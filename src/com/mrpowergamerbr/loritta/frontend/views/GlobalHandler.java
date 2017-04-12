@@ -65,6 +65,9 @@ public class GlobalHandler {
 		if (path.equalsIgnoreCase("/")) {
 			render = HomeView.render(req, res);
 		}
+		if (path.equalsIgnoreCase("/servers")) {
+			render = ServerListView.render(req, res);
+		}
 		// Authentication
 		System.out.println("OAuth2!");
 		if (path.startsWith("/auth")) {
@@ -123,14 +126,13 @@ public class GlobalHandler {
 						return;
 					}
 				}
-			} else {
-				try {
-					res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fauth&scope=identify%20guilds&response_type=code&client_id=297153970613387264");
-				} catch (Throwable ex) {
-					ex.printStackTrace();
-				}
-				return;
 			}
+			try {
+				res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fauth&scope=identify%20guilds&response_type=code&client_id=297153970613387264");
+			} catch (Throwable ex) {
+				ex.printStackTrace();
+			}
+			return;
 		}
 		if (path.startsWith("/config")) {
 			// Behind Authentication
