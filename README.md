@@ -1,22 +1,24 @@
 Loritta
 -------------
 <p align="center">
-<b>A Nukkit fork that aims to add new and pretty features to Nukkit!</b>
 <br>
-<img src="http://i.imgur.com/Meuavoq.png">
-<a href="https://discord.gg/3rXgN8x"><img src="https://img.shields.io/badge/discord-sequinland-yellow.svg"></a>
+<img height="384" src="http://i.imgur.com/Meuavoq.png">
+<br>
+<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
+<a href="https://discord.gg/3rXgN8x"><img src="https://img.shields.io/badge/discord-loritta-yellow.svg"></a>
+<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 </p>
 
-A Loritta (ou para amigos próximos, "Lori") é um bot com várias funções, simples, modular, fácil e extremamente customizável para você usar para o seu servidor no Discord!
+A Loritta (ou para amigos prÃ³ximos, "Lori") Ã© um bot com vÃ¡rias funÃ§Ãµes, simples, modular, fÃ¡cil e extremamente customizÃ¡vel para vocÃª usar para o seu servidor no Discord!
 
-Ela foi criada devido a falta de bots para servidores brasileiros, já que a maioria dos bots só "digitam" em inglês, ficando difícil para pessoas que não sabem inglês, sem contar que fica estranho um chat misturado com português e inglês.
+Ela foi criada devido a falta de bots para servidores brasileiros, jÃ¡ que a maioria dos bots sÃ³ "digitam" em inglÃªs, ficando difÃ­cil para pessoas que nÃ£o sabem inglÃªs, sem contar que fica estranho um chat misturado com portuguÃªs e inglÃªs.
 
-Se você quiser usar a Loritta no seu servidor, você pode adicionar ela clicando [aqui](http://loritta.website/auth).
+Se vocÃª quiser usar a Loritta no seu servidor, vocÃª pode adicionar ela clicando [aqui](http://loritta.website/auth).
 
-Você também pode hospedar a Loritta você mesmo em algum lugar... mas eu nunca pensei que alguém ia usar hospedar a Loritta então você terá que fazer algumas modificações no código-fonte dela para funcionar. ;)
+VocÃª tambÃ©m pode hospedar a Loritta vocÃª mesmo em algum lugar... mas eu nunca pensei que alguÃ©m ia usar hospedar a Loritta entÃ£o vocÃª terÃ¡ que fazer algumas modificaÃ§Ãµes no cÃ³digo-fonte dela para funcionar. ;)
 
 Pull Requests (e coisas relacionadas)
 -------------
-Pull Requests serão aceitos desde que:
-* Não sejam gambiarras, meu código pode ser ter algumas gambiarras mas isto não significa que você também deve fazer gambiarras.
-* Coisas NSFW **NÃO** serão adicionadas na Loritta
+Pull Requests serÃ£o aceitos desde que:
+* NÃ£o sejam gambiarras, meu cÃ³digo pode ser ter algumas gambiarras mas isto nÃ£o significa que vocÃª tambÃ©m deve fazer gambiarras.
+* Coisas NSFW **NÃƒO** serÃ£o adicionadas na Loritta
