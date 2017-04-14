@@ -70,7 +70,7 @@ public class AjudaCommand extends CommandBase {
 		context.sendMessage(sparklyPower.build());
 		context.sendMessage(additionalInfoEmbed.build());
 
-		if (cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE)) {
+		if (true /* cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE) */) {
 			context.getEvent().getTextChannel().sendMessage(context.getAsMention(true) + "Enviei para você no privado! ;)").complete();
 		}
 	}

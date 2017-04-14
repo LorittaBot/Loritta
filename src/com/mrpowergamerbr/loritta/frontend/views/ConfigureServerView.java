@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.frontend.views;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.jooby.Response;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
+import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderWrapper;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -31,25 +33,47 @@ public class ConfigureServerView {
 					break;
 				}
 			}
-			
+
 			if (allowed) {
+				PebbleTemplate template = null;
 				ServerConfig sc = LorittaLauncher.getInstance().getServerConfigForGuild(guildId);
-				
-				if (req.param("commandPrefix").isSet()) {
-					sc.commandPrefix(req.param("commandPrefix").value());
-					LorittaLauncher.getInstance().getDs().save(sc);
-				}
-				
-				if (req.param("commandMagic").isSet()) {
-					sc.explainOnCommandRun(req.param("explainOnCommandRun").isSet());
-					sc.mentionOnCommandOutput(req.param("mentionOnCommandOutput").isSet());
-					LorittaLauncher.getInstance().getDs().save(sc);
-				}
-				
-				context.put("commandPrefix", sc.commandPrefix());
 				context.put("serverConfig", sc);
 				
-				PebbleTemplate template = LorittaWebsite.engine.getTemplate("server_config.html");
+				if (req.path().endsWith("commands")) {
+					ArrayList<String> enabledModules = new ArrayList<String>();
+					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+						if (req.param(cmdBase.getClass().getSimpleName()).isSet()) {
+							enabledModules.add(cmdBase.getClass().getSimpleName());
+						}
+					}
+					sc.modules(enabledModules);
+					if (req.param("activateAllCommands").isSet()) {
+						enabledModules.clear();
+						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+							enabledModules.add(cmdBase.getClass().getSimpleName());
+						}
+						sc.modules(enabledModules);
+					}
+					LorittaLauncher.getInstance().getDs().save(sc);
+					template = LorittaWebsite.engine.getTemplate("module_config.html");
+					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
+					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
+				} else {
+					if (req.param("commandPrefix").isSet()) {
+						sc.commandPrefix(req.param("commandPrefix").value());
+						LorittaLauncher.getInstance().getDs().save(sc);
+					}
+
+					if (req.param("commandMagic").isSet()) {
+						sc.explainOnCommandRun(req.param("explainOnCommandRun").isSet());
+						sc.mentionOnCommandOutput(req.param("mentionOnCommandOutput").isSet());
+						sc.debugOptions().enableAllModules(req.param("enableAllModules").isSet());
+						LorittaLauncher.getInstance().getDs().save(sc);
+					}
+
+					context.put("commandPrefix", sc.commandPrefix());
+					template = LorittaWebsite.engine.getTemplate("server_config.html");
+				}
 
 				return new RenderWrapper(template, context);
 			} else {

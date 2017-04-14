@@ -80,9 +80,10 @@ public class CommandContext {
 	public void sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
+		/* if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
 			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
-		}
+		} */
+		privateReply = cmd instanceof AjudaCommand;
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
 				t.sendMessage(message).complete();
@@ -95,9 +96,10 @@ public class CommandContext {
 	public void sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
+		/* if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
 			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
-		}
+		} */
+		privateReply = cmd instanceof AjudaCommand;
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
 				t.sendMessage(embed).complete();

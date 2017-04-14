@@ -156,7 +156,7 @@ public class GlobalHandler {
 				}
 				if (path.startsWith("/config/servidor")) {
 					String[] split = path.split("/");
-					if (split.length == 4) {
+					if (split.length >= 4) {
 						String guildId = split[3];
 						System.out.println("reading guildId..." + guildId);
 						if (LorittaLauncher.getInstance().getJda().getGuildById(guildId) != null) {

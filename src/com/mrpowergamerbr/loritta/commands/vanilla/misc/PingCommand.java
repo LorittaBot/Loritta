@@ -12,6 +12,6 @@ public class PingCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
-		context.sendMessage(context.getAsMention(true) + "Pong!");
+		context.sendMessage(context.getAsMention(true) + "🏓 Pong!");
 	}
 }

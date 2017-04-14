@@ -22,6 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.model.Filters;
+import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandManager;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
@@ -80,7 +81,7 @@ public class Loritta {
 
 	private static final List<String> mstKeys = new ArrayList<String>(); // http://trans.pantherman594.com/translateKeys
 
-	
+
 	static {
 		mstKeys.add("Tharsen;6mutEwVfEVk3S9nIdolEc9EdVVHANwNyW69H15ssB7c=");
 		mstKeys.add("Rell1936;ZiE7WrcOTj0QYuJsgan0PhQDRv2A34ZVIQKBWL7wS9o=");
@@ -160,30 +161,30 @@ public class Loritta {
 				// cmdOpti.options().put(AvatarCommand.HIDE_IMAGE, true);
 				config.commandOptions().put("AjudaCommand", cmdOpti);
 			}
-			
+
 			{
 				YouTubeCommandOptions cmdOpt = new YouTubeCommand.YouTubeCommandOptions();
 				cmdOpt.doNotEmbed(true);
 				config.commandOptions().put("YouTubeCommand", cmdOpt);
 			}
-			
+
 			{
 				CustomCommand customCmd = new CustomCommand();
 				customCmd.commandName("parappa");
-				
+
 				CodeBlock codeBlock = new CodeBlock(); // Nosso CodeBlock
-				
+
 				ReplyCode reply = new ReplyCode("Yeah, I know... I gotta believe!");
 				codeBlock.codes.add(reply);
-				
+
 				ReactionCode react = new ReactionCode("parappa", true);
 				codeBlock.codes.add(react);
-				
+
 				customCmd.codes().add(codeBlock);
 
 				config.customCommands().add(customCmd);
 			}
-			
+
 			CommandOptions tristeRealidadeOpti = new CommandOptions();
 			config.commandOptions().put("TristeRealidadeCommand", tristeRealidadeOpti);
 
@@ -214,7 +215,7 @@ public class Loritta {
 
 				config.whistlers().add(whistler); // Pronto!
 			}
-			
+
 			// Test Whistler #2
 			// kk eae girl
 			{
@@ -233,16 +234,24 @@ public class Loritta {
 
 				config.whistlers().add(whistler); // Pronto!
 			} // http://i.imgur.com/hSiDzcT.png
-			
+
 			// TODO: Apenas para debug ;)
 			ds.save(config); */
 			Document doc = mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("_id", guildId)).first();
 			if (doc != null) {
 				ServerConfig config = ds.get(ServerConfig.class, doc.get("_id"));
-				config.debugOptions().enableAllModules(true);
+				/* if (guildId.equals("268353819409252352")) {
+					config.debugOptions().enableAllModules(false);
+				} else {
+					config.debugOptions().enableAllModules(true);
+				} */
 				return config;
 			} else {
-				return new ServerConfig().guildId(guildId);
+				ArrayList<String> enabledModules = new ArrayList<String>();
+				for (CommandBase cmdBase : commandManager.getCommandMap()) {
+					enabledModules.add(cmdBase.getClass().getSimpleName());
+				}
+				return new ServerConfig().guildId(guildId).modules(enabledModules);
 			}
 			// TODO: AjudaOptions & AvatarOptions
 			// Gson gson = new Gson();
@@ -292,11 +301,11 @@ public class Loritta {
 
 		return temmie;
 	}
-	
+
 	public static String getPlaying() {
 		return playingGame;
 	}
-	
+
 	public static void setPlaying(String newGame) {
 		playingGame = newGame;
 	}
