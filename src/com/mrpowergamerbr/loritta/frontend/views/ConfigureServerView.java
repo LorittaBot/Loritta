@@ -30,6 +30,7 @@ public class ConfigureServerView {
 			for (TemmieGuild guild : guilds) {
 				if (guild.getId().equals(guildId)) {
 					allowed = guild.isOwner();
+					context.put("currentServer", guild);
 					break;
 				}
 			}
