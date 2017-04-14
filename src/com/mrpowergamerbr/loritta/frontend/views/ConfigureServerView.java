@@ -38,17 +38,19 @@ public class ConfigureServerView {
 				PebbleTemplate template = null;
 				ServerConfig sc = LorittaLauncher.getInstance().getServerConfigForGuild(guildId);
 				context.put("serverConfig", sc);
-				
+
 				if (req.path().endsWith("commands")) {
-					ArrayList<String> enabledModules = new ArrayList<String>();
-					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-						if (req.param(cmdBase.getClass().getSimpleName()).isSet()) {
-							enabledModules.add(cmdBase.getClass().getSimpleName());
+					if (req.param("editingCmds").isSet()) {
+						ArrayList<String> enabledModules = new ArrayList<String>();
+						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+							if (req.param(cmdBase.getClass().getSimpleName()).isSet()) {
+								enabledModules.add(cmdBase.getClass().getSimpleName());
+							}
 						}
+						sc.modules(enabledModules);
 					}
-					sc.modules(enabledModules);
 					if (req.param("activateAllCommands").isSet()) {
-						enabledModules.clear();
+						ArrayList<String> enabledModules = new ArrayList<String>();
 						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
 							enabledModules.add(cmdBase.getClass().getSimpleName());
 						}
