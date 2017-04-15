@@ -80,8 +80,10 @@ public class GlobalHandler {
 				}
 				return;
 			} else if (req.session().get("discordAuthCode").isSet()) { // Se discordAuthCode existe, então já existe uma conta OAuth2 ativada!
+				System.out.println("Trying to reuse Authentication Code...");
 				Object temmieObj = LorittaWebsite.getOAuth2().getOrDefault(req.session().get("discordAuthCode").value(), null);
 				if (temmieObj == null) { // Se é null, quer dizer que o TemmieDiscordAuth expirou
+					System.out.println("null!");
 					try {
 						res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fauth&scope=identify%20guilds&response_type=code&client_id=297153970613387264");
 					} catch (Throwable ex) {
@@ -89,9 +91,11 @@ public class GlobalHandler {
 					}
 					return;
 				} else {
+					System.out.println("not null!");
 					TemmieDiscordAuth temmie = (TemmieDiscordAuth) temmieObj;
 
-					if (!temmie.isValid()) {
+					if (false /* !temmie.isValid() */) {
+						System.out.println("but it isn't valid!");
 						// Vamos tentar pegar um novo access token
 						try {
 							System.out.println("doing token exchange!");
