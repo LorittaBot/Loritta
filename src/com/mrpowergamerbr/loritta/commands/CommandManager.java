@@ -32,6 +32,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EncurtarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PackageInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 
@@ -63,6 +64,7 @@ public class CommandManager {
 		commandMap.add(new EncurtarCommand());
 		commandMap.add(new SAMCommand());
 		commandMap.add(new NyanCatCommand());
+		commandMap.add(new WikipediaCommand());
 		
 		// =======[ DISCORD ]=======
 		commandMap.add(new AvatarCommand());
