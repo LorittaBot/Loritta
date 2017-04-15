@@ -12,8 +12,8 @@ import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mongodb.MongoClient;
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler;
+import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
 
 import lombok.Getter;
 
@@ -49,5 +49,9 @@ public class LorittaWebsite extends Jooby {
 		engine = new PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build();
 		
 		run(LorittaWebsite::new, new String[] {});
+	}
+	
+	public static boolean canManageGuild(TemmieGuild g) {
+		return g.isOwner() || (g.getPermissions() >> 5 & 1) == 1;
 	}
 }

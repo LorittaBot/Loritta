@@ -33,7 +33,7 @@ public class ConfigureServerView {
 			boolean allowed = false;
 			for (TemmieGuild guild : guilds) {
 				if (guild.getId().equals(guildId)) {
-					allowed = guild.isOwner();
+					allowed = LorittaWebsite.canManageGuild(guild);
 					context.put("currentServer", guild);
 					break;
 				}

@@ -4,14 +4,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jooby.Request;
 import org.jooby.Response;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderWrapper;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
@@ -24,7 +23,7 @@ public class ChooseServerView {
 			HashMap<String, Object> context = new HashMap<String, Object>();
 
 			List<TemmieGuild> guilds = temmie.getUserGuilds();
-			context.put("guilds", guilds);
+			context.put("guilds", guilds.stream().filter((guild) -> LorittaWebsite.canManageGuild(guild)).collect(Collectors.toList()));
 			PebbleTemplate template = LorittaWebsite.engine.getTemplate("choose_server.html");
 
 			return new RenderWrapper(template, context);

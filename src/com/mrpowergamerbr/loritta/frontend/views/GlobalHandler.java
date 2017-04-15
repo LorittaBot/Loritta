@@ -5,12 +5,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import javax.security.auth.login.LoginException;
 
 import org.jooby.Request;
 import org.jooby.Response;
@@ -22,12 +19,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderWrapper;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
-import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
-
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class GlobalHandler {
 
