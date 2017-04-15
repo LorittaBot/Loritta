@@ -38,7 +38,7 @@ public abstract class CommandBase {
 	public boolean hasCommandFeedback() {
 		return true;
 	}
-
+	
 	public abstract void run(CommandContext context);
 
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 
@@ -80,10 +79,9 @@ public class CommandContext {
 	public void sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		/* if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
-			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
-		} */
-		privateReply = cmd instanceof AjudaCommand;
+		if (cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
+		}
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
 				t.sendMessage(message).complete();
@@ -96,10 +94,9 @@ public class CommandContext {
 	public void sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		/* if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
-			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
-		} */
-		privateReply = cmd instanceof AjudaCommand;
+		if (cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
+		}
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
 				t.sendMessage(embed).complete();
@@ -116,8 +113,8 @@ public class CommandContext {
 	public void sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
-			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
+		if (cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
@@ -135,8 +132,8 @@ public class CommandContext {
 	public void sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE)) {
-			privateReply = cmdOptions.getAsBoolean(AjudaCommand.SEND_IN_PRIVATE);
+		if (cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
