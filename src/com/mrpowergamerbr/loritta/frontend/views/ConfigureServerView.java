@@ -39,6 +39,8 @@ public class ConfigureServerView {
 				}
 			}
 
+			context.put("whereAmI", "idk");
+			
 			if (allowed) {
 				PebbleTemplate template = null;
 				ServerConfig sc = LorittaLauncher.getInstance().getServerConfigForGuild(guildId);
@@ -75,6 +77,8 @@ public class ConfigureServerView {
 						context.put("commandOption" + entry.getKey(), entry.getValue());
 					}
 					
+					context.put("whereAmI", "moduleConfig");
+					
 					template = LorittaWebsite.engine.getTemplate("module_config.html");
 					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
@@ -91,6 +95,8 @@ public class ConfigureServerView {
 						LorittaLauncher.getInstance().getDs().save(sc);
 					}
 
+					context.put("whereAmI", "mainPage");
+					
 					context.put("commandPrefix", sc.commandPrefix());
 					template = LorittaWebsite.engine.getTemplate("server_config.html");
 				}
