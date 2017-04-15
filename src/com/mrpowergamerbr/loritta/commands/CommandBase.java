@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public abstract class CommandBase {
@@ -40,14 +39,7 @@ public abstract class CommandBase {
 		return true;
 	}
 
-	@Deprecated
-	public void run(MessageReceivedEvent ev, ServerConfig conf, String message, String[] args) {
-
-	}
-
-	public void run(CommandContext context) {
-
-	}
+	public abstract void run(CommandContext context);
 
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
 		String message = ev.getMessage().getContent();
@@ -62,8 +54,6 @@ public abstract class CommandBase {
 				explain(conf, ev);
 				return true;
 			}
-			run(ev, conf, message, args); // @Deprecated! Remova isto depois!
-
 			CommandContext context = new CommandContext(conf, ev, this, args);
 			run(context);
 			return true;
