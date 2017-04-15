@@ -22,7 +22,11 @@ import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.commands.CommandOptions;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Member;
@@ -50,6 +54,8 @@ public class TristeRealidadeCommand extends CommandBase {
 	public void run(CommandContext context) {
 		// ok
 		try {
+			TristeRealidadeCommandOptions cmdOpti = (TristeRealidadeCommandOptions) context.getConfig().getCommandOptionsFor(this);
+			
 			BufferedImage bi = ImageIO.read(new File(Loritta.FOLDER + "meme_1.png")); // Primeiro iremos carregar o nosso template
 			int x = 0;
 			int y = 0;
@@ -84,6 +90,8 @@ public class TristeRealidadeCommand extends CommandBase {
 				users.add(member.getUser());
 			}
 
+			List<User> clonedUserList = new ArrayList<User>(users); // É necessário clonar já que nós iremos mexer nela depois
+			
 			int val = 0;
 			while (6 > val) {
 				User member = users.get(0);
@@ -98,7 +106,7 @@ public class TristeRealidadeCommand extends CommandBase {
 				Image avatarImg = avatar.getScaledInstance(128, 128, Image.SCALE_SMOOTH);
 				baseGraph.drawImage(avatarImg, x, y, null);
 
-				if (!context.getConfig().getCommandOptionsFor(this).getAsBoolean(HIDE_DISCORD_TAGS)) {
+				if (!cmdOpti.hideDiscordTags()) {
 					baseGraph.setColor(Color.BLACK);
 					baseGraph.drawString(member.getName() + "#" + member.getDiscriminator(), x + 1, y + 12);
 					baseGraph.drawString(member.getName() + "#" + member.getDiscriminator(), x + 1, y + 14);
@@ -129,8 +137,8 @@ public class TristeRealidadeCommand extends CommandBase {
 
 			MessageBuilder builder = new MessageBuilder();
 
-			if (context.getConfig().getCommandOptionsFor(this).getAsBoolean(MENTION_USERS)) {
-				for (User usr : users) {
+			if (cmdOpti.mentionEveryone()) {
+				for (User usr : clonedUserList) {
 					builder.append(usr);
 					builder.append(" ");
 				}
@@ -142,5 +150,13 @@ public class TristeRealidadeCommand extends CommandBase {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Getter
+	@Setter
+	@Accessors(fluent = true)
+	public static class TristeRealidadeCommandOptions extends CommandOptions {
+		boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem serão mencionados
+		boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags não irão aparecer na imagem
 	}
 }

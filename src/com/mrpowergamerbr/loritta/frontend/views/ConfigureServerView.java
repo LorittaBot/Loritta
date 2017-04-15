@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.jooby.Request;
 import org.jooby.Response;
@@ -13,6 +14,9 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandOptions;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.TristeRealidadeCommandOptions;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderWrapper;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -39,7 +43,6 @@ public class ConfigureServerView {
 				PebbleTemplate template = null;
 				ServerConfig sc = LorittaLauncher.getInstance().getServerConfigForGuild(guildId);
 				context.put("serverConfig", sc);
-
 				if (req.path().endsWith("commands")) {
 					if (req.param("editingCmds").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
@@ -50,6 +53,12 @@ public class ConfigureServerView {
 						}
 						sc.modules(enabledModules);
 					}
+					if (req.param("editingTristeRealidade").isSet()) {
+						TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
+						cmdOpti.mentionEveryone(req.param("mentionEveryone").isSet());
+						cmdOpti.hideDiscordTags(req.param("hideDiscordTags").isSet());
+						sc.commandOptions().put("TristeRealidadeCommand", cmdOpti);
+					}
 					if (req.param("activateAllCommands").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
 						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
@@ -58,6 +67,14 @@ public class ConfigureServerView {
 						sc.modules(enabledModules);
 					}
 					LorittaLauncher.getInstance().getDs().save(sc);
+					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+						context.put("commandOption" + cmdBase.getClass().getSimpleName(), new CommandOptions());
+					}
+					context.put("commandOptionTristeRealidadeCommand", new TristeRealidadeCommand.TristeRealidadeCommandOptions());
+					for (Entry<String, CommandOptions> entry : sc.commandOptions().entrySet()) {
+						context.put("commandOption" + entry.getKey(), entry.getValue());
+					}
+					
 					template = LorittaWebsite.engine.getTemplate("module_config.html");
 					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));

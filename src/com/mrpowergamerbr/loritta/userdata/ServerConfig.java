@@ -11,6 +11,7 @@ import org.mongodb.morphia.annotations.IndexOptions;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
 
 import lombok.Getter;
@@ -49,6 +50,9 @@ public class ServerConfig {
 	public CommandOptions getCommandOptionsFor(CommandBase cmd) {
 		if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {
 			return commandOptions.get(cmd.getClass().getSimpleName());
+		}
+		if (cmd instanceof TristeRealidadeCommand) {
+			return new TristeRealidadeCommand.TristeRealidadeCommandOptions();
 		}
 		return new CommandOptions();
 	}
