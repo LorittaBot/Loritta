@@ -5,14 +5,13 @@ import java.util.HashMap;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.IndexOptions;
+import org.mongodb.morphia.annotations.Indexed;
 
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
 
 import lombok.Getter;
@@ -47,6 +46,8 @@ public class ServerConfig {
 	ArrayList<Whistler> whistlers = new ArrayList<Whistler>(); // Whistlers
 	
 	ArrayList<CustomCommand> customCommands = new ArrayList<CustomCommand>(); // Comandos customizados
+
+	JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
 	
 	public CommandOptions getCommandOptionsFor(CommandBase cmd) {
 		if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {

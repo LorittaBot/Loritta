@@ -20,7 +20,11 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -130,4 +134,56 @@ public class DiscordListener extends ListenerAdapter {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+		loritta.getExecutor().execute(() -> {
+			try {
+				ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
+				
+				if (conf.joinLeaveConfig().isEnabled()) {
+					if (conf.joinLeaveConfig().isTellOnJoin()) {
+						Guild guild = event.getGuild();
+						
+						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalJoin(), true);
+						
+						if (!textChannelList.isEmpty()) {
+							TextChannel textChannel = textChannelList.get(0);
+							
+							String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
+							textChannel.sendMessage(msg).complete();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+    }
+	
+	@Override
+    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+		loritta.getExecutor().execute(() -> {
+			try {
+				ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
+
+				if (conf.joinLeaveConfig().isEnabled()) {
+					if (conf.joinLeaveConfig().isTellOnLeave()) {
+						Guild guild = event.getGuild();
+						
+						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalLeave(), true);
+						
+						if (!textChannelList.isEmpty()) {
+							TextChannel textChannel = textChannelList.get(0);
+							
+							String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
+							textChannel.sendMessage(msg).complete();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+    }
 }

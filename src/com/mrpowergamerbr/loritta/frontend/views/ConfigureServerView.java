@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.TristeRealidadeCommandOptions;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderWrapper;
+import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
@@ -107,7 +108,6 @@ public class ConfigureServerView {
 					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
 						context.put("commandOption" + cmdBase.getClass().getSimpleName(), new CommandOptions());
 					}
-					context.put("commandOptionTristeRealidadeCommand", new TristeRealidadeCommand.TristeRealidadeCommandOptions());
 					for (Entry<String, CommandOptions> entry : sc.commandOptions().entrySet()) {
 						context.put("commandOption" + entry.getKey(), entry.getValue());
 					}
@@ -117,6 +117,23 @@ public class ConfigureServerView {
 					template = LorittaWebsite.engine.getTemplate("module_config.html");
 					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
+				} else if (req.path().endsWith("joinconfig")) {
+					if (req.param("enableModule").isSet()) { // O usuário está salvando as configurações?
+						JoinLeaveConfig jlCnf = sc.joinLeaveConfig();
+						jlCnf.setEnabled(req.param("enableModule").isSet());
+						jlCnf.setTellOnJoin(req.param("tellOnJoin").isSet());
+						jlCnf.setTellOnLeave(req.param("tellOnLeave").isSet());
+						jlCnf.setCanalJoin(req.param("canalJoin").value());
+						jlCnf.setCanalLeave(req.param("canalLeave").value());
+						jlCnf.setJoinMessage(req.param("joinMessage").value());
+						jlCnf.setLeaveMessage(req.param("leaveMessage").value());
+	
+						sc.joinLeaveConfig(jlCnf);
+						LorittaLauncher.getInstance().getDs().save(sc);
+					}
+					context.put("whereAmI", "joinConfig");
+
+					template = LorittaWebsite.engine.getTemplate("join_config.html");
 				} else {
 					if (req.param("commandPrefix").isSet()) {
 						sc.commandPrefix(req.param("commandPrefix").value());
