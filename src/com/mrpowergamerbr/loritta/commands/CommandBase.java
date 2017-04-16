@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 
 import net.dv8tion.jda.core.EmbedBuilder;
