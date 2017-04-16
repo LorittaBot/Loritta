@@ -32,6 +32,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.Game.GameType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -291,5 +293,13 @@ public class Loritta {
 
 	public static void setPlaying(String newGame) {
 		playingGame = newGame;
+	}
+	
+	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
+		for (Member member : guild.getMembers()) {
+			if (member.isOwner()) {
+				member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
+			}
+		}
 	}
 }

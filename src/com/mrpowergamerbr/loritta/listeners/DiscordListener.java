@@ -16,9 +16,6 @@ import com.mrpowergamerbr.loritta.whistlers.IPrecondition;
 import com.mrpowergamerbr.loritta.whistlers.ReactionCode;
 import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
-
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -134,24 +131,28 @@ public class DiscordListener extends ListenerAdapter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 		loritta.getExecutor().execute(() -> {
 			try {
 				ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
-				
+
 				if (conf.joinLeaveConfig().isEnabled()) {
 					if (conf.joinLeaveConfig().isTellOnJoin()) {
 						Guild guild = event.getGuild();
-						
+
 						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalJoin(), true);
-						
+
 						if (!textChannelList.isEmpty()) {
 							TextChannel textChannel = textChannelList.get(0);
-							
-							String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
-							textChannel.sendMessage(msg).complete();
+
+							if (textChannel.canTalk()) {
+								String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
+								textChannel.sendMessage(msg).complete();
+							} else {
+								Loritta.warnOwnerNoPermission(guild, textChannel, conf);
+							}
 						}
 					}
 				}
@@ -159,10 +160,10 @@ public class DiscordListener extends ListenerAdapter {
 				e.printStackTrace();
 			}
 		});
-    }
-	
+	}
+
 	@Override
-    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+	public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
 		loritta.getExecutor().execute(() -> {
 			try {
 				ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
@@ -170,14 +171,18 @@ public class DiscordListener extends ListenerAdapter {
 				if (conf.joinLeaveConfig().isEnabled()) {
 					if (conf.joinLeaveConfig().isTellOnLeave()) {
 						Guild guild = event.getGuild();
-						
+
 						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalLeave(), true);
-						
+
 						if (!textChannelList.isEmpty()) {
 							TextChannel textChannel = textChannelList.get(0);
-							
-							String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
-							textChannel.sendMessage(msg).complete();
+
+							if (textChannel.canTalk()) {
+								String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
+								textChannel.sendMessage(msg).complete();
+							} else {
+								Loritta.warnOwnerNoPermission(guild, textChannel, conf);
+							}
 						}
 					}
 				}
@@ -185,5 +190,5 @@ public class DiscordListener extends ListenerAdapter {
 				e.printStackTrace();
 			}
 		});
-    }
+	}
 }

@@ -45,7 +45,12 @@ public abstract class CommandBase {
 		String message = ev.getMessage().getContent();
 		if (message.startsWith(conf.commandPrefix() + getLabel())) {
 			if (hasCommandFeedback()) {
-				ev.getChannel().sendTyping().complete();
+				if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+					Loritta.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
+					return true;
+				} else {
+					ev.getChannel().sendTyping().complete();
+				}
 			}
 			String cmd = conf.commandPrefix() + getLabel();
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
