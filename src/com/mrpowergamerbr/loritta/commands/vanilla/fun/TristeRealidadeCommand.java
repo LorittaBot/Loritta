@@ -156,7 +156,7 @@ public class TristeRealidadeCommand extends CommandBase {
 	@Setter
 	@Accessors(fluent = true)
 	public static class TristeRealidadeCommandOptions extends CommandOptions {
-		boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem serão mencionados
-		boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags não irão aparecer na imagem
+		public boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem serão mencionados
+		public boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags não irão aparecer na imagem
 	}
 }

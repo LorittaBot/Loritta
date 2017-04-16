@@ -59,6 +59,6 @@ public class YouTubeCommand extends CommandBase {
 	@Setter
 	@Accessors(fluent = true)
 	public static class YouTubeCommandOptions extends CommandOptions {
-		boolean doNotEmbed; // Caso esteja ativado, os vídeos não ficarão em "embeds"
+		public boolean doNotEmbed; // Caso esteja ativado, os vídeos não ficarão em "embeds"
 	}
 }

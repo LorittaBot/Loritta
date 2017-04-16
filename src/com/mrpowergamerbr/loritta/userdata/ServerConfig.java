@@ -8,6 +8,7 @@ import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.IndexOptions;
 
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
@@ -51,10 +52,12 @@ public class ServerConfig {
 		if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {
 			return commandOptions.get(cmd.getClass().getSimpleName());
 		}
-		if (cmd instanceof TristeRealidadeCommand) {
-			return new TristeRealidadeCommand.TristeRealidadeCommandOptions();
+		try {
+			return (CommandOptions) LorittaLauncher.getInstance().getCommandManager().getDefaultCmdOptions().get(cmd.getClass().getSimpleName()).newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
 		}
-		return new CommandOptions();
 	}
 	
 	@Getter

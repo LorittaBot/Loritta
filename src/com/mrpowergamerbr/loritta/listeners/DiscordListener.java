@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.CacheBuilder;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
@@ -54,8 +55,9 @@ public class DiscordListener extends ListenerAdapter {
 						if (conf.debugOptions().enableAllModules() || conf.modules().contains(cmd.getClass().getSimpleName())) {
 							if (cmd.handle(event, conf)) {
 								// event.getChannel().sendTyping().queue();
-								if (conf.deleteMessageAfterCommand()) {
-									event.getMessage().delete().queue();
+								CommandOptions cmdOpti = conf.getCommandOptionsFor(cmd);
+								if (conf.deleteMessageAfterCommand() || cmdOpti.deleteMessageAfterCommand()) {
+									event.getMessage().delete().complete();
 								}
 								return;
 							}
@@ -66,7 +68,7 @@ public class DiscordListener extends ListenerAdapter {
 					for (CustomCommand cmd : conf.customCommands()) {
 						if (cmd.handle(event, conf)) {
 							if (conf.deleteMessageAfterCommand()) {
-								event.getMessage().delete().queue();
+								event.getMessage().delete().complete();
 							}
 						}
 						return;

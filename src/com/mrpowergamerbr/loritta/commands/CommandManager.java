@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand;
@@ -41,6 +43,7 @@ import lombok.Getter;
 @Getter
 public class CommandManager {
 	private List<CommandBase> commandMap = new ArrayList<CommandBase>();
+	private Map<String, Class<?>> defaultCmdOptions = new HashMap<String, Class<?>>();
 	
 	public CommandManager() {
 		commandMap.add(new BotInfoCommand());
@@ -84,6 +87,14 @@ public class CommandManager {
 		// =======[ MAGIC ]========
 		commandMap.add(new ReloadCommand());
 		commandMap.add(new ChangeGameCommand());
+		
+		for (CommandBase cmdBase : this.getCommandMap()) {
+			defaultCmdOptions.put(cmdBase.getClass().getSimpleName(), CommandOptions.class);
+		}
+		
+		// Custom Options
+		defaultCmdOptions.put(TristeRealidadeCommand.class.getSimpleName(), TristeRealidadeCommand.TristeRealidadeCommandOptions.class);
+		defaultCmdOptions.put(YouTubeCommand.class.getSimpleName(), YouTubeCommand.YouTubeCommandOptions.class);
 	}
 	
 	public List<CommandBase> getCommandsAvailableFor(ServerConfig conf) {
