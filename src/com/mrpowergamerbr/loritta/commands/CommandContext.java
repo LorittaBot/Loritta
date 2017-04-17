@@ -10,14 +10,12 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser;
 
 import lombok.Getter;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 
 /**
  * Contexto do comando executado
@@ -109,7 +107,7 @@ public class CommandContext {
 				t.sendMessage(embed).complete();
 			});
 		} else {
-			if (event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
+			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendMessage(embed).complete();
 			} else {
 				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
@@ -132,7 +130,7 @@ public class CommandContext {
 				t.sendFile(data, name, message).complete();
 			});
 		} else {
-			if (event.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_WRITE)) {
+			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendFile(data, name, message).complete();
 			} else {
 				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
@@ -159,7 +157,7 @@ public class CommandContext {
 				}
 			});
 		} else {
-			if (event.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_WRITE)) {
+			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendFile(file, name, message).complete();
 			} else {
 				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
