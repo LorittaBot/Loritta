@@ -78,27 +78,27 @@ public class WikipediaCommand extends CommandBase {
 				// Resolvi usar JsonParser em vez de criar um objeto para o Gson desparsear... a response do Wikipedia é meio "estranha"
 				StringReader reader = new StringReader(wikipediaResponse);
 				JsonReader jsonReader = new JsonReader(reader);
-			    jsonReader.setLenient(true);
+				jsonReader.setLenient(true);
 				JsonObject wikipedia = new JsonParser().parse(jsonReader).getAsJsonObject(); // Base
 				JsonObject wikiQuery = wikipedia.getAsJsonObject("query"); // Query
 				JsonObject wikiPages = wikiQuery.getAsJsonObject("pages"); // Páginas
 				Entry<String, JsonElement> entryWikiContent = wikiPages.entrySet().iterator().next(); // Conteúdo
-				
+
 				if (entryWikiContent.getKey().equals("-1")) { // -1 = Nenhuma página encontrada
 					context.sendMessage(context.getAsMention(true) + "Não consegui encontrar nada relacionado á **" + query + "** 😞");
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					String pageTitle = entryWikiContent.getValue().getAsJsonObject().get("title").getAsString();
 					String pageExtract = entryWikiContent.getValue().getAsJsonObject().get("extract").getAsString();
-					
+
 					EmbedBuilder embed = new EmbedBuilder()
 							.setTitle(pageTitle, null)
 							.setColor(Color.BLUE)
 							.setDescription(pageExtract.length() > 2048 ? pageExtract.substring(0, 2044) + "..." : pageExtract);
-					
+
 					context.sendMessage(embed.build()); // Envie a mensagem!
 				}
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				context.sendMessage(context.getAsMention(true) + "**Deu ruim!**");
