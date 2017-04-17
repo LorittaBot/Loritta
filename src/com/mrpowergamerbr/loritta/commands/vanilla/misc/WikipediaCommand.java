@@ -1,6 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc;
 
 import java.awt.Color;
+import java.io.StringReader;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
@@ -70,10 +73,13 @@ public class WikipediaCommand extends CommandBase {
 			}
 			try {
 				String query = StringUtils.join(context.getArgs(), " ", hasValidLanguageId ? 1 : 0, context.getArgs().length);
-				String wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + query).body();
+				String wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body();
 
 				// Resolvi usar JsonParser em vez de criar um objeto para o Gson desparsear... a response do Wikipedia é meio "estranha"
-				JsonObject wikipedia = new JsonParser().parse(wikipediaResponse).getAsJsonObject(); // Base
+				StringReader reader = new StringReader(wikipediaResponse);
+				JsonReader jsonReader = new JsonReader(reader);
+			    jsonReader.setLenient(true);
+				JsonObject wikipedia = new JsonParser().parse(jsonReader).getAsJsonObject(); // Base
 				JsonObject wikiQuery = wikipedia.getAsJsonObject("query"); // Query
 				JsonObject wikiPages = wikiQuery.getAsJsonObject("pages"); // Páginas
 				Entry<String, JsonElement> entryWikiContent = wikiPages.entrySet().iterator().next(); // Conteúdo
