@@ -28,12 +28,15 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.VaporondaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.YouTubeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ChangeGameCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EncurtarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PackageInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -68,6 +71,7 @@ public class CommandManager {
 		commandMap.add(new SAMCommand());
 		commandMap.add(new NyanCatCommand());
 		commandMap.add(new WikipediaCommand());
+		commandMap.add(new QuoteCommand());
 		
 		// =======[ DISCORD ]=======
 		commandMap.add(new AvatarCommand());
@@ -76,6 +80,8 @@ public class CommandManager {
 		
 		// =======[ MINECRAFT ]========
 		commandMap.add(new OfflineUUIDCommand());
+		commandMap.add(new McAvatarCommand());
+		commandMap.add(new McQueryCommand());
 		
 		// =======[ UNDERTALE ]========
 		commandMap.add(new UndertaleBoxCommand());
