@@ -1,7 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord;
 
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
@@ -15,6 +19,11 @@ public class BotInfoCommand extends CommandBase {
 		return "botinfo";
 	}
 
+	@Override
+	public String getDescription() {
+		return "Mostra informações interessantes (e algumas bem inúteis) sobre a Loritta.";
+	}
+	
 	@Override
 	public void run(CommandContext context) {
 		EmbedBuilder embed = new EmbedBuilder();

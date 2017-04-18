@@ -40,7 +40,12 @@ public class FaustaoCommand extends CommandBase {
 	public CommandCategory getCategory() {
 		return CommandCategory.FUN;
 	}
-
+	
+	@Override
+	public String getDescription() {
+		return "Invoque o querido Faustão no seu servidor!";
+	}
+	
 	@Override
 	public boolean hasCommandFeedback() {
 		return false;

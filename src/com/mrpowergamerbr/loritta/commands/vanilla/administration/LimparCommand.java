@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
@@ -12,6 +15,21 @@ public class LimparCommand extends CommandBase {
 		return "limpar";
 	}
 
+	@Override
+	public String getDescription() {
+		return "Limpa o chat do canal de texto atual.";
+	}
+	
+	@Override
+	public String getUsage() {
+		return "QuantasMensagens";
+	}
+	
+	@Override
+	public List<String> getExample() {
+		return Arrays.asList("10", "25");
+	}
+	
 	@Override
 	public CommandCategory getCategory() {
 		return CommandCategory.ADMIN;

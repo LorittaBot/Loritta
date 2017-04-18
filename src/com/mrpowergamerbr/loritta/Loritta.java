@@ -225,11 +225,6 @@ public class Loritta {
 			Document doc = mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("_id", guildId)).first();
 			if (doc != null) {
 				ServerConfig config = ds.get(ServerConfig.class, doc.get("_id"));
-				/* if (guildId.equals("268353819409252352")) {
-					config.debugOptions().enableAllModules(false);
-				} else {
-					config.debugOptions().enableAllModules(true);
-				} */
 				return config;
 			} else {
 				ArrayList<String> enabledModules = new ArrayList<String>();
@@ -294,7 +289,7 @@ public class Loritta {
 	public static void setPlaying(String newGame) {
 		playingGame = newGame;
 	}
-	
+
 	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
 		for (Member member : guild.getMembers()) {
 			if (member.isOwner()) {

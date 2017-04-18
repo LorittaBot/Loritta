@@ -6,6 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +25,21 @@ public class NyanCatCommand extends CommandBase {
 		return "nyan";
 	}
 
+	@Override
+	public String getDescription() {
+		return "Nyan Cat, diretamente no seu servidor! E você pode pedir o tamanho do Nyan Cat igual quando você pede algum sanduíche no Subway!";
+	}
+	
+	@Override
+	public String getUsage() {
+		return "cat";
+	}
+	
+	@Override
+	public List<String> getExample() {
+		return Arrays.asList("", "cat", "caaaaaaat", "caaaaaaaaaaaaat");
+	}
+	
 	@Override
 	public void run(CommandContext context) {
 		int times = 0;

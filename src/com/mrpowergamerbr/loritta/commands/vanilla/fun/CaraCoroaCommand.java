@@ -11,8 +11,12 @@ public class CaraCoroaCommand extends CommandBase {
 	}
 
 	@Override
+	public String getDescription() {
+		return "Gire uma moeda e veja se irá cair cara ou coroa! Perfeito para descobrir quem irá ir primeiro em uma partida de futebas";
+	}
+	
+	@Override
 	public void run(CommandContext context) {
 		context.sendMessage(context.getAsMention(true) + (Loritta.getRandom().nextBoolean() ? "Cara!" : "Coroa!"));
 	}
-
 }

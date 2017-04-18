@@ -2,7 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
@@ -16,6 +20,25 @@ public class PedraPapelTesouraCommand extends CommandBase {
 		return "ppt";
 	}
 
+	@Override
+	public String getDescription() {
+		return "Jogue Pedra, Papel ou Tesoura! (jankenpon, ou a versão abrasileirada: jokenpô)";
+	}
+
+	public String getUsage() {
+		return "sua escolha";
+	}
+
+	public List<String> getExample() {
+		return Arrays.asList("pedra", "papel", "tesoura");
+	}
+
+	public Map<String, String> getDetailedUsage() {
+		return ImmutableMap.<String, String>builder()
+				.put("sua escolha", "Pedra, Papel ou Tesoura")
+				.build();
+	}
+	
 	@Override
 	public CommandCategory getCategory() {
 		return CommandCategory.FUN;

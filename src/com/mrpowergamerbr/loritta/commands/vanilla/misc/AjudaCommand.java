@@ -24,6 +24,11 @@ public class AjudaCommand extends CommandBase {
 	}
 
 	@Override
+	public String getDescription() {
+		return "Mostra todos os comandos disponíveis que eu posso executar, lembrando que isto só irá mostrar os comandos habilitados no servidor que você executou a ajuda!";
+	}
+	
+	@Override
 	public void run(CommandContext context) {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setThumbnail("http://i.imgur.com/LUHLEs9.png");

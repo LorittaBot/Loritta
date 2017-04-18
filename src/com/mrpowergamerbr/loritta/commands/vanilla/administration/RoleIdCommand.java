@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
@@ -14,8 +17,18 @@ public class RoleIdCommand extends CommandBase {
 	}
 
 	@Override
-	public CommandCategory getCategory() {
-		return CommandCategory.ADMIN;
+	public String getDescription() {
+		return "Pega o ID de um cargo do Discord";
+	}
+	
+	@Override
+	public String getUsage() {
+		return "CargoMencionado";
+	}
+	
+	@Override
+	public List<String> getExample() {
+		return Arrays.asList("@Moderadores");
 	}
 	
 	@Override

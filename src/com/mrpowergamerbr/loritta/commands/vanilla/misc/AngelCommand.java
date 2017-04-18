@@ -10,10 +10,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext;
 import net.dv8tion.jda.core.MessageBuilder;
 
 public class AngelCommand extends CommandBase {
-
 	@Override
 	public String getLabel() {
 		return "angel";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Mostra o meu avatar!";
 	}
 
 	@Override

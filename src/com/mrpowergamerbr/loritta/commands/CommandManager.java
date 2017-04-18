@@ -25,6 +25,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TretaNewsCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.VaporQualidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.VaporondaCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.WikiaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.YouTubeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ChangeGameCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
@@ -72,6 +73,7 @@ public class CommandManager {
 		commandMap.add(new NyanCatCommand());
 		commandMap.add(new WikipediaCommand());
 		commandMap.add(new QuoteCommand());
+		commandMap.add(new WikiaCommand());
 		
 		// =======[ DISCORD ]=======
 		commandMap.add(new AvatarCommand());

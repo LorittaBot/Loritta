@@ -21,7 +21,12 @@ public class EncurtarCommand extends CommandBase {
 	
 	@Override
 	public List<String> getExample() {
-		return Arrays.asList("http://mrpowergamerbr.com/");
+		return Arrays.asList("https://mrpowergamerbr.com/");
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Encurta um link usando o bit.ly";
 	}
 	
 	@Override

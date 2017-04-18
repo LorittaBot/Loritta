@@ -104,6 +104,10 @@ public class ConfigureServerView {
 						}
 						sc.modules(enabledModules);
 					}
+					if (req.param("deactivateAllCommands").isSet()) {
+						ArrayList<String> enabledModules = new ArrayList<String>();
+						sc.modules(enabledModules);
+					}
 					LorittaLauncher.getInstance().getDs().save(sc);
 					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
 						context.put("commandOption" + cmdBase.getClass().getSimpleName(), new CommandOptions());
