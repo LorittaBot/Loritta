@@ -21,7 +21,7 @@ public class BotInfoCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Mostra informações interessantes (e algumas bem inúteis) sobre a Loritta.";
+		return "Mostra informaÃ§Ãµes interessantes (e algumas bem inÃºteis) sobre a Loritta.";
 	}
 	
 	@Override
@@ -31,12 +31,12 @@ public class BotInfoCommand extends CommandBase {
 		embed.setColor(new Color(186, 0, 239));
 		embed.addField("Nome", "Loritta#" + LorittaLauncher.getInstance().getJda().getSelfUser().getDiscriminator(), true);
 		embed.addField("Servidores", String.valueOf(LorittaLauncher.getInstance().getJda().getGuilds().size()), true);
-		embed.addField("Usuários", String.valueOf(LorittaLauncher.getInstance().getJda().getUsers().size()), true);
+		embed.addField("UsuÃ¡rios", String.valueOf(LorittaLauncher.getInstance().getJda().getUsers().size()), true);
 		embed.addField("Website", "https://loritta.website", true);
 		embed.addField("Bibiloteca", "JDA", true);
-		embed.addField("Menções Honrosas", "`DaPorkchop_#2459` Ter criado o PorkBot\n"
-				+ "`official-papyrus-amiibo` Ter feito a incrível arte que a Loritta usa [Veja o tumblr!](http://official-papyrus-amiibo.tumblr.com/post/158758445671/youve-been-blessed-by-the-angel-katy)", false);
-		embed.setFooter("Loritta foi criada por MrPowerGamerBR - http://mrpowergamerbr.com/", "http://i.imgur.com/nhBZ8i4.png");
+		embed.addField("MenÃ§Ãµes Honrosas", "`DaPorkchop_#2459` Ter criado o PorkBot\n"
+				+ "`official-papyrus-amiibo` Ter feito a incrÃ­vel arte que a Loritta usa [Veja o tumblr!](http://official-papyrus-amiibo.tumblr.com/post/158758445671/youve-been-blessed-by-the-angel-katy)", false);
+		embed.setFooter("Loritta foi criada por MrPowerGamerBR - https://mrpowergamerbr.com/", "http://i.imgur.com/nhBZ8i4.png");
 		context.sendMessage(embed.build());
 	}
 
