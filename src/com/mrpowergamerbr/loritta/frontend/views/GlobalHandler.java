@@ -31,6 +31,8 @@ public class GlobalHandler {
 		defaultContext.put("websiteUrl", LorittaWebsite.websiteUrl);
 		defaultContext.put("totalServers", LorittaLauncher.getInstance().getJda().getGuilds().size());
 		defaultContext.put("totalUsers", LorittaLauncher.getInstance().getJda().getUsers().size());
+		defaultContext.put("epochMillis", System.currentTimeMillis());
+		
 		long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
 
 		long days = TimeUnit.MILLISECONDS.toDays(jvmUpTime);

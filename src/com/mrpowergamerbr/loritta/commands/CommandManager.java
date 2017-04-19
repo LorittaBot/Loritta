@@ -40,6 +40,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 
 import lombok.Getter;
@@ -74,6 +75,9 @@ public class CommandManager {
 		commandMap.add(new WikipediaCommand());
 		commandMap.add(new QuoteCommand());
 		commandMap.add(new WikiaCommand());
+		
+		// =======[ UTILS ]=======
+		commandMap.add(new HexCommand());
 		
 		// =======[ DISCORD ]=======
 		commandMap.add(new AvatarCommand());

@@ -66,7 +66,6 @@ public class Loritta {
 
 	private static final List<String> mstKeys = new ArrayList<String>(); // http://trans.pantherman594.com/translateKeys
 
-
 	static {
 		mstKeys.add("Tharsen;6mutEwVfEVk3S9nIdolEc9EdVVHANwNyW69H15ssB7c=");
 		mstKeys.add("Rell1936;ZiE7WrcOTj0QYuJsgan0PhQDRv2A34ZVIQKBWL7wS9o=");

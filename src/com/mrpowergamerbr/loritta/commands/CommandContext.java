@@ -66,7 +66,8 @@ public class CommandContext {
 	}
 
 	public String getAsMention(boolean addSpace) {
-		return lorittaUser.getAsMention(addSpace);
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		return (cmdOptions.mentionOnCommandOutput() ? lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") : "");
 	}
 
 	public Guild getGuild() {
