@@ -67,7 +67,7 @@ public class QuoteCommand extends CommandBase {
 					.builder()
 					.avatarUrl(context.getMessage().getAuthor().getEffectiveAvatarUrl())
 					.username(context.getMessage().getAuthor().getName())
-					.content(context.getEvent().getMessage().getRawContent().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0] + " ", ""))
+					.content(context.getEvent().getMessage().getRawContent().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0], "").trim())
 					.embed(embed)
 					.build();
 			
