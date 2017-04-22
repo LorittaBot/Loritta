@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CommandOptions {
 	// Todas as próximas opções são "command overrides", isto permite fazer overrides nas opções globais da Loritta
+	public boolean override; // Os comandos a seguir só serão ativados CASO override esteja ativo!
 	public boolean explainOnCommandRun = true; // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
 	public boolean explainInPrivate = false; // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?
 	public boolean commandOutputInPrivate = false; // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?

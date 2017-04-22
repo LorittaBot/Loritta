@@ -67,7 +67,11 @@ public class CommandContext {
 
 	public String getAsMention(boolean addSpace) {
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		return (cmdOptions.mentionOnCommandOutput() ? lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") : "");
+		if (cmdOptions.override()) {
+			return (cmdOptions.mentionOnCommandOutput() ? lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") : "");
+		} else {
+			return lorittaUser.getAsMention(true);
+		}
 	}
 
 	public Guild getGuild() {
@@ -81,7 +85,7 @@ public class CommandContext {
 	public void sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.commandOutputInPrivate()) {
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
@@ -100,7 +104,7 @@ public class CommandContext {
 	public void sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.commandOutputInPrivate()) {
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
@@ -123,7 +127,7 @@ public class CommandContext {
 	public void sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.commandOutputInPrivate()) {
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
@@ -146,7 +150,7 @@ public class CommandContext {
 	public void sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.commandOutputInPrivate()) {
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
