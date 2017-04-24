@@ -45,7 +45,9 @@ public class LorittaLauncher {
 						.setMercadoPagoClientToken("Client Token do MercadoPago, usado na página de doação")
 						.setOwnerId("ID do dono do bot, usado para alguns comandos \"especiais\"")
 						.setWebsiteUrl("URL do website da Loritta, coloque uma / no final!")
-						.setYoutubeKey("Key da API do YouTube, usado no comando \"+youtube\"")), "UTF-8");
+						.setYoutubeKey("Key da API do YouTube, usado no comando \"+youtube\"")
+						.setCurrentlyPlaying("loritta.website | Shantae: Half-Genie Hero")), "UTF-8");
+			
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

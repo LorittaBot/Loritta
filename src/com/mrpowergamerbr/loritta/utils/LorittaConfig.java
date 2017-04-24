@@ -17,4 +17,5 @@ public class LorittaConfig {
 	private String frontendFolder;
 	private String mercadoPagoClientId;
 	private String mercadoPagoClientToken;
+	private String currentlyPlaying;
 }

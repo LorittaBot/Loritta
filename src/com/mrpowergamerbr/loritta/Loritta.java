@@ -56,7 +56,7 @@ public class Loritta {
 	public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
 	public static final String botOwnerId = "123170274651668480"; // ID do dono do bot
 	private JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
-	public static String playingGame = "loritta.website | Shantae: Half-Genie Hero";
+	private static String playingGame = "loritta.website | Shantae: Half-Genie Hero";
 	public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
 	@Getter
 	private static final Gson gson = new Gson(); // Gson
@@ -88,6 +88,7 @@ public class Loritta {
 		Loritta.clientId = config.getClientId();
 		Loritta.clientSecret = config.getClientSecret();
 		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
+		Loritta.setPlaying(config.getCurrentlyPlaying());
 	}
 
 	public void start() {		
