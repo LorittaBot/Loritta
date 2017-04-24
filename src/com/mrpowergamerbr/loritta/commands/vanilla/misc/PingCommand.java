@@ -11,7 +11,7 @@ public class PingCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Um comando de teste para ver se eu estou funcionando, recomendo que vocÃª deixe isto ligado para testes!";
+		return "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testes!";
 	}
 	
 	@Override
