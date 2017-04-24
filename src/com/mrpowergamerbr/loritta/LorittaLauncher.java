@@ -41,6 +41,11 @@ public class LorittaLauncher {
 			System.out.println("Como é a sua primeira vez executando ela, nós iremos criar um arquivo chamado \"config.json\", que você deverá configurar a Loritta antes de usar ela!");
 			System.out.println("");
 			System.out.println("Após configurar a Loritta, inicie ela novamente!");
+			try {
+				FileUtils.writeStringToFile(file, gson.toJson(new LorittaConfig()), "UTF-8");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			System.exit(1);
 			return;
 		}
