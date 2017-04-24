@@ -1,0 +1,15 @@
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+    - mvn clean
+    - mvn package
+    - cp -R ./target/loritta* $CIRCLE_ARTIFACTS
+
+machine:
+  java:
+    version: oraclejdk8
+
+notify:
+  webhooks:
+    - url: https://ptb.discordapp.com/api/webhooks/306079496963096577/DyPXlvf1MaI_8wpAqAL9ofE3ndeExwcbgVvYUrswPJJvRL6Qq76ZGn3cnKW55ewc46SO/circle
