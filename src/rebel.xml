@@ -2,7 +2,7 @@
 <application generated-by="eclipse" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd">
 
 	<classpath>
-		<dir name="D:/workspace/Loritta/target/classes">
+		<dir name="D:/workspace_alt/Loritta/target/classes">
 		</dir>
 	</classpath>
 
