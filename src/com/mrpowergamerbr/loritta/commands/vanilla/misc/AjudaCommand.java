@@ -25,7 +25,7 @@ public class AjudaCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Mostra todos os comandos disponíveis que eu posso executar, lembrando que isto só irá mostrar os comandos habilitados no servidor que você executou a ajuda!";
+		return "Mostra todos os comandos disponÃ­veis que eu posso executar, lembrando que isto sÃ³ irÃ¡ mostrar os comandos habilitados no servidor que vocÃª executou a ajuda!";
 	}
 	
 	@Override
@@ -53,16 +53,16 @@ public class AjudaCommand extends CommandBase {
 		EmbedBuilder sparklyPower = new EmbedBuilder();
 		sparklyPower.setTitle("Reclames do Plim Plim #1", null);
 		sparklyPower.setThumbnail("http://sparklypower.net/SparklyPower_Logo_250.png");
-		sparklyPower.setDescription("Gostou da qualidade do Loritta? Gosta de Minecraft? Survival? Que tal jogar no SparklyPower então? :slight_smile:");
+		sparklyPower.setDescription("Gostou da qualidade do Loritta? Gosta de Minecraft? Survival? Que tal jogar no SparklyPower entÃ£o? :slight_smile:");
 		sparklyPower.addField("Website", "https://sparklypower.net/", true);
-		sparklyPower.addField("IP", "jogar.sparklypower.net (Versão 1.11.2)", true);
+		sparklyPower.addField("IP", "jogar.sparklypower.net (VersÃ£o 1.11.2)", true);
 
 		EmbedBuilder additionalInfoEmbed = new EmbedBuilder();
-		additionalInfoEmbed.setTitle("Informações Adicionais", null);
+		additionalInfoEmbed.setTitle("InformaÃ§Ãµes Adicionais", null);
 		additionalInfoEmbed.setDescription("[Todos os comandos da Loritta](https://loritta.website/comandos)\n"
 				+ "[Discord da nossa querida Loritta](https://discord.gg/3rXgN8x)\n"
 				+ "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
-				+ "[Amou o Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/doar)\n"
+				+ "[Amou o Loritta? Tem dinheirinho de sobra? EntÃ£o doe!](https://loritta.website/doar)\n"
 				+ "[Website do MrPowerGamerBR](https://mrpowergamerbr.com/)");
 
 		CommandOptions cmdOptions = context.getConfig().getCommandOptionsFor(this);
@@ -77,7 +77,7 @@ public class AjudaCommand extends CommandBase {
 		context.sendMessage(additionalInfoEmbed.build());
 
 		if (true /* cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE) */) {
-			context.getEvent().getTextChannel().sendMessage(context.getAsMention(true) + "Enviei para você no privado! ;)").complete();
+			context.getEvent().getTextChannel().sendMessage(context.getAsMention(true) + "Enviei para vocÃª no privado! ;)").complete();
 		}
 	}
 

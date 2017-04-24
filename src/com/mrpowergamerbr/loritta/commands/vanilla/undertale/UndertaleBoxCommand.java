@@ -48,7 +48,7 @@ public class UndertaleBoxCommand extends CommandBase {
 
 	@Override
 	public String getUsage() {
-		return "usu·rio (caso queira) mensagem";
+		return "usu√°rio (caso queira) mensagem";
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class UndertaleBoxCommand extends CommandBase {
 				if (context.getMessage().getMentionedUsers().size() == 1) {
 					member = context.getGuild().getMember(context.getMessage().getMentionedUsers().get(0));
 				}
-				String str = String.join(" ", context.getArgs()); // Primeiro nÛs juntamos tudo
-				// Mas ok, ainda tem uma coisa chamada "nome do usu·rio mencionado"
+				String str = String.join(" ", context.getArgs()); // Primeiro n√≥s juntamos tudo
+				// Mas ok, ainda tem uma coisa chamada "nome do usu√°rio mencionado"
 				// Sabe o que a gente faz com ele? Gambiarra!
 				// TODO: Menos gambiarra
 				str = str.replace("@" + member.getEffectiveName() + " ", "");
@@ -83,7 +83,7 @@ public class UndertaleBoxCommand extends CommandBase {
 				graph.setFont(determinationMono.deriveFont(Font.PLAIN, 27)); 
 				graph.setColor(Color.WHITE);
 
-				// graph.getFontMetrics(determinationMono) tem problemas, a width do char È sempre 1 (bug?)
+				// graph.getFontMetrics(determinationMono) tem problemas, a width do char √© sempre 1 (bug?)
 				ImageUtils.drawTextWrap(str, 180, 56 + determinationMono.getSize(), 578, 0, graph.getFontMetrics(), graph);
 
 				URL imageUrl = new URL(member.getUser().getEffectiveAvatarUrl());

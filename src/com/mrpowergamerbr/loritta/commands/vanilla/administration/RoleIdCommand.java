@@ -38,7 +38,7 @@ public class RoleIdCommand extends CommandBase {
 				context.sendMessage(context.getAsMention(true) + r.getId());
 			}
 		} else {
-			// Sem permiss„o
+			// Sem permiss√£o
 		}
 	}
 }

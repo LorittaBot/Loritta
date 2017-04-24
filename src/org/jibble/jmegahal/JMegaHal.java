@@ -40,7 +40,7 @@ public class JMegaHal implements Serializable {
 	public static final String END_CHARS = ".!?";
 
 	public static final Map<String, String> ANTONYMS = ImmutableMap.<String, String>builder()
-			.put("EU", "VOC ")
+			.put("EU", "VOC√ä")
 			.build();
 	/**
 	 * Construct an instance of JMegaHal with an empty brain.
@@ -77,7 +77,7 @@ public class JMegaHal implements Serializable {
 	 */
 	public void add(String sentence) {
 		if (words.size() >= 100000) {
-			// Limpar para n„o dar OOM
+			// Limpar para n√£o dar OOM
 			words.clear();
 			quads.clear();
 			next.clear();

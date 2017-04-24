@@ -6,7 +6,7 @@ import lombok.Getter;
 import net.dv8tion.jda.core.entities.Member;
 
 /**
- * Um usu·rio que est· comunicando com a Loritta
+ * Um usu√°rio que est√° comunicando com a Loritta
  */
 @Getter
 public class LorittaUser {

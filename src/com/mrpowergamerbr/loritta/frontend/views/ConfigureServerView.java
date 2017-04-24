@@ -122,7 +122,7 @@ public class ConfigureServerView {
 					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
 				} else if (req.path().endsWith("joinconfig")) {
-					if (req.param("enableModule").isSet()) { // O usu·rio est· salvando as configuraÁıes?
+					if (req.param("enableModule").isSet()) { // O usu√°rio est√° salvando as configura√ß√µes?
 						JoinLeaveConfig jlCnf = sc.joinLeaveConfig();
 						jlCnf.setEnabled(req.param("enableModule").isSet());
 						jlCnf.setTellOnJoin(req.param("tellOnJoin").isSet());

@@ -27,7 +27,7 @@ public class NyanCatCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Nyan Cat, diretamente no seu servidor! E você pode pedir o tamanho do Nyan Cat igual quando você pede algum sanduíche no Subway!";
+		return "Nyan Cat, diretamente no seu servidor! E vocÃª pode pedir o tamanho do Nyan Cat igual quando vocÃª pede algum sanduÃ­che no Subway!";
 	}
 	
 	@Override

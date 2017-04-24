@@ -23,7 +23,7 @@ public class ReloadCommand extends CommandBase {
 			LorittaLauncher.getInstance().loadCommandManager();
 			context.sendMessage("Loritta recarregada com sucesso!");
 		} else {
-			// Sem permiss„o
+			// Sem permiss√£o
 		}
 	}
 }

@@ -12,7 +12,7 @@ public class CaraCoroaCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Gire uma moeda e veja se ir· cair cara ou coroa! Perfeito para descobrir quem ir· ir primeiro em uma partida de futebas";
+		return "Gire uma moeda e veja se ir√° cair cara ou coroa! Perfeito para descobrir quem ir√° ir primeiro em uma partida de futebas";
 	}
 	
 	@Override

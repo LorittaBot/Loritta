@@ -14,15 +14,15 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 /**
  * Usado para criar comandos personalizados
  * 
- * N√O È usado para comandos padrıes da Loritta, para isso, veja {@link com.mrpowergamerbr.loritta.commands.CommandBase}
+ * N√ÉO √© usado para comandos padr√µes da Loritta, para isso, veja {@link com.mrpowergamerbr.loritta.commands.CommandBase}
  */
 @Setter
 @Getter
 @NoArgsConstructor
 @Accessors(fluent = true)
 public class CustomCommand {
-	// yay reaproveitamento de cÛdigo ;)
-	// Normalmente apenas contÈm um CodeBlock
+	// yay reaproveitamento de c√≥digo ;)
+	// Normalmente apenas cont√©m um CodeBlock
 	private List<ICode> codes = new ArrayList<ICode>();
 	
 	// Nome do comando

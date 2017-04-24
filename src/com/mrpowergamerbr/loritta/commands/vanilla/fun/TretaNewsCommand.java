@@ -33,11 +33,11 @@ public class TretaNewsCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "VOOOOOOOC  EST¡ ASSISTINDO TRETA NEWS ENT√O VAMOS DIRETO PARA AS NOTÕCIAS";
+		return "VOOOOOOOC√ä EST√Å ASSISTINDO TRETA NEWS ENT√ÉO VAMOS DIRETO PARA AS NOT√çCIAS";
 	}
 
 	public String getUsage() {
-		return "[usu·rio1] [usu·rio2]";
+		return "[usu√°rio1] [usu√°rio2]";
 	}
 
 	public List<String> getExample() {
@@ -46,8 +46,8 @@ public class TretaNewsCommand extends CommandBase {
 
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
-				.put("usu·rio1", "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News")
-				.put("usu·rio2", "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News")
+				.put("usu√°rio1", "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News")
+				.put("usu√°rio2", "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News")
 				.build();
 	}
 
@@ -97,7 +97,7 @@ public class TretaNewsCommand extends CommandBase {
 			InputStream is = new ByteArrayInputStream(os.toByteArray());
 
 			MessageBuilder builder = new MessageBuilder();
-			builder.append(context.getAsMention(true) + "VOOOOOOC  EST¡ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÕCIAAAAAAAAS!");
+			builder.append(context.getAsMention(true) + "VOOOOOOC√ä EST√Å ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOT√çCIAAAAAAAAS!");
 
 			if (context.getConfig().getCommandOptionsFor(this).getAsBoolean(MENTION_USERS)) {
 				builder.append(" ");

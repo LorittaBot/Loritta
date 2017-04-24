@@ -23,7 +23,7 @@ public class ChangeGameCommand extends CommandBase {
 			Loritta.setPlaying(text);
 			context.sendMessage(context.getAsMention(true) + "Alterado com sucesso!");
 		} else {
-			// Sem permiss„o
+			// Sem permiss√£o
 		}
 	}
 }

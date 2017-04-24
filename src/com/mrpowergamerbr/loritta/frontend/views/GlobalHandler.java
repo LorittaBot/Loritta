@@ -64,12 +64,12 @@ public class GlobalHandler {
 		// Authentication
 		System.out.println("OAuth2!");
 		if (path.startsWith("/auth")) {
-			if (req.param("code").isSet()) { // Se o code est· marcado, ent„o È um pedido de autenticaÁ„o via OAuth2
+			if (req.param("code").isSet()) { // Se o code est√° marcado, ent√£o √© um pedido de autentica√ß√£o via OAuth2
 				String code = req.param("code").value();
 
 				TemmieDiscordAuth temmie = new TemmieDiscordAuth(code, "https://loritta.website/auth", Loritta.getClientId(), Loritta.getClientSecret(), true);
 
-				temmie.doTokenExchange(); // FaÁa o token exchange
+				temmie.doTokenExchange(); // Fa√ßa o token exchange
 				System.out.println("Token exchanged!");
 				UUID uuid = UUID.randomUUID();
 				LorittaWebsite.getOAuth2().put(uuid.toString(), temmie); // TODO: Tenho certeza que existe um jeito melhor para isto. :/
@@ -81,10 +81,10 @@ public class GlobalHandler {
 					ex.printStackTrace();
 				}
 				return;
-			} else if (req.session().get("discordAuthCode").isSet()) { // Se discordAuthCode existe, ent„o j· existe uma conta OAuth2 ativada!
+			} else if (req.session().get("discordAuthCode").isSet()) { // Se discordAuthCode existe, ent√£o j√° existe uma conta OAuth2 ativada!
 				System.out.println("Trying to reuse Authentication Code...");
 				Object temmieObj = LorittaWebsite.getOAuth2().getOrDefault(req.session().get("discordAuthCode").value(), null);
-				if (temmieObj == null) { // Se È null, quer dizer que o TemmieDiscordAuth expirou
+				if (temmieObj == null) { // Se √© null, quer dizer que o TemmieDiscordAuth expirou
 					System.out.println("null!");
 					try {
 						res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fauth&scope=identify%20guilds&response_type=code&client_id=297153970613387264");
@@ -104,7 +104,7 @@ public class GlobalHandler {
 							temmie.doTokenExchangeUsingRefreshToken();
 						} catch (Exception e) {
 							e.printStackTrace();
-							// Inv·lido, redirecione para o oauth2 request
+							// Inv√°lido, redirecione para o oauth2 request
 							try {
 								res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fauth&scope=identify%20guilds&response_type=code&client_id=297153970613387264");
 							} catch (Throwable ex) {
@@ -113,7 +113,7 @@ public class GlobalHandler {
 							return;
 						}
 					} else {
-						// CÛdigo OAuth2 È v·lido, vamos redirecionar para o gerenciador de servidores
+						// C√≥digo OAuth2 √© v√°lido, vamos redirecionar para o gerenciador de servidores
 						try {
 							System.out.println("OAuth2 valid!");
 							res.redirect("https://loritta.website/config/servidores");
@@ -141,7 +141,7 @@ public class GlobalHandler {
 				// permissions
 				if (path.equalsIgnoreCase("/config/servidores")) {
 					if (req.param("guild_id").isSet()) {
-						// Se est· marcado, ent„o a Loritta foi adicionada em algum servidor
+						// Se est√° marcado, ent√£o a Loritta foi adicionada em algum servidor
 						try {
 							res.redirect("https://loritta.website/config/servidor/" + req.param("guild_id").value());
 						} catch (Throwable e) {

@@ -5,11 +5,11 @@ import java.util.List;
 
 import lombok.NoArgsConstructor;
 
-// Code Block = Trecho de cÛdigo
+// Code Block = Trecho de c√≥digo
 @NoArgsConstructor
 public class CodeBlock implements ICode {
 	public List<IPrecondition> preconditions = new ArrayList<IPrecondition>(); // Preconditions desse CodeBlock
-	// SÛ ser· executado os cÛdigos desse CodeBlock caso todos os preconditions retornarem OK
+	// S√≥ ser√° executado os c√≥digos desse CodeBlock caso todos os preconditions retornarem OK
 	
-	public List<ICode> codes = new ArrayList<ICode>(); // Mais cÛdigo...
+	public List<ICode> codes = new ArrayList<ICode>(); // Mais c√≥digo...
 }

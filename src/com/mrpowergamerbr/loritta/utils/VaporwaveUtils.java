@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils;
 
 public class VaporwaveUtils {
 	public static String vaporwave(String str) {
-		str = str.toLowerCase(); // Como a gente abusa dos cÛdigos unicode, È necess·rio dar lowercase antes de aplicar o efeito
+		str = str.toLowerCase(); // Como a gente abusa dos c√≥digos unicode, √© necess√°rio dar lowercase antes de aplicar o efeito
 		StringBuilder sb = new StringBuilder();
 		for (char c : str.toCharArray()) {
 			if (Character.isSpaceChar(c)) {

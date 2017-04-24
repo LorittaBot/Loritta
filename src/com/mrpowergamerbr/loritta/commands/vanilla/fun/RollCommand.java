@@ -16,11 +16,11 @@ public class RollCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "Rola um dado e fala o resultado dele, perfeito quando você quer jogar um Monopoly maroto mas perdeu os dados.";
+		return "Rola um dado e fala o resultado dele, perfeito quando vocÃª quer jogar um Monopoly maroto mas perdeu os dados.";
 	}
 
 	public String getUsage() {
-		return "[número]";
+		return "[nÃºmero]";
 	}
 
 	public List<String> getExample() {
@@ -29,7 +29,7 @@ public class RollCommand extends CommandBase {
 
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
-				.put("número", "*(Opcional)* Quantos lados o dado que eu irei rolar irá ter, padrão: 6")
+				.put("nÃºmero", "*(Opcional)* Quantos lados o dado que eu irei rolar irÃ¡ ter, padrÃ£o: 6")
 				.build();
 	}
 
@@ -41,13 +41,13 @@ public class RollCommand extends CommandBase {
 				val = Long.parseLong(context.getArgs()[0]);
 				Loritta.getRandom().nextLong(1, val + 1);
 			} catch (Exception e) {
-				context.sendMessage(context.getAsMention(true) + "Número `" + context.getArgs()[0] + "` é algo irreconhecível para um bot como eu, sorry. :(");
+				context.sendMessage(context.getAsMention(true) + "NÃºmero `" + context.getArgs()[0] + "` Ã© algo irreconhecÃ­vel para um bot como eu, sorry. :(");
 				return;
 			}
 		}
 
 		if (0 >= val) {
-			context.sendMessage(context.getAsMention(true) + "Número inválido!");
+			context.sendMessage(context.getAsMention(true) + "NÃºmero invÃ¡lido!");
 			return;
 		}
 

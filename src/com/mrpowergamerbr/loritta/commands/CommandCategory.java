@@ -7,11 +7,11 @@ public enum CommandCategory {
 	MINECRAFT("Minecraft"),
 	UNDERTALE("Undertale"),
 	DISCORD("Discord"),
-	MISC("Miscel‚nea"),
-	FUN("Divers„o"),
-	ADMIN("AdministraÁ„o"),
-	UTILS("Utilit·rios"),
-	MAGIC("M·gica"); // Esta categoria È usada para comandos APENAS para o dono do bot (no caso, MrPowerGamerBR#4185)
+	MISC("Miscel√¢nea"),
+	FUN("Divers√£o"),
+	ADMIN("Administra√ß√£o"),
+	UTILS("Utilit√°rios"),
+	MAGIC("M√°gica"); // Esta categoria √© usada para comandos APENAS para o dono do bot (no caso, MrPowerGamerBR#4185)
 	
 	String fancyTitle;
 	

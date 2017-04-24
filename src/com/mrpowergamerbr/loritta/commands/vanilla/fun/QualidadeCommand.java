@@ -29,7 +29,7 @@ public class QualidadeCommand extends CommandBase {
 
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
-				.put("mensagem", "A mensagem que você deseja transformar")
+				.put("mensagem", "A mensagem que vocÃª deseja transformar")
 				.build();
 	}
 	

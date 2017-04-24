@@ -12,9 +12,9 @@ import lombok.Setter;
 @Setter
 public class Whistler {
 	private String whistlerName = "Meu Primeiro Whistler";
-	// Contém todos os códigos references a esse whistler
+	// ContÃ©m todos os cÃ³digos references a esse whistler
 	
-	// Normalmente apenas contém um CodeBlock
+	// Normalmente apenas contÃ©m um CodeBlock
 	public List<ICode> codes = new ArrayList<ICode>();
 	
 	public Whistler(String whistlerName) {

@@ -11,16 +11,16 @@ import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
 public class FaustaoCommand extends CommandBase {
 	private static List<String> frases = Arrays.asList(
-			"Que isso bixo, Û u cara l· Û",
-			"Vamos ver as vÌdeos cassetadas",
-			"Voltamos j· com vÌdeos cassetadas",
+			"Que isso bixo, √≥ u cara l√° √≥",
+			"Vamos ver as v√≠deos cassetadas",
+			"Voltamos j√° com v√≠deos cassetadas",
 			"ERRRROOOOOOOOOUUUUUUUU!!!!",
-			"E agora, pra desligar essa merda aÌ, meu. Porra ligou, agora desliga! T· pegando fogo bixo!",
-			"Est· fera ai bixo",
-			"Olha o tamanho da CrianÁa",
+			"E agora, pra desligar essa merda a√≠, meu. Porra ligou, agora desliga! T√° pegando fogo bixo!",
+			"Est√° fera ai bixo",
+			"Olha o tamanho da Crian√ßa",
 			"Oito e sete",
-			"‘ loco meu!",
-			"… brincadera bicho.",
+			"√î loco meu!",
+			"√â brincadera bicho.",
 			"Se vira nos 30!",
 			"Quem sabe faz ao vivo!");
 
@@ -33,7 +33,7 @@ public class FaustaoCommand extends CommandBase {
 
 	@Override
 	public String getLabel() {
-		return "faust„o";
+		return "faust√£o";
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class FaustaoCommand extends CommandBase {
 	
 	@Override
 	public String getDescription() {
-		return "Invoque o querido Faust„o no seu servidor!";
+		return "Invoque o querido Faust√£o no seu servidor!";
 	}
 	
 	@Override
@@ -53,10 +53,10 @@ public class FaustaoCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
-		TemmieWebhook temmie = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Faust„o");
+		TemmieWebhook temmie = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Faust√£o");
 
 		temmie.sendMessage(DiscordMessage.builder()
-				.username("Faust„o")
+				.username("Faust√£o")
 				.content(frases.get(Loritta.getRandom().nextInt(frases.size())))
 				.avatarUrl(avatars.get(Loritta.getRandom().nextInt(avatars.size())))
 				.build());

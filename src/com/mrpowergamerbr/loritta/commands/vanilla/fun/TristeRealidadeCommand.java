@@ -90,7 +90,7 @@ public class TristeRealidadeCommand extends CommandBase {
 				users.add(member.getUser());
 			}
 
-			List<User> clonedUserList = new ArrayList<User>(users); // … necess·rio clonar j· que nÛs iremos mexer nela depois
+			List<User> clonedUserList = new ArrayList<User>(users); // √â necess√°rio clonar j√° que n√≥s iremos mexer nela depois
 			
 			int val = 0;
 			while (6 > val) {
@@ -156,7 +156,7 @@ public class TristeRealidadeCommand extends CommandBase {
 	@Setter
 	@Accessors(fluent = true)
 	public static class TristeRealidadeCommandOptions extends CommandOptions {
-		public boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem ser„o mencionados
-		public boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags n„o ir„o aparecer na imagem
+		public boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem ser√£o mencionados
+		public boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags n√£o ir√£o aparecer na imagem
 	}
 }

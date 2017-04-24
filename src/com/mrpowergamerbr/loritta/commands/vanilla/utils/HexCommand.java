@@ -46,7 +46,7 @@ public class HexCommand extends CommandBase {
 				
 				context.sendMessage(context.getAsMention(true) + String.format(" transformei a sua cor %s, %s, %s (%s) para hexadecimal! %s", r, g, b, new ColorUtils().getColorNameFromRgb(r, g, b), hex));
 			} catch (Exception e) {
-				context.sendMessage(context.getAsMention(true) + " todos os argumentos devem ser números!");
+				context.sendMessage(context.getAsMention(true) + " todos os argumentos devem ser nÃºmeros!");
 			}
 		} else {
 			context.explain();

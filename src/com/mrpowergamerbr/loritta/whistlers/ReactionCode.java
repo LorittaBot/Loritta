@@ -11,7 +11,6 @@ public class ReactionCode implements ICode {
 	boolean isCustom;
 
 	public void handle(Message message) {
-		// 🌍
 		if (isCustom) {
 			// Caso o emoji seja custom...
 			message.addReaction(message.getGuild().getEmotesByName(reaction, true).get(0)).complete();

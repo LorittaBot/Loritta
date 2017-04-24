@@ -98,7 +98,7 @@ public class DiscordListener extends ListenerAdapter {
 		} */
 	}
 
-	// TODO: Isto n„o deveria ficar aqui...
+	// TODO: Isto n√£o deveria ficar aqui...
 	public static void processCode(ServerConfig conf, Message message, List<ICode> codes) {
 		try {
 			wow:

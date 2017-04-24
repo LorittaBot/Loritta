@@ -16,7 +16,7 @@ public class AvatarCommand extends CommandBase {
 	public static final String HIDE_IMAGE = "hideImage";
 	
 	public String getDescription() {
-		return "Pega o avatar de um usu·rio do Discord";
+		return "Pega o avatar de um usu√°rio do Discord";
 	}
 	
 	public CommandCategory getCategory() {
@@ -24,7 +24,7 @@ public class AvatarCommand extends CommandBase {
 	}
 	
 	public String getUsage() {
-		return "nome do usu·rio";
+		return "nome do usu√°rio";
 	}
 
 	@Override

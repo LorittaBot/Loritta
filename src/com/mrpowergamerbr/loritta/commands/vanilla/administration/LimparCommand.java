@@ -43,7 +43,7 @@ public class LimparCommand extends CommandBase {
 			
 			context.sendMessage("Chat limpo por " + context.getHandle().getAsMention() + "!");
 		} else {
-			// Sem permiss„o
+			// Sem permiss√£o
 		}
 	}
 }

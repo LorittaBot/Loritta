@@ -31,17 +31,17 @@ public class ServerConfig {
 	String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
 	ArrayList<String> modules = new ArrayList<String>();
 	DebugOptions debugOptions = new DebugOptions();
-	boolean deleteMessageAfterCommand; // Deletar mensagem do comando apÛs executar ele?
+	boolean deleteMessageAfterCommand; // Deletar mensagem do comando ap√≥s executar ele?
 	
 	HashMap<String, CommandOptions> commandOptions = new HashMap<String, CommandOptions>(); // Command Options
-	// Os command options s„o salvos assim:
+	// Os command options s√£o salvos assim:
 	// CommandBase.getClass().getSimpleName() - CommandOptions
 
-	// boolean warnOnFail; // Avisar ao usu·rio quando escrever o comando errado?
+	// boolean warnOnFail; // Avisar ao usu√°rio quando escrever o comando errado?
 	boolean explainOnCommandRun = true; // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
-	boolean explainInPrivate = false; // Caso explainOnCommandRun estiver ativado, È para explicar APENAS no privado ou mandar no global?
-	boolean commandOutputInPrivate = false; // … para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
-	boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta ir· marcar quem executou na mensagem resposta
+	boolean explainInPrivate = false; // Caso explainOnCommandRun estiver ativado, √© para explicar APENAS no privado ou mandar no global?
+	boolean commandOutputInPrivate = false; // √â para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
+	boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta ir√° marcar quem executou na mensagem resposta
 	
 	ArrayList<Whistler> whistlers = new ArrayList<Whistler>(); // Whistlers
 	
@@ -64,6 +64,6 @@ public class ServerConfig {
 	@Getter
 	@Setter
 	public static class DebugOptions extends CommandOptions {
-		boolean enableAllModules; // Caso ativado, TODAS as modules estar„o ativadas
+		boolean enableAllModules; // Caso ativado, TODAS as modules estar√£o ativadas
 	}
 }

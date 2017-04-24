@@ -18,7 +18,7 @@ public class McAvatarCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "Mostra o avatar de uma conta do Minecraft, caso a conta n„o exista ele ir· mostrar a skin padr„o (Steve)";
+		return "Mostra o avatar de uma conta do Minecraft, caso a conta n√£o exista ele ir√° mostrar a skin padr√£o (Steve)";
 	}
 	
 	public CommandCategory getCategory() {

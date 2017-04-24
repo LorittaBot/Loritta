@@ -17,7 +17,7 @@ public class OfflineUUIDCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "Pega a UUID offline (ou seja, de servidores sem autenticação da Mojang) de um player";
+		return "Pega a UUID offline (ou seja, de servidores sem autenticaÃ§Ã£o da Mojang) de um player";
 	}
 	
 	public CommandCategory getCategory() {
@@ -38,7 +38,7 @@ public class OfflineUUIDCommand extends CommandBase {
 			
 			UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + context.getArgs()[0]).getBytes(Charsets.UTF_8));
 			
-			context.sendMessage(context.getAsMention(true) + "UUID offline (sem autenticação da Mojang) de " + context.getArgs()[0] + ": `" + uuid.toString() + "`");
+			context.sendMessage(context.getAsMention(true) + "UUID offline (sem autenticaÃ§Ã£o da Mojang) de " + context.getArgs()[0] + ": `" + uuid.toString() + "`");
 		} else {
 			context.explain();
 		}
