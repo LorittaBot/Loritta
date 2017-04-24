@@ -42,6 +42,10 @@ public abstract class CommandBase {
 	
 	public abstract void run(CommandContext context);
 
+	public String getExtendedDescription() {
+		return getDescription();
+	}
+	
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
 		String message = ev.getMessage().getContent();
 		if (message.startsWith(conf.commandPrefix() + getLabel())) {

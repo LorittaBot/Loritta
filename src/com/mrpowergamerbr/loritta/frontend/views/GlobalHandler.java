@@ -75,6 +75,8 @@ public class GlobalHandler {
 				obj = HomeView.render(context);
 			} else if (arguments.is(0, "doar")) {
 				obj = DonateView.render(context);
+			} else if (arguments.is(0, "comandos")) {
+				obj = CommandsView.render(context);
 			} else if (arguments.is(0, "servers")) {
 				obj = ServerListView.render(context);
 			} else if (arguments.is(0, "auth")) {
