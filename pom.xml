@@ -57,6 +57,11 @@
             <artifactId>TemmieDiscordAuth</artifactId>
             <version>8f58e8ec64</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.MrPowerGamerBR</groupId>
+            <artifactId>TemmieMercadoPago</artifactId>
+            <version>-7b09c6218d-1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
         <dependency>
             <groupId>commons-lang</groupId>
