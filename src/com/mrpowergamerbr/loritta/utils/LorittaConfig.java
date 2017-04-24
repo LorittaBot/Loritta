@@ -1,8 +1,12 @@
 package com.mrpowergamerbr.loritta.utils;
 
-import lombok.Getter;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class LorittaConfig {
 	private String clientToken;
 	private String clientId;

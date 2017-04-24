@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mrpowergamerbr.loritta.utils.LorittaConfig;
 
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class LorittaLauncher {
 	public static Loritta loritta;
 
 	public static void main(String[] args) {
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		File file = new File("./config.json");
 		LorittaConfig config = null;
 		
@@ -35,7 +36,16 @@ public class LorittaLauncher {
 			System.out.println("");
 			System.out.println("Após configurar a Loritta, inicie ela novamente!");
 			try {
-				FileUtils.writeStringToFile(file, gson.toJson(new LorittaConfig()), "UTF-8");
+				FileUtils.writeStringToFile(file, gson.toJson(new LorittaConfig() // Colocar valores padrões na LorittaConfig, já que se não o Gson só irá gerar "{}"
+						.setClientId("Client ID do Bot")
+						.setClientSecret("Client Secret do Bot")
+						.setClientToken("Client Token do Bot")
+						.setFrontendFolder("Pasta do frontend da Loritta, coloque uma / no final!")
+						.setMercadoPagoClientId("Client ID do MercadoPago, usado na página de doação")
+						.setMercadoPagoClientToken("Client Token do MercadoPago, usado na página de doação")
+						.setOwnerId("ID do dono do bot, usado para alguns comandos \"especiais\"")
+						.setWebsiteUrl("URL do website da Loritta, coloque uma / no final!")
+						.setYoutubeKey("Key da API do YouTube, usado no comando \"+youtube\"")), "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
