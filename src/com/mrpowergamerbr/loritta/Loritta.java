@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.commands.CommandManager;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
@@ -41,6 +42,9 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 @Getter
 @Setter
 public class Loritta {
+	@Getter
+	private LorittaConfig config;
+	
 	private String clientToken; // Client token da sessão atual
 	private JDA jda;
 	private CommandManager commandManager; // Nosso command manager
@@ -78,11 +82,12 @@ public class Loritta {
 		mstKeys.add("Jealifted77;zLQ7XLgRwWZmigP+PKiwGFT+Hk/Pu1+6/TpO9qu8ftE=");
 	}
 
-	public Loritta(String clientToken, String clientId, String clientSecret, String youtubeApiKey) {
-		this.setClientToken(clientToken);
-		Loritta.clientId = clientId;
-		Loritta.clientSecret = clientSecret;
-		Loritta.youtube = new TemmieYouTube(youtubeApiKey);
+	public Loritta(LorittaConfig config) {
+		this.setConfig(config);
+		this.setClientToken(config.getClientToken());
+		Loritta.clientId = config.getClientId();
+		Loritta.clientSecret = config.getClientSecret();
+		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
 	}
 
 	public void start() {		
@@ -104,7 +109,7 @@ public class Loritta {
 		System.out.println("Loritta (Discord Bot) started!"); // Yay!
 
 		System.out.println("Success! Starting Loritta (Website)..."); // E agora iremos iniciar o frontend (website)
-		Runnable website = () -> { LorittaWebsite.init(); };
+		Runnable website = () -> { LorittaWebsite.init(config.getWebsiteUrl(), config.getFrontendFolder()); };
 		new Thread(website, "Website Thread").start(); // ...não foi tão difícil fazer isso :P
 
 		Runnable presenceUpdater = () -> {  // Agora iremos iniciar o presence updater

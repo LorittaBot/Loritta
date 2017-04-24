@@ -18,8 +18,8 @@ import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
 import lombok.Getter;
 
 public class LorittaWebsite extends Jooby {
-	public static String rootFolder = "/home/servers/millennium/root/";
-	public static String websiteUrl = "http://mrpowergamerbr.com/";
+	public static String frontendFolder;
+	public static String websiteUrl;
 
 	public static boolean development = true;
 
@@ -33,19 +33,16 @@ public class LorittaWebsite extends Jooby {
 	
 	{		
 		port(4568);
-		assets("/**", Paths.get(rootFolder + "static/"));
+		assets("/**", Paths.get(frontendFolder + "static/"));
 		get("/**", (req, res) -> GlobalHandler.render(req, res));
 		post("/**", (req, res) -> GlobalHandler.render(req, res));
 	}
 	
-	public static void init() {
-		if (development) {
-			rootFolder = "/home/servers/loritta/frontend/";
-			websiteUrl = "https://loritta.website/";
-		}
-		
+	public static void init(String websiteUrl, String frontendFolder) {
+		LorittaWebsite.websiteUrl = websiteUrl;
+		LorittaWebsite.frontendFolder = frontendFolder;
 		FileLoader fl = new FileLoader();
-		fl.setPrefix(rootFolder);
+		fl.setPrefix(frontendFolder);
 		engine = new PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build();
 		
 		run(LorittaWebsite::new, new String[] {});
