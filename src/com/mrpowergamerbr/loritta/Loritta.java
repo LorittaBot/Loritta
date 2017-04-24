@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
+import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
 import lombok.Getter;
@@ -62,12 +63,13 @@ public class Loritta {
 	private static final Gson gson = new Gson(); // Gson
 	@Getter
 	private static TemmieYouTube youtube = null; // API key do YouTube, usado em alguns comandos
-
 	@Getter
 	private static String clientId;
 	@Getter
 	private static String clientSecret;
-
+	@Getter
+	private static TemmieMercadoPago temmieMercadoPago; // Usado na página de "doar"
+	
 	private static final List<String> mstKeys = new ArrayList<String>(); // http://trans.pantherman594.com/translateKeys
 
 	static {
@@ -89,6 +91,7 @@ public class Loritta {
 		Loritta.clientSecret = config.getClientSecret();
 		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
 		Loritta.setPlaying(config.getCurrentlyPlaying());
+		Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
 	}
 
 	public void start() {		
