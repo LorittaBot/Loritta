@@ -18,7 +18,7 @@ public class HomeView {
 		try {
 			HashMap<String, Object> context = new HashMap<String, Object>();
 			
-			PebbleTemplate template = LorittaWebsite.engine.getTemplate("home.html");
+			PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("home.html");
 
 			return new RenderWrapper(template, context);
 		} catch (PebbleException e) {

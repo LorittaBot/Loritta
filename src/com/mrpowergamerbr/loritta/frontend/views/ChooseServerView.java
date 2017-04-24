@@ -24,7 +24,7 @@ public class ChooseServerView {
 
 			List<TemmieGuild> guilds = temmie.getUserGuilds();
 			context.put("guilds", guilds.stream().filter((guild) -> LorittaWebsite.canManageGuild(guild)).collect(Collectors.toList()));
-			PebbleTemplate template = LorittaWebsite.engine.getTemplate("choose_server.html");
+			PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("choose_server.html");
 
 			return new RenderWrapper(template, context);
 		} catch (PebbleException e) {

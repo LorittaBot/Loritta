@@ -118,7 +118,7 @@ public class ConfigureServerView {
 
 					context.put("whereAmI", "moduleConfig");
 
-					template = LorittaWebsite.engine.getTemplate("module_config.html");
+					template = LorittaWebsite.getEngine().getTemplate("module_config.html");
 					context.put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
 				} else if (req.path().endsWith("joinconfig")) {
@@ -137,7 +137,7 @@ public class ConfigureServerView {
 					}
 					context.put("whereAmI", "joinConfig");
 
-					template = LorittaWebsite.engine.getTemplate("join_config.html");
+					template = LorittaWebsite.getEngine().getTemplate("join_config.html");
 				} else {
 					if (req.param("commandPrefix").isSet()) {
 						sc.commandPrefix(req.param("commandPrefix").value());
@@ -154,13 +154,13 @@ public class ConfigureServerView {
 					context.put("whereAmI", "mainPage");
 
 					context.put("commandPrefix", sc.commandPrefix());
-					template = LorittaWebsite.engine.getTemplate("server_config.html");
+					template = LorittaWebsite.getEngine().getTemplate("server_config.html");
 				}
 
 				return new RenderWrapper(template, context);
 			} else {
 				try {
-					res.redirect(LorittaWebsite.websiteUrl);
+					res.redirect(LorittaWebsite.getWebsiteUrl());
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

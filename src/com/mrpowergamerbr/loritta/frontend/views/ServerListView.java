@@ -20,7 +20,7 @@ public class ServerListView {
 
 			context.put("guilds", LorittaLauncher.getInstance().getJda().getGuilds());
 			
-			PebbleTemplate template = LorittaWebsite.engine.getTemplate("server_list.html");
+			PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("server_list.html");
 
 			return new RenderWrapper(template, context);
 		} catch (PebbleException e) {

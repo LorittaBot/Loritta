@@ -28,7 +28,7 @@ public class GlobalHandler {
 
 		HashMap<String, Object> defaultContext = new HashMap<String, Object>();
 		defaultContext.put("clientId", Loritta.getClientId());
-		defaultContext.put("websiteUrl", LorittaWebsite.websiteUrl);
+		defaultContext.put("websiteUrl", LorittaWebsite.getWebsiteUrl());
 		defaultContext.put("totalServers", LorittaLauncher.getInstance().getJda().getGuilds().size());
 		defaultContext.put("totalUsers", LorittaLauncher.getInstance().getJda().getUsers().size());
 		defaultContext.put("epochMillis", System.currentTimeMillis());
