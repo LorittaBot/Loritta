@@ -43,7 +43,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 @Setter
 public class Loritta {
 	@Getter
-	private LorittaConfig config;
+	@Setter
+	private static LorittaConfig config;
 	
 	private String clientToken; // Client token da sessão atual
 	private JDA jda;
@@ -54,7 +55,6 @@ public class Loritta {
 	private Morphia morphia; // MongoDB³
 	@Getter // Sim, getter de novo, já que o lombok não cria getters para variáveis estáticas
 	public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
-	public static final String botOwnerId = "123170274651668480"; // ID do dono do bot
 	private JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
 	private static String playingGame = "loritta.website | Shantae: Half-Genie Hero";
 	public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
@@ -83,7 +83,7 @@ public class Loritta {
 	}
 
 	public Loritta(LorittaConfig config) {
-		this.setConfig(config);
+		Loritta.setConfig(config);
 		this.setClientToken(config.getClientToken());
 		Loritta.clientId = config.getClientId();
 		Loritta.clientSecret = config.getClientSecret();

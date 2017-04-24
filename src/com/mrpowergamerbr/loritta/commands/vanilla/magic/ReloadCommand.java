@@ -19,7 +19,7 @@ public class ReloadCommand extends CommandBase {
 	
 	@Override
 	public void run(CommandContext context) {
-		if (context.getUserHandle().getId().equals(Loritta.botOwnerId)) {
+		if (context.getUserHandle().getId().equals(Loritta.getConfig().getOwnerId())) {
 			LorittaLauncher.getInstance().loadCommandManager();
 			context.sendMessage("Loritta recarregada com sucesso!");
 		} else {

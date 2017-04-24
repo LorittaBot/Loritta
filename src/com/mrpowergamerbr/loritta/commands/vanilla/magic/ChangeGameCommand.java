@@ -18,7 +18,7 @@ public class ChangeGameCommand extends CommandBase {
 	
 	@Override
 	public void run(CommandContext context) {
-		if (context.getUserHandle().getId().equals(Loritta.botOwnerId)) {
+		if (context.getUserHandle().getId().equals(Loritta.getConfig().getOwnerId())) {
 			String text = String.join(" ",context.getArgs());
 			Loritta.setPlaying(text);
 			context.sendMessage(context.getAsMention(true) + "Alterado com sucesso!");
