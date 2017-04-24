@@ -5,6 +5,7 @@ Loritta
 <img height="384" src="http://i.imgur.com/Meuavoq.png">
 <br>
 <a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
+<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
 <a href="https://discord.gg/3rXgN8x"><img src="https://img.shields.io/badge/discord-loritta-yellow.svg"></a>
 <a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 </p>
