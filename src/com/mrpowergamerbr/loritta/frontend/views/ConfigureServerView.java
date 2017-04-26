@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.Tr
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
+import com.mrpowergamerbr.loritta.userdata.MusicConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
@@ -133,6 +134,20 @@ public class ConfigureServerView {
 					context.contextVars().put("whereAmI", "joinConfig");
 
 					template = LorittaWebsite.getEngine().getTemplate("join_config.html");
+				} else if (context.request().path().endsWith("music")) {
+					if (context.request().param("enableModule").isSet()) { // O usuário está salvando as configurações?
+						MusicConfig mscCnf = sc.musicConfig();
+						mscCnf.setEnabled(context.request().param("enableModule").isSet());
+						mscCnf.setMusicGuildId(context.request().param("musicGuildId").value());
+						mscCnf.setHasMaxSecondRestriction(context.request().param("maxSecEnabled").isSet());
+						mscCnf.setMaxSeconds(context.request().param("maxSec").intValue());
+	
+						sc.musicConfig(mscCnf);
+						LorittaLauncher.getInstance().getDs().save(sc);
+					}
+					context.contextVars().put("whereAmI", "musicConfig");
+
+					template = LorittaWebsite.getEngine().getTemplate("music_config.html");
 				} else {
 					if (context.request().param("commandPrefix").isSet()) {
 						sc.commandPrefix(context.request().param("commandPrefix").value());

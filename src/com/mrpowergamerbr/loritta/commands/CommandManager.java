@@ -39,6 +39,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.PackageInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -75,6 +76,7 @@ public class CommandManager {
 		commandMap.add(new WikipediaCommand());
 		commandMap.add(new QuoteCommand());
 		commandMap.add(new WikiaCommand());
+		commandMap.add(new TocarCommand());
 		
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());

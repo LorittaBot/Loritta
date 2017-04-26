@@ -14,6 +14,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>central</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -109,6 +114,11 @@
             <artifactId>microsoft-translator-java-api</artifactId>
             <version>0.6.2</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>1.2.36</version>
         </dependency>
     </dependencies>
     <build>

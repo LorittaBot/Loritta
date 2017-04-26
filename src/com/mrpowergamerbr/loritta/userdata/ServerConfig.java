@@ -48,6 +48,7 @@ public class ServerConfig {
 	ArrayList<CustomCommand> customCommands = new ArrayList<CustomCommand>(); // Comandos customizados
 
 	JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
+	MusicConfig musicConfig = new MusicConfig();
 	
 	public CommandOptions getCommandOptionsFor(CommandBase cmd) {
 		if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {
