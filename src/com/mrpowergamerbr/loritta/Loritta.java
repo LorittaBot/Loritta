@@ -333,9 +333,9 @@ public class Loritta {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				if (false && conf.musicConfig().isHasMaxSecondRestriction()) {
-					if (TimeUnit.SECONDS.toMillis(conf.musicConfig().getMaxSeconds()) > track.getDuration()) {
-						channel.sendMessage("Música grande demais!").queue();
+				if (conf.musicConfig().isHasMaxSecondRestriction()) {
+					if (track.getDuration() > TimeUnit.SECONDS.toMillis(conf.musicConfig().getMaxSeconds())) {
+						channel.sendMessage(context.getAsMention(true) + "Música grande demais!").queue();
 						return;
 					}
 				}
