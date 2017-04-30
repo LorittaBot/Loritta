@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 
 import lombok.Getter;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -96,7 +96,7 @@ public class CommandContext {
 			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendMessage(message).complete();
 			} else {
-				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 			}
 		}
 	}
@@ -115,7 +115,7 @@ public class CommandContext {
 			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendMessage(embed).complete();
 			} else {
-				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 			}
 		}
 	}
@@ -138,7 +138,7 @@ public class CommandContext {
 			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendFile(data, name, message).complete();
 			} else {
-				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 			}
 		}
 	}
@@ -165,7 +165,7 @@ public class CommandContext {
 			if (event.getTextChannel().canTalk()) {
 				event.getTextChannel().sendFile(file, name, message).complete();
 			} else {
-				Loritta.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 			}
 		}
 	}

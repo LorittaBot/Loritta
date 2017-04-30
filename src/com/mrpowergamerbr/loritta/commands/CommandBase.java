@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -51,7 +51,7 @@ public abstract class CommandBase {
 		if (message.startsWith(conf.commandPrefix() + getLabel())) {
 			if (hasCommandFeedback()) {
 				if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-					Loritta.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
+					LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
 					return true;
 				} else {
 					ev.getChannel().sendTyping().complete();

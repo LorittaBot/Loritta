@@ -27,8 +27,8 @@ import com.mrpowergamerbr.loritta.commands.CommandManager;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
-import com.mrpowergamerbr.loritta.utils.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
+import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
@@ -482,13 +482,5 @@ public class Loritta {
 
 	public static void setPlaying(String newGame) {
 		playingGame = newGame;
-	}
-
-	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
-		for (Member member : guild.getMembers()) {
-			if (member.isOwner()) {
-				member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
-			}
-		}
 	}
 }

@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
 import com.mrpowergamerbr.loritta.whistlers.ICode;
 import com.mrpowergamerbr.loritta.whistlers.IPrecondition;
@@ -151,7 +152,7 @@ public class DiscordListener extends ListenerAdapter {
 								String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
 								textChannel.sendMessage(msg).complete();
 							} else {
-								Loritta.warnOwnerNoPermission(guild, textChannel, conf);
+								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf);
 							}
 						}
 					}
@@ -181,7 +182,7 @@ public class DiscordListener extends ListenerAdapter {
 								String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
 								textChannel.sendMessage(msg).complete();
 							} else {
-								Loritta.warnOwnerNoPermission(guild, textChannel, conf);
+								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf);
 							}
 						}
 					}
