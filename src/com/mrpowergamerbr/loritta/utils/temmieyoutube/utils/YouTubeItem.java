@@ -4,7 +4,7 @@ package com.mrpowergamerbr.loritta.utils.temmieyoutube.utils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Item {
+public class YouTubeItem {
 
     @SerializedName("kind")
     @Expose

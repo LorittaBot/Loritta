@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.Item;
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.PageInfo;
 
 public class SearchResponse {
@@ -26,7 +26,7 @@ public class SearchResponse {
     private PageInfo pageInfo;
     @SerializedName("items")
     @Expose
-    private List<Item> items = null;
+    private List<YouTubeItem> items = null;
 
     public String getKind() {
         return kind;
@@ -68,11 +68,11 @@ public class SearchResponse {
         this.pageInfo = pageInfo;
     }
 
-    public List<Item> getItems() {
+    public List<YouTubeItem> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<YouTubeItem> items) {
         this.items = items;
     }
 

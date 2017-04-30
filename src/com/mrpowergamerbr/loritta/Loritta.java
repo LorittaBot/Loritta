@@ -27,8 +27,10 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaConfig;
+import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -148,9 +150,9 @@ public class Loritta {
 
 		this.playerManager = new DefaultAudioPlayerManager();
 
-	    AudioSourceManagers.registerRemoteSources(playerManager);
-	    AudioSourceManagers.registerLocalSource(playerManager);
-	    
+		AudioSourceManagers.registerRemoteSources(playerManager);
+		AudioSourceManagers.registerLocalSource(playerManager);
+
 		jda.addEventListener(new DiscordListener(this)); // Hora de registrar o nosso listener
 		// Ou seja, agora a Loritta estará aceitando comandos
 	}
@@ -328,6 +330,10 @@ public class Loritta {
 	}
 
 	public void loadAndPlay(CommandContext context, ServerConfig conf, final TextChannel channel, final String trackUrl) {
+		loadAndPlay(context, conf, channel, trackUrl, false);
+	}
+
+	public void loadAndPlay(CommandContext context, ServerConfig conf, final TextChannel channel, final String trackUrl, boolean alreadyChecked) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
@@ -359,6 +365,17 @@ public class Loritta {
 
 			@Override
 			public void noMatches() {
+				if (!alreadyChecked) {
+					// Ok, não encontramos NADA relacionado a essa música
+					// Então vamos pesquisar!
+					List<YouTubeItem> item = YouTubeUtils.searchVideosOnYouTube(trackUrl);
+					
+					System.out.println("Video: " + item.size() + ", " + trackUrl);
+					if (!item.isEmpty()) {
+						loadAndPlay(context, conf, channel, item.get(0).getId().getVideoId(), true);
+						return;
+					}
+				}
 				channel.sendMessage(context.getAsMention(true) + "Nada encontrado! " + trackUrl).queue();
 			}
 

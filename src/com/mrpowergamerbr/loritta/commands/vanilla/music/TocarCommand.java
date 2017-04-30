@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.response.SearchResponse;
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.Item;
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
 
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -40,13 +40,13 @@ public class TocarCommand extends CommandBase {
 	@Override
 	public void run(CommandContext context) {
 		if (context.getArgs().length >= 1) {	
-			String music = context.getArgs()[0];
+			String music = String.join(" ", context.getArgs());
 			
 			if (music.equalsIgnoreCase("pular") && context.getHandle().hasPermission(Permission.MANAGE_SERVER)) {
 				LorittaLauncher.getInstance().skipTrack(context.getEvent().getTextChannel());
 				return;
 			}
-			
+
 			LorittaLauncher.getInstance().loadAndPlay(context, context.getConfig(), context.getEvent().getTextChannel(), music);
 		} else {
 			context.explain();

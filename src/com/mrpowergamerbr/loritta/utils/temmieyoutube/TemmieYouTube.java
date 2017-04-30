@@ -23,15 +23,6 @@ public class TemmieYouTube {
 		this.apiKey = apiKey;
 	}
 	
-	public static void main(String[] args) {
-		// https://www.googleapis.com/customsearch/v1?key=INSERT_YOUR_API_KEY&cx=017576662512468239146:omuauf_lfve&q=lectures
-		String apiKey = "AIzaSyCdHzSfGPrvyMPxPSq7eyPzmuwJvIaTK1Y";
-		
-		TemmieYouTube t = new TemmieYouTube(apiKey);
-		
-		t.searchOnGoogle("Shantae");
-	}
-	
 	public SearchResponse searchOnYouTube(String searchQuery) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("part", "snippet");
