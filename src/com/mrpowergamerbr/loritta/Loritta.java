@@ -375,7 +375,7 @@ public class Loritta {
 		musicManager.scheduler.queue(track);
 	}
 
-	private void skipTrack(TextChannel channel) {
+	public void skipTrack(TextChannel channel) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 		musicManager.scheduler.nextTrack();
 
@@ -383,6 +383,9 @@ public class Loritta {
 	}
 
 	private static void connectToVoiceChannel(String id, AudioManager audioManager) {
+		if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
+			audioManager.closeAudioConnection(); // Desconecte do canal atual!
+		}
 		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
 			for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
 				if (voiceChannel.getId().equals(id)) {
