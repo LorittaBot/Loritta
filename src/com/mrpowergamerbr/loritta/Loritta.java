@@ -29,6 +29,7 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
+import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
@@ -53,7 +54,6 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
@@ -354,7 +354,7 @@ public class Loritta {
 		return temmie;
 	}
 
-	private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
+	public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
 		long guildId = Long.parseLong(guild.getId());
 		GuildMusicManager musicManager = musicManagers.get(guildId);
 
@@ -386,7 +386,7 @@ public class Loritta {
 				}
 				channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + track.getInfo().title).queue();
 
-				play(channel.getGuild(), conf, musicManager, track);
+				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false));
 			}
 
 			@Override
@@ -399,7 +399,7 @@ public class Loritta {
 
 				channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + firstTrack.getInfo().title + " (primeira música da playlist " + playlist.getName() + ")").queue();
 
-				play(channel.getGuild(), conf, musicManager, firstTrack);
+				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false));
 			}
 
 			@Override
@@ -409,7 +409,6 @@ public class Loritta {
 					// Então vamos pesquisar!
 					List<YouTubeItem> item = YouTubeUtils.searchVideosOnYouTube(trackUrl);
 
-					System.out.println("Video: " + item.size() + ", " + trackUrl);
 					if (!item.isEmpty()) {
 						loadAndPlay(context, conf, channel, item.get(0).getId().getVideoId(), true);
 						return;
@@ -431,12 +430,12 @@ public class Loritta {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				play(guild, conf, musicManager, track);
+				play(guild, conf, musicManager, new AudioTrackWrapper(track, true));
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				play(guild, conf, musicManager, playlist.getTracks().get(0));
+				play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true));
 			}
 
 			@Override
@@ -449,10 +448,10 @@ public class Loritta {
 		});
 	}
 
-	private void play(Guild guild, ServerConfig conf, GuildMusicManager musicManager, AudioTrack track) {
+	private void play(Guild guild, ServerConfig conf, GuildMusicManager musicManager, AudioTrackWrapper trackWrapper) {
 		connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
 
-		musicManager.scheduler.queue(track);
+		musicManager.scheduler.queue(trackWrapper);
 	}
 
 	public void skipTrack(TextChannel channel) {
@@ -463,17 +462,17 @@ public class Loritta {
 	}
 
 	private static void connectToVoiceChannel(String id, AudioManager audioManager) {
-		if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
+		/* if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
 			audioManager.closeAudioConnection(); // Desconecte do canal atual!
 		}
-		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
+		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) { */
 			for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
 				if (voiceChannel.getId().equals(id)) {
 					audioManager.openAudioConnection(voiceChannel);
 					break;
 				}
 			}
-		}
+		// }
 	}
 
 	public static String getPlaying() {

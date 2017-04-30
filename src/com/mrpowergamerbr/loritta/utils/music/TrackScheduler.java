@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.concurrent.BlockingQueue;
@@ -19,9 +20,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
-	private final BlockingQueue<AudioTrack> queue;
+	@Getter
+	private final BlockingQueue<AudioTrackWrapper> queue;
 	@Getter
 	private final Guild guild;
+	@Getter
+	private AudioTrackWrapper currentTrack;
 	
 	/**
 	 * @param player The audio player this scheduler uses
@@ -37,12 +41,23 @@ public class TrackScheduler extends AudioEventAdapter {
 	 *
 	 * @param track The track to play or add to queue.
 	 */
-	public void queue(AudioTrack track) {
+	public void queue(AudioTrackWrapper track) {
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
-		if (!player.startTrack(track, true)) {
+
+		if (player.getPlayingTrack() != null) {
+			if (getCurrentTrack() != null) {
+				if (getCurrentTrack().isAutoPlay()) {
+					// Quem liga para músicas do autoplay? Cancele ela agora!
+					player.stopTrack();
+				}
+ 			}
+		}
+		if (!player.startTrack(track.getTrack(), true)) {
 			queue.offer(track);
+		} else {
+			this.currentTrack = track;
 		}
 	}
 
@@ -53,12 +68,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
 		
-		AudioTrack audioTrack = queue.poll();
-		player.startTrack(audioTrack, false);
+		AudioTrackWrapper audioTrackWrapper = queue.poll();
+		player.startTrack((audioTrackWrapper == null ? null : audioTrackWrapper.getTrack()), false);
+		this.currentTrack = audioTrackWrapper;
 		
 		// Então quer dizer que nós iniciamos uma música vazia?
 		// Okay então, vamos pegar nossas próprias coisas
-		if (audioTrack == null) {
+		if (audioTrackWrapper == null) {
 			// Ok, Audio Track é null!
 			// Vamos pegar o ServerConfig deste servidor
 			ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(guild.getId());

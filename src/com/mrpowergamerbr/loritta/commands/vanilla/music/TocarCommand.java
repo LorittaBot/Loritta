@@ -52,11 +52,4 @@ public class TocarCommand extends CommandBase {
 			context.explain();
 		}
 	}
-	
-	@Getter
-	@Setter
-	@Accessors(fluent = true)
-	public static class YouTubeCommandOptions extends CommandOptions {
-		public boolean doNotEmbed; // Caso esteja ativado, os vídeos não ficarão em "embeds"
-	}
 }
