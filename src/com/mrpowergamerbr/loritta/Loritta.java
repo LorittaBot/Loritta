@@ -16,6 +16,7 @@ import org.bson.Document;
 import org.jibble.jmegahal.JMegaHal;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
@@ -41,6 +42,9 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.AccountType;
@@ -113,6 +117,10 @@ public class Loritta {
 	}
 
 	public void start() {		
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
+		rootLogger.setLevel(Level.OFF);
+		
 		System.out.println("Initializing MongoDB...");
 
 		mongo = new MongoClient(); // Hora de iniciar o MongoClient
@@ -145,6 +153,37 @@ public class Loritta {
 			}
 		};
 		new Thread(presenceUpdater, "Presence Updater").start(); // Pronto!
+
+		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
+			while (true) {
+				for (Guild guild : jda.getGuilds()) {
+					ServerConfig conf = getServerConfigForGuild(guild.getId());
+					
+					if (conf.musicConfig().isEnabled()) {
+						connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
+						getGuildAudioPlayer(guild);
+					}
+				}
+				for (GuildMusicManager mm : musicManagers.values()) {
+					if (mm.player.getPlayingTrack() == null) {
+						ServerConfig conf = getServerConfigForGuild(mm.scheduler.getGuild().getId());
+
+						if (conf.musicConfig().isAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+							String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+
+							// E agora carregue a música
+							LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
+						}
+					}
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		new Thread(playlistMagic, "Playlist Magic").start(); // Pronto!
 
 		this.musicManagers = new HashMap<>();
 
@@ -320,7 +359,7 @@ public class Loritta {
 		GuildMusicManager musicManager = musicManagers.get(guildId);
 
 		if (musicManager == null) {
-			musicManager = new GuildMusicManager(playerManager);
+			musicManager = new GuildMusicManager(guild, playerManager);
 			musicManagers.put(guildId, musicManager);
 		}
 
@@ -369,7 +408,7 @@ public class Loritta {
 					// Ok, não encontramos NADA relacionado a essa música
 					// Então vamos pesquisar!
 					List<YouTubeItem> item = YouTubeUtils.searchVideosOnYouTube(trackUrl);
-					
+
 					System.out.println("Video: " + item.size() + ", " + trackUrl);
 					if (!item.isEmpty()) {
 						loadAndPlay(context, conf, channel, item.get(0).getId().getVideoId(), true);
@@ -382,6 +421,30 @@ public class Loritta {
 			@Override
 			public void loadFailed(FriendlyException exception) {
 				channel.sendMessage(context.getAsMention(true) + "Deu ruim: " + exception.getMessage()).queue();
+			}
+		});
+	}
+
+	public void loadAndPlayNoFeedback(Guild guild, ServerConfig conf, final String trackUrl) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+
+		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+			@Override
+			public void trackLoaded(AudioTrack track) {
+				play(guild, conf, musicManager, track);
+			}
+
+			@Override
+			public void playlistLoaded(AudioPlaylist playlist) {
+				play(guild, conf, musicManager, playlist.getTracks().get(0));
+			}
+
+			@Override
+			public void noMatches() {
+			}
+
+			@Override
+			public void loadFailed(FriendlyException exception) {
 			}
 		});
 	}

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
@@ -143,10 +145,13 @@ public class ConfigureServerView {
 						mscCnf.setMusicGuildId(context.request().param("musicGuildId").value());
 						mscCnf.setHasMaxSecondRestriction(context.request().param("maxSecEnabled").isSet());
 						mscCnf.setMaxSeconds(context.request().param("maxSec").intValue());
-	
+						mscCnf.setAutoPlayWhenEmpty(context.request().param("autoPlayEnabled").isSet());
+						mscCnf.setUrls(Arrays.asList(context.request().param("musicUrls").value().split(";")));
+						
 						sc.musicConfig(mscCnf);
 						LorittaLauncher.getInstance().getDs().save(sc);
 					}
+					context.contextVars().put("playlist", StringUtils.join(sc.musicConfig().getUrls(), ";"));
 					context.contextVars().put("whereAmI", "musicConfig");
 
 					template = LorittaWebsite.getEngine().getTemplate("music_config.html");

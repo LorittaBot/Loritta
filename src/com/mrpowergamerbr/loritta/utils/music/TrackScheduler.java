@@ -1,9 +1,15 @@
 package com.mrpowergamerbr.loritta.utils.music;
 
+import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.LorittaLauncher;
+import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+
+import lombok.Getter;
+import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,13 +20,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
 	private final BlockingQueue<AudioTrack> queue;
-
+	@Getter
+	private final Guild guild;
+	
 	/**
 	 * @param player The audio player this scheduler uses
 	 */
-	public TrackScheduler(AudioPlayer player) {
+	public TrackScheduler(Guild guild, AudioPlayer player) {
 		this.player = player;
 		this.queue = new LinkedBlockingQueue<>();
+		this.guild = guild;
 	}
 
 	/**
@@ -43,7 +52,24 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void nextTrack() {
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
-		player.startTrack(queue.poll(), false);
+		
+		AudioTrack audioTrack = queue.poll();
+		player.startTrack(audioTrack, false);
+		
+		// Então quer dizer que nós iniciamos uma música vazia?
+		// Okay então, vamos pegar nossas próprias coisas
+		if (audioTrack == null) {
+			// Ok, Audio Track é null!
+			// Vamos pegar o ServerConfig deste servidor
+			ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(guild.getId());
+			
+			if (conf.musicConfig().isAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+				String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+				
+				// E agora carregue a música
+				LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl); // Só vai meu parça
+			}
+		}
 	}
 
 	@Override
