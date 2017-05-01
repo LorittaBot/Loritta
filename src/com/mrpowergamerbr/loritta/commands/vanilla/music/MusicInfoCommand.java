@@ -42,7 +42,7 @@ public class MusicInfoCommand extends CommandBase {
 				if (manager.player.getPlayingTrack() == null) {
 					txt = "Não tem nenhuma música na fila...";
 				} else {
-					txt = "▶ " + manager.player.getPlayingTrack().getInfo().title + "\n";
+					txt += "▶ " + manager.player.getPlayingTrack().getInfo().title + "\n";
 				}
 				for (AudioTrackWrapper song : songs) {
 					txt += "⏸ " + song.getTrack().getInfo().title + "\n";
@@ -62,7 +62,7 @@ public class MusicInfoCommand extends CommandBase {
 			if (manager.player.getPlayingTrack() == null) {
 				context.sendMessage(context.getAsMention(true) + "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`");
 			} else {
-				context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + "!");
+				context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + " [" + ((manager.player.getPlayingTrack().getDuration() - manager.player.getPlayingTrack().getPosition()) / 1000) + "s]!");
 			}
 		}
 	}

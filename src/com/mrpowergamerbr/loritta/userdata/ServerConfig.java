@@ -32,6 +32,7 @@ public class ServerConfig {
 	ArrayList<String> modules = new ArrayList<String>();
 	DebugOptions debugOptions = new DebugOptions();
 	boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?
+	long creationDate = System.currentTimeMillis();
 	
 	HashMap<String, CommandOptions> commandOptions = new HashMap<String, CommandOptions>(); // Command Options
 	// Os command options são salvos assim:

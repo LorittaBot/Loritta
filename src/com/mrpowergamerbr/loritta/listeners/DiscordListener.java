@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.whistlers.Whistler;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
@@ -48,6 +49,12 @@ public class DiscordListener extends ListenerAdapter {
 						loritta.getHal().add(event.getMessage().getContent().toLowerCase());
 					}
 
+					for (Role r : event.getMember().getRoles()) {
+						if (r.getName().equalsIgnoreCase("Inimigo da Loritta")) {
+							return;
+						}
+					}
+					
 					for (Whistler whistler : conf.whistlers()) {
 						processCode(conf, event.getMessage(), whistler.codes);
 					}

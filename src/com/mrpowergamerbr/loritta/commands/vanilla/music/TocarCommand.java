@@ -47,6 +47,10 @@ public class TocarCommand extends CommandBase {
 				return;
 			}
 
+			if (music.equalsIgnoreCase("limpar") && context.getHandle().hasPermission(Permission.MANAGE_SERVER)) {
+				LorittaLauncher.getInstance().getGuildAudioPlayer(context.getGuild()).scheduler.getQueue().clear();
+				return;
+			}
 			LorittaLauncher.getInstance().loadAndPlay(context, context.getConfig(), context.getEvent().getTextChannel(), music);
 		} else {
 			context.explain();
