@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.entities.User;
 
 @Getter
 @Setter
@@ -12,4 +13,5 @@ import lombok.Setter;
 public class AudioTrackWrapper {
 	private AudioTrack track;
 	private boolean isAutoPlay;
+	private User user;
 }

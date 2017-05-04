@@ -42,10 +42,10 @@ public class MusicInfoCommand extends CommandBase {
 				if (manager.player.getPlayingTrack() == null) {
 					txt = "Não tem nenhuma música na fila...";
 				} else {
-					txt += "▶ " + manager.player.getPlayingTrack().getInfo().title + "\n";
+					txt += "▶ " + manager.player.getPlayingTrack().getInfo().title + " (" + manager.scheduler.getCurrentTrack().getUser().getName() + ")\n";
 				}
 				for (AudioTrackWrapper song : songs) {
-					txt += "⏸ " + song.getTrack().getInfo().title + "\n";
+					txt += "⏸ " + song.getTrack().getInfo().title + " (" + song.getUser().getName() + ")\n";
 				}
 				context.sendMessage(context.getAsMention(true) + txt);
 			}
@@ -53,7 +53,7 @@ public class MusicInfoCommand extends CommandBase {
 				String txt = "Em outras quebradas por aí...\n";
 				for (GuildMusicManager mm : LorittaLauncher.getInstance().getMusicManagers().values()) {
 					if (mm.player.getPlayingTrack() != null) {
-						txt += "**" + mm.scheduler.getGuild().getName() + "** ▶ " + mm.player.getPlayingTrack().getInfo().title + "\n";
+						txt += "**" + mm.scheduler.getGuild().getName() + "** ▶ " + mm.player.getPlayingTrack().getInfo().title + " (pedido por " + mm.scheduler.getCurrentTrack().getUser().getName() + ")\n";
 					}
 				}
 				context.sendMessage(context.getAsMention(true) + txt);
@@ -62,7 +62,7 @@ public class MusicInfoCommand extends CommandBase {
 			if (manager.player.getPlayingTrack() == null) {
 				context.sendMessage(context.getAsMention(true) + "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`");
 			} else {
-				context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + " [" + ((manager.player.getPlayingTrack().getDuration() - manager.player.getPlayingTrack().getPosition()) / 1000) + "s]!");
+				context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + " [" + ((manager.player.getPlayingTrack().getDuration() - manager.player.getPlayingTrack().getPosition()) / 1000) + "s]! (pedido por " + manager.scheduler.getCurrentTrack().getUser().getName() + ")");
 			}
 		}
 	}

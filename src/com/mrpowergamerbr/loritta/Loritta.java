@@ -204,96 +204,6 @@ public class Loritta {
 	 */
 	public ServerConfig getServerConfigForGuild(String guildId) {
 		try {
-			// TODO: Server Config
-			/* ServerConfig config = new ServerConfig();
-			config.guildId(guildId);
-			config.commandPrefix("..");
-			config.modules().add("BotInfoCommand");
-			config.debugOptions().enableAllModules(true);
-
-			{
-				CommandOptions cmdOpti = new CommandOptions();
-				cmdOpti.options().put(AjudaCommand.TELL_SENT_IN_PRIVATE, true);
-				cmdOpti.options().put(AjudaCommand.SEND_IN_PRIVATE, true);
-				// cmdOpti.options().put(AvatarCommand.HIDE_IMAGE, true);
-				config.commandOptions().put("AjudaCommand", cmdOpti);
-			}
-
-			{
-				YouTubeCommandOptions cmdOpt = new YouTubeCommand.YouTubeCommandOptions();
-				cmdOpt.doNotEmbed(true);
-				config.commandOptions().put("YouTubeCommand", cmdOpt);
-			}
-
-			{
-				CustomCommand customCmd = new CustomCommand();
-				customCmd.commandName("parappa");
-
-				CodeBlock codeBlock = new CodeBlock(); // Nosso CodeBlock
-
-				ReplyCode reply = new ReplyCode("Yeah, I know... I gotta believe!");
-				codeBlock.codes.add(reply);
-
-				ReactionCode react = new ReactionCode("parappa", true);
-				codeBlock.codes.add(react);
-
-				customCmd.codes().add(codeBlock);
-
-				config.customCommands().add(customCmd);
-			}
-
-			CommandOptions tristeRealidadeOpti = new CommandOptions();
-			config.commandOptions().put("TristeRealidadeCommand", tristeRealidadeOpti);
-
-			config.explainOnCommandRun(true);
-			config.commandOutputInPrivate(false);
-			config.mentionOnCommandOutput(true);
-
-			// Test Whistler #1
-			{
-				Whistler whistler = new Whistler("Olá Mundo!"); // Criando o whistler
-
-				CodeBlock codeBlock = new CodeBlock(); // Nosso CodeBlock
-
-				ContainsPrecondition precondition = new ContainsPrecondition("hello world", true); // Nosso pré condition
-
-				codeBlock.preconditions.add(precondition);
-
-				ChancePrecondition preconditionWow = new ChancePrecondition(25);
-				codeBlock.preconditions.add(preconditionWow);
-
-				ReactionCode reaction = new ReactionCode("🌍", false);
-				codeBlock.codes.add(reaction);
-
-				ReplyCode reply = new ReplyCode("Olá mundo!");
-				codeBlock.codes.add(reply);
-
-				whistler.codes.add(codeBlock);
-
-				config.whistlers().add(whistler); // Pronto!
-			}
-
-			// Test Whistler #2
-			// kk eae girl
-			{
-				Whistler whistler = new Whistler("kk eae girl"); // Criando o whistler
-
-				CodeBlock codeBlock = new CodeBlock(); // Nosso CodeBlock
-
-				ChancePrecondition precondition = new ChancePrecondition(0.666);
-
-				codeBlock.preconditions.add(precondition);
-
-				ReplyCode reply = new ReplyCode("kk eae girl");
-				codeBlock.codes.add(reply);
-
-				whistler.codes.add(codeBlock);
-
-				config.whistlers().add(whistler); // Pronto!
-			} // http://i.imgur.com/hSiDzcT.png
-
-			// TODO: Apenas para debug ;)
-			ds.save(config); */
 			Document doc = mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("_id", guildId)).first();
 			if (doc != null) {
 				ServerConfig config = ds.get(ServerConfig.class, doc.get("_id"));
@@ -386,7 +296,7 @@ public class Loritta {
 				}
 				channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + track.getInfo().title).queue();
 
-				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false));
+				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false, context.getUserHandle()));
 			}
 
 			@Override
@@ -399,7 +309,7 @@ public class Loritta {
 
 				channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + firstTrack.getInfo().title + " (primeira música da playlist " + playlist.getName() + ")").queue();
 
-				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false));
+				play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false, context.getUserHandle()));
 			}
 
 			@Override
@@ -430,12 +340,12 @@ public class Loritta {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				play(guild, conf, musicManager, new AudioTrackWrapper(track, true));
+				play(guild, conf, musicManager, new AudioTrackWrapper(track, true, jda.getSelfUser()));
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true));
+				play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, jda.getSelfUser()));
 			}
 
 			@Override
