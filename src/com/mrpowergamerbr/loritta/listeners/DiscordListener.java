@@ -150,11 +150,9 @@ public class DiscordListener extends ListenerAdapter {
 					if (conf.joinLeaveConfig().isTellOnJoin()) {
 						Guild guild = event.getGuild();
 
-						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalJoin(), true);
+						TextChannel textChannel = guild.getTextChannelById(conf.joinLeaveConfig().getCanalJoinId());
 
-						if (!textChannelList.isEmpty()) {
-							TextChannel textChannel = textChannelList.get(0);
-
+						if (textChannel != null) {
 							if (textChannel.canTalk()) {
 								String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
 								textChannel.sendMessage(msg).complete();
@@ -180,11 +178,9 @@ public class DiscordListener extends ListenerAdapter {
 					if (conf.joinLeaveConfig().isTellOnLeave()) {
 						Guild guild = event.getGuild();
 
-						List<TextChannel> textChannelList = guild.getTextChannelsByName(conf.joinLeaveConfig().getCanalLeave(), true);
+						TextChannel textChannel = guild.getTextChannelById(conf.joinLeaveConfig().getCanalLeaveId());
 
-						if (!textChannelList.isEmpty()) {
-							TextChannel textChannel = textChannelList.get(0);
-
+						if (textChannel != null) {
 							if (textChannel.canTalk()) {
 								String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
 								textChannel.sendMessage(msg).complete();
