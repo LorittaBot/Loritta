@@ -11,6 +11,6 @@ public class JoinLeaveConfig {
 	private boolean tellOnLeave = true;
 	private String joinMessage = "👉 %UserMention% entrou no servidor!";
 	private String leaveMessage = "👈 %UserMention% saiu do servidor!";
-	private String canalJoin = "bate-papo";
-	private String canalLeave = "bate-papo";
+	private String canalJoinId = null;
+	private String canalLeaveId = null;
 }

@@ -127,8 +127,8 @@ public class ConfigureServerView {
 						jlCnf.setEnabled(context.request().param("enableModule").isSet());
 						jlCnf.setTellOnJoin(context.request().param("tellOnJoin").isSet());
 						jlCnf.setTellOnLeave(context.request().param("tellOnLeave").isSet());
-						jlCnf.setCanalJoin(context.request().param("canalJoin").value());
-						jlCnf.setCanalLeave(context.request().param("canalLeave").value());
+						jlCnf.setCanalJoinId(context.request().param("canalJoin").value());
+						jlCnf.setCanalLeaveId(context.request().param("canalLeave").value());
 						jlCnf.setJoinMessage(context.request().param("joinMessage").value());
 						jlCnf.setLeaveMessage(context.request().param("leaveMessage").value());
 	
