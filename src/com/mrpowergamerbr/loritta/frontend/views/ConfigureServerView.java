@@ -17,6 +17,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
+import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.TristeRealidadeCommandOptions;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
@@ -24,6 +25,8 @@ import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
+import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
 
@@ -37,7 +40,7 @@ public class ConfigureServerView {
 				if (guild.getId().equals(guildId)) {
 					allowed = LorittaWebsite.canManageGuild(guild);
 					context.contextVars().put("currentServer", guild);
-					
+
 					context.contextVars().put("currentServerJda", LorittaLauncher.getInstance().getJda().getGuildById(guild.getId()));
 					break;
 				}
@@ -131,7 +134,7 @@ public class ConfigureServerView {
 						jlCnf.setCanalLeaveId(context.request().param("canalLeave").value());
 						jlCnf.setJoinMessage(context.request().param("joinMessage").value());
 						jlCnf.setLeaveMessage(context.request().param("leaveMessage").value());
-	
+
 						sc.joinLeaveConfig(jlCnf);
 						LorittaLauncher.getInstance().getDs().save(sc);
 					}
@@ -147,7 +150,7 @@ public class ConfigureServerView {
 						mscCnf.setMaxSeconds(context.request().param("maxSec").intValue());
 						mscCnf.setAutoPlayWhenEmpty(context.request().param("autoPlayEnabled").isSet());
 						mscCnf.setUrls(Arrays.asList(context.request().param("musicUrls").value().split(";")));
-						
+
 						sc.musicConfig(mscCnf);
 						LorittaLauncher.getInstance().getDs().save(sc);
 					}
@@ -155,6 +158,39 @@ public class ConfigureServerView {
 					context.contextVars().put("whereAmI", "musicConfig");
 
 					template = LorittaWebsite.getEngine().getTemplate("music_config.html");
+				} else if (context.request().path().endsWith("commandscustom")) {
+					if (context.request().param("deleteCommand").isSet()) {
+						ArrayList<CustomCommand> toRemove = new ArrayList<CustomCommand>();
+						
+						for (CustomCommand customCommand : sc.customCommands()) {
+							if (customCommand.commandName().equals(context.request().param("deleteCommand").value())) {
+								toRemove.add(customCommand);
+							}
+						}
+						
+						sc.customCommands().removeAll(toRemove);
+					}
+					if (context.request().param("commandName").isSet()) {
+						// Hora de criar um novo comando!
+						CustomCommand customCommand = new CustomCommand()
+								.commandName(context.request().param("commandName").value()); // Primeiro o label do comando...
+						
+						CodeBlock codeBlock = new CodeBlock(); // Nosso CodeBlock
+						// Este codeblock é o "root" de todos os códigos
+					
+						ReplyCode reply = new ReplyCode(context.request().param("commandResponse").value()); // E agora o nosso replycode!
+						codeBlock.codes.add(reply);
+						
+						customCommand.codes().add(codeBlock);
+						
+						sc.customCommands().add(customCommand); // E agora adicione o nosso novo comando customizado no ServerConfig...
+						
+						LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
+					}
+					
+					context.contextVars().put("whereAmI", "customCommands");
+					
+					template = LorittaWebsite.getEngine().getTemplate("custom_commands.html");
 				} else {
 					if (context.request().param("commandPrefix").isSet()) {
 						sc.commandPrefix(context.request().param("commandPrefix").value());
