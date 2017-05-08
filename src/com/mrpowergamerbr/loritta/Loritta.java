@@ -92,20 +92,6 @@ public class Loritta {
 	private AudioPlayerManager playerManager;
 	private Map<Long, GuildMusicManager> musicManagers;
 
-	private static final List<String> mstKeys = new ArrayList<String>(); // http://trans.pantherman594.com/translateKeys
-
-	static {
-		mstKeys.add("Tharsen;6mutEwVfEVk3S9nIdolEc9EdVVHANwNyW69H15ssB7c=");
-		mstKeys.add("Rell1936;ZiE7WrcOTj0QYuJsgan0PhQDRv2A34ZVIQKBWL7wS9o=");
-		mstKeys.add("Faber1974;So3rU12SPzo2xjIICgyTPEoYxSIkAIKgopS1NOO/3jA=");
-		mstKeys.add("Factiong;FSVgPoxrYOWdIx1FGH2GtEmmLAhSfW5lpJkAL61Wtmg=");
-		mstKeys.add("Neittle;J6QqMu/9oFwjffjenwjAMm3I3KSh/jhnUEgRJrqGvR8=");
-		mstKeys.add("Gasselve;MPAp7JAhBlkloO+iW+K1sGf4GVg8ipb8YRFY7CY1jn8=");
-		mstKeys.add("Mork1971;ATniH+AEAZ/t87U90UUMi5ZY2vGzNc+3ivnWP2NV1Pk=");
-		mstKeys.add("Lintioned;MWLlqI+juS/3uDFRty4hQMBF62OtRfflWfYgr3V5q7U=");
-		mstKeys.add("Jealifted77;zLQ7XLgRwWZmigP+PKiwGFT+Hk/Pu1+6/TpO9qu8ftE=");
-	}
-
 	public Loritta(LorittaConfig config) {
 		Loritta.setConfig(config);
 		this.setClientToken(config.getClientToken());
@@ -231,13 +217,6 @@ public class Loritta {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		commandManager = new CommandManager();
-	}
-
-	public static String getMicrosoftTranslateServiceKey() {
-		String key = mstKeys.get(0);
-		mstKeys.remove(0);
-		mstKeys.add(key);
-		return key;
 	}
 
 	/**
