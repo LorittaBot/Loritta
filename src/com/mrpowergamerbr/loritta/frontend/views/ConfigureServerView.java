@@ -125,7 +125,7 @@ public class ConfigureServerView {
 					context.contextVars().put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
 					context.contextVars().put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
 				} else if (context.request().path().endsWith("joinconfig")) {
-					if (context.request().param("enableModule").isSet()) { // O usuário está salvando as configurações?
+					if (context.request().param("canalJoin").isSet()) { // O usuário está salvando as configurações?
 						JoinLeaveConfig jlCnf = sc.joinLeaveConfig();
 						jlCnf.setEnabled(context.request().param("enableModule").isSet());
 						jlCnf.setTellOnJoin(context.request().param("tellOnJoin").isSet());
@@ -142,7 +142,7 @@ public class ConfigureServerView {
 
 					template = LorittaWebsite.getEngine().getTemplate("join_config.html");
 				} else if (context.request().path().endsWith("music")) {
-					if (context.request().param("enableModule").isSet()) { // O usuário está salvando as configurações?
+					if (context.request().param("musicGuildId").isSet()) { // O usuário está salvando as configurações?
 						MusicConfig mscCnf = sc.musicConfig();
 						mscCnf.setEnabled(context.request().param("enableModule").isSet());
 						mscCnf.setMusicGuildId(context.request().param("musicGuildId").value());
