@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
@@ -7,6 +10,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext;
 public class InviteCommand extends CommandBase {
 	public String getDescription() {
 		return "Envia o link do convite para adicionar a Loritta em outros servidores!";
+	}
+	
+	@Override
+	public List<String> getAliases() {
+		return Arrays.asList("convidar", "invite");
 	}
 
 	public CommandCategory getCategory() {
