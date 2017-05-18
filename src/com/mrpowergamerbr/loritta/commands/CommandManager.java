@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.CaraCoroaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.FaustaoCommand;
@@ -87,6 +88,7 @@ public class CommandManager {
 		commandMap.add(new AvatarCommand());
 		commandMap.add(new EmojiCommand());
 		commandMap.add(new ServerInfoCommand());
+		commandMap.add(new InviteCommand());
 		
 		// =======[ MINECRAFT ]========
 		commandMap.add(new OfflineUUIDCommand());

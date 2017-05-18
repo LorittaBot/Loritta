@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.CacheBuilder;
 import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
@@ -19,6 +20,7 @@ import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
