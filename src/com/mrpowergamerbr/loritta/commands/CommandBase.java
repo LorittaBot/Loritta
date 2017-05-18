@@ -36,6 +36,10 @@ public abstract class CommandBase {
 	public List<String> getExample() {
 		return Arrays.asList();
 	}
+	
+	public List<String> getAliases() {
+		return Arrays.asList();
+	}
 
 	public boolean hasCommandFeedback() {
 		return true;
@@ -49,7 +53,17 @@ public abstract class CommandBase {
 	
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
 		String message = ev.getMessage().getContent();
-		if (message.startsWith(conf.commandPrefix() + getLabel())) {
+		boolean run = false;
+		run = message.startsWith(conf.commandPrefix() + getLabel());
+		if (!run) {
+			for (String alias : this.getAliases()) {
+				if (message.startsWith(conf.commandPrefix() + alias)) {
+					run = true;
+					break;
+				}
+			}
+		}
+		if (run) {
 			if (hasCommandFeedback()) {
 				if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
