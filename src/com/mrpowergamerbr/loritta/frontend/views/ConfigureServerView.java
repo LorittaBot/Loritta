@@ -92,7 +92,7 @@ public class ConfigureServerView {
 								enabledModules.add(cmdBase.getClass().getSimpleName());
 							}
 						}
-						sc.disabledModules(enabledModules);
+						sc.disabledCommands(enabledModules);
 					}
 					if (context.request().param("editingTristeRealidade").isSet()) {
 						TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
@@ -102,14 +102,14 @@ public class ConfigureServerView {
 					}
 					if (context.request().param("activateAllCommands").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
-						sc.disabledModules(enabledModules);
+						sc.disabledCommands(enabledModules);
 					}
 					if (context.request().param("deactivateAllCommands").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
 						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
 							enabledModules.add(cmdBase.getClass().getSimpleName());
 						}
-						sc.disabledModules(enabledModules);
+						sc.disabledCommands(enabledModules);
 					}
 					LorittaLauncher.getInstance().getDs().save(sc);
 					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
@@ -123,7 +123,7 @@ public class ConfigureServerView {
 
 					template = LorittaWebsite.getEngine().getTemplate("module_config.html");
 					context.contextVars().put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
-					context.contextVars().put("activeCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(sc));
+					context.contextVars().put("disabledCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsDisabledIn(sc));
 				} else if (context.request().path().endsWith("joinconfig")) {
 					if (context.request().param("canalJoin").isSet()) { // O usuário está salvando as configurações?
 						JoinLeaveConfig jlCnf = sc.joinLeaveConfig();

@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.model.Filters;
-import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandManager;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;

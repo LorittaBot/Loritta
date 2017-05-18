@@ -34,13 +34,13 @@ public class AjudaCommand extends CommandBase {
 		embed.setThumbnail("http://i.imgur.com/LUHLEs9.png");
 		embed.setColor(new Color(186, 0, 239));
 
-		List<CommandBase> availableCommands = LorittaLauncher.getInstance().getCommandManager().getCommandsAvailableFor(context.getConfig());
+		List<CommandBase> disabledCommands = LorittaLauncher.getInstance().getCommandManager().getCommandsDisabledIn(context.getConfig());
 
-		MessageEmbed discordCmds = getCommandsFor(context.getConfig(), availableCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300");
-		MessageEmbed minecraftCmds = getCommandsFor(context.getConfig(), availableCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png");
-		MessageEmbed undertaleCmds = getCommandsFor(context.getConfig(), availableCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006");
-		MessageEmbed funCmds = getCommandsFor(context.getConfig(), availableCommands, CommandCategory.FUN, "http://i.imgur.com/gKBHNzL.png");
-		MessageEmbed miscCmds = getCommandsFor(context.getConfig(), availableCommands, CommandCategory.MISC, "http://i.imgur.com/ssNe7dx.png");
+		MessageEmbed discordCmds = getCommandsFor(context.getConfig(), disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300");
+		MessageEmbed minecraftCmds = getCommandsFor(context.getConfig(), disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png");
+		MessageEmbed undertaleCmds = getCommandsFor(context.getConfig(), disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006");
+		MessageEmbed funCmds = getCommandsFor(context.getConfig(), disabledCommands, CommandCategory.FUN, "http://i.imgur.com/gKBHNzL.png");
+		MessageEmbed miscCmds = getCommandsFor(context.getConfig(), disabledCommands, CommandCategory.MISC, "http://i.imgur.com/ssNe7dx.png");
 
 		EmbedBuilder aboutMe = new EmbedBuilder();
 		aboutMe.setTitle("Sobre o Criador", null);

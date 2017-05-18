@@ -63,7 +63,7 @@ public class DiscordListener extends ListenerAdapter {
 
 					// Primeiro os comandos customizados da Loritta(tm)
 					for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
-						if (conf.debugOptions().enableAllModules() || !conf.disabledModules().contains(cmd.getClass().getSimpleName())) {
+						if (conf.debugOptions().enableAllModules() || !conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {
 							if (cmd.handle(event, conf)) {
 								// event.getChannel().sendTyping().queue();
 								CommandOptions cmdOpti = conf.getCommandOptionsFor(cmd);

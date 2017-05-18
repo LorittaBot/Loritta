@@ -115,11 +115,13 @@ public class CommandManager {
 		defaultCmdOptions.put(YouTubeCommand.class.getSimpleName(), YouTubeCommand.YouTubeCommandOptions.class);
 	}
 	
-	public List<CommandBase> getCommandsAvailableFor(ServerConfig conf) {
+	public List<CommandBase> getCommandsDisabledIn(ServerConfig conf) {
 		List<CommandBase> commands = new ArrayList<CommandBase>();
 		
+		if (conf.debugOptions().enableAllModules()) { return commandMap; }
+		
 		for (CommandBase cmd : commandMap) {
-			if (conf.debugOptions().enableAllModules() || !conf.disabledModules().contains(cmd.getClass().getSimpleName())) {
+			if (conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {
 				commands.add(cmd);
 			}
 		}

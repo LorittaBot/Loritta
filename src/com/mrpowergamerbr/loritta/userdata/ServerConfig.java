@@ -29,7 +29,7 @@ public class ServerConfig {
 	@Indexed(options = @IndexOptions(unique = true))
 	String guildId; // Guild ID
 	String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
-	ArrayList<String> disabledModules = new ArrayList<String>(); // Módulos desativados
+	ArrayList<String> disabledCommands = new ArrayList<String>(); // Comandos desativados
 	DebugOptions debugOptions = new DebugOptions();
 	boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?
 	long creationDate = System.currentTimeMillis();
