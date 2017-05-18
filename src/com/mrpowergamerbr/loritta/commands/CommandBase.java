@@ -54,10 +54,12 @@ public abstract class CommandBase {
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
 		String message = ev.getMessage().getContent();
 		boolean run = false;
-		run = message.startsWith(conf.commandPrefix() + getLabel());
+		String label = conf.commandPrefix() + getLabel();
+		run = message.startsWith(label);
 		if (!run) {
 			for (String alias : this.getAliases()) {
-				if (message.startsWith(conf.commandPrefix() + alias)) {
+				label = conf.commandPrefix() + alias;
+				if (message.startsWith(label)) {
 					run = true;
 					break;
 				}
@@ -72,7 +74,7 @@ public abstract class CommandBase {
 					ev.getChannel().sendTyping().complete();
 				}
 			}
-			String cmd = conf.commandPrefix() + getLabel();
+			String cmd = label;
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
 			if (args.length >= 1 && args[0].equals("🤷")) { // Usar a ajuda caso 🤷 seja usado
