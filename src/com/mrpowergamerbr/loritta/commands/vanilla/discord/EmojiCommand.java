@@ -49,7 +49,7 @@ public class EmojiCommand extends CommandBase {
 			if (emoji.startsWith(":") && emoji.endsWith(":")) { // Emoji customizado?
 				// Sim!
 				emoji = emoji.substring(1, emoji.length() - 1);
-				List<Emote> customEmotes = context.getGuild().getEmotesByName(emoji, false);
+				List<Emote> customEmotes = context.getMessage().getEmotes();
 				if (!customEmotes.isEmpty()) {
 					Emote emote = customEmotes.get(0);
 					String emojiUrl = emote.getImageUrl();
