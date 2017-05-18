@@ -119,7 +119,7 @@ public class CommandManager {
 		List<CommandBase> commands = new ArrayList<CommandBase>();
 		
 		for (CommandBase cmd : commandMap) {
-			if (conf.debugOptions().enableAllModules() || conf.modules().contains(cmd.getClass().getSimpleName())) {
+			if (conf.debugOptions().enableAllModules() || !conf.disabledModules().contains(cmd.getClass().getSimpleName())) {
 				commands.add(cmd);
 			}
 		}

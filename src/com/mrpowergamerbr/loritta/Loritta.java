@@ -195,15 +195,8 @@ public class Loritta {
 				ServerConfig config = ds.get(ServerConfig.class, doc.get("_id"));
 				return config;
 			} else {
-				ArrayList<String> enabledModules = new ArrayList<String>();
-				for (CommandBase cmdBase : commandManager.getCommandMap()) {
-					enabledModules.add(cmdBase.getClass().getSimpleName());
-				}
-				return new ServerConfig().guildId(guildId).modules(enabledModules);
+				return new ServerConfig().guildId(guildId);
 			}
-			// TODO: AjudaOptions & AvatarOptions
-			// Gson gson = new Gson();
-			// String json = gson.toJson(config);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

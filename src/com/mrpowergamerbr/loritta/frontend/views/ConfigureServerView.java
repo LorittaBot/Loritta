@@ -88,11 +88,11 @@ public class ConfigureServerView {
 					if (context.request().param("editingCmds").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
 						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-							if (context.request().param(cmdBase.getClass().getSimpleName()).isSet()) {
+							if (!context.request().param(cmdBase.getClass().getSimpleName()).isSet()) {
 								enabledModules.add(cmdBase.getClass().getSimpleName());
 							}
 						}
-						sc.modules(enabledModules);
+						sc.disabledModules(enabledModules);
 					}
 					if (context.request().param("editingTristeRealidade").isSet()) {
 						TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
@@ -102,14 +102,14 @@ public class ConfigureServerView {
 					}
 					if (context.request().param("activateAllCommands").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
-						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-							enabledModules.add(cmdBase.getClass().getSimpleName());
-						}
-						sc.modules(enabledModules);
+						sc.disabledModules(enabledModules);
 					}
 					if (context.request().param("deactivateAllCommands").isSet()) {
 						ArrayList<String> enabledModules = new ArrayList<String>();
-						sc.modules(enabledModules);
+						for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+							enabledModules.add(cmdBase.getClass().getSimpleName());
+						}
+						sc.disabledModules(enabledModules);
 					}
 					LorittaLauncher.getInstance().getDs().save(sc);
 					for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
