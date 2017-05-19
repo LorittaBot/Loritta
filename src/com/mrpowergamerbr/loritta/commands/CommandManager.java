@@ -44,6 +44,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -82,6 +83,7 @@ public class CommandManager {
 		commandMap.add(new WikiaCommand());
 		commandMap.add(new TocarCommand());
 		commandMap.add(new MusicInfoCommand());
+		commandMap.add(new VolumeCommand());
 		commandMap.add(new PrimeirasPalavrasCommand());
 		
 		// =======[ UTILS ]=======
