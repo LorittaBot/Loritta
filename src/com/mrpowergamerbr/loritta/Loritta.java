@@ -49,6 +49,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.Guild;
@@ -98,6 +99,7 @@ public class Loritta {
 		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
 		Loritta.setPlaying(config.getCurrentlyPlaying());
 		Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
+		System.currentTimeMillis();
 	}
 
 	public void start() {		
@@ -218,6 +220,9 @@ public class Loritta {
 	 * @return TemmieWebhook pronto para ser usado
 	 */
 	public static TemmieWebhook getOrCreateWebhook(TextChannel textChannel, String name) {
+		if (!textChannel.getGuild().getMember(textChannel.getJDA().getSelfUser()).hasPermission(Permission.MANAGE_WEBHOOKS)) { // Se a Loritta não pode acessar as webhooks do servidor, retorne null
+			return null;
+		}
 		List<Webhook> webhookList = textChannel.getGuild().getWebhooks().complete();
 
 		List<Webhook> webhooks = webhookList.stream().filter((webhook) -> webhook.getChannel() == textChannel).collect(Collectors.toList());

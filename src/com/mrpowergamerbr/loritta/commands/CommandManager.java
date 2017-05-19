@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.FraseToscaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.MagicBallCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.NyanCatCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.PedraPapelTesouraCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.PrimeirasPalavrasCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.QualidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.RollCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.SAMCommand;
@@ -81,6 +82,7 @@ public class CommandManager {
 		commandMap.add(new WikiaCommand());
 		commandMap.add(new TocarCommand());
 		commandMap.add(new MusicInfoCommand());
+		commandMap.add(new PrimeirasPalavrasCommand());
 		
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
