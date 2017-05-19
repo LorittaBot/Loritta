@@ -99,7 +99,6 @@ public class Loritta {
 		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
 		Loritta.setPlaying(config.getCurrentlyPlaying());
 		Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
-		System.currentTimeMillis();
 	}
 
 	public void start() {		
