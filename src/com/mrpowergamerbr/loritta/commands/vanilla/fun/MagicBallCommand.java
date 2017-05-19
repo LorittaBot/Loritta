@@ -70,7 +70,7 @@ public class MagicBallCommand extends CommandBase {
 		if (context.getArgs().length >= 1) {
 			TemmieWebhook temmie = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Vieirinha");
 
-			temmie.sendMessage(DiscordMessage.builder()
+			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
 					.content(context.getAsMention(true) + responses.get(Loritta.getRandom().nextInt(responses.size())))
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")

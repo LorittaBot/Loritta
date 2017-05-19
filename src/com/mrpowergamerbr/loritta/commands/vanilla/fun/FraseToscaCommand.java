@@ -47,7 +47,7 @@ public class FraseToscaCommand extends CommandBase {
 		}
 		text = text.length() > 400 ? text.substring(0, 400) + "..." : text;
 		TemmieWebhook webhook = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Frase Tosca");
-		webhook.sendMessage(DiscordMessage.builder()
+		context.sendMessage(webhook, DiscordMessage.builder()
 				.username("Gabriela, a amiga da Loritta")
 				.content(context.getAsMention(true) + text)
 				.avatarUrl("http://i.imgur.com/aATogAg.png")

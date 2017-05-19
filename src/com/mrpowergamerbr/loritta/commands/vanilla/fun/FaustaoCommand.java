@@ -40,12 +40,12 @@ public class FaustaoCommand extends CommandBase {
 	public CommandCategory getCategory() {
 		return CommandCategory.FUN;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Invoque o querido Faustão no seu servidor!";
 	}
-	
+
 	@Override
 	public boolean hasCommandFeedback() {
 		return false;
@@ -55,7 +55,7 @@ public class FaustaoCommand extends CommandBase {
 	public void run(CommandContext context) {
 		TemmieWebhook temmie = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Faustão");
 
-		temmie.sendMessage(DiscordMessage.builder()
+		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Faustão")
 				.content(frases.get(Loritta.getRandom().nextInt(frases.size())))
 				.avatarUrl(avatars.get(Loritta.getRandom().nextInt(avatars.size())))

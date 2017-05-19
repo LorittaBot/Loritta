@@ -7,8 +7,11 @@ import java.io.InputStream;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
+import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
 import lombok.Getter;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -120,6 +123,17 @@ public class CommandContext {
 		}
 	}
 
+	public void sendMessage(TemmieWebhook webhook, DiscordMessage message) {
+		if (webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
+			webhook.sendMessage(message);
+		} else { // Se não, iremos usar embeds mesmo...
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.setAuthor(message.getUsername(), null, message.getAvatarUrl());
+			builder.setDescription(message.getContent());
+			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null);
+			sendMessage(builder.build());
+		}
+	}
 	public void sendFile(InputStream data, String name, String message) {
 		sendFile(data, name, new MessageBuilder().append(message).build());
 	}
