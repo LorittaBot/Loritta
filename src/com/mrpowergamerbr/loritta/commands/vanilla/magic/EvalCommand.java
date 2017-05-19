@@ -35,13 +35,13 @@ public class EvalCommand extends CommandBase {
 			String javaScript = String.join(" ", context.getArgs());
 			
 			// Agora vamos mudar um pouquinho o nosso código
-			javaScript = "function loritta() {" + javaScript + "}";
+			javaScript = "function loritta(context) {" + javaScript + "}";
 			
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn"); // Iniciar o nashorn
 			try {
 				engine.eval(javaScript);
 				Invocable invocable = (Invocable) engine;
-				Object returnedValue = invocable.invokeFunction("loritta"); // Pegar o valor retornado pelo script
+				Object returnedValue = invocable.invokeFunction("loritta", context); // Pegar o valor retornado pelo script
 				
 				context.sendMessage(String.valueOf(returnedValue)); // Value of, já que nós não sabemos qual tipo esse objeto é
 			} catch (ScriptException | NoSuchMethodException e) {
