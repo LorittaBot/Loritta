@@ -27,7 +27,7 @@ public class AjudaCommand extends CommandBase {
 	public String getDescription() {
 		return "Mostra todos os comandos disponíveis que eu posso executar, lembrando que isto só irá mostrar os comandos habilitados no servidor que você executou a ajuda!";
 	}
-	
+
 	@Override
 	public void run(CommandContext context) {
 		EmbedBuilder embed = new EmbedBuilder();
@@ -87,13 +87,14 @@ public class AjudaCommand extends CommandBase {
 		embed.setThumbnail(image);
 		embed.setColor(new Color(186, 0, 239));
 
-		List<CommandBase> minecraftCmds = availableCommands.stream().filter((cmd) -> cmd.getCategory() == cat).collect(Collectors.toList());
+		List<CommandBase> categoryCmds = LorittaLauncher.getInstance().getCommandManager().getCommandMap().stream().filter((cmd) -> cmd.getCategory() == cat).collect(Collectors.toList());
 
-		if (!minecraftCmds.isEmpty()) {
-			for (CommandBase cmd : minecraftCmds) {
-				embed.addField(conf.commandPrefix() + cmd.getLabel(), cmd.getDescription(), false);
+		if (!categoryCmds.isEmpty()) {
+			for (CommandBase cmd : categoryCmds) {
+				if (!conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {
+					embed.addField(conf.commandPrefix() + cmd.getLabel(), cmd.getDescription(), false);
+				}
 			}
-
 			return embed.build();
 		} else {
 			return null;
