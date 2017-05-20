@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.CaraCoroaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.DrakeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.FaustaoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.FraseToscaCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.InverterCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.MagicBallCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.NyanCatCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.PedraPapelTesouraCommand;
@@ -90,6 +91,7 @@ public class CommandManager {
 		commandMap.add(new PrimeirasPalavrasCommand());
 		commandMap.add(new MoneyCommand());
 		commandMap.add(new DrakeCommand());
+		commandMap.add(new InverterCommand());
 		
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
