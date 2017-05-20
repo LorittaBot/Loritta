@@ -33,6 +33,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.YouTubeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ChangeGameCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
@@ -115,6 +116,7 @@ public class CommandManager {
 		commandMap.add(new ReloadCommand());
 		commandMap.add(new ChangeGameCommand());
 		commandMap.add(new EvalCommand());
+		commandMap.add(new ServerInvitesCommand());
 		for (CommandBase cmdBase : this.getCommandMap()) {
 			defaultCmdOptions.put(cmdBase.getClass().getSimpleName(), CommandOptions.class);
 		}
