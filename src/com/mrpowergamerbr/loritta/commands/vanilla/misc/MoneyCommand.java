@@ -8,7 +8,6 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
-import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
@@ -21,12 +20,12 @@ public class MoneyCommand extends CommandBase {
 
 	@Override
 	public String getDescription() {
-		return "Mostra o status de uma encomenda dos correios, funciona com os Correios (Brasil) e a CTT (Portugal)";
+		return "Transforma o valor de uma moeda em outra moeda. (Por exemplo: Ver quanto está valendo o dólar em relação ao real)";
 	}
 
 	@Override
 	public List<String> getExample() {
-		return Arrays.asList("reais dólares");
+		return Arrays.asList("USD BRL");
 	}
 
 	@Override
