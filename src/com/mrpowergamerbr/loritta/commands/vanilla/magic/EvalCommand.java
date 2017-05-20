@@ -51,7 +51,7 @@ public class EvalCommand extends CommandBase {
 				if (returnedValue != null) {
 					context.sendMessage(String.valueOf(returnedValue)); // Value of, já que nós não sabemos qual tipo esse objeto é
 				}
-			} catch (ScriptException | NoSuchMethodException e) {
+			} catch (Exception e) {
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
 				ExceptionUtils.getStackTrace(e);
