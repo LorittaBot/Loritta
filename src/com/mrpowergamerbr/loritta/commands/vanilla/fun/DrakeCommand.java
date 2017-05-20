@@ -70,8 +70,6 @@ public class DrakeCommand extends CommandBase {
 		try {
 			BufferedImage bi = ImageIO.read(new File(Loritta.FOLDER + "drake.png")); // Primeiro iremos carregar o nosso template
 			Graphics graph = bi.getGraphics();
-			int x = 0;
-			int y = 0;
 
 			List<User> users = new ArrayList<User>();
 
@@ -81,7 +79,6 @@ public class DrakeCommand extends CommandBase {
 				Member member = context.getGuild().getMembers().get(Loritta.getRandom().nextInt(context.getGuild().getMembers().size()));
 				users.add(member.getUser());
 			}
-			int val = 0;
 
 			User user1 = users.get(0);
 			User user2 = users.get(1);
