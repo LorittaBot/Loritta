@@ -20,6 +20,7 @@ public class GoogleTranslateUtils {
 	 * @param to
 	 * @return A mensagem traduzida, caso seja null, quer dizer que falhou ao traduzir a mensagem
 	 */
+	@SuppressWarnings("unchecked")
 	public static String translate(String message, String from ,String to) {
         try {
             message = URLEncoder.encode(message, "UTF-8");

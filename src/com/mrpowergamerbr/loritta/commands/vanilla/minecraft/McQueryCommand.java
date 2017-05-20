@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
@@ -75,6 +76,11 @@ public class McQueryCommand extends CommandBase {
 			if (serverResponse.has("error")) { // E se ainda está com erro... bem, desisto.
 				// desisto :(
 				context.sendMessage(context.getAsMention(true) + "Servidor **" + ip + ":" + port + "** não existe ou está offline!");
+				try {
+					jsonReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				return;
 			}
 			EmbedBuilder builder = new EmbedBuilder();
@@ -119,6 +125,12 @@ public class McQueryCommand extends CommandBase {
 			Message message = new MessageBuilder().append(context.getAsMention(true)).setEmbed(builder.build()).build();
 
 			context.sendMessage(message);
+			
+			try {
+				jsonReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			context.explain();
 		}

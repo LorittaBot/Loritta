@@ -3,8 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;

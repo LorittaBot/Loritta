@@ -9,7 +9,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.concurrent.BlockingQueue;

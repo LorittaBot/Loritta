@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mrpowergamerbr.loritta.commands.CommandBase;
-import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 
 import net.dv8tion.jda.core.Permission;
