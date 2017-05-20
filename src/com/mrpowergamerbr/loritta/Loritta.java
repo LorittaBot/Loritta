@@ -91,6 +91,10 @@ public class Loritta {
 	private AudioPlayerManager playerManager;
 	private Map<Long, GuildMusicManager> musicManagers;
 
+	@Getter
+	@Setter
+	private static int executedCommands = 0;
+	
 	public Loritta(LorittaConfig config) {
 		Loritta.setConfig(config);
 		this.setClientToken(config.getClientToken());
