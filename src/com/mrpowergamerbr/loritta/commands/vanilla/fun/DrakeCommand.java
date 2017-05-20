@@ -80,7 +80,7 @@ public class DrakeCommand extends CommandBase {
 			User user2 = users.get(1);
 			
 			{
-				URL imageUrl = new URL(user1.getEffectiveAvatarUrl());
+				URL imageUrl = new URL(user1.getEffectiveAvatarUrl() + "?size=256");
 				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 				connection.setRequestProperty(
 						"User-Agent",
@@ -92,7 +92,7 @@ public class DrakeCommand extends CommandBase {
 			}
 			
 			{
-				URL imageUrl = new URL(user2.getEffectiveAvatarUrl());
+				URL imageUrl = new URL(user2.getEffectiveAvatarUrl() + "?size=256");
 				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 				connection.setRequestProperty(
 						"User-Agent",
