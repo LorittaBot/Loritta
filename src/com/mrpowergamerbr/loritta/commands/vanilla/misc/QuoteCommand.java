@@ -58,6 +58,10 @@ public class QuoteCommand extends CommandBase {
 				context.getMessage().delete().complete(); // ok, vamos deletar a msg original
 			}
 
+			String content = msg.getAuthor().getAsMention() + " " + context.getEvent().getMessage().getRawContent().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0], "").trim();
+			content = content.replace("@here", "");
+			content = content.replace("@everyone", "");
+			
 			DiscordEmbed embed = DiscordEmbed
 					.builder()
 					.author(new AuthorEmbed(msg.getAuthor().getName() + " disse...", null, msg.getAuthor().getEffectiveAvatarUrl(), null))
@@ -71,7 +75,7 @@ public class QuoteCommand extends CommandBase {
 					.builder()
 					.avatarUrl(context.getMessage().getAuthor().getEffectiveAvatarUrl())
 					.username(context.getMessage().getAuthor().getName())
-					.content(msg.getAuthor().getAsMention() + " " + context.getEvent().getMessage().getRawContent().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0], "").trim())
+					.content(content)
 					.embed(embed)
 					.build();
 
