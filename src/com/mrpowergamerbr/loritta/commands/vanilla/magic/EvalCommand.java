@@ -48,7 +48,9 @@ public class EvalCommand extends CommandBase {
 				Invocable invocable = (Invocable) engine;
 				Object returnedValue = invocable.invokeFunction("loritta", context); // Pegar o valor retornado pelo script
 				
-				context.sendMessage(String.valueOf(returnedValue)); // Value of, já que nós não sabemos qual tipo esse objeto é
+				if (returnedValue != null) {
+					context.sendMessage(String.valueOf(returnedValue)); // Value of, já que nós não sabemos qual tipo esse objeto é
+				}
 			} catch (ScriptException | NoSuchMethodException e) {
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
