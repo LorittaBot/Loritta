@@ -81,44 +81,42 @@ public class CommandContext {
 		return event.getGuild();
 	}
 
-	public void sendMessage(String message) {
-		sendMessage(new MessageBuilder().append(message).build());
+	public Message sendMessage(String message) {
+		return sendMessage(new MessageBuilder().append(message).build());
 	}
 
-	public void sendMessage(Message message) {
+	public Message sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
-			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
-				t.sendMessage(message).complete();
-			});
+			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				event.getTextChannel().sendMessage(message).complete();
+				return event.getTextChannel().sendMessage(message).complete();
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				return null;
 			}
 		}
 	}
 
-	public void sendMessage(MessageEmbed embed) {
+	public Message sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
-			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
-				t.sendMessage(embed).complete();
-			});
+			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				event.getTextChannel().sendMessage(embed).complete();
+				return event.getTextChannel().sendMessage(embed).complete();
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				return null;
 			}
 		}
 	}
@@ -134,52 +132,47 @@ public class CommandContext {
 			sendMessage(builder.build());
 		}
 	}
-	public void sendFile(InputStream data, String name, String message) {
-		sendFile(data, name, new MessageBuilder().append(message).build());
+	
+	public Message sendFile(InputStream data, String name, String message) {
+		return sendFile(data, name, new MessageBuilder().append(message).build());
 	}
 
-	public void sendFile(InputStream data, String name, Message message) {
+	public Message sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
-			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
-				t.sendFile(data, name, message).complete();
-			});
+			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				event.getTextChannel().sendFile(data, name, message).complete();
+				return event.getTextChannel().sendFile(data, name, message).complete();
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				return null;
 			}
 		}
 	}
 
-	public void sendFile(File file, String name, String message) throws IOException {
-		sendFile(file, name, new MessageBuilder().append(message).build());
+	public Message sendFile(File file, String name, String message) throws IOException {
+		return sendFile(file, name, new MessageBuilder().append(message).build());
 	}
 
-	public void sendFile(File file, String name, Message message) throws IOException {
+	public Message sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply) {
-			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
-				try {
-					t.sendFile(file, name, message).complete();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
+			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				event.getTextChannel().sendFile(file, name, message).complete();
+				return event.getTextChannel().sendFile(file, name, message).complete();
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
+				return null;
 			}
 		}
 	}
