@@ -32,15 +32,16 @@ public class ServerInfoCommand extends CommandBase {
 
 		embed.setThumbnail(context.getGuild().getIconUrl()); // Ícone da Guild
 		embed.setTitle(context.getGuild().getName(), null); // Nome da Guild
-		embed.addField("ID", context.getGuild().getId(), true); // ID da Guild
-		embed.addField("Nome", context.getGuild().getName(), true); // Nome da Guild (de novo)
-		embed.addField("Dono", context.getGuild().getOwner().getUser().getName() + "#" + context.getGuild().getOwner().getUser().getDiscriminator(), true); // Dono da Guild
-		embed.addField("Região", context.getGuild().getRegion().getName(), true); // Região da Guild
-		embed.addField("Canais", String.valueOf(context.getGuild().getTextChannels().size()), true); // Canais de Texto da Guild
-		embed.addField("Membros", String.valueOf(context.getGuild().getMembers().size()), true); // Membros da Guild
-		embed.addField("Pessoas", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> !member.getUser().isBot()).collect(Collectors.toList()).size()), true); // Humanos na Guild
-		embed.addField("Bots", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> member.getUser().isBot()).collect(Collectors.toList()).size()), true); // Bots na Guild
-		embed.addField("Online", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE).collect(Collectors.toList()).size()), true); // Pessoas online na Guild
+		embed.addField("💻 ID", context.getGuild().getId(), true); // ID da Guild
+		embed.addField("📙 Nome", context.getGuild().getName(), true); // Nome da Guild (de novo)
+		embed.addField("👑 Dono", context.getGuild().getOwner().getUser().getName() + "#" + context.getGuild().getOwner().getUser().getDiscriminator(), true); // Dono da Guild
+		embed.addField("🌎 Região", context.getGuild().getRegion().getName(), true); // Região da Guild
+		embed.addField("📝 Canais de Texto", String.valueOf(context.getGuild().getTextChannels().size()), true); // Canais de Texto da Guild
+		embed.addField("💬 Canais de Voz", String.valueOf(context.getGuild().getVoiceChannels().size()), true); // Canais de Texto da Guild
+		embed.addField("👥 Membros", String.valueOf(context.getGuild().getMembers().size()), true); // Membros da Guild
+		embed.addField("😋 Pessoas", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> !member.getUser().isBot()).collect(Collectors.toList()).size()), true); // Humanos na Guild
+		embed.addField("🤖 Bots", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> member.getUser().isBot()).collect(Collectors.toList()).size()), true); // Bots na Guild
+		embed.addField("💁 Online", String.valueOf(context.getGuild().getMembers().stream().filter((member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE).collect(Collectors.toList()).size()), true); // Pessoas online na Guild
 		
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -56,6 +57,7 @@ public class ServerInfoCommand extends CommandBase {
 		embed.addField("Cargos", sb.toString(), true); // Cargos da Guild
 		
 		embed.setFooter("Criado em " + context.getGuild().getCreationTime().toString(), null); // Quando a Guild foi criada
+		embed.setThumbnail(context.getGuild().getIconUrl());
 		
 		context.sendMessage(embed.build()); // phew, agora finalmente poderemos enviar o embed!
 	}
