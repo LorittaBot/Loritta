@@ -38,6 +38,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EncurtarCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.MoneyCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PackageInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
@@ -85,6 +86,7 @@ public class CommandManager {
 		commandMap.add(new MusicInfoCommand());
 		commandMap.add(new VolumeCommand());
 		commandMap.add(new PrimeirasPalavrasCommand());
+		commandMap.add(new MoneyCommand());
 		
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
