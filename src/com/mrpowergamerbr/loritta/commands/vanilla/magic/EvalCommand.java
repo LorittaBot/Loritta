@@ -54,8 +54,7 @@ public class EvalCommand extends CommandBase {
 			} catch (Exception e) {
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
-				ExceptionUtils.getStackTrace(e);
-				builder.setDescription("```" + e.getCause().getMessage().trim() + "```");
+				builder.setDescription("```" + (e.getCause() != null ? e.getCause().getMessage().trim() : ExceptionUtils.getStackTrace(e).substring(0, 1000)) + "```");
 				builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null);
 				builder.setColor(Color.RED);
 				context.sendMessage(builder.build());
