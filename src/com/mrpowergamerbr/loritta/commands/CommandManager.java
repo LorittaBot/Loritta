@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.CaraCoroaCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.DrakeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.FaustaoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.FraseToscaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.MagicBallCommand;
@@ -87,6 +88,7 @@ public class CommandManager {
 		commandMap.add(new VolumeCommand());
 		commandMap.add(new PrimeirasPalavrasCommand());
 		commandMap.add(new MoneyCommand());
+		commandMap.add(new DrakeCommand());
 		
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
