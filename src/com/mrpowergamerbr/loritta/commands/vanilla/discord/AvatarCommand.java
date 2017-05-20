@@ -50,7 +50,7 @@ public class AvatarCommand extends CommandBase {
 			
 			StringBuilder sb = new StringBuilder(context.getAsMention(true) + "\n");
 			for (User usr : list) { 
-				sb.append((cmdOptions.getAsBoolean(HIDE_IMAGE) ? "<" : "") + usr.getEffectiveAvatarUrl() + (cmdOptions.getAsBoolean(HIDE_IMAGE) ? ">" : "") + "\n");
+				sb.append((cmdOptions.getAsBoolean(HIDE_IMAGE) ? "<" : "") + usr.getEffectiveAvatarUrl() + "?size=2048" + (cmdOptions.getAsBoolean(HIDE_IMAGE) ? ">" : "") + "\n");
 			}
 			context.sendMessage(sb.toString());
 		} else {
