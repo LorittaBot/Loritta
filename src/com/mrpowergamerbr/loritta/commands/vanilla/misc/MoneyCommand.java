@@ -37,8 +37,8 @@ public class MoneyCommand extends CommandBase {
 	@Override
 	public void run(CommandContext context) {
 		if (context.getArgs().length == 2) {
-			String from = context.getArgs()[0];
-			String to = context.getArgs()[1];
+			String from = context.getArgs()[0].toUpperCase();
+			String to = context.getArgs()[1].toUpperCase();
 
 			String response = HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body();
 			StringReader reader = new StringReader(response);
