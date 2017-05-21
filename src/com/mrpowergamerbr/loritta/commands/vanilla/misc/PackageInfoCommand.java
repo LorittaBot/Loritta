@@ -58,26 +58,7 @@ public class PackageInfoCommand extends CommandBase {
 					context.sendMessage(context.getAsMention(true) + "**Status para pacote \"" + packageId + "\"**\n" +
 							"```" + base + "```");
 				} else {
-					doc = Jsoup.connect("http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_ITEMCODE=&P_LINGUA=001&P_TESTE=&P_TIPO=001&P_COD_UNI=" + packageId).get();
-
-					Elements elements = doc.select("tr"); // Hora de pegar todos os trs na página
-					boolean first = true;
-					String base = "";
-					for (Element element : elements) {
-						if (first) { first = false; continue; } // Ninguém liga para o primeiro tr
-						Element hora = element.select("td").get(0); // Hora
-						if (hora.hasAttr("colspan")) {
-							// colspan = aconteceu no mesmo horário
-							// então só é na verdade um update de status
-							base += hora.text() + "\n";
-							continue;
-						}
-						Element local = element.select("td").get(1); // Local
-						Element status = element.select("td").get(2); // Status
-						base += hora.text() + " - " + local.text() + " - " + status.text() + "\n";
-					}
-					context.sendMessage(context.getAsMention(true) + "**Status para pacote \"" + packageId + "\"**\n" +
-							"```" + base + "```");
+					context.sendMessage(context.getAsMention(true) + "**Códigos de rastreio dos correios estão desativados devido a mudança na API dos Correios :(**");
 				}
 			} catch (Exception e) {
 				context.sendMessage(context.getAsMention(true) + "**Código de rastreio inválido!**");
