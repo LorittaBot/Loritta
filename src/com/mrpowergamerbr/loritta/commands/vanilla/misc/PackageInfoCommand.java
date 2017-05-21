@@ -58,7 +58,7 @@ public class PackageInfoCommand extends CommandBase {
 					context.sendMessage(context.getAsMention(true) + "**Status para pacote \"" + packageId + "\"**\n" +
 							"```" + base + "```");
 				} else {
-					context.sendMessage(context.getAsMention(true) + "**Códigos de rastreio dos correios estão desativados devido a mudança na API dos Correios :(**");
+					context.sendMessage(context.getAsMention(true) + "**O comando de rastreio de encomendas dos correios estão desativados devido a mudança na API dos Correios :(**");
 				}
 			} catch (Exception e) {
 				context.sendMessage(context.getAsMention(true) + "**Código de rastreio inválido!**");
