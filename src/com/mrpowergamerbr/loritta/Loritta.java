@@ -67,7 +67,7 @@ public class Loritta {
 	private static LorittaConfig config;
 
 	private String clientToken; // Client token da sessão atual
-	private JDA jda;
+	public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
 	private CommandManager commandManager; // Nosso command manager
 	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(8); // Threads
 	private MongoClient mongo; // MongoDB
