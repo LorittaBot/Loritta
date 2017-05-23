@@ -10,10 +10,10 @@ class PingCommand : CommandBase() {
     }
 
     override fun getDescription(): String {
-        return "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testes!"
+        return "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testar!"
     }
 
     override fun run(context: CommandContext) {
-        context.sendMessage(context.getAsMention(true) + "🏓 Pong! " + LorittaLauncher.getInstance().jda.ping + "ms")
+        context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + LorittaLauncher.getInstance().jda.ping + "ms")
     }
 }

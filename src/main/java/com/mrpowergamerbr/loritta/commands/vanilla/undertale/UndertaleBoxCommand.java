@@ -38,7 +38,7 @@ public class UndertaleBoxCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "Cria uma caixa de dialogo igual ao do Undertale";
+		return "Cria uma caixa de diálogo igual ao do Undertale";
 	}
 
 	@Override

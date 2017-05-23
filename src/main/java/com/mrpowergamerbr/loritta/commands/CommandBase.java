@@ -18,7 +18,7 @@ public abstract class CommandBase {
 	public abstract String getLabel();
 
 	public String getDescription() {
-		return "Insira descrição do comando aqui";
+		return "Insira descrição do comando aqui!";
 	}
 
 	public CommandCategory getCategory() {
@@ -87,6 +87,10 @@ public abstract class CommandBase {
 			return true;
 		}
 		return false;
+	}
+
+	public void explain(CommandContext context) {
+        explain(context.getConfig(), context.getEvent());
 	}
 
 	public void explain(ServerConfig conf, MessageReceivedEvent ev) {

@@ -31,6 +31,7 @@ public class BotInfoCommand extends CommandBase {
 		embed.addField("👥 Usuários", String.valueOf(LorittaLauncher.getInstance().getJda().getUsers().size()) + " usuários", true);
 		embed.addField("👾 Website", "https://loritta.website", true);
 		embed.addField("📚 Bibiloteca", "JDA (Java)", true);
+		embed.addField("📚 Linguagem", "Java + Kotlin", true);
 		embed.addField("💻 Quantidade de Comandos", LorittaLauncher.getInstance().getCommandManager().getCommandMap().size() + " comandos", true);
 		LorittaLauncher.getInstance();
 		embed.addField("🏋️‍ Comandos executados desde o último restart", String.valueOf(Loritta.getExecutedCommands()), true);

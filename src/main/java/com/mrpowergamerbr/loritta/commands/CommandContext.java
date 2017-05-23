@@ -25,10 +25,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  */
 @Getter
 public class CommandContext {
-	private LorittaUser lorittaUser;
-	private MessageReceivedEvent event;
-	private CommandBase cmd;
-	private String[] args;
+	public LorittaUser lorittaUser;
+	public MessageReceivedEvent event;
+	public CommandBase cmd;
+	public String[] args;
 
 	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {	
 		this.lorittaUser = new LorittaUser(event.getMember(), conf);

@@ -41,7 +41,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.0.0_201</version>
+            <version>3.1.0_204</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -139,7 +139,7 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>src</sourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>

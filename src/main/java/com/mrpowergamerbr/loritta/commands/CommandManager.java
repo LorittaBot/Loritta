@@ -49,6 +49,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -109,7 +110,8 @@ public class CommandManager {
 		
 		// =======[ UNDERTALE ]========
 		commandMap.add(new UndertaleBoxCommand());
-		
+		commandMap.add(new UndertaleBattleCommand());
+
 		// =======[ ADMIN ]========
 		commandMap.add(new LimparCommand());
 		commandMap.add(new RoleIdCommand());

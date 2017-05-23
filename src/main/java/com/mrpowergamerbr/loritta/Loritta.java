@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
 
+import net.dv8tion.jda.core.entities.*;
 import org.bson.Document;
 import org.jibble.jmegahal.JMegaHal;
 import org.mongodb.morphia.Datastore;
@@ -50,11 +51,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.Game.GameType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -143,6 +140,35 @@ public class Loritta {
 		};
 		new Thread(presenceUpdater, "Presence Updater").start(); // Pronto!
 
+		Runnable rektUpdater = () -> {
+			while (true) {
+				if (true) { return; }
+				for (Guild guild : jda.getGuilds()) {
+                    // Sim, você pode achar isto errado "wow, mas para que banir alguém de todas as guilds que a Loritta está?"
+                    // Bem, eu também acho isto errado se for para banir alguém só porque ela não gosta de mim ou da Loritta
+                    // ...
+                    // Mas quando o assunto é ser um impostor que fica tentando degenerir o nome do meu bot entrando em várias guilds
+                    // para causar discórdia, então o cara deve ser banido mesmo.
+                    //
+                    // Eu irei deixar o motivo do cara ser banido de lado, caso você queria ver...
+                    if (guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) { // Se a Loritta tem permissão para banir membros...
+                        Member member = guild.getMemberById("315579184724574209"); // Impostor tentando se passar da Loritta, não trocou o nome/avatar mesmo após pedir
+
+                        if (member != null) {
+                            guild.getController().ban(member, 0);
+                        }
+                    }
+                }
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+
+		new Thread(rektUpdater, "Rekt").start(); // Pronto!
+
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {
 				for (Guild guild : jda.getGuilds()) {
@@ -161,7 +187,7 @@ public class Loritta {
 							String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
 
 							// E agora carregue a música
-							LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
+							com.mrpowergamerbr.loritta.LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
 						}
 					}
 				}
