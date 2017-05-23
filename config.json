@@ -1,0 +1,11 @@
+{
+  "clientToken": "Client Token do Bot",
+  "clientId": "Client ID do Bot",
+  "clientSecret": "Client Secret do Bot",
+  "youtubeKey": "Key da API do YouTube, usado no comando \"+youtube\"",
+  "ownerId": "ID do dono do bot, usado para alguns comandos \"especiais\"",
+  "websiteUrl": "URL do website da Loritta, coloque uma / no final!",
+  "frontendFolder": "Pasta do frontend da Loritta, coloque uma / no final!",
+  "mercadoPagoClientId": "Client ID do MercadoPago, usado na página de doação",
+  "mercadoPagoClientToken": "Client Token do MercadoPago, usado na página de doação"
+}
