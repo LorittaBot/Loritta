@@ -186,7 +186,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.mrpowergamerbr.LorittaLauncher</mainClass>
+                            <mainClass>com.mrpowergamerbr.loritta.LorittaLauncher</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
