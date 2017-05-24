@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
@@ -91,7 +92,7 @@ public class CommandContext {
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
-		if (privateReply) {
+		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
@@ -109,7 +110,7 @@ public class CommandContext {
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
-		if (privateReply) {
+		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
@@ -143,7 +144,7 @@ public class CommandContext {
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
-		if (privateReply) {
+		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
@@ -165,7 +166,7 @@ public class CommandContext {
 		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
 			privateReply = cmdOptions.commandOutputInPrivate();
 		}
-		if (privateReply) {
+		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {

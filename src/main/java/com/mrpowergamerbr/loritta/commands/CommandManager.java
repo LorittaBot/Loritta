@@ -38,14 +38,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.EncurtarCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.MoneyCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PackageInfoCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.WikipediaCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
@@ -93,7 +86,8 @@ public class CommandManager {
 		commandMap.add(new MoneyCommand());
 		commandMap.add(new DrakeCommand());
 		commandMap.add(new InverterCommand());
-		
+        commandMap.add(new PerfilCommand());
+
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
 		
