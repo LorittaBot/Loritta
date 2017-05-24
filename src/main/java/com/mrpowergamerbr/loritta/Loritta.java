@@ -142,7 +142,6 @@ public class Loritta {
 
 		Runnable rektUpdater = () -> {
 			while (true) {
-				if (true) { return; }
 				for (Guild guild : jda.getGuilds()) {
                     // Sim, você pode achar isto errado "wow, mas para que banir alguém de todas as guilds que a Loritta está?"
                     // Bem, eu também acho isto errado se for para banir alguém só porque ela não gosta de mim ou da Loritta
