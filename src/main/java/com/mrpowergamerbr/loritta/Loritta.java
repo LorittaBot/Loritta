@@ -154,7 +154,7 @@ public class Loritta {
                         Member member = guild.getMemberById("315579184724574209"); // Impostor tentando se passar da Loritta, não trocou o nome/avatar mesmo após pedir
 
                         if (member != null) {
-                            guild.getController().ban(member, 0);
+                            guild.getController().ban(member, 0).complete();
                         }
                     }
                 }
