@@ -1,7 +1,12 @@
 package com.mrpowergamerbr.loritta.utils;
 
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import com.mrpowergamerbr.loritta.Loritta;
+
+import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class ImageUtils {
 	/**
@@ -32,4 +37,82 @@ public class ImageUtils {
 		}
 		return currentY;
 	}
+
+    public static int drawTextWrapUndertale(String text, int startX, int startY, int endX, int endY, FontMetrics fontMetrics, Graphics graphics) {
+        BufferedImage temp = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+	    int lineHeight = fontMetrics.getHeight(); // Aqui é a altura da nossa fonte
+        Font font = graphics.getFont(); // Font original
+        int currentX = startX; // X atual
+        int currentY = startY; // Y atual
+
+        for (char c : text.toCharArray()) {
+            int width = fontMetrics.charWidth(c); // Width do char (normalmente é 16)
+            if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
+                currentX = startX; // Nós iremos fazer wrapping do texto
+                currentY = currentY + lineHeight;
+            }
+            if (font.canDisplay(c)) {
+                graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
+            } else {
+                graphics.setFont(temp.getGraphics().getFont());
+                graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
+                graphics.setFont(font);
+            }
+            currentX = currentX + width; // E adicione o width no nosso currentX
+        }
+        return currentY;
+    }
+
+	public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
+		int w = image.getWidth();
+		int h = image.getHeight();
+		BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D g2 = output.createGraphics();
+
+		// This is what we want, but it only does hard-clipping, i.e. aliasing
+		// g2.setClip(new RoundRectangle2D ...)
+
+		// so instead fake soft-clipping by first drawing the desired clip shape
+		// in fully opaque white with antialiasing enabled...
+		g2.setComposite(AlphaComposite.Src);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(Color.WHITE);
+		g2.fill(new RoundRectangle2D.Float(0, 0, w, h, cornerRadius, cornerRadius));
+
+		// ... then compositing the image on top,
+		// using the white shape from above as alpha source
+		g2.setComposite(AlphaComposite.SrcAtop);
+		g2.drawImage(image, 0, 0, null);
+
+		g2.dispose();
+
+		return output;
+	}
+
+    /**
+     * Converts a given Image into a BufferedImage
+     *
+     * @param img The Image to be converted
+     * @return The converted BufferedImage
+     */
+    public static BufferedImage toBufferedImage(Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
 }

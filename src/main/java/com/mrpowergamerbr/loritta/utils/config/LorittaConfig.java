@@ -8,14 +8,14 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class LorittaConfig {
-	private String clientToken;
-	private String clientId;
-	private String clientSecret;
-	private String youtubeKey;
-	private String ownerId;
-	private String websiteUrl;
-	private String frontendFolder;
-	private String mercadoPagoClientId;
-	private String mercadoPagoClientToken;
-	private String currentlyPlaying;
+	public String clientToken;
+	public String clientId;
+	public String clientSecret;
+	public String youtubeKey;
+	public String ownerId;
+	public String websiteUrl;
+	public String frontendFolder;
+	public String mercadoPagoClientId;
+	public String mercadoPagoClientToken;
+	public String currentlyPlaying;
 }

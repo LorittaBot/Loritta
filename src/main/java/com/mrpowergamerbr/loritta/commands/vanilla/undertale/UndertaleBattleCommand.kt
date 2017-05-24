@@ -6,10 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import net.dv8tion.jda.core.MessageBuilder
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics
-import java.awt.Graphics2D
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -85,10 +82,14 @@ class UndertaleBattleCommand : CommandBase() {
 
                 graphics.setPaint((Color(0, 0, 0))); // Encher de preto
                 // TODO: Fonte do Undertale
+                graphics.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
                 val dotumChe = Font.createFont(Font.TRUETYPE_FONT,
                         FileInputStream(File(Loritta.FOLDER + "dotumche.ttf")))
-                graphics.setFont(dotumChe.deriveFont(12F))
-                ImageUtils.drawTextWrap(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
+                graphics.font = dotumChe.deriveFont(12F)
+                ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
                 val os = ByteArrayOutputStream()
                 ImageIO.write(blackWhite, "png", os)
                 val inputStream = ByteArrayInputStream(os.toByteArray())

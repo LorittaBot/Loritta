@@ -61,7 +61,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 public class Loritta {
 	@Getter
 	@Setter
-	private static LorittaConfig config;
+	public static LorittaConfig config;
 
 	private String clientToken; // Client token da sessão atual
 	public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
@@ -175,6 +175,7 @@ public class Loritta {
 					
 					if (conf.musicConfig().isEnabled()) {
 						connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
+						getGuildAudioPlayer(guild);
 						getGuildAudioPlayer(guild);
 					}
 				}
