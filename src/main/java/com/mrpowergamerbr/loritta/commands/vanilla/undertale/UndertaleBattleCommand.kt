@@ -85,6 +85,9 @@ class UndertaleBattleCommand : CommandBase() {
 
                 graphics.setPaint((Color(0, 0, 0))); // Encher de preto
                 // TODO: Fonte do Undertale
+                val dotumChe = Font.createFont(Font.TRUETYPE_FONT,
+                        FileInputStream(File(Loritta.FOLDER + "dotumche.ttf")))
+                graphics.setFont(dotumChe.deriveFont(12F))
                 ImageUtils.drawTextWrap(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
                 val os = ByteArrayOutputStream()
                 ImageIO.write(blackWhite, "png", os)
