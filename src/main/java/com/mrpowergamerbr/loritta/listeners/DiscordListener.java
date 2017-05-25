@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
@@ -54,7 +55,11 @@ public class DiscordListener extends ListenerAdapter {
 							return;
 						}
 					}
-					
+
+                    LorittaProfile lorittaProfile = loritta.getLorittaProfileForUser(event.getAuthor().getId());
+                    lorittaProfile.setXp(lorittaProfile.getXp() + 1);
+                    loritta.getDs().save(lorittaProfile);
+
 					for (Whistler whistler : conf.whistlers()) {
 						processCode(conf, event.getMessage(), whistler.codes);
 					}

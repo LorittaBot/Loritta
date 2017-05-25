@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SplittableRandom;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
 
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
 import org.bson.Document;
 import org.jibble.jmegahal.JMegaHal;
@@ -47,10 +46,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -140,6 +135,38 @@ public class Loritta {
 		};
 		new Thread(presenceUpdater, "Presence Updater").start(); // Pronto!
 
+        Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
+            while (true) {
+                for (User user : jda.getUsers()) {
+                    LorittaProfile lorittaProfile = getLorittaProfileForUser(user.getId());
+                    List<Guild> mutualGuilds = jda.getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
+                    List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
+                    if (!mutualGuilds.isEmpty()) {
+                        Member member = mutualGuilds.get(0).getMember(user);
+                        if (member.getOnlineStatus() != OnlineStatus.OFFLINE) {
+                            lorittaProfile.setTempoOnline(lorittaProfile.getTempoOnline() + 5); // Em segundos
+                            Game game = member.getGame();
+
+                            if (game != null) {
+                                String gameName = game.getName();
+                                gameName = gameName.replace(".", "[---DOT---]");
+                                gameName = gameName.replace("$", "[---DOLLAR---]");
+                                lorittaProfile.getGames().put(gameName, 5 + lorittaProfile.getGames().getOrDefault(gameName, 0L));
+                            }
+                            ds.save(lorittaProfile);
+                        }
+                    }
+                    ds.save(toUpdate);
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new Thread(onlineUpdater, "Game & Time Updater").start(); // Pronto!
+
 		Runnable rektUpdater = () -> {
 			while (true) {
 				for (Guild guild : jda.getGuilds()) {
@@ -225,6 +252,27 @@ public class Loritta {
 				return config;
 			} else {
 				return new ServerConfig().guildId(guildId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Carrega um LorittaProfile de um usuário
+	 *
+	 * @param userId
+	 * @return LorittaProfile
+	 */
+	public LorittaProfile getLorittaProfileForUser(String userId) {
+		try {
+			Document doc = mongo.getDatabase("loritta").getCollection("users").find(Filters.eq("_id", userId)).first();
+			if (doc != null) {
+                LorittaProfile profile = ds.get(LorittaProfile.class, doc.get("_id"));
+				return profile;
+			} else {
+				return new LorittaProfile(userId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -33,14 +34,14 @@ public class CommandContext {
 	public String[] args;
 
 	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {	
-		this.lorittaUser = new LorittaUser(event.getMember(), conf, new LorittaProfile(event.getMember().getUser().getId()));
+		this.lorittaUser = new LorittaUser(event.getMember(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {
-		this.lorittaUser = new LorittaUser(member, conf, new LorittaProfile(member.getUser().getId()));
+		this.lorittaUser = new LorittaUser(member, conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;

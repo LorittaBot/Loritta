@@ -26,7 +26,12 @@ class PerfilCommand : CommandBase() {
     override fun run(context: CommandContext) {
         val base = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as Graphics2D;
+        graphics.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         val profileWrapper = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper.png")); // Wrapper do perfil
+        val defaultFont = profileWrapper.graphics.font; // Fonte padrão
         var userProfile = context.lorittaUser.profile
         var user = if (context.message.mentionedUsers.size == 1) context.message.mentionedUsers[0] else context.userHandle
         if (user == null) {
@@ -59,6 +64,12 @@ class PerfilCommand : CommandBase() {
 
         val bebasNeue = Font.createFont(Font.TRUETYPE_FONT,
                 FileInputStream(File(Loritta.FOLDER + "BebasNeue.otf")))
+
+        val bariolRegular = Font.createFont(Font.TRUETYPE_FONT,
+                FileInputStream(File(Loritta.FOLDER + "bariol_regular.otf")))
+
+        val mavenProBold = Font.createFont(Font.TRUETYPE_FONT,
+                FileInputStream(File(Loritta.FOLDER + "mavenpro-bold.ttf")))
 
         val guildImages = ArrayList<Image>();
 
@@ -116,6 +127,50 @@ class PerfilCommand : CommandBase() {
             }
         }
 
+        // Barrinha de XP
+        graphics.color = Color(128, 128, 128)
+        graphics.fillRect(87, 143, 202, 19);
+
+        graphics.color = Color(0, 0, 0)
+        graphics.fillRect(88, 144, 200, 17);
+
+        // Calcular quanto a barrinha deveria ficar
+        // 145 - 199
+        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1);
+        val currentLevel = userProfile.xp;
+
+        val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
+
+        graphics.color = Color(114, 137, 218)
+        graphics.fillRect(89, 145, (percentage * 198).toInt(), 15);
+
+        graphics.color = Color(255, 255, 255);
+
+        graphics.font = bariolRegular.deriveFont(10F);
+        ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(89, 145, 198, 15), graphics.font);
+
+        graphics.font = mavenProBold.deriveFont(24F)
+        graphics.color = Color(118, 118, 118);
+        graphics.drawString("NÍVEL", 86, 187);
+        graphics.color = Color(90, 90, 90);
+        graphics.font = mavenProBold.deriveFont(28F)
+        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().toString(), Rectangle(86, 189, 66, 23), graphics.font);
+        graphics.color = Color(118, 118, 118);
+        graphics.font = bariolRegular.deriveFont(12F)
+        graphics.drawString("XP Total", 163, 178)
+        graphics.drawString("Tempo Online", 163, 193)
+        graphics.drawString("Reputação", 163, 208)
+
+        graphics.drawString(userProfile.xp.toString(), 235, 178)
+
+        val hours = userProfile.tempoOnline / 3600;
+        val minutes = (userProfile.tempoOnline % 3600) / 60;
+        val seconds = userProfile.tempoOnline % 60;
+
+        graphics.drawString("${hours}h${minutes}m${seconds}s", 235, 193)
+        graphics.drawString(0.toString(), 235, 208)
+        graphics.font = bariolRegular.deriveFont(12F)
+        graphics.drawString(userProfile.aboutMe, 89, 244)
         val os = ByteArrayOutputStream()
         ImageIO.write(base, "png", os)
         val inputStream = ByteArrayInputStream(os.toByteArray())

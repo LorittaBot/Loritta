@@ -115,4 +115,22 @@ public class ImageUtils {
         // Return the buffered image
         return bimage;
     }
+
+    /**
+     * Draw a String centered in the middle of a Rectangle.
+     *
+     * @param graphics The Graphics instance.
+     * @param text The String to draw.
+     * @param rect The Rectangle to center the text in.
+     */
+    public static void drawCenteredString(Graphics graphics, String text, Rectangle rect, Font font) {
+        // Get the FontMetrics
+        FontMetrics metrics = graphics.getFontMetrics(font);
+        // Determine the X coordinate for the text
+        int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
+        int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
+        // Draw the String
+        graphics.drawString(text, x, y);
+    }
 }
