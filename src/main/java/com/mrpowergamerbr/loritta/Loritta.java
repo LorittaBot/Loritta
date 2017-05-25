@@ -62,8 +62,8 @@ public class Loritta {
 	public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
 	private CommandManager commandManager; // Nosso command manager
 	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(8); // Threads
-	private MongoClient mongo; // MongoDB
-	private Datastore ds; // MongoDB²
+	public MongoClient mongo; // MongoDB
+	public Datastore ds; // MongoDB²
 	private Morphia morphia; // MongoDB³
 	@Getter // Sim, getter de novo, já que o lombok não cria getters para variáveis estáticas
 	public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)

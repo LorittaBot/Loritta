@@ -28,7 +28,7 @@ import org.mongodb.morphia.annotations.Indexed
         var expToAdvance = getExpToAdvanceFrom(lvl + 1);
         while (expLeft > expToAdvance && expLeft > 0) {
             lvl++;
-            expToAdvance = getExpToAdvanceFrom(lvl + 1);
+            expToAdvance = getExpToAdvanceFrom(lvl);
             expLeft = expLeft - expToAdvance;
         }
         return lvl;

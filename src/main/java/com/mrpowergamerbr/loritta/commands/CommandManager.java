@@ -87,6 +87,7 @@ public class CommandManager {
 		commandMap.add(new DrakeCommand());
 		commandMap.add(new InverterCommand());
         commandMap.add(new PerfilCommand());
+		commandMap.add(new GamesCommand());
 
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());

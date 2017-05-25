@@ -135,7 +135,7 @@ class PerfilCommand : CommandBase() {
 
         // Calcular quanto a barrinha deveria ficar
         // 145 - 199
-        val nextLevel = 100;
+        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1) - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
         val currentLevel = userProfile.xp - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
 
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
@@ -171,7 +171,6 @@ class PerfilCommand : CommandBase() {
         graphics.font = bariolRegular.deriveFont(12F)
         graphics.drawString(userProfile.aboutMe, 89, 244)
 
-
         if (!userProfile.games.isEmpty()) {
             graphics.font = bariolRegular.deriveFont(10F)
             val games = ArrayList<GamePlayed>();
@@ -183,6 +182,7 @@ class PerfilCommand : CommandBase() {
 
             graphics.drawString("Jogo mais jogado: " + sorted[0].game, 89, 280)
         }
+
         val os = ByteArrayOutputStream()
         ImageIO.write(base, "png", os)
         val inputStream = ByteArrayInputStream(os.toByteArray())
