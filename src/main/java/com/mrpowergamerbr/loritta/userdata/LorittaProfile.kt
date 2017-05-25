@@ -8,9 +8,7 @@ import org.mongodb.morphia.annotations.Indexed
  * Perfil de um usuário que usa a Loritta
  */
 @Entity(value = "users") class LorittaProfile {
-    constructor() {
-
-    }
+    constructor()
 
     constructor(userId: String) : this() {
         this.userId = userId;
@@ -25,12 +23,12 @@ import org.mongodb.morphia.annotations.Indexed
     var games = HashMap<String, Long>();
 
     fun getCurrentLevel(): Int {
-        var lvl = 1;
+        var lvl = 0;
         var expLeft = xp;
-        var expToAdvance = getExpToAdvanceFrom(lvl);
-        while (expLeft > expToAdvance && expLeft >= 0) {
+        var expToAdvance = getExpToAdvanceFrom(lvl + 1);
+        while (expLeft > expToAdvance && expLeft > 0) {
             lvl++;
-            expToAdvance = getExpToAdvanceFrom(lvl);
+            expToAdvance = getExpToAdvanceFrom(lvl + 1);
             expLeft = expLeft - expToAdvance;
         }
         return lvl;

@@ -31,7 +31,6 @@ class PerfilCommand : CommandBase() {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         val profileWrapper = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper.png")); // Wrapper do perfil
-        val defaultFont = profileWrapper.graphics.font; // Fonte padrão
         var userProfile = context.lorittaUser.profile
         var user = if (context.message.mentionedUsers.size == 1) context.message.mentionedUsers[0] else context.userHandle
         if (user == null) {
@@ -40,7 +39,7 @@ class PerfilCommand : CommandBase() {
         }
 
         if (context.message.mentionedUsers.size == 1) {
-            userProfile = LorittaProfile(context.message.mentionedUsers[0].id)
+            userProfile = LorittaLauncher.getInstance().getLorittaProfileForUser(context.message.mentionedUsers[0].id)
         }
 
         var background: BufferedImage?;
@@ -136,8 +135,8 @@ class PerfilCommand : CommandBase() {
 
         // Calcular quanto a barrinha deveria ficar
         // 145 - 199
-        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1);
-        val currentLevel = userProfile.xp;
+        val nextLevel = 100;
+        val currentLevel = userProfile.xp - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
 
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
@@ -171,10 +170,25 @@ class PerfilCommand : CommandBase() {
         graphics.drawString(0.toString(), 235, 208)
         graphics.font = bariolRegular.deriveFont(12F)
         graphics.drawString(userProfile.aboutMe, 89, 244)
+
+
+        if (!userProfile.games.isEmpty()) {
+            graphics.font = bariolRegular.deriveFont(10F)
+            val games = ArrayList<GamePlayed>();
+            for (entry in userProfile.games.entries) {
+                games.add(GamePlayed(entry.key.replace("[---DOT---]", "."), entry.value));
+            }
+
+            val sorted = games.sortedWith(compareBy({ it.timeSpent })).reversed();
+
+            graphics.drawString("Jogo mais jogado: " + sorted[0].game, 89, 280)
+        }
         val os = ByteArrayOutputStream()
         ImageIO.write(base, "png", os)
         val inputStream = ByteArrayInputStream(os.toByteArray())
 
         context.sendFile(inputStream, "profile.png", "📝 | Perfil"); // E agora envie o arquivo
     }
+
+    data class GamePlayed(val game: String, val timeSpent: Long)
 }
