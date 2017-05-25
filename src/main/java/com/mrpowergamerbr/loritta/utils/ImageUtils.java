@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.utils;
 
-import com.mrpowergamerbr.loritta.Loritta;
-
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;

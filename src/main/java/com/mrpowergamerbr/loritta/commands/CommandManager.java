@@ -88,6 +88,7 @@ public class CommandManager {
 		commandMap.add(new InverterCommand());
         commandMap.add(new PerfilCommand());
 		commandMap.add(new GamesCommand());
+        commandMap.add(new BackgroundCommand());
 
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());

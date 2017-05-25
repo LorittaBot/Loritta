@@ -3,11 +3,20 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 
 class GamesCommand : CommandBase() {
     override fun getLabel():String {
         return "games";
+    }
+
+    override fun getDescription(): String {
+        return "Veja os jogos mais jogados pela galera!";
+    }
+
+    override fun getCategory(): CommandCategory {
+         return CommandCategory.SOCIAL;
     }
 
     override fun run(context: CommandContext) {
@@ -33,7 +42,7 @@ class GamesCommand : CommandBase() {
         var idx = 0;
         for ((game, timesPlayed) in entries) {
             if (idx > 9) { break; }
-            str += "${game} pessoas jogam ${timesPlayed}\n";
+            str += "${timesPlayed} pessoas jogam ${game}!\n";
             idx++;
         }
 

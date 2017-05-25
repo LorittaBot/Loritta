@@ -11,6 +11,7 @@ public enum CommandCategory {
 	MISC("Miscelânea"),
 	ADMIN("Administração"),
 	UTILS("Utilitários"),
+	SOCIAL("Social"),
 	MAGIC("Mágica"); // Esta categoria é usada para comandos APENAS para o dono do bot (no caso, MrPowerGamerBR#4185)
 	
 	String fancyTitle;

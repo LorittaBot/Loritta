@@ -4,9 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import org.apache.commons.codec.binary.Base64
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -21,6 +20,14 @@ import javax.imageio.ImageIO
 class PerfilCommand : CommandBase() {
     override fun getLabel():String {
         return "perfil";
+    }
+
+    override fun getDescription(): String {
+        return "Mostra o seu perfil!";
+    }
+
+    override fun getCategory(): CommandCategory {
+        return CommandCategory.SOCIAL;
     }
 
     override fun run(context: CommandContext) {
@@ -44,8 +51,9 @@ class PerfilCommand : CommandBase() {
 
         var background: BufferedImage?;
 
-        if (userProfile.userId == Loritta.config.ownerId) {
-           background = ImageIO.read(File(Loritta.FOLDER + "shantae_bg.png")); // Background padrão
+        var file = File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
+        if (file.exists()) {
+           background = ImageIO.read(File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")); // Background padrão
         } else {
            background = ImageIO.read(File(Loritta.FOLDER + "default_background.png")); // Background padrão
         }
