@@ -26,12 +26,13 @@ public class BotInfoCommand extends CommandBase {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setAuthor("Olá, eu sou a Loritta! 💁", null, "http://i.imgur.com/LUHLEs9.png");
 		embed.setColor(new Color(186, 0, 239));
-		embed.addField("📝 Nome", "Loritta#" + LorittaLauncher.getInstance().getJda().getSelfUser().getDiscriminator(), true);
-		embed.addField("🌎 Servidores", String.valueOf(LorittaLauncher.getInstance().getJda().getGuilds().size()) + " servidores", true);
-		embed.addField("👥 Usuários", String.valueOf(LorittaLauncher.getInstance().getJda().getUsers().size()) + " usuários", true);
+		embed.addField("📝 Nome", "Loritta#" + context.event.getGuild().getSelfMember().getUser().getDiscriminator(), true);
+		embed.addField("🌎 Servidores", String.valueOf(LorittaLauncher.getInstance().getLorittaShards().getGuilds().size()) + " servidores", true);
+		embed.addField("👥 Usuários", String.valueOf(LorittaLauncher.getInstance().getLorittaShards().getUsers().size()) + " usuários", true);
 		embed.addField("👾 Website", "https://loritta.website", true);
 		embed.addField("📚 Bibiloteca", "JDA (Java)", true);
 		embed.addField("📚 Linguagem", "Java + Kotlin", true);
+		embed.addField("\uD83D\uDD25 Shard", String.valueOf(context.event.getJDA().getShardInfo().getShardId()), true);
 		embed.addField("💻 Quantidade de Comandos", LorittaLauncher.getInstance().getCommandManager().getCommandMap().size() + " comandos", true);
 		LorittaLauncher.getInstance();
 		embed.addField("🏋️‍ Comandos executados desde o último restart", String.valueOf(Loritta.getExecutedCommands()), true);

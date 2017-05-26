@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 
@@ -14,6 +13,6 @@ class PingCommand : CommandBase() {
     }
 
     override fun run(context: CommandContext) {
-        context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + LorittaLauncher.getInstance().jda.ping + "ms")
+        context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + context.event.jda.ping + "ms (Shard ${context.event.jda.shardInfo.shardId})")
     }
 }

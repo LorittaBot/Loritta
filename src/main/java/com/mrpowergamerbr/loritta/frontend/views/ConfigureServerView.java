@@ -41,7 +41,7 @@ public class ConfigureServerView {
 					allowed = LorittaWebsite.canManageGuild(guild);
 					context.contextVars().put("currentServer", guild);
 
-					context.contextVars().put("currentServerJda", LorittaLauncher.getInstance().getJda().getGuildById(guild.getId()));
+					context.contextVars().put("currentServerJda", LorittaLauncher.getInstance().getLorittaShards().getGuildById(guild.getId()));
 					break;
 				}
 			}

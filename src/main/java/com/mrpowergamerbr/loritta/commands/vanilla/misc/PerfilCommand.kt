@@ -80,7 +80,7 @@ class PerfilCommand : CommandBase() {
 
         val guildImages = ArrayList<Image>();
 
-        val guilds = LorittaLauncher.getInstance().jda.guilds.filter { guild -> guild.isMember(user) };
+        val guilds = LorittaLauncher.getInstance().lorittaShards.getGuilds().filter { guild -> guild.isMember(user) };
 
         var idx = 0;
         for (guild in guilds) {

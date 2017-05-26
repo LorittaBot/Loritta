@@ -54,7 +54,7 @@ public class QuoteCommand extends CommandBase {
 				return;
 			}
 
-			if (context.getGuild().getMember(LorittaLauncher.getInstance().getJda().getSelfUser()).hasPermission(Permission.MESSAGE_MANAGE)) {
+			if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
 				context.getMessage().delete().complete(); // ok, vamos deletar a msg original
 			}
 
@@ -68,7 +68,7 @@ public class QuoteCommand extends CommandBase {
 					.color(123)
 					.description(msg.getRawContent())
 					// .title("Wow!")
-					.footer(new FooterEmbed("em #" + context.getMessage().getTextChannel().getName() + (context.getGuild().getMember(LorittaLauncher.getInstance().getJda().getSelfUser()).hasPermission(Permission.MESSAGE_MANAGE) ? "" : " | Não tenho permissão para deletar mensagens!"), null, null))
+					.footer(new FooterEmbed("em #" + context.getMessage().getTextChannel().getName() + (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE) ? "" : " | Não tenho permissão para deletar mensagens!"), null, null))
 					.build();
 
 			DiscordMessage dm = DiscordMessage

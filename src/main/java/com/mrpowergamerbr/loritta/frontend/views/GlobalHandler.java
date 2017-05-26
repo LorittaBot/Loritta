@@ -39,8 +39,8 @@ public class GlobalHandler {
 			contextVars.put("websiteUrl", LorittaWebsite.getWebsiteUrl());
 			contextVars.put("clientId", Loritta.getClientId());
 			contextVars.put("websiteUrl", LorittaWebsite.getWebsiteUrl());
-			contextVars.put("totalServers", LorittaLauncher.getInstance().getJda().getGuilds().size());
-			contextVars.put("totalUsers", LorittaLauncher.getInstance().getJda().getUsers().size());
+			contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
+			contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
 			contextVars.put("epochMillis", System.currentTimeMillis());
 
 			long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
@@ -170,7 +170,7 @@ public class GlobalHandler {
 						if (split.length >= 4) {
 							String guildId = split[3];
 							System.out.println("reading guildId..." + guildId);
-							if (LorittaLauncher.getInstance().getJda().getGuildById(guildId) != null) {
+							if (LorittaLauncher.getInstance().getLorittaShards().getGuildById(guildId) != null) {
 								// oh shit
 								obj = ConfigureServerView.render(context, temmie, guildId);
 							} else {

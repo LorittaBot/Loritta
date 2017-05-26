@@ -12,7 +12,7 @@ public class ServerListView {
 
 	public static Object render(RenderContext context) {
 		try {
-			context.contextVars().put("guilds", LorittaLauncher.getInstance().getJda().getGuilds());
+			context.contextVars().put("guilds", LorittaLauncher.getInstance().getLorittaShards().getGuilds());
 			
 			PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("server_list.html");
 

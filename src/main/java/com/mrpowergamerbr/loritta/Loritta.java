@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
 
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
+import com.mrpowergamerbr.loritta.utils.LorittaShards;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
 import org.bson.Document;
@@ -59,7 +60,8 @@ public class Loritta {
 	public static LorittaConfig config;
 
 	private String clientToken; // Client token da sessão atual
-	public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
+	// public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
+    public LorittaShards lorittaShards = new LorittaShards();
 	private CommandManager commandManager; // Nosso command manager
 	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(8); // Threads
 	public MongoClient mongo; // MongoDB
@@ -87,7 +89,7 @@ public class Loritta {
 	@Getter
 	@Setter
 	private static int executedCommands = 0;
-	
+
 	public Loritta(LorittaConfig config) {
 		loadFromConfig(config);
 	}
@@ -115,7 +117,13 @@ public class Loritta {
 
 		System.out.println("Success! Starting Loritta (Discord Bot)..."); // Agora iremos iniciar o bot
 		try {
-			jda = new JDABuilder(AccountType.BOT).setToken(clientToken).buildBlocking();
+		    int maxShards = 1;
+		    System.out.println("Starting Shard 1...");
+			JDA shard1 = new JDABuilder(AccountType.BOT).useSharding(0, 2).setToken(clientToken).buildBlocking();
+            lorittaShards.getShards().add(shard1);
+            System.out.println("Starting Shard 2...");
+            JDA shard2 = new JDABuilder(AccountType.BOT).useSharding(1, 2).setToken(clientToken).buildBlocking();
+            lorittaShards.getShards().add(shard2);
 		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
 			e.printStackTrace();
 			System.exit(1); // Caso dê login exception, vamos fechar o app :(
@@ -134,9 +142,9 @@ public class Loritta {
                     currentIndex = 0;
                 }
                 String str = playingGame.get(currentIndex);
-			    str = str.replace("%guilds%", String.valueOf(jda.getGuilds().size()));
-                str = str.replace("%users%", String.valueOf(jda.getUsers().size()));
-				jda.getPresence().setGame(new GameImpl(str, "https://www.twitch.tv/monstercat", GameType.TWITCH));
+			    str = str.replace("%guilds%", String.valueOf(lorittaShards.getGuilds().size()));
+                str = str.replace("%users%", String.valueOf(lorittaShards.getUsers().size()));
+                lorittaShards.getPresence().setGame(new GameImpl(str, "https://www.twitch.tv/monstercat", GameType.TWITCH));
                 currentIndex++;
 				try {
 					Thread.sleep(10000);
@@ -149,9 +157,9 @@ public class Loritta {
 
         Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
             while (true) {
-                for (User user : jda.getUsers()) {
+                for (User user : lorittaShards.getUsers()) {
                     LorittaProfile lorittaProfile = getLorittaProfileForUser(user.getId());
-                    List<Guild> mutualGuilds = jda.getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
+                    List<Guild> mutualGuilds = lorittaShards.getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
                     List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
                     if (!mutualGuilds.isEmpty()) {
                         Member member = mutualGuilds.get(0).getMember(user);
@@ -181,7 +189,7 @@ public class Loritta {
 
 		Runnable rektUpdater = () -> {
 			while (true) {
-				for (Guild guild : jda.getGuilds()) {
+				for (Guild guild : lorittaShards.getGuilds()) {
                     // Sim, você pode achar isto errado "wow, mas para que banir alguém de todas as guilds que a Loritta está?"
                     // Bem, eu também acho isto errado se for para banir alguém só porque ela não gosta de mim ou da Loritta
                     // ...
@@ -209,7 +217,7 @@ public class Loritta {
 
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {
-				for (Guild guild : jda.getGuilds()) {
+				for (Guild guild : lorittaShards.getGuilds()) {
 					ServerConfig conf = getServerConfigForGuild(guild.getId());
 					
 					if (conf.musicConfig().isEnabled()) {
@@ -246,7 +254,10 @@ public class Loritta {
 		AudioSourceManagers.registerRemoteSources(playerManager);
 		AudioSourceManagers.registerLocalSource(playerManager);
 
-		jda.addEventListener(new DiscordListener(this)); // Hora de registrar o nosso listener
+		// Vamos registrar o nosso event listener em todas as shards!
+		for (JDA jda : lorittaShards.getShards()) {
+            jda.addEventListener(new DiscordListener(this)); // Hora de registrar o nosso listener
+        }
 		// Ou seja, agora a Loritta estará aceitando comandos
 	}
 
@@ -404,12 +415,12 @@ public class Loritta {
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				play(guild, conf, musicManager, new AudioTrackWrapper(track, true, jda.getSelfUser()));
+				play(guild, conf, musicManager, new AudioTrackWrapper(track, true, guild.getSelfMember().getUser()));
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, jda.getSelfUser()));
+				play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, guild.getSelfMember().getUser()));
 			}
 
 			@Override

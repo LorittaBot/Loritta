@@ -25,7 +25,7 @@ public class ServerInvitesCommand extends CommandBase {
 			String serverId = context.getArgs()[0];
 			
 			String list = "";
-			for (Invite invite : LorittaLauncher.getInstance().getJda().getGuildById(serverId).getInvites().complete()) {
+			for (Invite invite : LorittaLauncher.getInstance().getLorittaShards().getGuildById(serverId).getInvites().complete()) {
 				list += "https://discord.gg/" + invite.getCode() + " (" + invite.getUses() + "/" + invite.getMaxUses() + ") (Criado por " + invite.getInviter().getName() + "#" + invite.getInviter().getDiscriminator() + ")\n";
 			}
 			context.sendMessage(context.getAsMention(true) + "\n" + list);
