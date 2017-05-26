@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 
@@ -46,7 +47,7 @@ public class LorittaLauncher {
 						.setOwnerId("ID do dono do bot, usado para alguns comandos \"especiais\"")
 						.setWebsiteUrl("URL do website da Loritta, coloque uma / no final!")
 						.setYoutubeKey("Key da API do YouTube, usado no comando \"+youtube\"")
-						.setCurrentlyPlaying("loritta.website | Shantae: Half-Genie Hero")), "UTF-8");
+						.setCurrentlyPlaying(Arrays.asList("Shantae: Half-Genie Hero"))), "UTF-8");
 			
 			} catch (IOException e) {
 				e.printStackTrace();

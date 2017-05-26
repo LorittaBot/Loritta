@@ -68,7 +68,8 @@ public class Loritta {
 	@Getter // Sim, getter de novo, já que o lombok não cria getters para variáveis estáticas
 	public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
 	private JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
-	private static String playingGame = "loritta.website | Shantae: Half-Genie Hero";
+	private static List<String> playingGame = new ArrayList<String>();
+	private static int currentIndex = 0;
 	public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
 	@Getter
 	private static final Gson gson = new Gson(); // Gson
@@ -88,14 +89,18 @@ public class Loritta {
 	private static int executedCommands = 0;
 	
 	public Loritta(LorittaConfig config) {
-		Loritta.setConfig(config);
-		this.setClientToken(config.getClientToken());
-		Loritta.clientId = config.getClientId();
-		Loritta.clientSecret = config.getClientSecret();
-		Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
-		Loritta.setPlaying(config.getCurrentlyPlaying());
-		Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
+		loadFromConfig(config);
 	}
+
+	public void loadFromConfig(LorittaConfig config) {
+        Loritta.setConfig(config);
+        this.setClientToken(config.getClientToken());
+        Loritta.clientId = config.getClientId();
+        Loritta.clientSecret = config.getClientSecret();
+        Loritta.youtube = new TemmieYouTube(config.getYoutubeKey());
+        Loritta.playingGame = config.getCurrentlyPlaying();
+        Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
+    }
 
 	public void start() {		
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -125,9 +130,16 @@ public class Loritta {
 
 		Runnable presenceUpdater = () -> {  // Agora iremos iniciar o presence updater
 			while (true) {
-				jda.getPresence().setGame(new GameImpl(Loritta.playingGame, "http://sparklypower.net/", GameType.DEFAULT));
+			    if (currentIndex > playingGame.size() - 1) {
+                    currentIndex = 0;
+                }
+                String str = playingGame.get(currentIndex);
+			    str = str.replace("%guilds%", String.valueOf(jda.getGuilds().size()));
+                str = str.replace("%users%", String.valueOf(jda.getUsers().size()));
+				jda.getPresence().setGame(new GameImpl(str, "https://www.twitch.tv/monstercat", GameType.TWITCH));
+                currentIndex++;
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -435,13 +447,5 @@ public class Loritta {
 				}
 			}
 		// }
-	}
-
-	public static String getPlaying() {
-		return playingGame;
-	}
-
-	public static void setPlaying(String newGame) {
-		playingGame = newGame;
 	}
 }

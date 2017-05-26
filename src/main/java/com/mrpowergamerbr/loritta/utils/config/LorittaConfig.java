@@ -3,6 +3,9 @@ package com.mrpowergamerbr.loritta.utils.config;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,5 +20,5 @@ public class LorittaConfig {
 	public String frontendFolder;
 	public String mercadoPagoClientId;
 	public String mercadoPagoClientToken;
-	public String currentlyPlaying;
+	public List<String> currentlyPlaying = new ArrayList<String>();
 }

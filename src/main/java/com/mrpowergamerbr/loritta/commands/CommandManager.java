@@ -31,7 +31,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.VaporQualidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.VaporondaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.WikiaCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.YouTubeCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.ChangeGameCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand;
@@ -114,9 +113,9 @@ public class CommandManager {
 		
 		// =======[ MAGIC ]========
 		commandMap.add(new ReloadCommand());
-		commandMap.add(new ChangeGameCommand());
 		commandMap.add(new EvalCommand());
 		commandMap.add(new ServerInvitesCommand());
+
 		for (CommandBase cmdBase : this.getCommandMap()) {
 			defaultCmdOptions.put(cmdBase.getClass().getSimpleName(), CommandOptions.class);
 		}
