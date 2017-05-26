@@ -25,11 +25,11 @@ import org.mongodb.morphia.annotations.Indexed
     fun getCurrentLevel(): Int {
         var lvl = 0;
         var expLeft = xp;
-        var expToAdvance = getExpToAdvanceFrom(lvl + 1);
+        var expToAdvance = getExpToAdvanceFrom(lvl);
         while (expLeft > expToAdvance && expLeft > 0) {
             lvl++;
-            expToAdvance = getExpToAdvanceFrom(lvl);
             expLeft = expLeft - expToAdvance;
+            expToAdvance = getExpToAdvanceFrom(lvl);
         }
         return lvl;
     }

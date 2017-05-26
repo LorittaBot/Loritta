@@ -131,7 +131,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         // Calcular quanto a barrinha deveria ficar
         // 145 - 199
-        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1) - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
+        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1);
         val currentLevel = userProfile.xp - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
 
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
