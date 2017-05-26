@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import java.awt.Color
 import java.awt.image.BufferedImage
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
@@ -133,20 +136,20 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
-        graphics.color = java.awt.Color(114, 137, 218)
+        graphics.color = Color(114, 137, 218)
         graphics.fillRect(89, 145, (percentage * 198).toInt(), 15);
 
-        graphics.color = java.awt.Color(255, 255, 255);
+        graphics.color = Color(255, 255, 255);
 
         graphics.font = bariolRegular.deriveFont(10F);
-        com.mrpowergamerbr.loritta.utils.ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, 145, 198, 15), graphics.font);
+        ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, 145, 198, 15), graphics.font);
 
         graphics.font = mavenProBold.deriveFont(24F)
         graphics.color = java.awt.Color(118, 118, 118);
         graphics.drawString("NÍVEL", 86, 187);
         graphics.color = java.awt.Color(90, 90, 90);
         graphics.font = mavenProBold.deriveFont(28F)
-        com.mrpowergamerbr.loritta.utils.ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
+        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
         graphics.color = java.awt.Color(118, 118, 118);
         graphics.font = bariolRegular.deriveFont(12F)
         graphics.drawString("XP Total", 163, 178)
@@ -162,13 +165,13 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         graphics.drawString("${hours}h${minutes}m${seconds}s", 235, 193)
         graphics.drawString(0.toString(), 235, 208)
         graphics.font = bariolRegular.deriveFont(12F)
-        graphics.drawString(userProfile.aboutMe, 89, 244)
+        ImageUtils.drawTextWrap(userProfile.aboutMe, 89, 244, 288, 9999, graphics.fontMetrics, graphics);
 
         if (!userProfile.games.isEmpty()) {
             graphics.font = bariolRegular.deriveFont(10F)
-            val games = ArrayList<com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.GamePlayed>();
+            val games = ArrayList<GamePlayed>();
             for (entry in userProfile.games.entries) {
-                games.add(com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.GamePlayed(entry.key.replace("[---DOT---]", "."), entry.value));
+                games.add(GamePlayed(entry.key.replace("[---DOT---]", "."), entry.value));
             }
 
             val sorted = games.sortedWith(compareBy({ it.timeSpent })).reversed();
