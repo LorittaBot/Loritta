@@ -44,6 +44,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.GamesCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.social.SobreMimCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
@@ -88,9 +89,12 @@ public class CommandManager {
 		commandMap.add(new MoneyCommand());
 		commandMap.add(new DrakeCommand());
 		commandMap.add(new InverterCommand());
-        commandMap.add(new PerfilCommand());
+
+        // =======[ SOCIAL ]======
+		commandMap.add(new PerfilCommand());
 		commandMap.add(new GamesCommand());
-        commandMap.add(new BackgroundCommand());
+		commandMap.add(new BackgroundCommand());
+		commandMap.add(new SobreMimCommand());
 
 		// =======[ UTILS ]=======
 		commandMap.add(new HexCommand());
