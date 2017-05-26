@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext

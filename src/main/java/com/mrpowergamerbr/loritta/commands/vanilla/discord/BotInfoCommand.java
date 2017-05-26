@@ -34,7 +34,6 @@ public class BotInfoCommand extends CommandBase {
 		embed.addField("📚 Linguagem", "Java + Kotlin", true);
 		embed.addField("\uD83D\uDD25 Shard", String.valueOf(context.event.getJDA().getShardInfo().getShardId()), true);
 		embed.addField("💻 Quantidade de Comandos", LorittaLauncher.getInstance().getCommandManager().getCommandMap().size() + " comandos", true);
-		LorittaLauncher.getInstance();
 		embed.addField("🏋️‍ Comandos executados desde o último restart", String.valueOf(Loritta.getExecutedCommands()), true);
 		embed.addField("Menções Honrosas", "`DaPorkchop_#2459` Ter criado o PorkBot\n"
 				+ "`official-papyrus-amiibo` Ter feito a incrível arte que a Loritta usa [Veja o tumblr!](http://official-papyrus-amiibo.tumblr.com/post/158758445671/youve-been-blessed-by-the-angel-katy)", false);
