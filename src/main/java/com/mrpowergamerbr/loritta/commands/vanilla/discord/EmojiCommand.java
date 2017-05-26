@@ -97,7 +97,7 @@ public class EmojiCommand extends CommandBase {
 		}
 	}
 
-	private static String toUnicode(int ch) {
+	public static String toUnicode(int ch) {
 		return String.format("\\u%04x", (int) ch);
 	}
 }

@@ -1,10 +1,15 @@
 package com.mrpowergamerbr.loritta.utils;
 
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class ImageUtils {
 	/**
@@ -24,13 +29,26 @@ public class ImageUtils {
 		int currentX = startX; // X atual
 		int currentY = startY; // Y atual
 
+        int idx = 0;
 		for (char c : text.toCharArray()) {
+		    idx++;
 			int width = fontMetrics.charWidth(c); // Width do char (normalmente é 16)
 			if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
 				currentX = startX; // Nós iremos fazer wrapping do texto
 				currentY = currentY + lineHeight;
 			}
 			if (!graphics.getFont().canDisplay(c)) {
+			    try {
+			        // Talvez seja um emoji!
+                    URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
+                    HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+                    connection.setRequestProperty(
+                            "User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+                    BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
+                    graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
+                    currentX = currentX + width;
+			    } catch (Exception e) {}
                 continue;
             }
 			graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
@@ -47,7 +65,9 @@ public class ImageUtils {
         int currentX = startX; // X atual
         int currentY = startY; // Y atual
 
+        int idx = 0;
         for (char c : text.toCharArray()) {
+            idx++;
             int width = fontMetrics.charWidth(c); // Width do char (normalmente é 16)
             if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
                 currentX = startX; // Nós iremos fazer wrapping do texto
@@ -56,9 +76,26 @@ public class ImageUtils {
             if (font.canDisplay(c)) {
                 graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
             } else {
+                    try {
+                        // Talvez seja um emoji!
+                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
+                        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+                        connection.setRequestProperty(
+                                "User-Agent",
+                                "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+                        BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
+                        graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
+                        currentX = currentX + width;
+                        continue;
+                    } catch (Exception e) {}
+                if (temp.getGraphics().getFont().canDisplay(c)) {
                 graphics.setFont(temp.getGraphics().getFont());
-                graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
+                    graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
+
                 graphics.setFont(font);
+                } else {
+                        continue;
+                }
             }
             currentX = currentX + width; // E adicione o width no nosso currentX
         }

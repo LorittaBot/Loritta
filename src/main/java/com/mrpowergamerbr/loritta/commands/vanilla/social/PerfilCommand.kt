@@ -176,7 +176,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
             val sorted = games.sortedWith(compareBy({ it.timeSpent })).reversed();
 
-            graphics.drawString("Jogo mais jogado: " + sorted[0].game, 89, 280)
+            ImageUtils.drawTextWrap("Jogo mais jogado: " + sorted[0].game, 89, 280, 288, 9999, graphics.fontMetrics, graphics);
         }
 
         val os = java.io.ByteArrayOutputStream()
