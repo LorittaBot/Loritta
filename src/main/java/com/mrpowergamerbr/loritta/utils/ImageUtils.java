@@ -30,6 +30,9 @@ public class ImageUtils {
 				currentX = startX; // Nós iremos fazer wrapping do texto
 				currentY = currentY + lineHeight;
 			}
+			if (!graphics.getFont().canDisplay(c)) {
+                continue;
+            }
 			graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
 			currentX = currentX + width; // E adicione o width no nosso currentX
 		}
