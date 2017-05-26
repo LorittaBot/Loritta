@@ -30,7 +30,7 @@ public class BotInfoCommand extends CommandBase {
 		embed.addField("🌎 Servidores", String.valueOf(LorittaLauncher.getInstance().getLorittaShards().getGuilds().size()) + " servidores", true);
 		embed.addField("👥 Usuários", String.valueOf(LorittaLauncher.getInstance().getLorittaShards().getUsers().size()) + " usuários", true);
 		embed.addField("👾 Website", "https://loritta.website", true);
-		embed.addField("📚 Bibiloteca", "JDA (Java)", true);
+		embed.addField("\uD83D\uDCD8 Bibiloteca", "JDA (Java)", true);
 		embed.addField("📚 Linguagem", "Java + Kotlin", true);
 		embed.addField("\uD83D\uDD25 Shard", String.valueOf(context.event.getJDA().getShardInfo().getShardId()), true);
 		embed.addField("💻 Quantidade de Comandos", LorittaLauncher.getInstance().getCommandManager().getCommandMap().size() + " comandos", true);
