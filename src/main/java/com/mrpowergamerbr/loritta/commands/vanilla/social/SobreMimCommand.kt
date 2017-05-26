@@ -26,8 +26,12 @@ class SobreMimCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
         var profile = context.lorittaUser.profile;
-        profile.aboutMe = context.args.joinToString(" ");
-        context.sendMessage(context.getAsMention(true) + "Sua mensagem de perfil foi alterada para " + profile.aboutMe + "!")
-        LorittaLauncher.getInstance().ds.save(profile);
+        if (context.args.size > 0) {
+            profile.aboutMe = context.args.joinToString(" ");
+            context.sendMessage(context.getAsMention(true) + "Sua mensagem de perfil foi alterada para " + profile.aboutMe + "!")
+            LorittaLauncher.getInstance().ds.save(profile);
+        } else {
+            this.explain(context);
+        }
     }
 }
