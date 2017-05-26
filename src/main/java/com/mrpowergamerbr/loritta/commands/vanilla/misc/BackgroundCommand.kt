@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage
 
 import java.io.File
 import java.lang.Exception
+import java.net.HttpURLConnection
 import java.net.URL
 import javax.imageio.ImageIO
 
@@ -32,7 +33,13 @@ class BackgroundCommand : CommandBase() {
             var link = context.args[0];
 
             try {
-                var bufferedImage = ImageIO.read(URL(link));
+                val imageUrl = URL(link)
+                val connection = imageUrl.openConnection() as HttpURLConnection
+                connection.setRequestProperty(
+                        "User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0")
+
+                var bufferedImage = ImageIO.read(connection.inputStream);
                 var needsEditing = false;
                 if (!(bufferedImage.width == 300 && bufferedImage.height == 300)) {
                     needsEditing = true;
