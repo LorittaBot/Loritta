@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
 
+import com.google.common.cache.CacheBuilder;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.utils.LorittaShards;
 import net.dv8tion.jda.core.*;
@@ -85,6 +87,7 @@ public class Loritta {
 	private static TemmieMercadoPago temmieMercadoPago; // Usado na página de "doar"
 	private AudioPlayerManager playerManager;
 	private Map<Long, GuildMusicManager> musicManagers;
+	private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(10000L).expireAfterWrite(10L, TimeUnit.MINUTES).build().asMap();
 
 	@Getter
 	@Setter
@@ -453,6 +456,11 @@ public class Loritta {
 		musicManager.scheduler.nextTrack();
 
 		channel.sendMessage("🤹 Música pulada!").queue();
+	}
+
+	public void skipTrack(Guild guild) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+		musicManager.scheduler.nextTrack();
 	}
 
 	private static void connectToVoiceChannel(String id, AudioManager audioManager) {

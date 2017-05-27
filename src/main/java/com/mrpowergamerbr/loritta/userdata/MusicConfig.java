@@ -15,4 +15,6 @@ public class MusicConfig {
 	private int maxSeconds = 420;
 	private boolean autoPlayWhenEmpty = false;
 	private List<String> urls = new ArrayList<String>();
+	private boolean voteToSkip = true;
+	private int required = 75;
 }

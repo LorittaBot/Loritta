@@ -1,37 +1,33 @@
 package com.mrpowergamerbr.loritta.listeners;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import com.google.common.cache.CacheBuilder;
 import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
 import com.mrpowergamerbr.loritta.whistlers.ICode;
 import com.mrpowergamerbr.loritta.whistlers.IPrecondition;
 import com.mrpowergamerbr.loritta.whistlers.ReactionCode;
 import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class DiscordListener extends ListenerAdapter {
 	Loritta loritta;
-	public ConcurrentMap<Object, Object> cache = CacheBuilder.newBuilder().maximumSize(100L).expireAfterWrite(1L, TimeUnit.MINUTES).build().asMap();
 
 	public DiscordListener(Loritta loritta) {
 		this.loritta = loritta;
@@ -95,20 +91,27 @@ public class DiscordListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGuildMessageDelete(GuildMessageDeleteEvent e) {
-		/* if (cache.containsKey(e.getMessageId())) {
-			Message message = (Message) cache.get(e.getMessageId());
-			if (10000 >= System.currentTimeMillis() - (message.getEditedTime() != null ? message.getEditedTime() : message.getCreationTime()).toInstant().toEpochMilli()) {
-				TemmieWebhook temmie = Loritta.getOrCreateWebhook(message.getTextChannel(), "Message Undeleter");
+	public void onGenericMessageReaction(GenericMessageReactionEvent e) {
+	    if (LorittaLauncher.getInstance().getMusicMessagesCache().containsKey(e.getMessageId())) {
+            AudioTrackWrapper atw = (AudioTrackWrapper) LorittaLauncher.getInstance().getMusicMessagesCache().get(e.getMessageId());
 
-				String avatar = e.getGuild().getMember(message.getAuthor()).getEffectiveName();
-				temmie.sendMessage(DiscordMessage.builder()
-						.avatarUrl(message.getAuthor().getEffectiveAvatarUrl())
-						.username("[CTRL-Z] " + avatar)
-						.content(message.getContent())
-						.build());
-			}
-		} */
+            int count = e.getReaction().getUsers().complete().stream().filter((user) -> !user.isBot()).collect(Collectors.toList()).size();
+            ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.getGuild().getId());
+
+            if (conf.musicConfig().isVoteToSkip()) {
+                VoiceChannel vc = e.getGuild().getVoiceChannelById(conf.musicConfig().getMusicGuildId());
+
+                if (vc != null) {
+                    int inChannel = vc.getMembers().stream().filter((member) -> !member.getUser().isBot()).collect(Collectors.toList()).size();
+                    long required = Math.round((double) inChannel * ((double) conf.musicConfig().getRequired() / 100));
+
+                    if (count >= required) {
+                        LorittaLauncher.getInstance().skipTrack(e.getGuild());
+                        e.getTextChannel().sendMessage("🤹 Música pulada!").complete();
+                    }
+                }
+            }
+        }
 	}
 
 	// TODO: Isto não deveria ficar aqui...

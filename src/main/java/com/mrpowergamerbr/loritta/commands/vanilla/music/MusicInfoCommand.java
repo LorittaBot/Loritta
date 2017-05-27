@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
+import net.dv8tion.jda.core.entities.Message;
 
 public class MusicInfoCommand extends CommandBase {
 	@Override
@@ -62,7 +63,9 @@ public class MusicInfoCommand extends CommandBase {
 			if (manager.player.getPlayingTrack() == null) {
 				context.sendMessage(context.getAsMention(true) + "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`");
 			} else {
-				context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + " [" + ((manager.player.getPlayingTrack().getDuration() - manager.player.getPlayingTrack().getPosition()) / 1000) + "s]! (pedido por " + manager.scheduler.getCurrentTrack().getUser().getName() + ")");
+				Message message = context.sendMessage(context.getAsMention(true) + "Atualmente estou tocando " + manager.player.getPlayingTrack().getInfo().title + " [" + ((manager.player.getPlayingTrack().getDuration() - manager.player.getPlayingTrack().getPosition()) / 1000) + "s]! (pedido por " + manager.scheduler.getCurrentTrack().getUser().getName() + ")" + (context.getConfig().musicConfig().isVoteToSkip() ? "\n\uD83D\uDCAB **Quer pular a música? Então use \uD83E\uDD26 nesta mensagem!** (Se 75% das pessoas no canal de música reagirem com \uD83E\uDD26, eu irei pular a música!)" : ""));
+                LorittaLauncher.getInstance().getMusicMessagesCache().put(message.getId(), manager.scheduler.getCurrentTrack());
+				message.addReaction("\uD83E\uDD26").complete();
 			}
 		}
 	}
