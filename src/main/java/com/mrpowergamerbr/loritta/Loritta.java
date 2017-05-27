@@ -207,7 +207,9 @@ public class Loritta {
 							Member member = guild.getMemberById(id);
 
 							if (member != null) {
-								guild.getController().ban(member, 0).complete();
+								try {
+									guild.getController().ban(member, 0).complete();
+								} catch (Exception e) {} // A Loritta não pode banir usuários com roles maiores que ela
 							}
 						}
                     }
