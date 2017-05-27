@@ -76,16 +76,18 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                 if (idx > 14) {
                     break;
                 }
-                val connection = java.net.URL(guild.iconUrl).openConnection() as java.net.HttpURLConnection
-                connection.setRequestProperty(
-                        "User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-                var guild = javax.imageio.ImageIO.read(connection.inputStream)
-                var guildImg = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(guild.getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH));
-                guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1);
-                guildImg = com.mrpowergamerbr.loritta.utils.ImageUtils.makeRoundedCorner(guildImg, 999);
-                guildImages.add(guildImg)
-                idx++;
+                try {
+                    val connection = java.net.URL(guild.iconUrl).openConnection() as java.net.HttpURLConnection
+                    connection.setRequestProperty(
+                            "User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+                    var guild = javax.imageio.ImageIO.read(connection.inputStream)
+                    var guildImg = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(guild.getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH));
+                    guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1);
+                    guildImg = com.mrpowergamerbr.loritta.utils.ImageUtils.makeRoundedCorner(guildImg, 999);
+                    guildImages.add(guildImg)
+                    idx++;
+                } catch (e: Exception) {}
             }
         }
         graphics.drawImage(avatarImg, 5, 65, null); // Colar avatar do usuário no profile

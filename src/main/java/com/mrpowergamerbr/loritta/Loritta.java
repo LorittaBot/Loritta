@@ -197,12 +197,19 @@ public class Loritta {
                     // para causar discórdia, então o cara deve ser banido mesmo.
                     //
                     // Eu irei deixar o motivo do cara ser banido de lado, caso você queria ver...
-                    if (guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) { // Se a Loritta tem permissão para banir membros...
-                        Member member = guild.getMemberById("315579184724574209"); // Impostor tentando se passar da Loritta, não trocou o nome/avatar mesmo após pedir
+					List<String> ids = new ArrayList<String>();
 
-                        if (member != null) {
-                            guild.getController().ban(member, 0).complete();
-                        }
+					ids.add("315579184724574209"); // Impostor tentando se passar da Loritta, não trocou o nome/avatar mesmo após pedir
+					ids.add("307188402128945162"); // Talvez seja uma conta alternativa da mesma pessoa acima, também é um impostor.
+
+                    if (guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) { // Se a Loritta tem permissão para banir membros...
+                        for (String id : ids) {
+							Member member = guild.getMemberById(id);
+
+							if (member != null) {
+								guild.getController().ban(member, 0).complete();
+							}
+						}
                     }
                 }
 				try {

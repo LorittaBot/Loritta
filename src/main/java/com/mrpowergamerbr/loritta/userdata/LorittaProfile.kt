@@ -23,7 +23,7 @@ import org.mongodb.morphia.annotations.Indexed
     var games = HashMap<String, Long>();
 
     fun getCurrentLevel(): Int {
-        var lvl = 0;
+        var lvl = 1;
         var expLeft = xp;
         var expToAdvance = getExpToAdvanceFrom(lvl);
         while (expLeft > expToAdvance && expLeft > 0) {
