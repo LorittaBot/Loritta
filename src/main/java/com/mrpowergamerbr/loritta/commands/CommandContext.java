@@ -136,6 +136,9 @@ public class CommandContext {
 
 			for (DiscordEmbed embed : message.getEmbeds()) {
                 builder.setImage(embed.getImage() != null ? embed.getImage().getUrl() : null);
+                if (embed.getTitle() != null) {
+                    builder.setTitle(builder.getDescriptionBuilder().toString() + "\n\n**" + embed.getTitle() + "**");
+                }
                 if (embed.getDescription() != null) {
                     builder.setDescription(builder.getDescriptionBuilder().toString() + "\n\n" + embed.getDescription());
                 }
