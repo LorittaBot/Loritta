@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 
@@ -132,10 +133,20 @@ public class CommandContext {
 			builder.setAuthor(message.getUsername(), null, message.getAvatarUrl());
 			builder.setDescription(message.getContent());
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null);
+
+			for (DiscordEmbed embed : message.getEmbeds()) {
+                builder.setImage(embed.getImage() != null ? embed.getImage().getUrl() : null);
+                if (embed.getDescription() != null) {
+                    builder.setDescription(builder.getDescriptionBuilder().toString() + "\n\n" + embed.getDescription());
+                }
+                if (embed.getThumbnail() != null) {
+                    builder.setThumbnail(embed.getThumbnail().getUrl());
+                }
+            }
 			sendMessage(builder.build());
 		}
 	}
-	
+
 	public Message sendFile(InputStream data, String name, String message) {
 		return sendFile(data, name, new MessageBuilder().append(message).build());
 	}
