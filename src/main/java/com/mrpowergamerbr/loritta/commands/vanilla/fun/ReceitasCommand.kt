@@ -33,6 +33,10 @@ class ReceitasCommand : CommandBase() {
          return CommandCategory.FUN;
     }
 
+    override fun hasCommandFeedback(): Boolean {
+        return false;
+    }
+
     override fun run(context: CommandContext) {
         if (context.args.size > 0) {
             val query = context.args.joinToString(" ");
@@ -62,7 +66,13 @@ class ReceitasCommand : CommandBase() {
                         .build();
                 context.sendMessage(Loritta.getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
             } else {
+                var message = DiscordMessage.builder()
+                        .username("Louro José")
+                        .avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
+                        .content("Não encontrei nada relacionado a \"${query}\" no livro de receitas da Ana Maria Braga!")
+                        .build();
 
+                context.sendMessage(Loritta.getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
             }
         } else {
             this.explain(context);
