@@ -39,9 +39,13 @@ public class AvatarCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
-		if (!context.getMessage().getMentionedUsers().isEmpty()) {
-			List<User> list = new ArrayList<User>(context.getMessage().getMentionedUsers());
+		List<User> list = new ArrayList<User>(context.getMessage().getMentionedUsers());
 
+		if (list.isEmpty()) {
+			list.add(context.getUserHandle());
+		}
+
+		if (!list.isEmpty()) {
 			CommandOptions cmdOptions = context.getConfig().getCommandOptionsFor(this);
 			
 			if (cmdOptions.getAsBoolean(ONLY_ONE_PER_MESSAGE)) {
