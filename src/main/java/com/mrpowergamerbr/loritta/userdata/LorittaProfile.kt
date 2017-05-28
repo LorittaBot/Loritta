@@ -22,19 +22,23 @@ import org.mongodb.morphia.annotations.Indexed
     var tempoOnline: Long = 0;
     var games = HashMap<String, Long>();
 
-    fun getCurrentLevel(): Int {
-        var lvl = 1;
-        var expLeft = xp;
+    fun getCurrentLevel(): XpWrapper {
+        var lvl = 0;
         var expToAdvance = getExpToAdvanceFrom(lvl);
-        while (expLeft > expToAdvance && expLeft > 0) {
+        while (xp > expToAdvance) {
             lvl++;
-            expLeft = expLeft - expToAdvance;
             expToAdvance = getExpToAdvanceFrom(lvl);
         }
-        return lvl;
+        var expLeft = xp;
+        if (lvl != 0) {
+            expLeft = expToAdvance - xp;
+        }
+        return XpWrapper(lvl, expLeft);
     }
 
     fun getExpToAdvanceFrom(lvl: Int): Int {
-        return 100 * lvl;
+        return 125 + lvl * (70 + lvl)
     }
+
+    data class XpWrapper(val currentLevel: Int, val expLeft: Int)
 }

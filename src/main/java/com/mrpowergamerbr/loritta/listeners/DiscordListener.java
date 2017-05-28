@@ -98,7 +98,7 @@ public class DiscordListener extends ListenerAdapter {
             int count = e.getReaction().getUsers().complete().stream().filter((user) -> !user.isBot()).collect(Collectors.toList()).size();
             ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.getGuild().getId());
 
-            if (conf.musicConfig().isVoteToSkip()) {
+            if (count > 0 && conf.musicConfig().isVoteToSkip() && LorittaLauncher.getInstance().getGuildAudioPlayer(e.getGuild()).scheduler.getCurrentTrack() == atw) {
                 VoiceChannel vc = e.getGuild().getVoiceChannelById(conf.musicConfig().getMusicGuildId());
 
                 if (vc != null) {
@@ -108,6 +108,7 @@ public class DiscordListener extends ListenerAdapter {
                     if (count >= required) {
                         LorittaLauncher.getInstance().skipTrack(e.getGuild());
                         e.getTextChannel().sendMessage("🤹 Música pulada!").complete();
+                        LorittaLauncher.getInstance().getMusicMessagesCache().remove(e.getMessageId());
                     }
                 }
             }

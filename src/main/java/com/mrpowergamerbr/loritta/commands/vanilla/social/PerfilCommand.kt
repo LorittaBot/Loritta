@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.*
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
+import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     override fun getLabel():String {
@@ -133,9 +134,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         // Calcular quanto a barrinha deveria ficar
         // 145 - 199
-        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel() + 1);
-        val currentLevel = userProfile.xp - userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
-
+        val xpWrapper = userProfile.getCurrentLevel()
+        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel().currentLevel + 1) // userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
+        val currentLevel = xpWrapper.expLeft
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
         graphics.color = Color(114, 137, 218)
@@ -151,7 +152,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         graphics.drawString("NÍVEL", 86, 187);
         graphics.color = java.awt.Color(90, 90, 90);
         graphics.font = mavenProBold.deriveFont(28F)
-        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
+        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().currentLevel.toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
         graphics.color = java.awt.Color(118, 118, 118);
         graphics.font = bariolRegular.deriveFont(12F)
         graphics.drawString("XP Total", 163, 178)
