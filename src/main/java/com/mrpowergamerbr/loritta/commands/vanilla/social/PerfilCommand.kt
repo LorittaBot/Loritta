@@ -1,15 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.*
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import java.awt.Color
-import java.awt.FontMetrics
 import java.awt.Graphics
 import java.awt.image.BufferedImage
-import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
-    override fun getLabel():String {
+    override fun getLabel(): String {
         return "perfil";
     }
 
@@ -22,7 +19,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     }
 
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
-        val base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
+        var base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as java.awt.Graphics2D;
         graphics.setRenderingHint(
                 java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -44,9 +41,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         var file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
         if (file.exists()) {
-           background = javax.imageio.ImageIO.read(java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")); // Background padrão
+            background = javax.imageio.ImageIO.read(java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")); // Background padrão
         } else {
-           background = javax.imageio.ImageIO.read(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "default_background.png")); // Background padrão
+            background = javax.imageio.ImageIO.read(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "default_background.png")); // Background padrão
         }
 
         graphics.drawImage(background, 0, 0, null); // Background fica atrás de tudo
@@ -90,7 +87,8 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                     guildImg = com.mrpowergamerbr.loritta.utils.ImageUtils.makeRoundedCorner(guildImg, 999);
                     guildImages.add(guildImg)
                     idx++;
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }
         graphics.drawImage(avatarImg, 5, 65, null); // Colar avatar do usuário no profile
@@ -159,9 +157,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         graphics.font = bariolRegular.deriveFont(12F)
         drawWithShadow("XP Total", 163, 178, 9999, 9999, graphics)
         drawWithShadow("Tempo Online", 163, 193, 9999, 9999, graphics)
-        drawWithShadow("Reputação", 163, 208, 9999, 9999,  graphics)
+        drawWithShadow("Reputação", 163, 208, 9999, 9999, graphics)
 
-        drawWithShadow(userProfile.xp.toString(), 235, 178, 9999, 9999,  graphics)
+        drawWithShadow(userProfile.xp.toString(), 235, 178, 9999, 9999, graphics)
 
         val hours = userProfile.tempoOnline / 3600;
         val minutes = (userProfile.tempoOnline % 3600) / 60;
@@ -185,7 +183,12 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             drawWithShadow("Jogo mais jogado: " + sorted[0].game, 89, 279, 388, 9999, graphics);
         }
 
-        val os = java.io.ByteArrayOutputStream()
+        // Deixar as bordas arredondadas, parece frescura mas com as bordas arrendondadas o perfil parece que é
+        // "do Discord" e não simplesmente uma imagem no chat
+        base = ImageUtils.makeRoundedCorner(base, 15
+
+
+                val os = java . io . ByteArrayOutputStream ()
         javax.imageio.ImageIO.write(base, "png", os)
         val inputStream = java.io.ByteArrayInputStream(os.toByteArray())
 
