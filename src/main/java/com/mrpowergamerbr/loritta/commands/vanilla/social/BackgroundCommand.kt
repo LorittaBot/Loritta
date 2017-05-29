@@ -46,7 +46,6 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                     if (bufferedImage.width > 400 && bufferedImage.height > 300) {
                         var newWidth = 400.toDouble() / bufferedImage.width.toDouble();
                         var newHeight = 300.toDouble() / bufferedImage.height.toDouble();
-
                         var use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight;
                         bufferedImage = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(bufferedImage.getScaledInstance((bufferedImage.width * use).toInt(), (bufferedImage.height * use).toInt(), java.awt.image.BufferedImage.SCALE_SMOOTH));
                         bufferedImage = bufferedImage.getSubimage(0, 0, 400, 300);
@@ -54,11 +53,11 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                 }
                 javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png"));
 
-                context.sendMessage("Background atualizado!" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
+                context.sendMessage(context.getAsMention(true) + "Background atualizado!" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
                 return;
             } catch (e: java.lang.Exception) {
                 e.printStackTrace();
-                context.sendMessage("Link inválido!");
+                context.sendMessage(context.getAsMention(true) + "Link inválido!");
                 return;
             }
         }
@@ -66,7 +65,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         var imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
         var builder = net.dv8tion.jda.core.EmbedBuilder()
-                .setDescription("Altere o seu background colocando o link ao lado do comando!\n\nAtualmente o seu background atual é...")
+                .setDescription("Altere o seu background colocando o link ao lado do comando!\n\nAtualmente o seu background é...")
                 .setImage(imageUrl)
                 .build();
         context.sendMessage(builder);
