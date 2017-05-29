@@ -3,6 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand.*
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import java.awt.Color
+import java.awt.FontMetrics
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
@@ -20,7 +22,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     }
 
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
-        val base = java.awt.image.BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB); // Base
+        val base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as java.awt.Graphics2D;
         graphics.setRenderingHint(
                 java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -155,20 +157,21 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().currentLevel.toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
         graphics.color = java.awt.Color(118, 118, 118);
         graphics.font = bariolRegular.deriveFont(12F)
-        graphics.drawString("XP Total", 163, 178)
-        graphics.drawString("Tempo Online", 163, 193)
-        graphics.drawString("Reputação", 163, 208)
+        drawWithShadow("XP Total", 163, 178, 9999, 9999, graphics)
+        drawWithShadow("Tempo Online", 163, 193, 9999, 9999, graphics)
+        drawWithShadow("Reputação", 163, 208, 9999, 9999,  graphics)
 
-        graphics.drawString(userProfile.xp.toString(), 235, 178)
+        drawWithShadow(userProfile.xp.toString(), 235, 178, 9999, 9999,  graphics)
 
         val hours = userProfile.tempoOnline / 3600;
         val minutes = (userProfile.tempoOnline % 3600) / 60;
         val seconds = userProfile.tempoOnline % 60;
 
-        graphics.drawString("${hours}h${minutes}m${seconds}s", 235, 193)
-        graphics.drawString(0.toString(), 235, 208)
+        drawWithShadow("${hours}h${minutes}m${seconds}s", 235, 193, 9999, 9999, graphics)
+        drawWithShadow(0.toString(), 235, 208, 9999, 9999, graphics)
         graphics.font = bariolRegular.deriveFont(12F)
-        ImageUtils.drawTextWrap(userProfile.aboutMe, 89, 244, 288, 9999, graphics.fontMetrics, graphics);
+
+        drawWithShadow(userProfile.aboutMe, 89, 244, 388, 9999, graphics);
 
         if (!userProfile.games.isEmpty()) {
             graphics.font = bariolRegular.deriveFont(10F)
@@ -179,7 +182,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
             val sorted = games.sortedWith(compareBy({ it.timeSpent })).reversed();
 
-            ImageUtils.drawTextWrap("Jogo mais jogado: " + sorted[0].game, 89, 280, 288, 9999, graphics.fontMetrics, graphics);
+            drawWithShadow("Jogo mais jogado: " + sorted[0].game, 89, 279, 388, 9999, graphics);
         }
 
         val os = java.io.ByteArrayOutputStream()
@@ -187,6 +190,13 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         val inputStream = java.io.ByteArrayInputStream(os.toByteArray())
 
         context.sendFile(inputStream, "profile.png", "📝 | Perfil"); // E agora envie o arquivo
+    }
+
+    fun drawWithShadow(text: String, x: Int, y: Int, maxX: Int, maxY: Int, graphics: Graphics) {
+        graphics.color = java.awt.Color(75, 75, 75, 75);
+        ImageUtils.drawTextWrapSpaces(text, x, y + 1, maxX, maxY, graphics.fontMetrics, graphics);
+        graphics.color = java.awt.Color(118, 118, 118);
+        ImageUtils.drawTextWrapSpaces(text, x, y, maxX, maxY, graphics.fontMetrics, graphics);
     }
 
     data class GamePlayed(val game: String, val timeSpent: Long)

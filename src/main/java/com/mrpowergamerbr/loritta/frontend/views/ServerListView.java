@@ -2,17 +2,30 @@ package com.mrpowergamerbr.loritta.frontend.views;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Comparator;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import net.dv8tion.jda.core.entities.Guild;
 
 public class ServerListView {
 
 	public static Object render(RenderContext context) {
 		try {
-			context.contextVars().put("guilds", LorittaLauncher.getInstance().getLorittaShards().getGuilds());
+			List<Guild> guilds = LorittaLauncher.getInstance().getLorittaShards().getGuilds();
+
+			guilds.sort(new Comparator<Guild>() {
+
+				@Override
+				public int compare(Guild o1, Guild o2) {
+					return o1.getSelfMember().getJoinDate().compareTo(o2.getSelfMember().getJoinDate());
+				}
+			});
+			context.contextVars().put("guilds", guilds);
 			
 			PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("server_list.html");
 

@@ -171,4 +171,56 @@ public class ImageUtils {
         // Draw the String
         graphics.drawString(text, x, y);
     }
+
+    /**
+     * Escreve um texto em um Graphics, fazendo wrap caso necessário
+     *
+     * Esta versão separa entre espaços o texto, para ficar mais bonito
+     *
+     * @param text Texto
+     * @param startX X inicial
+     * @param startY Y inicial
+     * @param endX X máximo, caso o texto ultrapasse o endX, ele automaticamente irá fazer wrap para a próxima linha
+     * @param endY Y máximo, atualmente unused
+     * @param fontMetrics Metrics da fonte
+     * @param graphics Graphics usado para escrever a imagem
+     * @return Y final
+     */
+    public static int drawTextWrapSpaces(String text, int startX, int startY, int endX, int endY, FontMetrics fontMetrics, Graphics graphics) {
+        int lineHeight = fontMetrics.getHeight(); // Aqui é a altura da nossa fonte
+
+        int currentX = startX; // X atual
+        int currentY = startY; // Y atual
+
+        String[] split = text.split("((?<= )|(?= ))"); // Nós precisamos deixar os espaços entre os splits!
+        for (String str : split) {
+            int width = fontMetrics.stringWidth(str); // Width do texto que nós queremos colocar
+            if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
+                currentX = startX; // Nós iremos fazer wrapping do texto
+                currentY = currentY + lineHeight;
+            }
+            int idx = 0;
+            for (char c : str.toCharArray()) { // E agora nós iremos printar todos os chars
+                idx++;
+                width = fontMetrics.charWidth(c);
+                if (!graphics.getFont().canDisplay(c)) {
+                    try {
+                        // Talvez seja um emoji!
+                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(str.codePointAt(idx - 1)).substring(2) + ".png");
+                        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+                        connection.setRequestProperty(
+                                "User-Agent",
+                                "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+                        BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
+                        graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
+                        currentX = currentX + width;
+                    } catch (Exception e) {}
+                    continue;
+                }
+                graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
+                currentX = currentX + width; // E adicione o width no nosso currentX
+            }
+        }
+        return currentY;
+    }
 }

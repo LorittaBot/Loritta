@@ -41,21 +41,20 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
                 var bufferedImage = javax.imageio.ImageIO.read(connection.inputStream);
                 var needsEditing = false;
-                if (!(bufferedImage.width == 300 && bufferedImage.height == 300)) {
+                if (!(bufferedImage.width == 400 && bufferedImage.height == 300)) {
                     needsEditing = true;
-                    if (bufferedImage.width > 300 && bufferedImage.height > 300) {
-                        var newWidth = 300.toDouble() / bufferedImage.width.toDouble();
+                    if (bufferedImage.width > 400 && bufferedImage.height > 300) {
+                        var newWidth = 400.toDouble() / bufferedImage.width.toDouble();
                         var newHeight = 300.toDouble() / bufferedImage.height.toDouble();
 
                         var use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight;
-                        println(newWidth.toString() + ", " + newHeight.toString());
                         bufferedImage = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(bufferedImage.getScaledInstance((bufferedImage.width * use).toInt(), (bufferedImage.height * use).toInt(), java.awt.image.BufferedImage.SCALE_SMOOTH));
-                        bufferedImage = bufferedImage.getSubimage(0, 0, 300, 300);
+                        bufferedImage = bufferedImage.getSubimage(0, 0, 400, 300);
                     }
                 }
                 javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png"));
 
-                context.sendMessage("Background atualizado!" + if (needsEditing) " Como a sua imagem não era 300x300, eu precisei mexer um pouquinho nela!" else "")
+                context.sendMessage("Background atualizado!" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
                 return;
             } catch (e: java.lang.Exception) {
                 e.printStackTrace();
