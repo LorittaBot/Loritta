@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     override fun getLabel(): String {
@@ -185,10 +186,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         // Deixar as bordas arredondadas, parece frescura mas com as bordas arrendondadas o perfil parece que é
         // "do Discord" e não simplesmente uma imagem no chat
-        base = ImageUtils.makeRoundedCorner(base, 15
+        base = ImageUtils.makeRoundedCorner(base, 15);
 
-
-                val os = java . io . ByteArrayOutputStream ()
+        val os = ByteArrayOutputStream()
         javax.imageio.ImageIO.write(base, "png", os)
         val inputStream = java.io.ByteArrayInputStream(os.toByteArray())
 
