@@ -23,21 +23,19 @@ import org.mongodb.morphia.annotations.Indexed
     var games = HashMap<String, Long>();
 
     fun getCurrentLevel(): XpWrapper {
-        var lvl = 0;
+        var lvl = 1;
+        var currentXp = xp;
         var expToAdvance = getExpToAdvanceFrom(lvl);
-        while (xp > expToAdvance) {
+        while (currentXp > expToAdvance) {
+            currentXp -= expToAdvance;
             lvl++;
             expToAdvance = getExpToAdvanceFrom(lvl);
         }
-        var expLeft = xp;
-        if (lvl != 0) {
-            expLeft = expToAdvance - xp;
-        }
-        return XpWrapper(lvl, expLeft);
+        return XpWrapper(lvl, currentXp);
     }
 
     fun getExpToAdvanceFrom(lvl: Int): Int {
-        return 125 + lvl * (70 + lvl)
+        return 125 + lvl * (25 + lvl)
     }
 
     data class XpWrapper(val currentLevel: Int, val expLeft: Int)

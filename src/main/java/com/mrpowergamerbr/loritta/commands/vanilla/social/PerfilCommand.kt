@@ -128,10 +128,10 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         // Barrinha de XP
         graphics.color = java.awt.Color(128, 128, 128)
-        graphics.fillRect(87, 143, 202, 19);
+        graphics.fillRect(87, 143, 300, 19);
 
         graphics.color = java.awt.Color(0, 0, 0)
-        graphics.fillRect(88, 144, 200, 17);
+        graphics.fillRect(88, 144, 298, 17);
 
         // Calcular quanto a barrinha deveria ficar
         // 145 - 199
@@ -141,12 +141,12 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
         graphics.color = Color(114, 137, 218)
-        graphics.fillRect(89, 145, (percentage * 198).toInt(), 15);
+        graphics.fillRect(89, 145, (percentage * 296).toInt(), 15);
 
         graphics.color = Color(255, 255, 255);
 
         graphics.font = bariolRegular.deriveFont(10F);
-        ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, 145, 198, 15), graphics.font);
+        ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, 145, 296, 15), graphics.font);
 
         graphics.font = mavenProBold.deriveFont(24F)
         graphics.color = java.awt.Color(118, 118, 118);
