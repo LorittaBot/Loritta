@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public class LorittaUtils {
     public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
-        if (serverConf.warnOnNoPermission()) {
+        if (serverConf.warnOnMissingPermission()) {
             for (Member member : guild.getMembers()) {
                 if (member.isOwner()) {
                     member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
