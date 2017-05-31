@@ -1,25 +1,9 @@
 package com.mrpowergamerbr.loritta;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.security.auth.login.LoginException;
-
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.cache.CacheBuilder;
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
-import com.mrpowergamerbr.loritta.utils.LorittaShards;
-import net.dv8tion.jda.core.*;
-import net.dv8tion.jda.core.entities.*;
-import org.bson.Document;
-import org.jibble.jmegahal.JMegaHal;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.model.Filters;
@@ -27,7 +11,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandManager;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.listeners.DiscordListener;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaShards;
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
@@ -43,16 +29,27 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import org.bson.Document;
+import org.jibble.jmegahal.JMegaHal;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.login.LoginException;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -87,7 +84,10 @@ public class Loritta {
 	private static TemmieMercadoPago temmieMercadoPago; // Usado na página de "doar"
 	private AudioPlayerManager playerManager;
 	private Map<Long, GuildMusicManager> musicManagers;
+	@Deprecated // TODO: Usar o messageContextCache
 	private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(10000L).expireAfterWrite(10L, TimeUnit.MINUTES).build().asMap();
+    // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
+	public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(10000L).expireAfterAccess(10L, TimeUnit.MINUTES).build().asMap();
 
 	@Getter
 	@Setter

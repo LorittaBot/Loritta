@@ -1,28 +1,23 @@
 package com.mrpowergamerbr.loritta.commands;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
-
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  * Contexto do comando executado
@@ -33,6 +28,7 @@ public class CommandContext {
 	public MessageReceivedEvent event;
 	public CommandBase cmd;
 	public String[] args;
+	public HashMap<String, Object> metadata = new HashMap<>();
 
 	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {	
 		this.lorittaUser = new LorittaUser(event.getMember(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
@@ -99,7 +95,9 @@ public class CommandContext {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				return event.getTextChannel().sendMessage(message).complete();
+				Message sentMessage = event.getTextChannel().sendMessage(message).complete();
+				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
+				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 				return null;

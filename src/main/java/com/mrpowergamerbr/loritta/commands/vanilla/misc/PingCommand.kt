@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
 class PingCommand : CommandBase() {
     override fun getLabel(): String {
@@ -14,5 +16,9 @@ class PingCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
         context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + context.event.jda.ping + "ms (Shard ${context.event.jda.shardInfo.shardId})")
+    }
+
+    override fun onCommandReactionFeedback(context: CommandContext?, e: GenericMessageReactionEvent?, msg: Message) {
+        msg.editMessage("kk eae men").complete();
     }
 }

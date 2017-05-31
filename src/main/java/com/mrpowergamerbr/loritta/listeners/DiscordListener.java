@@ -1,30 +1,25 @@
 package com.mrpowergamerbr.loritta.listeners;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
-import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
-import com.mrpowergamerbr.loritta.whistlers.ICode;
-import com.mrpowergamerbr.loritta.whistlers.IPrecondition;
-import com.mrpowergamerbr.loritta.whistlers.ReactionCode;
-import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
-import com.mrpowergamerbr.loritta.whistlers.Whistler;
+import com.mrpowergamerbr.loritta.whistlers.*;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DiscordListener extends ListenerAdapter {
 	Loritta loritta;
@@ -92,6 +87,18 @@ public class DiscordListener extends ListenerAdapter {
 
 	@Override
 	public void onGenericMessageReaction(GenericMessageReactionEvent e) {
+		if (LorittaLauncher.getInstance().messageContextCache.containsKey(e.getMessageId())) {
+			CommandContext context = (CommandContext) LorittaLauncher.getInstance().messageContextCache.get(e.getMessageId());
+			Thread t = new Thread() {
+			    public void run() {
+                    Message msg = e.getTextChannel().getMessageById(e.getMessageId()).complete();
+                    if (msg != null && !e.getMember().getUser().isBot()) {
+                        context.cmd.onCommandReactionFeedback(context, e, msg);
+                    }
+                }
+            };
+            t.start();
+		}
 	    if (LorittaLauncher.getInstance().getMusicMessagesCache().containsKey(e.getMessageId())) {
             AudioTrackWrapper atw = (AudioTrackWrapper) LorittaLauncher.getInstance().getMusicMessagesCache().get(e.getMessageId());
 

@@ -14,7 +14,8 @@ class LorittaShards {
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {
             var guild = shard.getGuildById(id);
-            if (guild != null) { return guild; }
+            if (guild != null) {
+                return guild; }
         }
         return null;
     }
@@ -37,6 +38,16 @@ class LorittaShards {
             users.addAll(shard.users);
         }
         return users;
+    }
+
+    fun getUserById(id: String?): User? {
+        for (shard in shards) {
+            var user = shard.getUserById(id);
+            if (user != null) {
+                return user;
+            }
+        }
+        return null;
     }
 
     fun getMutualGuilds(user: User): List<Guild> {
