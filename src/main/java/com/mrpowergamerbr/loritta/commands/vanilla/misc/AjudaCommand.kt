@@ -31,10 +31,10 @@ class AjudaCommand : CommandBase() {
         var description = "Olá " + context.userHandle.asMention + ", eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975)!\n\nAtualmente você está vendo a ajuda do **" + context.guild.name + "**!"
 
         var builder = EmbedBuilder()
-                    .setColor(Color(39, 153, 201))
-                    .setTitle("💁 Ajuda da Loritta")
-                    .setDescription(description)
-                    .setThumbnail("https://loritta.website/assets/img/katy_commands3.png")
+                .setColor(Color(39, 153, 201))
+                .setTitle("💁 Ajuda da Loritta")
+                .setDescription(description)
+                .setThumbnail("https://loritta.website/assets/img/katy_commands3.png")
 
         var firstMsgSent = fastEmbedSend(context, builder.build()) // Nós iremos dar pin nela
 
@@ -44,11 +44,12 @@ class AjudaCommand : CommandBase() {
 
         val disabledCommands = LorittaLauncher.getInstance().commandManager.getCommandsDisabledIn(context.config)
 
+        val socialCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.SOCIAL, "http://i.imgur.com/Ql6EiAw.png")
         val discordCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")
         val minecraftCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png")
         val undertaleCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
-        val funCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/gKBHNzL.png")
-        val miscCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/ssNe7dx.png")
+        val funCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
+        val miscCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
 
         val aboutMe = EmbedBuilder()
         aboutMe.setTitle("Sobre o Criador", null)
@@ -59,6 +60,7 @@ class AjudaCommand : CommandBase() {
         aboutMe.addField("Twitter", "@mrpowergamerbr", true)
 
         val sparklyPower = EmbedBuilder()
+                .setColor(Color(0, 255, 168))
         sparklyPower.setTitle("Reclames do Plim Plim #1", null)
         sparklyPower.setThumbnail("http://sparklypower.net/SparklyPower_Logo_250.png")
         sparklyPower.setDescription("Gostou da qualidade do Loritta? Gosta de Minecraft? Survival? Que tal jogar no SparklyPower então? :slight_smile:")
@@ -67,6 +69,7 @@ class AjudaCommand : CommandBase() {
 
         val additionalInfoEmbed = EmbedBuilder()
         additionalInfoEmbed.setTitle("Informações Adicionais", null)
+                .setColor(Color(39, 153, 201))
         additionalInfoEmbed.setDescription("[Todos os comandos da Loritta](https://loritta.website/comandos)\n"
                 + "[Discord da nossa querida Loritta](https://discord.gg/3rXgN8x)\n"
                 + "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
@@ -75,6 +78,9 @@ class AjudaCommand : CommandBase() {
 
         val cmdOptions = context.config.getCommandOptionsFor(this)
 
+        if (socialCmds != null) {
+            fastEmbedSend(context, socialCmds);
+        }
         if (discordCmds != null) {
             fastEmbedSend(context, discordCmds);
         }
@@ -95,7 +101,7 @@ class AjudaCommand : CommandBase() {
         context.sendMessage(additionalInfoEmbed.build())
 
         firstMsgSent.pin().complete();
-        
+
         // E agora vamos enviar o aviso do pin
         context.sendFile(File(Loritta.FOLDER + "pinned.png"), "aviso.png", "**Se você quiser voltar para o topo das mensagens de ajuda do " + context.guild.name + ", então clique nas mensagens fixadas!**")
     }
@@ -123,6 +129,12 @@ class AjudaCommand : CommandBase() {
 
         if (cat == CommandCategory.DISCORD) {
             embed.setColor(Color(121, 141, 207))
+        } else if (cat == CommandCategory.SOCIAL) {
+            embed.setColor(Color(231, 150, 90));
+        } else if (cat == CommandCategory.MINECRAFT) {
+            embed.setColor(Color(50, 141, 145))
+        } else if (cat == CommandCategory.MISC) {
+            embed.setColor(Color(255, 176, 0));
         } else {
             embed.setColor(Color(186, 0, 239))
         }
@@ -133,7 +145,7 @@ class AjudaCommand : CommandBase() {
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-                    description += "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + "\n" + cmd.description + "\n\n";
+                    description += "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " ➡ " + cmd.description + "\n";
                 }
             }
             embed.setDescription(description)
