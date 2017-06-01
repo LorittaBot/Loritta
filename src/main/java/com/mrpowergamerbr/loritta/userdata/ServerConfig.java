@@ -26,21 +26,21 @@ public class ServerConfig {
     @Id
     @Indexed(options = @IndexOptions(unique = true))
     String guildId; // Guild ID
-    String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
-    ArrayList<String> disabledCommands = new ArrayList<String>(); // Comandos desativados
+    public String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
+    public ArrayList<String> disabledCommands = new ArrayList<String>(); // Comandos desativados
     DebugOptions debugOptions = new DebugOptions();
-    boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?
+    public boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?
     long creationDate = System.currentTimeMillis();
 
-    HashMap<String, CommandOptions> commandOptions = new HashMap<String, CommandOptions>(); // Command Options
+    public HashMap<String, CommandOptions> commandOptions = new HashMap<String, CommandOptions>(); // Command Options
     // Os command options são salvos assim:
     // CommandBase.getClass().getSimpleName() - CommandOptions
 
     // boolean warnOnFail; // Avisar ao usuário quando escrever o comando errado?
-    boolean explainOnCommandRun = true; // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
-    boolean explainInPrivate = false; // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?
-    boolean commandOutputInPrivate = false; // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
-    boolean warnOnMissingPermission = false; // Avisar quando a Loritta não tem permissão para falar em um canal específico
+    public boolean explainOnCommandRun = true; // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
+    public boolean explainInPrivate = false; // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?
+    public boolean commandOutputInPrivate = false; // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
+    public boolean warnOnMissingPermission = false; // Avisar quando a Loritta não tem permissão para falar em um canal específico
     public boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
 
     ArrayList<Whistler> whistlers = new ArrayList<Whistler>(); // Whistlers

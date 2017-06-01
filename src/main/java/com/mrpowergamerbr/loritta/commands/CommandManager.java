@@ -31,8 +31,8 @@ import java.util.Map;
 
 @Getter
 public class CommandManager {
-    private List<CommandBase> commandMap = new ArrayList<CommandBase>();
-    private Map<String, Class<?>> defaultCmdOptions = new HashMap<String, Class<?>>();
+    public List<CommandBase> commandMap = new ArrayList<CommandBase>();
+    public Map<String, Class<?>> defaultCmdOptions = new HashMap<String, Class<?>>();
 
     public CommandManager() {
         commandMap.add(new BotInfoCommand());
