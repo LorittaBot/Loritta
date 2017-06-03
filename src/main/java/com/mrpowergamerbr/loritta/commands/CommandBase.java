@@ -1,6 +1,8 @@
 package com.mrpowergamerbr.loritta.commands;
 
 import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontend.utils.CmdVisualizerWrapper;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -67,6 +69,14 @@ public abstract class CommandBase {
             }
         }
         if (run) {
+            Thread t = new Thread() {
+                public void run() {
+                    CmdVisualizerWrapper cmdVisWrap = new CmdVisualizerWrapper(ev.getAuthor().getName(), ev.getAuthor().getDiscriminator(), ev.getAuthor().getEffectiveAvatarUrl(), ev.getGuild().getName(), ev.getGuild().getIconUrl(), ev.getMessage().getContent());
+
+                    LorittaWebsite.sendToEveryone(Loritta.getGson().toJson(cmdVisWrap));
+                }
+            };
+            t.start();
             if (hasCommandFeedback()) {
                 if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
                     LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
@@ -132,5 +142,6 @@ public abstract class CommandBase {
         }
     }
 
-    public void onCommandReactionFeedback(CommandContext context, GenericMessageReactionEvent e, Message msg) {} // Quando alguém usa uma reaction na mensagem
+    public void onCommandReactionFeedback(CommandContext context, GenericMessageReactionEvent e, Message msg) {
+    } // Quando alguém usa uma reaction na mensagem
 }
