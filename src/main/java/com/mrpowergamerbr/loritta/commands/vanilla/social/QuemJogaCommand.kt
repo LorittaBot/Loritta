@@ -86,11 +86,15 @@ class QuemJogaCommand : CommandBase() {
             }
         }
         if (list.isEmpty()) {
-            message.editMessage(context.getAsMention(true) + "Ninguém joga `" + game + "`... 😢").complete() // Editar a mensagem, avisando que nada foi encontrado (triste...)
+            message.editMessage(context.getAsMention(true) + "Infelizmente ninguém joga `" + game + "`... 😢").complete() // Editar a mensagem, avisando que nada foi encontrado (triste...)
         } else {
             var sorted = list.sortedWith(compareBy({ it.playingNow })).reversed();
             var idx = 0;
-            sorted = sorted.subList(((page - 1) * 15), page * 15)
+            var cut = page * 15;
+            if (cut > sorted.size) {
+                cut = sorted.size;
+            }
+            sorted = sorted.subList(((page - 1) * 15), cut)
             for (wrapper in sorted) {
                 if (description.length > 1900) {
                     continue;
