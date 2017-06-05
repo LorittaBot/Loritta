@@ -70,6 +70,7 @@ public class CommandManager {
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
+        commandMap.add(new SC2000ParserCommand());
 
         // =======[ SOCIAL ]======
         commandMap.add(new PerfilCommand());

@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>Loritta</groupId>
     <artifactId>loritta</artifactId>
@@ -7,8 +7,8 @@
 
     <properties>
         <kotlin.version>1.1.2-4</kotlin.version>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     </properties>
-
 
     <repositories>
         <repository>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>TemmieWebhook</artifactId>
-            <version>-SNAPSHOT</version>
+            <version>59de40c3b6</version>
         </dependency>
         <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
@@ -120,6 +120,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20160810</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MrPowerGamerBR</groupId>
+            <artifactId>TemmieSC2KParser</artifactId>
+            <version>15579d79e2</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
