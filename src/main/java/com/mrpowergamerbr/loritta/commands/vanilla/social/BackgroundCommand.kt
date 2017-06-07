@@ -1,20 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
-import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.image.BufferedImage
 
-import java.io.File
-import java.lang.Exception
-import java.net.HttpURLConnection
-import java.net.URL
-import javax.imageio.ImageIO
-
 class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
-    override fun getLabel():String {
+    override fun getLabel(): String {
         return "background";
     }
 
@@ -48,7 +37,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                         var newHeight = 300.toDouble() / bufferedImage.height.toDouble();
                         var use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight;
                         bufferedImage = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(bufferedImage.getScaledInstance((bufferedImage.width * use).toInt(), (bufferedImage.height * use).toInt(), java.awt.image.BufferedImage.SCALE_SMOOTH));
-                        bufferedImage = bufferedImage.getSubimage(0, 0, 400, 300);
+                        bufferedImage = bufferedImage.getSubimage(0, 0, Math.min(bufferedImage.width, 400), Math.min(bufferedImage.height, 300));
                     }
                 }
                 javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png"));
@@ -57,7 +46,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                 return;
             } catch (e: java.lang.Exception) {
                 e.printStackTrace();
-                context.sendMessage(context.getAsMention(true) + "Link inválido!");
+                context.sendMessage(context.getAsMention(true) + "Link inválido! (Não se esqueça, você precisa enviar o link direto para a imagem!)");
                 return;
             }
         }
