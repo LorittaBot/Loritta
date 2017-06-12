@@ -85,9 +85,9 @@ public class Loritta {
     private AudioPlayerManager playerManager;
     private Map<Long, GuildMusicManager> musicManagers;
     @Deprecated // TODO: Usar o messageContextCache
-    private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(10000L).expireAfterWrite(10L, TimeUnit.MINUTES).build().asMap();
+    private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterWrite(5L, TimeUnit.MINUTES).build().asMap();
     // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
-    public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(10000L).expireAfterAccess(10L, TimeUnit.MINUTES).build().asMap();
+    public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build().asMap();
 
     @Getter
     @Setter

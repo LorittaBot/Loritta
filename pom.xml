@@ -122,11 +122,6 @@
             <version>20160810</version>
         </dependency>
         <dependency>
-            <groupId>com.github.MrPowerGamerBR</groupId>
-            <artifactId>TemmieSC2KParser</artifactId>
-            <version>15579d79e2</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jre8</artifactId>
             <version>${kotlin.version}</version>
