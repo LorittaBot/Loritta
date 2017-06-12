@@ -17,7 +17,7 @@ import com.mrpowergamerbr.loritta.whistlers.CodeBlock;
 import com.mrpowergamerbr.loritta.whistlers.ReplyCode;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
