@@ -14,21 +14,12 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaShards;
-import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.*;
@@ -44,7 +35,9 @@ import org.mongodb.morphia.Morphia;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SplittableRandom;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -82,10 +75,10 @@ public class Loritta {
     private static String clientSecret;
     @Getter
     private static TemmieMercadoPago temmieMercadoPago; // Usado na página de "doar"
-    private AudioPlayerManager playerManager;
-    private Map<Long, GuildMusicManager> musicManagers;
+    // private AudioPlayerManager playerManager;
+    // private Map<Long, GuildMusicManager> musicManagers;
     @Deprecated // TODO: Usar o messageContextCache
-    private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterWrite(5L, TimeUnit.MINUTES).build().asMap();
+    // private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterWrite(5L, TimeUnit.MINUTES).build().asMap();
     // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
     public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build().asMap();
 
@@ -230,7 +223,7 @@ public class Loritta {
 
         new Thread(rektUpdater, "Rekt").start(); // Pronto!
 
-        Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
+        /* Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
             while (true) {
                 for (Guild guild : lorittaShards.getGuilds()) {
                     ServerConfig conf = getServerConfigForGuild(guild.getId());
@@ -267,7 +260,7 @@ public class Loritta {
         this.playerManager = new DefaultAudioPlayerManager();
 
         AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager); */
 
         // Vamos registrar o nosso event listener em todas as shards!
         for (JDA jda : lorittaShards.getShards()) {
@@ -282,6 +275,7 @@ public class Loritta {
      * @param guildId
      * @return ServerConfig
      */
+
     public ServerConfig getServerConfigForGuild(String guildId) {
         try {
             Document doc = mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("_id", guildId)).first();
@@ -355,7 +349,7 @@ public class Loritta {
     }
 
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
+        /* long guildId = Long.parseLong(guild.getId());
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
@@ -363,9 +357,9 @@ public class Loritta {
             musicManagers.put(guildId, musicManager);
         }
 
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler()); */
 
-        return musicManager;
+        return null;
     }
 
     public void loadAndPlay(CommandContext context, ServerConfig conf, final TextChannel channel, final String trackUrl) {
@@ -373,7 +367,7 @@ public class Loritta {
     }
 
     public void loadAndPlay(CommandContext context, ServerConfig conf, final TextChannel channel, final String trackUrl, boolean alreadyChecked) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        /* GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -421,11 +415,11 @@ public class Loritta {
             public void loadFailed(FriendlyException exception) {
                 channel.sendMessage(context.getAsMention(true) + "Deu ruim: " + exception.getMessage()).queue();
             }
-        });
+        }); */
     }
 
     public void loadAndPlayNoFeedback(Guild guild, ServerConfig conf, final String trackUrl) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+        /* GuildMusicManager musicManager = getGuildAudioPlayer(guild);
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -445,41 +439,41 @@ public class Loritta {
             @Override
             public void loadFailed(FriendlyException exception) {
             }
-        });
+        }); */
     }
 
     private void play(Guild guild, ServerConfig conf, GuildMusicManager musicManager, AudioTrackWrapper trackWrapper) {
-        connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
+        /* connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
 
-        musicManager.scheduler.queue(trackWrapper);
+        musicManager.scheduler.queue(trackWrapper); */
     }
 
     public void skipTrack(TextChannel channel) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        /* GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.nextTrack();
 
-        channel.sendMessage("🤹 Música pulada!").queue();
+        channel.sendMessage("🤹 Música pulada!").queue();*/
     }
 
     public void skipTrack(Guild guild) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(guild);
-        musicManager.scheduler.nextTrack();
+        /* GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+        musicManager.scheduler.nextTrack(); */
     }
 
     private static void connectToVoiceChannel(String id, AudioManager audioManager) {
-        if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
+        /* if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
             audioManager.closeAudioConnection(); // Desconecte do canal atual!
         }
         /* if (audioManager.isConnected() && !audioManager.getConnectedChannel().getId().equals(id)) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
             audioManager.closeAudioConnection(); // Desconecte do canal atual!
 		}
 		if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) { */
-        for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
+        /* for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
             if (voiceChannel.getId().equals(id)) {
                 audioManager.openAudioConnection(voiceChannel);
                 break;
             }
-        }
+        } */
         // }
     }
 }

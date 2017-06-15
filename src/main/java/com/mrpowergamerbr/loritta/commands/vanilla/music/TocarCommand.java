@@ -1,10 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music;
 
-import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
-import net.dv8tion.jda.core.Permission;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +30,7 @@ public class TocarCommand extends CommandBase {
 
     @Override
     public void run(CommandContext context) {
-        if (context.getArgs().length >= 1) {
+        /* if (context.getArgs().length >= 1) {
             String music = String.join(" ", context.getArgs());
 
             if (music.equalsIgnoreCase("pular") && context.getHandle().hasPermission(Permission.MANAGE_SERVER)) {
@@ -52,6 +50,6 @@ public class TocarCommand extends CommandBase {
             LorittaLauncher.getInstance().loadAndPlay(context, context.getConfig(), context.getEvent().getTextChannel(), music);
         } else {
             context.explain();
-        }
+        } */
     }
 }

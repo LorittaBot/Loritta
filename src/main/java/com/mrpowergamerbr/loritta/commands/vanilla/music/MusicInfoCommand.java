@@ -1,42 +1,37 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
-import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
-import net.dv8tion.jda.core.entities.Message;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MusicInfoCommand extends CommandBase {
-	@Override
-	public String getLabel() {
-		return "tocando";
-	}
+    @Override
+    public String getLabel() {
+        return "tocando";
+    }
 
-	@Override
-	public String getDescription() {
-		return "Fala a música que está tocando agora.";
-	}
+    @Override
+    public String getDescription() {
+        return "Fala a música que está tocando agora.";
+    }
 
-	@Override
-	public List<String> getExample() {
-		return Arrays.asList("", "playlist", "todos");
-	}
+    @Override
+    public List<String> getExample() {
+        return Arrays.asList("", "playlist", "todos");
+    }
 
-	@Override
-	public CommandCategory getCategory() {
-		return CommandCategory.FUN;
-	}
+    @Override
+    public CommandCategory getCategory() {
+        return CommandCategory.FUN;
+    }
 
-	@Override
-	public void run(CommandContext context) {
-		GuildMusicManager manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.getGuild());
-		if (context.getArgs().length == 1) {	
+    @Override
+    public void run(CommandContext context) {
+        /* GuildMusicManager manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.getGuild());
+        if (context.getArgs().length == 1) {
 			if (context.getArgs()[0].equalsIgnoreCase("playlist")) {
 				List<AudioTrackWrapper> songs = manager.scheduler.getQueue().stream().collect(Collectors.toList()); // Para não remover tudo da nossa BlockingQueue
 				String txt = "Na fila...\n";
@@ -67,6 +62,6 @@ public class MusicInfoCommand extends CommandBase {
                 LorittaLauncher.getInstance().getMusicMessagesCache().put(message.getId(), manager.scheduler.getCurrentTrack());
 				message.addReaction("\uD83E\uDD26").complete();
 			}
-		}
-	}
+		} */
+    }
 }

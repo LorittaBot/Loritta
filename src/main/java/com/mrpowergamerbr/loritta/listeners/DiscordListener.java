@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.whistlers.*;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -19,7 +18,6 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DiscordListener extends ListenerAdapter {
     Loritta loritta;
@@ -100,7 +98,7 @@ public class DiscordListener extends ListenerAdapter {
             };
             t.start();
         }
-        if (LorittaLauncher.getInstance().getMusicMessagesCache().containsKey(e.getMessageId())) {
+        /* if (LorittaLauncher.getInstance().getMusicMessagesCache().containsKey(e.getMessageId())) {
             AudioTrackWrapper atw = (AudioTrackWrapper) LorittaLauncher.getInstance().getMusicMessagesCache().get(e.getMessageId());
 
             int count = e.getReaction().getUsers().complete().stream().filter((user) -> !user.isBot()).collect(Collectors.toList()).size();
@@ -120,7 +118,7 @@ public class DiscordListener extends ListenerAdapter {
                     }
                 }
             }
-        }
+        } */
     }
 
     // TODO: Isto não deveria ficar aqui...
