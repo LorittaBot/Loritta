@@ -1,5 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
+import com.google.common.collect.ImmutableMap;
+import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandCategory;
+import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,19 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.SplittableRandom;
-
-import javax.imageio.ImageIO;
-
-import com.google.common.collect.ImmutableMap;
-import com.mrpowergamerbr.loritta.commands.CommandBase;
-import com.mrpowergamerbr.loritta.commands.CommandCategory;
-import com.mrpowergamerbr.loritta.commands.CommandContext;
-import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator;
-
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
 
 public class TretaNewsCommand extends CommandBase {
 	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
@@ -58,6 +57,7 @@ public class TretaNewsCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
+		if (!LorittaUtils.canUploadFiles(context)) { return; }
 		try {
 			User user1 = null;
 			User user2 = null;

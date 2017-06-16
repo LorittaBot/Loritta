@@ -1,29 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
-
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -31,6 +13,15 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TristeRealidadeCommand extends CommandBase {
 	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
@@ -52,6 +43,7 @@ public class TristeRealidadeCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
+		if (!LorittaUtils.canUploadFiles(context)) { return; }
 		// ok
 		try {
 			TristeRealidadeCommandOptions cmdOpti = (TristeRealidadeCommandOptions) context.getConfig().getCommandOptionsFor(this);

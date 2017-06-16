@@ -1,25 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
-
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.ImageUtils;
-
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.MessageBuilder;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 
 public class PrimeirasPalavrasCommand extends CommandBase {
 	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
@@ -42,6 +34,7 @@ public class PrimeirasPalavrasCommand extends CommandBase {
 	@Override
 	public void run(CommandContext context) {
 		if (context.getArgs().length >= 1) {
+			if (!LorittaUtils.canUploadFiles(context)) { return; }
 			try {
 				String str = String.join(" ", context.getArgs());
 

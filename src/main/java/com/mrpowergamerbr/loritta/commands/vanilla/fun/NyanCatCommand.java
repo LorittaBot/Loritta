@@ -1,6 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.awt.Image;
+import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import net.dv8tion.jda.core.MessageBuilder;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,16 +16,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.mrpowergamerbr.loritta.Loritta;
-import com.mrpowergamerbr.loritta.commands.CommandBase;
-import com.mrpowergamerbr.loritta.commands.CommandContext;
-
-import net.dv8tion.jda.core.MessageBuilder;
 
 public class NyanCatCommand extends CommandBase {
 	@Override
@@ -42,6 +40,8 @@ public class NyanCatCommand extends CommandBase {
 	
 	@Override
 	public void run(CommandContext context) {
+		if (!LorittaUtils.canUploadFiles(context)) { return; }
+
 		int times = 0;
 		if (context.getArgs().length == 1) {
 			times = StringUtils.countMatches(context.getArgs()[0], "a");

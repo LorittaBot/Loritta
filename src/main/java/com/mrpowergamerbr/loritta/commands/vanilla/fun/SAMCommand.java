@@ -1,6 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.awt.Image;
+import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandCategory;
+import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import net.dv8tion.jda.core.MessageBuilder;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,14 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import com.mrpowergamerbr.loritta.Loritta;
-import com.mrpowergamerbr.loritta.commands.CommandBase;
-import com.mrpowergamerbr.loritta.commands.CommandCategory;
-import com.mrpowergamerbr.loritta.commands.CommandContext;
-import net.dv8tion.jda.core.MessageBuilder;
 
 public class SAMCommand extends CommandBase {
 	@Override
@@ -42,7 +42,8 @@ public class SAMCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
-		if (context.getArgs().length >= 1) {	
+		if (context.getArgs().length >= 1) {
+			if (!LorittaUtils.canUploadFiles(context)) { return; }
 			String link = context.getArgs()[0];
 
 			double div = 1.5;

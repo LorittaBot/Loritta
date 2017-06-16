@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -26,6 +27,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     }
 
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
+		if (!LorittaUtils.canUploadFiles(context)) { return }
         var base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as java.awt.Graphics2D;
         graphics.setRenderingHint(

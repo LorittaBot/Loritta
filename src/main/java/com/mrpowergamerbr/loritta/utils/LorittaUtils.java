@@ -1,6 +1,8 @@
 package com.mrpowergamerbr.loritta.utils;
 
+import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -13,6 +15,14 @@ import java.net.URL;
 import java.util.UUID;
 
 public class LorittaUtils {
+    public static boolean canUploadFiles(CommandContext context) {
+        if (!context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
+        	context.sendMessage("❌ | Eu não tenho permissão para enviar arquivos aqui!");
+        	return false;
+		}
+		return true;
+    }
+
     public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
         if (serverConf.warnOnMissingPermission()) {
             for (Member member : guild.getMembers()) {

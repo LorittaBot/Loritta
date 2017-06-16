@@ -1,32 +1,22 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.undertale;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.ImageUtils;
-
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 public class UndertaleBoxCommand extends CommandBase {
 	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
@@ -60,6 +50,7 @@ public class UndertaleBoxCommand extends CommandBase {
 	public void run(CommandContext context) {
 		try {
 			if (context.getArgs().length >= 1) {
+				if (!LorittaUtils.canUploadFiles(context)) { return; }
 				Member member = context.getHandle();
 				if (context.getMessage().getMentionedUsers().size() == 1) {
 					member = context.getGuild().getMember(context.getMessage().getMentionedUsers().get(0));
