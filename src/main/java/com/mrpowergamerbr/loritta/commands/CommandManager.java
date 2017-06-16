@@ -76,7 +76,6 @@ public class CommandManager {
         commandMap.add(new GamesCommand());
         commandMap.add(new BackgroundCommand());
         commandMap.add(new SobreMimCommand());
-        commandMap.add(new QuemJogaCommand());
 
         // =======[ UTILS ]=======
         commandMap.add(new HexCommand());
