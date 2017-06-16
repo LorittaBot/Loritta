@@ -237,8 +237,6 @@ public class Loritta {
 
                     if (conf.musicConfig().isEnabled()) {
                         connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
-                        getGuildAudioPlayer(guild);
-                        getGuildAudioPlayer(guild);
                     }
                 }
                 for (GuildMusicManager mm : musicManagers.values()) {
@@ -249,7 +247,7 @@ public class Loritta {
                             String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
 
                             // E agora carregue a música
-                            com.mrpowergamerbr.loritta.LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
+                            LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
                         }
                     }
                 }
@@ -440,10 +438,18 @@ public class Loritta {
 
             @Override
             public void noMatches() {
+				if (conf.musicConfig().getUrls().contains(trackUrl)) {
+					conf.musicConfig().getUrls().remove(trackUrl);
+					ds.save(conf);
+				}
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
+                if (conf.musicConfig().getUrls().contains(trackUrl)) {
+                	conf.musicConfig().getUrls().remove(trackUrl);
+                	ds.save(conf);
+				}
             }
         });
     }

@@ -14,8 +14,7 @@ class LorittaShards {
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {
             var guild = shard.getGuildById(id);
-            if (guild != null) {
-                return guild; }
+            if (guild != null) { return guild; }
         }
         return null;
     }

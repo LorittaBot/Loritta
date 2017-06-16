@@ -1,22 +1,28 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     override fun getLabel(): String {
         return "perfil";
     }
 
+    override fun getAliases(): MutableList<String> {
+        return Arrays.asList("profile");
+    }
+
     override fun getDescription(): String {
         return "Mostra o seu perfil!";
     }
 
-    override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
-        return com.mrpowergamerbr.loritta.commands.CommandCategory.SOCIAL;
+    override fun getCategory(): CommandCategory {
+        return CommandCategory.SOCIAL;
     }
 
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {

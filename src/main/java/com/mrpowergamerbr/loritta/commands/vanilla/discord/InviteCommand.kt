@@ -26,7 +26,7 @@ class InviteCommand : CommandBase() {
     override fun run(context: CommandContext) {
         var embed = EmbedBuilder()
                 .setDescription("Você quer me adicionar em outros servidores/guilds do Discord? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975) para me adicionar em outro servidor!\n\nSe você quiser configurar algumas coisas (como o meu prefixo, comandos ativados, etc) então acesse o painel de administração clicando [aqui](http://loritta.website/auth)!\n\nE, é claro, entre na guild da Loritta para dar sugestões, reportar bugs e muito mais! https://discord.gg/3rXgN8x")
-                .setThumbnail("http://loritta.website/assets/img/loritta_guild_v3.png")
+                .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
                 .build()
 
         context.sendMessage(embed)

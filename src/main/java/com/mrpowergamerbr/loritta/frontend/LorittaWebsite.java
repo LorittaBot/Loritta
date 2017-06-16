@@ -21,7 +21,7 @@ public class LorittaWebsite extends Jooby {
     private static PebbleEngine engine;
 
     @Getter
-    private static final ConcurrentMap<Object, Object> oAuth2 = CacheBuilder.newBuilder().expireAfterAccess(14L, TimeUnit.DAYS).build().asMap(); // 14 dias = refresh tokens são invalidados após 14 dias
+    private static final ConcurrentMap<Object, Object> oAuth2 = CacheBuilder.newBuilder().expireAfterAccess(1L, TimeUnit.DAYS).maximumSize(1000).build().asMap(); // 14 dias = refresh tokens são invalidados após 14 dias
 
     {
         port(4568);
