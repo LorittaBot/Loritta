@@ -2,7 +2,7 @@ Loritta
 -------------
 <p align="center">
 <br>
-<img height="384" src="http://i.imgur.com/Meuavoq.png">
+<img height="384" src="http://loritta.website/assets/img/loritta_angel_v2.png">
 <br>
 <a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
 <a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
