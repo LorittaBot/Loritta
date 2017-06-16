@@ -236,6 +236,7 @@ public class Loritta {
                     ServerConfig conf = getServerConfigForGuild(guild.getId());
 
                     if (conf.musicConfig().isEnabled()) {
+						getGuildAudioPlayer(guild); // Criar Audio Player para a guild
                         connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
                     }
                 }
