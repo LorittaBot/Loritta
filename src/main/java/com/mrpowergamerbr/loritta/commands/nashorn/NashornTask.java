@@ -17,6 +17,7 @@ class NashornTask implements Callable<Void> {
 	CommandContext ogContext;
 	NashornContext context;
 	boolean running = true;
+	int autoKill = 0;
 
 	public NashornTask(ScriptEngine engine, String javaScript, CommandContext ogContext, NashornContext context) {
 		this.engine = engine;
@@ -36,7 +37,8 @@ class NashornTask implements Callable<Void> {
 				public void run() {
 					while (running) {
 						System.out.println("bytes: " + sunBean.getThreadAllocatedBytes(id));
-						if (sunBean.getThreadAllocatedBytes(id) > 4e+6) {
+						autoKill++;
+						if (sunBean.getThreadAllocatedBytes(id) > 113701120 || autoKill > 500) {
 							System.out.println("!!! Matando thread");
 							running = false;
 							currentThread.stop(); // stop now!
@@ -54,7 +56,6 @@ class NashornTask implements Callable<Void> {
 			engine.eval(javaScript);
 			invocable.invokeFunction("nashornCommand", context, new NashornUtils());
 		} catch (Exception e) {
-			e.printStackTrace();
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
 			builder.setDescription("```" + (e.getCause() != null ?
