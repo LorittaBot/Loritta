@@ -17,10 +17,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -90,13 +87,19 @@ public class NashornCommand {
 			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto, utils) {" + inlineMethods + javaScript + "}", ogContext, context));
 			future.get(3, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			e.printStackTrace();
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
-			builder.setDescription("```" + (e.getCause() != null ?
-					e.getCause().getMessage().trim() :
-					ExceptionUtils.getStackTrace(e)
-							.substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length()))) + "```");
+			String description = "Irineu, você não sabe e nem eu!";
+			if (e instanceof ExecutionException) {
+				description = "A thread que executava este comando agora está nos céus... *+angel*";
+			} else {
+				if (e != null && e.getCause() != null && e.getCause().getMessage() != null) {
+					description = e.getCause().getMessage().trim();
+				} else if (e != null) {
+					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length()));
+				}
+			}
+			builder.setDescription("```" + description + "```");
 			builder.setFooter(
 					"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null);
 			builder.setColor(Color.RED);
