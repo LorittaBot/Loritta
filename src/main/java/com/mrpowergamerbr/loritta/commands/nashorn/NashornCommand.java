@@ -91,7 +91,7 @@ public class NashornCommand {
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
 			String description = "Irineu, você não sabe e nem eu!";
 			if (e instanceof ExecutionException) {
-				description = "A thread que executava este comando agora está nos céus... *+angel*";
+				description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)";
 			} else {
 				if (e != null && e.getCause() != null && e.getCause().getMessage() != null) {
 					description = e.getCause().getMessage().trim();
