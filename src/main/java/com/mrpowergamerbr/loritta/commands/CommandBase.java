@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands;
 
 import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -52,7 +53,7 @@ public abstract class CommandBase {
         return getDescription();
     }
 
-    public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
+    public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
         String message = ev.getMessage().getContent();
         boolean run = false;
         String label = conf.commandPrefix() + getLabel();
@@ -84,6 +85,9 @@ public abstract class CommandBase {
                 return true;
             }
             CommandContext context = new CommandContext(conf, ev, this, args);
+            if (LorittaUtils.handleIfBanned(context, profile)) {
+                return true;
+            }
             run(context);
             return true;
         }

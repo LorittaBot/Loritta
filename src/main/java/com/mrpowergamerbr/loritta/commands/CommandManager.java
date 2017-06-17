@@ -7,10 +7,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.*;
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.NashornTestCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
@@ -107,6 +104,8 @@ public class CommandManager {
         commandMap.add(new EvalCommand());
         commandMap.add(new NashornTestCommand());
         commandMap.add(new ServerInvitesCommand());
+        commandMap.add(new LorittaBanCommand());
+        commandMap.add(new LorittaUnbanCommand());
 
         for (CommandBase cmdBase : this.getCommandMap()) {
             defaultCmdOptions.put(cmdBase.getClass().getSimpleName(), CommandOptions.class);

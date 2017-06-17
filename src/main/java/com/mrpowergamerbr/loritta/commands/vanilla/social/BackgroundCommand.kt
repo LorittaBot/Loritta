@@ -54,7 +54,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         var imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
         var builder = net.dv8tion.jda.core.EmbedBuilder()
-                .setDescription("Altere o seu background colocando o link ao lado do comando!\n\nAtualmente o seu background é...")
+                .setDescription("Altere o seu background colocando o link ao lado do comando!\n\nAtualmente o seu background é...\n\n(Backgrounds NSFW terão a sua conta banida!)")
                 .setImage(imageUrl)
                 .build();
         context.sendMessage(builder);

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils;
 
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -21,6 +22,14 @@ public class LorittaUtils {
         	return false;
 		}
 		return true;
+    }
+
+    public static boolean handleIfBanned(CommandContext context, LorittaProfile profile) {
+        if (profile.isBanned()) {
+            context.sendMessage("\uD83D\uDE45 | Você está **banido**\n\n**Motivo:** " + profile.getBanReason() + "\n\nEnvie uma mensagem privada para o MrPowerGamerBR#4185 caso queira ser desbanido.");
+            return true;
+        }
+        return false;
     }
 
     public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {

@@ -2,7 +2,9 @@ package com.mrpowergamerbr.loritta.commands.nashorn;
 
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import jdk.nashorn.api.scripting.ClassFilter;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import lombok.Getter;
@@ -53,7 +55,7 @@ public class NashornCommand {
 		return false;
 	}
 
-	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
+	public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
 		String message = ev.getMessage().getContent();
 
 		if (message.startsWith(conf.commandPrefix + label)) {
@@ -64,6 +66,9 @@ public class NashornCommand {
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
 					.collect(Collectors.toList()).toArray(new String[0]);
 			CommandContext context = new CommandContext(conf, ev, null, args);
+			if (LorittaUtils.handleIfBanned(context, profile)) {
+				return true;
+			}
 			run(context, new NashornContext(context));
 			return true;
 		}

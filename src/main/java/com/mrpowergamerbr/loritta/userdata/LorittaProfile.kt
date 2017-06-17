@@ -21,6 +21,8 @@ import org.mongodb.morphia.annotations.Indexed
     var aboutMe: String = "A Loritta é minha amiga!";
     var tempoOnline: Long = 0;
     var games = HashMap<String, Long>();
+    var isBanned = false;
+    var banReason: String? = null;
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;

@@ -39,6 +39,7 @@ public class DiscordListener extends ListenerAdapter {
                 try {
                     // cache.put(event.getMessage().getId(), event.getMessage());
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
+                    LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getName());
 
                     if (!event.getMessage().getContent().startsWith(conf.commandPrefix())) { // TODO: Filtrar links
                         loritta.getHal().add(event.getMessage().getContent().toLowerCase());
@@ -61,7 +62,7 @@ public class DiscordListener extends ListenerAdapter {
                     // Primeiro os comandos vanilla da Loritta(tm)
                     for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
                         if (conf.debugOptions().enableAllModules() || !conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {
-                            if (cmd.handle(event, conf)) {
+                            if (cmd.handle(event, conf, profile)) {
                                 // event.getChannel().sendTyping().queue();
                                 CommandOptions cmdOpti = conf.getCommandOptionsFor(cmd);
                                 if (conf.deleteMessageAfterCommand() || cmdOpti.deleteMessageAfterCommand()) {
@@ -74,7 +75,7 @@ public class DiscordListener extends ListenerAdapter {
 
                     // E depois os comandos usando JavaScript (Nashorn)
                     for (NashornCommand cmd : conf.nashornCommands()) {
-                        if (cmd.handle(event, conf)) {
+                        if (cmd.handle(event, conf, profile)) {
 
                         }
                     }
