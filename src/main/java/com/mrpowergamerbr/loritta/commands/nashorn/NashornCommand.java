@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import jdk.nashorn.api.scripting.ClassFilter;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -24,10 +26,12 @@ import java.util.stream.Collectors;
 /**
  * Comandos usando a Nashorn Engine
  */
+@Getter
+@Setter
 public class NashornCommand {
-	String label;
-	String javaScript;
-	List<String> aliases = new ArrayList<>();
+	public String label;
+	public String javaScript;
+	public List<String> aliases = new ArrayList<>();
 
 	public NashornCommand() {}
 
@@ -80,9 +84,7 @@ public class NashornCommand {
 		String inlineMethods = "var loritta=function(){ return utils.loritta(); };\n"
 				+ "var pegarConteúdoDeUmaURL=function(url){ return utils.getURL(url); };\n"
 				+ "var responder=function(mensagem){ contexto.responder(mensagem); };\n"
-				+ "var enviarMensagem=function(mensagem){ contexto.enviarMensagem(mensagem); };\n"
-				+ "var pegarArgumento(index) { return contexto.pegarArgumento(index); };\n"
-				+ "var argumento(index, texto) { return contexto.argumento(index, texto); };";
+				+ "var enviarMensagem=function(mensagem){ contexto.enviarMensagem(mensagem); };";
 		try {
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto, utils) {" + inlineMethods + javaScript + "}", ogContext, context));
