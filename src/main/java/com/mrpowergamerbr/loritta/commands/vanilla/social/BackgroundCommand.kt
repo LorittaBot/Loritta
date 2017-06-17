@@ -1,6 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.github.kevinsawicki.http.HttpRequest
+import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
+import com.mrpowergamerbr.loritta.Loritta
 import java.awt.image.BufferedImage
+import java.io.StringReader
+import java.net.URLEncoder
 
 class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     override fun getLabel(): String {
@@ -22,6 +28,23 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             var link = context.args[0];
 
             try {
+                var mensagem = context.sendMessage(context.getAsMention(true) + "💭 | Processando...");
+
+                var response = HttpRequest.get("https://sphirelabs-advanced-porn-nudity-and-adult-content-detection.p.mashape.com/v1/get/index.php?url=" + URLEncoder.encode(link, "UTF-8"))
+                        .header("X-Mashape-Key", Loritta.config.mashapeKey)
+                        .header("Accept", "application/json")
+                        .acceptJson()
+                        .body()
+
+				val reader = StringReader(response)
+				val jsonReader = JsonReader(reader)
+				val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+
+				if (apiResponse.get("Is Porn").asString == "True") {
+					mensagem.editMessage("🙅 | **Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o " + context.getAsMention(false) + " é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore 😞)").complete()
+					return;
+				}
+
                 val imageUrl = java.net.URL(link)
                 val connection = imageUrl.openConnection() as java.net.HttpURLConnection
                 connection.setRequestProperty(
