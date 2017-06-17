@@ -39,7 +39,7 @@ public class DiscordListener extends ListenerAdapter {
                 try {
                     // cache.put(event.getMessage().getId(), event.getMessage());
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
-                    LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getName());
+                    LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getId());
 
                     if (!event.getMessage().getContent().startsWith(conf.commandPrefix())) { // TODO: Filtrar links
                         loritta.getHal().add(event.getMessage().getContent().toLowerCase());
