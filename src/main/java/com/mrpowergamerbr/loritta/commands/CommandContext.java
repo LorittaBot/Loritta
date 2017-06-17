@@ -69,12 +69,15 @@ public class CommandContext {
 	}
 
 	public String getAsMention(boolean addSpace) {
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override()) {
-			return (cmdOptions.mentionOnCommandOutput() ? lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") : "");
-		} else {
-			return lorittaUser.getAsMention(true);
+		if (cmd != null) {
+			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+			if (cmdOptions.override()) {
+				return (cmdOptions.mentionOnCommandOutput() ?
+						lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") :
+						"");
+			}
 		}
+		return lorittaUser.getAsMention(true);
 	}
 
 	public Guild getGuild() {
@@ -87,9 +90,11 @@ public class CommandContext {
 
 	public Message sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmd != null) {
+			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+				privateReply = cmdOptions.commandOutputInPrivate();
+			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(message).complete();
@@ -107,9 +112,11 @@ public class CommandContext {
 
 	public Message sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmd != null) {
+			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+				privateReply = cmdOptions.commandOutputInPrivate();
+			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
@@ -154,9 +161,11 @@ public class CommandContext {
 
 	public Message sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmd != null) {
+			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+				privateReply = cmdOptions.commandOutputInPrivate();
+			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
@@ -176,9 +185,11 @@ public class CommandContext {
 
 	public Message sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmd != null) {
+			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+				privateReply = cmdOptions.commandOutputInPrivate();
+			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();

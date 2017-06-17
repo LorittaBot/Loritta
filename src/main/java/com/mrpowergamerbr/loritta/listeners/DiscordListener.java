@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
@@ -57,7 +58,7 @@ public class DiscordListener extends ListenerAdapter {
                         processCode(conf, event.getMessage(), whistler.codes);
                     }
 
-                    // Primeiro os comandos customizados da Loritta(tm)
+                    // Primeiro os comandos vanilla da Loritta(tm)
                     for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
                         if (conf.debugOptions().enableAllModules() || !conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {
                             if (cmd.handle(event, conf)) {
@@ -68,6 +69,13 @@ public class DiscordListener extends ListenerAdapter {
                                 }
                                 return;
                             }
+                        }
+                    }
+
+                    // E depois os comandos usando JavaScript (Nashorn)
+                    for (NashornCommand cmd : conf.nashornCommands()) {
+                        if (cmd.handle(event, conf)) {
+
                         }
                     }
 

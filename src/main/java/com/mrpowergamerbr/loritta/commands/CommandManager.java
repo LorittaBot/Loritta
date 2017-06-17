@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.NashornTestCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
@@ -104,6 +105,7 @@ public class CommandManager {
         // =======[ MAGIC ]========
         commandMap.add(new ReloadCommand());
         commandMap.add(new EvalCommand());
+        commandMap.add(new NashornTestCommand());
         commandMap.add(new ServerInvitesCommand());
 
         for (CommandBase cmdBase : this.getCommandMap()) {

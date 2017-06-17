@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import net.dv8tion.jda.core.EmbedBuilder;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -50,7 +49,6 @@ public class EvalCommand extends CommandBase {
 			} catch (Exception e) {
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
-				builder.setDescription("```" + (e.getCause() != null ? e.getCause().getMessage().trim() : ExceptionUtils.getStackTrace(e).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length()))) + "```");
 				builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null);
 				builder.setColor(Color.RED);
 				context.sendMessage(builder.build());

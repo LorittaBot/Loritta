@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
 import com.mrpowergamerbr.loritta.whistlers.Whistler;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +47,7 @@ public class ServerConfig {
     ArrayList<Whistler> whistlers = new ArrayList<Whistler>(); // Whistlers
 
     ArrayList<CustomCommand> customCommands = new ArrayList<CustomCommand>(); // Comandos customizados
+    ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
     JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     MusicConfig musicConfig = new MusicConfig();
