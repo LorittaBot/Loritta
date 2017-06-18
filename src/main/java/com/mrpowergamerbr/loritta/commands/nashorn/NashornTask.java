@@ -54,7 +54,7 @@ class NashornTask implements Callable<Void> {
 			t.start();
 			Invocable invocable = (Invocable) engine;
 			engine.eval(javaScript);
-			invocable.invokeFunction("nashornCommand", context, new NashornUtils());
+			invocable.invokeFunction("nashornCommand", context);
 		} catch (Exception e) {
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");

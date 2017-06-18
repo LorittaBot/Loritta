@@ -83,15 +83,23 @@ public class NashornCommand {
 		// Funções que jamais poderão ser usadas em comandos
 		String blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};";
 		// Funções inline para facilitar a programação de comandos
-		String inlineMethods = "var loritta=function(){ return utils.loritta(); };\n"
-				+ "var pegarConteúdoDeUmaURL=function(url){ return utils.getURL(url); };\n"
-				+ "var responder=function(mensagem){ contexto.responder(mensagem); };\n"
-				+ "var enviarMensagem=function(mensagem){ contexto.enviarMensagem(mensagem); };\n"
-				+ "var pegarArgumento=function(index){ contexto.pegarArgumento(index); };\n"
-				+ "var argumento=function(index, mensagem){ contexto.argumento(index, mensagem); };";
+		String inlineMethods = "var nashornUtils = Java.type(\"com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils\");\n"
+				+ "var loritta=function(){ return nashornUtils.loritta(); };\n"
+				+ "var mensagem=function(){ return contexto.getMensagem(); };\n"
+				+ "var pegarMensagem=function(){ return contexto.getMensagem(); };\n"
+				+ "var pegarConteúdoDeUmaURL=function(url){ return nashornUtils.getURL(url); };\n"
+				+ "var responder=function(mensagem){ return contexto.responder(mensagem); };\n"
+				+ "var enviarMensagem=function(mensagem){ return contexto.enviarMensagem(mensagem); };\n"
+				+ "var enviarImagem=function(imagem){ return contexto.enviarImagem(imagem); };\n"
+				+ "var enviarImagem=function(imagem, mensagem){ return contexto.enviarImagem(imagem, mensagem); };\n"
+				+ "var pegarArgumento=function(index){ return contexto.pegarArgumento(index); };\n"
+				+ "var argumento=function(index, mensagem){ return contexto.argumento(index, mensagem); };\n"
+				+ "var juntarArgumentos=function(){ return contexto.juntarArgumentos(); };\n"
+				+ "var juntarArgumentos=function(delimitador){ return contexto.juntarArgumentos(delimitador); };\n"
+				+ "var criarImagem=function(x, y){ return contexto.criarImagem(x, y); };";
 		try {
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto, utils) {" + inlineMethods + javaScript + "}", ogContext, context));
+			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto) {" + inlineMethods + javaScript + "}", ogContext, context));
 			future.get(3, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			EmbedBuilder builder = new EmbedBuilder();
@@ -114,9 +122,10 @@ public class NashornCommand {
 		}
 	}
 
-	class NashornClassFilter implements ClassFilter {
+	static final class NashornClassFilter implements ClassFilter {
 		@Override
 		public boolean exposeToScripts(String s) {
+			if (s.compareTo("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils") == 0) { return true; }
 			return false;
 		}
 	}
