@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
@@ -94,6 +95,9 @@ public class CommandManager {
         // =======[ UNDERTALE ]========
         commandMap.add(new UndertaleBoxCommand());
         commandMap.add(new UndertaleBattleCommand());
+
+        // =======[ POKÉMON ]========
+        commandMap.add(new PokedexCommand());
 
         // =======[ ADMIN ]========
         commandMap.add(new LimparCommand());
