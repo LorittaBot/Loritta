@@ -86,7 +86,9 @@ public class NashornCommand {
 		String inlineMethods = "var loritta=function(){ return utils.loritta(); };\n"
 				+ "var pegarConteúdoDeUmaURL=function(url){ return utils.getURL(url); };\n"
 				+ "var responder=function(mensagem){ contexto.responder(mensagem); };\n"
-				+ "var enviarMensagem=function(mensagem){ contexto.enviarMensagem(mensagem); };";
+				+ "var enviarMensagem=function(mensagem){ contexto.enviarMensagem(mensagem); };\n"
+				+ "var pegarArgumento=function(index){ contexto.pegarArgumento(index); };\n"
+				+ "var argumento=function(index, mensagem){ contexto.argumento(index, mensagem); };";
 		try {
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto, utils) {" + inlineMethods + javaScript + "}", ogContext, context));
