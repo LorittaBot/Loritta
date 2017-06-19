@@ -1,5 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord;
 
+import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.CommandCategory;
+import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Emote;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,15 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import com.mrpowergamerbr.loritta.commands.CommandBase;
-import com.mrpowergamerbr.loritta.commands.CommandCategory;
-import com.mrpowergamerbr.loritta.commands.CommandContext;
-
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Emote;
 
 public class EmojiCommand extends CommandBase {
 	public String getDescription() {
@@ -73,7 +72,7 @@ public class EmojiCommand extends CommandBase {
 				}
 			} else {
 				// Na verdade é um emoji padrão...
-				String val = toUnicode(emoji.codePointAt(0)); // Vamos usar codepoints porque emojis
+				String val = LorittaUtils.toUnicode(emoji.codePointAt(0)); // Vamos usar codepoints porque emojis
 				val = val.substring(2); // Remover coisas desnecessárias
 				try {
 					URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + val + ".png");
@@ -95,9 +94,5 @@ public class EmojiCommand extends CommandBase {
 		} else {
 			context.explain();
 		}
-	}
-
-	public static String toUnicode(int ch) {
-		return String.format("\\u%04x", (int) ch);
 	}
 }

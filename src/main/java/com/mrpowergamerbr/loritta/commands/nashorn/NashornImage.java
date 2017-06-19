@@ -21,7 +21,7 @@ public class NashornImage {
 	}
 
 	public NashornImage(BufferedImage image) {
-		bufferedImage = image;
+		this.bufferedImage = image;
 		graphics = bufferedImage.getGraphics();
 	}
 

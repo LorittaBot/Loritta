@@ -1,13 +1,9 @@
 package com.mrpowergamerbr.loritta.utils;
 
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -40,7 +36,7 @@ public class ImageUtils {
 			if (!graphics.getFont().canDisplay(c)) {
 			    try {
 			        // Talvez seja um emoji!
-                    URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
+                    URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
                     HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
                     connection.setRequestProperty(
                             "User-Agent",
@@ -78,7 +74,7 @@ public class ImageUtils {
             } else {
                     try {
                         // Talvez seja um emoji!
-                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
+                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
                         HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
                         connection.setRequestProperty(
                                 "User-Agent",
@@ -206,7 +202,7 @@ public class ImageUtils {
                 if (!graphics.getFont().canDisplay(c)) {
                     try {
                         // Talvez seja um emoji!
-                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + EmojiCommand.toUnicode(str.codePointAt(idx - 1)).substring(2) + ".png");
+                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(str.codePointAt(idx - 1)).substring(2) + ".png");
                         HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
                         connection.setRequestProperty(
                                 "User-Agent",

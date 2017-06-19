@@ -48,7 +48,9 @@ public class NashornCommand {
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
 					.collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args);
+			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs);
 			run(context, new NashornContext(context));
 			return true;
 		}
@@ -65,7 +67,9 @@ public class NashornCommand {
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
 					.collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args);
+			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs);
 			if (LorittaUtils.handleIfBanned(context, profile)) {
 				return true;
 			}

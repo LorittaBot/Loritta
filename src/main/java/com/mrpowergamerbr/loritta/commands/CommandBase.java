@@ -84,7 +84,9 @@ public abstract class CommandBase {
                 explain(conf, ev);
                 return true;
             }
-            CommandContext context = new CommandContext(conf, ev, this, args);
+            String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+            CommandContext context = new CommandContext(conf, ev, this, args, rawArgs);
             if (LorittaUtils.handleIfBanned(context, profile)) {
                 return true;
             }

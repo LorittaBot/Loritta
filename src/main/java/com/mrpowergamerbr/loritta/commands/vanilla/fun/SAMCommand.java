@@ -14,8 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,49 +40,39 @@ public class SAMCommand extends CommandBase {
 
 	@Override
 	public void run(CommandContext context) {
-		if (context.getArgs().length >= 1) {
-			if (!LorittaUtils.canUploadFiles(context)) { return; }
-			String link = context.getArgs()[0];
+		if (!LorittaUtils.canUploadFiles(context)) { return; }
 
-			double div = 1.5;
-			if (context.getArgs().length >= 2) {
-				try {
-					div = Double.parseDouble(context.getArgs()[1]);
-				} catch (Exception e) {
-					
-				}
-			}
+		double div = 1.5;
+		if (context.getArgs().length >= 2) {
 			try {
-				URL imageUrl = new URL(link);
-				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-				connection.setRequestProperty(
-						"User-Agent",
-						"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
-				BufferedImage image = ImageIO.read(connection.getInputStream());
-				
-				Image seloSouthAmericaMemes = null;
-				seloSouthAmericaMemes =  ImageIO.read(new File(Loritta.FOLDER + "selo_sam.png"));
-				
-				int height = (int) (image.getHeight() / div); // Baseando na altura
-				seloSouthAmericaMemes = seloSouthAmericaMemes.getScaledInstance(height, height, Image.SCALE_SMOOTH);
-
-				int x = Loritta.getRandom().nextInt(0, Math.max(1, image.getWidth() - seloSouthAmericaMemes.getWidth(null)));
-				int y = Loritta.getRandom().nextInt(0, Math.max(1, image.getHeight() - seloSouthAmericaMemes.getHeight(null)));
-				
-				image.getGraphics().drawImage(seloSouthAmericaMemes, x, y, null);
-				
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ImageIO.write(image, "png", os);
-				InputStream is = new ByteArrayInputStream(os.toByteArray());
-				
-				MessageBuilder builder = new MessageBuilder();
-				builder.append(context.getAsMention(true));
-				context.sendFile(is, "south_america_memes.png", builder.build());
+				div = Double.parseDouble(context.getArgs()[1]);
 			} catch (Exception e) {
-				e.printStackTrace();
+
 			}
-		} else {
-			context.explain();
+		}
+		try {
+			BufferedImage image = LorittaUtils.getImageFromContext(context, 0);
+
+			Image seloSouthAmericaMemes = null;
+			seloSouthAmericaMemes =  ImageIO.read(new File(Loritta.FOLDER + "selo_sam.png"));
+
+			int height = (int) (image.getHeight() / div); // Baseando na altura
+			seloSouthAmericaMemes = seloSouthAmericaMemes.getScaledInstance(height, height, Image.SCALE_SMOOTH);
+
+			int x = Loritta.getRandom().nextInt(0, Math.max(1, image.getWidth() - seloSouthAmericaMemes.getWidth(null)));
+			int y = Loritta.getRandom().nextInt(0, Math.max(1, image.getHeight() - seloSouthAmericaMemes.getHeight(null)));
+
+			image.getGraphics().drawImage(seloSouthAmericaMemes, x, y, null);
+
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ImageIO.write(image, "png", os);
+			InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+			MessageBuilder builder = new MessageBuilder();
+			builder.append(context.getAsMention(true));
+			context.sendFile(is, "south_america_memes.png", builder.build());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

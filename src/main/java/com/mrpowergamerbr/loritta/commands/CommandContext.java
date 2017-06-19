@@ -28,20 +28,23 @@ public class CommandContext {
 	public MessageReceivedEvent event;
 	public CommandBase cmd;
 	public String[] args;
+	public String[] rawArgs;
 	public HashMap<String, Object> metadata = new HashMap<>();
 
-	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {	
+	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
 		this.lorittaUser = new LorittaUser(event.getMember(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
+		this.rawArgs = rawArgs;
 	}
 
-	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args) {
+	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
 		this.lorittaUser = new LorittaUser(member, conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
+		this.rawArgs = rawArgs;
 	}
 
 	public void explain() {
