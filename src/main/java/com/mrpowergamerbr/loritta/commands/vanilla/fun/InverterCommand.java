@@ -4,11 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
-import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.dv8tion.jda.core.MessageBuilder;
 
 import javax.imageio.ImageIO;
@@ -18,8 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -31,16 +25,16 @@ public class InverterCommand extends CommandBase {
 	}
 
 	public String getDescription() {
-		return "Inverte a cor de um avatar";
+		return "Inverte a cor de uma imagem";
 	}
 
 	public List<String> getExample() {
-		return Arrays.asList("@Loritta");
+		return Arrays.asList("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C");
 	}
 
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
-				.put("usuário1", "Usuário sortudo")
+				.put("mensagem", "Usuário sortudo")
 				.build();
 	}
 
@@ -53,28 +47,22 @@ public class InverterCommand extends CommandBase {
 	public void run(CommandContext context) {
 		if (!LorittaUtils.canUploadFiles(context)) { return; }
 		// ok
-		if (context.getMessage().getMentionedUsers().size() > 0) {
 			try {
-				URL imageUrl = new URL(context.getEvent().getMessage().getMentionedUsers().get(0).getEffectiveAvatarUrl() + "?size=256");
-				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-				connection.setRequestProperty(
-						"User-Agent",
-						"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
-				BufferedImage avatar = ImageIO.read(connection.getInputStream());
+				BufferedImage image = LorittaUtils.getImageFromContext(context, 0);
 
-				for (int x = 0; x < avatar.getWidth(); x++) {
-					for (int y = 0; y < avatar.getHeight(); y++) {
-						int rgba = avatar.getRGB(x, y);
+				for (int x = 0; x < image.getWidth(); x++) {
+					for (int y = 0; y < image.getHeight(); y++) {
+						int rgba = image.getRGB(x, y);
 						Color col = new Color(rgba, true);
 						col = new Color(255 - col.getRed(),
 								255 - col.getGreen(),
 								255 - col.getBlue());
-						avatar.setRGB(x, y, col.getRGB());
+						image.setRGB(x, y, col.getRGB());
 					}
 				}
 
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ImageIO.write(avatar, "png", os);
+				ImageIO.write(image, "png", os);
 				InputStream is = new ByteArrayInputStream(os.toByteArray());
 
 				MessageBuilder builder = new MessageBuilder();
@@ -83,16 +71,5 @@ public class InverterCommand extends CommandBase {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else {
-			this.explain(context.getConfig(), context.getEvent());
-		}
-	}
-
-	@Getter
-	@Setter
-	@Accessors(fluent = true)
-	public static class TristeRealidadeCommandOptions extends CommandOptions {
-		public boolean mentionEveryone = false; // Caso esteja ativado, todos que aparecerem serão mencionados
-		public boolean hideDiscordTags = false; // Caso esteja ativado, todas as discord tags não irão aparecer na imagem
 	}
 }
