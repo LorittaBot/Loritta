@@ -51,7 +51,7 @@ public class BotInfoCommand extends CommandBase {
         sb.append(seconds);
         sb.append("s");
 
-        embed.setAuthor("Olá, eu sou a Loritta! 💁", null, "https://mrpowergamerbr.com/assets/img/loritta_guild_v3.png");
+        embed.setAuthor("Olá, eu sou a Loritta! 💁", null, "https://loritta.website/assets/img/loritta_guild_v3.png");
         embed.setDescription("Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\") e eu sou uma garota de *lembrete para mim: colocar quantos anos eu tenho aqui* anos!");
         embed.setImage("http://loritta.website/assets/img/loritta_heart.png");
         embed.setColor(new Color(186, 0, 239));
