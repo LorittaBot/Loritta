@@ -86,17 +86,18 @@ public class NashornCommand {
 		String inlineMethods = "var nashornUtils = Java.type(\"com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils\");\n"
 				+ "var loritta=function(){ return nashornUtils.loritta(); };\n"
 				+ "var mensagem=function(){ return contexto.getMensagem(); };\n"
+				+ "var quemEnviou=function(){ return contexto.getSender(); };\n"
 				+ "var pegarMensagem=function(){ return contexto.getMensagem(); };\n"
 				+ "var pegarConteúdoDeUmaURL=function(url){ return nashornUtils.getURL(url); };\n"
 				+ "var responder=function(mensagem){ return contexto.responder(mensagem); };\n"
 				+ "var enviarMensagem=function(mensagem){ return contexto.enviarMensagem(mensagem); };\n"
-				+ "var enviarImagem=function(imagem){ return contexto.enviarImagem(imagem); };\n"
-				+ "var enviarImagem=function(imagem, mensagem){ return contexto.enviarImagem(imagem, mensagem); };\n"
+				+ "var enviarImagem=function(imagem, mensagem){ return contexto.enviarImagem(imagem, mensagem || \" \"); };\n"
 				+ "var pegarArgumento=function(index){ return contexto.pegarArgumento(index); };\n"
 				+ "var argumento=function(index, mensagem){ return contexto.argumento(index, mensagem); };\n"
-				+ "var juntarArgumentos=function(){ return contexto.juntarArgumentos(); };\n"
-				+ "var juntarArgumentos=function(delimitador){ return contexto.juntarArgumentos(delimitador); };\n"
-				+ "var criarImagem=function(x, y){ return contexto.criarImagem(x, y); };";
+				+ "var juntarArgumentos=function(delimitador){ return contexto.juntarArgumentos(delimitador || \" \"); };\n"
+				+ "var criarImagem=function(x, y){ return contexto.criarImagem(x, y); };\n"
+				+ "var baixarImagem=function(url){ return nashornUtils.downloadImage(url); };\n"
+				+ "var cor=function(r, g, b) { return nashornUtils.createColor(r, g, b); };";
 		try {
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto) {" + inlineMethods + javaScript + "}", ogContext, context));

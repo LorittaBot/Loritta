@@ -19,14 +19,19 @@ public class NashornContext {
 	private CommandContext context; // Context original, jamais poderá ser usado pelo script!
 	private int sentMessages = 0; // Quantas mensagens foram enviadas, usado para não levar rate limit
 	private long lastMessageSent = 0L; // Quando foi a última mensagem enviada
+	public NashornMember membro;
 
 	public NashornContext(CommandContext context) {
 		this.context = context;
 		this.mensagem = new NashornMessage(context.getMessage());
+		this.membro = new NashornMember(context.getHandle());
 	}
 
 	public NashornMessage getMensagem() {
 		return mensagem;
+	}
+	public NashornMember getSender() {
+		return membro;
 	}
 
 	public NashornMessage responder(String mensagem) {

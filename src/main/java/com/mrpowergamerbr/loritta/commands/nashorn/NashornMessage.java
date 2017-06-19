@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.Message;
 import java.util.List;
 
 /**
- * Contexto de um comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que
+ * Wrapper de uma mensagem de um comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que
  * a Loritta possa controlar as mensagens enviadas de uma maneira segura (para não abusarem da API do Discord)
  */
 public class NashornMessage {
