@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -40,6 +41,14 @@ public class LorittaUtils {
                 }
             }
         }
+    }
+
+    public static String replaceTokens(String message, GuildMemberJoinEvent e) {
+        message = message.replace("{@user}", e.getMember().getAsMention());
+        message = message.replace("{user}", e.getMember().getUser().getName());
+        message = message.replace("{nickname}", e.getMember().getEffectiveName());
+        message = message.replace("{guild}", e.getGuild().getName());
+        return message;
     }
 
     public static UUID getUUID(String id) {
