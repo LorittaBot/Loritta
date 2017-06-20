@@ -31,7 +31,7 @@ public class NashornImage {
 
 	public NashornImage escrever(String texto, Color cor, int x, int y) {
 		graphics.setColor(cor);
-		graphics.drawString(texto, x, y);
+		ImageUtils.drawTextWrap(texto, x, y, 9999, 9999, graphics.getFontMetrics(), graphics);
 		return this;
 	}
 

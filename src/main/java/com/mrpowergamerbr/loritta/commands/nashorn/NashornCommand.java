@@ -101,7 +101,8 @@ public class NashornCommand {
 				+ "var juntarArgumentos=function(delimitador){ return contexto.juntarArgumentos(delimitador || \" \"); };\n"
 				+ "var criarImagem=function(x, y){ return contexto.criarImagem(x, y); };\n"
 				+ "var baixarImagem=function(url){ return nashornUtils.downloadImage(url); };\n"
-				+ "var cor=function(r, g, b) { return nashornUtils.createColor(r, g, b); };";
+				+ "var cor=function(r, g, b) { return nashornUtils.createColor(r, g, b); };\n"
+				+ "var pegarImagemDoContexto=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };";
 		try {
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 			Future<Void> future = executor.submit(new NashornTask(engine, blacklisted + " function nashornCommand(contexto) {" + inlineMethods + javaScript + "}", ogContext, context));

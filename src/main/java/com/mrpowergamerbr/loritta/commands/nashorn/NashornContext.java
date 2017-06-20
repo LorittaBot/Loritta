@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.nashorn;
 
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -116,5 +117,15 @@ public class NashornContext {
 
 	public NashornImage criarImagem(int x, int y) {
 		return new NashornImage(x, y);
+	}
+
+	public NashornImage pegarImagemDoContexto(int argumento) {
+		BufferedImage bufferedImage = LorittaUtils.getImageFromContext(context, argumento);
+
+		if (bufferedImage != null) {
+			return new NashornImage(bufferedImage);
+		} else {
+			return null;
+		}
 	}
 }
