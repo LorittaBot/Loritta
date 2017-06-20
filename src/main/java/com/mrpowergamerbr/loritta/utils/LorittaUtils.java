@@ -56,6 +56,12 @@ public class LorittaUtils {
 		return message;
 	}
 
+	/**
+	 * Verifica se uma imagem é válida (ou seja, diferente de null), caso seja null, a Loritta irá avisar ao usuário que ela não tem nenhuma imagem "utilizável"
+	 * @param context
+	 * @param image
+	 * @return
+	 */
 	public static boolean isValidImage(CommandContext context, BufferedImage image) {
 		if (image == null) {
 			context.sendMessage(ERROR + " | " + context.getAsMention(true) + " Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
