@@ -120,9 +120,11 @@ public class LorittaUtils {
 			// Se não é nada... então talvez seja um emoji padrão do Discordão!
 			// Na verdade é um emoji padrão...
 			if (toBeDownloaded == null) {
-				String val = toUnicode(context.getArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
-				val = val.substring(2); // Remover coisas desnecessárias
-				toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
+				try {
+					String val = toUnicode(context.getArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
+					val = val.substring(2); // Remover coisas desnecessárias
+					toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
+				} catch (Exception e) {}
 			}
 		}
 

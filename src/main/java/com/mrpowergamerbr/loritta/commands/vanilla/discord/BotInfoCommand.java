@@ -8,8 +8,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BotInfoCommand extends CommandBase {
@@ -18,7 +16,7 @@ public class BotInfoCommand extends CommandBase {
     public String getLabel() {
         return "botinfo";
     }
-    
+
     @Override
     public String getDescription() {
         return "Mostra informações interessantes (e algumas bem inúteis) sobre a Loritta.";
