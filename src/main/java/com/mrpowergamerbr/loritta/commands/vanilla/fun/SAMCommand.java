@@ -53,6 +53,8 @@ public class SAMCommand extends CommandBase {
 		try {
 			BufferedImage image = LorittaUtils.getImageFromContext(context, 0);
 
+			if (!LorittaUtils.isValidImage(context, image)) { return; }
+
 			Image seloSouthAmericaMemes = null;
 			seloSouthAmericaMemes =  ImageIO.read(new File(Loritta.FOLDER + "selo_sam.png"));
 

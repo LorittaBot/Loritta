@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class LorittaUtils {
+	public static final String ERROR = "<:erro:326509900115083266>";
+
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
 			context.sendMessage("❌ | Eu não tenho permissão para enviar arquivos aqui!");
@@ -52,6 +54,14 @@ public class LorittaUtils {
 		message = message.replace("{nickname}", e.getMember().getEffectiveName());
 		message = message.replace("{guild}", e.getGuild().getName());
 		return message;
+	}
+
+	public static boolean isValidImage(CommandContext context, BufferedImage image) {
+		if (image == null) {
+			context.sendMessage(ERROR + " | " + context.getAsMention(true) + " Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
+			return false;
+		}
+		return true;
 	}
 
 	/**

@@ -46,9 +46,11 @@ public class InverterCommand extends CommandBase {
 	@Override
 	public void run(CommandContext context) {
 		if (!LorittaUtils.canUploadFiles(context)) { return; }
-		// ok
+			// ok
 			try {
 				BufferedImage image = LorittaUtils.getImageFromContext(context, 0);
+
+				if (!LorittaUtils.isValidImage(context, image)) { return; }
 
 				for (int x = 0; x < image.getWidth(); x++) {
 					for (int y = 0; y < image.getHeight(); y++) {
