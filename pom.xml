@@ -42,9 +42,9 @@
             <version>22.0</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.Shredder121-me</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.1.1_213</version>
+            <version>patch-speed-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
