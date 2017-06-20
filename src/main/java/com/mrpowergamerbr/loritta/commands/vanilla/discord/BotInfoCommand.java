@@ -18,10 +18,7 @@ public class BotInfoCommand extends CommandBase {
     public String getLabel() {
         return "botinfo";
     }
-
-    @Override
-    public List<String> getAliases() { return Arrays.asList("sobre"); }
-
+    
     @Override
     public String getDescription() {
         return "Mostra informações interessantes (e algumas bem inúteis) sobre a Loritta.";
