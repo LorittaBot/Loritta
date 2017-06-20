@@ -85,7 +85,7 @@ public class LorittaUtils {
 			if (toBeDownloaded == null) {
 				// Uma menção do Discord é + ou - assim: <@123170274651668480>
 				for (User user : context.getMessage().getMentionedUsers()) {
-					if (user.getAsMention().equals(link)) {
+					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 						// Diferente de null? Então vamos usar o avatar do usuário!
 						toBeDownloaded = user.getEffectiveAvatarUrl();
 					}
