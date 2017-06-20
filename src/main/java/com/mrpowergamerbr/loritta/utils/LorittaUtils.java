@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
@@ -49,6 +50,14 @@ public class LorittaUtils {
 	}
 
 	public static String replaceTokens(String message, GuildMemberJoinEvent e) {
+		message = message.replace("{@user}", e.getMember().getAsMention());
+		message = message.replace("{user}", e.getMember().getUser().getName());
+		message = message.replace("{nickname}", e.getMember().getEffectiveName());
+		message = message.replace("{guild}", e.getGuild().getName());
+		return message;
+	}
+
+	public static String replaceTokens(String message, GuildMemberLeaveEvent e) {
 		message = message.replace("{@user}", e.getMember().getAsMention());
 		message = message.replace("{user}", e.getMember().getUser().getName());
 		message = message.replace("{nickname}", e.getMember().getEffectiveName());

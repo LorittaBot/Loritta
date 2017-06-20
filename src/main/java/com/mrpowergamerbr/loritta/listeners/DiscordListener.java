@@ -180,7 +180,7 @@ public class DiscordListener extends ListenerAdapter {
 
                         if (textChannel != null) {
                             if (textChannel.canTalk()) {
-                                String msg = conf.joinLeaveConfig().getJoinMessage().replace("%UserMention%", event.getMember().getAsMention());
+                                String msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig().getJoinMessage(), event);
                                 textChannel.sendMessage(msg).complete();
                             } else {
                                 LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf);
@@ -208,7 +208,7 @@ public class DiscordListener extends ListenerAdapter {
 
                         if (textChannel != null) {
                             if (textChannel.canTalk()) {
-                                String msg = conf.joinLeaveConfig().getLeaveMessage().replace("%UserMention%", event.getMember().getAsMention());
+                                String msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig().getLeaveMessage(), event);
                                 textChannel.sendMessage(msg).complete();
                             } else {
                                 LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf);
