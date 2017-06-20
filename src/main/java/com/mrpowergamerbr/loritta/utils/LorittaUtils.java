@@ -78,6 +78,18 @@ public class LorittaUtils {
 	 * @return uma BufferedImage com a imagem
 	 */
 	public static BufferedImage getImageFromContext(CommandContext context, int argument) {
+		return getImageFromContext(context, argument, 25);
+	}
+
+	/**
+	 * Retorna uma imagem dependendo do contexto
+	 *
+	 * @param context
+	 * @param argument
+	 * @param search
+	 * @return uma BufferedImage com a imagem
+	 */
+	public static BufferedImage getImageFromContext(CommandContext context, int argument, int search) {
 		String toBeDownloaded = null; // Imagem para ser baixada
 		BufferedImage image = null;
 		if (context.getRawArgs().length > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
@@ -130,7 +142,7 @@ public class LorittaUtils {
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor então para encontrar attachments...
 		if (toBeDownloaded == null) {
-			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(25).complete();
+			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
 
 			attach:
 			for (Message msg : message) {
