@@ -56,6 +56,8 @@ public class ConfigureServerView {
                     cmdOptions.put(cmdBase, cmdOpti);
                 }
 
+                System.out.println("Website: " + cmdOptions.size());
+
                 context.contextVars().put("cmdOptions", cmdOptions);
 
                 if (context.request().path().endsWith("commands")) {

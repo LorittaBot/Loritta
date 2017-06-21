@@ -69,6 +69,7 @@ public class CommandManager {
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
+        commandMap.add(new EscolherCommand());
 
         // =======[ SOCIAL ]======
         commandMap.add(new PerfilCommand());
