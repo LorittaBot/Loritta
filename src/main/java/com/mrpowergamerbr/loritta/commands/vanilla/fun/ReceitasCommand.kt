@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.social
+package com.mrpowergamerbr.loritta.commands.vanilla.`fun`;
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase

@@ -67,6 +67,9 @@ public class CommandManager {
         commandMap.add(new InverterCommand());
         commandMap.add(new ReceitasCommand());
 
+        // =======[ DIVERSÃO ]======
+        commandMap.add(new ClapifyCommand());
+
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
         commandMap.add(new EscolherCommand());
