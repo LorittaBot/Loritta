@@ -19,6 +19,10 @@ public class RollCommand extends CommandBase {
 		return "Rola um dado e fala o resultado dele, perfeito quando você quer jogar um Monopoly maroto mas perdeu os dados.";
 	}
 
+	public List<String> getAliases() {
+		return Arrays.asList("roll");
+	}
+	
 	public String getUsage() {
 		return "[número]";
 	}
