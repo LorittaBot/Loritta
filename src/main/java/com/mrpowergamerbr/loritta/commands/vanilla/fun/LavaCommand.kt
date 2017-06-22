@@ -46,6 +46,11 @@ class LavaCommand : CommandBase() {
 				context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1);
 			}
 
+			if (context.rawArgs.isEmpty()) {
+				this.explain(context);
+				return;
+			}
+
 			var joined = context.rawArgs.joinToString(separator = " "); // Vamos juntar tudo em uma string
 			var singular = true; // E verificar se é singular ou não
 			if (context.rawArgs[0].endsWith("s", true)) { // Se termina com s...
