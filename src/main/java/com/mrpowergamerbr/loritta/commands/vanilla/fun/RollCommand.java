@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class RollCommand extends CommandBase {
 	@Override
@@ -51,6 +51,6 @@ public class RollCommand extends CommandBase {
 			return;
 		}
 
-		context.sendMessage(context.getAsMention(true) + "**Resultado:** " + Loritta.getRandom().nextLong(1, val + 1));
+		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **Resultado:** " + Loritta.getRandom().nextLong(1, val + 1));
 	}
 }
