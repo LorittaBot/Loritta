@@ -26,11 +26,14 @@ class SpinnerCommand : CommandBase() {
     override fun run(context: CommandContext) {
 		var time = Loritta.random.nextInt(5, 61); // Tempo que o Fidget Spinner irá ficar rodando
 
-		var msg = context.sendMessage(context.getAsMention(true) + "<:spinner1:327243530244325376> Girando o fidget spinner...")
+		var random = listOf("<:spinner1:327243530244325376>", "<:spinner2:327245670052397066>", "<:spinner3:327246151591919627>") // Pegar um spinner aleatório
+		var spinner = random[Loritta.random.nextInt(random.size)]
+
+		var msg = context.sendMessage(context.getAsMention(true) + "$spinner Girando o fidget spinner...")
 		thread {
 			Thread.sleep((time * 1000).toLong());
 			msg.delete().complete()
-			context.sendMessage(context.getAsMention(true) + "<:spinner1:327243530244325376> Seu spinner girou por **$time** segundos!")
+			context.sendMessage(context.getAsMention(true) + "$spinner Seu spinner girou por **$time** segundos!")
 		}
     }
 }
