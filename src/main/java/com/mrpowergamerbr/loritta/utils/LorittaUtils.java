@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils;
 
+import com.github.kevinsawicki.http.HttpRequest;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -145,12 +146,15 @@ public class LorittaUtils {
 					String val = toUnicode(context.getArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
 					val = val.substring(2); // Remover coisas desnecessárias
 					toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
+					if (HttpRequest.get(toBeDownloaded).code() == 404) {
+						toBeDownloaded = null;
+					}
 				} catch (Exception e) {}
 			}
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor então para encontrar attachments...
-		if (toBeDownloaded == null) {
+		if (search > 0 && toBeDownloaded == null) {
 			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
 
 			attach:
