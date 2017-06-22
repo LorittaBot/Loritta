@@ -36,7 +36,10 @@ class LorittaShards {
         for (shard in shards) {
             users.addAll(shard.users);
         }
-        return users;
+
+        var nonDuplicates = users.distinctBy { it.id }
+
+        return nonDuplicates;
     }
 
     fun getUserById(id: String?): User? {
