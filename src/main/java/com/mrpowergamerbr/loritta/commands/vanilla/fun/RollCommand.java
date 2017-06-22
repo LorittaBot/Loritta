@@ -22,7 +22,7 @@ public class RollCommand extends CommandBase {
 	public List<String> getAliases() {
 		return Arrays.asList("roll");
 	}
-	
+
 	public String getUsage() {
 		return "[número]";
 	}

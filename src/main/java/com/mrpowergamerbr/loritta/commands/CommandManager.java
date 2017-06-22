@@ -69,6 +69,7 @@ public class CommandManager {
 
         // =======[ DIVERSÃO ]======
         commandMap.add(new ClapifyCommand());
+        commandMap.add(new SpinnerCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
