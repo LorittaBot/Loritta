@@ -118,6 +118,11 @@ public class DiscordListener extends ListenerAdapter {
             if (count > 0 && conf.musicConfig().isVoteToSkip() && LorittaLauncher.getInstance().getGuildAudioPlayer(e.getGuild()).scheduler.getCurrentTrack() == atw) {
                 VoiceChannel vc = e.getGuild().getVoiceChannelById(conf.musicConfig().getMusicGuildId());
 
+                if (e.getMember().getVoiceState().getChannel() != vc) {
+                    e.getReaction().removeReaction(e.getUser()).complete();
+                    return;
+                }
+
                 if (vc != null) {
                     int inChannel = vc.getMembers().stream().filter((member) -> !member.getUser().isBot()).collect(Collectors.toList()).size();
                     long required = Math.round((double) inChannel * ((double) conf.musicConfig().getRequired() / 100));

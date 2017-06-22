@@ -26,7 +26,7 @@ class AjudaCommand : CommandBase() {
     override fun getAliases(): List<String> {
         return listOf("help", "comandos")
     }
-    
+
     override fun run(context: CommandContext) {
         if (true /* cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE) */) {
             context.event.textChannel.sendMessage(context.getAsMention(true) + "Enviei para você no privado! ;)").complete()
