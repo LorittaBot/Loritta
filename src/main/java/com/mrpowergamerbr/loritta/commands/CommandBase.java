@@ -57,7 +57,7 @@ public abstract class CommandBase {
         String message = ev.getMessage().getContent();
         boolean run = false;
         String label = conf.commandPrefix() + getLabel();
-        run = message.startsWith(label);
+        run = message.split(" ")[0].equalsIgnoreCase(label);
         if (!run) {
             for (String alias : this.getAliases()) {
                 label = conf.commandPrefix() + alias;

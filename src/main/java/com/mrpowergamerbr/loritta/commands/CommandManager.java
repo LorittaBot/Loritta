@@ -71,6 +71,7 @@ public class CommandManager {
         commandMap.add(new ClapifyCommand());
         commandMap.add(new SpinnerCommand());
         commandMap.add(new LavaCommand());
+        commandMap.add(new LavaReversoCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
