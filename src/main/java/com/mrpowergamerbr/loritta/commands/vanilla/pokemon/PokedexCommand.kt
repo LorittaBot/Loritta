@@ -18,7 +18,7 @@ class PokedexCommand : CommandBase() {
     }
 
     override fun getCategory(): CommandCategory {
-        return CommandCategory.MISC;
+        return CommandCategory.POKEMON;
     }
 
     override fun getExample(): List<String> {

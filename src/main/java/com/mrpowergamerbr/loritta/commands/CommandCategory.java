@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum CommandCategory {
     FUN("Diversão", "Quer um pouco de entreterimento? Quer animar o chat do seu servidor com várias coisas engraçadas e aleatórias? Então use os comandos de diversão!"),
     MINECRAFT("Minecraft", "Comandos relacionados ao Minecraft"),
+    POKEMON("Pokémon", "Comandos relacionados ao Pokémon"),
     UNDERTALE("Undertale", "Comandos relacionados ao Undertale"),
     DISCORD("Discord", "Comandos relacionados ao Discord"),
     MISC("Miscelânea", "Comandos que até hoje não encontraram uma categoria específica para viver... Aqui você irá encontrar vários comandos que não se encaixam nas outras categorias!"),
