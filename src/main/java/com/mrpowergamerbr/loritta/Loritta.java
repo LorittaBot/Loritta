@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
@@ -146,6 +147,14 @@ public class Loritta {
                 if (currentIndex > playingGame.size() - 1) {
                     currentIndex = 0;
                 }
+                // Enviar as informações do bot para o Discord Bots
+                String body = HttpRequest.post("https://bots.discord.pw/api/bots/" + getConfig().clientId + "/stats")
+                     .authorization(getConfig().discordBotsKey)
+                     .acceptJson()
+                     .contentType("application/json")
+                     .send("{ \"server_count\": " + lorittaShards.getGuilds().size() + " }")
+                     .body();
+
                 String str = playingGame.get(currentIndex);
                 str = str.replace("%guilds%", String.valueOf(lorittaShards.getGuilds().size()));
                 str = str.replace("%users%", String.valueOf(lorittaShards.getUsers().size()));

@@ -23,5 +23,6 @@ public class LorittaConfig {
 	public String mercadoPagoClientId;
 	public String mercadoPagoClientToken;
 	public String mashapeKey;
+	public String discordBotsKey;
 	public List<String> currentlyPlaying = new ArrayList<String>();
 }
