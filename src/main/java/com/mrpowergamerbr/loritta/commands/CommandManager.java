@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands;
 
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.HackBanCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand;
@@ -112,6 +113,7 @@ public class CommandManager {
         // =======[ ADMIN ]========
         commandMap.add(new LimparCommand());
         commandMap.add(new RoleIdCommand());
+        commandMap.add(new HackBanCommand());
 
         // =======[ MAGIC ]========
         commandMap.add(new ReloadCommand());
