@@ -72,6 +72,7 @@ public class CommandManager {
         commandMap.add(new SpinnerCommand());
         commandMap.add(new LavaCommand());
         commandMap.add(new LavaReversoCommand());
+        commandMap.add(new ShipCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
