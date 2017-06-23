@@ -28,7 +28,10 @@ class AvaliarWaifuCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			var random = SplittableRandom(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + joined.hashCode().toLong()) // Usar um random sempre com a mesma seed
+			if (context.message.mentionedUsers.isNotEmpty()) {
+				joined = context.message.mentionedUsers[0].name;
+			}
+			var random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + joined.hashCode().toLong()) // Usar um random sempre com a mesma seed
 			var nota = random.nextInt(0, 11).toString();
 
 			if (joined == "Loritta") {
