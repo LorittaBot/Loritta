@@ -16,7 +16,7 @@ class HackBanCommand : CommandBase() {
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("159985870458322944");
+		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
 	}
 
 	override fun getCategory(): CommandCategory {
