@@ -163,7 +163,7 @@ class AjudaCommand : CommandBase() {
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " " + cmd.description + "\n";
+                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.description + "\n";
                 }
             }
             embed.setDescription(description)
