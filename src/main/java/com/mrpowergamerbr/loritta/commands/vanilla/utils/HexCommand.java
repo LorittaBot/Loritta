@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.ColorUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class HexCommand extends CommandBase {
 	@Override
@@ -44,9 +44,9 @@ public class HexCommand extends CommandBase {
 
 				String hex = String.format("#%02x%02x%02x", r, g, b);
 				
-				context.sendMessage(context.getAsMention(true) + String.format(" transformei a sua cor %s, %s, %s (%s) para hexadecimal! %s", r, g, b, new ColorUtils().getColorNameFromRgb(r, g, b), hex));
+				context.sendMessage(context.getAsMention(true) + String.format("Transformei a sua cor %s, %s, %s (%s) para hexadecimal! %s", r, g, b, new ColorUtils().getColorNameFromRgb(r, g, b), hex));
 			} catch (Exception e) {
-				context.sendMessage(context.getAsMention(true) + " todos os argumentos devem ser números!");
+				context.sendMessage(context.getAsMention(true) + "Todos os argumentos devem ser números!");
 			}
 		} else {
 			context.explain();
