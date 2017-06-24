@@ -90,6 +90,7 @@ public class CommandManager {
         // =======[ UTILS ]=======
         commandMap.add(new HexCommand());
         commandMap.add(new LembrarCommand());
+        commandMap.add(new RgbCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
