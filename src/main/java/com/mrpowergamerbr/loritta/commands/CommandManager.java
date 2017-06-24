@@ -89,6 +89,7 @@ public class CommandManager {
 
         // =======[ UTILS ]=======
         commandMap.add(new HexCommand());
+        commandMap.add(new LembrarCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());

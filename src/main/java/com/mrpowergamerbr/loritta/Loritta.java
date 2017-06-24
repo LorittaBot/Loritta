@@ -7,6 +7,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandManager;
@@ -19,6 +20,7 @@ import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
+import com.mrpowergamerbr.loritta.utils.reminders.Reminder;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago;
@@ -141,6 +143,41 @@ public class Loritta {
             LorittaWebsite.init(config.getWebsiteUrl(), config.getFrontendFolder());
         };
         new Thread(website, "Website Thread").start(); // ...não foi tão difícil fazer isso :P
+
+        Runnable reminders = () -> {
+            while (true) {
+                FindIterable<Document> list = mongo.getDatabase("loritta").getCollection("users").find(Filters.exists("reminders"));
+                for (Document doc : list) {
+                    LorittaProfile profile = this.getLorittaProfileForUser(doc.getString("_id"));
+                    List<Reminder> toRemove = new ArrayList<Reminder>();
+                    for (Reminder reminder : profile.getReminders()) {
+                        if (System.currentTimeMillis() >= reminder.getRemindMe()) {
+                            toRemove.add(reminder);
+
+                            Guild guild = lorittaShards.getGuildById(reminder.getGuild());
+
+                            if (guild != null) {
+                                TextChannel textChannel = guild.getTextChannelById(reminder.getTextChannel());
+
+                                if (textChannel != null) {
+                                    textChannel.sendMessage(
+                                            "\uD83D\uDD14 | <@" + profile.getUserId() + "> Lembrete! `" + reminder.getReason() + "`").complete();
+                                }
+                            }
+                        }
+                    }
+                    if (!toRemove.isEmpty()) {
+                        profile.getReminders().removeAll(toRemove);
+                        ds.save(profile);
+                    }
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                }
+            }
+        };
+        new Thread(reminders, "Reminders Thread").start();
 
         Runnable presenceUpdater = () -> {  // Agora iremos iniciar o presence updater
             while (true) {

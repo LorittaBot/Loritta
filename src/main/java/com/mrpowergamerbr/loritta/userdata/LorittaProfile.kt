@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
+import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import org.mongodb.morphia.annotations.Entity
 import org.mongodb.morphia.annotations.Id
 import org.mongodb.morphia.annotations.Indexed
@@ -23,6 +24,7 @@ import org.mongodb.morphia.annotations.Indexed
     var games = HashMap<String, Long>();
     var isBanned = false;
     var banReason: String? = null;
+    var reminders: MutableList<Reminder> = arrayListOf();
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
