@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
+import java.text.DateFormatSymbols
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.regex.Pattern
@@ -106,6 +107,9 @@ class LembrarCommand : CommandBase() {
 			// E agora em millis
 			var inMillis = instant.atZone(zoneId).toInstant().toEpochMilli();
 
+			// Transformar o nome do mês em PT-BR
+			var strMonth = DateFormatSymbols().months[instant.month.value - 1]
+
 			// Criar o Lembrete
 			var reminder = Reminder(context.guild.id, context.message.textChannel.id, inMillis, message.trim());
 			var profile = context.lorittaUser.profile
@@ -114,7 +118,7 @@ class LembrarCommand : CommandBase() {
 
 			LorittaLauncher.getInstance().ds.save(profile)
 
-			context.sendMessage(context.getAsMention(true) + "Eu irei te lembrar deste lembrete em ${instant.dayOfMonth}/${instant.month}/${instant.year} as ${instant.hour}:${instant.minute}!")
+			context.sendMessage(context.getAsMention(true) + "Eu irei te lembrar deste lembrete em ${instant.dayOfMonth}/${strMonth}/${instant.year} as ${instant.hour}:${instant.minute}!")
 		} else {
 			this.explain(context);
 		}
