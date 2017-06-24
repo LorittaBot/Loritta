@@ -8,6 +8,8 @@ import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BotInfoCommand extends CommandBase {
@@ -15,6 +17,11 @@ public class BotInfoCommand extends CommandBase {
     @Override
     public String getLabel() {
         return "botinfo";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return Arrays.asList("info");
     }
 
     @Override
