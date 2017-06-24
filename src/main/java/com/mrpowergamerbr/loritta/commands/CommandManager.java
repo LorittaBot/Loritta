@@ -91,6 +91,7 @@ public class CommandManager {
         commandMap.add(new HexCommand());
         commandMap.add(new LembrarCommand());
         commandMap.add(new RgbCommand());
+        commandMap.add(new YoutubeMp3Command());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
