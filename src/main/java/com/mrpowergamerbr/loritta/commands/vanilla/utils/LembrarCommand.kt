@@ -50,6 +50,8 @@ class LembrarCommand : CommandBase() {
 			var monthsMatcher = monthsPattern.matcher(context.message.content);
 			var weeksPattern = Pattern.compile("(?i)([0-9]+) semana(s)?");
 			var weeksMatcher = weeksPattern.matcher(context.message.content);
+			var daysPattern = Pattern.compile("(?i)([0-9]+) dia(s)?");
+			var daysMatcher = daysPattern.matcher(context.message.content);
 			var hoursPattern = Pattern.compile("(?i)([0-9]+) hora(s)?");
 			var hoursMatcher = hoursPattern.matcher(context.message.content);
 			var minutesPattern = Pattern.compile("(?i)([0-9]+) minuto(s)?");
@@ -70,6 +72,11 @@ class LembrarCommand : CommandBase() {
 				var group = weeksMatcher.group(1);
 				weeks = group.toLong();
 				message = message.replace(weeksMatcher.group(), "");
+			}
+			if (daysMatcher.find()) {
+				var group = daysMatcher.group(1);
+				days = group.toLong();
+				message = message.replace(daysMatcher.group(), "");
 			}
 			if (hoursMatcher.find()) {
 				var group = hoursMatcher.group(1);
