@@ -6,8 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.util.regex.Pattern
+
 
 class LembrarCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -41,6 +42,7 @@ class LembrarCommand : CommandBase() {
 			var minutes = 0L;
 			var seconds = 0L;
 			var instant = LocalDateTime.now();
+			var zoneId = ZoneId.systemDefault()
 			// Vamos usar RegEx para detectar!
 			var yearsPattern = Pattern.compile("(?i)([0-9]+) ano(s)?");
 			var yearsMatcher = yearsPattern.matcher(context.message.content);
@@ -95,7 +97,7 @@ class LembrarCommand : CommandBase() {
 			instant = instant.plusSeconds(seconds);
 
 			// E agora em millis
-			var inMillis = instant.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
+			var inMillis = instant.atZone(zoneId).toInstant().toEpochMilli();
 
 			// Criar o Lembrete
 			var reminder = Reminder(context.guild.id, context.message.textChannel.id, inMillis, message.trim());
