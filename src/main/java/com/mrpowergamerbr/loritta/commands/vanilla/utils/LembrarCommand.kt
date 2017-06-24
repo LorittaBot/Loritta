@@ -29,7 +29,7 @@ class LembrarCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.MISC;
+		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext) {

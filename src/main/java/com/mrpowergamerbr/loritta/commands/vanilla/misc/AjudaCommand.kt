@@ -38,7 +38,7 @@ class AjudaCommand : CommandBase() {
                 .setColor(Color(39, 153, 201))
                 .setTitle("💁 Ajuda da Loritta")
                 .setDescription(description)
-                .setThumbnail("https://loritta.website/assets/img/katy_commands3.png")
+                .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
         var firstMsgSent = fastEmbedSend(context, builder.build()) // Nós iremos dar pin nela
 
@@ -52,8 +52,10 @@ class AjudaCommand : CommandBase() {
         val discordCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")
         val minecraftCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png")
         val undertaleCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
+        val pokemonCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.POKEMON, "http://i.imgur.com/2l5kKCp.png")
         val funCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
         val miscCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
+        val utilsCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.UTILS, "http://i.imgur.com/eksGMGw.png")
 
         val aboutMe = EmbedBuilder()
         aboutMe.setTitle("Sobre o Criador", null)
@@ -94,11 +96,17 @@ class AjudaCommand : CommandBase() {
         if (undertaleCmds != null) {
             fastEmbedSend(context, undertaleCmds);
         }
+        if (pokemonCmds != null) {
+            fastEmbedSend(context, pokemonCmds);
+        }
         if (funCmds != null) {
             fastEmbedSend(context, funCmds);
         }
         if (miscCmds != null) {
             fastEmbedSend(context, miscCmds);
+        }
+        if (utilsCmds != null) {
+            fastEmbedSend(context, utilsCmds);
         }
 
         context.sendMessage(sparklyPower.build())
@@ -135,10 +143,16 @@ class AjudaCommand : CommandBase() {
             embed.setColor(Color(121, 141, 207))
         } else if (cat == CommandCategory.SOCIAL) {
             embed.setColor(Color(231, 150, 90));
+        } else if (cat == CommandCategory.UNDERTALE) {
+            embed.setColor(Color(250, 250, 250))
+        } else if (cat == CommandCategory.POKEMON) {
+            embed.setColor(Color(255, 13, 0))
         } else if (cat == CommandCategory.MINECRAFT) {
             embed.setColor(Color(50, 141, 145))
         } else if (cat == CommandCategory.MISC) {
             embed.setColor(Color(255, 176, 0));
+        } else if (cat == CommandCategory.UTILS) {
+            embed.setColor(Color(176, 146, 209));
         } else {
             embed.setColor(Color(186, 0, 239))
         }
@@ -149,7 +163,7 @@ class AjudaCommand : CommandBase() {
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-                    description += "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " ➡ " + cmd.description + "\n";
+                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " " + cmd.description + "\n";
                 }
             }
             embed.setDescription(description)
