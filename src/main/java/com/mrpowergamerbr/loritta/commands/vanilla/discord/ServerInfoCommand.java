@@ -1,14 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord;
 
-import java.util.stream.Collectors;
-
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
-
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Role;
+
+import java.util.stream.Collectors;
 
 public class ServerInfoCommand extends CommandBase {
 	public String getDescription() {
@@ -32,8 +31,8 @@ public class ServerInfoCommand extends CommandBase {
 
 		embed.setThumbnail(context.getGuild().getIconUrl()); // Ícone da Guild
 		embed.setTitle(context.getGuild().getName(), null); // Nome da Guild
-		embed.addField("💻 ID", context.getGuild().getId(), true); // ID da Guild
 		embed.addField("📙 Nome", context.getGuild().getName(), true); // Nome da Guild (de novo)
+		embed.addField("💻 ID", context.getGuild().getId(), true); // ID da Guild
 		embed.addField("👑 Dono", context.getGuild().getOwner().getUser().getName() + "#" + context.getGuild().getOwner().getUser().getDiscriminator(), true); // Dono da Guild
 		embed.addField("🌎 Região", context.getGuild().getRegion().getName(), true); // Região da Guild
 		embed.addField("📝 Canais de Texto", String.valueOf(context.getGuild().getTextChannels().size()), true); // Canais de Texto da Guild
