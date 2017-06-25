@@ -32,7 +32,7 @@ class AjudaCommand : CommandBase() {
             context.event.textChannel.sendMessage(context.getAsMention(true) + "Enviei para você no privado! ;)").complete()
         }
 
-        var description = "Olá " + context.userHandle.asMention + ", eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975)!\n\nAtualmente você está vendo a ajuda do **" + context.guild.name + "**!"
+        var description = "Olá " + context.userHandle.asMention + ", eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975))!\n\nAtualmente você está vendo a ajuda do **" + context.guild.name + "**!"
 
         var builder = EmbedBuilder()
                 .setColor(Color(39, 153, 201))
