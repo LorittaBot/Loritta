@@ -34,6 +34,9 @@ class RazoesCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0);
+		if (!LorittaUtils.isValidImage(context, contextImage)) {
+			return;
+		}
 		var template = ImageIO.read(File(Loritta.FOLDER + "reasons.png")); // Template
 		var image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
