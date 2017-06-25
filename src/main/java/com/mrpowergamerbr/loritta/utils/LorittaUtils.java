@@ -171,14 +171,26 @@ public class LorittaUtils {
 		if (toBeDownloaded != null) {
 			// Vamos baixar a imagem!
 			try {
-				URL imageUrl = new URL(toBeDownloaded);
-				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-				connection.setRequestProperty("User-Agent",
-						"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
-				image = ImageIO.read(connection.getInputStream());
+				image = downloadImage(toBeDownloaded);
 			} catch (Exception e) {}
 		}
 		return image;
+	}
+
+	/**
+	 * Faz download de uma imagem e retorna ela como um BufferedImage
+	 * @param url
+	 * @return
+	 */
+	public static BufferedImage downloadImage(String url) {
+		try {
+			URL imageUrl = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+			connection.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+			return ImageIO.read(connection.getInputStream());
+		} catch (Exception e) {}
+		return null;
 	}
 
 	/**
