@@ -4,28 +4,28 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import java.awt.Color
-import java.awt.Font
-import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
-class LavaCommand : CommandBase() {
+class RazoesCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "lava"
+		return "razoes"
+	}
+
+	override fun getAliases(): List<String> {
+		return listOf("razões", "reasons")
 	}
 
 	override fun getDescription(): String {
-		return "O chão é...? Decida o que você quiser!";
+		return "Qual é a sua razão para viver?";
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("@Loritta bots indecentes");
+		return listOf("@Loritta");
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -33,54 +33,38 @@ class LavaCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		if (context.args.isNotEmpty()) {
-			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);
-			var template = ImageIO.read(File(Loritta.FOLDER + "lava.png")); // Template
+		var contextImage = LorittaUtils.getImageFromContext(context, 0);
+		var template = ImageIO.read(File(Loritta.FOLDER + "reasons.png")); // Template
+		var image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
-			if (contextImage == null) {
-				contextImage = LorittaUtils.getImageFromContext(context, 0);
-				if (!LorittaUtils.isValidImage(context, contextImage)) {
-					return;
-				}
-			} else {
-				context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1);
-			}
+		var graphics = image.graphics;
+		var skewed = javaxt.io.Image(contextImage);
 
-			if (context.rawArgs.isEmpty()) {
-				this.explain(context);
-				return;
-			}
+		skewed.resize(202, 202);
+		skewed.width = 240; // Aumentar o tamanho da imagem para manipular ela
+		skewed.height = 240;
+		// skew image
+		skewed.setCorners(
+				// keep the upper left corner as it is
+				0F,0F, // UL
 
-			var joined = context.rawArgs.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			var singular = true; // E verificar se é singular ou não
-			if (context.rawArgs[0].endsWith("s", true)) { // Se termina com s...
-				singular = false; // Então é plural!
-			}
-			var resized = contextImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH);
-			var small = contextImage.getScaledInstance(32, 32, BufferedImage.SCALE_SMOOTH);
-			var templateGraphics = template.graphics;
-			templateGraphics.drawImage(resized, 120, 0, null);
-			templateGraphics.drawImage(small, 487, 0, null);
-			var image = BufferedImage(700, 443, BufferedImage.TYPE_INT_ARGB);
-			var graphics = image.getGraphics() as java.awt.Graphics2D;
-			graphics.color = Color.WHITE;
-			graphics.fillRect(0, 0, 700, 443);
-			graphics.color = Color.BLACK;
-			graphics.drawImage(template, 0, 100, null);
-			graphics.setRenderingHint(
-					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.FOLDER + "mavenpro-bold.ttf")).deriveFont(24F);
-			graphics.font = font;
-			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 700, 100), font);
+				// push the upper right corner more to the bottom
+				202 - 40F,40F , // UR
 
-			val os = ByteArrayOutputStream()
-			ImageIO.write(image, "png", os)
-			val inputStream = ByteArrayInputStream(os.toByteArray())
+				// push the lower right corner more to the left
+				236F,210F, // LR
 
-			context.sendFile(inputStream, "lava.png", context.getAsMention(true));
-		} else {
-			this.explain(context);
-		}
+				// push the lower left corner more to the right
+				95F, 215F); // LL
+
+		graphics.drawImage(skewed.bufferedImage, 30, 370, null);
+
+		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
+
+		val os = ByteArrayOutputStream()
+		ImageIO.write(image, "png", os)
+		val inputStream = ByteArrayInputStream(os.toByteArray())
+
+		context.sendFile(inputStream, "reasons.png", context.getAsMention(true));
 	}
 }

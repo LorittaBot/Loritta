@@ -75,6 +75,7 @@ public class CommandManager {
         commandMap.add(new LavaReversoCommand());
         commandMap.add(new ShipCommand());
         commandMap.add(new AvaliarWaifuCommand());
+        commandMap.add(new RazoesCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
