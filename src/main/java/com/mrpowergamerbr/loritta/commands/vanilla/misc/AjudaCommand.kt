@@ -40,7 +40,7 @@ class AjudaCommand : CommandBase() {
                 .setDescription(description)
                 .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
-        var firstMsgSent = fastEmbedSend(context, builder.build()) // Nós iremos dar pin nela
+        var firstMsgSent = fastEmbedSend(context, listOf(builder.build()))[0] // Nós iremos dar pin nela
 
         val embed = EmbedBuilder()
         embed.setThumbnail("http://i.imgur.com/LUHLEs9.png")
@@ -125,37 +125,46 @@ class AjudaCommand : CommandBase() {
      * imagens antes de enviar para o destinatário... usando o "truque" o usuário irá receber sem as imagens e depois irá receber
      * a versão editada com imagens, economizando tempo ao tentar enviar várias embeds de uma só vez
      */
-    fun fastEmbedSend(context: CommandContext, embed: MessageEmbed): Message {
-        var clone = EmbedBuilder(embed)
-        clone.setImage(null)
-        clone.setThumbnail(null)
-        var sentMsg = context.sendMessage(clone.build())
-        sentMsg.editMessage(embed).queue(); // Vamos enviar em uma queue para não atrasar o envio
-        return sentMsg;
+    fun fastEmbedSend(context: CommandContext, embeds: List<MessageEmbed>): List<Message> {
+        var messages = ArrayList<Message>();
+        for (embed in embeds) {
+            var clone = EmbedBuilder(embed)
+            clone.setImage(null)
+            clone.setThumbnail(null)
+            var sentMsg = context.sendMessage(clone.build())
+            sentMsg.editMessage(embed).queue(); // Vamos enviar em uma queue para não atrasar o envio
+            messages.add(sentMsg);
+        }
+        return messages;
     }
 
-    fun getCommandsFor(conf: ServerConfig, availableCommands: List<CommandBase>, cat: CommandCategory, image: String): MessageEmbed? {
-        val embed = EmbedBuilder()
+    fun getCommandsFor(conf: ServerConfig, availableCommands: List<CommandBase>, cat: CommandCategory, image: String): MutableList<MessageEmbed> {
+        val embeds = ArrayList<MessageEmbed>();
+        var embed = EmbedBuilder()
         embed.setTitle(cat.fancyTitle, null)
         embed.setThumbnail(image)
 
+        var color = Color(255, 255, 255);
+
         if (cat == CommandCategory.DISCORD) {
-            embed.setColor(Color(121, 141, 207))
+            color = Color(121, 141, 207);
         } else if (cat == CommandCategory.SOCIAL) {
-            embed.setColor(Color(231, 150, 90));
+            color = Color(231, 150, 90);
         } else if (cat == CommandCategory.UNDERTALE) {
-            embed.setColor(Color(250, 250, 250))
+            color = Color(250, 250, 250);
         } else if (cat == CommandCategory.POKEMON) {
-            embed.setColor(Color(255, 13, 0))
+            color = Color(255, 13, 0);
         } else if (cat == CommandCategory.MINECRAFT) {
-            embed.setColor(Color(50, 141, 145))
+            color = Color(50, 141, 145);
         } else if (cat == CommandCategory.MISC) {
-            embed.setColor(Color(255, 176, 0));
+            color = Color(255, 176, 0);
         } else if (cat == CommandCategory.UTILS) {
-            embed.setColor(Color(176, 146, 209));
+            color = Color(176, 146, 209);
         } else {
-            embed.setColor(Color(186, 0, 239))
+            color = Color(186, 0, 239);
         }
+
+        embed.setColor(color)
 
         var description = "*" + cat.description + "*\n\n";
         val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.category == cat }.collect(Collectors.toList<CommandBase>())
@@ -163,13 +172,22 @@ class AjudaCommand : CommandBase() {
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
+                    var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.description + "\n";
+                    if ((description + toBeAdded).length > 2048) {
+                        embed.setDescription(description);
+                        embeds.add(embed.build());
+                        embed = EmbedBuilder();
+                        embed.setColor(color)
+                        description = "";
+                    }
                     description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.description + "\n";
                 }
             }
             embed.setDescription(description)
-            return embed.build()
+            embeds.add(embed.build());
+            return embeds
         } else {
-            return null
+            return embeds
         }
     }
 
