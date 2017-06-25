@@ -95,6 +95,7 @@ public class CommandManager {
         commandMap.add(new RgbCommand());
         commandMap.add(new YoutubeMp3Command());
         commandMap.add(new DicioCommand());
+        commandMap.add(new TempoCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());

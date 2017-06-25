@@ -24,5 +24,6 @@ public class LorittaConfig {
 	public String mercadoPagoClientToken;
 	public String mashapeKey;
 	public String discordBotsKey;
+	public String openWeatherMapKey;
 	public List<String> currentlyPlaying = new ArrayList<String>();
 }
