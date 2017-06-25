@@ -1,13 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.util.Arrays;
-import java.util.List;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class FaustaoCommand extends CommandBase {
 	private static List<String> frases = Arrays.asList(
@@ -49,6 +50,11 @@ public class FaustaoCommand extends CommandBase {
 	@Override
 	public boolean hasCommandFeedback() {
 		return false;
+	}
+
+	@Override
+	public List<String> getAliases() {
+		return Arrays.asList("faustao");
 	}
 
 	@Override
