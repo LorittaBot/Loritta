@@ -53,9 +53,7 @@ public class FaustaoCommand extends CommandBase {
 	}
 
 	@Override
-	public List<String> getAliases() {
-		return Arrays.asList("faustao");
-	}
+	public List<String> getAliases() { return Arrays.asList("faustao"); }
 
 	@Override
 	public void run(CommandContext context) {

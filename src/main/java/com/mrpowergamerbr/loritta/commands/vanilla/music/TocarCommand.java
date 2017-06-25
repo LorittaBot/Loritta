@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.Permission;
 
 import java.util.Arrays;
@@ -32,6 +33,10 @@ public class TocarCommand extends CommandBase {
 
     @Override
     public void run(CommandContext context) {
+        if (!context.getConfig().musicConfig().isEnabled()) {
+            context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E");
+            return;
+        }
         if (context.getArgs().length >= 1) {
             String music = String.join(" ", context.getArgs());
 
