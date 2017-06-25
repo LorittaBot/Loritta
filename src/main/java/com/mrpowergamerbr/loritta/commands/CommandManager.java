@@ -20,10 +20,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.LembrarCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.RgbCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command;
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.*;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import lombok.Getter;
 
@@ -95,6 +92,7 @@ public class CommandManager {
         commandMap.add(new LembrarCommand());
         commandMap.add(new RgbCommand());
         commandMap.add(new YoutubeMp3Command());
+        commandMap.add(new DicioCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
