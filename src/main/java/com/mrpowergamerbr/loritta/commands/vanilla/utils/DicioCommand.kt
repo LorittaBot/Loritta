@@ -14,6 +14,9 @@ class DicioCommand : CommandBase() {
 		return "dicio"
 	}
 
+	override fun getUsage(): String {
+		return "palavra"
+	}
 
 	override fun getAliases(): List<String> {
 		return listOf("dicionário", "definir")

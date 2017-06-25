@@ -20,8 +20,13 @@ class ClapifyCommand : CommandBase() {
 	override fun getExample(): List<String> {
 		return listOf("Não finja que você nunca viu alguém falar assim antes");
 	}
+
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN;
+	}
+
+	override fun getUsage(): String {
+		return "<mensagem>"
 	}
 
     override fun run(context: CommandContext) {

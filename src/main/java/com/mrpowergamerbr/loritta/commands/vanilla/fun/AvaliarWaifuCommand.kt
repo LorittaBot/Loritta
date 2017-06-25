@@ -21,8 +21,13 @@ class AvaliarWaifuCommand : CommandBase() {
 	override fun getExample(): List<String> {
 		return listOf("Loritta");
 	}
+
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN;
+	}
+
+	override fun getUsage(): String {
+		return "<usuário 1>"
 	}
 
 	override fun run(context: CommandContext) {

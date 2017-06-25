@@ -10,6 +10,10 @@ class DiscriminatorCommand : CommandBase() {
         return "discriminator"
     }
 
+	override fun getUsage(): String {
+		return "<usuário>"
+	}
+
     override fun getAliases(): List<String> {
         return listOf("discrim", "discriminador");
     }

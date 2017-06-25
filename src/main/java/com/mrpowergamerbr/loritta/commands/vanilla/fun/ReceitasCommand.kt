@@ -32,6 +32,10 @@ class ReceitasCommand : CommandBase() {
 		return false;
 	}
 
+	override fun getUsage(): String {
+		return "<texto>";
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.size > 0) {
 			val query = context.args.joinToString(" ");

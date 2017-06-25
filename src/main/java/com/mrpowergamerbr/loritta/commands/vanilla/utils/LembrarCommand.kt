@@ -20,6 +20,10 @@ class LembrarCommand : CommandBase() {
 		return listOf("lembre", "remind", "remindme");
 	}
 
+	override fun getUsage(): String {
+		return "tempo mensagem"
+	}
+
 	override fun getDescription(): String {
 		return "Precisa lembrar de dar comida para o dog? Talvez você queira marcar um lembrete para que no futuro você possa ver se você conseguir fazer todos os seus \"Life Goals\" deste ano? Então crie um lembrete!"
 	}

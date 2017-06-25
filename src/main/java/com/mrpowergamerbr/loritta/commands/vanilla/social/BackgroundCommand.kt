@@ -13,6 +13,10 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         return "background";
     }
 
+    override fun getUsage(): String {
+        return "<novo background>"
+    }
+
     override fun getDescription(): String {
         return "Permite alterar o background do seu perfil!";
     }

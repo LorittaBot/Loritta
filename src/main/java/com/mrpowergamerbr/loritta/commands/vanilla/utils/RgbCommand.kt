@@ -11,6 +11,10 @@ class RgbCommand : CommandBase() {
 		return "rgb"
 	}
 
+	override fun getUsage(): String {
+		return "hexadecimal"
+	}
+
 	override fun getDescription(): String {
 		return "Transforme uma cor hexadecimal para RGB"
 	}

@@ -18,6 +18,9 @@ class TempoCommand : CommandBase() {
 		return "tempo"
 	}
 
+	override fun getUsage(): String {
+		return "cidade"
+	}
 
 	override fun getAliases(): List<String> {
 		return listOf("previsão", "previsao")

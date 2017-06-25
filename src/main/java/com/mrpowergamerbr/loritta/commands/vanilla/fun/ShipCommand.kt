@@ -17,8 +17,13 @@ class ShipCommand : CommandBase() {
 	override fun getExample(): List<String> {
 		return listOf("@Loritta @SparklyBot");
 	}
+
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN;
+	}
+
+	override fun getUsage(): String {
+		return "<usuário 1> <usuário 2>";
 	}
 
     override fun run(context: CommandContext) {

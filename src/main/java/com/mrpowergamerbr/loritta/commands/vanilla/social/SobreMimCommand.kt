@@ -1,15 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
-import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.util.*
 
 class SobreMimCommand : CommandBase() {
     override fun getLabel():String {
         return "sobremim";
+    }
+
+    override fun getUsage(): String {
+        return "<nova mensagem>"
     }
 
     override fun getAliases(): MutableList<String> {

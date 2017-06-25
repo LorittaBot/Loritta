@@ -32,6 +32,10 @@ class LavaCommand : CommandBase() {
 		return CommandCategory.FUN;
 	}
 
+	override fun getUsage(): String {
+		return "<imagem>";
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);

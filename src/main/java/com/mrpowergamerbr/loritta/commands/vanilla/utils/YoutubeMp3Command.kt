@@ -16,6 +16,9 @@ class YoutubeMp3Command : CommandBase() {
 		return "ytmp3"
 	}
 
+	override fun getUsage(): String {
+		return "link"
+	}
 
 	override fun getAliases(): List<String> {
 		return listOf("youtube2mp3", "youtubemp3")
