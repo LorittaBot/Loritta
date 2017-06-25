@@ -185,16 +185,14 @@ public class Loritta {
                     currentIndex = 0;
                 }
                 // Enviar as informações do bot para o Discord Bots
-                String body = HttpRequest.post("https://bots.discord.pw/api/bots/" + getConfig().clientId + "/stats")
-                     .authorization(getConfig().discordBotsKey)
-                     .acceptJson()
-                     .contentType("application/json")
-                     .send("{ \"server_count\": " + lorittaShards.getGuilds().size() + " }")
-                     .body();
-
+                try {
+                    String body = HttpRequest.post("https://bots.discord.pw/api/bots/" + getConfig().clientId + "/stats")
+                            .authorization(getConfig().discordBotsKey).acceptJson().contentType("application/json")
+                            .send("{ \"server_count\": " + lorittaShards.getGuilds().size() + " }").body();
+                } catch (Exception e) {}
                 String str = playingGame.get(currentIndex);
-                str = str.replace("%guilds%", String.valueOf(lorittaShards.getGuilds().size()));
-                str = str.replace("%users%", String.valueOf(lorittaShards.getUsers().size()));
+                str = str.replace("{guilds}", String.valueOf(lorittaShards.getGuilds().size()));
+                str = str.replace("{users}", String.valueOf(lorittaShards.getUsers().size()));
                 lorittaShards.getPresence().setGame(new GameImpl(str, "https://www.twitch.tv/monstercat", GameType.TWITCH));
                 currentIndex++;
                 try {
