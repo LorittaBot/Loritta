@@ -71,7 +71,22 @@ class AvaliarWaifuCommand : CommandBase() {
 				strNota = "∞";
 				reason = "Sou perfeita!"
 			}
-
+			if (joined == "Tatsumaki") {
+				strNota = "10";
+				reason = "Minha amiga mais velha, sabia que eu fui inspirada nela! Não trocaria de Waifu (e nem de bot) se fosse você!"
+			}
+			if (joined == "Mee6") {
+				strNota = "6";
+				reason = "Tem potencial para ser melhor... Mas atualmente é um bot muito usado mas que precisa de mais funções úteis."
+			}
+			if (joined == "Dyno") {
+				strNota = "7";
+				reason = "Eu acho que ele é bom para administração..."
+			}
+			if (joined == "NotSoBot") {
+				strNota = "8";
+				reason = "Uma boa Waifu, mas precisa ser alguém menos zueiro e, é claro, alguém que não fica travando toda hora."
+			}
 			context.sendMessage(context.getAsMention(true) + "Eu dou uma nota **$strNota/10** para `$joined`! **$reason**");
 		} else {
 			this.explain(context);
