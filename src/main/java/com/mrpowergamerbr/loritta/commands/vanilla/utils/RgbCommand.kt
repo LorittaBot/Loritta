@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory

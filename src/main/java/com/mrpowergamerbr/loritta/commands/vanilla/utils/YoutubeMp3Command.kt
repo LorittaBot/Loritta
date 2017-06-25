@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.JsonParser
