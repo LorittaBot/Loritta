@@ -14,9 +14,9 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -156,6 +156,16 @@ public class CommandContext {
             }
 			sendMessage(builder.build());
 		}
+	}
+
+	public Message sendFile(BufferedImage image, String name, String message) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, "png", os);
+		} catch (Exception e) {}
+		InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+		return sendFile(is, name, message);
 	}
 
 	public Message sendFile(InputStream data, String name, String message) {
