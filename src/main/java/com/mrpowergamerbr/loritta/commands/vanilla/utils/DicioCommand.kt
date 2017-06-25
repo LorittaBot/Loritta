@@ -43,6 +43,11 @@ class DicioCommand : CommandBase() {
 			}
 			var jsoup = Jsoup.parse(response);
 
+			if (jsoup.select("p[itemprop = description]").isEmpty()) {
+				context.sendMessage(context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
+				return;
+			}
+
 			var description = jsoup.select("p[itemprop = description]")[0];
 
 			var type = description.getElementsByTag("span")[0]
