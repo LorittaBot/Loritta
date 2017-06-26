@@ -168,8 +168,35 @@ public class CommandContext {
 		return sendFile(is, name, message);
 	}
 
+	public Message sendFile(BufferedImage image, String name, Message message) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, "png", os);
+		} catch (Exception e) {}
+		InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+		return sendFile(is, name, message);
+	}
+
+	public Message sendFile(BufferedImage image, String name, MessageEmbed message) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, "png", os);
+		} catch (Exception e) {}
+		InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+		return sendFile(is, name, message);
+	}
+
 	public Message sendFile(InputStream data, String name, String message) {
 		return sendFile(data, name, new MessageBuilder().append(message).build());
+	}
+
+	public Message sendFile(InputStream data, String name, MessageEmbed message) {
+		MessageBuilder messageBuilder = new MessageBuilder();
+		messageBuilder.setEmbed(message);
+		messageBuilder.append(" ");
+		return sendFile(data, name, message);
 	}
 
 	public Message sendFile(InputStream data, String name, Message message) {
