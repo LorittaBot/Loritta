@@ -26,7 +26,7 @@ import java.util.HashMap;
 public class ServerConfig {
     @Id
     @Indexed(options = @IndexOptions(unique = true))
-    String guildId; // Guild ID
+    public String guildId; // Guild ID
     public String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
     public ArrayList<String> disabledCommands = new ArrayList<String>(); // Comandos desativados
     DebugOptions debugOptions = new DebugOptions();
@@ -51,6 +51,7 @@ public class ServerConfig {
 
     JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     MusicConfig musicConfig = new MusicConfig();
+    public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {
         if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {

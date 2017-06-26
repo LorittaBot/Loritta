@@ -25,5 +25,8 @@ public class LorittaConfig {
 	public String mashapeKey;
 	public String discordBotsKey;
 	public String openWeatherMapKey;
+	public String aminoEmail;
+	public String aminoPassword;
+	public String aminoDeviceId;
 	public List<String> currentlyPlaying = new ArrayList<String>();
 }

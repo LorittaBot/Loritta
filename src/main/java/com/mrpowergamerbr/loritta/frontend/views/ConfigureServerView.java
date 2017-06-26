@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.TristeRealidadeCommandOptions;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontend.views.configure.AminoConfigView;
 import com.mrpowergamerbr.loritta.frontend.views.configure.NashornCommandsView;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
@@ -190,7 +191,9 @@ public class ConfigureServerView {
 
                     template = LorittaWebsite.getEngine().getTemplate("custom_commands.html");
 				} else if (context.request().path().endsWith("nashorn")) {
-					template = NashornCommandsView.render(context, temmie, sc);
+                    template = NashornCommandsView.render(context, temmie, sc);
+                } else if (context.request().path().endsWith("amino")) {
+                        template = AminoConfigView.render(context, temmie, sc);
 				} else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());

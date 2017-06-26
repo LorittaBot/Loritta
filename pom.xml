@@ -11,6 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
 
     <repositories>
@@ -129,6 +130,11 @@
             <groupId>javaxt</groupId>
             <artifactId>javaxt-core</artifactId>
             <version>1.7.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MrPowerGamerBR</groupId>
+            <artifactId>AminoREAPI</artifactId>
+            <version>39868538f8</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
