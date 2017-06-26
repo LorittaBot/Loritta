@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
+import java.awt.Color
 
 class AminoRepostThread : Thread() {
 	var storedLastIds = HashMap<String, String>();
@@ -64,7 +65,12 @@ class AminoRepostThread : Thread() {
 						try {
 							community.join(communityId)
 						} catch (e: Exception) {
-							e.printStackTrace(); }
+							try {
+								community.join();
+							} catch (e: Exception) {
+								e.printStackTrace()
+							}
+						}
 
 						var posts = community.getBlogFeed(0, 5);
 
@@ -79,6 +85,7 @@ class AminoRepostThread : Thread() {
 							embed.setAuthor(post.author.nickname, null, post.author.icon)
 							embed.setTitle(post.title)
 							embed.setDescription(post.content)
+							embed.setColor(Color.WHITE);
 
 							if (post.mediaList != null) {
 								var obj = post.mediaList;

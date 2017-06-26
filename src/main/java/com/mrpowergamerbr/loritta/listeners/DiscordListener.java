@@ -12,13 +12,20 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.whistlers.*;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +66,22 @@ public class DiscordListener extends ListenerAdapter {
                         processCode(conf, event.getMessage(), whistler.codes);
                     }
 
+                    if (conf.aminoConfig.getFixAminoImages()) {
+                        for (Attachment attachments : event.getMessage().getAttachments()) {
+                            if (attachments.getFileName().endsWith(".Amino")) {
+                                BufferedImage bufferedImage = LorittaUtils.downloadImage(attachments.getUrl());
+
+                                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                                try {
+                                    ImageIO.write(bufferedImage, "png", os);
+                                } catch (Exception e) {}
+                                InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+                                event.getTextChannel().sendFile(is, "amino.png", new MessageBuilder().append("(Por " + event.getMember().getAsMention() + ") **Link para o \".Amino\":** " + attachments.getUrl()).build()).complete();
+                                event.getMessage().delete().complete();
+                            }
+                        }
+                    }
                     // Primeiro os comandos vanilla da Loritta(tm)
                     for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
                         if (conf.debugOptions().enableAllModules() || !conf.disabledCommands().contains(cmd.getClass().getSimpleName())) {

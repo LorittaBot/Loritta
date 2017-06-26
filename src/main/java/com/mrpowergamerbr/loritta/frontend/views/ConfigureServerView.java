@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.frontend.views;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
@@ -41,6 +42,10 @@ public class ConfigureServerView {
                     context.contextVars().put("currentServerJda", LorittaLauncher.getInstance().getLorittaShards().getGuildById(guild.getId()));
                     break;
                 }
+            }
+
+            if (!allowed && temmie.getCurrentUserIdentification().getId().equals(Loritta.config.ownerId)) { // Ninguém viu nada...
+                allowed = true;
             }
 
             context.contextVars().put("whereAmI", "idk");
