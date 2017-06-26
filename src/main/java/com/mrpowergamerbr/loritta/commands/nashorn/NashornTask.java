@@ -38,7 +38,7 @@ class NashornTask implements Callable<Void> {
 					while (running) {
 						System.out.println("bytes: " + sunBean.getThreadAllocatedBytes(id));
 						autoKill++;
-						if (sunBean.getThreadAllocatedBytes(id) > 113701120 || autoKill > 500) {
+						if (sunBean.getThreadAllocatedBytes(id) > 113701120 || autoKill > 250) {
 							System.out.println("!!! Matando thread");
 							running = false;
 							currentThread.stop(); // stop now!
