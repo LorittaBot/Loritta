@@ -103,6 +103,15 @@ public class LorittaUtils {
 		return getImageFromContext(context, argument, search, 2048);
 	}
 
+	/**
+	 * Retorna uma imagem dependendo do contexto
+	 *
+	 * @param context
+	 * @param argument
+	 * @param search
+	 * @param avatarSize
+	 * @return uma BufferedImage com a imagem
+	 */
 	public static BufferedImage getImageFromContext(CommandContext context, int argument, int search, int avatarSize) {
 		String toBeDownloaded = null; // Imagem para ser baixada
 		BufferedImage image = null;
