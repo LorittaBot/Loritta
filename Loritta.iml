@@ -174,7 +174,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.iharder:base64:2.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20170516" level="project" />
     <orderEntry type="library" name="Maven: javaxt:javaxt-core:1.7.8" level="project" />
-    <orderEntry type="library" name="Maven: com.github.MrPowerGamerBR:AminoREAPI:39868538f8" level="project" />
+    <orderEntry type="library" name="Maven: com.github.MrPowerGamerBR:AminoREAPI:d2d90c9fed" level="project" />
     <orderEntry type="library" name="Maven: com.github.salomonbrys.kotson:kotson:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.2-4" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.2-4" level="project" />
