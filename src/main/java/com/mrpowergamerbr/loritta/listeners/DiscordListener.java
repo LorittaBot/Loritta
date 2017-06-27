@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners;
 
+import com.mongodb.client.model.Filters;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
@@ -15,6 +16,7 @@ import com.mrpowergamerbr.loritta.whistlers.*;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -158,6 +160,16 @@ public class DiscordListener extends ListenerAdapter {
                 }
             }
         }
+    }
+
+    @Override
+    public void onGuildLeave(GuildLeaveEvent e) {
+        // Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
+
+        LorittaLauncher.getInstance().getMongo()
+                .getDatabase("loritta")
+                .getCollection("servers")
+                .deleteMany(Filters.eq("_id", e.getGuild().getId())); // Tchau... :(
     }
 
     // TODO: Isto não deveria ficar aqui...
