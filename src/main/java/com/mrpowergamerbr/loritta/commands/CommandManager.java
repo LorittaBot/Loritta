@@ -77,6 +77,7 @@ public class CommandManager {
         commandMap.add(new AvaliarWaifuCommand());
         commandMap.add(new RazoesCommand());
         commandMap.add(new QuadroCommand());
+        commandMap.add(new DeusCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
