@@ -26,89 +26,93 @@ class AminoRepostThread : Thread() {
 	}
 
 	fun checkRepost(aminoClient: AminoClient) {
-		// Carregar todos os server configs que tem o Amino Repost ativado
-		var servers = LorittaLauncher.loritta.mongo
-				.getDatabase("loritta")
-				.getCollection("servers")
-				.find(Filters.eq("aminoConfig.isEnabled", true))
+		try {
+			// Carregar todos os server configs que tem o Amino Repost ativado
+			var servers = LorittaLauncher.loritta.mongo
+					.getDatabase("loritta")
+					.getCollection("servers")
+					.find(Filters.eq("aminoConfig.isEnabled", true))
 
-		for (server in servers) {
-			var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
+			for (server in servers) {
+				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
 
-			var aminoConfig = config.aminoConfig;
+				var aminoConfig = config.aminoConfig;
 
-			if (aminoConfig.isEnabled) { // Está ativado? (Nem sei para que verificar de novo mas vai que né)
-				var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
+				if (aminoConfig.isEnabled) { // Está ativado? (Nem sei para que verificar de novo mas vai que né)
+					var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
 
-				if (guild != null) {
-					var textChannel = guild.getTextChannelById(aminoConfig.repostToChannelId);
+					if (guild != null) {
+						var textChannel = guild.getTextChannelById(aminoConfig.repostToChannelId);
 
-					if (textChannel != null) { // Wow, diferente de null!
-						// Vamos fazer polling dos posts então!
-						var communityId = aminoConfig.communityId;
+						if (textChannel != null) { // Wow, diferente de null!
+							// Vamos fazer polling dos posts então!
+							var communityId = aminoConfig.communityId;
 
-						if (communityId == null) {
-							var document = Jsoup.connect(aminoConfig.inviteUrl).get(); // Mas antes vamos pegar o ID...
+							if (communityId == null) {
+								var document = Jsoup.connect(aminoConfig.inviteUrl).get(); // Mas antes vamos pegar o ID...
 
-							var deepLink = document.getElementsByClass("deeplink-holder")[0];
+								var deepLink = document.getElementsByClass("deeplink-holder")[0];
 
-							var narviiAppLink = deepLink.attr("data-link");
+								var narviiAppLink = deepLink.attr("data-link");
 
-							communityId = narviiAppLink.split("/")[2];
+								communityId = narviiAppLink.split("/")[2];
 
-							LorittaLauncher.loritta.ds.save(config);
-						}
+								LorittaLauncher.loritta.ds.save(config);
+							}
 
-						// E agora nós iremos fazer o polling de verdade
-						var community = aminoClient.getCommunityById(communityId);
+							// E agora nós iremos fazer o polling de verdade
+							var community = aminoClient.getCommunityById(communityId);
 
-						try {
-							community.join(communityId)
-						} catch (e: Exception) {
 							try {
-								community.join();
+								community.join(communityId)
 							} catch (e: Exception) {
-								e.printStackTrace()
-							}
-						}
-
-						var posts = community.getBlogFeed(0, 5);
-
-						var lastIdSent = storedLastIds.getOrDefault(config.guildId, null);
-
-						for (post in posts) {
-							if (post.blogId == lastIdSent) {
-								break;
-							}
-							// Enviar mensagem
-							var embed = EmbedBuilder();
-							embed.setAuthor(post.author.nickname, null, post.author.icon)
-							embed.setTitle(post.title)
-							embed.setDescription(post.content)
-							embed.setColor(Color.WHITE);
-
-							if (post.mediaList != null) {
-								var obj = post.mediaList;
-								var inside = obj.get(0);
-
-								if (inside is List<*>) {
-									var link = inside.get(1) as String;
-
-									if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
-										embed.setImage(link);
-									}
+								try {
+									community.join();
+								} catch (e: Exception) {
+									e.printStackTrace()
 								}
 							}
-							embed.setFooter("Enviado as " + post.modifiedTime, null);
-							textChannel.sendMessage(embed.build()).complete()
-						}
 
-						if (posts.isNotEmpty()) {
-							storedLastIds.put(config.guildId, posts[0].blogId)
+							var posts = community.getBlogFeed(0, 5);
+
+							var lastIdSent = storedLastIds.getOrDefault(config.guildId, null);
+
+							for (post in posts) {
+								if (post.blogId == lastIdSent) {
+									break;
+								}
+								// Enviar mensagem
+								var embed = EmbedBuilder();
+								embed.setAuthor(post.author.nickname, null, post.author.icon)
+								embed.setTitle(post.title)
+								embed.setDescription(post.content)
+								embed.setColor(Color.WHITE);
+
+								if (post.mediaList != null) {
+									var obj = post.mediaList;
+									var inside = obj.get(0);
+
+									if (inside is List<*>) {
+										var link = inside.get(1) as String;
+
+										if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
+											embed.setImage(link);
+										}
+									}
+								}
+								embed.setFooter("Enviado as " + post.modifiedTime, null);
+								textChannel.sendMessage(embed.build()).complete()
+							}
+
+							if (posts.isNotEmpty()) {
+								storedLastIds.put(config.guildId, posts[0].blogId)
+							}
 						}
 					}
 				}
 			}
+		} catch (e: Exception) {
+			e.printStackTrace();
 		}
 	}
 }

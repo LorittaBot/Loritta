@@ -47,6 +47,7 @@ public class EvalCommand extends CommandBase {
 					context.sendMessage(String.valueOf(returnedValue)); // Value of, já que nós não sabemos qual tipo esse objeto é
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
 				builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null);
