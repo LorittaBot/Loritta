@@ -165,7 +165,6 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onGuildLeave(GuildLeaveEvent e) {
         // Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-
         LorittaLauncher.getInstance().getMongo()
                 .getDatabase("loritta")
                 .getCollection("servers")
