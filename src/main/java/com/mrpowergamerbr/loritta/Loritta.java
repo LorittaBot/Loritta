@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaShards;
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread;
+import com.mrpowergamerbr.loritta.utils.amino.PurgeServerConfigsThread;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
@@ -146,6 +147,8 @@ public class Loritta {
         new Thread(website, "Website Thread").start(); // ...não foi tão difícil fazer isso :P
 
         new AminoRepostThread().start(); // Iniciar Amino Repost Thread
+
+        new PurgeServerConfigsThread().start(); // Iniciar Purge Server Configs Thread
 
         Runnable reminders = () -> {
             while (true) {
