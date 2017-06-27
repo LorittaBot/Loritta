@@ -100,6 +100,10 @@ public class LorittaUtils {
 	 * @return uma BufferedImage com a imagem
 	 */
 	public static BufferedImage getImageFromContext(CommandContext context, int argument, int search) {
+		return getImageFromContext(context, argument, search, 2048);
+	}
+
+	public static BufferedImage getImageFromContext(CommandContext context, int argument, int search, int avatarSize) {
 		String toBeDownloaded = null; // Imagem para ser baixada
 		BufferedImage image = null;
 		if (context.getRawArgs().length > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
@@ -115,7 +119,8 @@ public class LorittaUtils {
 				for (User user : context.getMessage().getMentionedUsers()) {
 					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 						// Diferente de null? Então vamos usar o avatar do usuário!
-						toBeDownloaded = user.getEffectiveAvatarUrl();
+						toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
+						break;
 					}
 				}
 			}
@@ -125,7 +130,7 @@ public class LorittaUtils {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
-					toBeDownloaded = matchedMembers.get(0).getUser().getEffectiveAvatarUrl();
+					toBeDownloaded = matchedMembers.get(0).getUser().getEffectiveAvatarUrl() + "?size=" + avatarSize;
 				}
 			}
 
@@ -133,8 +138,9 @@ public class LorittaUtils {
 			if (toBeDownloaded == null) {
 				// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
 				for (Emote emote : context.getMessage().getEmotes()) {
-					if (link.equals(emote.getAsMention())) {
+					if (link.equalsIgnoreCase(emote.getAsMention())) {
 						toBeDownloaded = emote.getImageUrl();
+						break;
 					}
 				}
 			}

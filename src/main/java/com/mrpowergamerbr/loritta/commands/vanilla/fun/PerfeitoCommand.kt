@@ -9,13 +9,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DeusCommand : CommandBase() {
+class PerfeitoCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "deus"
+		return "perfeito"
 	}
 
 	override fun getDescription(): String {
-		return "Coloca alguém em uma pesquisa do Google sobre \"Deus\"";
+		return "Será que \"Nada é perfeito\" mesmo?";
 	}
 
 	override fun getExample(): List<String> {
@@ -31,15 +31,15 @@ class DeusCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0);
+		var contextImage = LorittaUtils.getImageFromContext(context, 0, 25, 256);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "deus.png")); // Template
+		var template = ImageIO.read(File(Loritta.FOLDER + "perfeito.png")); // Template
 
-		var scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
-		template.graphics.drawImage(scaled, 1, 1, null);
+		var scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
+		template.graphics.drawImage(scaled, 225, 85, null);
 
-		context.sendFile(template, "deus.png", context.getAsMention(true));
+		context.sendFile(template, "perfeito.png", context.getAsMention(true));
 	}
 }
