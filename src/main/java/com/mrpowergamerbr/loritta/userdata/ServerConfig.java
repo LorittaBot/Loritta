@@ -52,6 +52,7 @@ public class ServerConfig {
     JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
+    public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {
         if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {
