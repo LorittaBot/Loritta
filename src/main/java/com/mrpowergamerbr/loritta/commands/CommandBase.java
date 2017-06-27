@@ -78,13 +78,13 @@ public abstract class CommandBase {
             }
             Loritta.setExecutedCommands(Loritta.getExecutedCommands() + 1);
             String cmd = label;
-            String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String onlyArgs = message.substring(message.toLowerCase().indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
             if (args.length >= 1 && args[0].equals("🤷")) { // Usar a ajuda caso 🤷 seja usado
                 explain(conf, ev);
                 return true;
             }
-            String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String onlyArgsRaw = ev.getMessage().getRawContent().toLowerCase().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
             CommandContext context = new CommandContext(conf, ev, this, args, rawArgs);
             if (LorittaUtils.handleIfBanned(context, profile)) {
