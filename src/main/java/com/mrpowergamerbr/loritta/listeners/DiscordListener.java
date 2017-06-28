@@ -51,10 +51,6 @@ public class DiscordListener extends ListenerAdapter {
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
                     LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getId());
 
-                    if (!event.getMessage().getContent().startsWith(conf.commandPrefix())) { // TODO: Filtrar links
-                        loritta.getHal().add(event.getMessage().getContent().toLowerCase());
-                    }
-
                     for (Role r : event.getMember().getRoles()) {
                         if (r.getName().equalsIgnoreCase("Inimigo da Loritta")) {
                             return;
@@ -119,6 +115,8 @@ public class DiscordListener extends ListenerAdapter {
                             }
                         }
                     }
+
+                    loritta.getHal().add(event.getMessage().getContent().toLowerCase()); // TODO: Filtrar links
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
