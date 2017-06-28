@@ -88,26 +88,3 @@ class PackageInfoCommand : CommandBase() {
 		}
 	}
 }
-
-fun main(args: Array<String>) {
-	// Eu encontrei a API REST do Correios usando engenharia reversa(tm) no SRO Mobile
-	var response = HttpRequest.post("http://webservice.correios.com.br/service/rest/rastro/rastroMobile")
-			.contentType("application/xml")
-			.userAgent("Dalvik/2.1.0 (Linux; U; Android 7.1.2; MotoG3-TE Build/NJH47B)")
-			.acceptJson() // Sim, o request é em XML mas a response é em JSON
-			// E sim, não importa qual é o usuário/senha/token, ele sempre retorna algo válido
-			.send("<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado><objetos>A</objetos><lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>")
-
-	var body = response.body();
-
-	println(response.code());
-	println(body);
-
-	var correios = Loritta.gson.fromJson(body, CorreiosResponse::class.java);
-
-	println(correios.objeto[0].nome)
-
-	for (evento in correios.objeto[0].evento) {
-		println(evento.descricao);
-	}
-}
