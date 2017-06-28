@@ -6,22 +6,20 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.ImageUtils;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 public class UndertaleBoxCommand extends CommandBase {
-	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
-	public static final String MENTION_USERS = "mencionarUsuarios";
-
 	@Override
 	public String getLabel() {
 		return "undertalebox";
@@ -91,7 +89,7 @@ public class UndertaleBoxCommand extends CommandBase {
 				g2d.drawImage(avatarImg, 0, 0, null);
 				blackWhite.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH);
 				
-				if (!context.getConfig().getCommandOptionsFor(this).getAsBoolean(HIDE_DISCORD_TAGS)) {
+				if (true) {
 					// TODO: This
 					Font minecraftia = null;
 					try {
@@ -116,24 +114,7 @@ public class UndertaleBoxCommand extends CommandBase {
 
 				graph.drawImage(blackWhite, 20, 22, null);
 
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ImageIO.write(bi, "png", os);
-				InputStream is = new ByteArrayInputStream(os.toByteArray());
-
-				MessageBuilder builder = new MessageBuilder();
-
-				if (context.getConfig().getCommandOptionsFor(this).getAsBoolean(MENTION_USERS)) {
-					// TODO: This
-					builder.append(" ");
-					/* for (Member usr : users) {
-						builder.append(usr);
-						builder.append(" ");
-					} */
-				} else {
-					builder.append(" ");
-				}
-
-				context.sendFile(is, "undertale_box.png", builder.build());
+				context.sendFile(bi, "undertale_box.png", context.getAsMention(true));
 			} else {
 				context.explain();
 			}
