@@ -84,7 +84,7 @@ public class WikipediaCommand extends CommandBase {
                     EmbedBuilder embed = new EmbedBuilder()
                             .setTitle(pageTitle, null)
                             .setColor(Color.BLUE)
-                            .setDescription(pageExtract.length() > 2048 ? pageExtract.substring(0, 2044) + "..." : pageExtract);
+                            .setDescription(pageExtract.length() > 512 ? pageExtract.substring(0, 509) + "..." : pageExtract);
 
                     context.sendMessage(embed.build()); // Envie a mensagem!
                 }
