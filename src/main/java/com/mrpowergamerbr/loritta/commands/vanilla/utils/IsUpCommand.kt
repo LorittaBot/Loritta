@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import java.net.UnknownHostException
 import java.util.*
 
 class IsUpCommand : CommandBase() {
@@ -32,12 +33,20 @@ class IsUpCommand : CommandBase() {
 			}
 			url = url.toLowerCase();
 
-			var response = HttpRequest.get(url).code();
+			try {
+				var response = HttpRequest.get(url).code();
 
-			if (response == 200) {
-				context.sendMessage(context.getAsMention(true) + "É só você, `$url` está online aqui! ($response)");
-			} else {
-				context.sendMessage(context.getAsMention(true) + "Não é só você, `$url` está offline aqui! ($response)");
+				if (response == 200) {
+					context.sendMessage(context.getAsMention(true) + "É só você, para mim `$url` está online! (**Código:**  $response)");
+				} else {
+					context.sendMessage(context.getAsMention(true) + "Não é só você! Para mim `$url` também está offline! (**Código:** $response)");
+				}
+			} catch (e: Exception) {
+				var reason = e.message;
+				if (e.cause is UnknownHostException) {
+					reason = "`$url não existe!`";
+				}
+				context.sendMessage(context.getAsMention(true) + "Não é só você! Para mim `$url` também está offline! (**Erro:**: $reason)");
 			}
 		} else {
 			this.explain(context);
