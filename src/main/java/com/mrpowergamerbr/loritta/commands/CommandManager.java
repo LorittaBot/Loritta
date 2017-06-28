@@ -99,6 +99,7 @@ public class CommandManager {
         commandMap.add(new TempoCommand());
         commandMap.add(new AminoCommand());
         commandMap.add(new PackageInfoCommand());
+        commandMap.add(new IsUpCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
