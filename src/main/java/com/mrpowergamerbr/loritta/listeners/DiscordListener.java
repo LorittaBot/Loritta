@@ -6,14 +6,12 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
-import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
-import com.mrpowergamerbr.loritta.whistlers.*;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
@@ -29,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class DiscordListener extends ListenerAdapter {
@@ -66,10 +63,6 @@ public class DiscordListener extends ListenerAdapter {
                     conf.userData.put(event.getMember().getUser().getId(), userData);
                     loritta.getDs().save(conf);
 
-                    for (Whistler whistler : conf.whistlers()) {
-                        processCode(conf, event.getMessage(), whistler.codes);
-                    }
-
                     if (conf.aminoConfig.getFixAminoImages()) {
                         for (Attachment attachments : event.getMessage().getAttachments()) {
                             if (attachments.getFileName().endsWith(".Amino")) {
@@ -104,15 +97,6 @@ public class DiscordListener extends ListenerAdapter {
                     for (NashornCommand cmd : conf.nashornCommands()) {
                         if (cmd.handle(event, conf, profile)) {
 
-                        }
-                    }
-
-                    // E agora os comandos do servidor
-                    for (CustomCommand cmd : conf.customCommands()) {
-                        if (cmd.handle(event, conf)) {
-                            if (conf.deleteMessageAfterCommand()) {
-                                event.getMessage().delete().complete();
-                            }
                         }
                     }
 
@@ -174,40 +158,6 @@ public class DiscordListener extends ListenerAdapter {
                 .getDatabase("loritta")
                 .getCollection("servers")
                 .deleteMany(Filters.eq("_id", e.getGuild().getId())); // Tchau! :(
-    }
-
-    // TODO: Isto não deveria ficar aqui...
-    public static void processCode(ServerConfig conf, Message message, List<ICode> codes) {
-        try {
-            wow:
-            for (ICode code : codes) {
-                if (code instanceof CodeBlock) {
-                    CodeBlock codeBlock = (CodeBlock) code;
-
-                    boolean valid = false;
-                    for (IPrecondition precondition : codeBlock.preconditions) {
-                        valid = precondition.isValid(conf, message);
-                        if (!valid) {
-                            break wow;
-                        }
-                    }
-
-                    processCode(conf, message, ((CodeBlock) code).codes);
-                }
-                if (code instanceof ReplyCode) {
-                    ReplyCode replyCode = (ReplyCode) code;
-
-                    replyCode.handle(message.getTextChannel());
-                }
-                if (code instanceof ReactionCode) {
-                    ReactionCode replyCode = (ReactionCode) code;
-
-                    replyCode.handle(message);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
