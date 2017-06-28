@@ -78,7 +78,7 @@ public class Loritta {
     private static int currentIndex = 0;
     public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
     @Getter
-    private static final Gson gson = new Gson(); // Gson
+    public static final Gson gson = new Gson(); // Gson
     @Getter
     private static TemmieYouTube youtube = null; // API key do YouTube, usado em alguns comandos
     @Getter

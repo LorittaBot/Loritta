@@ -50,7 +50,6 @@ public class CommandManager {
         commandMap.add(new TretaNewsCommand());
         commandMap.add(new MagicBallCommand());
         commandMap.add(new FraseToscaCommand());
-        commandMap.add(new PackageInfoCommand());
         commandMap.add(new YouTubeCommand());
         commandMap.add(new TranslateCommand());
         commandMap.add(new EncurtarCommand());
@@ -99,6 +98,7 @@ public class CommandManager {
         commandMap.add(new DicioCommand());
         commandMap.add(new TempoCommand());
         commandMap.add(new AminoCommand());
+        commandMap.add(new PackageInfoCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
