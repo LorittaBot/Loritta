@@ -62,7 +62,7 @@ class PackageInfoCommand : CommandBase() {
 					var objeto = correios.objeto[0];
 
 					if (objeto.categoria == "ERRO: Objeto não encontrado na base de dados dos Correios.") {
-						context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "**Não consegui encontrar o objeto `$packageId$` no banco de dados do Correios!**")
+						context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "**Não consegui encontrar o objeto `$packageId` no banco de dados do Correios!**")
 						return;
 					}
 
