@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public class LorittaUtils {
 	 * @param image
 	 * @return
 	 */
-	public static boolean isValidImage(CommandContext context, BufferedImage image) {
+	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
 			context.sendMessage(ERROR + " | " + context.getAsMention(true) + " Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
 			return false;

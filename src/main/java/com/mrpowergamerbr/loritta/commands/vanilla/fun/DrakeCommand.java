@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DrakeCommand extends CommandBase {
-	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
-	public static final String MENTION_USERS = "mencionarUsuarios";
-
 	@Override
 	public String getLabel() {
 		return "drake";
@@ -57,12 +54,20 @@ public class DrakeCommand extends CommandBase {
 				Image avatarImg = LorittaUtils.getImageFromContext(context, 0);
 				avatarImg = avatarImg.getScaledInstance(248, 248, Image.SCALE_SMOOTH);
 				graph.drawImage(avatarImg, 248, 0, null);
+
+				if (!LorittaUtils.isValidImage(context, avatarImg)) {
+					return;
+				}
 			}
 			
 			{
 				Image avatarImg = LorittaUtils.getImageFromContext(context, 1);
 				avatarImg = avatarImg.getScaledInstance(248, 248, Image.SCALE_SMOOTH);
 				graph.drawImage(avatarImg, 248, 250, null);
+
+				if (!LorittaUtils.isValidImage(context, avatarImg)) {
+					return;
+				}
 			}
 			
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
