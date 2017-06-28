@@ -32,5 +32,5 @@ Mas se você quiser mesmo hospedar a Loritta (você tem certeza MESMO que você 
 Pull Requests (e coisas relacionadas)
 -------------
 Pull Requests serão aceitos desde que:
-* Não sejam gambiarras, meu código pode ser ter algumas gambiarras mas isto não significa que você também deve fazer gambiarras.
+* Não sejam gambiarras, meu código pode ter algumas gambiarras mas isto não significa que você também deve fazer gambiarras.
 * Coisas NSFW **NÃO** serão adicionadas na Loritta
