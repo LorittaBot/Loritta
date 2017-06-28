@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.CommandCategory
+import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.Color
@@ -27,7 +28,10 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     }
 
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
-		if (!LorittaUtils.canUploadFiles(context)) { return }
+        if (!LorittaUtils.canUploadFiles(context)) {
+            return
+        }
+        var userData = context.config.userData.getOrDefault(context.userHandle.id, LorittaServerUserData());
         var base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as java.awt.Graphics2D;
         graphics.setRenderingHint(
@@ -134,48 +138,79 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             }
         }
 
+        var offset = 6;
+
         // Barrinha de XP
         graphics.color = java.awt.Color(128, 128, 128)
-        graphics.fillRect(87, 143, 300, 19);
+        graphics.fillRect(87, offset + 143, 148, 19);
 
         graphics.color = java.awt.Color(0, 0, 0)
-        graphics.fillRect(88, 144, 298, 17);
+        graphics.fillRect(88, offset + 144, 146, 17);
+
+        // Barrinha de XP do servidor
+        graphics.color = java.awt.Color(128, 128, 128)
+        graphics.fillRect(239, offset + 143, 148, 19);
+
+        graphics.color = java.awt.Color(0, 0, 0)
+        graphics.fillRect(240, offset + 144, 146, 17);
 
         // Calcular quanto a barrinha deveria ficar
-        // 145 - 199
-        val xpWrapper = userProfile.getCurrentLevel()
-        val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel().currentLevel + 1) // userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel());
-        val currentLevel = xpWrapper.expLeft
-        val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
+        run {
+            val xpWrapper = userProfile.getCurrentLevel()
+            val nextLevel = userProfile.getExpToAdvanceFrom(userProfile.getCurrentLevel().currentLevel + 1)
+            val currentLevel = xpWrapper.expLeft
+            val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
-        graphics.color = Color(114, 137, 218)
-        graphics.fillRect(89, 145, (percentage * 296).toInt(), 15);
+            graphics.color = Color(114, 137, 218)
+            graphics.fillRect(89, offset +  145, (percentage * 148).toInt(), 15);
 
-        graphics.color = Color(255, 255, 255);
+            graphics.color = Color(255, 255, 255);
 
-        graphics.font = bariolRegular.deriveFont(10F);
-        ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, 145, 296, 15), graphics.font);
+            graphics.font = bariolRegular.deriveFont(10F);
+            ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, offset +  145, 148, 15), graphics.font);
+        }
+        // E agora calcular quanto a barrinha deveria ficar (mas do XP do servidor)
+        run {
+            val xpWrapper = userData.getCurrentLevel()
+            val nextLevel = userData.getExpToAdvanceFrom(userData.getCurrentLevel().currentLevel + 1)
+            val currentLevel = xpWrapper.expLeft
+            val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
-        graphics.font = mavenProBold.deriveFont(24F)
+            graphics.color = Color(218, 195, 114)
+            graphics.fillRect(241, offset +  145, (percentage * 148).toInt(), 15);
+
+            graphics.color = Color(255, 255, 255);
+
+            graphics.font = bariolRegular.deriveFont(10F);
+            ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(241, offset + 145, 148, 15), graphics.font);
+        }
+
+        graphics.font = mavenProBold.deriveFont(20F)
         graphics.color = java.awt.Color(118, 118, 118);
-        graphics.drawString("NÍVEL", 86, 187);
+        graphics.drawString("NÍVEL", 92, offset + 180);
         graphics.color = java.awt.Color(90, 90, 90);
         graphics.font = mavenProBold.deriveFont(28F)
-        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().currentLevel.toString(), java.awt.Rectangle(86, 189, 66, 23), graphics.font);
+        ImageUtils.drawCenteredString(graphics, userProfile.getCurrentLevel().currentLevel.toString(), java.awt.Rectangle(83, offset + 184, 77, 23), graphics.font);
         graphics.color = java.awt.Color(118, 118, 118);
         graphics.font = bariolRegular.deriveFont(12F)
-        drawWithShadow("XP Total", 163, 178, 9999, 9999, graphics)
-        drawWithShadow("Tempo Online", 163, 193, 9999, 9999, graphics)
-        drawWithShadow("Reputação", 163, 208, 9999, 9999, graphics)
+        drawWithShadow("XP Total", 163, offset + 178, 9999, 9999, graphics)
+        drawWithShadow("Tempo Online", 163, offset + 193, 9999, 9999, graphics)
+        drawWithShadow("Reputação", 163, offset + 208, 9999, 9999, graphics)
 
-        drawWithShadow(userProfile.xp.toString(), 235, 178, 9999, 9999, graphics)
+        drawWithShadow(userProfile.xp.toString(), 235, offset + 178, 9999, 9999, graphics)
 
+        // Desenhar alguns textos
+        graphics.font = bariolRegular.deriveFont(10F)
+        drawWithShadow("XP Global", 87, 147, 9999, 9999, graphics)
+        drawWithShadow("XP no ${context.guild.name}", 239, 147, 9999, 9999, graphics)
+
+        graphics.font = bariolRegular.deriveFont(12F)
         val hours = userProfile.tempoOnline / 3600;
         val minutes = (userProfile.tempoOnline % 3600) / 60;
         val seconds = userProfile.tempoOnline % 60;
 
-        drawWithShadow("${hours}h${minutes}m${seconds}s", 235, 193, 9999, 9999, graphics)
-        drawWithShadow(0.toString(), 235, 208, 9999, 9999, graphics)
+        drawWithShadow("${hours}h${minutes}m${seconds}s", 235, offset + 193, 9999, 9999, graphics)
+        drawWithShadow(0.toString(), 235, offset + 208, 9999, 9999, graphics)
         graphics.font = bariolRegular.deriveFont(12F)
 
         drawWithShadow(userProfile.aboutMe, 89, 244, 388, 9999, graphics);
