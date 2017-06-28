@@ -21,7 +21,7 @@ class LorittaUnbanCommand : CommandBase() {
 
     override fun run(context: CommandContext?) {
 		if (context!!.userHandle.id == Loritta.config.ownerId) {
-			if (context!!.args.size >= 1) {
+			if (context.args.size >= 1) {
 				var monster = context.args[0].toLowerCase(); // ID
 				var profile = LorittaLauncher.getInstance().getLorittaProfileForUser(monster);
 

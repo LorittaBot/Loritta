@@ -21,7 +21,7 @@ class LorittaBanCommand : CommandBase() {
 
     override fun run(context: CommandContext?) {
 		if (context!!.userHandle.id == Loritta.config.ownerId) {
-			if (context!!.args.size >= 2) {
+			if (context.args.size >= 2) {
 				var monster = context.args[0].toLowerCase(); // ID
 				context.args[0] = "";
 				var reason = context.args.joinToString(" ");
