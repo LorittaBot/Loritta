@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.custom.CustomCommand;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
+import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
@@ -63,6 +64,11 @@ public class DiscordListener extends ListenerAdapter {
                     LorittaProfile lorittaProfile = loritta.getLorittaProfileForUser(event.getAuthor().getId());
                     lorittaProfile.setXp(lorittaProfile.getXp() + 1);
                     loritta.getDs().save(lorittaProfile);
+
+                    LorittaServerUserData userData = conf.userData.getOrDefault(event.getMember().getUser().getId(), new LorittaServerUserData());
+                    userData.setXp(userData.getXp() + 1);
+                    conf.userData.put(event.getMember().getUser().getId(), userData);
+                    loritta.getDs().save(conf);
 
                     for (Whistler whistler : conf.whistlers()) {
                         processCode(conf, event.getMessage(), whistler.codes);
@@ -165,10 +171,11 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onGuildLeave(GuildLeaveEvent e) {
         // Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
+
         LorittaLauncher.getInstance().getMongo()
                 .getDatabase("loritta")
                 .getCollection("servers")
-                .deleteMany(Filters.eq("_id", e.getGuild().getId())); // Tchau... :(
+                .deleteMany(Filters.eq("_id", e.getGuild().getId())); // Tchau! :(
     }
 
     // TODO: Isto não deveria ficar aqui...
