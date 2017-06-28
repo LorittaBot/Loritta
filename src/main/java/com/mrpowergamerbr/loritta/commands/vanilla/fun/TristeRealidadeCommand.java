@@ -17,7 +17,9 @@ import net.dv8tion.jda.core.entities.User;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -122,10 +124,6 @@ public class TristeRealidadeCommand extends CommandBase {
 			if (context.getMessage().getContent().contains("Mas capricha, vou colocar no grupo do SAM!") || Loritta.getRandom().nextInt(0, 200) == 199) { // Easter Egg: Colocar o selo do South America Memes
 				baseGraph.drawImage(seloSouthAmericaMemes, (384 / 2) - (seloSouthAmericaMemes.getWidth(null) / 2), (256 / 2) - (seloSouthAmericaMemes.getHeight(null) / 2), null);
 			}
-			
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(base, "png", os);
-			InputStream is = new ByteArrayInputStream(os.toByteArray());
 
 			MessageBuilder builder = new MessageBuilder();
 
@@ -138,7 +136,7 @@ public class TristeRealidadeCommand extends CommandBase {
 				builder.append(" ");
 			}
 
-			context.sendFile(is, "meme.png", builder.build());
+			context.sendFile(base, "meme.png", builder.build());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

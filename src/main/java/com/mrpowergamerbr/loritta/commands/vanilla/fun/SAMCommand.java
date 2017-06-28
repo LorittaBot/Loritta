@@ -10,10 +10,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,13 +63,9 @@ public class SAMCommand extends CommandBase {
 
 			image.getGraphics().drawImage(seloSouthAmericaMemes, x, y, null);
 
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(image, "png", os);
-			InputStream is = new ByteArrayInputStream(os.toByteArray());
-
 			MessageBuilder builder = new MessageBuilder();
 			builder.append(context.getAsMention(true));
-			context.sendFile(is, "south_america_memes.png", builder.build());
+			context.sendFile(image, "south_america_memes.png", builder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -11,8 +11,6 @@ import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import java.awt.image.FilteredImageSource
 import java.awt.image.RGBImageFilter
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
@@ -94,11 +92,7 @@ class RazoesCommand : CommandBase() {
 		rotatedAvatar.rotate(5.0)
 		graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)
 
-		val os = ByteArrayOutputStream()
-		ImageIO.write(image, "png", os)
-		val inputStream = ByteArrayInputStream(os.toByteArray())
-
-		context.sendFile(inputStream, "reasons.png", context.getAsMention(true));
+		context.sendFile(image, "reasons.png", context.getAsMention(true));
 	}
 }
 

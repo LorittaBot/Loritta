@@ -6,8 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
@@ -69,10 +67,6 @@ class QuadroCommand : CommandBase() {
 
 		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
 
-		val os = ByteArrayOutputStream()
-		ImageIO.write(image, "png", os)
-		val inputStream = ByteArrayInputStream(os.toByteArray())
-
-		context.sendFile(inputStream, "quadro.png", context.getAsMention(true));
+		context.sendFile(image, "quadro.png", context.getAsMention(true));
 	}
 }

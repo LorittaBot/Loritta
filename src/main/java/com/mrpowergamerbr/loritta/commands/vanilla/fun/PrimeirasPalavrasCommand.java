@@ -11,7 +11,8 @@ import net.dv8tion.jda.core.MessageBuilder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 public class PrimeirasPalavrasCommand extends CommandBase {
 	public static final String HIDE_DISCORD_TAGS = "esconderTagsDoDiscord";
@@ -58,13 +59,9 @@ public class PrimeirasPalavrasCommand extends CommandBase {
 
 				ImageUtils.drawTextWrap(str, 4, 277 + font.getSize(), 342, 0, baseGraph.getFontMetrics(), baseGraph);
 
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ImageIO.write(bi, "png", os);
-				InputStream is = new ByteArrayInputStream(os.toByteArray());
-
 				MessageBuilder builder = new MessageBuilder().append(context.getAsMention(true));
 
-				context.sendFile(is, "tirinha_baby.png", builder.build());
+				context.sendFile(bi, "tirinha_baby.png", builder.build());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

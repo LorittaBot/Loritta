@@ -10,8 +10,6 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
@@ -78,11 +76,7 @@ class LavaCommand : CommandBase() {
 			graphics.font = font;
 			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 700, 100), font);
 
-			val os = ByteArrayOutputStream()
-			ImageIO.write(image, "png", os)
-			val inputStream = ByteArrayInputStream(os.toByteArray())
-
-			context.sendFile(inputStream, "lava.png", context.getAsMention(true));
+			context.sendFile(image, "lava.png", context.getAsMention(true));
 		} else {
 			this.explain(context);
 		}

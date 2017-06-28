@@ -10,10 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,13 +86,9 @@ public class NyanCatCommand extends CommandBase {
 
 			bi.getGraphics().drawImage(catRight, x, 0, null);
 
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(bi, "png", os);
-			InputStream is = new ByteArrayInputStream(os.toByteArray());
-
 			MessageBuilder builder = new MessageBuilder();
 			builder.append(context.getAsMention(true));
-			context.sendFile(is, "nyan_cat.png", builder.build());
+			context.sendFile(bi, "nyan_cat.png", builder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

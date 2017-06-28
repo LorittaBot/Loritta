@@ -11,8 +11,6 @@ import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
@@ -94,11 +92,8 @@ class UndertaleBattleCommand : CommandBase() {
                         FileInputStream(File(Loritta.FOLDER + "dotumche.ttf")))
                 graphics.font = dotumChe.deriveFont(12F)
                 ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
-                val os = ByteArrayOutputStream()
-                ImageIO.write(blackWhite, "png", os)
-                val inputStream = ByteArrayInputStream(os.toByteArray())
 
-                context.sendFile(inputStream, "undertale_battle.png", " "); // E agora envie o arquivo
+                context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)); // E agora envie o arquivo
             } else {
                 // Não, não é válido!
                 context.sendMessage(context.getAsMention(true) + " Monstro \"" + monster + "\" não é válido! **Lista de monstros válidos:** " + validMonsterList.joinToString(", "))

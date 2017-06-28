@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
@@ -231,11 +230,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         // "do Discord" e não simplesmente uma imagem no chat
         base = ImageUtils.makeRoundedCorner(base, 15);
 
-        val os = ByteArrayOutputStream()
-        javax.imageio.ImageIO.write(base, "png", os)
-        val inputStream = java.io.ByteArrayInputStream(os.toByteArray())
-
-        context.sendFile(inputStream, "profile.png", "📝 | Perfil"); // E agora envie o arquivo
+        context.sendFile(base, "profile.png", "📝 | " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
     }
 
     fun drawWithShadow(text: String, x: Int, y: Int, maxX: Int, maxY: Int, graphics: Graphics) {

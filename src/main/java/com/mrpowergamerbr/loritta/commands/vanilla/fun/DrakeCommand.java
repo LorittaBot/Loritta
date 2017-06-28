@@ -11,7 +11,8 @@ import net.dv8tion.jda.core.MessageBuilder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -69,14 +70,10 @@ public class DrakeCommand extends CommandBase {
 					return;
 				}
 			}
-			
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(bi, "png", os);
-			InputStream is = new ByteArrayInputStream(os.toByteArray());
 
 			MessageBuilder builder = new MessageBuilder();
 			builder.append(context.getAsMention(true));
-			context.sendFile(is, "meme.png", builder.build());
+			context.sendFile(bi, "meme.png", builder.build());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
