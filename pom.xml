@@ -134,7 +134,7 @@
         <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>AminoREAPI</artifactId>
-            <version>d2d90c9fed</version>
+            <version>8163c41cb2</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
