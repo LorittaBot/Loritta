@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.fun;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandCategory;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.utils.VaporwaveUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class VaporondaCommand extends CommandBase {
 	@Override
@@ -28,6 +28,8 @@ public class VaporondaCommand extends CommandBase {
 		return Arrays.asList("Windows 95");
 	}
 
+	public List<String> getAliases() { return Arrays.asList("vaporwave", "vapor"); }
+	
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
 				.put("mensagem", "A mensagem que você deseja transformar")
