@@ -25,6 +25,8 @@ import org.mongodb.morphia.annotations.Indexed
     var isBanned = false;
     var banReason: String? = null;
     var reminders: MutableList<Reminder> = arrayListOf();
+    var receivedReputations: MutableList<String> = ArrayList<String>(); // Nós salvamos os usuários que deram reputação em vez de só salvar um número
+    var lastReputationGiven: Long = 0;
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
@@ -40,6 +42,10 @@ import org.mongodb.morphia.annotations.Indexed
 
     fun getExpToAdvanceFrom(lvl: Int): Int {
         return 125 + lvl * (25 + lvl)
+    }
+
+    fun getReputation(): Int {
+        return receivedReputations.size;
     }
 
     data class XpWrapper(val currentLevel: Int, val expLeft: Int)

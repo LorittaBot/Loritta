@@ -209,7 +209,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         val seconds = userProfile.tempoOnline % 60;
 
         drawWithShadow("${hours}h${minutes}m${seconds}s", 235, offset + 193, 9999, 9999, graphics)
-        drawWithShadow(0.toString(), 235, offset + 208, 9999, 9999, graphics)
+        drawWithShadow(userProfile.getReputation().toString(), 235, offset + 208, 9999, 9999, graphics)
         graphics.font = bariolRegular.deriveFont(12F)
 
         drawWithShadow(userProfile.aboutMe, 89, 244, 388, 9999, graphics);
