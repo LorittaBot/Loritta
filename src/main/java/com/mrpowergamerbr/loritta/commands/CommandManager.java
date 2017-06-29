@@ -78,6 +78,7 @@ public class CommandManager {
         commandMap.add(new QuadroCommand());
         commandMap.add(new DeusCommand());
         commandMap.add(new PerfeitoCommand());
+        commandMap.add(new TrumpCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());

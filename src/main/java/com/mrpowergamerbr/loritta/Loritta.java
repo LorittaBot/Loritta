@@ -433,7 +433,7 @@ public class Loritta {
                         return;
                     }
                 }
-                channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + track.getInfo().title).queue();
+                channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila `" + track.getInfo().title + "`").queue();
 
                 play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false, context.getUserHandle()));
             }
@@ -446,7 +446,7 @@ public class Loritta {
                     firstTrack = playlist.getTracks().get(0);
                 }
 
-                channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila " + firstTrack.getInfo().title + " (primeira música da playlist " + playlist.getName() + ")").queue();
+                channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila `" + firstTrack.getInfo().title + "` (primeira música da playlist " + playlist.getName() + ")").queue();
 
                 play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false, context.getUserHandle()));
             }
@@ -463,7 +463,7 @@ public class Loritta {
                         return;
                     }
                 }
-                channel.sendMessage(context.getAsMention(true) + "Nada encontrado! " + trackUrl).queue();
+                channel.sendMessage(context.getAsMention(true) + "Nada encontrado! `" + trackUrl + "`").queue();
             }
 
             @Override
