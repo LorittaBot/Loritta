@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object TrumpGIF {
-	fun getGif(toUse: BufferedImage, toUse2: BufferedImage): File {
+	fun getGIF(toUse: BufferedImage, toUse2: BufferedImage): File {
 		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
 		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
 

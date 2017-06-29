@@ -36,7 +36,7 @@ class TrumpCommand : CommandBase() {
 		if (!LorittaUtils.isValidImage(context, contextImage2)) {
 			return;
 		}
-		var file = TrumpGIF.getGif(contextImage2, contextImage);
+		var file = TrumpGIF.getGIF(contextImage2, contextImage);
 
 		context.sendFile(file, "trump.gif", context.getAsMention(true));
 	}
