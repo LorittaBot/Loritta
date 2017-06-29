@@ -47,6 +47,8 @@ public class ServerConfig {
     JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
+    public YouTubeConfig youTubeConfig = new YouTubeConfig();
+
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {

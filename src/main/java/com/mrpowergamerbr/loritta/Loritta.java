@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaShards;
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
 import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread;
+import com.mrpowergamerbr.loritta.utils.amino.NewYouTubeVideosThread;
 import com.mrpowergamerbr.loritta.utils.amino.PurgeServerConfigsThread;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
@@ -149,6 +150,8 @@ public class Loritta {
         new AminoRepostThread().start(); // Iniciar Amino Repost Thread
 
         new PurgeServerConfigsThread().start(); // Iniciar Purge Server Configs Thread
+
+        new NewYouTubeVideosThread().start(); // Iniciar New YouTube Videos Thread
 
         Runnable reminders = () -> {
             while (true) {
