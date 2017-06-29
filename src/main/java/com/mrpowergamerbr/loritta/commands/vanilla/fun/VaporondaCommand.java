@@ -29,7 +29,7 @@ public class VaporondaCommand extends CommandBase {
 	}
 
 	public List<String> getAliases() { return Arrays.asList("vaporwave", "vapor"); }
-	
+
 	public Map<String, String> getDetailedUsage() {
 		return ImmutableMap.<String, String>builder()
 				.put("mensagem", "A mensagem que você deseja transformar")
