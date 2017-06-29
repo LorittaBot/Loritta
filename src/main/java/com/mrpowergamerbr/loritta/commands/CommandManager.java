@@ -142,7 +142,6 @@ public class CommandManager {
 
         // Custom Options
         defaultCmdOptions.put(TristeRealidadeCommand.class.getSimpleName(), TristeRealidadeCommand.TristeRealidadeCommandOptions.class);
-        defaultCmdOptions.put(YouTubeCommand.class.getSimpleName(), YouTubeCommand.YouTubeCommandOptions.class);
     }
 
     public List<CommandBase> getCommandsDisabledIn(ServerConfig conf) {
