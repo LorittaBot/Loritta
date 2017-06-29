@@ -37,7 +37,7 @@ class DiscriminatorCommand : CommandBase() {
 			user = context.message.mentionedUsers[0];
 			discriminator = context.message.mentionedUsers[0].discriminator;
 		} else if (context.args.isNotEmpty()) {
-			discriminator = context.args[0].replace("\\D+","");
+			discriminator = context.args[0].replace(Regex("\\D+"),"");
 		}
 		var users = LorittaLauncher.loritta.lorittaShards.getUsers().filter { it.discriminator.equals(discriminator) }
 
