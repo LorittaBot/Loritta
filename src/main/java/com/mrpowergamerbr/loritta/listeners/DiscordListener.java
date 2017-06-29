@@ -44,9 +44,12 @@ public class DiscordListener extends ListenerAdapter {
         if (event.isFromType(ChannelType.TEXT)) {
             loritta.getExecutor().execute(() -> {
                 try {
-                    // cache.put(event.getMessage().getId(), event.getMessage());
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
                     LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getId());
+
+                    if (event.getMessage().getRawContent().replace("!", "").equals("<@297153970613387264>")) {
+                        event.getTextChannel().sendMessage("Olá " + event.getMessage().getAuthor().getAsMention() + "! Meu prefixo neste servidor é `" + conf.commandPrefix() + "` Para ver o que eu posso fazer, use `" + conf.commandPrefix() + "ajuda`!").complete();
+                    }
 
                     for (Role r : event.getMember().getRoles()) {
                         if (r.getName().equalsIgnoreCase("Inimigo da Loritta")) {
