@@ -125,7 +125,9 @@ public class CommandContext {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				return event.getTextChannel().sendMessage(embed).complete();
+				Message sentMessage = event.getTextChannel().sendMessage(embed).complete();
+				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
+				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 				return null;
@@ -211,7 +213,9 @@ public class CommandContext {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				return event.getTextChannel().sendFile(data, name, message).complete();
+				Message sentMessage = event.getTextChannel().sendFile(data, name, message).complete();
+				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
+				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 				return null;
@@ -235,7 +239,9 @@ public class CommandContext {
 			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
 		} else {
 			if (event.getTextChannel().canTalk()) {
-				return event.getTextChannel().sendFile(file, name, message).complete();
+				Message sentMessage = event.getTextChannel().sendFile(file, name, message).complete();;
+				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
+				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
 				return null;

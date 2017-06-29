@@ -45,7 +45,7 @@ public class ServerConfig {
     ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
     JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
-    MusicConfig musicConfig = new MusicConfig();
+    public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
 

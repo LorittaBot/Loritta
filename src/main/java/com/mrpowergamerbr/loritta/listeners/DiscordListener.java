@@ -110,12 +110,14 @@ public class DiscordListener extends ListenerAdapter {
 
     @Override
     public void onGenericMessageReaction(GenericMessageReactionEvent e) {
+        if (e.getUser().isBot()) { return; } // Ignorar reactions de bots
+
         if (LorittaLauncher.getInstance().messageContextCache.containsKey(e.getMessageId())) {
             CommandContext context = (CommandContext) LorittaLauncher.getInstance().messageContextCache.get(e.getMessageId());
             Thread t = new Thread() {
                 public void run() {
                     Message msg = e.getTextChannel().getMessageById(e.getMessageId()).complete();
-                    if (msg != null && !e.getMember().getUser().isBot()) {
+                    if (msg != null) {
                         context.cmd.onCommandReactionFeedback(context, e, msg);
                     }
                 }

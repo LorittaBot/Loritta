@@ -1,18 +1,16 @@
 package com.mrpowergamerbr.loritta.utils.temmieyoutube;
 
+import com.github.kevinsawicki.http.HttpRequest;
+import com.mrpowergamerbr.loritta.Loritta;
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.response.SearchResponse;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.github.kevinsawicki.http.HttpRequest;
-import com.mrpowergamerbr.loritta.Loritta;
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.response.SearchResponse;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -34,7 +32,7 @@ public class TemmieYouTube {
 
 		return Loritta.getGson().fromJson(body, SearchResponse.class);
 	}
-	
+
 	public void searchOnGoogle(String searchQuery) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("q", searchQuery);
