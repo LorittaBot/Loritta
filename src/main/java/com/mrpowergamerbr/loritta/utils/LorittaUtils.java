@@ -159,7 +159,7 @@ public class LorittaUtils {
 			// Na verdade é um emoji padrão...
 			if (toBeDownloaded == null) {
 				try {
-					String val = toUnicode(context.getArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
+					String val = toUnicode(context.getRawArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
 					val = val.substring(2); // Remover coisas desnecessárias
 					toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
 					if (HttpRequest.get(toBeDownloaded).code() == 404) {
