@@ -39,8 +39,8 @@ class RepCommand : CommandBase() {
 
             if (3.6e+6 > diff) {
                 var fancy = String.format("%02d minutos e %02d segundos",
-                        60 - (TimeUnit.MILLISECONDS.toMinutes(diff)),
-                        60 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
+                        61 - (TimeUnit.MILLISECONDS.toMinutes(diff)),
+                        61 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)))
                 );
                 context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você precisa esperar **$fancy** antes de poder dar outra reputação!");
