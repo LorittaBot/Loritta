@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.amino
+package com.mrpowergamerbr.loritta.utils
 
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
