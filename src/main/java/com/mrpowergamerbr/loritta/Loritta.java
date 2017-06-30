@@ -15,10 +15,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.listeners.DiscordListener;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
-import com.mrpowergamerbr.loritta.utils.LorittaShards;
-import com.mrpowergamerbr.loritta.utils.NewYouTubeVideosThread;
-import com.mrpowergamerbr.loritta.utils.PurgeServerConfigsThread;
-import com.mrpowergamerbr.loritta.utils.YouTubeUtils;
+import com.mrpowergamerbr.loritta.utils.*;
 import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
@@ -437,7 +434,7 @@ public class Loritta {
                 }
                 channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila `" + track.getInfo().title + "`").queue();
 
-                play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false, context.getUserHandle()));
+                play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
             }
 
             @Override
@@ -450,7 +447,7 @@ public class Loritta {
 
                 channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila `" + firstTrack.getInfo().title + "` (primeira música da playlist " + playlist.getName() + ")").queue();
 
-                play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false, context.getUserHandle()));
+                play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false, context.getUserHandle(), new HashMap<String, String>()));
             }
 
             @Override
@@ -481,12 +478,12 @@ public class Loritta {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                play(guild, conf, musicManager, new AudioTrackWrapper(track, true, guild.getSelfMember().getUser()));
+                play(guild, conf, musicManager, new AudioTrackWrapper(track, true, guild.getSelfMember().getUser(), new HashMap<String, String>()));
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, guild.getSelfMember().getUser()));
+                play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, guild.getSelfMember().getUser(), new HashMap<String, String>()));
             }
 
             @Override
@@ -511,6 +508,8 @@ public class Loritta {
         connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
 
         musicManager.scheduler.queue(trackWrapper);
+
+        LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
     }
 
     public void skipTrack(TextChannel channel) {
