@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.dv8tion.jda.core.EmbedBuilder
+import java.awt.Color
 import java.io.StringReader
 import java.net.URLEncoder
 
@@ -56,39 +57,46 @@ class TempoCommand : CommandBase() {
 				var pressure = status.getAsJsonObject("main").get("pressure").asDouble;
 				var humidity = status.getAsJsonObject("main").get("humidity").asDouble;
 				var windSpeed = status.getAsJsonObject("wind").get("speed").asDouble;
+				var realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString;
+				var countryShort = cidadeJsonResponse.get("city").asJsonObject.get("country").asString;
+				var icon = "";
+
 				var embed = EmbedBuilder();
 
 				var description = status.get("weather").asJsonArray.get(0).asJsonObject.get("description").asString
 				var abbr = status.get("weather").asJsonArray.get(0).asJsonObject.get("icon").asString
-				/* if (abbr == "sn") {
-					description = "🌨 Nevando";
-				}
-				if (abbr == "sl" || abbr == "h") {
-					description = "🌨 Granizo";
-				}
-				if (abbr == "t") {
-					description = "⛈ Tempestade";
-				}
-				if (abbr == "hr") {
-					description = "🌧 Chuva Forte";
-				}
-				if (abbr == "hl") {
-					description = "🌧 Chuva Fraca";
-				}
-				if (abbr == "s") {
-					description = "🚿 Garoando";
-				}
-				if (abbr == "hc") {
-					description = "☁ Nuvens pesadas";
-				}
-				if (abbr.startsWith("02"))
-					description = "⛅ Sol com nuvens";
-				}
+
 				if (abbr.startsWith("01")) {
-					description = "☀ Ensolarado";
-				} */
-				embed.setTitle("Previsão do tempo para $cidade")
-				embed.setDescription(description);
+					icon = "☀ ";
+				}
+				if (abbr.startsWith("02")) {
+					icon = "⛅ ";
+				}
+				if (abbr.startsWith("03")) {
+					icon = "☁ ";
+				}
+				if (abbr.startsWith("04")) {
+					icon = "☁ ";
+				}
+				if (abbr.startsWith("09")) {
+					icon = "\uD83D\uDEBF ";
+				}
+				if (abbr.startsWith("10")) {
+					icon = "\uD83C\uDF27 ";
+				}
+				if (abbr.startsWith("11")) {
+					icon = "⛈ ";
+				}
+				if (abbr.startsWith("13")) {
+					icon = "\uD83C\uDF28 ";
+				}
+				if (abbr.startsWith("50")) {
+					icon = "\uD83C\uDF2B ";
+				}
+
+				embed.setTitle("Previsão do tempo para $realCityName, $countryShort")
+				embed.setDescription(icon + description);
+				embed.setColor(Color(0, 210, 255));
 				embed.addField("🌡 Temperatura", "**Atual: **$now ºC\n**Máxima: **$max ºC\n**Mínima: **$min ºC", true);
 				embed.addField("💦 Umidade", "$humidity%", true);
 				embed.addField("🌬 Velocidade do Vento", "$windSpeed km/h", true);
