@@ -34,9 +34,11 @@ class IsUpCommand : CommandBase() {
 			url = url.toLowerCase();
 
 			try {
-				var response = HttpRequest.get(url).code();
+				var response = HttpRequest.get(url)
+						.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
+						.code();
 
-				if (response == 200) {
+				if (response in 100..308) {
 					context.sendMessage(context.getAsMention(true) + "É só você, para mim `$url` está online! (**Código:**  $response)");
 				} else {
 					context.sendMessage(context.getAsMention(true) + "Não é só você! Para mim `$url` também está offline! (**Código:** $response)");
