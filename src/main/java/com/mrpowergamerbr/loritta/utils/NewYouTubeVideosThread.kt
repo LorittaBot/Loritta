@@ -40,6 +40,11 @@ class NewYouTubeVideosThread : Thread() {
 						var textChannel = guild.getTextChannelById(youTubeConfig.repostToChannelId);
 
 						if (textChannel != null) { // Wow, diferente de null!
+							if (!youTubeConfig.channelUrl!!.startsWith("http")) {
+								youTubeConfig.channelUrl = "http://" + youTubeConfig.channelUrl;
+
+								LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+							}
 							if (youTubeConfig.channelId == null) { // Omg é null
 								var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
 

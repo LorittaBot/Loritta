@@ -21,6 +21,9 @@ public class YouTubeConfigView {
 			youTubeConfig.setRepostToChannelId(context.request().param("repostToChannelId").value());
 			youTubeConfig.setVideoSentMessage(context.request().param("videoSentMessage").value());
 
+			if (!youTubeConfig.getChannelUrl().startsWith("http")) {
+				youTubeConfig.setChannelUrl("http://" + youTubeConfig.getChannelUrl());
+			}
 			try {
 				Document jsoup = Jsoup.connect(youTubeConfig.getChannelUrl()).get(); // Hora de pegar a página do canal...
 
