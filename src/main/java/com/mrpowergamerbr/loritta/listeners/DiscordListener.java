@@ -42,7 +42,7 @@ public class DiscordListener extends ListenerAdapter {
             return;
         }
         if (event.isFromType(ChannelType.TEXT)) {
-            // loritta.getExecutor().execute(() -> {
+            loritta.getExecutor().execute(() -> {
                 try {
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
                     LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getId());
@@ -107,7 +107,7 @@ public class DiscordListener extends ListenerAdapter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            // });
+            });
         }
     }
 
