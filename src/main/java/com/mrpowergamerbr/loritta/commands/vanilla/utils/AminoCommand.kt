@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.dv8tion.jda.core.EmbedBuilder
+import java.awt.Color
 
 
 class AminoCommand : CommandBase() {
@@ -49,6 +50,7 @@ class AminoCommand : CommandBase() {
 				embed.addField("ID", community.ndcId.toString(), true);
 				embed.addField("Membros", community.membersCount.toString(), true);
 				embed.addField("Linguagem", community.primaryLanguage.toString(), true);
+				embed.setColor(Color(255, 112, 125));
 				embed.setThumbnail(community.icon)
 
 				context.sendMessage(embed.build());
