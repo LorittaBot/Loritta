@@ -40,6 +40,7 @@ public class GlobalHandler {
             contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
+            contextVars.put("temmie", null);
 
             long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
 
@@ -150,6 +151,7 @@ public class GlobalHandler {
                 // Behind Authentication
                 try {
                     TemmieDiscordAuth temmie = (TemmieDiscordAuth) LorittaWebsite.getOAuth2().get(req.session().get("discordAuthCode").value());
+                    context.contextVars().put("temmie", temmie);
                     // code
                     // guild_id
                     // permissions
