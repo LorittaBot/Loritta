@@ -68,7 +68,7 @@ public class Loritta {
     // public JDA jda; // TODO: Tirar este público, ele só é público porque nós precisamos usar o Kotlin e o Kotlin não gosta disto
     public LorittaShards lorittaShards = new LorittaShards();
     public CommandManager commandManager; // Nosso command manager
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(16); // Threads
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(32); // Threads
     public MongoClient mongo; // MongoDB
     public Datastore ds; // MongoDB²
     private Morphia morphia; // MongoDB³
