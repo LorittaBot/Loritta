@@ -34,6 +34,10 @@ class LavaCommand : CommandBase() {
 		return "<imagem>";
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);

@@ -46,13 +46,20 @@ class NewYouTubeVideosThread : Thread() {
 								LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
 							}
 							if (youTubeConfig.channelId == null) { // Omg é null
-								var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
+								try {
+									var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
 
-								var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
+									var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
 
-								youTubeConfig.channelId = id; // E salvar o ID!
+									youTubeConfig.channelId = id; // E salvar o ID!
 
-								LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+								} catch (e: Exception) {
+									// Se deu ruim, desative o módulo!
+									youTubeConfig.isEnabled = false;
+									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+									continue;
+								}
 							}
 							// E agora sim iremos pegar os novos vídeos!
 							var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")

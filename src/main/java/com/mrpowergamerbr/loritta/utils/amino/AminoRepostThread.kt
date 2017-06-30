@@ -49,15 +49,22 @@ class AminoRepostThread : Thread() {
 							var communityId = aminoConfig.communityId;
 
 							if (communityId == null) {
-								var document = Jsoup.connect(aminoConfig.inviteUrl).get(); // Mas antes vamos pegar o ID...
+								try {
+									var document = Jsoup.connect(aminoConfig.inviteUrl).get(); // Mas antes vamos pegar o ID...
 
-								var deepLink = document.getElementsByClass("deeplink-holder")[0];
+									var deepLink = document.getElementsByClass("deeplink-holder")[0];
 
-								var narviiAppLink = deepLink.attr("data-link");
+									var narviiAppLink = deepLink.attr("data-link");
 
-								communityId = narviiAppLink.split("/")[2];
+									communityId = narviiAppLink.split("/")[2];
 
-								LorittaLauncher.loritta.ds.save(config);
+									LorittaLauncher.loritta.ds.save(config);
+								} catch (e: Exception) {
+									// Se deu ruim, desative o módulo!
+									aminoConfig.isEnabled = false;
+									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+									continue;
+								}
 							}
 
 							// E agora nós iremos fazer o polling de verdade

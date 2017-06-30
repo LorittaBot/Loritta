@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -18,13 +17,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
 public class TrackScheduler extends AudioEventAdapter {
-	private final AudioPlayer player;
+	public final AudioPlayer player;
 	@Getter
-	private final BlockingQueue<AudioTrackWrapper> queue;
+	public final BlockingQueue<AudioTrackWrapper> queue;
 	@Getter
-	private final Guild guild;
+	public final Guild guild;
 	@Getter
-	private AudioTrackWrapper currentTrack;
+	public AudioTrackWrapper currentTrack;
 	
 	/**
 	 * @param player The audio player this scheduler uses

@@ -98,8 +98,8 @@ public class ConfigureServerView {
                     }
                     if (context.request().param("editingTristeRealidade").isSet()) {
                         TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
-                        cmdOpti.mentionEveryone(context.request().param("mentionEveryone").isSet());
-                        cmdOpti.hideDiscordTags(context.request().param("hideDiscordTags").isSet());
+                        cmdOpti.setMentionEveryone(context.request().param("mentionEveryone").isSet());
+                        cmdOpti.setHideDiscordTags(context.request().param("hideDiscordTags").isSet());
                         sc.commandOptions().put("TristeRealidadeCommand", cmdOpti);
                     }
                     if (context.request().param("activateAllCommands").isSet()) {

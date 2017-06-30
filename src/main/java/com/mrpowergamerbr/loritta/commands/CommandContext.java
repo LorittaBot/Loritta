@@ -71,6 +71,11 @@ public class CommandContext {
 		return lorittaUser.getAsMention();
 	}
 
+	/**
+	 * Verifica se o usuário tem permissão para utilizar um comando
+	 */
+	public boolean canUseCommand() { return lorittaUser.canUseCommand(this); }
+
 	public String getAsMention(boolean addSpace) {
 		if (cmd != null) {
 			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);

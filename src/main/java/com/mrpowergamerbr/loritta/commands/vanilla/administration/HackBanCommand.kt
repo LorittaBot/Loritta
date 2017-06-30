@@ -23,25 +23,27 @@ class HackBanCommand : CommandBase() {
 		return CommandCategory.ADMIN;
 	}
 
+	override fun getDiscordPermissions(): List<Permission> {
+		return listOf(Permission.BAN_MEMBERS)
+	}
+
 	override fun run(context: CommandContext) {
-		if (context.getHandle().hasPermission(Permission.MANAGE_SERVER)) {
-			if (context.args.isNotEmpty()) {
-				try {
-					var id = context.args[0];
+		if (context.args.isNotEmpty()) {
+			try {
+				var id = context.args[0];
 
-					var reason: String? = null;
-					if (context.args.size > 1) {
-						reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
-					}
-					context.guild.controller.ban(id, 0, "Hackbanned por " + context.userHandle.name + "#" + context.userHandle.discriminator + if (reason != null) " (Motivo: " + reason + ")" else "").complete();
-
-					context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi banido com sucesso!");
-				} catch (e: Exception) {
-					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " Não tenho permissão para banir este usuário!");
+				var reason: String? = null;
+				if (context.args.size > 1) {
+					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
 				}
-			} else {
-				this.explain(context);
+				context.guild.controller.ban(id, 0, "Hackbanned por " + context.userHandle.name + "#" + context.userHandle.discriminator + if (reason != null) " (Motivo: " + reason + ")" else "").complete();
+
+				context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi banido com sucesso!");
+			} catch (e: Exception) {
+				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " Não tenho permissão para banir este usuário!");
 			}
+		} else {
+			this.explain(context);
 		}
 	}
 }

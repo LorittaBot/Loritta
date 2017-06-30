@@ -31,8 +31,9 @@ class McStatusCommand : CommandBase() {
         var json = JsonParser().parse(body);
         for (section in json.asJsonObject.entrySet()) {
             var status = section.value.asJsonObject.get("status").asString;
+            var prefix = if (section.key.contains("minecraft")) "<:grass:330435576392318978> " else "<:mojang:330436377831538689>";
             var emoji = if (status == "Online") "✅" else "❌";
-            builder.addField(section.key, "${emoji} ${status}", true)
+            builder.addField(prefix + section.key, "${emoji} ${status}", true)
         }
 
         context.sendMessage(builder.build());

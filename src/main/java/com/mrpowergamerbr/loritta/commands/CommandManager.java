@@ -9,9 +9,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*;
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
@@ -115,6 +113,8 @@ public class CommandManager {
         commandMap.add(new McQueryCommand());
         commandMap.add(new McUUIDCommand());
         commandMap.add(new McStatusCommand());
+        commandMap.add(new McHeadCommand());
+        commandMap.add(new McBodyCommand());
 
         // =======[ UNDERTALE ]========
         commandMap.add(new UndertaleBoxCommand());

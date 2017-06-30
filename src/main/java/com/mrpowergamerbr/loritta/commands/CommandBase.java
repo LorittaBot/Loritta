@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
@@ -53,6 +54,24 @@ public abstract class CommandBase {
         return getDescription();
     }
 
+    public boolean needsToUploadFiles() {
+        return false;
+    }
+
+    /**
+     * Retorna as permissões necessárias para utilizar este comando
+     *
+     * @return A lista de permissões necessárias
+     */
+    public List<Permission> getDiscordPermissions() { return Arrays.asList(); }
+
+    /**
+     * Retorna se somente o dono do bot pode executar este comando
+     *
+     * @return Se somente o dono do bot pode usar este comando
+     */
+    public boolean onlyOwner() { return false; }
+
     public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
         String message = ev.getMessage().getContent();
         boolean run = false;
@@ -87,8 +106,13 @@ public abstract class CommandBase {
             String onlyArgsRaw = ev.getMessage().getRawContent().toLowerCase().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
             CommandContext context = new CommandContext(conf, ev, this, args, rawArgs);
-            if (LorittaUtils.handleIfBanned(context, profile)) {
+            if (LorittaUtils.handleIfBanned(context, profile)) { return true; }
+            if (!context.canUseCommand()) {
+                context.sendMessage("\uD83D\uDE45 | " + context.getAsMention(true) + "**Sem permissão!**");
                 return true;
+            }
+            if (needsToUploadFiles()) {
+                if (!LorittaUtils.canUploadFiles(context)) { return true; };
             }
             run(context);
             return true;

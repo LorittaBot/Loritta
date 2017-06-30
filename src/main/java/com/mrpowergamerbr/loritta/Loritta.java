@@ -73,7 +73,7 @@ public class Loritta {
     private Morphia morphia; // MongoDB³
     @Getter // Sim, getter de novo, já que o lombok não cria getters para variáveis estáticas
     public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
-    private JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
+    public JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
     private static List<String> playingGame = new ArrayList<String>();
     private static int currentIndex = 0;
     public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
@@ -88,15 +88,15 @@ public class Loritta {
     @Getter
     private static TemmieMercadoPago temmieMercadoPago; // Usado na página de "doar"
     private AudioPlayerManager playerManager;
-    private Map<Long, GuildMusicManager> musicManagers;
+    public Map<Long, GuildMusicManager> musicManagers;
     @Deprecated // TODO: Usar o messageContextCache
-    private ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterWrite(5L, TimeUnit.MINUTES).build().asMap();
+    public ConcurrentMap<Object, Object> musicMessagesCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterWrite(5L, TimeUnit.MINUTES).build().asMap();
     // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
     public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build().asMap();
 
     @Getter
     @Setter
-    private static int executedCommands = 0;
+    public static int executedCommands = 0;
 
     public Loritta(LorittaConfig config) {
         loadFromConfig(config);

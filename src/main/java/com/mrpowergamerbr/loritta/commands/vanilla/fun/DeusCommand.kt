@@ -30,6 +30,10 @@ class DeusCommand : CommandBase() {
 		return "<imagem>";
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {

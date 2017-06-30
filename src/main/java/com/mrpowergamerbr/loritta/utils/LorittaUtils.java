@@ -27,7 +27,7 @@ public class LorittaUtils {
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage("❌ | Eu não tenho permissão para enviar arquivos aqui!");
+			context.sendMessage(ERROR + " | Eu não tenho permissão para enviar arquivos neste canal! \uD83D\uDE22");
 			return false;
 		}
 		return true;
@@ -169,12 +169,18 @@ public class LorittaUtils {
 			}
 		}
 
-		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor então para encontrar attachments...
+		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && toBeDownloaded == null) {
 			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
 
 			attach:
 			for (Message msg : message) {
+				for (MessageEmbed embed : msg.getEmbeds()) {
+					if (embed.getImage() != null) {
+						toBeDownloaded = embed.getImage().getUrl();
+						break attach;
+					}
+				}
 				for (Attachment attachment : msg.getAttachments()) {
 					if (attachment.isImage()) {
 						toBeDownloaded = attachment.getUrl();
