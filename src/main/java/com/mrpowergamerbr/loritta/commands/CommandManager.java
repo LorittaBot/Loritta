@@ -115,6 +115,7 @@ public class CommandManager {
         commandMap.add(new McStatusCommand());
         commandMap.add(new McHeadCommand());
         commandMap.add(new McBodyCommand());
+        commandMap.add(new McSignCommand());
 
         // =======[ UNDERTALE ]========
         commandMap.add(new UndertaleBoxCommand());
