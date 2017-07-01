@@ -23,7 +23,7 @@ class NewYouTubeVideosThread : Thread() {
 
 		while (true) {
 			checkNewVideos();
-			Thread.sleep(5000); // Só 2.5s de delay!
+			Thread.sleep(2500); // Só 2.5s de delay!
 		}
 	}
 
@@ -162,6 +162,11 @@ class NewYouTubeVideosThread : Thread() {
 							if (lastId == null) {
 								// Se é null, só salve o ID do último vídeo atual e ignore!
 								lastVideos.put(guild.id, videoId);
+
+								val tz = TimeZone.getTimeZone("UTC")
+								val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+								df.timeZone = tz
+								lastVideosTime.put(guild.id, df.format(Calendar.getInstance()));
 								continue;
 							} else if (lastId != videoId) {
 								// Novo vídeo! Yay!
