@@ -166,7 +166,7 @@ class NewYouTubeVideosThread : Thread() {
 								val tz = TimeZone.getTimeZone("UTC")
 								val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
 								df.timeZone = tz
-								lastVideosTime.put(guild.id, df.format(Calendar.getInstance()));
+								lastVideosTime.put(guild.id, df.format(Date()));
 								continue;
 							} else if (lastId != videoId) {
 								// Novo vídeo! Yay!
