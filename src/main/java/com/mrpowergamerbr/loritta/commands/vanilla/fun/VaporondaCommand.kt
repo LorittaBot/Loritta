@@ -23,7 +23,7 @@ class VaporondaCommand : CommandBase() {
 	}
 
 	override fun getAliases(): List<String> {
-		return listOf("vaporwave", "vapor")
+		return listOf("vaporwave")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
