@@ -26,9 +26,14 @@ class MoneyCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.size >= 2) {
-			var multiply: Double? = 0.0;
+			println("Wow!")
+			var multiply: Double? = 1.0;
 			if (context.args.size > 2) {
-				multiply = context.args[2].replace(",", ".").toDoubleOrNull();
+				try {
+					multiply = context.args[2].replace(",", ".").toDouble()
+				} catch (e: Exception) {
+					multiply = null
+				}
 			}
 
 			if (multiply == null) {
@@ -57,9 +62,10 @@ class MoneyCommand : CommandBase() {
 			}
 
 			val converted = rates.get(to).asDouble
+
 			context.sendMessage(context.getAsMention(true) + "💵 **$multiply " + from + " para " + to + ":** " + (converted * multiply) + " " + to)
 		} else {
-			this.explain(context.config, context.event)
+			context.explain()
 		}
 	}
 }
