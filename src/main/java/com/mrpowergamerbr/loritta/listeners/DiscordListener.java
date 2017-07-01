@@ -136,6 +136,10 @@ public class DiscordListener extends ListenerAdapter {
             if (count > 0 && conf.musicConfig().isVoteToSkip() && LorittaLauncher.getInstance().getGuildAudioPlayer(e.getGuild()).scheduler.getCurrentTrack() == atw) {
                 VoiceChannel vc = e.getGuild().getVoiceChannelById(conf.musicConfig().getMusicGuildId());
 
+                if (!e.getReactionEmote().getName().equals("\uD83E\uDD26")) { // Só permitir reactions de "facepalm"
+                    return;
+                }
+
                 if (e.getMember().getVoiceState().getChannel() != vc) {
                     e.getReaction().removeReaction(e.getUser()).complete();
                     return;
