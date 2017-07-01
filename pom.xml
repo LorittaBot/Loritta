@@ -127,6 +127,11 @@
             <version>1.7.8</version>
         </dependency>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20170516</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>AminoREAPI</artifactId>
             <version>8163c41cb2</version>
