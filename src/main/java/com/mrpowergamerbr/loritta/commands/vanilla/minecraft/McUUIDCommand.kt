@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -39,9 +40,9 @@ class McUUIDCommand : CommandBase() {
             try {
                 var json = JsonParser().parse(data).asJsonObject;
 
-                context.sendMessage(context.getAsMention(true) + "A UUID de " + player + ": `" + LorittaUtils.getUUID(json.get("id").asString) + "`");
+                context.sendMessage(context.getAsMention(true) + "A UUID de " + player + ": `" + LorittaUtils.getUUID(json["id"].string) + "`");
             } catch (e: IllegalStateException) {
-                context.sendMessage(context.getAsMention(true) + "Player não encontrado! Tem certeza que `" + player + "` é uma conta válida?");
+                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Player não encontrado! Tem certeza que `" + player + "` é uma conta válida?");
             }
         } else {
             this.explain(context);
