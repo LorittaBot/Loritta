@@ -157,6 +157,9 @@ class NewYouTubeVideosThread : Thread() {
 								if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
 									continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
 								}
+							} else {
+								lastVideosTime.put(guild.id, df.format(Date()));
+								continue;
 							}
 
 							if (lastId == null) {
