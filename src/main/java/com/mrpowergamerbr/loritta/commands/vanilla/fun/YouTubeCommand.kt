@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -52,7 +54,7 @@ class YouTubeCommand : CommandBase() {
 					var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
 					var parser = JsonParser();
 					var json = parser.parse(response).asJsonObject;
-					var strDuration = json.get("items").asJsonArray[0].get("contentDetails").asJsonObject.get("duration").asString;
+					var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
 					var duration = java.time.Duration.parse(strDuration)
 					var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS); // Nós não podemos pegar o tempo diretamente porque é "unsupported"
 					var final = String.format("%02d:%02d", ((inSeconds/60)%60), (inSeconds%60));
