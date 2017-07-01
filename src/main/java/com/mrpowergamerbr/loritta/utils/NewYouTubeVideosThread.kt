@@ -96,7 +96,7 @@ class NewYouTubeVideosThread : Thread() {
 
 								message = message.replace("{canal}", channelTitle);
 								message = message.replace("{título}", title);
-								message = message.replace("{descrição}", title);
+								message = message.replace("{descrição}", description);
 								message = message.replace("{link}", "https://youtu.be/" + videoId);
 
 								textChannel.sendMessage(message).complete();
