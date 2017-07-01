@@ -23,11 +23,12 @@ class NewYouTubeVideosThread : Thread() {
 
 		while (true) {
 			checkNewVideos();
-			Thread.sleep(2500); // Só 2.5s de delay!
+			Thread.sleep(5000); // Só 2.5s de delay!
 		}
 	}
 
 	fun checkNewVideos() {
+		println("Checking new videos!")
 		try {
 			var servers = LorittaLauncher.loritta.mongo
 					.getDatabase("loritta")
@@ -67,6 +68,7 @@ class NewYouTubeVideosThread : Thread() {
 									continue;
 								}
 							}
+
 							// E agora sim iremos pegar os novos vídeos!
 							var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
 									.body();
@@ -159,7 +161,10 @@ class NewYouTubeVideosThread : Thread() {
 								}
 							} else {
 								lastVideosTime.put(guild.id, df.format(Date()));
-								continue;
+								if (lastId == null) {
+									lastVideos.put(guild.id, videoId);
+									continue;
+								}
 							}
 
 							if (lastId == null) {
