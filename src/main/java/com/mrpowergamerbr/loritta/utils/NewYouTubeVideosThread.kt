@@ -23,12 +23,11 @@ class NewYouTubeVideosThread : Thread() {
 
 		while (true) {
 			checkNewVideos();
-			Thread.sleep(5000); // Só 2.5s de delay!
+			Thread.sleep(5000); // Só 5s de delay!
 		}
 	}
 
 	fun checkNewVideos() {
-		println("Checking new videos!")
 		try {
 			var servers = LorittaLauncher.loritta.mongo
 					.getDatabase("loritta")
