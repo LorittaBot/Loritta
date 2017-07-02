@@ -91,10 +91,6 @@ public class Loritta {
     // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
     public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build().asMap();
 
-    @Getter
-    @Setter
-    public static int executedCommands = 0;
-
     public Loritta(LorittaConfig config) {
         loadFromConfig(config);
     }

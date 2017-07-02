@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands;
 
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
@@ -95,7 +94,6 @@ public abstract class CommandBase {
                     ev.getChannel().sendTyping().complete();
                 }
             }
-            Loritta.setExecutedCommands(Loritta.getExecutedCommands() + 1);
             String cmd = label;
             String onlyArgs = message.substring(message.toLowerCase().indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
