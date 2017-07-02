@@ -46,6 +46,14 @@ public class DiscordListener extends ListenerAdapter {
                 try {
                     ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
                     LorittaProfile profile = loritta.getLorittaProfileForUser(event.getMember().getUser().getId());
+                    LorittaProfile ownerProfile = loritta.getLorittaProfileForUser(event.getGuild().getOwner().getUser().getId());
+
+                    if (ownerProfile.isBanned()) { // Se o dono está banido...
+                        if (!event.getMember().getUser().getId().equals(Loritta.getConfig().ownerId)) { // E ele não é o dono do bot!
+                            event.getGuild().leave().complete(); // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+                            return;
+                        }
+                    }
 
                     if (event.getMessage().getRawContent().replace("!", "").equals("<@297153970613387264>")) {
                         event.getTextChannel().sendMessage("Olá " + event.getMessage().getAuthor().getAsMention() + "! Meu prefixo neste servidor é `" + conf.commandPrefix() + "` Para ver o que eu posso fazer, use `" + conf.commandPrefix() + "ajuda`!").complete();
