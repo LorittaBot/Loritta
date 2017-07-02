@@ -45,8 +45,7 @@ class BotInfoCommand : CommandBase() {
 		sb.append(seconds)
 		sb.append("s")
 
-		embed.setAuthor("Olá, eu sou a Loritta! 💁", null, "https://loritta.website/assets/img/loritta_guild_v4.png")
-		embed.setDescription("Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\") e eu sou uma garota de *lembrete para mim: colocar quantos anos eu tenho aqui* anos!")
+		embed.setAuthor("Olá, eu me chamo Loritta! 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setImage("http://loritta.website/assets/img/loritta_heart.png")
 		embed.setColor(Color(186, 0, 239))
 		embed.addField("📝 Nome", "Loritta#" + context.event.guild.selfMember.user.discriminator, true)
