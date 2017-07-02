@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.nashorn;
 
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -43,7 +42,6 @@ public class NashornCommand {
 	public boolean handle(MessageReceivedEvent ev, String message, ServerConfig conf) {
 		if (message.startsWith(conf.commandPrefix + label)) {
 			ev.getChannel().sendTyping().complete();
-			Loritta.setExecutedCommands(Loritta.getExecutedCommands() + 1);
 			String cmd = label;
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
@@ -62,7 +60,6 @@ public class NashornCommand {
 
 		if (message.startsWith(conf.commandPrefix + label)) {
 			ev.getChannel().sendTyping().complete();
-			Loritta.setExecutedCommands(Loritta.getExecutedCommands() + 1);
 			String cmd = label;
 			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
