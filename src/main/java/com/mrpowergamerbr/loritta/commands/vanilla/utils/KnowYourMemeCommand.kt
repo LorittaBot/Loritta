@@ -61,7 +61,7 @@ class KnowYourMemeCommand : CommandBase() {
 
 				val embed = EmbedBuilder()
 
-				embed.setTitle("<:kym:331052564357578754> $name", "https://knowyourmeme.com/$url")
+				embed.setTitle("<:kym:331052564357578754> $name", "https://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
 				embed.addField("\uD83C\uDF1F Origem", if (origin.isNotBlank()) origin else "Desconhecido", true)
