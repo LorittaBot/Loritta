@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.PaniniUtils;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import lombok.experimental.ExtensionMethod;
 import org.apache.commons.lang3.ArrayUtils;
@@ -152,6 +153,8 @@ public class GlobalHandler {
                 try {
                     TemmieDiscordAuth temmie = (TemmieDiscordAuth) LorittaWebsite.getOAuth2().get(req.session().get("discordAuthCode").value());
                     context.contextVars().put("temmie", temmie);
+                    LorittaProfile profile = LorittaLauncher.getInstance().getLorittaProfileForUser(temmie.getCurrentUserIdentification().getId());
+                    context.contextVars().put("userProfile", profile);
                     // code
                     // guild_id
                     // permissions
