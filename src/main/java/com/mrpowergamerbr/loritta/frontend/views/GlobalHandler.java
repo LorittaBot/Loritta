@@ -204,6 +204,12 @@ public class GlobalHandler {
             }
             String output = null;
 
+            if (obj == null) { // Se o obj é null...
+                // Então vamos criar nossa própria página! (de erro 404)
+                obj = LorittaWebsite.getEngine().getTemplate("404.html");
+                res.status(404); // E altere o status para 404
+            }
+
             if (obj instanceof PebbleTemplate) {
                 PebbleTemplate compiledTemplate = (PebbleTemplate) obj;
                 StringWriter writer = new StringWriter();
