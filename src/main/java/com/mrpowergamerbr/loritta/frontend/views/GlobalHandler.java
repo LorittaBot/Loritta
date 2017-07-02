@@ -41,8 +41,12 @@ public class GlobalHandler {
             contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
-            Object temmieObj = LorittaWebsite.getOAuth2().getOrDefault(req.session().get("discordAuthCode").value(), null);
-            contextVars.put("temmie", temmieObj);
+            if (req.session().isSet("discordAuthValue")) {
+                Object temmieObj = LorittaWebsite.getOAuth2()
+                        .getOrDefault(req.session().get("discordAuthCode").value(), null);
+            } else {
+                contextVars.put("temmie", null);
+            }
 
             long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
 
