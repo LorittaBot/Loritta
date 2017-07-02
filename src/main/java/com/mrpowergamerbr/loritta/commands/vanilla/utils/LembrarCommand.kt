@@ -122,7 +122,7 @@ class LembrarCommand : CommandBase() {
 
 			LorittaLauncher.getInstance().ds.save(profile)
 
-			context.sendMessage(context.getAsMention(true) + "Eu irei te lembrar deste lembrete em ${instant.dayOfMonth}/${strMonth}/${instant.year} as ${instant.hour}:${instant.minute}!")
+			context.sendMessage(context.getAsMention(true) + "Eu irei te lembrar em ${instant.dayOfMonth}/${strMonth}/${instant.year} às ${instant.hour}:${instant.minute}!")
 		} else {
 			this.explain(context);
 		}
