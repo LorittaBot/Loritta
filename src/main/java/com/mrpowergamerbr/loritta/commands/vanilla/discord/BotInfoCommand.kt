@@ -46,6 +46,7 @@ class BotInfoCommand : CommandBase() {
 		sb.append("s")
 
 		embed.setAuthor("Olá, eu me chamo Loritta! 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
+		embed.setDescription("\"Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\"),  sou apenas um bot para o Discord fofo e com várias funcionalidades supimpas!")
 		embed.setImage("http://loritta.website/assets/img/loritta_heart.png")
 		embed.setColor(Color(186, 0, 239))
 		embed.addField("📝 Nome", "Loritta#" + context.event.guild.selfMember.user.discriminator, true)
