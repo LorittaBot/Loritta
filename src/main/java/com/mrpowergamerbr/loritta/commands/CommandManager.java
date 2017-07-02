@@ -79,6 +79,7 @@ public class CommandManager {
         commandMap.add(new TrumpCommand());
         commandMap.add(new CepoCommand());
         commandMap.add(new DeusesCommand());
+        commandMap.add(new GangueCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
