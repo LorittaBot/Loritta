@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.Color
 
 
@@ -31,11 +32,15 @@ class RgbCommand : CommandBase() {
 		if (context.args.size == 1) {
 			var hex = context.args[0]
 
-			if (hex.endsWith("#")) { hex.prependIndent("#"); } // Se não tem # antes, então adicione!
+			if (!hex.startsWith("#")) { hex.prependIndent("#"); } // Se não tem # antes, então adicione!
 
-			var color = Color.decode(hex);
-
-			context.sendMessage(context.getAsMention(true) + "Transformei a sua cor `$hex` para RGB! ${color.red}, ${color.green}, ${color.blue}")
+			try {
+				var color = Color.decode(hex);
+				context.sendMessage(context.getAsMention(true) + "Transformei a sua cor `$hex` para RGB! ${color.red}, ${color.green}, ${color.blue}")
+			} catch (e: Exception) {
+				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "A cor `$hex` não é uma cor hexadecimal válida!")
+				return;
+			}
 		} else {
 			this.explain(context);
 		}
