@@ -151,31 +151,29 @@ class NewYouTubeVideosThread : Thread() {
 								currentCalendar = rssCalendar
 							}
 
-							val lastDate = lastVideosTime.getOrDefault(guild.id, null);
-							if (lastDate != null) {
-								val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
-
-								if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
-									continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
-								}
-							} else {
-								lastVideosTime.put(guild.id, df.format(Date()));
-								if (lastId == null) {
-									lastVideos.put(guild.id, videoId);
-								}
-								continue;
-							}
-
 							if (lastId == null) {
 								// Se é null, só salve o ID do último vídeo atual e ignore!
 								lastVideos.put(guild.id, videoId);
 
+								// E também salve o tempo atual
 								val tz = TimeZone.getTimeZone("UTC")
 								val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
 								df.timeZone = tz
 								lastVideosTime.put(guild.id, df.format(Date()));
 								continue;
-							} else if (lastId != videoId) {
+							}
+
+							val lastDate = lastVideosTime.getOrDefault(guild.id, null);
+							if (lastDate != null) {
+								// Data do último vídeo enviado
+								val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
+
+								if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
+									continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+								}
+							}
+
+							if (lastId != videoId) {
 								// Novo vídeo! Yay!
 								var message = youTubeConfig.videoSentMessage;
 
