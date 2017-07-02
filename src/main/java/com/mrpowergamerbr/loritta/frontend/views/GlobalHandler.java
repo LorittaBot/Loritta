@@ -78,14 +78,14 @@ public class GlobalHandler {
             Object obj = null;
             if (arguments.length == 0) {
                 obj = HomeView.render(context);
-            } else if (arguments.is(0, "cmdvis")) {
-                obj = CommandVisualizerRender.render(context);
             } else if (arguments.is(0, "doar")) {
                 obj = DonateView.render(context);
             } else if (arguments.is(0, "comandos")) {
                 obj = CommandsView.render(context);
             } else if (arguments.is(0, "servers")) {
                 obj = ServerListView.render(context);
+            } else if (arguments.is(0, "fanarts")) {
+                obj = FanArtsView.render(context);
             } else if (arguments.is(0, "auth")) {
                 if (req.param("code").isSet()) { // Se o code está marcado, então é um pedido de autenticação via OAuth2
                     String code = req.param("code").value();
