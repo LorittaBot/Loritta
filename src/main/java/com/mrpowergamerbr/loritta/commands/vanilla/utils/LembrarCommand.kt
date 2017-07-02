@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import java.text.DateFormatSymbols
 import java.time.LocalDateTime
@@ -39,13 +40,13 @@ class LembrarCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var message = context.args.joinToString(separator = " ");
-			var years = 0L;
-			var months = 0L;
-			var weeks = 0L;
-			var days = 0L;
-			var hours = 0L;
-			var minutes = 0L;
-			var seconds = 0L;
+			var years: Long? = 0L;
+			var months: Long? = 0L;
+			var weeks: Long? = 0L;
+			var days: Long? = 0L;
+			var hours: Long? = 0L;
+			var minutes: Long? = 0L;
+			var seconds: Long? = 0L;
 			var instant = LocalDateTime.now();
 			var zoneId = ZoneId.systemDefault()
 			// Vamos usar RegEx para detectar!
@@ -65,40 +66,44 @@ class LembrarCommand : CommandBase() {
 			var secondsMatcher = secondsPattern.matcher(context.message.content);
 			if (yearsMatcher.find()) {
 				var group = yearsMatcher.group(1);
-				years = group.toLong();
+				years = group.toLongOrNull();
 				message = message.replace(yearsMatcher.group(), "");
 			}
 			if (monthsMatcher.find()) {
 				var group = monthsMatcher.group(1);
-				months = group.toLong();
+				months = group.toLongOrNull();
 				message = message.replace(monthsMatcher.group(), "");
 			}
 			if (weeksMatcher.find()) {
 				var group = weeksMatcher.group(1);
-				weeks = group.toLong();
+				weeks = group.toLongOrNull();
 				message = message.replace(weeksMatcher.group(), "");
 			}
 			if (daysMatcher.find()) {
 				var group = daysMatcher.group(1);
-				days = group.toLong();
+				days = group.toLongOrNull();
 				message = message.replace(daysMatcher.group(), "");
 			}
 			if (hoursMatcher.find()) {
 				var group = hoursMatcher.group(1);
-				hours = group.toLong();
+				hours = group.toLongOrNull();
 				message = message.replace(hoursMatcher.group(), "");
 			}
 			if (minutesMatcher.find()) {
 				var group = minutesMatcher.group(1);
-				minutes = group.toLong();
+				minutes = group.toLongOrNull();
 				message = message.replace(minutesMatcher.group(), "");
 			}
 			if (secondsMatcher.find()) {
 				var group = secondsMatcher.group(1);
-				seconds = group.toLong();
+				seconds = group.toLongOrNull();
 				message = message.replace(secondsMatcher.group(), "");
 			}
 
+			if (years == null || months == null || weeks == null || days == null || hours == null || minutes == null || seconds == null) {
+				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Tempo de espera inválido! Talvez você tenha colocado um tempo muito grande...")
+				return;
+			}
 			// Agora vamos somar!
 			instant = instant.plusYears(years);
 			instant = instant.plusMonths(months);
