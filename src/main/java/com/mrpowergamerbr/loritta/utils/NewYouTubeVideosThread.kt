@@ -162,8 +162,8 @@ class NewYouTubeVideosThread : Thread() {
 								lastVideosTime.put(guild.id, df.format(Date()));
 								if (lastId == null) {
 									lastVideos.put(guild.id, videoId);
-									continue;
 								}
+								continue;
 							}
 
 							if (lastId == null) {
