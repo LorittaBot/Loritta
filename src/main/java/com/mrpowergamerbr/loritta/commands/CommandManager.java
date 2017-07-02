@@ -102,6 +102,7 @@ public class CommandManager {
         commandMap.add(new AminoCommand());
         commandMap.add(new PackageInfoCommand());
         commandMap.add(new IsUpCommand());
+        commandMap.add(new KnowYourMemeCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());
