@@ -29,6 +29,16 @@ class TocarCommand : CommandBase() {
 			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E")
 			return
 		}
+		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
+			if (context.guild.selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
+				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!")
+				return
+			}
+			if (!context.guild.selfMember.hasPermission(context.guild.selfMember.voiceState.channel, Permission.VOICE_SPEAK)) {
+				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!")
+				return
+			}
+		}
 		if (context.args.size >= 1) {
 			val music = context.args.joinToString(" ")
 
