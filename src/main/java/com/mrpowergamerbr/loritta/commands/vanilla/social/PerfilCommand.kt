@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -80,7 +81,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         val guildImages = ArrayList<java.awt.Image>();
 
-        val guilds = com.mrpowergamerbr.loritta.LorittaLauncher.getInstance().lorittaShards.getGuilds().filter { guild -> guild.isMember(user) };
+        val guilds = LorittaLauncher.getInstance().lorittaShards.getGuilds()
+                .filter { guild -> guild.isMember(user) }
+				.sortedByDescending { it.members.size }
 
         var idx = 0;
         for (guild in guilds) {
