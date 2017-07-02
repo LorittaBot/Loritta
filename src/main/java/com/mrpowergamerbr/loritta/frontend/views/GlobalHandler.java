@@ -42,7 +42,7 @@ public class GlobalHandler {
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
             Object temmieObj = null;
-            if (req.session().isSet("discordAuthValue")) {
+            if (req.session().get("discordAuthCode").isSet()) {
                 temmieObj = LorittaWebsite.getOAuth2()
                         .getOrDefault(req.session().get("discordAuthCode").value(), null);
             }
