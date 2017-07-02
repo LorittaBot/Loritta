@@ -155,38 +155,43 @@ public class GlobalHandler {
                     context.contextVars().put("temmie", temmie);
                     LorittaProfile profile = LorittaLauncher.getInstance().getLorittaProfileForUser(temmie.getCurrentUserIdentification().getId());
                     context.contextVars().put("userProfile", profile);
-                    // code
-                    // guild_id
-                    // permissions
-                    if (context.request().path().equalsIgnoreCase("/config/servidores")) {
-                        if (req.param("guild_id").isSet()) {
-                            // Se está marcado, então a Loritta foi adicionada em algum servidor
-                            try {
-                                res.redirect("https://loritta.website/config/servidor/" + req.param("guild_id").value());
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                            return;
-                        }
-                        obj = ChooseServerView.render(context, temmie);
-                    }
-                    if (context.request().path().startsWith("/config/servidor")) {
-                        String[] split = context.request().path().split("/");
-                        if (split.length >= 4) {
-                            String guildId = split[3];
-                            System.out.println("reading guildId..." + guildId);
-                            if (LorittaLauncher.getInstance().getLorittaShards().getGuildById(guildId) != null) {
-                                // oh shit
-                                obj = ConfigureServerView.render(context, temmie, guildId);
-                            } else {
+
+                    if (!profile.isBanned()) { // Se o usuário não está banido...
+                        // code
+                        // guild_id
+                        // permissions
+                        if (context.request().path().equalsIgnoreCase("/config/servidores")) {
+                            if (req.param("guild_id").isSet()) {
+                                // Se está marcado, então a Loritta foi adicionada em algum servidor
                                 try {
-                                    res.redirect("https://discordapp.com/oauth2/authorize?client_id=" + Loritta.getClientId() + "&scope=bot&guild_id=" + guildId + "&response_type=code&redirect_uri=https://loritta.website/config/servidores&permissions=2097176631");
+                                    res.redirect("https://loritta.website/config/servidor/" + req.param("guild_id").value());
                                 } catch (Throwable e) {
                                     e.printStackTrace();
                                 }
                                 return;
                             }
+                            obj = ChooseServerView.render(context, temmie);
                         }
+                        if (context.request().path().startsWith("/config/servidor")) {
+                            String[] split = context.request().path().split("/");
+                            if (split.length >= 4) {
+                                String guildId = split[3];
+                                System.out.println("reading guildId..." + guildId);
+                                if (LorittaLauncher.getInstance().getLorittaShards().getGuildById(guildId) != null) {
+                                    // oh shit
+                                    obj = ConfigureServerView.render(context, temmie, guildId);
+                                } else {
+                                    try {
+                                        res.redirect("https://discordapp.com/oauth2/authorize?client_id=" + Loritta.getClientId() + "&scope=bot&guild_id=" + guildId + "&response_type=code&redirect_uri=https://loritta.website/config/servidores&permissions=2097176631");
+                                    } catch (Throwable e) {
+                                        e.printStackTrace();
+                                    }
+                                    return;
+                                }
+                            }
+                        }
+                    } else { // Mas se ele estiver, carregue a página de bans
+                        obj = BannedView.render(context, temmie);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

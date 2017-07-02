@@ -35,7 +35,7 @@ public class LorittaUtils {
 
 	public static boolean handleIfBanned(CommandContext context, LorittaProfile profile) {
 		if (profile.isBanned()) {
-			context.sendMessage("\uD83D\uDE45 | Você está **banido**\n\n**Motivo:** " + profile.getBanReason() + "\n\nEnvie uma mensagem privada para o MrPowerGamerBR#4185 caso queira ser desbanido.");
+			context.sendMessage("\uD83D\uDE45 | Você está **banido**\n\n**Motivo:** " + profile.getBanReason() + "\n\nSe você acha que o ban foi injusto (duvido que foi injusto) ou se você se arrependeu, envie uma mensagem privada para `MrPowerGamerBR#4185` pedindo para ser desbanido!\n\nDesculpe pela inconveniência... \uD83D\uDE1E");
 			return true;
 		}
 		return false;
