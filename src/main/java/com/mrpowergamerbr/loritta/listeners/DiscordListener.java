@@ -41,6 +41,9 @@ public class DiscordListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
+        if (event.getTextChannel().isNSFW()) { // lol nope, I'm outta here ♪~ ᕕ(ᐛ)ᕗ
+            return;
+        }
         if (event.isFromType(ChannelType.TEXT)) {
             loritta.getExecutor().execute(() -> {
                 try {
