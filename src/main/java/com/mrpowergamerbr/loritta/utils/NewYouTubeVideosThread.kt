@@ -145,9 +145,9 @@ class NewYouTubeVideosThread : Thread() {
 								source = "rss"
 								date = dateRss;
 								title = jsoup.select("feed entry title").first().text()
-								description = jsoup.select("feed entry media:group media:description").first().text()
+								description = jsoup.select("feed entry media|group media|description").first().text()
 								channelTitle = jsoup.select("feed entry author name").first().text()
-								videoId = jsoup.select("feed entry yt:videoId").first().text()
+								videoId = jsoup.select("feed entry yt|videoId").first().text()
 								currentCalendar = rssCalendar
 							}
 
