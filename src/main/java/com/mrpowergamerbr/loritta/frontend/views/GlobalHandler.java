@@ -41,7 +41,8 @@ public class GlobalHandler {
             contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
-            contextVars.put("temmie", null);
+            Object temmieObj = LorittaWebsite.getOAuth2().getOrDefault(req.session().get("discordAuthCode").value(), null);
+            contextVars.put("temmie", temmieObj);
 
             long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
 
@@ -101,7 +102,6 @@ public class GlobalHandler {
                     return;
                 } else if (req.session().get("discordAuthCode").isSet()) { // Se discordAuthCode existe, então já existe uma conta OAuth2 ativada!
                     System.out.println("Trying to reuse Authentication Code...");
-                    Object temmieObj = LorittaWebsite.getOAuth2().getOrDefault(req.session().get("discordAuthCode").value(), null);
                     if (temmieObj == null) { // Se é null, quer dizer que o TemmieDiscordAuth expirou
                         System.out.println("null!");
                         try {
