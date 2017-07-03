@@ -27,7 +27,7 @@ class MusicInfoCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
+		return CommandCategory.MUSIC
 	}
 
 	override fun run(context: CommandContext) {
