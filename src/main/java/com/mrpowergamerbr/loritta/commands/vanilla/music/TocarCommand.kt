@@ -35,7 +35,7 @@ class TocarCommand : CommandBase() {
 				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!")
 				return
 			}
-			if (!selfMember.hasPermission(selfMember.voiceState.channel, Permission.VOICE_SPEAK)) {
+			if (selfMember.voiceState.isSuppressed) {
 				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!")
 				return
 			}
