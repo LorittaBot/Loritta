@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -64,7 +65,7 @@ class MusicInfoCommand : CommandBase() {
 			} else {
 				val embed = createTrackInfoEmbed(context)
 				val message = context.sendMessage(embed)
-				LorittaLauncher.loritta.musicMessagesCache.put(message.id, manager.scheduler.currentTrack)
+				context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
 				message.addReaction("\uD83E\uDD26").complete()
 				message.addReaction("\uD83D\uDD22").complete();
 			}
@@ -104,6 +105,33 @@ class MusicInfoCommand : CommandBase() {
 					e.reaction.removeReaction(e.user).queue()
 					msg.editMessage(embed).complete()
 					msg.addReaction("\uD83D\uDD22").queue();
+				}
+			}
+		} else { // Se for facepalm...
+			val atw = context.metadata.get("currentTrack") as AudioTrackWrapper
+			val count = e.reaction.users.complete().filter { !it.isBot }.size
+			val conf = context.config
+
+			if (count > 0 && conf.musicConfig.voteToSkip && LorittaLauncher.loritta.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
+				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
+
+				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
+					return
+				}
+
+				if (e.member.voiceState.channel !== vc) {
+					e.reaction.removeReaction(e.user).complete()
+					return
+				}
+
+				if (vc != null) {
+					val inChannel = vc.members.filter{ !it.user.isBot }.size
+					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
+
+					if (count >= required) {
+						LorittaLauncher.getInstance().skipTrack(e.guild)
+						e.textChannel.sendMessage("🤹 Música pulada!").complete()
+					}
 				}
 			}
 		}

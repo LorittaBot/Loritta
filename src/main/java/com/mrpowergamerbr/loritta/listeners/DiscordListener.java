@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
@@ -27,7 +26,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.stream.Collectors;
 
 public class DiscordListener extends ListenerAdapter {
     Loritta loritta;
@@ -140,36 +138,6 @@ public class DiscordListener extends ListenerAdapter {
                 }
             };
             t.start();
-        }
-        if (LorittaLauncher.getInstance().getMusicMessagesCache().containsKey(e.getMessageId())) {
-            AudioTrackWrapper atw = (AudioTrackWrapper) LorittaLauncher.getInstance().getMusicMessagesCache().get(e.getMessageId());
-
-            int count = e.getReaction().getUsers().complete().stream().filter((user) -> !user.isBot()).collect(Collectors.toList()).size();
-            ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.getGuild().getId());
-
-            if (count > 0 && conf.musicConfig().isVoteToSkip() && LorittaLauncher.getInstance().getGuildAudioPlayer(e.getGuild()).scheduler.getCurrentTrack() == atw) {
-                VoiceChannel vc = e.getGuild().getVoiceChannelById(conf.musicConfig().getMusicGuildId());
-
-                if (!e.getReactionEmote().getName().equals("\uD83E\uDD26")) { // Só permitir reactions de "facepalm"
-                    return;
-                }
-
-                if (e.getMember().getVoiceState().getChannel() != vc) {
-                    e.getReaction().removeReaction(e.getUser()).complete();
-                    return;
-                }
-
-                if (vc != null) {
-                    int inChannel = vc.getMembers().stream().filter((member) -> !member.getUser().isBot()).collect(Collectors.toList()).size();
-                    long required = Math.round((double) inChannel * ((double) conf.musicConfig().getRequired() / 100));
-
-                    if (count >= required) {
-                        LorittaLauncher.getInstance().skipTrack(e.getGuild());
-                        e.getTextChannel().sendMessage("🤹 Música pulada!").complete();
-                        LorittaLauncher.getInstance().getMusicMessagesCache().remove(e.getMessageId());
-                    }
-                }
-            }
         }
     }
 
