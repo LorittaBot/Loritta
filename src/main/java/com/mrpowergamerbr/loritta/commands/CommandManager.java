@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.music.PlaylistCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand;
@@ -56,9 +57,6 @@ public class CommandManager {
         commandMap.add(new WikipediaCommand());
         commandMap.add(new QuoteCommand());
         commandMap.add(new WikiaCommand());
-        commandMap.add(new TocarCommand());
-        commandMap.add(new MusicInfoCommand());
-        commandMap.add(new VolumeCommand());
         commandMap.add(new PrimeirasPalavrasCommand());
         commandMap.add(new MoneyCommand());
         commandMap.add(new DrakeCommand());
@@ -104,6 +102,12 @@ public class CommandManager {
         commandMap.add(new PackageInfoCommand());
         commandMap.add(new IsUpCommand());
         commandMap.add(new KnowYourMemeCommand());
+
+        // =======[ MÚSICA ]========
+        commandMap.add(new TocarCommand());
+        commandMap.add(new MusicInfoCommand());
+        commandMap.add(new VolumeCommand());
+        commandMap.add(new PlaylistCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());

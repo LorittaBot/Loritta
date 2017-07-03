@@ -72,6 +72,13 @@ public abstract class CommandBase {
      */
     public boolean onlyOwner() { return false; }
 
+    /**
+     * Retorna se o comando precisa ter o sistema de música ativado
+     *
+     * @return Se o comando precisa ter o sistema de música ativado
+     */
+    public boolean requiresMusicEnabled() { return false; }
+
     public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
         String message = ev.getMessage().getContent();
         boolean run = false;
@@ -112,6 +119,12 @@ public abstract class CommandBase {
             }
             if (needsToUploadFiles()) {
                 if (!LorittaUtils.canUploadFiles(context)) { return true; };
+            }
+            if (requiresMusicEnabled()) {
+                if (!context.getConfig().musicConfig.isEnabled()) {
+                    context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E");
+                    return true;
+                }
             }
             run(context);
             return true;

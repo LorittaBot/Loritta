@@ -28,6 +28,10 @@ class VolumeCommand : CommandBase() {
 		return listOf(Permission.VOICE_MUTE_OTHERS)
 	}
 
+	override fun requiresMusicEnabled(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (context.args.size >= 1) {

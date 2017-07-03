@@ -24,11 +24,11 @@ class TocarCommand : CommandBase() {
 		return CommandCategory.MUSIC
 	}
 
+	override fun requiresMusicEnabled(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext) {
-		if (!context.config.musicConfig.isEnabled) {
-			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E")
-			return
-		}
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!

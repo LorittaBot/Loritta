@@ -8,13 +8,13 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class MusicInfoCommand : CommandBase() {
+class PlaylistCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "tocando"
+		return "playlist"
 	}
 
 	override fun getDescription(): String {
-		return "Fala a música que está tocando agora."
+		return "Mostra as próximas músicas que serão tocadas na DJ Loritta!"
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -27,14 +27,12 @@ class MusicInfoCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
-		if (manager.player.playingTrack == null) {
-			context.sendMessage(context.getAsMention(true) + "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`")
-		} else {
-			val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
-			val message = context.sendMessage(embed)
-			context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
+		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)
+		val message = context.sendMessage(embed)
+		context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
+		if (manager.scheduler.currentTrack != null) { // Só adicione os reactions caso esteja tocando alguma música
 			message.addReaction("\uD83E\uDD26").complete()
-			message.addReaction("\uD83D\uDD22").complete();
+			message.addReaction("\uD83D\uDCBF").complete();
 		}
 	}
 
