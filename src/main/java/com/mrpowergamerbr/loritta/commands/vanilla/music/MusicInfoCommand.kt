@@ -34,17 +34,13 @@ class MusicInfoCommand : CommandBase() {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (context.args.size == 1) {
 			if (context.args[0].equals("playlist", ignoreCase = true)) {
-				val songs = manager.scheduler.queue.toList() // Para não remover tudo da nossa BlockingQueue
-				var txt = "Na fila...\n"
-				if (manager.player.playingTrack == null) {
-					txt = "Não tem nenhuma música na fila..."
-				} else {
-					txt += "▶ " + manager.player.playingTrack.info.title + " (" + manager.scheduler.currentTrack.user.name + ")\n"
+				val embed = createPlaylistInfoEmbed(context)
+				val message = context.sendMessage(embed)
+				context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
+				if (manager.scheduler.currentTrack != null) { // Só adicione os reactions caso esteja tocando alguma música
+					message.addReaction("\uD83E\uDD26").complete()
+					message.addReaction("\uD83D\uDCBF").complete();
 				}
-				for (song in songs) {
-					txt += "⏸ " + song.track.info.title + " (" + song.user.name + ")\n"
-				}
-				context.sendMessage(context.getAsMention(true) + txt)
 			}
 			if (context.args[0].equals("todos", ignoreCase = true)) {
 				var txt = "Em outras quebradas por aí...\n"
@@ -76,25 +72,14 @@ class MusicInfoCommand : CommandBase() {
 		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
 			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
 				if (e.reactionEmote.name == "\uD83D\uDD22") {
-					val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
-					val embed = EmbedBuilder()
-
-					embed.setTitle("\uD83C\uDFB6 Na fila...")
-					embed.setColor(Color(93, 173, 236))
-
-					val songs = manager.scheduler.queue.toList()
-					val currentTrack = manager.scheduler.currentTrack
-					var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
-					text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
-					embed.setDescription(text)
-					msg.editMessage(embed.build()).complete()
+					msg.editMessage(createPlaylistInfoEmbed(context)).complete()
 					msg.reactions.forEach {
 						if (it.emote.name != "\uD83E\uDD26") {
 							it.removeReaction().complete()
 						}
 					}
 					e.reaction.removeReaction(e.user).complete()
-					msg.addReaction("💿").complete();
+					msg.addReaction("\uD83D\uDCBF").complete();
 				} else if (e.reactionEmote.name == "\uD83D\uDCBF") {
 					val embed = createTrackInfoEmbed(context)
 					msg.reactions.forEach {
@@ -174,5 +159,24 @@ class MusicInfoCommand : CommandBase() {
 
 		embed.addField("\uD83D\uDCAB Quer pular a música?", "**Então use \uD83E\uDD26 nesta mensagem!** (Se 75% das pessoas no canal de música reagirem com \uD83E\uDD26, eu irei pular a música!)", false)
 		return embed.build()
+	}
+
+	fun createPlaylistInfoEmbed(context: CommandContext): MessageEmbed {
+		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+		val embed = EmbedBuilder()
+
+		embed.setTitle("\uD83C\uDFB6 Na fila...")
+		embed.setColor(Color(93, 173, 236))
+
+		val songs = manager.scheduler.queue.toList()
+		val currentTrack = manager.scheduler.currentTrack
+		if (currentTrack != null) {
+			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
+			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
+			embed.setDescription(text)
+		} else {
+			embed.setDescription("Nenhuma música...");
+		}
+		return embed.build();
 	}
 }
