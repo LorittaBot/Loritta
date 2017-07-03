@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -21,6 +22,13 @@ inline fun Image.toBufferedImage() : BufferedImage {
 
 inline fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 	return ImageUtils.makeRoundedCorner(this, cornerRadius);
+}
+
+/**
+ * Retorna a instância atual da Loritta
+ */
+inline fun loritta(): Loritta {
+	return LorittaLauncher.getInstance();
 }
 
 object LorittaUtilsKotlin {

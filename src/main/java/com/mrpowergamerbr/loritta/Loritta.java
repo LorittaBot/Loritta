@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.mongodb.MongoClient;
@@ -36,8 +35,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.Game.GameType;
-import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.bson.Document;
@@ -143,6 +140,10 @@ public class Loritta {
 
         new NewYouTubeVideosThread().start(); // Iniciar New YouTube Videos Thread
 
+        new UpdateStatusThread().start(); // Iniciar thread para atualizar o status da Loritta
+
+        new DiscordBotsInfoThread().start(); // Iniciar thread para atualizar os servidores no Discord Bots
+
         Runnable reminders = () -> {
             while (true) {
                 FindIterable<Document> list = mongo.getDatabase("loritta").getCollection("users").find(Filters.exists("reminders"));
@@ -177,31 +178,6 @@ public class Loritta {
             }
         };
         new Thread(reminders, "Reminders Thread").start();
-
-        Runnable presenceUpdater = () -> {  // Agora iremos iniciar o presence updater
-            while (true) {
-                if (currentIndex > playingGame.size() - 1) {
-                    currentIndex = 0;
-                }
-                // Enviar as informações do bot para o Discord Bots
-                try {
-                    String body = HttpRequest.post("https://bots.discord.pw/api/bots/" + getConfig().clientId + "/stats")
-                            .authorization(getConfig().discordBotsKey).acceptJson().contentType("application/json")
-                            .send("{ \"server_count\": " + lorittaShards.getGuilds().size() + " }").body();
-                } catch (Exception e) {}
-                String str = playingGame.get(currentIndex);
-                str = str.replace("{guilds}", String.valueOf(lorittaShards.getGuilds().size()));
-                str = str.replace("{users}", String.valueOf(lorittaShards.getUsers().size()));
-                lorittaShards.getPresence().setGame(new GameImpl(str, "https://www.twitch.tv/monstercat", GameType.TWITCH));
-                currentIndex++;
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        new Thread(presenceUpdater, "Presence Updater").start(); // Pronto!
 
         Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
             while (true) {
