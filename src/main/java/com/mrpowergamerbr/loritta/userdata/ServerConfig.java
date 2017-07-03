@@ -45,7 +45,7 @@ public class ServerConfig {
 
     public JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     public MusicConfig musicConfig = new MusicConfig();
-    public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
+    public AminoConfig aminoConfig = new AminoConfig();
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
