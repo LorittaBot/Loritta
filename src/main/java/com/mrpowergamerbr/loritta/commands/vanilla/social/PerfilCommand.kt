@@ -169,7 +169,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             graphics.color = Color(255, 255, 255);
 
             graphics.font = bariolRegular.deriveFont(10F);
-            ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, offset +  145, 148, 15), graphics.font);
+            ImageUtils.drawCenteredStringOutlined(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(89, offset +  145, 148, 15), graphics.font);
         }
         // E agora calcular quanto a barrinha deveria ficar (mas do XP do servidor)
         run {
@@ -184,7 +184,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             graphics.color = Color(255, 255, 255);
 
             graphics.font = bariolRegular.deriveFont(10F);
-            ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(241, offset + 145, 148, 15), graphics.font);
+            ImageUtils.drawCenteredStringOutlined(graphics, "$currentLevel/$nextLevel XP", java.awt.Rectangle(241, offset + 145, 148, 15), graphics.font);
         }
 
         graphics.font = mavenProBold.deriveFont(20F)
