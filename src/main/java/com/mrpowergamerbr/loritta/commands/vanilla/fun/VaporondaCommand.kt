@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.VaporwaveUtils
+import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 
 class VaporondaCommand : CommandBase() {
 	override fun getLabel(): String {

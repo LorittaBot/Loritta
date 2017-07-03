@@ -1,16 +1,14 @@
 package com.mrpowergamerbr.loritta;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.apache.commons.io.FileUtils;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig;
-
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 @Getter
 public class LorittaLauncher {
@@ -20,7 +18,7 @@ public class LorittaLauncher {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		File file = new File("./config.json");
 		LorittaConfig config = null;
-		
+
 		if (file.exists()) {
 			String json;
 			try {
@@ -48,7 +46,7 @@ public class LorittaLauncher {
 						.setWebsiteUrl("URL do website da Loritta, coloque uma / no final!")
 						.setYoutubeKey("Key da API do YouTube, usado no comando \"+youtube\"")
 						.setCurrentlyPlaying(Arrays.asList("Shantae: Half-Genie Hero"))), "UTF-8");
-			
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

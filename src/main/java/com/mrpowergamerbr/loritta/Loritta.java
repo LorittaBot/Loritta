@@ -21,7 +21,7 @@ import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder;
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube;
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.utils.YouTubeItem;
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem;
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -74,7 +74,7 @@ public class Loritta {
     @Getter
     public static final Gson gson = new Gson(); // Gson
     @Getter
-    private static TemmieYouTube youtube = null; // API key do YouTube, usado em alguns comandos
+    public static TemmieYouTube youtube = null; // API key do YouTube, usado em alguns comandos
     @Getter
     private static String clientId;
     @Getter
