@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
 
-class AminoRepostThread : Thread() {
+class AminoRepostThread : Thread("Amino Repost Thread") {
 	var storedLastIds = HashMap<String, String>();
 
 	override fun run() {

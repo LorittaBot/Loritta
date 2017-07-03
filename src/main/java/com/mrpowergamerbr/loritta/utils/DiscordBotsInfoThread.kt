@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.Loritta
 /**
  * Thread que atualiza os servidores que a Loritta no Discord Bots está a cada 10 segundos
  */
-class DiscordBotsInfoThread : Thread() {
+class DiscordBotsInfoThread : Thread("Discord Bot Info Thread") {
 	override fun run() {
 		super.run()
 

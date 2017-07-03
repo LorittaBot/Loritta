@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class NewYouTubeVideosThread : Thread() {
+class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	val lastVideos = HashMap<String, String>(); // HashMap usada para guardar o ID do último vídeo
 	val lastVideosTime = HashMap<String, String>(); // HashMap usada para guardar a data do último vídeo
 

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 
-class PurgeServerConfigsThread : Thread() {
+class PurgeServerConfigsThread : Thread("Purge Server Configs Thread") {
 	override fun run() {
 		super.run()
 

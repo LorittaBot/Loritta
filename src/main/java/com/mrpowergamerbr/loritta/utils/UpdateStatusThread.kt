@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Thread que atualiza o status da Loritta a cada 7 segundos
  */
-class UpdateStatusThread : Thread() {
+class UpdateStatusThread : Thread("Update Status Thread") {
 	var lastUpdate: Long = System.currentTimeMillis()
 	var currentIndex = 0; // Index atual
 
