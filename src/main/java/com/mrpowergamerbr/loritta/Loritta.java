@@ -287,7 +287,7 @@ public class Loritta {
                     if (mm.player.getPlayingTrack() == null) {
                         ServerConfig conf = getServerConfigForGuild(mm.scheduler.getGuild().getId());
 
-                        if (conf.musicConfig().isAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+                        if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
                             String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
 
                             // E agora carregue a música
@@ -420,7 +420,7 @@ public class Loritta {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (conf.musicConfig().isHasMaxSecondRestriction()) {
+                if (conf.musicConfig().getHasMaxSecondRestriction()) {
                     if (track.getDuration() > TimeUnit.SECONDS.toMillis(conf.musicConfig().getMaxSeconds())) {
                         channel.sendMessage(context.getAsMention(true) + "Música grande demais!").queue();
                         return;

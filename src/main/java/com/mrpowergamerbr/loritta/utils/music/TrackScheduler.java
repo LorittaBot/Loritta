@@ -77,7 +77,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			// Vamos pegar o ServerConfig deste servidor
 			ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(guild.getId());
 			
-			if (conf.musicConfig().isAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+			if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
 				String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
 				
 				// E agora carregue a música
