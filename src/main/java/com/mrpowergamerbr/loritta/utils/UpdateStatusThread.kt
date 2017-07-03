@@ -7,7 +7,7 @@ import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
 /**
- * Thread que atualiza o status da Loritta a cada 7 segundos
+ * Thread que atualiza o status da Loritta a cada 25s segundos
  */
 class UpdateStatusThread : Thread("Update Status Thread") {
 	var lastUpdate: Long = System.currentTimeMillis()
@@ -51,11 +51,10 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		str = str.replace("{users}", loritta().lorittaShards.getUsers().size.toString())
 		str = str.replace("{uptime}", sb.toString())
 
-		loritta().lorittaShards.getPresence().setGame(GameImpl(str, "https://www.twitch.tv/monstercat", Game.GameType.TWITCH))
-
 		val diff = System.currentTimeMillis() - lastUpdate
 
-		if (diff >= 7000) {
+		if (diff >= 25000) {
+			loritta().lorittaShards.setGame(GameImpl(str, "https://www.twitch.tv/monstercat", Game.GameType.TWITCH))
 			currentIndex++
 			lastUpdate = System.currentTimeMillis()
 
