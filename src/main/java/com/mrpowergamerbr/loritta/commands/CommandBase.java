@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -125,8 +126,8 @@ public abstract class CommandBase {
     public void explain(ServerConfig conf, MessageReceivedEvent ev) {
         if (conf.explainOnCommandRun()) {
             EmbedBuilder embed = new EmbedBuilder();
-
-            embed.setAuthor("Comando: " + conf.commandPrefix() + this.getLabel(), null, "http://emojipedia-us.s3.amazonaws.com/cache/69/c0/69c0b62308243947c2ac885e1cd3d853.png");
+            embed.setColor(new Color(0, 193, 223));
+            embed.setTitle("\uD83E\uDD14 Como usar... `" + conf.commandPrefix() + this.getLabel() + "`");
 
             String usage = getUsage() != null ? " `" + getUsage() + "`" : "";
 
