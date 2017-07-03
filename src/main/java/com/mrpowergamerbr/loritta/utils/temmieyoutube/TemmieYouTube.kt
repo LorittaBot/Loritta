@@ -47,7 +47,7 @@ data class SearchResponse(
 		val etag: String,
 		val nextPageToken: String,
 		val regionCode: String,
-		val pageInfo: String,
+		val pageInfo: PageInfo,
 		val items: List<YouTubeItem>)
 
 data class YouTubeItem(
