@@ -45,7 +45,7 @@ class BotInfoCommand : CommandBase() {
 		sb.append("s")
 
 		embed.setAuthor("Olá, eu me chamo Loritta! 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
-		embed.setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
+		embed.setThumbnail("https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription("Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\") e sou apenas um bot para o Discord fofo e com várias funcionalidades supimpas!\n\n" +
 				"Eu estou em **${LorittaLauncher.getInstance().lorittaShards.getGuilds().size} servidores** e eu conheço **${LorittaLauncher.getInstance().lorittaShards.getUsers().size} pessoas diferentes** (Wow, quanta gente)! Eu fui feita usando **JDA** em **Java & Kotlin** e, se você quiser ver meu código-fonte, [clique aqui](http://bit.ly/lorittagit)!\n\n" +
