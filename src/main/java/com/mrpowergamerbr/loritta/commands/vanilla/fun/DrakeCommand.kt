@@ -46,22 +46,24 @@ class DrakeCommand : CommandBase() {
 
 		run {
 			var avatarImg: Image = LorittaUtils.getImageFromContext(context, 0)
-			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
-			graph.drawImage(avatarImg, 150, 0, null)
 
 			if (!LorittaUtils.isValidImage(context, avatarImg)) {
 				return
 			}
+
+			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			graph.drawImage(avatarImg, 150, 0, null)
 		}
 
 		run {
 			var avatarImg: Image = LorittaUtils.getImageFromContext(context, 1)
-			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
-			graph.drawImage(avatarImg, 150, 150, null)
 
 			if (!LorittaUtils.isValidImage(context, avatarImg)) {
 				return
 			}
+			
+			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			graph.drawImage(avatarImg, 150, 150, null)
 		}
 
 		val builder = MessageBuilder()
