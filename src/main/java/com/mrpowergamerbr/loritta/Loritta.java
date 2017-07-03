@@ -64,7 +64,7 @@ public class Loritta {
     private String clientToken; // Client token da sessão atual
     public LorittaShards lorittaShards = new LorittaShards();
     public CommandManager commandManager; // Nosso command manager
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(32); // Threads
+    public final ScheduledExecutorService executor = Executors.newScheduledThreadPool(32); // Threads
     public MongoClient mongo; // MongoDB
     public Datastore ds; // MongoDB²
     private Morphia morphia; // MongoDB³

@@ -27,7 +27,7 @@ public class ServerConfig {
     public String guildId; // Guild ID
     public String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
     public ArrayList<String> disabledCommands = new ArrayList<String>(); // Comandos desativados
-    DebugOptions debugOptions = new DebugOptions();
+    public DebugOptions debugOptions = new DebugOptions();
     public boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?
     long creationDate = System.currentTimeMillis();
 
@@ -42,9 +42,9 @@ public class ServerConfig {
     public boolean warnOnMissingPermission = false; // Avisar quando a Loritta não tem permissão para falar em um canal específico
     public boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
 
-    ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
+    public ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
-    JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
+    public JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig(false, null, null, null, false);
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
@@ -66,6 +66,6 @@ public class ServerConfig {
     @Getter
     @Setter
     public static class DebugOptions extends CommandOptions {
-        boolean enableAllModules; // Caso ativado, TODAS as modules estarão ativadas
+        public boolean enableAllModules; // Caso ativado, TODAS as modules estarão ativadas
     }
 }
