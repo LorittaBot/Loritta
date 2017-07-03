@@ -72,36 +72,40 @@ class MusicInfoCommand : CommandBase() {
 	}
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.reactionEmote.name == "\uD83D\uDD22") {
-			val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
-			val embed = EmbedBuilder()
+		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
+			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
+				if (e.reactionEmote.name == "\uD83D\uDD22") {
+					val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+					val embed = EmbedBuilder()
 
-			embed.setTitle("\uD83C\uDFB6 Na fila...")
-			embed.setColor(Color(93, 173, 236))
+					embed.setTitle("\uD83C\uDFB6 Na fila...")
+					embed.setColor(Color(93, 173, 236))
 
-			val songs = manager.scheduler.queue.toList()
-			val currentTrack = manager.scheduler.currentTrack
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
-			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
-			embed.setDescription(text)
-			msg.editMessage(embed.build()).complete()
-			msg.reactions.forEach {
-				if (it.emote.name != "\uD83E\uDD26") {
-					it.removeReaction().complete()
+					val songs = manager.scheduler.queue.toList()
+					val currentTrack = manager.scheduler.currentTrack
+					var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
+					text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
+					embed.setDescription(text)
+					msg.editMessage(embed.build()).complete()
+					msg.reactions.forEach {
+						if (it.emote.name != "\uD83E\uDD26") {
+							it.removeReaction().complete()
+						}
+					}
+					e.reaction.removeReaction(e.user).complete()
+					msg.addReaction("💿").complete();
+				} else if (e.reactionEmote.name == "\uD83D\uDCBF") {
+					val embed = createTrackInfoEmbed(context)
+					msg.reactions.forEach {
+						if (it.emote.name != "\uD83E\uDD26") {
+							it.removeReaction().complete()
+						}
+					}
+					e.reaction.removeReaction(e.user).queue()
+					msg.editMessage(embed).complete()
+					msg.addReaction("\uD83D\uDD22").queue();
 				}
 			}
-			e.reaction.removeReaction(e.user).complete()
-			msg.addReaction("💿").complete();
-		} else if (e.reactionEmote.name == "\uD83D\uDCBF") {
-			val embed = createTrackInfoEmbed(context)
-			msg.reactions.forEach {
-				if (it.emote.name != "\uD83E\uDD26") {
-					it.removeReaction().complete()
-				}
-			}
-			e.reaction.removeReaction(e.user).queue()
-			msg.editMessage(embed).complete()
-			msg.addReaction("\uD83D\uDD22").queue();
 		}
 	}
 
