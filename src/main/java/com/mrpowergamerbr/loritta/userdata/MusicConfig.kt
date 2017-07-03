@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
-class MusicConfig(
+data class MusicConfig(
 		var isEnabled: Boolean,
 		var musicGuildId: String?,
 		var hasMaxSecondRestriction: Boolean,

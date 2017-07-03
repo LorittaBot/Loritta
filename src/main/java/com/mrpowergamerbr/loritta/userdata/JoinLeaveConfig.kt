@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
-class JoinLeaveConfig (
+data class JoinLeaveConfig (
 	var isEnabled: Boolean,
 	var tellOnJoin: Boolean,
 	var tellOnLeave: Boolean,
