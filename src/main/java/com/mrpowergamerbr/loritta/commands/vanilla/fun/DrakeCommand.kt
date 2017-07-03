@@ -61,7 +61,7 @@ class DrakeCommand : CommandBase() {
 			if (!LorittaUtils.isValidImage(context, avatarImg)) {
 				return
 			}
-			
+
 			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
 			graph.drawImage(avatarImg, 150, 150, null)
 		}

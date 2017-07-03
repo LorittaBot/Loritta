@@ -196,7 +196,10 @@ public class CommandContext {
 	}
 
 	public Message sendFile(InputStream data, String name, String message) {
-		return sendFile(data, name, new MessageBuilder().append(message).build());
+		// Corrigir erro ao construir uma mensagem vazia
+		MessageBuilder builder = new MessageBuilder();
+		builder.append(message.isEmpty() ? " " : message);
+		return sendFile(data, name, builder.build());
 	}
 
 	public Message sendFile(InputStream data, String name, MessageEmbed message) {
@@ -229,7 +232,10 @@ public class CommandContext {
 	}
 
 	public Message sendFile(File file, String name, String message) throws IOException {
-		return sendFile(file, name, new MessageBuilder().append(message).build());
+		// Corrigir erro ao construir uma mensagem vazia
+		MessageBuilder builder = new MessageBuilder();
+		builder.append(message.isEmpty() ? " " : message);
+		return sendFile(file, name, builder.build());
 	}
 
 	public Message sendFile(File file, String name, Message message) throws IOException {
