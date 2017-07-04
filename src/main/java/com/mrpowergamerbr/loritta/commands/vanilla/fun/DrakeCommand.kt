@@ -45,24 +45,28 @@ class DrakeCommand : CommandBase() {
 		val graph = bi.graphics
 
 		run {
-			var avatarImg: Image = LorittaUtils.getImageFromContext(context, 0)
+			val avatarImg = LorittaUtils.getImageFromContext(context, 0)
 
 			if (!LorittaUtils.isValidImage(context, avatarImg)) {
 				return
 			}
 
-			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			var image: Image = avatarImg;
+
+			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
 			graph.drawImage(avatarImg, 150, 0, null)
 		}
 
 		run {
-			var avatarImg: Image = LorittaUtils.getImageFromContext(context, 1)
+			var avatarImg = LorittaUtils.getImageFromContext(context, 1)
 
 			if (!LorittaUtils.isValidImage(context, avatarImg)) {
 				return
 			}
 
-			avatarImg = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			var image: Image = avatarImg;
+
+			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
 			graph.drawImage(avatarImg, 150, 150, null)
 		}
 
