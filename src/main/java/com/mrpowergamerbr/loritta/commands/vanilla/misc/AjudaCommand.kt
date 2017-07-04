@@ -35,16 +35,12 @@ class AjudaCommand : CommandBase() {
         var description = "Olá " + context.userHandle.asMention + ", eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975))!\n\nAtualmente você está vendo a ajuda do **" + context.guild.name + "**!"
 
         var builder = EmbedBuilder()
-                .setColor(Color(39, 153, 201))
+                .setColor(Color(0, 193, 223))
                 .setTitle("💁 Ajuda da Loritta")
                 .setDescription(description)
                 .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
         var firstMsgSent = fastEmbedSend(context, listOf(builder.build()))[0] // Nós iremos dar pin nela
-
-        val embed = EmbedBuilder()
-        embed.setThumbnail("http://i.imgur.com/LUHLEs9.png")
-        embed.setColor(Color(186, 0, 239))
 
         val disabledCommands = LorittaLauncher.getInstance().commandManager.getCommandsDisabledIn(context.config)
 
@@ -75,7 +71,7 @@ class AjudaCommand : CommandBase() {
 
         val additionalInfoEmbed = EmbedBuilder()
         additionalInfoEmbed.setTitle("Informações Adicionais", null)
-                .setColor(Color(39, 153, 201))
+                .setColor(Color(0, 193, 223))
         additionalInfoEmbed.setDescription("[Todos os comandos da Loritta](https://loritta.website/comandos)\n"
                 + "[Discord da nossa querida Loritta](https://discord.gg/3rXgN8x)\n"
                 + "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
