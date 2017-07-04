@@ -78,6 +78,7 @@ public class CommandManager {
         commandMap.add(new CepoCommand());
         commandMap.add(new DeusesCommand());
         commandMap.add(new GangueCommand());
+        commandMap.add(new RandomSAMCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());

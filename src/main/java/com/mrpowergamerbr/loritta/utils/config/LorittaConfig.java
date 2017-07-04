@@ -28,5 +28,6 @@ public class LorittaConfig {
 	public String aminoEmail;
 	public String aminoPassword;
 	public String aminoDeviceId;
+	public String facebookToken;
 	public List<String> currentlyPlaying = new ArrayList<String>();
 }
