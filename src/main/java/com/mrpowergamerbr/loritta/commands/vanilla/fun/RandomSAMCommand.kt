@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import java.awt.image.BufferedImage
 
 class RandomSAMCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -39,6 +40,7 @@ class RandomSAMCommand : CommandBase() {
 
 		var url: String? = null;
 		var description: String? = null;
+		var image: BufferedImage? = null;
 
 		for (post in json["data"].array) {
 			var foundUrl = post["attachments"]["data"][0]["url"].string;
@@ -46,7 +48,10 @@ class RandomSAMCommand : CommandBase() {
 			if (!foundUrl.contains("video")) {
 				url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
 				description = post["attachments"]["data"][0]["description"].string;
-				break;
+				image = LorittaUtils.downloadImage(url, 4000)
+				if (image != null) {
+					break;
+				}
 			}
 		}
 

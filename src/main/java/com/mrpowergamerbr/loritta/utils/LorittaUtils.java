@@ -205,11 +205,25 @@ public class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url) {
+		return downloadImage(url, -1);
+	}
+
+	/**
+	 * Faz download de uma imagem e retorna ela como um BufferedImage
+	 * @param url
+	 * @param timeout
+	 * @return
+	 */
+	public static BufferedImage downloadImage(String url, int timeout) {
 		try {
 			URL imageUrl = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 			connection.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+			if (timeout != -1) {
+				connection.setReadTimeout(timeout);
+				connection.setConnectTimeout(timeout);
+			}
 			return ImageIO.read(connection.getInputStream());
 		} catch (Exception e) {}
 		return null;
