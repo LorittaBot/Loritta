@@ -63,7 +63,6 @@ class RandomSAMCommand : CommandBase() {
 		}
 
 		if (url != null && description != null) {
-			val image = LorittaUtils.downloadImage(url);
 			context.sendFile(image, "south_america_memes.png", "<:sam:331592756969603073> | " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `$description`")
 		} else {
 			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
