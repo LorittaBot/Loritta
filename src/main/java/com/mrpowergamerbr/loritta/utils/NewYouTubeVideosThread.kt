@@ -46,150 +46,153 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						var textChannel = guild.getTextChannelById(youTubeConfig.repostToChannelId);
 
 						if (textChannel != null) { // Wow, diferente de null!
-							if (!youTubeConfig.channelUrl!!.startsWith("http")) {
-								youTubeConfig.channelUrl = "http://" + youTubeConfig.channelUrl;
-
-								LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
-							}
-							if (youTubeConfig.channelId == null) { // Omg é null
-								try {
-									var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
-
-									var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
-
-									youTubeConfig.channelId = id; // E salvar o ID!
+							if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
+								if (!youTubeConfig.channelUrl!!.startsWith("http")) {
+									youTubeConfig.channelUrl = "http://" + youTubeConfig.channelUrl;
 
 									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
-								} catch (e: Exception) {
-									// Se deu ruim, desative o módulo!
-									youTubeConfig.isEnabled = false;
-									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
-									continue;
 								}
-							}
+								if (youTubeConfig.channelId == null) { // Omg é null
+									try {
+										var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
 
-							// E agora sim iremos pegar os novos vídeos!
-							var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
-									.body();
+										var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
 
-							var parser = JsonParser();
-							var json = parser.parse(response);
-							var playlistId = json.get("items").asJsonArray[0].get("contentDetails").asJsonObject.get("relatedPlaylists").asJsonObject.get("uploads").asString;
+										youTubeConfig.channelId = id; // E salvar o ID!
 
-							var source = "playlist";
+										LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+									} catch (e: Exception) {
+										// Se deu ruim, desative o módulo!
+										youTubeConfig.isEnabled = false;
+										LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+										continue;
+									}
+								}
 
-							// Vamos verificar os novos vídeos de vários jeitos
-							var newVideos = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&order=date&maxResults=1&playlistId=$playlistId&key=${Loritta.config.youtubeKey}")
-									.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
-									.useCaches(false) // YouPobre(tm)
-									.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
-									.body();
+								// E agora sim iremos pegar os novos vídeos!
+								var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
+										.body();
 
-							var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
-									.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
-									.useCaches(false) // YouPobre(tm)
-									.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
-									.body();
+								var parser = JsonParser();
+								var json = parser.parse(response);
+								var playlistId = json.get("items").asJsonArray[0].get("contentDetails").asJsonObject.get("relatedPlaylists").asJsonObject.get("uploads").asString;
 
-							var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeConfig.channelId}")
-									.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
-									.useCaches(false) // YouPobre(tm)
-									.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
-									.body();
+								var source = "playlist";
 
-							var jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
+								// Vamos verificar os novos vídeos de vários jeitos
+								var newVideos = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&order=date&maxResults=1&playlistId=$playlistId&key=${Loritta.config.youtubeKey}")
+										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
+										.useCaches(false) // YouPobre(tm)
+										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
+										.body();
 
-							var videosJson = JsonParser().parse(newVideos);
-							var jsonItem = videosJson.get("items").asJsonArray[0];
+								var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
+										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
+										.useCaches(false) // YouPobre(tm)
+										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
+										.body();
 
-							var searchJson = JsonParser().parse(newVideosSearch);
-							var jsonSearch = searchJson.get("items").asJsonArray[0];
+								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeConfig.channelId}")
+										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
+										.useCaches(false) // YouPobre(tm)
+										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
+										.body();
 
-							var lastId = lastVideos.getOrDefault(guild.id, null);
+								var jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
 
-							var snippet = jsonItem.get("snippet").asJsonObject
-							var searchSnippet = jsonSearch.get("snippet").asJsonObject
+								var videosJson = JsonParser().parse(newVideos);
+								var jsonItem = videosJson.get("items").asJsonArray[0];
 
-							var title = snippet.get("title").asString;
-							var description = snippet.get("description").asString;
-							var channelTitle = snippet.get("channelTitle").asString;
-							var videoId = snippet.get("resourceId").asJsonObject.get("videoId").asString;
+								var searchJson = JsonParser().parse(newVideosSearch);
+								var jsonSearch = searchJson.get("items").asJsonArray[0];
 
-							var datePlaylist = snippet["publishedAt"].string;
-							var dateSearch = searchSnippet["publishedAt"].string;
-							var dateRss = jsoup.select("feed entry published").first().text()
-							var date: String = datePlaylist;
+								var lastId = lastVideos.getOrDefault(guild.id, null);
 
-							var playlistCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(datePlaylist);
-							var searchCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateSearch);
-							var rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
+								var snippet = jsonItem.get("snippet").asJsonObject
+								var searchSnippet = jsonSearch.get("snippet").asJsonObject
 
-							var currentCalendar = playlistCalendar;
+								var title = snippet.get("title").asString;
+								var description = snippet.get("description").asString;
+								var channelTitle = snippet.get("channelTitle").asString;
+								var videoId = snippet.get("resourceId").asJsonObject.get("videoId").asString;
 
-							val tz = TimeZone.getTimeZone("UTC")
-							val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
-							df.timeZone = tz
-							dateRss = df.format(rssCalendar.time) // Agora vamos guardar a data verdadeira!
+								var datePlaylist = snippet["publishedAt"].string;
+								var dateSearch = searchSnippet["publishedAt"].string;
+								var dateRss = jsoup.select("feed entry published").first().text()
+								var date: String = datePlaylist;
 
-							if (searchCalendar.after(currentCalendar)) { // Se o vídeo do search endpoint é mais recente que o da playlist...
-								source = "search"
-								date = dateSearch;
-								title = searchSnippet.get("title").asString;
-								description = searchSnippet.get("description").asString;
-								channelTitle = searchSnippet.get("channelTitle").asString;
-								videoId = jsonSearch.get("id").asJsonObject.get("videoId").asString;
-								currentCalendar = searchCalendar
-							}
+								var playlistCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(datePlaylist);
+								var searchCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateSearch);
+								var rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
 
-							if (rssCalendar.after(currentCalendar)) { // Se o vídeo do search endpoint é mais recente que o da playlist...
-								source = "rss"
-								date = dateRss;
-								title = jsoup.select("feed entry title").first().text()
-								description = jsoup.select("feed entry media|group media|description").first().text()
-								channelTitle = jsoup.select("feed entry author name").first().text()
-								videoId = jsoup.select("feed entry yt|videoId").first().text()
-								currentCalendar = rssCalendar
-							}
+								var currentCalendar = playlistCalendar;
 
-							if (lastId == null) {
-								// Se é null, só salve o ID do último vídeo atual e ignore!
-								lastVideos.put(guild.id, videoId);
-
-								// E também salve o tempo atual
 								val tz = TimeZone.getTimeZone("UTC")
 								val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
 								df.timeZone = tz
-								lastVideosTime.put(guild.id, df.format(Date()));
-								continue;
-							}
+								dateRss = df.format(rssCalendar.time) // Agora vamos guardar a data verdadeira!
 
-							val lastDate = lastVideosTime.getOrDefault(guild.id, null);
-							if (lastDate != null) {
-								// Data do último vídeo enviado
-								val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
-
-								if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
-									continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+								if (searchCalendar.after(currentCalendar)) { // Se o vídeo do search endpoint é mais recente que o da playlist...
+									source = "search"
+									date = dateSearch;
+									title = searchSnippet.get("title").asString;
+									description = searchSnippet.get("description").asString;
+									channelTitle = searchSnippet.get("channelTitle").asString;
+									videoId = jsonSearch.get("id").asJsonObject.get("videoId").asString;
+									currentCalendar = searchCalendar
 								}
-							}
 
-							if (lastId != videoId) {
-								// Novo vídeo! Yay!
-								var message = youTubeConfig.videoSentMessage;
+								if (rssCalendar.after(currentCalendar)) { // Se o vídeo do search endpoint é mais recente que o da playlist...
+									source = "rss"
+									date = dateRss;
+									title = jsoup.select("feed entry title").first().text()
+									description = jsoup.select("feed entry media|group media|description").first().text()
+									channelTitle = jsoup.select("feed entry author name").first().text()
+									videoId = jsoup.select("feed entry yt|videoId").first().text()
+									currentCalendar = rssCalendar
+								}
 
-								if (message == null) { continue; }
+								if (lastId == null) {
+									// Se é null, só salve o ID do último vídeo atual e ignore!
+									lastVideos.put(guild.id, videoId);
 
-								message = message.replace("{canal}", channelTitle);
-								message = message.replace("{título}", title);
-								message = message.replace("{descrição}", description);
-								message = message.replace("{link}", "https://youtu.be/" + videoId);
+									// E também salve o tempo atual
+									val tz = TimeZone.getTimeZone("UTC")
+									val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+									df.timeZone = tz
+									lastVideosTime.put(guild.id, df.format(Date()));
+									continue;
+								}
 
-								textChannel.sendMessage(message).complete();
+								val lastDate = lastVideosTime.getOrDefault(guild.id, null);
+								if (lastDate != null) {
+									// Data do último vídeo enviado
+									val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
 
-								lastVideos.put(guild.id, videoId);
-								lastVideosTime.put(guild.id, date);
+									if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
+										continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+									}
+								}
 
-								println("Atualizado pela source: $source")
+								if (lastId != videoId) {
+									// Novo vídeo! Yay!
+									var message = youTubeConfig.videoSentMessage;
+
+									if (message == null) {
+										continue; }
+
+									message = message.replace("{canal}", channelTitle);
+									message = message.replace("{título}", title);
+									message = message.replace("{descrição}", description);
+									message = message.replace("{link}", "https://youtu.be/" + videoId);
+
+									textChannel.sendMessage(message).complete();
+
+									lastVideos.put(guild.id, videoId);
+									lastVideosTime.put(guild.id, date);
+
+									println("Atualizado pela source: $source")
+								}
 							}
 						}
 					}
