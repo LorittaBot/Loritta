@@ -142,7 +142,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (conf.starboardConfig.isEnabled) {
 						val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
 
-						if (textChannel != null) {
+						if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
 							var starboardMessageId = conf.starboardEmbeds[e.messageId]
 							var starboardMessage: Message? = null;
 							if (starboardMessageId != null) {
