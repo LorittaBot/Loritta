@@ -12,17 +12,17 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.image.BufferedImage
 
-class RandomSAMCommand : CommandBase() {
+class RandomMemeguy1997 : CommandBase() {
 	override fun getLabel(): String {
-		return "randomsam"
+		return "randommemeguy1997"
 	}
 
 	override fun getAliases(): List<String> {
-		return listOf("randomsouthamericamemes")
+		return listOf("randommemeguy", "randomeme", "randomemeguy", "randomemeguy1997")
 	}
 
 	override fun getDescription(): String {
-		return "Pega uma postagem aleatória do South America Memes"
+		return "Pega uma postagem aleatória do Memeguy1997"
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -38,9 +38,9 @@ class RandomSAMCommand : CommandBase() {
 
 		var response: String?;
 		if (source == "página") {
-			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+			response = HttpRequest.get("https://graph.facebook.com/v2.9/memeguy1997/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
 		} else {
-			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+			response = HttpRequest.get("https://graph.facebook.com/380626148947201/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
 		}
 
 		val json = JsonParser().parse(response)
@@ -63,9 +63,9 @@ class RandomSAMCommand : CommandBase() {
 		}
 
 		if (url != null && description != null) {
-			context.sendFile(image, "south_america_memes.png", "<:sam:331592756969603073> | " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `$description`")
+			context.sendFile(image, "memeguy1997.png", "<:memeguy1997:331617335909548042> | " + context.getAsMention(true) + "(Fonte: *$source do Memeguy1997*) `$description`")
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
+			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do Memeguy1997...")
 		}
 	}
 }
