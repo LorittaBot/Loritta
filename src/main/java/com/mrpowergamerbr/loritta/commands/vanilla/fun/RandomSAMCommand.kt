@@ -53,12 +53,14 @@ class RandomSAMCommand : CommandBase() {
 			var foundUrl = post["attachments"]["data"][0]["url"].string;
 
 			if (!foundUrl.contains("video")) {
-				url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
-				description = if (source == "página") post["attachments"]["data"][0]["description"].string else post["message"].string
-				image = LorittaUtils.downloadImage(url, 4000)
-				if (image != null) {
-					break;
-				}
+				try { // Provavelmente não é o que nós queremos
+					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
+					description = if (source == "página") post["attachments"]["data"][0]["description"].string else post["message"].string
+					image = LorittaUtils.downloadImage(url, 4000)
+					if (image != null) {
+						break;
+					}
+				} catch (e: Exception) {}
 			}
 		}
 
