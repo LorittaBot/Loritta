@@ -26,11 +26,15 @@ class EscolherCommand : CommandBase() {
 	}
 
     override fun run(context: CommandContext) {
-		var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
-		var split = joined.split(","); // E vamos separar!
+		if (context.args.isNotEmpty()) {
+			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
+			var split = joined.split(","); // E vamos separar!
 
-		// Hora de escolher algo aleatório!
-		var chosen = split[Loritta.random.nextInt(split.size)];
-        context.sendMessage(context.getAsMention(true) + "Eu escolhi `" + chosen + "`!");
+			// Hora de escolher algo aleatório!
+			var chosen = split[Loritta.random.nextInt(split.size)];
+			context.sendMessage(context.getAsMention(true) + "Eu escolhi `" + chosen + "`!");
+		} else {
+			context.explain()
+		}
     }
 }
