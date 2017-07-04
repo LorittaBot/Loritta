@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.frontend.views.configure.AminoConfigView;
 import com.mrpowergamerbr.loritta.frontend.views.configure.NashornCommandsView;
+import com.mrpowergamerbr.loritta.frontend.views.configure.StarboardConfigView;
 import com.mrpowergamerbr.loritta.frontend.views.configure.YouTubeConfigView;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
@@ -166,6 +167,8 @@ public class ConfigureServerView {
                     template = AminoConfigView.render(context, temmie, sc);
                 } else if (context.request().path().endsWith("youtube")) {
                     template = YouTubeConfigView.render(context, temmie, sc);
+                } else if (context.request().path().endsWith("starboard")) {
+                    template = StarboardConfigView.render(context, temmie, sc);
 				} else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());

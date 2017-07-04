@@ -47,6 +47,9 @@ public class ServerConfig {
     public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig();
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
+    public StarboardConfig starboardConfig = new StarboardConfig();
+
+    public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
 

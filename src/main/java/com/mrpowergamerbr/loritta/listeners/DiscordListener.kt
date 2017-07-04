@@ -6,17 +6,22 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.humanize
+import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.awt.Color
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
+import kotlin.concurrent.thread
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -109,8 +114,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	override fun onGenericMessageReaction(e: GenericMessageReactionEvent?) {
-		if (e!!.user.isBot) {
+	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
+		if (e.user.isBot) {
 			return
 		} // Ignorar reactions de bots
 
@@ -125,6 +130,51 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 			t.start()
+		}
+
+		thread {
+			val msg = e.textChannel.getMessageById(e.messageId).complete()
+			if (msg != null) {
+				val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
+				val guild = e.guild
+				// Sistema de Starboard
+				if (e.reactionEmote.name == "⭐") {
+					if (conf.starboardConfig.isEnabled) {
+						val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
+
+						if (textChannel != null) {
+							var starboardMessageId = conf.starboardEmbeds[e.messageId]
+							var starboardMessage: Message? = null;
+							if (starboardMessageId != null) {
+								starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
+							}
+
+							val embed = EmbedBuilder()
+							val count = e.reaction.users.complete().size;
+							embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
+							embed.setDescription(msg.rawContent)
+							embed.setFooter(msg.creationTime.humanize(), null)
+							embed.setColor(Color(255, 253 - (e.reaction.count * 0.25).toInt(), 241 - (e.reaction.count * 4)))
+
+							val starCountMessage = MessageBuilder()
+							starCountMessage.append("⭐ **${count}** ${e.textChannel.asMention}")
+							starCountMessage.setEmbed(embed.build())
+
+							if (starboardMessage != null) {
+								if (1 > count) { // Remover embed já que o número de stars é menos que 0
+									starboardMessage.delete().complete()
+									return@thread;
+								}
+								starboardMessage.editMessage(starCountMessage.build()).complete()
+							} else {
+								starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
+							}
+							conf.starboardEmbeds.put(msg.id, starboardMessage?.id)
+							LorittaLauncher.loritta.ds.save(conf)
+						}
+					}
+				}
+			}
 		}
 	}
 

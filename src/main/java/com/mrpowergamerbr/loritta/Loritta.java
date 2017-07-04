@@ -64,7 +64,7 @@ public class Loritta {
     public final ScheduledExecutorService executor = Executors.newScheduledThreadPool(32); // Threads
     public MongoClient mongo; // MongoDB
     public Datastore ds; // MongoDB²
-    private Morphia morphia; // MongoDB³
+    public Morphia morphia; // MongoDB³
     @Getter // Sim, getter de novo, já que o lombok não cria getters para variáveis estáticas
     public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
     public JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
