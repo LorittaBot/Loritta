@@ -151,10 +151,24 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 							val embed = EmbedBuilder()
 							val count = e.reaction.users.complete().size;
+							var content = msg.rawContent
 							embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
-							embed.setDescription(msg.rawContent)
 							embed.setFooter(msg.creationTime.humanize(), null)
-							embed.setColor(Color(255, 253 - (e.reaction.count * 0.25).toInt(), 241 - (e.reaction.count * 4)))
+							embed.setColor(Color(255, 253 - (count * 0.25).toInt(), 241 - (count * 4)))
+
+							var hasImage = false;
+							if (msg.attachments.isNotEmpty()) { // Se tem attachments...
+								content += "\n**Arquivos:**\n"
+								for (attach in msg.attachments) {
+									if (attach.isImage && !hasImage) { // Se é uma imagem...
+										embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
+										hasImage = true;
+									}
+									content += attach.url + "\n"
+								}
+							}
+
+							embed.setDescription(content)
 
 							val starCountMessage = MessageBuilder()
 							starCountMessage.append("⭐ **${count}** ${e.textChannel.asMention}")
@@ -163,6 +177,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							if (starboardMessage != null) {
 								if (1 > count) { // Remover embed já que o número de stars é menos que 0
 									starboardMessage.delete().complete()
+									conf.starboardEmbeds.remove(msg.id)
+									LorittaLauncher.loritta.ds.save(conf)
 									return@thread;
 								}
 								starboardMessage.editMessage(starCountMessage.build()).complete()
