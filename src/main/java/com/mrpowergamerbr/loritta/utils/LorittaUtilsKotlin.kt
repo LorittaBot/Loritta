@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -174,4 +176,68 @@ object LorittaUtilsKotlin {
 			}
 		}
 	}
+
+	/**
+	 * Pega um post aleatório de uma página do Facebook
+	 */
+	fun getRandomPostFromPage(page: String): FacebookPostWrapper? {
+		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+
+		val json = JsonParser().parse(response)
+
+		var url: String? = null;
+		var description: String? = null;
+		var image: BufferedImage? = null;
+
+		for (post in json["data"].array) {
+			var foundUrl = post["attachments"]["data"][0]["url"].string;
+
+			if (!foundUrl.contains("video")) {
+				try { // Provavelmente não é o que nós queremos
+					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
+					description = post["attachments"]["data"][0]["description"].string
+					image = LorittaUtils.downloadImage(url, 4000)
+					if (image != null) {
+						return FacebookPostWrapper(url, description, image)
+					}
+				} catch (e: Exception) {}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Pega um post aleatório de um grupo do Facebook
+	 */
+	fun getRandomPostFromGroup(group: String): FacebookPostWrapper? {
+		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+		val json = JsonParser().parse(response)
+
+		var url: String? = null;
+		var description: String? = null;
+		var image: BufferedImage? = null;
+
+		for (post in json["data"].array) {
+			var foundUrl = post["attachments"]["data"][0]["url"].string;
+
+			if (!foundUrl.contains("video")) {
+				try { // Provavelmente não é o que nós queremos
+					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
+					description = post["message"].string
+					image = LorittaUtils.downloadImage(url, 4000)
+					if (image != null) {
+						return FacebookPostWrapper(url, description, image)
+					}
+				} catch (e: Exception) {
+					e.printStackTrace()
+				}
+			}
+		}
+		return null;
+	}
 }
+
+data class FacebookPostWrapper(
+		val url: String,
+		val description: String,
+		val image: BufferedImage)
