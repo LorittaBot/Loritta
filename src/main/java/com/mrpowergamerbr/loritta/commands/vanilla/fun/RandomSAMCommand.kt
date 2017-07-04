@@ -33,7 +33,7 @@ class RandomSAMCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1500)}").body();
+		val response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
 
 		val json = JsonParser().parse(response)
 
