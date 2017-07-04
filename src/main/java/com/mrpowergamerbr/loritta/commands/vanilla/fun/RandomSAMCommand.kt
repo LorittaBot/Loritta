@@ -40,7 +40,7 @@ class RandomSAMCommand : CommandBase() {
 		if (source == "página") {
 			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
 		} else {
-			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+			response = HttpRequest.get("https://graph.facebook.com/v2.9/293117011064847/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
 		}
 
 		val json = JsonParser().parse(response)
