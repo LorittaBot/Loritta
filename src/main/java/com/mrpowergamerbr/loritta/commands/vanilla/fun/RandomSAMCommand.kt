@@ -34,7 +34,14 @@ class RandomSAMCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+		val source = if (Loritta.random.nextBoolean()) "página" else "grupo";
+
+		var response: String?;
+		if (source == "página") {
+			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+		} else {
+			response = HttpRequest.get("https://graph.facebook.com/v2.9/samemes2/posts?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}").body();
+		}
 
 		val json = JsonParser().parse(response)
 
@@ -47,7 +54,7 @@ class RandomSAMCommand : CommandBase() {
 
 			if (!foundUrl.contains("video")) {
 				url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
-				description = post["attachments"]["data"][0]["description"].string;
+				description = if (source == "página") post["attachments"]["data"][0]["description"].string else post["message"].string
 				image = LorittaUtils.downloadImage(url, 4000)
 				if (image != null) {
 					break;
@@ -57,7 +64,7 @@ class RandomSAMCommand : CommandBase() {
 
 		if (url != null && description != null) {
 			val image = LorittaUtils.downloadImage(url);
-			context.sendFile(image, "south_america_memes.png", "<:sam:331592756969603073> | " + context.getAsMention(true) + "Cópia não comédia! `$description`")
+			context.sendFile(image, "south_america_memes.png", "<:sam:331592756969603073> | " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `$description`")
 		} else {
 			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
 		}
