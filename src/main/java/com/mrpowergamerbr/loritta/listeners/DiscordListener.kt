@@ -133,13 +133,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		thread {
-			val msg = e.textChannel.getMessageById(e.messageId).complete()
-			if (msg != null) {
-				val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
-				val guild = e.guild
-				// Sistema de Starboard
+			val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
+			val guild = e.guild
+			// Sistema de Starboard
+			if (conf.starboardConfig.isEnabled) {
 				if (e.reactionEmote.name == "⭐") {
-					if (conf.starboardConfig.isEnabled) {
+					val msg = e.textChannel.getMessageById(e.messageId).complete()
+					if (msg != null) {
 						val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
 
 						if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
