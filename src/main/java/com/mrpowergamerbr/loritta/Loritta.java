@@ -211,44 +211,6 @@ public class Loritta {
         };
         new Thread(onlineUpdater, "Game & Time Updater").start(); // Pronto!
 
-        Runnable rektUpdater = () -> {
-            while (true) {
-                for (Guild guild : lorittaShards.getGuilds()) {
-                    // Sim, você pode achar isto errado "wow, mas para que banir alguém de todas as guilds que a Loritta está?"
-                    // Bem, eu também acho isto errado se for para banir alguém só porque ela não gosta de mim ou da Loritta
-                    // ...
-                    // Mas quando o assunto é ser um impostor que fica tentando degenerir o nome do meu bot entrando em várias guilds
-                    // para causar discórdia, então o cara deve ser banido mesmo.
-                    //
-                    // Eu irei deixar o motivo do cara ser banido de lado, caso você queria ver...
-                    List<String> ids = new ArrayList<String>();
-
-                    ids.add("315579184724574209"); // Impostor tentando se passar da Loritta, não trocou o nome/avatar mesmo após pedir
-                    ids.add("307188402128945162"); // Talvez seja uma conta alternativa da mesma pessoa acima, também é um impostor.
-
-                    if (guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) { // Se a Loritta tem permissão para banir membros...
-                        for (String id : ids) {
-                            Member member = guild.getMemberById(id);
-
-                            if (member != null) {
-                                try {
-                                    guild.getController().ban(member, 0).complete();
-                                } catch (Exception e) {
-                                } // A Loritta não pode banir usuários com roles maiores que ela
-                            }
-                        }
-                    }
-                }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        new Thread(rektUpdater, "Rekt").start(); // Pronto!
-
         Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
             while (true) {
                 for (Guild guild : lorittaShards.getGuilds()) {
