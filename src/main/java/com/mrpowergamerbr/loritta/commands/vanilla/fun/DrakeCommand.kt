@@ -54,7 +54,7 @@ class DrakeCommand : CommandBase() {
 			var image: Image = avatarImg;
 
 			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
-			graph.drawImage(avatarImg, 150, 0, null)
+			graph.drawImage(image, 150, 0, null)
 		}
 
 		run {
@@ -67,7 +67,7 @@ class DrakeCommand : CommandBase() {
 			var image: Image = avatarImg;
 
 			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
-			graph.drawImage(avatarImg, 150, 150, null)
+			graph.drawImage(image, 150, 150, null)
 		}
 
 		val builder = MessageBuilder()
