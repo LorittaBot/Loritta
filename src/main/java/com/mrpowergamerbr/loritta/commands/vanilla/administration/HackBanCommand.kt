@@ -27,6 +27,10 @@ class HackBanCommand : CommandBase() {
 		return listOf(Permission.BAN_MEMBERS)
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			try {

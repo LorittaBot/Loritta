@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands;
 
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
@@ -58,6 +59,8 @@ public abstract class CommandBase {
         return false;
     }
 
+    public boolean canUseInPrivateChannel() { return true; }
+
     /**
      * Retorna as permissões necessárias para utilizar este comando
      *
@@ -95,7 +98,7 @@ public abstract class CommandBase {
         }
         if (run) {
             if (hasCommandFeedback()) {
-                if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+                if (conf != LorittaLauncher.getInstance().dummyServerConfig && !ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
                     LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
                     return true;
                 } else {
@@ -115,6 +118,10 @@ public abstract class CommandBase {
             if (LorittaUtils.handleIfBanned(context, profile)) { return true; }
             if (!context.canUseCommand()) {
                 context.sendMessage("\uD83D\uDE45 | " + context.getAsMention(true) + "**Sem permissão!**");
+                return true;
+            }
+            if (context.isPrivateChannel() && !canUseInPrivateChannel()) {
+                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você não pode usar este comando em mensagens privadas!");
                 return true;
             }
             if (needsToUploadFiles()) {

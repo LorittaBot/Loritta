@@ -86,6 +86,8 @@ public class Loritta {
     // Usado para guardar mensagens enviadas pela Loritta ara reactions & outras coisas
     public ConcurrentMap<Object, Object> messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build().asMap();
 
+    public ServerConfig dummyServerConfig; // Config utilizada em comandos no privado
+
     public Loritta(LorittaConfig config) {
         loadFromConfig(config);
     }
@@ -100,6 +102,10 @@ public class Loritta {
         Loritta.temmieMercadoPago = new TemmieMercadoPago(config.getMercadoPagoClientId(), config.getMercadoPagoClientToken());
     }
 
+    public void generateDummyServerConfig() {
+        dummyServerConfig = new ServerConfig().guildId("-1").commandPrefix("");
+    }
+
     public void start() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
@@ -110,6 +116,7 @@ public class Loritta {
         mongo = new MongoClient(); // Hora de iniciar o MongoClient
         morphia = new Morphia(); // E o Morphia
         ds = morphia.createDatastore(mongo, "loritta"); // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
+        generateDummyServerConfig();
 
         System.out.println("Success! Starting Loritta (Discord Bot)..."); // Agora iremos iniciar o bot
         try {
@@ -315,7 +322,7 @@ public class Loritta {
      * @return TemmieWebhook pronto para ser usado
      */
     public static TemmieWebhook getOrCreateWebhook(TextChannel textChannel, String name) {
-        if (!textChannel.getGuild().getMember(textChannel.getJDA().getSelfUser()).hasPermission(Permission.MANAGE_WEBHOOKS)) { // Se a Loritta não pode acessar as webhooks do servidor, retorne null
+        if (textChannel == null || !textChannel.getGuild().getMember(textChannel.getJDA().getSelfUser()).hasPermission(Permission.MANAGE_WEBHOOKS)) { // Se a Loritta não pode acessar as webhooks do servidor, retorne null
             return null;
         }
         List<Webhook> webhookList = textChannel.getGuild().getWebhooks().complete();

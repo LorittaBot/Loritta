@@ -28,7 +28,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.author.isBot) { // Se uma mensagem de um bot, ignore a mensagem!
 			return
 		}
-		if (event.isFromType(ChannelType.TEXT)) {
+		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
@@ -111,6 +111,26 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					e.printStackTrace()
 				}
 			}
+		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
+			loritta.executor.execute {
+				try {
+					val conf = LorittaLauncher.loritta.dummyServerConfig
+					val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
+					if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
+						event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
+						return@execute
+					}
+
+					// Comandos vanilla da Loritta
+					for (cmd in loritta.commandManager.commandMap) {
+						if (cmd.handle(event, conf, profile)) {
+							return@execute
+						}
+					}
+				} catch (e: Exception) {
+					e.printStackTrace()
+				}
+			}
 		}
 	}
 
@@ -123,7 +143,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
 			val t = object : Thread() {
 				override fun run() {
-					val msg = e.textChannel.getMessageById(e.messageId).complete()
+					val msg = e.channel.getMessageById(e.messageId).complete()
 					if (msg != null) {
 						context.cmd.onCommandReactionFeedback(context, e, msg)
 					}

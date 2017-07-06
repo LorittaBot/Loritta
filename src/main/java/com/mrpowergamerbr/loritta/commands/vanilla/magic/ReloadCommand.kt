@@ -31,6 +31,7 @@ class ReloadCommand : CommandBase() {
 
 		LorittaLauncher.getInstance().morphia = Morphia()
 		LorittaLauncher.getInstance().ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
+		LorittaLauncher.getInstance().generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
 		context.sendMessage("Loritta recarregada com sucesso!")
 	}

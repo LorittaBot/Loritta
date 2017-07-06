@@ -26,6 +26,10 @@ class RoleIdCommand : CommandBase() {
 		return listOf(Permission.MANAGE_ROLES);
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.message.mentionedRoles.isNotEmpty()) {
 			for (r in context.message.mentionedRoles) {

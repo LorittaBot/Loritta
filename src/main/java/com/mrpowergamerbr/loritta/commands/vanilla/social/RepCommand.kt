@@ -24,6 +24,10 @@ class RepCommand : CommandBase() {
          return CommandCategory.SOCIAL;
     }
 
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
+
     override fun run(context: CommandContext) {
         var profile = context.lorittaUser.profile;
 

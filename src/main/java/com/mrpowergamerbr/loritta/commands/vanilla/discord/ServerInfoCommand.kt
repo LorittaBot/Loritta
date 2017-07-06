@@ -21,6 +21,10 @@ class ServerInfoCommand : CommandBase() {
 		return "serverinfo"
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		val embed = EmbedBuilder()
 

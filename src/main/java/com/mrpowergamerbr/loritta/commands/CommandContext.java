@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
@@ -32,7 +33,13 @@ public class CommandContext {
 	public HashMap<String, Object> metadata = new HashMap<>();
 
 	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
-		this.lorittaUser = new LorittaUser(event.getMember(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
+		if (conf == LorittaLauncher.getInstance().dummyServerConfig) { // Se é um dummy server config, então crie um LorittaUser
+			this.lorittaUser = new LorittaUser(event.getAuthor(), conf,
+					LorittaLauncher.getInstance().getLorittaProfileForUser(event.getAuthor().getId()));
+		} else { // Mas caso NÃO seja, então crie um GuildLorittaUser
+			this.lorittaUser = new GuildLorittaUser(event.getMember(), conf,
+					LorittaLauncher.getInstance().getLorittaProfileForUser(event.getAuthor().getId()));
+		}
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
@@ -40,11 +47,15 @@ public class CommandContext {
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
-		this.lorittaUser = new LorittaUser(member, conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
+		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
 		this.rawArgs = rawArgs;
+	}
+
+	public boolean isPrivateChannel() {
+		return event.isFromType(ChannelType.PRIVATE);
 	}
 
 	public void explain() {
@@ -60,11 +71,14 @@ public class CommandContext {
 	}
 
 	public Member getHandle() {
-		return lorittaUser.getMember();
+		if (lorittaUser instanceof GuildLorittaUser) {
+			return ((GuildLorittaUser) lorittaUser).getMember();
+		}
+		throw new RuntimeException("Trying to use getHandle() in LorittaUser!");
 	}
 
 	public User getUserHandle() {
-		return lorittaUser.getMember().getUser();
+		return lorittaUser.getUser();
 	}
 
 	public String getAsMention() {
@@ -81,7 +95,7 @@ public class CommandContext {
 			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 			if (cmdOptions.override()) {
 				return (cmdOptions.mentionOnCommandOutput() ?
-						lorittaUser.getMember().getAsMention() + (addSpace ? " " : "") :
+						lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
 						"");
 			}
 		}
@@ -105,10 +119,10 @@ public class CommandContext {
 			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(message).complete();
+			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(message).complete();
 		} else {
-			if (event.getTextChannel().canTalk()) {
-				Message sentMessage = event.getTextChannel().sendMessage(message).complete();
+			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
+				Message sentMessage = event.getChannel().sendMessage(message).complete();
 				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
@@ -127,10 +141,10 @@ public class CommandContext {
 			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
+			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
 		} else {
-			if (event.getTextChannel().canTalk()) {
-				Message sentMessage = event.getTextChannel().sendMessage(embed).complete();
+			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
+				Message sentMessage = event.getChannel().sendMessage(embed).complete();
 				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
@@ -141,7 +155,7 @@ public class CommandContext {
 	}
 
 	public void sendMessage(TemmieWebhook webhook, DiscordMessage message) {
-		if (webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
+		if (!isPrivateChannel() || webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
 			webhook.sendMessage(message);
 		} else { // Se não, iremos usar embeds mesmo...
 			EmbedBuilder builder = new EmbedBuilder();
@@ -218,10 +232,10 @@ public class CommandContext {
 			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
+			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
 		} else {
-			if (event.getTextChannel().canTalk()) {
-				Message sentMessage = event.getTextChannel().sendFile(data, name, message).complete();
+			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
+				Message sentMessage = event.getChannel().sendFile(data, name, message).complete();
 				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
@@ -247,10 +261,10 @@ public class CommandContext {
 			}
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getMember().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
+			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
 		} else {
-			if (event.getTextChannel().canTalk()) {
-				Message sentMessage = event.getTextChannel().sendFile(file, name, message).complete();;
+			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
+				Message sentMessage = event.getChannel().sendFile(file, name, message).complete();;
 				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {

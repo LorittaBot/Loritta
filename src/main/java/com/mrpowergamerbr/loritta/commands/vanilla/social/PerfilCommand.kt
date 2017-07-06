@@ -27,6 +27,10 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         return CommandCategory.SOCIAL;
     }
 
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
+
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
         if (!LorittaUtils.canUploadFiles(context)) {
             return

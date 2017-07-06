@@ -32,6 +32,10 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         return com.mrpowergamerbr.loritta.commands.CommandCategory.SOCIAL;
     }
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
         var userProfile = context.lorittaUser.profile
 

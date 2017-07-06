@@ -26,7 +26,7 @@ public class LorittaUtils {
 	public static final String ERROR = "<:erro:326509900115083266>";
 
 	public static boolean canUploadFiles(CommandContext context) {
-		if (!context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
+		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
 			context.sendMessage(ERROR + " | Eu não tenho permissão para enviar arquivos neste canal! \uD83D\uDE22");
 			return false;
 		}
@@ -136,7 +136,7 @@ public class LorittaUtils {
 			}
 
 			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (toBeDownloaded == null) {
+			if (!context.isPrivateChannel() && toBeDownloaded == null) {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
@@ -171,7 +171,7 @@ public class LorittaUtils {
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && toBeDownloaded == null) {
-			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
+			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
 			attach:
 			for (Message msg : message) {
@@ -231,7 +231,7 @@ public class LorittaUtils {
 			}
 
 			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (toBeDownloaded == null) {
+			if (!context.isPrivateChannel() && toBeDownloaded == null) {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
@@ -266,7 +266,7 @@ public class LorittaUtils {
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && toBeDownloaded == null) {
-			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
+			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
 			attach:
 			for (Message msg : message) {
