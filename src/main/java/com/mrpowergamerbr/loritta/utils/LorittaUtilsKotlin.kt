@@ -20,23 +20,23 @@ import java.text.DateFormatSymbols
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
 
-inline fun OffsetDateTime.humanize(): String {
+fun OffsetDateTime.humanize(): String {
 	val months = DateFormatSymbols().getMonths();
 	return "${this.dayOfMonth} de ${months[this.month.value - 1]}, ${this.year} às ${this.hour.toString().padStart(2, '0')}:${this.minute.toString().padStart(2, '0')}";
 }
 
-inline fun Image.toBufferedImage() : BufferedImage {
+fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
 }
 
-inline fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
+fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 	return ImageUtils.makeRoundedCorner(this, cornerRadius);
 }
 
 /**
  * Retorna a instância atual da Loritta
  */
-inline fun loritta(): Loritta {
+fun loritta(): Loritta {
 	return LorittaLauncher.getInstance();
 }
 
