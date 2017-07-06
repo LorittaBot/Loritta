@@ -106,7 +106,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                 }
             }
         }
-        graphics.drawImage(avatarImg, 5, 65, null); // Colar avatar do usuário no profile
+        graphics.drawImage(avatarImg, 5, 75, null); // Colar avatar do usuário no profile
         graphics.drawImage(profileWrapper, 0, 0, null); // Colar wrapper (precisa ser o último para ficar certo)
         graphics.setRenderingHint(
                 java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -114,22 +114,20 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         graphics.color = java.awt.Color(211, 211, 211); // Cinza
         graphics.font = bebasNeue.deriveFont(24F);
-        graphics.drawString(user.name, 78, 122)
+        graphics.drawString(user.name, 74, 137)
         graphics.color = java.awt.Color(255, 255, 255); // Branca
-        graphics.font = bebasNeue.deriveFont(24F);
-        graphics.drawString(user.name, 78, 120)
-        graphics.font = bebasNeue.deriveFont(24F);
+        graphics.drawString(user.name, 74, 135)
 
         if (idx > 14) {
             val minecraftia = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
                     java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "minecraftia.ttf")))
 
             graphics.font = minecraftia.deriveFont(8F);
-            graphics.drawString("+" + (guilds.size - 14) + " guilds", 20, 277)
+            graphics.drawString("+" + (guilds.size - 14) + " guilds", 20, 287)
         }
 
         var guildX = 10;
-        var guildY = 141;
+        var guildY = 151;
         for (guild in guildImages) {
             graphics.drawImage(guild, guildX, guildY, null);
             guildX += 24;
@@ -140,7 +138,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             }
         }
 
-        var offset = 6;
+        var offset = 16;
 
         // Barrinha de XP
         graphics.color = java.awt.Color(128, 128, 128)
@@ -203,8 +201,8 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         // Desenhar alguns textos
         graphics.font = bariolRegular.deriveFont(10F)
-        drawWithShadow("XP Global", 87, 147, 9999, 9999, graphics)
-        drawWithShadow("XP no ${context.guild.name}", 239, 147, 9999, 9999, graphics)
+        drawWithShadow("XP Global", 87, 157, 9999, 9999, graphics)
+        drawWithShadow("XP no ${context.guild.name}", 239, 157, 9999, 9999, graphics)
 
         graphics.font = bariolRegular.deriveFont(12F)
         val hours = userProfile.tempoOnline / 3600;
@@ -215,7 +213,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         drawWithShadow(userProfile.getReputation().toString(), 235, offset + 208, 9999, 9999, graphics)
         graphics.font = bariolRegular.deriveFont(12F)
 
-        drawWithShadow(userProfile.aboutMe, 89, 244, 388, 9999, graphics);
+        drawWithShadow(userProfile.aboutMe, 89, 254, 388, 9999, graphics);
 
         if (!userProfile.games.isEmpty()) {
             graphics.font = bariolRegular.deriveFont(10F)
@@ -226,7 +224,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
             val sorted = games.sortedWith(compareBy({ it.timeSpent })).reversed();
 
-            drawWithShadow("Jogo mais jogado: " + sorted[0].game, 89, 279, 388, 9999, graphics);
+            drawWithShadow("Jogo mais jogado: " + sorted[0].game, 89, 289, 388, 9999, graphics);
         }
 
         // Deixar as bordas arredondadas, parece frescura mas com as bordas arrendondadas o perfil parece que é
