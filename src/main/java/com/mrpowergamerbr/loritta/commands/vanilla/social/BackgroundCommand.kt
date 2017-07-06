@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.image.BufferedImage
 import java.io.StringReader
 import java.net.URLEncoder
@@ -32,7 +33,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             var link = context.args[0];
 
             try {
-                var mensagem = context.sendMessage(context.getAsMention(true) + "💭 | Processando...");
+                var mensagem = context.sendMessage("💭 | " + context.getAsMention(true) + "Processando...");
 
                 var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(link, "UTF-8"))
                         .header("X-Mashape-Key", Loritta.config.mashapeKey)
@@ -45,7 +46,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
 				if (apiResponse.get("rating_label").asString == "adult") {
-					mensagem.editMessage("🙅 | **Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o " + context.getAsMention(false) + " é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore 😞)").complete()
+					mensagem.editMessage("🙅 | " + context.getAsMention(true) + "**Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o " + context.getAsMention(false) + " é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore 😞)").complete()
 					return;
 				}
 
@@ -69,11 +70,11 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
                 }
                 javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png"));
 
-                context.sendMessage(context.getAsMention(true) + "Background atualizado! (${apiResponse.get("rating_label").asString})" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
+                context.sendMessage("✨ | " + context.getAsMention(true) + "Background atualizado! (${apiResponse.get("rating_label").asString})" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
                 return;
             } catch (e: java.lang.Exception) {
                 e.printStackTrace();
-                context.sendMessage(context.getAsMention(true) + "Link inválido! (Não se esqueça, você precisa enviar o link direto para a imagem!)");
+                context.sendMessage(LorittaUtils.ERROR + " | " +context.getAsMention(true) + "Link inválido! (Não se esqueça, você precisa enviar o link direto para a imagem!)");
                 return;
             }
         }
