@@ -29,9 +29,9 @@ class HexCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.size == 3) {
 			try {
-				val r = Integer.parseInt(context.args[0])
-				val g = Integer.parseInt(context.args[1])
-				val b = Integer.parseInt(context.args[2])
+				val r = Integer.parseInt(context.args[0].replace(",", ""))
+				val g = Integer.parseInt(context.args[1].replace(",", ""))
+				val b = Integer.parseInt(context.args[2].replace(",", ""))
 
 				val hex = String.format("#%02x%02x%02x", r, g, b)
 

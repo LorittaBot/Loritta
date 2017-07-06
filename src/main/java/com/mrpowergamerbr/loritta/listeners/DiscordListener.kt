@@ -154,7 +154,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							var content = msg.rawContent
 							embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
 							embed.setFooter(msg.creationTime.humanize(), null)
-							embed.setColor(Color(255, 253 - (count * 0.25).toInt(), 241 - (count * 4)))
+							embed.setColor(Color(255, 253 - (count * 0.25).toInt(), 240 - (count * 4)))
 
 							var hasImage = false;
 							if (msg.attachments.isNotEmpty()) { // Se tem attachments...
