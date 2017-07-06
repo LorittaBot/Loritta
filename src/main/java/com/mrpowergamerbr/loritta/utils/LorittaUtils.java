@@ -200,6 +200,95 @@ public class LorittaUtils {
 	}
 
 	/**
+	 * Retorna uma URL dependendo do contexto
+	 *
+	 * @param context
+	 * @param argument
+	 * @param search
+	 * @param avatarSize
+	 * @return uma URL com a imagem
+	 */
+	public static String getURLFromContext(CommandContext context, int argument, int search, int avatarSize) {
+		String toBeDownloaded = null; // Imagem para ser baixada
+		BufferedImage image = null;
+		if (context.getRawArgs().length > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
+			String link = context.getRawArgs()[argument]; // Ok, será que isto é uma URL?
+
+			if (isValidUrl(link)) {
+				toBeDownloaded = link; // Vamos salvar para depois então ;)
+			}
+
+			// Vamos verificar por menções
+			if (toBeDownloaded == null) {
+				// Uma menção do Discord é + ou - assim: <@123170274651668480>
+				for (User user : context.getMessage().getMentionedUsers()) {
+					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
+						// Diferente de null? Então vamos usar o avatar do usuário!
+						toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
+						break;
+					}
+				}
+			}
+
+			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+			if (toBeDownloaded == null) {
+				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
+
+				if (!matchedMembers.isEmpty()) {
+					toBeDownloaded = matchedMembers.get(0).getUser().getEffectiveAvatarUrl() + "?size=" + avatarSize;
+				}
+			}
+
+			// Ainda não?!? Vamos verificar se é um emoji.
+			if (toBeDownloaded == null) {
+				// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
+				for (Emote emote : context.getMessage().getEmotes()) {
+					if (link.equalsIgnoreCase(emote.getAsMention())) {
+						toBeDownloaded = emote.getImageUrl();
+						break;
+					}
+				}
+			}
+
+			// Se não é nada... então talvez seja um emoji padrão do Discordão!
+			// Na verdade é um emoji padrão...
+			if (toBeDownloaded == null) {
+				try {
+					String val = toUnicode(context.getRawArgs()[argument].codePointAt(0)); // Vamos usar codepoints porque emojis
+					val = val.substring(2); // Remover coisas desnecessárias
+					toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
+					if (HttpRequest.get(toBeDownloaded).code() != 200) {
+						toBeDownloaded = null;
+					}
+				} catch (Exception e) {}
+			}
+		}
+
+		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
+		if (search > 0 && toBeDownloaded == null) {
+			List<Message> message = context.getMessage().getTextChannel().getHistory().retrievePast(search).complete();
+
+			attach:
+			for (Message msg : message) {
+				for (MessageEmbed embed : msg.getEmbeds()) {
+					if (embed.getImage() != null) {
+						toBeDownloaded = embed.getImage().getUrl();
+						break attach;
+					}
+				}
+				for (Attachment attachment : msg.getAttachments()) {
+					if (attachment.isImage()) {
+						toBeDownloaded = attachment.getUrl();
+						break attach;
+					}
+				}
+			}
+		}
+
+		return toBeDownloaded;
+	}
+
+	/**
 	 * Faz download de uma imagem e retorna ela como um BufferedImage
 	 * @param url
 	 * @return
