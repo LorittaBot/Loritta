@@ -171,11 +171,13 @@ public class LorittaUtils {
 
 			// Ok, então só pode ser um ID do Discord!
 			if (toBeDownloaded == null) {
-				User user = LorittaLauncher.getInstance().getLorittaShards().getUserById(link);
+				try {
+					User user = LorittaLauncher.getInstance().getLorittaShards().getUserById(link);
 
-				if (user != null) { // Pelo visto é!
-					toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
-				}
+					if (user != null) { // Pelo visto é!
+						toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
+					}
+				} catch (Exception e) {}
 			}
 		}
 
