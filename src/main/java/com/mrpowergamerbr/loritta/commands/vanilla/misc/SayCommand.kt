@@ -32,7 +32,7 @@ class SayCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
         if (context.args.size > 0) {
-            var message = context.args.joinToString(" ").replace("@everyone", "").replace("@here", "");
+            var message = context.rawArgs.joinToString(" ").replace("@everyone", "").replace("@here", "");
             context.sendMessage(context.getAsMention(true) + message);
         } else {
             this.explain(context);
