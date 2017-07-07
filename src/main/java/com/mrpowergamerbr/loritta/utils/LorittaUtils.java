@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -166,6 +167,15 @@ public class LorittaUtils {
 						toBeDownloaded = null;
 					}
 				} catch (Exception e) {}
+			}
+
+			// Ok, então só pode ser um ID do Discord!
+			if (toBeDownloaded == null) {
+				User user = LorittaLauncher.getInstance().getLorittaShards().getUserById(link);
+
+				if (user != null) { // Pelo visto é!
+					toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
+				}
 			}
 		}
 
