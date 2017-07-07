@@ -80,7 +80,11 @@ class AmigosCommand : CommandBase() {
 	fun getRandomAvatarIfNull(context: CommandContext, image: BufferedImage?): BufferedImage {
 		var newImage = image;
 		if (image == null) {
-			newImage = LorittaUtils.downloadImage(context.guild.members[Loritta.random.nextInt(context.guild.members.size)].user.effectiveAvatarUrl);
+			var userAvatar: String? = null;
+			while (userAvatar == null) {
+				userAvatar = context.guild.members[Loritta.random.nextInt(context.guild.members.size)].user.avatarUrl
+			}
+			newImage = LorittaUtils.downloadImage(userAvatar);
 		}
 		if (newImage != null) {
 			return newImage;
