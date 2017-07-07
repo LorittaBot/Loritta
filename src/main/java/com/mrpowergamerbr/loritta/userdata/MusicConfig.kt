@@ -8,6 +8,7 @@ data class MusicConfig(
 		var autoPlayWhenEmpty: Boolean,
 		var urls: List<String>,
 		var voteToSkip: Boolean,
-		var required: Int) {
-	constructor() : this(false, null, true, 420, false, mutableListOf<String>(), true, 75)
+		var required: Int,
+		var allowPlaylists: Boolean) {
+	constructor() : this(false, null, true, 420, false, mutableListOf<String>(), true, 75, false)
 }

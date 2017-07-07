@@ -378,15 +378,27 @@ public class Loritta {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                AudioTrack firstTrack = playlist.getSelectedTrack();
+                if (conf.musicConfig.getAllowPlaylists()) {
+                    AudioTrack firstTrack = playlist.getSelectedTrack();
 
-                if (firstTrack == null) {
-                    firstTrack = playlist.getTracks().get(0);
+                    if (firstTrack == null) {
+                        firstTrack = playlist.getTracks().get(0);
+                    }
+
+                    channel.sendMessage(
+                            context.getAsMention(true) + "💿 Adicionado na fila `" + firstTrack.getInfo().title + "` (primeira música da playlist " + playlist.getName() + ")").queue();
+
+                    play(channel.getGuild(), conf, musicManager,
+                            new AudioTrackWrapper(firstTrack, false, context.getUserHandle(), new HashMap<String, String>()));
+                } else {
+                    for (AudioTrack tracks : playlist.getTracks()) {
+                        play(channel.getGuild(), conf, musicManager,
+                                new AudioTrackWrapper(tracks, false, context.getUserHandle(), new HashMap<String, String>()));
+                    }
+
+                    channel.sendMessage(
+                            context.getAsMention(true) + "💿 Adicionado na fila " + playlist.getTracks().size() + " músicas!").queue();
                 }
-
-                channel.sendMessage(context.getAsMention(true) + "💿 Adicionado na fila `" + firstTrack.getInfo().title + "` (primeira música da playlist " + playlist.getName() + ")").queue();
-
-                play(channel.getGuild(), conf, musicManager, new AudioTrackWrapper(firstTrack, false, context.getUserHandle(), new HashMap<String, String>()));
             }
 
             @Override
@@ -422,7 +434,7 @@ public class Loritta {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(0), true, guild.getSelfMember().getUser(), new HashMap<String, String>()));
+                play(guild, conf, musicManager, new AudioTrackWrapper(playlist.getTracks().get(random.nextInt(0, playlist.getTracks().size())), true, guild.getSelfMember().getUser(), new HashMap<String, String>()));
             }
 
             @Override
