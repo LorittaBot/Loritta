@@ -80,6 +80,7 @@ public class CommandManager {
         commandMap.add(new GangueCommand());
         commandMap.add(new RandomSAMCommand());
         commandMap.add(new RandomMemeguy1997());
+        commandMap.add(new AmigosCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
