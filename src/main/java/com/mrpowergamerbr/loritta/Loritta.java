@@ -391,13 +391,25 @@ public class Loritta {
                     play(channel.getGuild(), conf, musicManager,
                             new AudioTrackWrapper(firstTrack, false, context.getUserHandle(), new HashMap<String, String>()));
                 } else {
-                    for (AudioTrack tracks : playlist.getTracks()) {
+                    int ignored = 0;
+                    for (AudioTrack track : playlist.getTracks()) {
+                        if (conf.musicConfig().getHasMaxSecondRestriction()) {
+                            if (track.getDuration() > TimeUnit.SECONDS.toMillis(conf.musicConfig().getMaxSeconds())) {
+                                ignored++;
+                                continue;
+                            }
+                        }
                         play(channel.getGuild(), conf, musicManager,
-                                new AudioTrackWrapper(tracks, false, context.getUserHandle(), new HashMap<String, String>()));
+                                new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
                     }
 
-                    channel.sendMessage(
-                            context.getAsMention(true) + "💿 Adicionado na fila " + playlist.getTracks().size() + " músicas!").queue();
+                    if (ignored == 0) {
+                        channel.sendMessage(
+                                context.getAsMention(true) + "💿 Adicionado na fila " + playlist.getTracks().size() + " músicas!").queue();
+                    } else {
+                        channel.sendMessage(
+                                context.getAsMention(true) + "💿 Adicionado na fila " + playlist.getTracks().size() + " músicas! (ignorado " + ignored + " faixas por serem muito grande!)").queue();
+                    }
                 }
             }
 
