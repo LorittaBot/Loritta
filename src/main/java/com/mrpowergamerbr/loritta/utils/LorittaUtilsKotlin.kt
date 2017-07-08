@@ -116,6 +116,9 @@ object LorittaUtilsKotlin {
 		if (currentTrack != null) {
 			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
 			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
+			if (text.length >= 2048) {
+				text = text.substring(0, 2047);
+			}
 			embed.setDescription(text)
 		} else {
 			embed.setDescription("Nenhuma música...");
