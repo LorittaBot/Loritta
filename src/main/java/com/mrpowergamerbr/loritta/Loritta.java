@@ -378,7 +378,7 @@ public class Loritta {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                if (conf.musicConfig.getAllowPlaylists()) {
+                if (!conf.musicConfig.getAllowPlaylists()) {
                     AudioTrack firstTrack = playlist.getSelectedTrack();
 
                     if (firstTrack == null) {
