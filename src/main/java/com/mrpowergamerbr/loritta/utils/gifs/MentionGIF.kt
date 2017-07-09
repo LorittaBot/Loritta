@@ -10,7 +10,7 @@ import javax.imageio.stream.FileImageOutputStream
 
 object MentionGIF {
 	fun getGIF(toUse: BufferedImage): File {
-		var fileName = System.getProperty("java.io.tmpdir") + "cepo-" + System.currentTimeMillis() + ".gif";
+		var fileName = Loritta.TEMP + "mention-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName));
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 1, true)
 

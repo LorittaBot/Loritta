@@ -39,5 +39,6 @@ class DiscordiaCommand : CommandBase() {
 		var file = MentionGIF.getGIF(contextImage);
 
 		context.sendFile(file, "discordia.gif", context.getAsMention(true));
+		file.delete()
 	}
 }

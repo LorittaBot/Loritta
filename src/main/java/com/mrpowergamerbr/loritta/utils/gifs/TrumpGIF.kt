@@ -13,7 +13,7 @@ object TrumpGIF {
 		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
 		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
 
-		var fileName = System.getProperty("java.io.tmpdir") + "trump-" + System.currentTimeMillis() + ".gif";
+		var fileName = Loritta.TEMP + "trump-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName));
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 1, true)
 

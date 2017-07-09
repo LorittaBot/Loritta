@@ -39,5 +39,6 @@ class TrumpCommand : CommandBase() {
 		var file = TrumpGIF.getGIF(contextImage2, contextImage);
 
 		context.sendFile(file, "trump.gif", context.getAsMention(true));
+		file.delete()
 	}
 }

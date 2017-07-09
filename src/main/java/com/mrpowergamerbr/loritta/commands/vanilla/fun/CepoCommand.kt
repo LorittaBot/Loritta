@@ -35,5 +35,6 @@ class CepoCommand : CommandBase() {
 		var file = CepoDeMadeiraGIF.getGIF(contextImage);
 
 		context.sendFile(file, "cepo.gif", context.getAsMention(true));
+		file.delete()
 	}
 }
