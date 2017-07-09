@@ -228,8 +228,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				if (conf.joinLeaveConfig.isEnabled) {
-					if (conf.joinLeaveConfig.tellOnJoin) {
+				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
+					if (conf.joinLeaveConfig.tellOnJoin) { // E o sistema de avisar ao entrar está ativado?
 						val guild = event.guild
 
 						val textChannel = guild.getTextChannelById(conf.joinLeaveConfig.canalJoinId)
@@ -242,6 +242,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)
 							}
 						}
+					}
+					if (conf.joinLeaveConfig.tellOnPrivate) { // Talvez o sistema de avisar no privado esteja ativado!
+						val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinMessage, event)
+						event.user.openPrivateChannel().complete().sendMessage(msg).complete() // Pronto!
 					}
 				}
 			} catch (e: Exception) {
