@@ -71,7 +71,7 @@ public class Loritta {
     private static List<String> playingGame = new ArrayList<String>();
     private static int currentIndex = 0;
     public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
-    public static final String TEMP = "/home/servers/loritta/tep/"; // Pasta usada para coisas temporarias
+    public static final String TEMP = "/home/servers/loritta/temp/"; // Pasta usada para coisas temporarias
     @Getter
     public static final Gson gson = new Gson(); // Gson
     @Getter
