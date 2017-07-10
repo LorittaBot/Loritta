@@ -40,7 +40,7 @@ public class NashornCommand {
 	public boolean isPublic = false; // Se o comando é público no repositório de comandos
 	public boolean isForked = false; // Se é uma cópia de outro comando na repo de cmds
 	public ObjectId upstreamId; // Caso seja forked, o upstreamId irá ter o Object ID original
-	
+
 	public NashornCommand() {}
 
 	public NashornCommand(String label, String javaScript) {

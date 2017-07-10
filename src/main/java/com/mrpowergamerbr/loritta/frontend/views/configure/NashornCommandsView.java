@@ -18,7 +18,7 @@ public class NashornCommandsView {
 			ArrayList<NashornCommand> toRemove = new ArrayList<NashornCommand>();
 
 			for (NashornCommand customCommand : sc.nashornCommands()) {
-				if (customCommand.getLabel().equals(context.request().param("deleteCommand").value())) {
+				if (customCommand.hashCode() == Integer.parseInt(context.request().param("deleteCommand").value())) {
 					toRemove.add(customCommand);
 				}
 			}
