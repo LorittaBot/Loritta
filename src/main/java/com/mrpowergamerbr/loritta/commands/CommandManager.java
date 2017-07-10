@@ -108,6 +108,7 @@ public class CommandManager {
         commandMap.add(new IsUpCommand());
         commandMap.add(new KnowYourMemeCommand());
         commandMap.add(new BIRLCommand());
+        commandMap.add(new Md5Command());
 
         // =======[ MÚSICA ]========
         commandMap.add(new TocarCommand());
