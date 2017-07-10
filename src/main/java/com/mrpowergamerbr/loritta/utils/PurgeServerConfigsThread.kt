@@ -8,6 +8,9 @@ class PurgeServerConfigsThread : Thread("Purge Server Configs Thread") {
 		super.run()
 
 		while (true) {
+			if (true) {
+				return;
+			}
 			// Vamos pegar todos os ServerConfigs...
 			var documents = LorittaLauncher.loritta.mongo.getDatabase("loritta")
 					.getCollection("servers").find();
