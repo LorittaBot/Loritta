@@ -95,6 +95,7 @@ public class CommandManager {
         commandMap.add(new SobreMimCommand());
         commandMap.add(new DiscriminatorCommand());
         commandMap.add(new RepCommand());
+        commandMap.add(new RankCommand());
 
         // =======[ UTILS ]=======
         commandMap.add(new HexCommand());
