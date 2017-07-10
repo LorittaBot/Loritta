@@ -11,10 +11,12 @@ import lombok.Setter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bson.types.ObjectId;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +29,18 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class NashornCommand {
-	public String label;
-	public String javaScript;
-	public List<String> aliases = new ArrayList<>();
-
+	public ObjectId id = new ObjectId(); // Object ID único para cada comando
+	public String label; // label do comando
+	public String javaScript; // código em JS do comando
+	public List<String> aliases = new ArrayList<>(); // aliases
+	public boolean isEnabled = true; // Se o comando está ativado
+	public LocalDateTime createdDate = LocalDateTime.now(); // Data criada
+	public LocalDateTime editedDate = LocalDateTime.now(); // Data editada
+	public List<String> authors = new ArrayList<>(); // Autores do comando (ou seja, quem mexeu)
+	public boolean isPublic = false; // Se o comando é público no repositório de comandos
+	public boolean isForked = false; // Se é uma cópia de outro comando na repo de cmds
+	public ObjectId upstreamId; // Caso seja forked, o upstreamId irá ter o Object ID original
+	
 	public NashornCommand() {}
 
 	public NashornCommand(String label, String javaScript) {
