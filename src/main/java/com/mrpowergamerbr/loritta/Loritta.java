@@ -144,8 +144,6 @@ public class Loritta {
 
         new AminoRepostThread().start(); // Iniciar Amino Repost Thread
 
-        new PurgeServerConfigsThread().start(); // Iniciar Purge Server Configs Thread
-
         new NewYouTubeVideosThread().start(); // Iniciar New YouTube Videos Thread
 
         new UpdateStatusThread().start(); // Iniciar thread para atualizar o status da Loritta
