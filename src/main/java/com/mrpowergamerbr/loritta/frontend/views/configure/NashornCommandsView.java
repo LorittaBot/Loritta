@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class NashornCommandsView {
 			ArrayList<NashornCommand> toRemove = new ArrayList<NashornCommand>();
 
 			for (NashornCommand customCommand : sc.nashornCommands()) {
-				if (customCommand.hashCode() == Integer.parseInt(context.request().param("deleteCommand").value())) {
+				if (customCommand.getId().equals(new ObjectId(context.request().param("deleteCommand").value()))) {
 					toRemove.add(customCommand);
 				}
 			}
