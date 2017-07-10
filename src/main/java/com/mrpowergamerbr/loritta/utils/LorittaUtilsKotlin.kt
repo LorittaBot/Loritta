@@ -18,6 +18,7 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.text.DateFormatSymbols
 import java.time.OffsetDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun OffsetDateTime.humanize(): String {
@@ -41,6 +42,17 @@ fun loritta(): Loritta {
 }
 
 object LorittaUtilsKotlin {
+	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
+		val rg : Random = Random()
+		for (i in 0..items.size - 1) {
+			val randomPosition = rg.nextInt(items.size)
+			val tmp : T = items[i]
+			items[i] = items[randomPosition]
+			items[randomPosition] = tmp
+		}
+		return items
+	}
+
 	@JvmStatic
 	fun fillTrackMetadata(track: AudioTrackWrapper) {
 		if (track.track.sourceManager.sourceName == "youtube") { // Se é do YouTube, então vamos preencher com algumas informações "legais"
