@@ -177,6 +177,12 @@ public class ImageUtils {
 	 */
 	public static void drawCenteredStringOutlined(Graphics graphics, String text, Rectangle rect, Font font) {
 		Color color = graphics.getColor();
+		Graphics2D g2d = null;
+		Paint paint = null;
+		if (graphics instanceof Graphics2D) {
+			g2d = (Graphics2D) graphics;
+			paint = g2d.getPaint();
+		}
 		// Get the FontMetrics
 		FontMetrics metrics = graphics.getFontMetrics(font);
 		// Determine the X coordinate for the text
@@ -191,6 +197,9 @@ public class ImageUtils {
 		graphics.drawString(text, x, y + 1);
 		// Draw the String
 		graphics.setColor(color);
+		if (paint != null) {
+			g2d.setPaint(paint);
+		}
 		graphics.drawString(text, x, y);
 	}
 

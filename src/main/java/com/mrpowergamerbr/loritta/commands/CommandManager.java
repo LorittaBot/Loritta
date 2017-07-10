@@ -82,6 +82,7 @@ public class CommandManager {
         commandMap.add(new RandomMemeguy1997());
         commandMap.add(new AmigosCommand());
         commandMap.add(new DiscordiaCommand());
+        commandMap.add(new AmizadeCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
