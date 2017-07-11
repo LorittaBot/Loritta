@@ -49,6 +49,7 @@ public class ServerConfig {
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
     public StarboardConfig starboardConfig = new StarboardConfig();
     public RssFeedConfig rssFeedConfig = new RssFeedConfig();
+    public EventLogConfig eventLogConfig = new EventLogConfig();
 
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
