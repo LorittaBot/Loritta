@@ -39,7 +39,7 @@ class AnagramaCommand : CommandBase() {
 
 			val shuffledWord = shuffledChars.joinToString(separator = "");
 
-			context.sendMessage(context.getAsMention(true) + "`$shuffledWord`")
+			context.sendMessage(context.getAsMention(true) + "Seu anagrama é... `$shuffledWord`")
 		} else {
 			this.explain(context);
 		}
