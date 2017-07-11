@@ -90,7 +90,6 @@ public class CommandManager {
 
         // =======[ SOCIAL ]======
         commandMap.add(new PerfilCommand());
-        commandMap.add(new GamesCommand());
         commandMap.add(new BackgroundCommand());
         commandMap.add(new SobreMimCommand());
         commandMap.add(new DiscriminatorCommand());
