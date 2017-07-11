@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
-
 import java.io.File
 
 class ReloadCommand : CommandBase() {
@@ -33,6 +32,7 @@ class ReloadCommand : CommandBase() {
 		LorittaLauncher.getInstance().ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
 		LorittaLauncher.getInstance().generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
+
 		context.sendMessage("Loritta recarregada com sucesso!")
 	}
 }

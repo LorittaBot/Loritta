@@ -146,6 +146,8 @@ public class Loritta {
 
         new NewYouTubeVideosThread().start(); // Iniciar New YouTube Videos Thread
 
+        new NewRssFeedThread().start(); // Iniciar Feed Rss
+
         new UpdateStatusThread().start(); // Iniciar thread para atualizar o status da Loritta
 
         new DiscordBotsInfoThread().start(); // Iniciar thread para atualizar os servidores no Discord Bots

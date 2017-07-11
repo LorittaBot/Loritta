@@ -48,6 +48,7 @@ public class ServerConfig {
     public AminoConfig aminoConfig = new AminoConfig();
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
     public StarboardConfig starboardConfig = new StarboardConfig();
+    public RssFeedConfig rssFeedConfig = new RssFeedConfig();
 
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
