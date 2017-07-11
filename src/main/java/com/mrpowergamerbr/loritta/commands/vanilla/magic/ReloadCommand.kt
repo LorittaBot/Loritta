@@ -50,6 +50,7 @@ class ReloadCommand : CommandBase() {
 				it.addEventListener(DiscordListener(LorittaLauncher.loritta))
 			}
 		}
+		
 		context.sendMessage("Loritta recarregada com sucesso!")
 	}
 }
