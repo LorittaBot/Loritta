@@ -5,7 +5,10 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
+import org.jsoup.safety.Whitelist
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -82,6 +85,10 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										description = jsoup.select("feed entry content").first().text()
 									}
 
+									if (description != null) {
+										description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
+									}
+									
 									val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
 
 									if (checkedRssFeeds.checked[feedUrl] != null) {
