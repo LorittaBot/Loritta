@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
@@ -101,6 +102,9 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								var jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
 
 								var videosJson = JsonParser().parse(newVideos);
+								if (videosJson["items"].array.size() == 0) { // Se estiver vazio, quer dizer que o canal não tem vídeos!
+									continue;
+								}
 								var jsonItem = videosJson.get("items").asJsonArray[0];
 
 								var searchJson = JsonParser().parse(newVideosSearch);
