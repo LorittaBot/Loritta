@@ -10,10 +10,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.TristeRealidadeCommandOptions;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
-import com.mrpowergamerbr.loritta.frontend.views.configure.AminoConfigView;
-import com.mrpowergamerbr.loritta.frontend.views.configure.NashornCommandsView;
-import com.mrpowergamerbr.loritta.frontend.views.configure.StarboardConfigView;
-import com.mrpowergamerbr.loritta.frontend.views.configure.YouTubeConfigView;
+import com.mrpowergamerbr.loritta.frontend.views.configure.*;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -172,6 +169,8 @@ public class ConfigureServerView {
                     template = YouTubeConfigView.render(context, temmie, sc);
                 } else if (context.request().path().endsWith("starboard")) {
                     template = StarboardConfigView.render(context, temmie, sc);
+                } else if (context.request().path().endsWith("rss")) {
+                   template = RssFeedsConfigView.render(context, temmie, sc);
 				} else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());
