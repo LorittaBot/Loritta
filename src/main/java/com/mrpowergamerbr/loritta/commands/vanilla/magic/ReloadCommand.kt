@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
@@ -33,6 +34,22 @@ class ReloadCommand : CommandBase() {
 		LorittaLauncher.getInstance().generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
 
+		if (context.args.isNotEmpty() && context.args[0] == "listeners") {
+			context.sendMessage("Recarregando listeners...")
+
+			// Desregistrar listeners
+			LorittaLauncher.loritta.lorittaShards.shards.forEach {
+				val shard = it;
+				it.registeredListeners.forEach {
+					shard.removeEventListener(it)
+				}
+			}
+
+			// Registrar novos listeners
+			LorittaLauncher.loritta.lorittaShards.shards.forEach {
+				it.addEventListener(DiscordListener(LorittaLauncher.loritta))
+			}
+		}
 		context.sendMessage("Loritta recarregada com sucesso!")
 	}
 }
