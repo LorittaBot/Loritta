@@ -174,7 +174,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							var content = msg.rawContent
 							embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
 							embed.setFooter(msg.creationTime.humanize(), null)
-							embed.setColor(Color(255, 253 - (count * 0.25).toInt(), 240 - (count * 4)))
+							embed.setColor(Color(255, 255, 200 - (count * 20)))
+
+							var emoji = "⭐";
+
+							if (count >= 5) {
+								emoji = "\uD83C\uDF1F";
+							}
+							if (count >= 10) {
+								emoji = "\uD83C\uDF20";
+							}
+							if (count >= 15) {
+								emoji = "\uD83D\uDCAB";
+							}
+							if (count >= 20) {
+								emoji = "\uD83C\uDF0C";
+							}
 
 							var hasImage = false;
 							if (msg.attachments.isNotEmpty()) { // Se tem attachments...
@@ -191,7 +206,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							embed.setDescription(content)
 
 							val starCountMessage = MessageBuilder()
-							starCountMessage.append("⭐ **${count}** ${e.textChannel.asMention}")
+							starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
 							starCountMessage.setEmbed(embed.build())
 
 							if (starboardMessage != null) {

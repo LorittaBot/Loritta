@@ -88,7 +88,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 									if (description != null) {
 										description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
 									}
-									
+
 									val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
 
 									if (checkedRssFeeds.checked[feedUrl] != null) {
