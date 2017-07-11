@@ -447,6 +447,7 @@ public class LorittaUtils {
 				}
 
 				if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
+				if (eat('%')) x = x % parseFactor(); // mod
 
 				return x;
 			}
