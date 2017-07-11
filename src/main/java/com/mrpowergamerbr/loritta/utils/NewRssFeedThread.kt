@@ -1,15 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
-import org.jsoup.nodes.Entities
-import org.jsoup.parser.Parser
-import org.jsoup.safety.Whitelist
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,58 +42,9 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 							if (textChannel != null && feedUrl != null) { // Wow, diferente de null!
 								if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-									val rssFeed = HttpRequest.get(feedUrl)
-											.header("Cache-Control", "max-age=0, no-cache") // Nunca pegar o cache
-											.useCaches(false) // Também não usar cache
-											.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
-											.body();
+									val feedEntry = LorittaUtilsKotlin.getLastPostFromFeed(feedUrl)
 
-									// Parsear a nossa RSS feed
-									val jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
-
-									var title: String? = null
-									var link: String? = null
-									var entryItem: Element? = null
-									var dateRss: String? = null
-									var description: String? = null;
-
-									if (jsoup.select("feed").attr("xmlns") == "http://www.w3.org/2005/Atom") {
-										// Atom Feed
-										title = jsoup.select("feed entry title").first().text()
-										link = jsoup.select("feed entry link").first().attr("href")
-										entryItem = jsoup.select("feed entry").first()
-										if (jsoup.select("feed entry published").isNotEmpty()) {
-											dateRss = jsoup.select("feed entry published").first().text();
-										} else if (jsoup.select("feed entry updated").isNotEmpty()) {
-											dateRss = jsoup.select("feed entry updated").first().text();
-										}
-										// Enquanto a maioria das feeds RSS colocam title e link... a maioria não coloca a descrição corretamente
-										// Então vamos verificar de duas maneiras
-										if (jsoup.select("feed entry description").isNotEmpty()) {
-											description = jsoup.select("feed entry description").first().text()
-										} else if (jsoup.select("feed entry content").isNotEmpty()) {
-											description = jsoup.select("feed entry content").first().text()
-										}
-									} else {
-										// Provavelemente é uma feed RSS então :)
-										title = jsoup.select("channel item title").first().text()
-										link = jsoup.select("channel item link").first().text()
-										entryItem = jsoup.select("channel item").first()
-										dateRss = jsoup.select("channel item pubDate").first().text();
-										if (!jsoup.select("channel item description").isEmpty()) {
-											description = jsoup.select("channel item description").first().text()
-										}
-									}
-
-									if (dateRss == null) {
-										continue;
-									}
-
-									val rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
-
-									if (description != null) {
-										description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
-									}
+									if (feedEntry == null) { continue; }
 
 									val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
 
@@ -110,7 +54,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										// Data do último item na RSS Feed
 										val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
 
-										if (rssCalendar.before(lastCalendar) || rssCalendar.equals(lastCalendar)) {
+										if (feedEntry.date.before(lastCalendar) || feedEntry.date.equals(lastCalendar)) {
 											continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
 										}
 
@@ -125,14 +69,14 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										// E envie para os canais necessários o nosso texto
 										var message = feedInfo.newMessage
 
-										if (description != null) {
-											message = message.replace("{descrição}", description);
+										if (feedEntry.description != null) {
+											message = message.replace("{descrição}", feedEntry.description);
 										}
-										message = message.replace("{título}", title);
-										message = message.replace("{link}", link);
+										message = message.replace("{título}", feedEntry.title);
+										message = message.replace("{link}", feedEntry.link);
 
 										// E só por diversão, vamos salvar todas as tags do entry!
-										for (element in entryItem.allElements) {
+										for (element in feedEntry.entry.select("*")) {
 											message = message.replace("{rss_${element.tagName()}", element.text());
 										}
 

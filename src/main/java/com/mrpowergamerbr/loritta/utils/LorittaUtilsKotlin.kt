@@ -13,10 +13,18 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import org.apache.commons.lang3.time.DateUtils
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import org.jsoup.nodes.Entities
+import org.jsoup.parser.Parser
+import org.jsoup.safety.Whitelist
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.text.DateFormatSymbols
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -250,9 +258,78 @@ object LorittaUtilsKotlin {
 		}
 		return null;
 	}
+
+	@JvmStatic
+	fun getLastPostFromFeed(feedUrl: String): FeedEntry? {
+		val rssFeed = HttpRequest.get(feedUrl)
+				.header("Cache-Control", "max-age=0, no-cache") // Nunca pegar o cache
+				.useCaches(false) // Também não usar cache
+				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
+				.body();
+
+		// Parsear a nossa RSS feed
+		val jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
+
+		var title: String? = null
+		var link: String? = null
+		var entryItem: Element? = null
+		var dateRss: String? = null
+		var description: String? = null;
+		var rssCalendar: Calendar? = null
+
+		if (jsoup.select("feed").attr("xmlns") == "http://www.w3.org/2005/Atom") {
+			// Atom Feed
+			title = jsoup.select("feed entry title").first().text()
+			link = jsoup.select("feed entry link").first().attr("href")
+			entryItem = jsoup.select("feed entry").first()
+			if (jsoup.select("feed entry published").isNotEmpty()) {
+				dateRss = jsoup.select("feed entry published").first().text();
+			} else if (jsoup.select("feed entry updated").isNotEmpty()) {
+				dateRss = jsoup.select("feed entry updated").first().text();
+			}
+			rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
+			// Enquanto a maioria das feeds RSS colocam title e link... a maioria não coloca a descrição corretamente
+			// Então vamos verificar de duas maneiras
+			if (jsoup.select("feed entry description").isNotEmpty()) {
+				description = jsoup.select("feed entry description").first().text()
+			} else if (jsoup.select("feed entry content").isNotEmpty()) {
+				description = jsoup.select("feed entry content").first().text()
+			}
+		} else {
+			// Provavelemente é uma feed RSS então :)
+			title = jsoup.select("channel item title").first().text()
+			link = jsoup.select("channel item link").first().text()
+			entryItem = jsoup.select("channel item").first()
+			dateRss = jsoup.select("channel item pubDate").first().text();
+			val sdf = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+			val date = sdf.parse(dateRss)
+			rssCalendar = DateUtils.toCalendar(date)
+			if (!jsoup.select("channel item description").isEmpty()) {
+				description = jsoup.select("channel item description").first().text()
+			}
+		}
+
+		if (dateRss == null) {
+			return null;
+		}
+
+		if (description != null) {
+			description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
+		}
+
+		return FeedEntry(title, link, rssCalendar, description, entryItem)
+	}
 }
 
 data class FacebookPostWrapper(
 		val url: String,
 		val description: String,
 		val image: BufferedImage)
+
+data class FeedEntry(
+		val title: String,
+		val link: String,
+		val date: Calendar,
+		val description: String?,
+		val entry: Element
+)
