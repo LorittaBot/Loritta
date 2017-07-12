@@ -11,10 +11,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -40,6 +38,8 @@ public abstract class CommandBase {
     public List<String> getExample() {
         return Arrays.asList();
     }
+
+    public HashMap<String, String> getExtendedExamples() { return new HashMap<String, String>(); }
 
     public List<String> getAliases() {
         return Arrays.asList();
@@ -151,7 +151,7 @@ public abstract class CommandBase {
 
             String usage = getUsage() != null ? " `" + getUsage() + "`" : "";
 
-            String cmdInfo = "**Descrição:** " + getDescription() + "\n\n";
+            String cmdInfo = getDescription() + "\n\n";
 
             cmdInfo += "**Como Usar:** " + conf.commandPrefix() + this.getLabel() + usage + "\n";
 
@@ -163,11 +163,20 @@ public abstract class CommandBase {
 
             cmdInfo += "\n";
 
+            // Criar uma lista de exemplos
+            List<String> examples = new ArrayList<String>();
+            for (String example : this.getExample()) { // Adicionar todos os exemplos simples
+                examples.add(conf.commandPrefix() + this.getLabel() + (example.isEmpty() ? "" : " `" + example + "`"));
+            }
+            for (Entry<String, String> entry : this.getExtendedExamples().entrySet()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
+                examples.add(conf.commandPrefix() + this.getLabel() + (entry.getKey().isEmpty() ? "" : " `" + entry.getKey() + "` - " + entry.getValue()));
+            }
+
             if (this.getExample().isEmpty()) {
                 cmdInfo += "**Exemplo:**\n" + conf.commandPrefix() + this.getLabel();
             } else {
                 cmdInfo += "**Exemplo" + (this.getExample().size() == 1 ? "" : "s") + ":**\n";
-                for (String example : this.getExample()) {
+                for (String example : examples) {
                     cmdInfo += conf.commandPrefix() + this.getLabel() + (example.isEmpty() ? "" : " `" + example + "`") + "\n";
                 }
             }
