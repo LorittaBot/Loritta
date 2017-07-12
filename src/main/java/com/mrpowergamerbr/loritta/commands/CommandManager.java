@@ -31,36 +31,26 @@ public class CommandManager {
     public Map<String, Class<?>> defaultCmdOptions = new HashMap<String, Class<?>>();
 
     public CommandManager() {
-        commandMap.add(new BotInfoCommand());
-        commandMap.add(new AjudaCommand());
+        // =======[ DIVERSÃO ]======
         commandMap.add(new RollCommand());
         commandMap.add(new FaustaoCommand());
         commandMap.add(new CaraCoroaCommand());
         commandMap.add(new PedraPapelTesouraCommand());
-        commandMap.add(new PingCommand());
         commandMap.add(new VaporondaCommand());
         commandMap.add(new QualidadeCommand());
         commandMap.add(new VaporQualidadeCommand());
         commandMap.add(new TristeRealidadeCommand());
-        commandMap.add(new AngelCommand());
         commandMap.add(new TretaNewsCommand());
         commandMap.add(new MagicBallCommand());
         commandMap.add(new FraseToscaCommand());
         commandMap.add(new YouTubeCommand());
-        commandMap.add(new TranslateCommand());
-        commandMap.add(new EncurtarCommand());
         commandMap.add(new SAMCommand());
         commandMap.add(new NyanCatCommand());
-        commandMap.add(new WikipediaCommand());
-        commandMap.add(new QuoteCommand());
         commandMap.add(new WikiaCommand());
         commandMap.add(new PrimeirasPalavrasCommand());
-        commandMap.add(new MoneyCommand());
         commandMap.add(new DrakeCommand());
         commandMap.add(new InverterCommand());
         commandMap.add(new ReceitasCommand());
-
-        // =======[ DIVERSÃO ]======
         commandMap.add(new ClapifyCommand());
         commandMap.add(new SpinnerCommand());
         commandMap.add(new LavaCommand());
@@ -83,6 +73,10 @@ public class CommandManager {
         commandMap.add(new PretoEBrancoCommand());
 
         // =======[ MISC ]======
+        commandMap.add(new AjudaCommand());
+        commandMap.add(new PingCommand());
+        commandMap.add(new AngelCommand());
+        commandMap.add(new QuoteCommand());
         commandMap.add(new SayCommand());
         commandMap.add(new EscolherCommand());
 
@@ -95,6 +89,10 @@ public class CommandManager {
         commandMap.add(new RankCommand());
 
         // =======[ UTILS ]=======
+        commandMap.add(new TranslateCommand());
+        commandMap.add(new EncurtarCommand());
+        commandMap.add(new WikipediaCommand());
+        commandMap.add(new MoneyCommand());
         commandMap.add(new HexCommand());
         commandMap.add(new LembrarCommand());
         commandMap.add(new RgbCommand());
@@ -118,6 +116,7 @@ public class CommandManager {
         commandMap.add(new PularCommand());
 
         // =======[ DISCORD ]=======
+        commandMap.add(new BotInfoCommand());
         commandMap.add(new AvatarCommand());
         commandMap.add(new EmojiCommand());
         commandMap.add(new ServerInfoCommand());
