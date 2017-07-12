@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.image.BufferedImage
 import java.io.File
@@ -44,30 +45,25 @@ class QuadroCommand : CommandBase() {
 			return;
 		}
 		var template = ImageIO.read(File(Loritta.FOLDER + "wolverine.png")); // Template
-		var image = BufferedImage(600, 872, BufferedImage.TYPE_INT_ARGB)
+		var image = BufferedImage(206, 300, BufferedImage.TYPE_INT_ARGB)
 
 		var graphics = image.graphics;
-		var skewed = javaxt.io.Image(contextImage);
+		var skewed = LorittaImage(contextImage);
 
-		skewed.resize(371, 371);
+		skewed.resize(206, 300);
 
-		skewed.width = 390; // Aumentar o tamanho da imagem para manipular ela
-		skewed.height = 390;
 		// skew image
 		skewed.setCorners(
 				// keep the upper left corner as it is
-				0F,3F, // UL
+				55F,165F, // UL
 
-				// push the upper right corner more to the bottom
-				280F,0F , // UR
+				152F,159F, // UR
 
-				// push the lower right corner more to the left
-				383F,383F, // LR
+				172F,283F, // LR
 
-				// push the lower left corner more to the right
-				20F, 389F); // LL
+				73F, 293F); // LL
 
-		graphics.drawImage(skewed.bufferedImage, 163, 471, null);
+		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
 
 		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
 
