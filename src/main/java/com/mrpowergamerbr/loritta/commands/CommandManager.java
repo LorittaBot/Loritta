@@ -11,10 +11,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
-import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.music.PlaylistCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.music.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
@@ -117,6 +114,7 @@ public class CommandManager {
         commandMap.add(new MusicInfoCommand());
         commandMap.add(new VolumeCommand());
         commandMap.add(new PlaylistCommand());
+        commandMap.add(new PularCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new AvatarCommand());

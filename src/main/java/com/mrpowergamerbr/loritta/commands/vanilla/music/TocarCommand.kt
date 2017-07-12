@@ -48,11 +48,6 @@ class TocarCommand : CommandBase() {
 		if (context.args.size >= 1) {
 			val music = context.args.joinToString(" ")
 
-			if (music.equals("pular", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				LorittaLauncher.getInstance().skipTrack(context.event.textChannel)
-				return
-			}
-
 			if (music.equals("reset", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
 				LorittaLauncher.getInstance().musicManagers.remove(context.guild.idLong)
 				return
