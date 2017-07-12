@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
@@ -181,6 +182,8 @@ public abstract class CommandBase {
                 }
             }
             embed.setDescription(cmdInfo);
+            embed.setFooter(ev.getAuthor().getName() + "#" + ev.getAuthor().getDiscriminator(), ev.getAuthor().getEffectiveAvatarUrl()); // Adicionar quem executou o comando
+            embed.setTimestamp(Instant.now());
 
             if (conf.explainInPrivate()) {
                 ev.getAuthor().openPrivateChannel().complete().sendMessage(embed.build()).complete();
