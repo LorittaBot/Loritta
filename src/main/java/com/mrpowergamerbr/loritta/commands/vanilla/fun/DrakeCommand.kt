@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Image
 import java.io.File
 import java.util.*
@@ -70,8 +69,6 @@ class DrakeCommand : CommandBase() {
 			graph.drawImage(image, 150, 150, null)
 		}
 
-		val builder = MessageBuilder()
-		builder.append(context.getAsMention(true))
-		context.sendFile(bi, "meme.png", builder.build())
+		context.sendFile(bi, "drake.png", context.getAsMention(true))
 	}
 }
