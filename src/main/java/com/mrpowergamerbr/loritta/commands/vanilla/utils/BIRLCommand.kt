@@ -32,7 +32,7 @@ class BIRLCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val joined = context.rawArgs.joinToString(" ").replace("\u200D", "");
+			val joined = context.rawArgs.joinToString(" ");
 
 			val split = joined.split("```")
 
@@ -59,13 +59,13 @@ class BIRLCommand : CommandBase() {
 					embed.addField("Resultado", "```${json["stdout"].string}```", false)
 				}
 
-				context.sendMessage(embed.build())
+				context.sendMessage(context.getAsMention(true), embed.build())
 			} else {
 				// Os \u200D são zero width joiners, usado para o Discord não parsear os code blocks
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Códigos em BIRL devem estar entre blocos de código, por exemplo:```\n${context.config.commandPrefix}birl\n\u200D`\u200D`\u200D`HORA DO SHOW\n" +
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Códigos em BIRL devem estar entre blocos de código, por exemplo:\n`${context.config.commandPrefix}birl\n```HORA DO SHOW\n" +
 						"    CE QUER VER ESSA PORRA? (\"Hello, World! Porra!\\n\");\n" +
 						"    BORA CUMPADE 0;\n" +
-						"BIRL`\u200D`\u200D`\n```Para mais informações: https://birl-language.github.io/")
+						"BIRL```\n`Para mais informações: https://birl-language.github.io/")
 			}
 		} else {
 			context.explain()
