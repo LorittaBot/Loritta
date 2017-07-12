@@ -34,9 +34,9 @@ class RandomSAMCommand : CommandBase() {
 		val post = if (source == "página") LorittaUtilsKotlin.getRandomPostFromPage("samemes2") else LorittaUtilsKotlin.getRandomPostFromGroup("293117011064847")
 
 		if (post != null) {
-			context.sendFile(post.image, "south_america_memes.png", "<:sam:331592756969603073> | " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `${post.description}`")
+			context.sendFile(post.image, "south_america_memes.png", "<:sam:331592756969603073> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `${post.description}`")
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
 		}
 	}
 }

@@ -35,7 +35,7 @@ class RepCommand : CommandBase() {
             var user = context.message.mentionedUsers[0];
 
             if (user == context.userHandle) {
-                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você não pode dar reputação para si mesmo, bobinho!");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você não pode dar reputação para si mesmo, bobinho!");
                 return;
             }
 
@@ -47,7 +47,7 @@ class RepCommand : CommandBase() {
                         61 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)))
                 );
-                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você precisa esperar **$fancy** antes de poder dar outra reputação!");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você precisa esperar **$fancy** antes de poder dar outra reputação!");
                 return;
             }
 
@@ -59,7 +59,7 @@ class RepCommand : CommandBase() {
             // E vamos salvar a última vez que o usuário deu reputação para o usuário
             profile.lastReputationGiven = System.currentTimeMillis();
 
-            context.sendMessage("☝ | " + context.getAsMention(true) + "deu um ponto de reputação para " + user.asMention + "!");
+            context.sendMessage("☝ **|** " + context.getAsMention(true) + "deu um ponto de reputação para " + user.asMention + "!");
 
 			// E vamos salvar as configurações
 			LorittaLauncher.loritta.ds.save(givenProfile);

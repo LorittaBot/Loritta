@@ -36,17 +36,17 @@ class TocarCommand : CommandBase() {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!")
 				return
 			}
 			if (selfMember.voiceState.isSuppressed) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!")
 				return
 			}
 		}
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você precisa estar no canal de música para poder colocar músicas!")
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você precisa estar no canal de música para poder colocar músicas!")
 			return
 		}
 		if (context.args.size >= 1) {

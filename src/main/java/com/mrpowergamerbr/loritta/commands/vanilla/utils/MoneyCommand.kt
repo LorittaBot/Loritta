@@ -32,7 +32,7 @@ class MoneyCommand : CommandBase() {
 			}
 
 			if (multiply == null) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Número `${context.args[2]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Número `${context.args[2]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
 				return;
 			}
 
@@ -47,12 +47,12 @@ class MoneyCommand : CommandBase() {
 			val validCurrencies = validCurrResponse.get("rates").asJsonObject.entrySet().joinToString(transform = { "`${it.key}`" })
 
 			if (fixerResponse.has("error")) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "`$from` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$from` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
 				return
 			}
 			val rates = fixerResponse.get("rates").asJsonObject
 			if (!rates.has(to)) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "`$to` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$to` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
 				return
 			}
 

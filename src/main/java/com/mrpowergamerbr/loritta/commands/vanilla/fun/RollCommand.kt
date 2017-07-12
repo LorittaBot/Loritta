@@ -38,7 +38,7 @@ class RollCommand : CommandBase() {
 				value = context.args[0].toLong()
 				Loritta.random.nextLong(1, value + 1)
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Número `${context.args[0]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Número `${context.args[0]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
 				return
 			}
 

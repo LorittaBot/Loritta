@@ -55,7 +55,7 @@ class WikiaCommand : CommandBase() {
 				val wikiaResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
 				if (wikiaResponse.has("exception")) {
-					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nada sobre `$query` na wikia `$websiteId`...")
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada sobre `$query` na wikia `$websiteId`...")
 				} else {
 					val item = wikiaResponse.get("items").asJsonArray.get(0).asJsonObject // Nós iremos pegar o 0, já que é o primeiro resultado
 
@@ -71,7 +71,7 @@ class WikiaCommand : CommandBase() {
 					context.sendMessage(embed.build()) // Envie a mensagem!
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nada sobre `$query` na wikia `$websiteId`...")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada sobre `$query` na wikia `$websiteId`...")
 			}
 		} else {
 			this.explain(context);

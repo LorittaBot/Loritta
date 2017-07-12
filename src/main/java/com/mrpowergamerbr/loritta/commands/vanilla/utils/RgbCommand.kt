@@ -38,7 +38,7 @@ class RgbCommand : CommandBase() {
 				var color = Color.decode(hex);
 				context.sendMessage(context.getAsMention(true) + "Transformei a sua cor `$hex` para RGB! ${color.red}, ${color.green}, ${color.blue}")
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "A cor `$hex` não é uma cor hexadecimal válida!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "A cor `$hex` não é uma cor hexadecimal válida!")
 				return;
 			}
 		} else {

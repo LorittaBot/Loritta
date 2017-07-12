@@ -74,7 +74,7 @@ class YouTubeCommand : CommandBase() {
 				// mensagem.addReaction("❌").complete();
 				return;
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " Eu não encontrei nada relacionado a `$query`!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Eu não encontrei nada relacionado a `$query`!")
 			}
 		} else {
 			context.explain()

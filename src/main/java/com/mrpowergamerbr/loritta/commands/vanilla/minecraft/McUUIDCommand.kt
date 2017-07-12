@@ -42,7 +42,7 @@ class McUUIDCommand : CommandBase() {
 
                 context.sendMessage(context.getAsMention(true) + "A UUID de " + player + ": `" + LorittaUtils.getUUID(json["id"].string) + "`");
             } catch (e: IllegalStateException) {
-                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Player não encontrado! Tem certeza que `" + player + "` é uma conta válida?");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Player não encontrado! Tem certeza que `" + player + "` é uma conta válida?");
             }
         } else {
             this.explain(context);

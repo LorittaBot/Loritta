@@ -101,7 +101,7 @@ class LembrarCommand : CommandBase() {
 			}
 
 			if (years == null || months == null || weeks == null || days == null || hours == null || minutes == null || seconds == null) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Tempo de espera inválido! Talvez você tenha colocado um tempo muito grande...")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Tempo de espera inválido! Talvez você tenha colocado um tempo muito grande...")
 				return;
 			}
 			// Agora vamos somar!

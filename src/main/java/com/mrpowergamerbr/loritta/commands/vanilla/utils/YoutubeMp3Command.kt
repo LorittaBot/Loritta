@@ -38,7 +38,7 @@ class YoutubeMp3Command : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.size == 1) {
-			var mensagem = context.sendMessage("💭 | " + context.getAsMention(true) + "Processando...");
+			var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "Processando...");
 
 			var link = context.args[0]
 			link = link.replace("https://www.youtube.com/watch?v=", "");
@@ -58,7 +58,7 @@ class YoutubeMp3Command : CommandBase() {
 			var title = checkJsonResponse.get("title").asString
 
 			if (title == "none") {
-				mensagem.editMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Link inválido!");
+				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Link inválido!");
 				return;
 			}
 
@@ -78,10 +78,10 @@ class YoutubeMp3Command : CommandBase() {
 				val progress = progressJsonResponse.get("progress").asString;
 
 				if (progress == "1" && lastProgress != progress) {
-					mensagem.editMessage("💭 | " + context.getAsMention(true) + "Baixando vídeo...").complete()
+					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + "Baixando vídeo...").complete()
 				}
 				if (progress == "2" && lastProgress != progress) {
-					mensagem.editMessage("💭 | " + context.getAsMention(true) + "Convertendo vídeo...").complete()
+					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + "Convertendo vídeo...").complete()
 				}
 				if (progress == "3") {
 					var serverId = progressJsonResponse.get("sid").asString;
@@ -118,7 +118,7 @@ class YoutubeMp3Command : CommandBase() {
 						"29" -> serverName = "tjljs"
 						"30" -> serverName = "ywjkg"
 					}
-					mensagem.editMessage("📥 | " + context.getAsMention(true) + "Pronto! Seu vídeo está pronto para ser baixado em MP3! https://$serverName.yt-downloader.org/download.php?id=$hash").complete()
+					mensagem.editMessage("📥 **|** " + context.getAsMention(true) + "Pronto! Seu vídeo está pronto para ser baixado em MP3! https://$serverName.yt-downloader.org/download.php?id=$hash").complete()
 					this.cancel()
 				}
 				lastProgress = progress;

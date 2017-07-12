@@ -235,7 +235,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         // "do Discord" e não simplesmente uma imagem no chat
         base = ImageUtils.makeRoundedCorner(base, 15);
 
-        context.sendFile(base, "profile.png", "📝 | " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
+        context.sendFile(base, "profile.png", "📝 **|** " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
     }
 
     fun drawWithShadow(text: String, x: Int, y: Int, maxX: Int, maxY: Int, graphics: Graphics) {

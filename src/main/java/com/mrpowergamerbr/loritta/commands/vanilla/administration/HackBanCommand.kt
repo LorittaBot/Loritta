@@ -44,7 +44,7 @@ class HackBanCommand : CommandBase() {
 
 				context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi banido com sucesso!");
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " Não tenho permissão para banir este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para banir este usuário!");
 			}
 		} else {
 			this.explain(context);

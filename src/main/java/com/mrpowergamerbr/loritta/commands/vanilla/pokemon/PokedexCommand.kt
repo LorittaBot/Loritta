@@ -106,7 +106,7 @@ class PokedexCommand : CommandBase() {
 					}
 					var evolMethod = el.getElementsByClass("dex-evolution-chain-method");
 					if (evolMethod.isNotEmpty()) {
-						strEvolutions += " | " + evolMethod[0].text()
+						strEvolutions += " **|** " + evolMethod[0].text()
 					}
 					strEvolutions += "\n";
 				}

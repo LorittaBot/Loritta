@@ -47,7 +47,7 @@ class KnowYourMemeCommand : CommandBase() {
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nada relacionado a `$query` no KnowYourMeme...")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$query` no KnowYourMeme...")
 				return;
 			} else {
 				// Algo foi encontrado!

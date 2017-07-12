@@ -52,11 +52,11 @@ class SoftBanCommand : CommandBase() {
 				}
 
 				if (days > 7) {
-					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " É impossível softbanir alguém por mais de 7 dias!");
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " É impossível softbanir alguém por mais de 7 dias!");
 					return;
 				}
 				if (0 > days) {
-					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " É impossível softbanir alguém por menos de 0 dias! (E como isso iria funcionar?)");
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " É impossível softbanir alguém por menos de 0 dias! (E como isso iria funcionar?)");
 					return;
 				}
 
@@ -69,7 +69,7 @@ class SoftBanCommand : CommandBase() {
 
 				context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi softbanned com sucesso!");
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " Não tenho permissão para softbanir este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para softbanir este usuário!");
 			}
 		} else {
 			this.explain(context);

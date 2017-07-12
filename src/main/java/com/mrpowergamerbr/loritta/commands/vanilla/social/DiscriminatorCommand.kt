@@ -49,7 +49,7 @@ class DiscriminatorCommand : CommandBase() {
 				idx++;
 			}
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Ninguém que eu conheça possui o discriminator `#$discriminator`!");
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Ninguém que eu conheça possui o discriminator `#$discriminator`!");
 			return;
 		}
 

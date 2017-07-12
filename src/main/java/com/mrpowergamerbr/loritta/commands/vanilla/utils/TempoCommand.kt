@@ -105,7 +105,7 @@ class TempoCommand : CommandBase() {
 				context.sendMessage(embed.build());
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei uma cidade chamada `$cidade`!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei uma cidade chamada `$cidade`!")
 			}
 		} else {
 			this.explain(context);

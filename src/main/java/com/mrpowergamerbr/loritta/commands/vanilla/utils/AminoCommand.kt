@@ -60,9 +60,9 @@ class AminoCommand : CommandBase() {
 						embed.setColor(Color(255, 112, 125));
 						embed.setThumbnail(community.icon)
 
-						context.sendMessage(embed.build());
+						context.sendMessage(context.asMention, embed.build());
 					} else {
-						context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
+						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
 					}
 				}
 			} else {
@@ -73,11 +73,11 @@ class AminoCommand : CommandBase() {
 						if (attachment.isImage) {
 							val imagem = LorittaUtils.downloadImage(attachment.url)
 
-							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC | " + context.getAsMention(true) + "Sua imagem `${context.message.attachments[0].fileName}`!")
+							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + "Sua imagem `${context.message.attachments[0].fileName}`!")
 							return;
 						}
 					}
-					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem \".Amino\" na sua mensagem... \uD83D\uDE1E")
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem \".Amino\" na sua mensagem... \uD83D\uDE1E")
 					return;
 				}
 				context.explain()

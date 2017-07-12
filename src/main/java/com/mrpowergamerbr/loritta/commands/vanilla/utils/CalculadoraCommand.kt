@@ -35,7 +35,7 @@ class CalculadoraCommand : CommandBase() {
 
 				context.sendMessage(context.getAsMention(true) + "Resultado: `$result`")
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "`$expression` não é uma expressão artimética válida!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$expression` não é uma expressão artimética válida!")
 			}
 		} else {
 			this.explain(context)

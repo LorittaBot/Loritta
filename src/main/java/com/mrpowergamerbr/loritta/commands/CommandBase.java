@@ -118,11 +118,11 @@ public abstract class CommandBase {
             CommandContext context = new CommandContext(conf, ev, this, args, rawArgs);
             if (LorittaUtils.handleIfBanned(context, profile)) { return true; }
             if (!context.canUseCommand()) {
-                context.sendMessage("\uD83D\uDE45 | " + context.getAsMention(true) + "**Sem permissão!**");
+                context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**Sem permissão!**");
                 return true;
             }
             if (context.isPrivateChannel() && !canUseInPrivateChannel()) {
-                context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Você não pode usar este comando em mensagens privadas!");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você não pode usar este comando em mensagens privadas!");
                 return true;
             }
             if (needsToUploadFiles()) {
@@ -130,7 +130,7 @@ public abstract class CommandBase {
             }
             if (requiresMusicEnabled()) {
                 if (!context.getConfig().musicConfig.isEnabled()) {
-                    context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E");
+                    context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " O meu sistema de músicas está desativado nesta guild... Pelo visto não teremos a `DJ Loritta` por aqui... \uD83D\uDE1E");
                     return true;
                 }
             }

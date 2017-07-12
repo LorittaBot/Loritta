@@ -61,7 +61,7 @@ class McQueryCommand : CommandBase() {
 			}
 			if (serverResponse.has("error")) { // E se ainda está com erro... bem, desisto.
 				// desisto :(
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Servidor `" + ip + ":" + port + "` não existe ou está offline!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Servidor `" + ip + ":" + port + "` não existe ou está offline!")
 				return
 			}
 			val builder = EmbedBuilder()

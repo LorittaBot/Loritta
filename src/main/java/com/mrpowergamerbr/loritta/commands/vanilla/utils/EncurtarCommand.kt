@@ -38,7 +38,7 @@ class EncurtarCommand : CommandBase() {
 			if (short != null && short != "INVALID_URI") {
 				context.sendMessage(context.getAsMention(true) + short)
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "A URL `${context.args[0]}` é inválida!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "A URL `${context.args[0]}` é inválida!")
 			}
 		} else {
 			context.explain()
