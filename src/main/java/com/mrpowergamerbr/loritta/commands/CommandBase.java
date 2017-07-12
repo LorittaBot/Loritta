@@ -173,7 +173,7 @@ public abstract class CommandBase {
                 examples.add(conf.commandPrefix() + this.getLabel() + (entry.getKey().isEmpty() ? "" : " `" + entry.getKey() + "` - " + entry.getValue()));
             }
 
-            if (this.getExample().isEmpty()) {
+            if (examples.isEmpty()) {
                 cmdInfo += "**Exemplo:**\n" + conf.commandPrefix() + this.getLabel();
             } else {
                 cmdInfo += "**Exemplo" + (this.getExample().size() == 1 ? "" : "s") + ":**\n";

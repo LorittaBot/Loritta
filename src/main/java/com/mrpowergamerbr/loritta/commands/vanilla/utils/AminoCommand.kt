@@ -23,6 +23,10 @@ class AminoCommand : CommandBase() {
 		return CommandCategory.UTILS;
 	}
 
+	override fun getExtendedExamples(): Map<String, String> {
+		return mapOf("pesquisar Undertale Brasil" to "Pesquisa \"Undertale Brasil\" no Amino")
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.size > 1 && context.args[0] == "pesquisar") {
 			// Pesquisar uma comunidade no Amino
