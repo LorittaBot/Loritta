@@ -6,8 +6,10 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.humanize
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
+import java.time.ZoneOffset
 
 
 class AminoCommand : CommandBase() {
@@ -46,10 +48,12 @@ class AminoCommand : CommandBase() {
 				var embed = EmbedBuilder();
 				embed.setTitle("<:amino:329308203684724737> " + community.name)
 				embed.setDescription(community.tagline);
-				embed.addField("Link", community.link, true);
-				embed.addField("ID", community.ndcId.toString(), true);
-				embed.addField("Membros", community.membersCount.toString(), true);
-				embed.addField("Linguagem", community.primaryLanguage.toString(), true);
+				embed.addField("\uD83D\uDD17 Link", community.link, true);
+				embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);
+				embed.addField("\uD83D\uDC65 Membros", community.membersCount.toString(), true);
+				embed.addField("\uD83C\uDF0E Linguagem", community.primaryLanguage, true);
+				embed.addField("\uD83D\uDD25 Calor da Comunidade", community.communityHeat, true);
+				embed.addField("\uD83D\uDCC5 Criado em", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
 				embed.setColor(Color(255, 112, 125));
 				embed.setThumbnail(community.icon)
 
