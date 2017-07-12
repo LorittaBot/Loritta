@@ -40,7 +40,7 @@ public abstract class CommandBase {
         return Arrays.asList();
     }
 
-    public HashMap<String, String> getExtendedExamples() { return new HashMap<String, String>(); }
+    public Map<String, String> getExtendedExamples() { return new HashMap<String, String>(); }
 
     public List<String> getAliases() {
         return Arrays.asList();
