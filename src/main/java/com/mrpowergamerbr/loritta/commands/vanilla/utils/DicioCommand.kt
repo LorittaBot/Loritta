@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
+import java.awt.Color
 import java.net.URLEncoder
 
 
@@ -36,30 +37,30 @@ class DicioCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.size == 1) {
-			var palavra = URLEncoder.encode(context.args[0], "UTF-8");
-			var httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
+			val palavra = URLEncoder.encode(context.args[0], "UTF-8");
+			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
 					.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
-			var response = httpRequest.body();
+			val response = httpRequest.body();
 			if (httpRequest.code() == 404) {
 				context.sendMessage(context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
 				return;
 			}
-			var jsoup = Jsoup.parse(response);
+			val jsoup = Jsoup.parse(response);
 
 			if (jsoup.select("p[itemprop = description]").isEmpty()) {
 				context.sendMessage(context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
 				return;
 			}
 
-			var description = jsoup.select("p[itemprop = description]")[0];
+			val description = jsoup.select("p[itemprop = description]")[0];
 
-			var type = description.getElementsByTag("span")[0]
-			var what = description.getElementsByTag("span")[1]
-			var etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else "";
+			val type = description.getElementsByTag("span")[0]
+			val what = description.getElementsByTag("span")[1]
+			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else "";
 			var frase = jsoup.getElementsByClass("frase")[0];
 
-			var embed = EmbedBuilder();
-
+			val embed = EmbedBuilder();
+			embed.setColor(Color(25, 89, 132))
 			embed.setFooter(etim, null);
 
 			embed.setTitle("📙 Significado de ${context.args[0]}")
@@ -77,7 +78,7 @@ class DicioCommand : CommandBase() {
 			}
 
 			embed.addField("🖋 Frase", frase.text(), false);
-			context.sendMessage(embed.build());
+			context.sendMessage(context.getAsMention(true), embed.build());
 
 		} else {
 			this.explain(context);
