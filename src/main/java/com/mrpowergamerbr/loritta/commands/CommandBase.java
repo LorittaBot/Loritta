@@ -170,7 +170,7 @@ public abstract class CommandBase {
                 examples.add(conf.commandPrefix() + this.getLabel() + (example.isEmpty() ? "" : " `" + example + "`"));
             }
             for (Entry<String, String> entry : this.getExtendedExamples().entrySet()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-                examples.add(conf.commandPrefix() + this.getLabel() + (entry.getKey().isEmpty() ? "" : " `" + entry.getKey() + "` - " + entry.getValue()));
+                examples.add(conf.commandPrefix() + this.getLabel() + (entry.getKey().isEmpty() ? "" : " `" + entry.getKey() + "` - **" + entry.getValue() + "**"));
             }
 
             if (examples.isEmpty()) {
@@ -178,7 +178,7 @@ public abstract class CommandBase {
             } else {
                 cmdInfo += "**Exemplo" + (this.getExample().size() == 1 ? "" : "s") + ":**\n";
                 for (String example : examples) {
-                    cmdInfo += conf.commandPrefix() + this.getLabel() + (example.isEmpty() ? "" : " `" + example + "`") + "\n";
+                    cmdInfo += example + "\n";
                 }
             }
             embed.setDescription(cmdInfo);
