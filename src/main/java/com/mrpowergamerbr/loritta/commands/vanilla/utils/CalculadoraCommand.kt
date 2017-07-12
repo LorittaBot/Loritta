@@ -11,6 +11,10 @@ class CalculadoraCommand : CommandBase() {
 		return "calc"
 	}
 
+	override fun getAliases(): List<String> {
+		return listOf("calculadora")
+	}
+
 	override fun getUsage(): String {
 		return "conta"
 	}
