@@ -13,6 +13,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent
 import net.dv8tion.jda.core.events.guild.GuildBanEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
@@ -252,6 +253,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
+
+				if (conf.autoroleConfig.isEnabled) { // Está ativado?
+					val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
+
+					val roles = mutableListOf<Role>()
+
+					rolesId.forEach { // E pegar a role dependendo do ID!
+						val role = event.guild.getRoleById(it)
+
+						if (role != null) {
+							roles.add(role)
+						}
+					}
+
+					event.guild.controller.addRolesToMember(event.member, roles).complete() // E adicione todas as roles no usuário
+				}
 
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
 					if (conf.joinLeaveConfig.tellOnJoin) { // E o sistema de avisar ao entrar está ativado?

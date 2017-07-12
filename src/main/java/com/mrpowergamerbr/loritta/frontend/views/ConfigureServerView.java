@@ -170,8 +170,10 @@ public class ConfigureServerView {
                 } else if (context.request().path().endsWith("starboard")) {
                     template = StarboardConfigView.render(context, temmie, sc);
                 } else if (context.request().path().endsWith("rss")) {
-                   template = RssFeedsConfigView.render(context, temmie, sc);
-				} else {
+                    template = RssFeedsConfigView.render(context, temmie, sc);
+                } else if (context.request().path().endsWith("autorole")) {
+                    template = AutoroleConfigView.render(context, temmie, sc);
+                } else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());
                         LorittaLauncher.getInstance().getDs().save(sc);
