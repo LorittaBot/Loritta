@@ -26,40 +26,61 @@ class AminoCommand : CommandBase() {
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
-		return mapOf("pesquisar Undertale Brasil" to "Pesquisa \"Undertale Brasil\" no Amino")
+		return mapOf("pesquisar Undertale Brasil" to "Pesquisa \"Undertale Brasil\" no Amino",
+				"converter" to "Converte uma imagem \".Amino\" para uma imagem normal")
 	}
 
 	override fun run(context: CommandContext) {
-		if (context.args.size > 1 && context.args[0] == "pesquisar") {
-			// Pesquisar uma comunidade no Amino
-			var aminoClient = AminoClient(Loritta.config.aminoEmail, Loritta.config.aminoPassword, Loritta.config.aminoDeviceId);
-			aminoClient.login();
+		if (context.args.size > 0) {
+			if (context.args.size > 1) {
+				if (context.args[0] == "pesquisar") {
+					// Pesquisar uma comunidade no Amino
+					var aminoClient = AminoClient(Loritta.config.aminoEmail, Loritta.config.aminoPassword, Loritta.config.aminoDeviceId);
+					aminoClient.login();
 
-			var args = context.args.sliceArray(1..context.rawArgs.size - 1).joinToString(" ");
-			var communities = aminoClient.searchCommunities(args, 0, 1, "pt", 1);
+					var args = context.args.sliceArray(1..context.rawArgs.size - 1).joinToString(" ");
+					var communities = aminoClient.searchCommunities(args, 0, 1, "pt", 1);
 
-			if (communities.isEmpty()) {
-				// Ok, não encontramos nada... mas que tal nós pesquisarmos em inglês?
-				communities = aminoClient.searchCommunities(args, 0, 1, "en", 1);
-			}
-			if (communities.isNotEmpty()) {
-				var community = communities[0];
+					if (communities.isEmpty()) {
+						// Ok, não encontramos nada... mas que tal nós pesquisarmos em inglês?
+						communities = aminoClient.searchCommunities(args, 0, 1, "en", 1);
+					}
+					if (communities.isNotEmpty()) {
+						var community = communities[0];
 
-				var embed = EmbedBuilder();
-				embed.setTitle("<:amino:329308203684724737> " + community.name)
-				embed.setDescription(community.tagline);
-				embed.addField("\uD83D\uDD17 Link", community.link, true);
-				embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);
-				embed.addField("\uD83D\uDC65 Membros", community.membersCount.toString(), true);
-				embed.addField("\uD83C\uDF0E Linguagem", community.primaryLanguage, true);
-				embed.addField("\uD83D\uDD25 Calor da Comunidade", community.communityHeat, true);
-				embed.addField("\uD83D\uDCC5 Criado em", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
-				embed.setColor(Color(255, 112, 125));
-				embed.setThumbnail(community.icon)
+						var embed = EmbedBuilder();
+						embed.setTitle("<:amino:329308203684724737> " + community.name)
+						embed.setDescription(community.tagline);
+						embed.addField("\uD83D\uDD17 Link", community.link, true);
+						embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);
+						embed.addField("\uD83D\uDC65 Membros", community.membersCount.toString(), true);
+						embed.addField("\uD83C\uDF0E Linguagem", community.primaryLanguage, true);
+						embed.addField("\uD83D\uDD25 Calor da Comunidade", community.communityHeat, true);
+						embed.addField("\uD83D\uDCC5 Criado em", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
+						embed.setColor(Color(255, 112, 125));
+						embed.setThumbnail(community.icon)
 
-				context.sendMessage(embed.build());
+						context.sendMessage(embed.build());
+					} else {
+						context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
+					}
+				}
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
+				if (context.args[0] == "converter") { // Converter imagens .Amino para imagens normais
+					if (context.message.attachments.isNotEmpty()) {
+						val attachment = context.message.attachments[0]
+
+						if (attachment.isImage) {
+							val imagem = LorittaUtils.downloadImage(attachment.url)
+
+							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC | " + context.getAsMention(true) + "Sua imagem `${context.message.attachments[0].fileName}`!")
+							return;
+						}
+					}
+					context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem \".Amino\" na sua mensagem... \uD83D\uDE1E")
+					return;
+				}
+				context.explain()
 			}
 		} else {
 			context.explain()
