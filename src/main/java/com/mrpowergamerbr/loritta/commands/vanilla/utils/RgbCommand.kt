@@ -32,7 +32,7 @@ class RgbCommand : CommandBase() {
 		if (context.args.size == 1) {
 			var hex = context.args[0]
 
-			if (!hex.startsWith("#")) { hex.prependIndent("#"); } // Se não tem # antes, então adicione!
+			if (!hex.startsWith("#")) { hex = "#$hex"; } // Se não tem # antes, então adicione!
 
 			try {
 				var color = Color.decode(hex);
