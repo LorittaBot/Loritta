@@ -23,8 +23,9 @@ class AnagramaCommand : CommandBase() {
 		return "Cria um anagrama de uma palavra!"
 	}
 
-	override fun getExample(): List<String> {
-		return listOf("Loritta");
+	override fun getExtendedExamples(): Map<String, String> {
+		return mapOf("Loritta" to "Cria um anagrama usando a palavra \"Loritta\"",
+				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -39,7 +40,7 @@ class AnagramaCommand : CommandBase() {
 
 			val shuffledWord = shuffledChars.joinToString(separator = "");
 
-			context.sendMessage(context.getAsMention(true) + "Seu anagrama é... `$shuffledWord`")
+			context.sendMessage("\uD83D\uDCDD **|** " + context.getAsMention(true) + "Seu anagrama é... `$shuffledWord` \uD83D\uDE4B")
 		} else {
 			this.explain(context);
 		}
