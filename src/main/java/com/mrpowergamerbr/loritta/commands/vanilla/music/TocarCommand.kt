@@ -13,11 +13,15 @@ class TocarCommand : CommandBase() {
 	}
 
 	override fun getDescription(): String {
-		return "Toca uma música, experimental."
+		return "Adiciona uma música para a fila da DJ Loritta!"
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("https://youtu.be/wn4Ju5-vMQ4")
+		return listOf("https://youtu.be/wn4Ju5-vMQ4",
+				"https://soundcloud.com/itsreach/sonicmashup",
+				"https://soundcloud.com/shokkbutt/ruining-songs-forever",
+				"https://www.youtube.com/watch?v=BaUwnmncsrc",
+				"Perfect Strangers")
 	}
 
 	override fun getCategory(): CommandCategory {
