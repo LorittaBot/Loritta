@@ -17,7 +17,7 @@ class SoftBanCommand : CommandBase() {
 
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("menção/ID" to "ID ou menção do usuário que será banido",
-				"dias" to "(Opcional) Quantos dias serão deletados, no mínimo 7",
+				"dias" to "(Opcional) Quantos dias serão deletados, no máximo 7",
 				"motivo" to "(Opcional) Motivo do Softban")
 	}
 
