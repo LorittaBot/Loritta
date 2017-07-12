@@ -15,12 +15,8 @@ class AminoCommand : CommandBase() {
 		return "amino"
 	}
 
-	override fun getUsage(): String {
-		return "<arquivo do Amino>"
-	}
-
 	override fun getDescription(): String {
-		return "Carrega e envia uma imagem do Amino (arquivos com extensão \".Amino\")"
+		return "Comandos relacionados ao Amino! ([http://aminoapps.com/](http://aminoapps.com/))"
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -57,6 +53,8 @@ class AminoCommand : CommandBase() {
 			} else {
 				context.sendMessage(LorittaUtils.ERROR + " | " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
 			}
+		} else {
+			context.explain()
 		}
 	}
 }
