@@ -76,7 +76,7 @@ public class LorittaUtils {
 	 */
 	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
-			context.sendMessage(ERROR + " | " + context.getAsMention(true) + " Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
+			context.sendMessage(ERROR + " | " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
 			return false;
 		}
 		return true;
