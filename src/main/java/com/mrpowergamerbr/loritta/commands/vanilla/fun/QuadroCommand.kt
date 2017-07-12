@@ -40,7 +40,7 @@ class QuadroCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0);
+		var contextImage = LorittaUtils.getImageFromContext(context, 0, 25, 256);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
