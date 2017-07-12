@@ -21,8 +21,15 @@ public class AutoroleConfigView {
 			throws PebbleException {
 		// Filtrar roles inválidas
 		AutoroleConfig autoroleConfig = sc.autoroleConfig;
+		boolean dirty = false;
+		if (context.request().param("autoroles").isSet()) { // O usuário está salvando as configurações?
+			autoroleConfig.setEnabled(context.request().param("enableModule").isSet());
+			autoroleConfig.setRoles(new ArrayList<String>(Arrays.asList(context.request().param("autoroles").value().split(";"))));
+			sc.autoroleConfig(autoroleConfig);
+			dirty = true;
+		}
 		List<String> toRemove = new ArrayList<String>();
-		Guild guild = (Guild) context.contextVars().get("currentJdaServer");
+		Guild guild = (Guild) context.contextVars().get("currentServerJda");
 		for (String roleId : autoroleConfig.getRoles()) {
 			try {
 				Role role = guild.getRoleById(roleId);
@@ -30,18 +37,16 @@ public class AutoroleConfigView {
 					toRemove.add(roleId);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				toRemove.add(roleId);
 			}
 		}
 		if (!toRemove.isEmpty()) {
 			autoroleConfig.getRoles().removeAll(toRemove);
 			sc.autoroleConfig(autoroleConfig);
-			LorittaLauncher.getInstance().getDs().save(sc);
+			dirty = true;
 		}
-		if (context.request().param("autoroles").isSet()) { // O usuário está salvando as configurações?
-			autoroleConfig.setEnabled(context.request().param("enableModule").isSet());
-			autoroleConfig.setRoles(Arrays.asList(context.request().param("autoroles").value().split(";")));
-			sc.autoroleConfig(autoroleConfig);
+		if (dirty) {
 			LorittaLauncher.getInstance().getDs().save(sc);
 		}
 		context.contextVars().put("whereAmI", "autoroleConfig");
