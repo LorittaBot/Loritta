@@ -40,7 +40,7 @@ class AnagramaCommand : CommandBase() {
 
 			val shuffledWord = shuffledChars.joinToString(separator = "");
 
-			context.sendMessage("\uD83D\uDCDD **|** " + context.getAsMention(true) + "Seu anagrama é... `$shuffledWord` \uD83D\uDE4B")
+			context.sendMessage("✍ **|** " + context.getAsMention(true) + "Seu anagrama é... `$shuffledWord` \uD83D\uDE4B")
 		} else {
 			this.explain(context);
 		}
