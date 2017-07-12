@@ -34,7 +34,11 @@ class EncurtarCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
-			var short =temmie.shorten(context.args[0]);
+			var url = context.args[0];
+			if (!url.startsWith("http")) {
+				url = "http://$url";
+			}
+			var short = temmie.shorten(url);
 			if (short != null && short != "INVALID_URI") {
 				context.sendMessage(context.getAsMention(true) + short)
 			} else {
