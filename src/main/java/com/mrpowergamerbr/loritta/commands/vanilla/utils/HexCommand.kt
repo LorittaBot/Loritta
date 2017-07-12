@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ColorUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 
 class HexCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -35,9 +36,9 @@ class HexCommand : CommandBase() {
 
 				val hex = String.format("#%02x%02x%02x", r, g, b)
 
-				context.sendMessage(context.getAsMention(true) + String.format("Transformei a sua cor %s, %s, %s (%s) para hexadecimal! %s", r, g, b, ColorUtils().getColorNameFromRgb(r, g, b), hex))
+				context.sendMessage(context.getAsMention(true) + String.format("Transformei a sua cor `%s, %s, %s (%s)` para hexadecimal! `%s`", r, g, b, ColorUtils().getColorNameFromRgb(r, g, b), hex))
 			} catch (e: Exception) {
-				context.sendMessage(context.getAsMention(true) + "Todos os argumentos devem ser números!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Todos os argumentos devem ser números!")
 			}
 		} else {
 			context.explain()
