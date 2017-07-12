@@ -107,7 +107,7 @@ public class CommandContext {
 	}
 
 	public Message sendMessage(String message) {
-		return sendMessage(new MessageBuilder().append(message).build());
+		return sendMessage(new MessageBuilder().append(message.isEmpty() ? " " : message).build());
 	}
 
 	public Message sendMessage(Message message) {
@@ -130,6 +130,10 @@ public class CommandContext {
 				return null;
 			}
 		}
+	}
+
+	public Message sendMessage(String message, MessageEmbed embed) {
+		return sendMessage(new MessageBuilder().setEmbed(embed).append(message.isEmpty() ? " " : message).build());
 	}
 
 	public Message sendMessage(MessageEmbed embed) {
