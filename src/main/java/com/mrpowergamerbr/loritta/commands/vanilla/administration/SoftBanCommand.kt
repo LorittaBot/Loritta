@@ -47,7 +47,7 @@ class SoftBanCommand : CommandBase() {
 				}
 
 				var days = 7;
-				if (context.args[1].toIntOrNull() != null) {
+				if (context.args.size > 1 && context.args[1].toIntOrNull() != null) {
 					days = context.args[1].toInt()
 				}
 
