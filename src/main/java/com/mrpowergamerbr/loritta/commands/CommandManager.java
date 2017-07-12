@@ -80,6 +80,7 @@ public class CommandManager {
         commandMap.add(new AmigosCommand());
         commandMap.add(new DiscordiaCommand());
         commandMap.add(new AmizadeCommand());
+        commandMap.add(new PretoEBrancoCommand());
 
         // =======[ MISC ]======
         commandMap.add(new SayCommand());
