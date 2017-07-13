@@ -297,7 +297,7 @@ object LorittaUtilsKotlin {
 				} else if (jsoup.select("feed entry content").isNotEmpty()) {
 					description = jsoup.select("feed entry content").first().text()
 				}
-			} else {
+			} else if (jsoup.select("channel").isNotEmpty()) {
 				// Provavelemente é uma feed RSS então :)
 				title = jsoup.select("channel item title").first().text()
 				link = jsoup.select("channel item link").first().text()
@@ -309,6 +309,9 @@ object LorittaUtilsKotlin {
 				if (!jsoup.select("channel item description").isEmpty()) {
 					description = jsoup.select("channel item description").first().text()
 				}
+			} else {
+				// Faço a mínima ideia do que seja isto.
+				return null;
 			}
 
 			if (dateRss == null) {
