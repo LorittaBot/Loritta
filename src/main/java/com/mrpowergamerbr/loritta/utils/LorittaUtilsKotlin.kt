@@ -372,6 +372,13 @@ object LorittaUtilsKotlin {
 					"<p>O servidor mais amigável de League of Legends que você já encontrará. atendendo às necessidades da comunidade. Fornecemos canais e recursos para interessar a galera. Venha participar da festa!</p>"))
 		}
 
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("330541042849808384")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("batata", guild, "https://discordapp.com/invite/362GWPp",
+					"<p>Guild sem um foco, gostamos de fazer uma variedades de coisas (Como ouvir músicas, conversar, etc) Entre e faça parte da Batata, estamos te esperando lá! =)</p>"))
+		}
+
 		return fanClubServers
 	}
 }
