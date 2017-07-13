@@ -325,6 +325,55 @@ object LorittaUtilsKotlin {
 			return FeedEntry(title, link, rssCalendar, description, entryItem)
 		} catch (urlEx: HttpRequest.HttpRequestException) { return null } // Ignorar silenciosamente...
 	}
+
+	@JvmStatic
+	fun getServersInFanClub(): List<ServerFanClubEntry> {
+		val fanClubServers = ArrayList<ServerFanClubEntry>()
+
+		var guild = LorittaLauncher.loritta.lorittaShards.getGuildById("323548939246632961")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("animeszone", guild, "https://discord.me/animeszone",
+					"<p>Variedade de comandos, eventos, League of Legends, shitpost, animes, mangas, wallpapers, músicas, histórias confessionário, frases e muito mais!</p>"))
+		}
+
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("300213099405901825")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("starsbrasil", guild, "https://discord.gg/QRPsEuW",
+					"<p>Animes, Filmes, Variedade de musica, Games, Cargos por level, Cargos personalizados, Sorteios, coisas aleatórias e muito mais pra vir!</p>"))
+		}
+
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("278636362163552257")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("brprogrammers", guild, "https://discord.gg/ypuZAqp",
+					"<p>Quer aprender a programar?</p>\n"
+							+ "<p>Já sabe programar e quer conversar com outros programadores sobre a sua linguagem favorita?</p>\n"
+							+ "<p>Sabe fazer um bot do discord e quer compartilhar conhecimento junto com outros programadores de bots para todos termos bots brs cada vez melhores?</p>\n"
+							+ "<p>Quer aprender a criar um bot no discord?</p>\n"
+							+ "<p>Tudo isso você pode fazer e encontrar no BR PROGRAMMERS! Um servidor com mais de 200 usuários contribuindo para melhorar cada vez mais</p>"))
+		}
+
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("313077442959114240")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("gamingstars", guild, "https://discord.gg/k9Uu2Yd",
+					"<p>Gostaria de convidá-lo(a) para vem fazer parte do servidor do Gaming Stars, este servidor tem foco em games mas também temos alguns assuntos extra como música eletrônica por exemplo,somos tão apaixonados por games e música eletrônica que temos ah Dubstep Stars para você descubrir ou aumentar seu amor ah música.</p>\n"
+							+ "<p>Temos muitos planos pela frente ainda como ter nossos produtos ao venda (em breve)</p>\n"
+							+ "\n"
+							+ "<p>Venha fazer parte da nossa \"família\" estamos lhe esperando. ✨\uD83C\uDF55</p>"))
+		}
+
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("207609115671920642")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("leaguebr", guild, "https://discord.gg/4YayeC8",
+					"<p>O servidor mais amigável de League of Legends que você já encontrará. atendendo às necessidades da comunidade. Fornecemos canais e recursos para interessar a galera. Venha participar da festa!</p>"))
+		}
+
+		return fanClubServers
+	}
 }
 
 data class FacebookPostWrapper(
@@ -340,9 +389,20 @@ data class FeedEntry(
 		val entry: Element
 )
 
-data class ServerFanClubEntry(
-		val id: String,
-		val guild: Guild,
-		val inviteUrl: String,
-		val description: String
-)
+class ServerFanClubEntry {
+	val id: String
+	val guild: Guild
+	val inviteUrl: String
+	val description: String
+	val guildIcon: String
+	val fancyJoinDate: String
+
+	constructor(id: String, guild: Guild, inviteUrl: String, description: String) {
+		this.id = id;
+		this.guild = guild;
+		this.inviteUrl = inviteUrl;
+		this.description = description;
+		this.guildIcon = guild.iconUrl.replace("jpg", "png")
+		this.fancyJoinDate = guild.selfMember.joinDate.humanize()
+	}
+}
