@@ -100,6 +100,13 @@ class ShipCommand : CommandBase() {
 
 			var percentage = random.nextInt(0, 101);
 
+			// Loritta presa amanhã por manipulação de resultados
+			if (context.message.mentionedUsers[0].id == Loritta.config.clientId || context.message.mentionedUsers[1].id == Loritta.config.clientId) {
+				if (context.message.mentionedUsers[0].id != Loritta.config.ownerId && context.message.mentionedUsers[1].id != Loritta.config.ownerId) {
+					percentage = random.nextInt(0, 51);
+				}
+			}
+
 			var friendzone: String;
 
 			friendzone = if (random.nextBoolean()) {
