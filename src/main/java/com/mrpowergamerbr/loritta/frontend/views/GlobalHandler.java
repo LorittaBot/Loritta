@@ -7,8 +7,10 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.PaniniUtils;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
+import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import lombok.experimental.ExtensionMethod;
+import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooby.Request;
 import org.jooby.Response;
@@ -16,9 +18,7 @@ import org.jooby.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,6 +41,25 @@ public class GlobalHandler {
             contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
+
+            List<ServerFanClubEntry> fanClubServers = new ArrayList<ServerFanClubEntry>();
+
+            Guild guild = LorittaLauncher.getInstance().getLorittaShards().getGuildById("323548939246632961");
+
+            if (guild != null) {
+                fanClubServers.add(new ServerFanClubEntry("animeszone", guild, "https://discord.me/animeszone",
+                        "<p>Variedade de comandos, eventos, League of Legends, shitpost, animes, mangas, wallpapers, músicas, histórias confessionário, frases e muito mais!</p>"));
+            }
+
+            guild = LorittaLauncher.getInstance().getLorittaShards().getGuildById("323548939246632961");
+
+            if (guild != null) {
+                fanClubServers.add(new ServerFanClubEntry("animeszone", guild, "https://discord.me/animeszone",
+                        "<p>Variedade de comandos, eventos, League of Legends, shitpost, animes, mangas, wallpapers, músicas, histórias confessionário, frases e muito mais!</p>"));
+            }
+
+            contextVars.put("fanClubServers", fanClubServers);
+
             Object temmieObj = null;
             if (req.session().get("discordAuthCode").isSet()) {
                 temmieObj = LorittaWebsite.getOAuth2()

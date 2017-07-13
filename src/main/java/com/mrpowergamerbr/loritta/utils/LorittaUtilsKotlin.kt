@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -334,4 +335,11 @@ data class FeedEntry(
 		val date: Calendar,
 		val description: String?,
 		val entry: Element
+)
+
+data class ServerFanClubEntry(
+		val id: String,
+		val guild: Guild,
+		val inviteUrl: String,
+		val description: String
 )
