@@ -386,6 +386,13 @@ object LorittaUtilsKotlin {
 					"<p>Nosso objetivo é juntar cada vêz mais comunidades de jogos em geral. Mas a nossa comunidade não é só de jogadores, para todos que quiserem entrar, as portas estarão sempre abertas! \uD83D\uDE04</p>"))
 		}
 
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("327605170257264641")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("gamingnetwork", guild, "https://discord.gg/sCTvW3c",
+					"<p>Gostaria de convida-lo para o Gaming Network 2.0 . Um servidor com foco em juntar a comunidade de Games e do Discord para se conhecerem e se unirem.</p><p>Além de Games temos Música e muita Zoeira. E temos a Loritta para alegrar ainda mais nosso servidor.</p>"))
+		}
+
 		return fanClubServers
 	}
 }
