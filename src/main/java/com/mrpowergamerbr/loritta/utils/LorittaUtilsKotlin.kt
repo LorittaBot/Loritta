@@ -379,6 +379,13 @@ object LorittaUtilsKotlin {
 					"<p>Guild sem um foco, gostamos de fazer uma variedades de coisas (Como ouvir músicas, conversar, etc) Entre e faça parte da Batata, estamos te esperando lá! =)</p>"))
 		}
 
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("210258135565205515")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("zueiragamer", guild, "https://discord.gg/KD6QJgS",
+					"<p>Nosso objetivo é juntar cada vêz mais comunidades de jogos em geral. Mas a nossa comunidade não é só de jogadores, para todos que quiserem entrar, as portas estarão sempre abertas! \uD83D\uDE04</p>"))
+		}
+
 		return fanClubServers
 	}
 }
