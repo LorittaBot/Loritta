@@ -4,7 +4,7 @@ checkout:
     - git submodule update --init
     - mvn clean
     - mvn package
-    - cp -R ./target/loritta* $CIRCLE_ARTIFACTS
+    - cp -R ./target/Loritta* $CIRCLE_ARTIFACTS
 
 machine:
   java:
