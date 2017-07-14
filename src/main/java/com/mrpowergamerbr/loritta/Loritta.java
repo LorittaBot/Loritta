@@ -400,8 +400,12 @@ public class Loritta {
                                 continue;
                             }
                         }
-                        play(channel.getGuild(), conf, musicManager,
-                                new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
+                        try {
+                            play(channel.getGuild(), conf, musicManager,
+                                    new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
+                        } catch (Exception e) {
+                            ignored++;
+                        }
                     }
 
                     if (ignored == 0) {
