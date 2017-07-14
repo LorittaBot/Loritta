@@ -93,7 +93,7 @@ class MuteCommand : CommandBase() {
 					context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi silenciado com sucesso!");
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para softbanir este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para silenciar este usuário!");
 			}
 		} else {
 			this.explain(context);
