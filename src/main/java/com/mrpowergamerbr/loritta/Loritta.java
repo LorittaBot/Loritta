@@ -225,7 +225,7 @@ public class Loritta {
                     ServerConfig conf = getServerConfigForGuild(guild.getId());
 
                     if (conf.musicConfig().isEnabled()) {
-						getGuildAudioPlayer(guild); // Criar Audio Player para a guild
+                        getGuildAudioPlayer(guild); // Criar Audio Player para a guild
                         connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
                     }
                 }
@@ -400,12 +400,9 @@ public class Loritta {
                                 continue;
                             }
                         }
-                        try {
-                            play(channel.getGuild(), conf, musicManager,
-                                    new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
-                        } catch (Exception e) {
-                            ignored++;
-                        }
+
+                        play(channel.getGuild(), conf, musicManager,
+                                new AudioTrackWrapper(track, false, context.getUserHandle(), new HashMap<String, String>()));
                     }
 
                     if (ignored == 0) {
@@ -456,18 +453,18 @@ public class Loritta {
 
             @Override
             public void noMatches() {
-				if (conf.musicConfig().getUrls().contains(trackUrl)) {
-					conf.musicConfig().getUrls().remove(trackUrl);
-					ds.save(conf);
-				}
+                if (conf.musicConfig().getUrls().contains(trackUrl)) {
+                    conf.musicConfig().getUrls().remove(trackUrl);
+                    ds.save(conf);
+                }
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
                 if (conf.musicConfig().getUrls().contains(trackUrl)) {
-                	conf.musicConfig().getUrls().remove(trackUrl);
-                	ds.save(conf);
-				}
+                    conf.musicConfig().getUrls().remove(trackUrl);
+                    ds.save(conf);
+                }
             }
         });
     }

@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -400,6 +399,13 @@ object LorittaUtilsKotlin {
 		if (guild != null) {
 			fanClubServers.add(ServerFanClubEntry("gamingnetwork", guild, "https://discord.gg/sCTvW3c",
 					"<p>Gostaria de convida-lo para o Gaming Network 2.0 . Um servidor com foco em juntar a comunidade de Games e do Discord para se conhecerem e se unirem.</p><p>Além de Games temos Música e muita Zoeira. E temos a Loritta para alegrar ainda mais nosso servidor.</p>"))
+		}
+
+		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("248288318322638851")
+
+		if (guild != null) {
+			fanClubServers.add(ServerFanClubEntry("scarlegameplay", guild, "https://discord.gg/6Z7fRNN",
+					"""<p>Discord de um youtuber legal e divertido, tendo em vista trazer muita diversão a todos, muitas brincadeira em call, tendo varias salas para conversar, salas somente para brincar com o bots e com temas diferenciados para evitar bagunças, Servidor sem pornografia, respeitando todos, venha conhecer e se divertir no nosso Discord!</p>"""))
 		}
 
 		return fanClubServers
