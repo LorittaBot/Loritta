@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -48,6 +49,11 @@ class MuteCommand : CommandBase() {
 
 				if (context.rawArgs[0].startsWith("<") && context.message.mentionedUsers.isNotEmpty()) {
 					id = context.message.mentionedUsers[0].id
+				}
+
+				if (id == Loritta.config.clientId) {
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Você não pode me silenciar, bobinho!")
+					return
 				}
 
 				// Vamos pegar se a nossa role existe
