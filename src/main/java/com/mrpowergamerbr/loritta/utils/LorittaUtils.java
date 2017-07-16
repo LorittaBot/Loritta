@@ -1,16 +1,23 @@
 package com.mrpowergamerbr.loritta.utils;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
+import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
+import com.mrpowergamerbr.loritta.utils.reminders.Reminder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.io.IOUtils;
+import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -20,6 +27,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -367,6 +375,108 @@ public class LorittaUtils {
 			if (is != null) is.close();
 		}
 		return bytes;
+	}
+
+	@Deprecated
+	public static void startNotMigratedYetThreads() {
+		Runnable reminders = () -> {
+			while (true) {
+				FindIterable<Document> list = LorittaLauncher.loritta.mongo.getDatabase("loritta").getCollection("users").find(Filters.exists("reminders"));
+				for (Document doc : list) {
+					LorittaProfile profile = LorittaLauncher.loritta.getLorittaProfileForUser(doc.getString("_id"));
+					List<Reminder> toRemove = new ArrayList<Reminder>();
+					for (Reminder reminder : profile.getReminders()) {
+						if (System.currentTimeMillis() >= reminder.getRemindMe()) {
+							toRemove.add(reminder);
+
+							Guild guild = LorittaLauncher.loritta.getLorittaShards().getGuildById(reminder.getGuild());
+
+							if (guild != null) {
+								TextChannel textChannel = guild.getTextChannelById(reminder.getTextChannel());
+
+								if (textChannel != null) {
+									textChannel.sendMessage(
+											"\uD83D\uDD14 | <@" + profile.getUserId() + "> Lembrete! `" + reminder.getReason() + "`").complete();
+								}
+							}
+						}
+					}
+					if (!toRemove.isEmpty()) {
+						profile.getReminders().removeAll(toRemove);
+						LorittaLauncher.loritta.ds.save(profile);
+					}
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (Exception e) {
+				}
+			}
+		};
+		new Thread(reminders, "Reminders Thread").start();
+
+		Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
+			while (true) {
+				for (User user : LorittaLauncher.loritta.getLorittaShards().getUsers()) {
+					LorittaProfile lorittaProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.getId());
+					List<Guild> mutualGuilds =  LorittaLauncher.loritta.getLorittaShards().getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
+					List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
+					if (!mutualGuilds.isEmpty()) {
+						Member member = mutualGuilds.get(0).getMember(user);
+						if (member.getOnlineStatus() != OnlineStatus.OFFLINE) {
+							lorittaProfile.setTempoOnline(lorittaProfile.getTempoOnline() + 5); // Em segundos
+							Game game = member.getGame();
+
+							if (game != null) {
+								String gameName = game.getName();
+								gameName = gameName.replace(".", "[---DOT---]");
+								gameName = gameName.replace("$", "[---DOLLAR---]");
+								lorittaProfile.getGames().put(gameName, 5 + lorittaProfile.getGames().getOrDefault(gameName, 0L));
+							}
+							LorittaLauncher.loritta.ds.save(lorittaProfile);
+						}
+					}
+					LorittaLauncher.loritta.ds.save(toUpdate);
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		new Thread(onlineUpdater, "Game & Time Updater").start(); // Pronto!
+
+		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
+			while (true) {
+				for (Guild guild :  LorittaLauncher.loritta.getLorittaShards().getGuilds()) {
+					ServerConfig conf =  LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+
+					if (conf.musicConfig().isEnabled()) {
+						LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
+						LorittaLauncher.loritta.connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
+					}
+				}
+				for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
+					if (mm.player.getPlayingTrack() == null) {
+						ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(mm.scheduler.getGuild().getId());
+
+						if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+							String trackUrl = conf.musicConfig().getUrls().get(
+									Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+
+							// E agora carregue a música
+							LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
+						}
+					}
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		new Thread(playlistMagic, "Playlist Magic").start(); // Pronto!
 	}
 
 	public static String toUnicode(int ch) {

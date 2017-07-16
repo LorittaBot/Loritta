@@ -111,7 +111,7 @@ class Loritta {
 
 		mongo = MongoClient() // Hora de iniciar o MongoClient
 		morphia = Morphia() // E o Morphia
-		ds = (morphia as Morphia).createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
+		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
 		generateDummyServerConfig()
 
 		println("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
@@ -142,7 +142,7 @@ class Loritta {
 
 		DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
 
-		// TODO: Reminders, Game & Time Updater e o Playlist Updater
+		LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 
 		// Iniciar coisas musicais
 		musicManagers = HashMap()
@@ -292,14 +292,43 @@ class Loritta {
 		})
 	}
 
-	// TODO: loadAndPlayNoFeedback
-	
+	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
+		val musicConfig = config.musicConfig
+		val musicManager = getGuildAudioPlayer(guild);
+
+		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
+			override fun trackLoaded(track: AudioTrack) {
+				play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
+			}
+
+			override fun playlistLoaded(playlist: AudioPlaylist) {
+				play(guild, config, musicManager, AudioTrackWrapper(playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)], true, guild.selfMember.user, HashMap<String, String>()))
+			}
+
+			override fun noMatches() {
+				if (musicConfig.urls.contains(trackUrl)) {
+					musicConfig.urls.remove(trackUrl);
+					ds.save(config);
+				}
+			}
+
+			override fun loadFailed(exception: FriendlyException) {
+				if (musicConfig.urls.contains(trackUrl)) {
+					musicConfig.urls.remove(trackUrl);
+					ds.save(config);
+				}
+			}
+		})
+	}
+
 	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
-		val guild = context.guild
-		val conf = context.config
+		play(context.guild, context.config, musicManager, trackWrapper)
+	}
+
+	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
-		connectToVoiceChannel(musicGuildId, guild.getAudioManager());
+		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
 		musicManager.scheduler.queue(trackWrapper);
 

@@ -37,7 +37,7 @@ public class GlobalHandler {
             Map<String, Object> contextVars = new HashMap<String, Object>(); // Variáveis usadas no Pebble
 
             contextVars.put("websiteUrl", LorittaWebsite.getWebsiteUrl());
-            contextVars.put("clientId", Loritta.getClientId());
+            contextVars.put("clientId", Loritta.getConfig().getClientId());
             contextVars.put("websiteUrl", LorittaWebsite.getWebsiteUrl());
             contextVars.put("totalServers", LorittaLauncher.getInstance().getLorittaShards().getGuilds().size());
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
@@ -96,7 +96,7 @@ public class GlobalHandler {
                 if (req.param("code").isSet()) { // Se o code está marcado, então é um pedido de autenticação via OAuth2
                     String code = req.param("code").value();
 
-                    TemmieDiscordAuth temmie = new TemmieDiscordAuth(code, "https://loritta.website/auth", Loritta.getClientId(), Loritta.getClientSecret(), true);
+                    TemmieDiscordAuth temmie = new TemmieDiscordAuth(code, "https://loritta.website/auth", Loritta.getConfig().getClientId(), Loritta.getConfig().getClientSecret(), true);
 
                     temmie.doTokenExchange(); // Faça o token exchange
                     System.out.println("Token exchanged!");
@@ -192,7 +192,7 @@ public class GlobalHandler {
                                     obj = ConfigureServerView.render(context, temmie, guildId);
                                 } else {
                                     try {
-                                        res.redirect("https://discordapp.com/oauth2/authorize?client_id=" + Loritta.getClientId() + "&scope=bot&guild_id=" + guildId + "&response_type=code&redirect_uri=https://loritta.website/config/servidores&permissions=2097176631");
+                                        res.redirect("https://discordapp.com/oauth2/authorize?client_id=" + Loritta.getConfig().getClientId() + "&scope=bot&guild_id=" + guildId + "&response_type=code&redirect_uri=https://loritta.website/config/servidores&permissions=2097176631");
                                     } catch (Throwable e) {
                                         e.printStackTrace();
                                     }

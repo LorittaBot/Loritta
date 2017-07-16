@@ -6,7 +6,7 @@ data class MusicConfig(
 		var hasMaxSecondRestriction: Boolean,
 		var maxSeconds: Int,
 		var autoPlayWhenEmpty: Boolean,
-		var urls: List<String>,
+		var urls: MutableList<String>,
 		var voteToSkip: Boolean,
 		var required: Int,
 		var allowPlaylists: Boolean) {
