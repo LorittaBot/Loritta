@@ -86,7 +86,7 @@ class YouTubeCommand : CommandBase() {
 			if (context.metadata.contains("playMusic")) {
 				var item = context.metadata.get("playMusic") as YouTubeItem;
 
-				LorittaLauncher.loritta.loadAndPlay(context, context.config, context.event.textChannel, "https://youtu.be/${item.id.videoId}")
+				LorittaLauncher.loritta.loadAndPlay(context, "https://youtu.be/${item.id.videoId}")
 				context.metadata.remove("playMusic");
 				return;
 			}

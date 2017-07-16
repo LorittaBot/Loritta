@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
@@ -57,7 +58,7 @@ class FaustaoCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val temmie = Loritta.getOrCreateWebhook(context.event.textChannel, "Faustão")
+		val temmie = getOrCreateWebhook(context.event.textChannel, "Faustão")
 
 		val mensagem = frases[Loritta.random.nextInt(frases.size)].replace("{user}", context.getAsMention(false));
 

@@ -24,7 +24,7 @@ class DiscordBotsInfoThread : Thread("Discord Bot Info Thread") {
 		try {
 			val body = HttpRequest.post("https://bots.discord.pw/api/bots/" + Loritta.config.clientId + "/stats")
 					.authorization(Loritta.config.discordBotsKey).acceptJson().contentType("application/json")
-					.send("{ \"server_count\": " + loritta().lorittaShards.getGuilds().size + " }").body()
+					.send("{ \"server_count\": " + loritta.lorittaShards.getGuilds().size + " }").body()
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

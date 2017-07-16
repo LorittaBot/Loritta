@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`;
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed
@@ -63,7 +63,7 @@ class ReceitasCommand : CommandBase() {
 						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
 						.content(" ")
 						.build();
-				context.sendMessage(Loritta.getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
 			} else {
 				var message = DiscordMessage.builder()
 						.username("Louro José")
@@ -71,7 +71,7 @@ class ReceitasCommand : CommandBase() {
 						.content("Não encontrei nada relacionado a \"${query}\" no livro de receitas da Ana Maria Braga!")
 						.build();
 
-				context.sendMessage(Loritta.getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
 			}
 		} else {
 			this.explain(context);

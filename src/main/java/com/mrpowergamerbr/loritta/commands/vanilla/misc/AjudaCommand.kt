@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -42,7 +43,7 @@ class AjudaCommand : CommandBase() {
 
         var firstMsgSent = fastEmbedSend(context, listOf(builder.build()))[0] // Nós iremos dar pin nela
 
-        val disabledCommands = LorittaLauncher.getInstance().commandManager.getCommandsDisabledIn(context.config)
+        val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 
         val socialCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.SOCIAL, "http://i.imgur.com/Ql6EiAw.png")
         val discordCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")

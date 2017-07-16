@@ -27,7 +27,7 @@ class ReloadCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
 		val config = Loritta.gson.fromJson(json, LorittaConfig::class.java)
-		LorittaLauncher.loritta.loadFromConfig(config)
+		Loritta.config = config
 
 		LorittaLauncher.getInstance().morphia = Morphia()
 		LorittaLauncher.getInstance().ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")

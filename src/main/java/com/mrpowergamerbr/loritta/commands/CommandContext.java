@@ -123,7 +123,7 @@ public class CommandContext {
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendMessage(message).complete();
-				LorittaLauncher.getInstance().messageContextCache.put(sentMessage.getId(), this);
+				LorittaLauncher.getInstance().put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());

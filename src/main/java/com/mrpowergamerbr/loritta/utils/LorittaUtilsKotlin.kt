@@ -47,9 +47,8 @@ fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 /**
  * Retorna a instância atual da Loritta
  */
-fun loritta(): Loritta {
-	return LorittaLauncher.getInstance();
-}
+val loritta: Loritta
+	get() = LorittaLauncher.loritta
 
 object LorittaUtilsKotlin {
 	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
@@ -202,7 +201,7 @@ object LorittaUtilsKotlin {
 					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
 
 					if (count >= required) {
-						LorittaLauncher.getInstance().skipTrack(e.guild)
+						loritta.skipTrack(e.textChannel)
 						e.textChannel.sendMessage("🤹 Música pulada!").complete()
 					}
 				}

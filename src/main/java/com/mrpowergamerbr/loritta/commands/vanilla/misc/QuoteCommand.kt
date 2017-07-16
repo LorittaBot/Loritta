@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.AuthorEmbed
@@ -34,7 +34,7 @@ class QuoteCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.size >= 1) {
-			val temmie = Loritta.getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
+			val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
 
 			val msg = context.event.textChannel.getMessageById(context.args[0]).complete() ?: return
 

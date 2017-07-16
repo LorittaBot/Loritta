@@ -61,7 +61,7 @@ class TocarCommand : CommandBase() {
 				LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild).scheduler.queue.clear()
 				return
 			}
-			LorittaLauncher.getInstance().loadAndPlay(context, context.config, context.event.textChannel, music)
+			LorittaLauncher.getInstance().loadAndPlay(context, music)
 		} else {
 			context.explain()
 		}

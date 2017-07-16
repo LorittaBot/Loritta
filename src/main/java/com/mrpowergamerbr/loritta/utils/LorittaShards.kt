@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.managers.Presence
  * Guarda todos os shards da Loritta
  */
 class LorittaShards {
-    var shards: List<JDA> = ArrayList<JDA>();
+    var shards: MutableList<JDA> = ArrayList<JDA>();
 
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {

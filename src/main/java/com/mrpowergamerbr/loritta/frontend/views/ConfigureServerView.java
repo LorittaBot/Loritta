@@ -40,7 +40,7 @@ public class ConfigureServerView {
                 }
             }
 
-            if (!allowed && temmie.getCurrentUserIdentification().getId().equals(Loritta.config.ownerId)) { // Ninguém viu nada...
+            if (!allowed && temmie.getCurrentUserIdentification().getId().equals(Loritta.config.getOwnerId())) { // Ninguém viu nada...
                 allowed = true;
             }
 
