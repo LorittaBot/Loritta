@@ -88,6 +88,7 @@ class Loritta {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
+		Loritta.youtube = TemmieYouTube(config.youtubeKey)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
