@@ -90,7 +90,7 @@ class Loritta {
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
-
+		loadServersFromFanClub()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube(config.youtubeKey)
 	}
