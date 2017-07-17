@@ -50,6 +50,19 @@ fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 val loritta: Loritta
 	get() = LorittaLauncher.loritta
 
+/**
+ * Retorna a LorittaShards
+ */
+val lorittaShards: LorittaShards
+	get() = LorittaLauncher.loritta.lorittaShards
+
+/**
+ * Salva um objeto usando o Datastore do MongoDB
+ */
+infix fun <T> Loritta.save(obj: T) {
+	loritta.ds.save(obj)
+}
+
 object LorittaUtilsKotlin {
 	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
 		val rg : Random = Random()
@@ -336,79 +349,17 @@ object LorittaUtilsKotlin {
 
 	@JvmStatic
 	fun getServersInFanClub(): List<ServerFanClubEntry> {
-		val fanClubServers = ArrayList<ServerFanClubEntry>()
-
-		var guild = LorittaLauncher.loritta.lorittaShards.getGuildById("323548939246632961")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("animeszone", guild, "https://discord.me/animeszone",
-					"<p>Variedade de comandos, eventos, League of Legends, shitpost, animes, mangas, wallpapers, músicas, histórias confessionário, frases e muito mais!</p>"))
+		val entries = mutableListOf<ServerFanClubEntry>()
+		loritta.serversFanClub.forEach{
+			val guild = lorittaShards.getGuildById(it.serverId)
+			if (guild != null) {
+				entries.add(ServerFanClubEntry(it.id,
+						guild,
+						it.inviteUrl,
+						it.description))
+			}
 		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("300213099405901825")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("starsbrasil", guild, "https://discord.gg/QRPsEuW",
-					"<p>Animes, Filmes, Variedade de musica, Games, Cargos por level, Cargos personalizados, Sorteios, coisas aleatórias e muito mais pra vir!</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("278636362163552257")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("brprogrammers", guild, "https://discord.gg/ypuZAqp",
-					"<p>Quer aprender a programar?</p>\n"
-							+ "<p>Já sabe programar e quer conversar com outros programadores sobre a sua linguagem favorita?</p>\n"
-							+ "<p>Sabe fazer um bot do discord e quer compartilhar conhecimento junto com outros programadores de bots para todos termos bots brs cada vez melhores?</p>\n"
-							+ "<p>Quer aprender a criar um bot no discord?</p>\n"
-							+ "<p>Tudo isso você pode fazer e encontrar no BR PROGRAMMERS! Um servidor com mais de 200 usuários contribuindo para melhorar cada vez mais</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("313077442959114240")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("gamingstars", guild, "https://discord.gg/k9Uu2Yd",
-					"<p>Gostaria de convidá-lo(a) para vem fazer parte do servidor do Gaming Stars, este servidor tem foco em games mas também temos alguns assuntos extra como música eletrônica por exemplo,somos tão apaixonados por games e música eletrônica que temos ah Dubstep Stars para você descubrir ou aumentar seu amor ah música.</p>\n"
-							+ "<p>Temos muitos planos pela frente ainda como ter nossos produtos ao venda (em breve)</p>\n"
-							+ "\n"
-							+ "<p>Venha fazer parte da nossa \"família\" estamos lhe esperando. ✨\uD83C\uDF55</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("207609115671920642")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("leaguebr", guild, "https://discord.gg/4YayeC8",
-					"<p>O servidor mais amigável de League of Legends que você já encontrará. atendendo às necessidades da comunidade. Fornecemos canais e recursos para interessar a galera. Venha participar da festa!</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("330541042849808384")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("batata", guild, "https://discordapp.com/invite/362GWPp",
-					"<p>Guild sem um foco, gostamos de fazer uma variedades de coisas (Como ouvir músicas, conversar, etc) Entre e faça parte da Batata, estamos te esperando lá! =)</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("210258135565205515")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("zueiragamer", guild, "https://discord.gg/KD6QJgS",
-					"<p>Nosso objetivo é juntar cada vêz mais comunidades de jogos em geral. Mas a nossa comunidade não é só de jogadores, para todos que quiserem entrar, as portas estarão sempre abertas! \uD83D\uDE04</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("327605170257264641")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("gamingnetwork", guild, "https://discord.gg/sCTvW3c",
-					"<p>Gostaria de convida-lo para o Gaming Network 2.0 . Um servidor com foco em juntar a comunidade de Games e do Discord para se conhecerem e se unirem.</p><p>Além de Games temos Música e muita Zoeira. E temos a Loritta para alegrar ainda mais nosso servidor.</p>"))
-		}
-
-		guild = LorittaLauncher.loritta.lorittaShards.getGuildById("248288318322638851")
-
-		if (guild != null) {
-			fanClubServers.add(ServerFanClubEntry("scarlegameplay", guild, "https://discord.gg/6Z7fRNN",
-					"""<p>Discord de um youtuber legal e divertido, tendo em vista trazer muita diversão a todos, muitas brincadeira em call, tendo varias salas para conversar, salas somente para brincar com o bots e com temas diferenciados para evitar bagunças, Servidor sem pornografia, respeitando todos, venha conhecer e se divertir no nosso Discord!</p>"""))
-		}
-
-		return fanClubServers
+		return entries
 	}
 }
 

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -44,102 +45,89 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				return
 			}
 			loritta.executor.execute {
-				try {
-					val conf = loritta.getServerConfigForGuild(event.guild.id)
-					val profile = loritta.getLorittaProfileForUser(event.member.user.id)
-					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
+				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+				val lorittaProfile = loritta.getLorittaProfileForUser(event.member.user.id)
+				val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
 
-					if (ownerProfile.isBanned) { // Se o dono está banido...
-						if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
-							event.guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-							return@execute
-						}
+				if (ownerProfile.isBanned) { // Se o dono está banido...
+					if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
+						event.guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+						return@execute
 					}
-
-					if (event.message.rawContent.replace("!", "") == "<@297153970613387264>") {
-						event.textChannel.sendMessage("Olá " + event.message.author.asMention + "! Meu prefixo neste servidor é `" + conf.commandPrefix + "` Para ver o que eu posso fazer, use `" + conf.commandPrefix + "ajuda`!").complete()
-					}
-
-					for (r in event.member.roles) {
-						if (r.name.equals("Inimigo da Loritta", ignoreCase = true)) {
-							return@execute
-						}
-					}
-
-					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
-					lorittaProfile.xp = lorittaProfile.xp + 1
-					loritta.ds.save(lorittaProfile)
-
-					val userData = (conf.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
-					userData.xp = userData.xp + 1
-					conf.userData.put(event.member.user.id, userData)
-					loritta.ds.save(conf)
-
-					if (conf.aminoConfig.fixAminoImages) {
-						for (attachments in event.message.attachments) {
-							if (attachments.fileName.endsWith(".Amino")) {
-								val bufferedImage = LorittaUtils.downloadImage(attachments.url)
-
-								val os = ByteArrayOutputStream()
-								try {
-									ImageIO.write(bufferedImage!!, "png", os)
-								} catch (e: Exception) {
-								}
-
-								val `is` = ByteArrayInputStream(os.toByteArray())
-
-								event.textChannel.sendFile(`is`, "amino.png", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
-								event.message.delete().complete()
-							}
-						}
-					}
-
-					// Primeiro os comandos vanilla da Loritta(tm)
-					for (cmd in loritta.commandManager.commandMap) {
-						if (conf.debugOptions.enableAllModules || !conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-							if (cmd.handle(event, conf, profile)) {
-								val cmdOpti = conf.getCommandOptionsFor(cmd)
-								if (conf.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
-									event.message.delete().complete()
-								}
-								return@execute
-							}
-						}
-					}
-
-					// E depois os comandos usando JavaScript (Nashorn)
-					for (cmd in conf.nashornCommands) {
-						if (cmd.handle(event, conf, profile)) {
-							if (conf.deleteMessageAfterCommand) {
-								event.message.delete().complete()
-							}
-							return@execute
-						}
-					}
-
-					loritta.hal.add(event.message.content.toLowerCase()) // TODO: Filtrar links
-				} catch (e: Exception) {
-					e.printStackTrace()
 				}
+
+				if (event.message.rawContent.replace("!", "") == "<@297153970613387264>") {
+					event.textChannel.sendMessage("Olá " + event.message.author.asMention + "! Meu prefixo neste servidor é `" + serverConfig.commandPrefix + "` Para ver o que eu posso fazer, use `" + serverConfig.commandPrefix + "ajuda`!").complete()
+				}
+
+				event.member.roles.forEach{
+					if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
+						return@execute
+					}
+				}
+
+				lorittaProfile.xp = lorittaProfile.xp + 1
+				loritta save lorittaProfile
+
+				val userData = (serverConfig.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
+				userData.xp = userData.xp + 1
+				serverConfig.userData.put(event.member.user.id, userData)
+				loritta save serverConfig
+
+				if (serverConfig.aminoConfig.fixAminoImages) {
+					for (attachments in event.message.attachments) {
+						if (attachments.fileName.endsWith(".Amino")) {
+							val bufferedImage = LorittaUtils.downloadImage(attachments.url)
+
+							val os = ByteArrayOutputStream()
+							ImageIO.write(bufferedImage!!, "png", os)
+							val inputStream = ByteArrayInputStream(os.toByteArray())
+
+							event.textChannel.sendFile(inputStream, "amino.png", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
+							event.message.delete().complete()
+						}
+					}
+				}
+
+				// Primeiro os comandos vanilla da Loritta(tm)
+				loritta.commandManager.commandMap.forEach{ cmd ->
+					if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
+						if (cmd.handle(event, serverConfig, lorittaProfile)) {
+							val cmdOpti = serverConfig.getCommandOptionsFor(cmd)
+							if (serverConfig.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
+								event.message.delete().complete()
+							}
+							return@execute
+						}
+					}
+				}
+
+				// E depois os comandos usando JavaScript (Nashorn)
+				serverConfig.nashornCommands.forEach{ cmd ->
+					if (cmd.handle(event, serverConfig, lorittaProfile)) {
+						if (serverConfig.deleteMessageAfterCommand) {
+							event.message.delete().complete()
+						}
+						return@execute
+					}
+				}
+
+				loritta.hal.add(event.message.content.toLowerCase()) // TODO: Filtrar links
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
 			loritta.executor.execute {
-				try {
-					val conf = LorittaLauncher.loritta.dummyServerConfig
-					val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
-					if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
-						event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
+				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
+				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
+				if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
+					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
+					return@execute
+				}
+
+				// Comandos vanilla da Loritta
+				loritta.commandManager.commandMap.forEach{ cmd ->
+					if (cmd.handle(event, serverConfig, profile)) {
 						return@execute
 					}
-
-					// Comandos vanilla da Loritta
-					for (cmd in loritta.commandManager.commandMap) {
-						if (cmd.handle(event, conf, profile)) {
-							return@execute
-						}
-					}
-				} catch (e: Exception) {
-					e.printStackTrace()
 				}
 			}
 		}
@@ -150,7 +138,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 		} // Ignorar reactions de bots
 
-		if (LorittaLauncher.getInstance().messageContextCache.containsKey(e.messageId)) {
+		if (loritta.messageContextCache.containsKey(e.messageId)) {
 			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
 			val t = object : Thread() {
 				override fun run() {

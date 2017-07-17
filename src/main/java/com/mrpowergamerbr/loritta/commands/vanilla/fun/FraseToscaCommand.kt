@@ -32,7 +32,7 @@ class FraseToscaCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		var text: String
 		if (context.args.size >= 1) {
-			text = loritta.hal.getSentence(context.args.joinToString(" "))
+			text = loritta.hal.getSentence(context.args.joinToString(" ").toLowerCase())
 		} else {
 			text = loritta.hal.sentence
 		}

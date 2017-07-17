@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import com.github.salomonbrys.kotson.fromJson
 import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
 import com.mongodb.MongoClient
@@ -15,6 +16,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -35,6 +37,7 @@ import org.jibble.jmegahal.JMegaHal
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -70,6 +73,7 @@ class Loritta {
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
+	var serversFanClub = listOf<ServerFanClub>()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
@@ -199,6 +203,13 @@ class Loritta {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		commandManager = CommandManager()
+	}
+
+	/**
+	 * Carrega todos os servidores do Fã Clube da Loritta
+	 */
+	fun loadServersFromFanClub() {
+		serversFanClub = gson.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
 	}
 
 	@Synchronized
