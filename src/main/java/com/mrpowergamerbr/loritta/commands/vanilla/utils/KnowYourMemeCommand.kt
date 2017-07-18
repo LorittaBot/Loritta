@@ -50,13 +50,19 @@ class KnowYourMemeCommand : CommandBase() {
 				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$query` no KnowYourMeme...")
 				return;
 			} else {
+				println(response)
+
 				// Algo foi encontrado!
 				val meme = json["results"][0]
 				val name = meme["name"].string
 				val origin = meme["origin"].string
 				val iconUrl = meme["icon_url"].string
 				val originDate = meme["origin_date"].string
-				val summary = meme["summary"].string
+				val summary = if (meme.obj.has("summary")) {
+					meme["summary"].string
+				} else {
+					"Sem descrição..."
+				}
 				val url = meme["url"].string
 
 				val embed = EmbedBuilder()
