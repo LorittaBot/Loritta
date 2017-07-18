@@ -241,14 +241,14 @@ class Loritta {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.getDuration() > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds/60)%60), (musicConfig.maxSeconds%60));
+						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
 						channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Música grande demais! Uma música deve ter, no máximo, `$final` de duração!").queue();
 						return;
 					}
-					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila `${track.info.title}`!").queue()
-
-					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 				}
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila `${track.info.title}`!").queue()
+
+				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
@@ -263,39 +263,39 @@ class Loritta {
 
 					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 				} else { // Mas se ela aceita...
-                    var ignored = 0;
-                    for (track in playlist.getTracks()) {
-                        if (musicConfig.hasMaxSecondRestriction) {
-                            if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-                                ignored++;
-                                continue;
-                            }
-                        }
+					var ignored = 0;
+					for (track in playlist.getTracks()) {
+						if (musicConfig.hasMaxSecondRestriction) {
+							if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+								ignored++;
+								continue;
+							}
+						}
 
-                        play(context, musicManager,
-                                AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
-                    }
+						play(context, musicManager,
+								AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+					}
 
-                    if (ignored == 0) {
+					if (ignored == 0) {
 						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila ${playlist.tracks.size} músicas!").queue()
-                    } else {
+					} else {
 						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila ${playlist.tracks.size} músicas! (ignorado $ignored + faixas por serem muito grandes!)").queue()
-                    }
+					}
 				}
 			}
 
 			override fun noMatches() {
-                if (!alreadyChecked) {
-                    // Ok, não encontramos NADA relacionado a essa música
-                    // Então vamos pesquisar!
-                    val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
+				if (!alreadyChecked) {
+					// Ok, não encontramos NADA relacionado a essa música
+					// Então vamos pesquisar!
+					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
 
-                    if (items.isNotEmpty()) {
-                        loadAndPlay(context, items[0].id.videoId, true);
-                        return;
-                    }
-                }
-                channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$trackUrl` no YouTube... Tente colocar para tocar o link do vídeo!").queue();
+					if (items.isNotEmpty()) {
+						loadAndPlay(context, items[0].id.videoId, true);
+						return;
+					}
+				}
+				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$trackUrl` no YouTube... Tente colocar para tocar o link do vídeo!").queue();
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
