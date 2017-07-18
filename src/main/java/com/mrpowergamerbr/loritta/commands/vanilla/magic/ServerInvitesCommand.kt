@@ -18,6 +18,10 @@ class ServerInvitesCommand : CommandBase() {
 		return true
 	}
 
+	override fun getDescription(): String {
+		return "Pega os invites de um servidor a partir do ID dele"
+	}
+
 	override fun run(context: CommandContext) {
 		val serverId = context.args[0]
 

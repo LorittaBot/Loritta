@@ -25,6 +25,10 @@ class ReloadCommand : CommandBase() {
 		return true
 	}
 
+	override fun getDescription(): String {
+		return "Recarrega a Loritta"
+	}
+
 	override fun run(context: CommandContext) {
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
 		val config = Loritta.gson.fromJson(json, LorittaConfig::class.java)

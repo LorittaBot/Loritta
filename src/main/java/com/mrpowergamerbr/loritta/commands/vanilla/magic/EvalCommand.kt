@@ -28,6 +28,10 @@ class EvalCommand : CommandBase() {
 		return true
 	}
 
+	override fun getDescription(): String {
+		return "Executa códigos em JavaScript"
+	}
+
 	override fun run(context: CommandContext) {
 		var javaScript = context.args.joinToString(" ")
 

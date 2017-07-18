@@ -18,6 +18,10 @@ class NashornTestCommand : CommandBase() {
 		return true
 	}
 
+	override fun getDescription(): String {
+		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
+	}
+
 	override fun run(context: CommandContext) {
 		val javaScript = context.args.joinToString(" ")
 
