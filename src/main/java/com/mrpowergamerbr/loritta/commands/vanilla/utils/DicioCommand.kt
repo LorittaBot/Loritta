@@ -47,7 +47,8 @@ class DicioCommand : CommandBase() {
 			}
 			val jsoup = Jsoup.parse(response);
 
-			if (jsoup.select("p[itemprop = description]").isEmpty()) {
+			// Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
+			if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de")) {
 				context.sendMessage(context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
 				return;
 			}
