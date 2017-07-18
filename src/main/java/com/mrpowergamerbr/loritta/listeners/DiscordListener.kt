@@ -48,7 +48,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			loritta.executor.execute {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-					val lorittaProfile = loritta.getLorittaProfileForUser(event.member.user.id)
+					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
 
 					if (ownerProfile.isBanned) { // Se o dono está banido...
