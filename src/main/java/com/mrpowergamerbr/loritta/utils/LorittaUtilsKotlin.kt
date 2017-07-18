@@ -370,7 +370,7 @@ object LorittaUtilsKotlin {
 		val textChannel = guild.getTextChannelById("336834673441243146")
 
 		val messageBuilder = MessageBuilder()
-		messageBuilder.append("[${message.guild.name}->${message.channel.name}] **${message.author.name}**: `${message.rawContent}`")
+		messageBuilder.append("[`${message.guild.name}`->`${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`")
 		val builder = EmbedBuilder()
 		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 		var description = "Irineu, você não sabe e nem eu!"
