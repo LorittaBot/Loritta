@@ -69,6 +69,7 @@ public class CommandManager {
         commandMap.add(new DiscordiaCommand());
         commandMap.add(new AmizadeCommand());
         commandMap.add(new PretoEBrancoCommand());
+        commandMap.add(new PerdaoCommand());
 
         // =======[ MISC ]======
         commandMap.add(new AjudaCommand());
