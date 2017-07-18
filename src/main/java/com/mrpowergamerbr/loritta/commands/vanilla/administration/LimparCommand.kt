@@ -3,8 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.dv8tion.jda.core.Permission
-import java.util.*
 
 class LimparCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -20,7 +20,7 @@ class LimparCommand : CommandBase() {
 	}
 
 	override fun getExample(): List<String> {
-		return Arrays.asList("10", "25")
+		return listOf("10", "25", "7 @Tsugami", "50 @Tsugami @Tsumari")
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -32,9 +32,36 @@ class LimparCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val toClear = Integer.parseInt(context.args[0])
-		context.event.textChannel.history.retrievePast(toClear).complete().forEach { msg -> msg.delete().complete() }
+		if (context.args.isNotEmpty()) {
+			val toClear = context.args[0].toIntOrNull()
 
-		context.sendMessage("Chat limpo por " + context.handle.asMention + "!")
+			if (toClear == null) {
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}`${context.args[0]}` é um número inválido!")
+				return
+			}
+
+			if (toClear !in 2..100) {
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}Eu só consigo limpar entre 2 até 100 mensagens passadas!")
+				return
+			}
+
+			val toDelete = mutableListOf<String>()
+
+			context.event.textChannel.history.retrievePast(toClear).complete().forEach { msg ->
+				if (context.message.mentionedUsers.isNotEmpty()) {
+					if (context.message.mentionedUsers.contains(msg.author)) {
+						toDelete.add(msg.id)
+					}
+				} else {
+					toDelete.add(msg.id)
+				}
+			}
+
+			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
+
+			context.sendMessage("Chat limpo por " + context.handle.asMention + "!")
+		} else {
+			this.explain(context)
+		}
 	}
 }
