@@ -68,13 +68,44 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
-					lorittaProfile.xp = lorittaProfile.xp + 1
-					loritta save lorittaProfile
+					// ===[ CÁLCULO DE XP ]===
+					// (copyright Loritta™)
 
-					val userData = (serverConfig.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
-					userData.xp = userData.xp + 1
-					serverConfig.userData.put(event.member.user.id, userData)
-					loritta save serverConfig
+					// Primeiro iremos ver se a mensagem contém algo "interessante"
+					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
+						// Primeiro iremos verificar se a mensagem é "válida"
+						// 5 chars por millisegundo
+						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 5
+
+						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
+
+						if (diff > calculatedMessageSpeed * 1000) {
+							var alreadyAdded = mutableListOf<Char>()
+							var nonRepeatedCharsMessageBuilder = StringBuilder()
+
+							event.message.strippedContent.toLowerCase().forEach {
+								if (!alreadyAdded.contains(it) && !it.isWhitespace()) {
+									alreadyAdded.add(it)
+									nonRepeatedCharsMessageBuilder.append(it)
+								}
+							}
+
+							var nonRepeatedCharsMessage = nonRepeatedCharsMessageBuilder.toString()
+							if (nonRepeatedCharsMessage.length >= 5) {
+								var gainedXp = (nonRepeatedCharsMessageBuilder.length / 5)
+
+								lorittaProfile.xp = lorittaProfile.xp + gainedXp
+								lorittaProfile.lastMessageSent = System.currentTimeMillis()
+								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
+								loritta save lorittaProfile
+
+								val userData = (serverConfig.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
+								userData.xp = userData.xp + gainedXp
+								serverConfig.userData.put(event.member.user.id, userData)
+								loritta save serverConfig
+							}
+						}
+					}
 
 					if (serverConfig.aminoConfig.fixAminoImages) {
 						for (attachments in event.message.attachments) {

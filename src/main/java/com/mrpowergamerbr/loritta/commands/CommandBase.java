@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 
 import java.awt.*;
 import java.time.Instant;
@@ -101,12 +102,15 @@ public abstract class CommandBase {
         if (run) {
             LorittaUtilsKotlin.trackCommands(ev.getMessage());
             if (hasCommandFeedback()) {
-                if (conf != LorittaLauncher.getInstance().dummyServerConfig && !ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-                    LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
-                    return true;
-                } else {
-                    ev.getChannel().sendTyping().complete();
-                }
+            	try {
+					if (conf != LorittaLauncher.getInstance().dummyServerConfig && !ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+						LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
+						return true;
+					} else {
+						ev.getChannel().sendTyping().complete();
+					}
+				} catch (ErrorResponseException e) {
+				}
             }
             String cmd = label;
             String onlyArgs = message.substring(message.toLowerCase().indexOf(cmd) + cmd.length()); // wow, such workaround, very bad

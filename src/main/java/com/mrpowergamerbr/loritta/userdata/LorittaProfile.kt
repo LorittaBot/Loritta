@@ -27,6 +27,8 @@ import org.mongodb.morphia.annotations.Indexed
     var reminders: MutableList<Reminder> = arrayListOf();
     var receivedReputations: MutableList<String> = ArrayList<String>(); // Nós salvamos os usuários que deram reputação em vez de só salvar um número
     var lastReputationGiven: Long = 0;
+    var lastMessageSent: Long = 0; // Última vez que o usuário enviou uma mensagem
+	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
