@@ -46,7 +46,7 @@ class PerdaoCommand : CommandBase() {
 		// alturaOriginal - X
 		var newHeight = (contextImage.width * template.height) / template.width
 
-		var scaledTemplate = template.getScaledInstance(contextImage.width, newHeight, BufferedImage.SCALE_SMOOTH)
+		var scaledTemplate = template.getScaledInstance(contextImage.width, Math.max(newHeight, 1), BufferedImage.SCALE_SMOOTH)
 		contextImage.graphics.drawImage(scaledTemplate, 0, contextImage.height - scaledTemplate.getHeight(null), null);
 
 		context.sendFile(contextImage, "perdao.png", context.getAsMention(true));
