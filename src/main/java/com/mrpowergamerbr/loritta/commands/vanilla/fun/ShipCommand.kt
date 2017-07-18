@@ -183,7 +183,7 @@ class ShipCommand : CommandBase() {
 
 			var text = "[`";
 			for (i in 0..100 step 10) {
-				if (percentage > i) {
+				if (percentage >= i) {
 					text += "█";
 				} else {
 					text += ".";
