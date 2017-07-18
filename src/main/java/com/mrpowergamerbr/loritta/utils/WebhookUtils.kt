@@ -4,6 +4,7 @@ import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.entities.Webhook
+import net.dv8tion.jda.core.exceptions.PermissionException
 
 object WebhookUtils {
 	/**
@@ -23,12 +24,16 @@ object WebhookUtils {
 		var webhook: Webhook?
 
 		if (webhooks.isEmpty()) {
-			webhook = textChannel.guild.controller.createWebhook(textChannel, name).complete()
+			try { // try catch, já que pelo visto a verificação acima falha as vezes
+				webhook = textChannel.guild.controller.createWebhook(textChannel, name).complete()
+			} catch (e: PermissionException) {
+				return null
+			}
 		} else {
 			webhook = webhooks[0];
 		}
 
-		val temmie = TemmieWebhook(webhook.getUrl(), true);
+		val temmie = TemmieWebhook(webhook.url, true);
 
 		return temmie;
 	}
