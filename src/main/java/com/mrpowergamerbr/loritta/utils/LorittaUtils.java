@@ -453,8 +453,9 @@ public class LorittaUtils {
 
 					if (conf.musicConfig().isEnabled()) {
 						LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
-						if (guild.getSelfMember().hasPermission(guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId()), Permission.VOICE_CONNECT)) {
-							LorittaLauncher.loritta.connectToVoiceChannel(conf.musicConfig().getMusicGuildId(), guild.getAudioManager());
+						VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
+						if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+							LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
 						}
 					}
 				}
