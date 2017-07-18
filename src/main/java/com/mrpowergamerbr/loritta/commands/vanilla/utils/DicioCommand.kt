@@ -57,7 +57,11 @@ class DicioCommand : CommandBase() {
 			val type = description.getElementsByTag("span")[0]
 			val what = description.getElementsByTag("span")[1]
 			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else "";
-			var frase = jsoup.getElementsByClass("frase")[0];
+			var frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
+				jsoup.getElementsByClass("frase")[0]
+			} else {
+				null
+			}
 
 			val embed = EmbedBuilder();
 			embed.setColor(Color(25, 89, 132))
@@ -77,7 +81,10 @@ class DicioCommand : CommandBase() {
 				embed.addField("🙁 Antônimos", antonimos.text(), false);
 			}
 
-			embed.addField("🖋 Frase", frase.text(), false);
+			if (frase != null) {
+				embed.addField("🖋 Frase", frase.text(), false);
+			}
+			
 			context.sendMessage(context.getAsMention(true), embed.build());
 
 		} else {
