@@ -18,6 +18,10 @@ class PerdaoCommand : CommandBase() {
 		return "Um monstro desses mereçe perdão?";
 	}
 
+	override fun getAliases(): List<String> {
+		return listOf("perdão")
+	}
+
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
 	}
