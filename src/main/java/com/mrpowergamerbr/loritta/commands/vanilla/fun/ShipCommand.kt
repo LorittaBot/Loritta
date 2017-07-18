@@ -105,6 +105,9 @@ class ShipCommand : CommandBase() {
 				if (context.message.mentionedUsers[0].id != Loritta.config.ownerId && context.message.mentionedUsers[1].id != Loritta.config.ownerId) {
 					percentage = random.nextInt(0, 51);
 				}
+				if (context.message.mentionedUsers[0].id == "273192139460968449" || context.message.mentionedUsers[1].id == "273192139460968449") {
+					percentage = 0
+				}
 			}
 
 			var friendzone: String;
