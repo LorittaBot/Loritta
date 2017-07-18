@@ -11,10 +11,12 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateUtils
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,6 +31,7 @@ import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 fun OffsetDateTime.humanize(): String {
@@ -360,6 +363,34 @@ object LorittaUtilsKotlin {
 			}
 		}
 		return entries
+	}
+
+	fun sendStackTrace(message: Message, t: Throwable) {
+		val guild = lorittaShards.getGuildById("297732013006389252")!!
+		val textChannel = guild.getTextChannelById("336834673441243146")
+
+		val messageBuilder = MessageBuilder()
+		messageBuilder.append("[${message.channel.name}] ${message.author.name}: `${message.rawContent}`")
+		val builder = EmbedBuilder()
+		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
+		var description = "Irineu, você não sabe e nem eu!"
+		if (t is ExecutionException) {
+			description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
+		} else {
+			val message = t.cause?.message
+			if (t != null && t.cause != null && message != null) {
+				description = message.trim { it <= ' ' }
+			} else if (t != null) {
+				description = ExceptionUtils.getStackTrace(t).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(t).length))
+			}
+		}
+		builder.setDescription("```$description```")
+		builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
+		builder.setColor(Color.RED)
+
+		messageBuilder.setEmbed(builder.build())
+
+		textChannel.sendMessage(messageBuilder.build()).queue()
 	}
 }
 

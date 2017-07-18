@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
@@ -116,6 +117,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					loritta.hal.add(event.message.content.toLowerCase()) // TODO: Filtrar links
 				} catch (e: Exception) {
 					e.printStackTrace()
+					LorittaUtilsKotlin.sendStackTrace(event.message, e)
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
