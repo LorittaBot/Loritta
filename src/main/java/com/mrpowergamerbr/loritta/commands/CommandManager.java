@@ -105,6 +105,7 @@ public class CommandManager {
         commandMap.add(new Md5Command());
         commandMap.add(new AnagramaCommand());
         commandMap.add(new CalculadoraCommand());
+        commandMap.add(new MorseCommand());
 
         // =======[ MÚSICA ]========
         commandMap.add(new TocarCommand());
