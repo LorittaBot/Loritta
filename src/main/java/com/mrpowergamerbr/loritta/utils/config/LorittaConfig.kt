@@ -18,6 +18,7 @@ data class LorittaConfig(
 	val aminoPassword: String,
 	val aminoDeviceId: String,
 	val facebookToken: String,
+	val googleVisionKey: String,
 	val currentlyPlaying: List<String>) {
 	constructor() : this(2,
 			"Token do Bot",
@@ -36,5 +37,6 @@ data class LorittaConfig(
 			"Senha de uma conta do Amino",
 			"Device ID de uma conta do Amino",
 			"Token da API do Facebook",
+			"Key do Google Vision",
 			listOf("Shantae: Half-Genie Hero"))
 }
