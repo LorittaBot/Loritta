@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.fromMorse
 import com.mrpowergamerbr.loritta.utils.toMorse
 import net.dv8tion.jda.core.EmbedBuilder
@@ -35,6 +36,11 @@ class MorseCommand : CommandBase() {
 
 			val toMorse = message.toUpperCase().toMorse()
 			val fromMorse = message.fromMorse()
+
+			if (toMorse.trim().isEmpty()) {
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não consegui transformar a sua mensagem para código morse... Talvez você tenha colocado apenas caracteres que não existem em código morse!")
+				return;
+			}
 
 			val embed = EmbedBuilder();
 

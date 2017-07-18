@@ -84,7 +84,7 @@ class DicioCommand : CommandBase() {
 			if (frase != null) {
 				embed.addField("🖋 Frase", frase.text(), false);
 			}
-			
+
 			context.sendMessage(context.getAsMention(true), embed.build());
 
 		} else {
