@@ -141,13 +141,10 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 			return;
 		}
 
-		val imageUrl = java.net.URL(link)
-		val connection = imageUrl.openConnection() as java.net.HttpURLConnection
-		connection.setRequestProperty(
-				"User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0")
-
-		var bufferedImage = javax.imageio.ImageIO.read(connection.inputStream);
+		var bufferedImage = LorittaUtils.downloadImage(link)
+		if (!LorittaUtils.isValidImage(context, bufferedImage)) {
+			return;
+		}
 		var needsEditing = false;
 		if (!(bufferedImage.width == 400 && bufferedImage.height == 300)) {
 			needsEditing = true;
