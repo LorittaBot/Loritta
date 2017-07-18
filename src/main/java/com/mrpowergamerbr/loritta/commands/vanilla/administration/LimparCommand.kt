@@ -5,6 +5,9 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.utils.MiscUtil
+
+
 
 class LimparCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -46,8 +49,13 @@ class LimparCommand : CommandBase() {
 			}
 
 			val toDelete = mutableListOf<String>()
-
+			var olderThanTwoWeeks = false;
 			context.event.textChannel.history.retrievePast(toClear).complete().forEach { msg ->
+				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
+				if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
+					olderThanTwoWeeks = true
+					return;
+				}
 				if (context.message.mentionedUsers.isNotEmpty()) {
 					if (context.message.mentionedUsers.contains(msg.author)) {
 						toDelete.add(msg.id)
@@ -59,7 +67,7 @@ class LimparCommand : CommandBase() {
 
 			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
 
-			context.sendMessage("Chat limpo por " + context.handle.asMention + "!")
+			context.sendMessage("Chat limpo por " + context.handle.asMention + "!" + if (olderThanTwoWeeks) " (Algumas mensagens eram mais velhas que duas semanas e, como o Discord é chato, não consegui deletar elas..." else "")
 		} else {
 			this.explain(context)
 		}
