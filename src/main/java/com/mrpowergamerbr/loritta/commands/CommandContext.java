@@ -159,7 +159,7 @@ public class CommandContext {
 	}
 
 	public void sendMessage(TemmieWebhook webhook, DiscordMessage message) {
-		if (!isPrivateChannel() || webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
+		if (!isPrivateChannel() && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
 			webhook.sendMessage(message);
 		} else { // Se não, iremos usar embeds mesmo...
 			EmbedBuilder builder = new EmbedBuilder();
