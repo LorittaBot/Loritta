@@ -136,6 +136,11 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		val jsonReader = JsonReader(reader)
 		val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
+		if (apiResponse.has("error")) {
+			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Imagem inválida! Tem certeza que isto é um link válido? Se puder, baixe a imagem e faça upload diretamente no Discord!").complete()
+			return;
+		}
+
 		if (apiResponse.get("rating_label").asString == "adult") {
 			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + "**Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o " + context.getAsMention(false) + " é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore 😞)").complete()
 			return;
