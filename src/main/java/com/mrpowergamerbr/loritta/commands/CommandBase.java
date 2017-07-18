@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -98,6 +99,7 @@ public abstract class CommandBase {
             }
         }
         if (run) {
+            LorittaUtilsKotlin.trackCommands(ev.getMessage());
             if (hasCommandFeedback()) {
                 if (conf != LorittaLauncher.getInstance().dummyServerConfig && !ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
                     LorittaUtils.warnOwnerNoPermission(ev.getGuild(), ev.getTextChannel(), conf);
