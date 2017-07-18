@@ -73,6 +73,10 @@ class ShipCommand : CommandBase() {
 		return "<usuário 1> <usuário 2>";
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return super.needsToUploadFiles()
+	}
+
     override fun run(context: CommandContext) {
 		if (context.message.mentionedUsers.size == 2) {
 			var texto = context.getAsMention(true) + "\n💖 **Hmmm, será que nós temos um novo casal aqui?** 💖\n";
