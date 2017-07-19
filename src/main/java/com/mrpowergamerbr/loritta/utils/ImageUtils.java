@@ -42,8 +42,8 @@ public class ImageUtils {
                             "User-Agent",
                             "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
                     BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
-                    graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
-                    currentX = currentX + width;
+                    graphics.drawImage(emoteImage.getScaledInstance(graphics.getFont().getSize(), graphics.getFont().getSize(), BufferedImage.SCALE_SMOOTH), currentX, currentY - graphics.getFont().getSize() + 1, null);
+                    currentX = currentX + fontMetrics.getMaxAdvance();
 			    } catch (Exception e) {}
                 continue;
             }

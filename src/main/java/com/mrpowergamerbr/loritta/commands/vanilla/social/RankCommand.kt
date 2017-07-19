@@ -1,9 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
+import com.mrpowergamerbr.loritta.utils.*
+import java.awt.*
+import java.awt.geom.Path2D
+import java.awt.image.BufferedImage
+import java.io.File
+import java.io.FileInputStream
+import javax.imageio.ImageIO
 
 class RankCommand : CommandBase() {
 	override fun getLabel():String {
@@ -14,12 +22,20 @@ class RankCommand : CommandBase() {
 		return "Veja o ranking do servidor atual!";
 	}
 
+	override fun getAliases(): List<String> {
+		return listOf("top", "leaderboard", "ranking")
+	}
+
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.SOCIAL;
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
+	}
+
+	override fun needsToUploadFiles(): Boolean {
+		return true
 	}
 
 	override fun run(context: CommandContext) {
@@ -30,50 +46,108 @@ class RankCommand : CommandBase() {
 		list.sortBy { it.userData.xp }
 		list.reverse()
 
-		var text = "```cs\n\uD83C\uDFC6 Rank | \uD83D\uDCDB Nome\n";
-
 		var idx = 0;
 
 		var currentIndex = 0;
-		var userData: LorittaServerUserData? = null;
+		var currentUserData: LorittaServerUserData? = null;
 
 		for (entry in list) {
 			if (entry.id == context.userHandle.id) {
-				userData = entry.userData;
+				currentUserData = entry.userData;
 				break;
 			}
 			currentIndex++;
 		}
 
-		for (entry in list) {
-			if (idx >= 10) {
+		val image = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
+		val graphics = image.graphics as Graphics2D
+
+		graphics.color = Color.BLACK
+		graphics.font = Font.createFont(Font.TRUETYPE_FONT,
+				FileInputStream(File(Loritta.FOLDER + "whitney_500.ttf"))).deriveFont(14F)
+		graphics.setRenderingHint(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		var currentY = 48;
+
+		var serverIcon = LorittaUtils.downloadImage(if (context.guild.iconUrl != null) context.guild.iconUrl.replace("jpg", "png") else "https://loritta.website/assets/img/unknown.png")
+				.getScaledInstance(40, 40, BufferedImage.SCALE_SMOOTH)
+				.toBufferedImage()
+				.makeRoundedCorners(9999)
+
+		for ((id, userData) in list) {
+			if (idx >= 6) {
 				break;
 			}
-			var member = context.guild.getMemberById(entry.id)
+			var member = context.guild.getMemberById(id)
 
-			text += "\n[${idx + 1}]   " + (if (idx != 9) " " else "") + " > #";
 			if (member != null) {
-				text += member.effectiveName
-				if (userData == entry.userData) {
-					text += " (\uD83D\uDC48 Sua posição no ranking!)"
-				}
-			} else {
-				text += "Usuário saiu do servidor... 😢"
+				var image = LorittaUtils.downloadImage(member.user.effectiveAvatarUrl)
+						.getScaledInstance(40, 40, BufferedImage.SCALE_SMOOTH)
+						.toBufferedImage()
+						.makeRoundedCorners(9999)
+
+				val userProfile = loritta.getLorittaProfileForUser(id)
+				val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
+				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
+
+				val rankBackground = LorittaUtils.downloadImage(imageUrl)
+				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
+						.toBufferedImage()
+						.getSubimage(0, idx * 42, 400, 42), 0, currentY, null)
+				graphics.color = Color(255, 255, 255, 230)
+
+				var solidBackground = BufferedImage(400, 45, BufferedImage.TYPE_INT_ARGB_PRE)
+				var solidGraphics = solidBackground.graphics as Graphics2D
+				solidGraphics.color = Color.BLACK
+
+				val path = Path2D.Double()
+				path.moveTo(0.0, 0.0)
+				path.lineTo(0.0, 42.0)
+				path.lineTo(235.0, 42.0)
+				path.lineTo(277.0, 0.0)
+				path.closePath()
+
+				solidGraphics.clip = path
+				var gp = GradientPaint(
+						0.0f, 0.0f,
+						Color(250, 250, 250, 240),
+						0.0f, 45.0f,
+						Color(243, 243, 243, 240));
+				solidGraphics.paint = gp;
+				solidGraphics.fillRect(0, 0, 400, 45)
+
+				graphics.drawImage(solidBackground, 0, currentY, null)
+				graphics.color = Color.BLACK
+				graphics.drawImage(image, 2, currentY + 1, null)
+				graphics.drawStringWrap(member.effectiveName + if (currentUserData == userData) { " 👈" } else "", 62, currentY + graphics.fontMetrics.ascent + 2)
+
+				graphics.color = Color(115, 127, 141, 75)
+				graphics.drawString("XP Total: ${userData.xp} | Nível Atual: ${userData.getCurrentLevel().currentLevel}", 62, currentY + 39)
+
+				graphics.color = Color(115, 127, 141)
+				graphics.drawString("XP Total: ${userData.xp} | Nível Atual: ${userData.getCurrentLevel().currentLevel}", 62, currentY + 38)
+
+				graphics.color = Color.BLACK
+				currentY += 42;
 			}
-			text += "\n            \uD83C\uDF1F XP total: " + entry.userData.xp + " | \uD83D\uDCAB Nível atual: " + entry.userData.getCurrentLevel().currentLevel
 			idx++;
 		}
 
-		var emoji = "\uD83D\uDE42";
+		graphics.drawImage(ImageIO.read(File(Loritta.FOLDER, "rank_wrapper.png")), 0, 0, null)
+		graphics.drawImage(serverIcon, 2, 3, null)
 
-		if (currentIndex >= 10) {
-			emoji = "\uD83D\uDE10";
-		}
+		val bebasNeue = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
+				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "BebasNeue.otf")))
+				.deriveFont(32F)
+		graphics.font = bebasNeue
+		graphics.color = Color(210, 210, 210)
+		ImageUtils.drawCenteredString(graphics, "Ranking do ${context.guild.name}", Rectangle(0, 1, 400, 46), bebasNeue)
 
-		text += "\n____________________________\n\n";
-		text += "$emoji Rank: ${currentIndex + 1} - \uD83C\uDF1F Seu XP: ${userData!!.xp}"
-		text += "```"
-		context.sendMessage(text)
+		graphics.color = Color.WHITE
+		ImageUtils.drawCenteredString(graphics, "Ranking do ${context.guild.name}", Rectangle(0, 0, 400, 45), bebasNeue)
+
+		context.sendFile(image.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
 	}
 
 	data class RankWrapper(

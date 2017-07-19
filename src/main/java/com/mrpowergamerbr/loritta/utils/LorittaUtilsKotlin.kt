@@ -25,6 +25,7 @@ import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
 import org.jsoup.safety.Whitelist
 import java.awt.Color
+import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.text.DateFormatSymbols
@@ -45,6 +46,10 @@ fun Image.toBufferedImage() : BufferedImage {
 
 fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 	return ImageUtils.makeRoundedCorner(this, cornerRadius);
+}
+
+fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY: Int = 9999) {
+	ImageUtils.drawTextWrap(text, x, y, maxX, maxY, this.fontMetrics, this)
 }
 
 /**
