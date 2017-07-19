@@ -52,6 +52,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
         if (context.message.mentionedUsers.size == 1) {
             userProfile = com.mrpowergamerbr.loritta.LorittaLauncher.getInstance().getLorittaProfileForUser(context.message.mentionedUsers[0].id)
+            userData = context.config.userData.getOrDefault(context.message.mentionedUsers[0].id, LorittaServerUserData());
         }
 
         var background: java.awt.image.BufferedImage?;
