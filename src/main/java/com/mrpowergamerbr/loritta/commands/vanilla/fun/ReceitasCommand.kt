@@ -36,6 +36,10 @@ class ReceitasCommand : CommandBase() {
 		return "<texto>";
 	}
 
+	override fun getExtendedExamples(): Map<String, String> {
+		return mapOf("bolo" to "Procura \"bolo\" no livro de receitas da Ana Maria Braga™")
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.size > 0) {
 			val query = context.args.joinToString(" ");
