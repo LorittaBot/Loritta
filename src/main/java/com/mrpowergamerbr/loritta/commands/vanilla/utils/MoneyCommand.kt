@@ -59,7 +59,7 @@ class MoneyCommand : CommandBase() {
 			val converted = rates.get(to).asDouble
 			context.sendMessage(context.getAsMention(true) + "💵 **$multiply " + from + " para " + to + ":** " + (converted * multiply) + " " + to)
 		} else {
-			this.explain(context.config, context.event)
+			this.explain(context)
 		}
 	}
 }

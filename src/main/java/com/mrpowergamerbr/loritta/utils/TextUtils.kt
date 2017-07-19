@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import java.net.URLEncoder
+import java.text.MessageFormat
 
 val morseValues = mapOf(
 		// ALFABETO
@@ -90,6 +91,10 @@ fun String.encodeToUrl(enc: String = "UTF-8"): String {
 
 fun String.stripCodeMarks(): String {
 	return this.replace("`", "")
+}
+
+fun String.msgFormat(vararg: Any): String {
+	return MessageFormat.format(this, vararg);
 }
 
 fun String.fromMorse(): String {

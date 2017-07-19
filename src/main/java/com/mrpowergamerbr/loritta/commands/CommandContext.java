@@ -66,7 +66,7 @@ public class CommandContext {
 	}
 
 	public void explain() {
-		cmd.explain(lorittaUser.getConfig(), event);
+		cmd.explain(this);
 	}
 
 	public Message getMessage() {
