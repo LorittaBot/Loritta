@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
+import java.net.URLEncoder
+
 val morseValues = mapOf(
 		// ALFABETO
 		'A' to ".-",
@@ -77,6 +79,14 @@ val morseValues = mapOf(
 		'þ' to "·--··",
 		'ü' to "··--"
 )
+
+fun String.stripNewLines(): String {
+	return this.replace(Regex("\\r|\\n"), "")
+}
+
+fun String.encodeToUrl(enc: String = "UTF-8"): String {
+	return URLEncoder.encode(this, enc)
+}
 
 fun String.fromMorse(): String {
 	// Criar uma string vazia para guardar a nossa mensagem em texto comum

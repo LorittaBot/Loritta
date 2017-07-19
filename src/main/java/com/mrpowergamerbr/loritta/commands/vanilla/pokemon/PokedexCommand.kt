@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.util.*
@@ -36,7 +37,7 @@ class PokedexCommand : CommandBase() {
     override fun run(context: CommandContext?) {
         if (context!!.args.size == 1) {
             // Argumento 1: Pokémon (ID ou Nome)
-			var http = HttpRequest.get("https://veekun.com/dex/pokemon/${context.args[0].toLowerCase()}").userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0");
+			var http = HttpRequest.get("https://veekun.com/dex/pokemon/${context.args[0].toLowerCase().encodeToUrl()}").userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0");
 			if (http.notFound()) {
 				context.sendMessage(context.getAsMention(true) + "Pokémon não encontrado!");
 				return;
