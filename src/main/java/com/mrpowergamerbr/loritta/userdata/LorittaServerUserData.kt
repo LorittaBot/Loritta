@@ -19,6 +19,6 @@ class LorittaServerUserData {
 	}
 
 	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return 125 + lvl * (25 + lvl)
+		return 325 + lvl * (25 + lvl)
 	}
 }
