@@ -29,7 +29,7 @@ class Md5Command : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val mensagem = context.args.joinToString(" ");
+			val mensagem = context.strippedArgs.joinToString(" ");
 
 			val encrypted = DigestUtils.md5Hex(mensagem)
 

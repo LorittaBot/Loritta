@@ -28,7 +28,7 @@ class MoneyCommand : CommandBase() {
 		if (context.args.size >= 2) {
 			var multiply: Double? = 1.0;
 			if (context.args.size > 2) {
-				multiply = context.args[2].replace(",", ".").toDoubleOrNull();
+				multiply = context.strippedArgs[2].replace(",", ".").toDoubleOrNull();
 			}
 
 			if (multiply == null) {
@@ -36,8 +36,8 @@ class MoneyCommand : CommandBase() {
 				return;
 			}
 
-			val from = context.args[0].toUpperCase()
-			val to = context.args[1].toUpperCase()
+			val from = context.strippedArgs[0].toUpperCase()
+			val to = context.strippedArgs[1].toUpperCase()
 
 			val response = HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body()
 			val validCurrenciesResponse = HttpRequest.get("http://api.fixer.io/latest").acceptJson().body()

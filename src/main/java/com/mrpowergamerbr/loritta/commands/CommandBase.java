@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
+import com.mrpowergamerbr.loritta.utils.TextUtilsKt;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -121,7 +122,9 @@ public abstract class CommandBase {
             }
             String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-            CommandContext context = new CommandContext(conf, ev, this, args, rawArgs);
+            String onlyArgsStripped = TextUtilsKt.removeSurrounding(ev.getMessage().getStrippedContent(), "`", "`").replace("@everyone", "").replace("@here", "").substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+            CommandContext context = new CommandContext(conf, ev, this, args, rawArgs, strippedArgs);
             if (LorittaUtils.handleIfBanned(context, profile)) { return true; }
             if (!context.canUseCommand()) {
                 context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**Sem permissão!**");

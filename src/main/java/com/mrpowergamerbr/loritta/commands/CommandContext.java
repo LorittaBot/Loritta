@@ -30,9 +30,10 @@ public class CommandContext {
 	public CommandBase cmd;
 	public String[] args;
 	public String[] rawArgs;
+	public String[] strippedArgs;
 	public HashMap<String, Object> metadata = new HashMap<>();
 
-	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
+	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		if (conf == LorittaLauncher.getInstance().dummyServerConfig) { // Se é um dummy server config, então crie um LorittaUser
 			this.lorittaUser = new LorittaUser(event.getAuthor(), conf,
 					LorittaLauncher.getInstance().getLorittaProfileForUser(event.getAuthor().getId()));
@@ -44,14 +45,16 @@ public class CommandContext {
 		this.cmd = cmd;
 		this.args = args;
 		this.rawArgs = rawArgs;
+		this.strippedArgs = strippedArgs;
 	}
 
-	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs) {
+	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
 		this.rawArgs = rawArgs;
+		this.strippedArgs = strippedArgs;
 	}
 
 	public boolean isPrivateChannel() {

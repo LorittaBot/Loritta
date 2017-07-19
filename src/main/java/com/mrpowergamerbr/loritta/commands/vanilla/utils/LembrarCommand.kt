@@ -39,7 +39,7 @@ class LembrarCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			var message = context.args.joinToString(separator = " ");
+			var message = context.strippedArgs.joinToString(separator = " ");
 			var years: Long? = 0L;
 			var months: Long? = 0L;
 			var weeks: Long? = 0L;

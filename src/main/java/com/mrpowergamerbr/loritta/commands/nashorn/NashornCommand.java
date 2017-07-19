@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.loritta.utils.TextUtilsKt;
 import jdk.nashorn.api.scripting.ClassFilter;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import lombok.Getter;
@@ -58,7 +59,9 @@ public class NashornCommand {
 					.collect(Collectors.toList()).toArray(new String[0]);
 			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs);
+			String onlyArgsStripped = TextUtilsKt.removeSurrounding(ev.getMessage().getStrippedContent(), "`", "`").substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
 			run(context, new NashornContext(context));
 			return true;
 		}
@@ -76,7 +79,9 @@ public class NashornCommand {
 					.collect(Collectors.toList()).toArray(new String[0]);
 			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs);
+			String onlyArgsStripped = ev.getMessage().getStrippedContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
 			if (LorittaUtils.handleIfBanned(context, profile)) {
 				return true;
 			}
