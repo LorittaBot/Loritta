@@ -88,11 +88,8 @@ fun String.encodeToUrl(enc: String = "UTF-8"): String {
 	return URLEncoder.encode(this, enc)
 }
 
-fun String.removeSurrounding(prefix: CharSequence, suffix: CharSequence): String {
-	if ((length >= prefix.length + suffix.length) && startsWith(prefix) && endsWith(suffix)) {
-		return substring(prefix.length, length - suffix.length)
-	}
-	return this
+fun String.stripCodeMarks(): String {
+	return this.replace("`", "")
 }
 
 fun String.fromMorse(): String {

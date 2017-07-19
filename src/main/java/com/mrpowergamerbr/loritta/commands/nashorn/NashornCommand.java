@@ -59,7 +59,7 @@ public class NashornCommand {
 					.collect(Collectors.toList()).toArray(new String[0]);
 			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsStripped = TextUtilsKt.removeSurrounding(ev.getMessage().getStrippedContent(), "`", "`").substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
 			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
 			run(context, new NashornContext(context));
@@ -74,12 +74,12 @@ public class NashornCommand {
 		if (message.startsWith(conf.commandPrefix + label)) {
 			ev.getChannel().sendTyping().complete();
 			String cmd = label;
-			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String onlyArgs = TextUtilsKt.stripCodeMarks(message.substring(message.indexOf(cmd) + cmd.length())); // wow, such workaround, very bad
 			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
 					.collect(Collectors.toList()).toArray(new String[0]);
 			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsStripped = ev.getMessage().getStrippedContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+			String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
 			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
 			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
 			if (LorittaUtils.handleIfBanned(context, profile)) {

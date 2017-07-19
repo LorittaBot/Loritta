@@ -399,7 +399,7 @@ object LorittaUtilsKotlin {
 		val textChannel = guild.getTextChannelById("336932935838203904")
 
 		val messageBuilder = MessageBuilder()
-		messageBuilder.append("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.strippedContent}`")
+		messageBuilder.append("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.strippedContent.stripCodeMarks()}`")
 		textChannel.sendMessage(messageBuilder.build()).queue()
 	}
 }

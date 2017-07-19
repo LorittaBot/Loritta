@@ -114,7 +114,7 @@ public abstract class CommandBase {
 				}
             }
             String cmd = label;
-            String onlyArgs = message.substring(message.toLowerCase().indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String onlyArgs = TextUtilsKt.stripCodeMarks(message.substring(message.toLowerCase().indexOf(cmd) + cmd.length())); // wow, such workaround, very bad
             String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
             if (args.length >= 1 && args[0].equals("🤷")) { // Usar a ajuda caso 🤷 seja usado
                 explain(conf, ev);
@@ -122,7 +122,7 @@ public abstract class CommandBase {
             }
             String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-            String onlyArgsStripped = TextUtilsKt.removeSurrounding(ev.getMessage().getStrippedContent(), "`", "`").replace("@everyone", "").replace("@here", "").substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
+            String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
             String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
             CommandContext context = new CommandContext(conf, ev, this, args, rawArgs, strippedArgs);
             if (LorittaUtils.handleIfBanned(context, profile)) { return true; }
