@@ -158,7 +158,7 @@ public abstract class CommandBase {
         if (conf.explainOnCommandRun()) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.setColor(new Color(0, 193, 223));
-            embed.setTitle("\uD83E\uDD14 " + context.locale.getEXAMPLE() + " `" + conf.commandPrefix() + this.getLabel() + "`");
+            embed.setTitle("\uD83E\uDD14 " + context.locale.getHOW_TO_USE() + "... `" + conf.commandPrefix() + this.getLabel() + "`");
 
             String usage = getUsage() != null ? " `" + getUsage() + "`" : "";
 
