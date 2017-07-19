@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 
@@ -190,24 +191,26 @@ public class LorittaUtils {
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
-			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
+		if (search > 0 && toBeDownloaded == null) {
+			try {
+				List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
-			attach:
-			for (Message msg : message) {
-				for (MessageEmbed embed : msg.getEmbeds()) {
-					if (embed.getImage() != null) {
-						toBeDownloaded = embed.getImage().getUrl();
-						break attach;
+				attach:
+				for (Message msg : message) {
+					for (MessageEmbed embed : msg.getEmbeds()) {
+						if (embed.getImage() != null) {
+							toBeDownloaded = embed.getImage().getUrl();
+							break attach;
+						}
+					}
+					for (Attachment attachment : msg.getAttachments()) {
+						if (attachment.isImage()) {
+							toBeDownloaded = attachment.getUrl();
+							break attach;
+						}
 					}
 				}
-				for (Attachment attachment : msg.getAttachments()) {
-					if (attachment.isImage()) {
-						toBeDownloaded = attachment.getUrl();
-						break attach;
-					}
-				}
-			}
+			} catch (PermissionException e) {}
 		}
 
 		if (toBeDownloaded != null) {
@@ -286,23 +289,25 @@ public class LorittaUtils {
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
-			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
+			try {
+				List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
-			attach:
-			for (Message msg : message) {
-				for (MessageEmbed embed : msg.getEmbeds()) {
-					if (embed.getImage() != null) {
-						toBeDownloaded = embed.getImage().getUrl();
-						break attach;
+				attach:
+				for (Message msg : message) {
+					for (MessageEmbed embed : msg.getEmbeds()) {
+						if (embed.getImage() != null) {
+							toBeDownloaded = embed.getImage().getUrl();
+							break attach;
+						}
+					}
+					for (Attachment attachment : msg.getAttachments()) {
+						if (attachment.isImage()) {
+							toBeDownloaded = attachment.getUrl();
+							break attach;
+						}
 					}
 				}
-				for (Attachment attachment : msg.getAttachments()) {
-					if (attachment.isImage()) {
-						toBeDownloaded = attachment.getUrl();
-						break attach;
-					}
-				}
-			}
+			} catch (PermissionException e) {}
 		}
 
 		return toBeDownloaded;
