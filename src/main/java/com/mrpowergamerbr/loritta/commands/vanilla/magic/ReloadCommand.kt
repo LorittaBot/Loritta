@@ -39,6 +39,7 @@ class ReloadCommand : CommandBase() {
 		LorittaLauncher.getInstance().generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
+		loritta.loadLocales()
 
 		if (context.args.isNotEmpty() && context.args[0] == "listeners") {
 			context.sendMessage("Recarregando listeners...")

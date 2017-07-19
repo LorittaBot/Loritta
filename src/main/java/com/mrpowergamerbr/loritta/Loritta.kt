@@ -17,6 +17,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.USLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -74,6 +76,7 @@ class Loritta {
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
 	var serversFanClub = listOf<ServerFanClub>()
+	var locales = mutableMapOf<String, BaseLocale>()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
@@ -91,6 +94,7 @@ class Loritta {
 	constructor(config: LorittaConfig) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 		loadServersFromFanClub()
+		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube(config.youtubeKey)
 	}
@@ -210,6 +214,18 @@ class Loritta {
 	 */
 	fun loadServersFromFanClub() {
 		serversFanClub = gson.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
+	}
+
+	/**
+	 * Inicia os locales da Loritta
+	 */
+	fun loadLocales() {
+		locales.put("us", USLocale())
+		locales.put("default", BaseLocale())
+	}
+
+	fun getLocaleById(localeId: String): BaseLocale {
+		return locales.getOrDefault(localeId, locales.get("default"))!!
 	}
 
 	@Synchronized

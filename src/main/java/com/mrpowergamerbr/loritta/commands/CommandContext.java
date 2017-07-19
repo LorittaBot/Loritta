@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
@@ -32,6 +33,7 @@ public class CommandContext {
 	public String[] rawArgs;
 	public String[] strippedArgs;
 	public HashMap<String, Object> metadata = new HashMap<>();
+	public BaseLocale locale = LorittaLauncher.loritta.getLocales().get("default");
 
 	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		if (conf == LorittaLauncher.getInstance().dummyServerConfig) { // Se é um dummy server config, então crie um LorittaUser
@@ -46,6 +48,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
+		this.locale = LorittaLauncher.loritta.getLocales().get(conf.localeId);
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
@@ -55,6 +58,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
+		this.locale = LorittaLauncher.loritta.getLocales().get(conf.localeId);
 	}
 
 	public boolean isPrivateChannel() {

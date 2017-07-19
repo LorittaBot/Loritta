@@ -78,6 +78,7 @@ public class CommandManager {
         commandMap.add(new QuoteCommand());
         commandMap.add(new SayCommand());
         commandMap.add(new EscolherCommand());
+        commandMap.add(new HelloWorldCommand());
 
         // =======[ SOCIAL ]======
         commandMap.add(new PerfilCommand());
