@@ -74,25 +74,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro iremos ver se a mensagem contém algo "interessante"
 					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
 						// Primeiro iremos verificar se a mensagem é "válida"
-						// 9 chars por millisegundo
-						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 9
+						// 10 chars por millisegundo
+						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 10
 
 						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
 
 						if (diff > calculatedMessageSpeed * 1000) {
-							var alreadyAdded = mutableListOf<Char>()
-							var nonRepeatedCharsMessageBuilder = StringBuilder()
+							var nonRepeatedCharsMessage = event.message.strippedContent.replace(Regex("(.)\\1{1,}"), "$1")
 
-							event.message.strippedContent.toLowerCase().forEach {
-								if (!alreadyAdded.contains(it) && !it.isWhitespace()) {
-									alreadyAdded.add(it)
-									nonRepeatedCharsMessageBuilder.append(it)
-								}
-							}
-
-							var nonRepeatedCharsMessage = nonRepeatedCharsMessageBuilder.toString()
 							if (nonRepeatedCharsMessage.length >= 5) {
-								var gainedXp = (nonRepeatedCharsMessageBuilder.length / 5)
+								var gainedXp = Math.min(100, Loritta.random.nextInt(1, (Math.max(2, nonRepeatedCharsMessage.length / 5))))
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
 								lorittaProfile.lastMessageSent = System.currentTimeMillis()
