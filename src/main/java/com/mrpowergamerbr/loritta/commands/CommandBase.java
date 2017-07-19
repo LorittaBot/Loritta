@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands;
 
+import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -12,12 +13,12 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class CommandBase {
     public abstract String getLabel();
@@ -91,15 +92,33 @@ public abstract class CommandBase {
 
     public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
         String message = ev.getMessage().getContent();
+        String rawMessage = ev.getMessage().getRawContent();
         boolean run = false;
+        boolean byMention = false;
         String label = conf.commandPrefix() + getLabel();
-        run = message.replace("\n", " ").split(" ")[0].equalsIgnoreCase(label);
+        if (rawMessage.startsWith("<@" + Loritta.config.getClientId() + ">") || rawMessage.startsWith("<@!" + Loritta.config.getClientId() + ">")) {
+            byMention = true;
+            rawMessage = rawMessage.replaceFirst("<@" + Loritta.config.getClientId() + "> ", "");
+            rawMessage = rawMessage.replaceFirst("<@!" + Loritta.config.getClientId() + "> ", "");
+            label = getLabel();
+        }
+        if (ev.getGuild().getId().equals("268353819409252352")) {
+            System.out.println(rawMessage);
+        }
+        run = rawMessage.replace("\n", " ").split(" ")[0].equalsIgnoreCase(label);
         if (!run) {
             for (String alias : this.getAliases()) {
                 label = conf.commandPrefix() + alias;
-                if (message.startsWith(label)) {
+                if (rawMessage.startsWith(label)) {
                     run = true;
                     break;
+                }
+                if (byMention) {
+                    label = alias;
+                    if (rawMessage.startsWith(label)) {
+                        run = true;
+                        break;
+                    }
                 }
             }
         }
@@ -117,12 +136,14 @@ public abstract class CommandBase {
 				}
             }
             String cmd = label;
-            String onlyArgs = TextUtilsKt.stripCodeMarks(message.substring(message.toLowerCase().indexOf(cmd) + cmd.length())); // wow, such workaround, very bad
-            String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-            String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-            String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-            String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-            String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
+            String[] args = ArrayUtils.remove(TextUtilsKt.stripCodeMarks(message).split(" "), 0);
+            String[] rawArgs = ArrayUtils.remove(TextUtilsKt.stripCodeMarks(ev.getMessage().getRawContent()).split(" "), 0);
+            String[] strippedArgs = ArrayUtils.remove(TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).split(" "), 0);
+            if (byMention) {
+                args = ArrayUtils.remove(args, 0);
+                rawArgs = ArrayUtils.remove(rawArgs, 0);
+                strippedArgs = ArrayUtils.remove(strippedArgs, 0);
+            }
             CommandContext context = new CommandContext(conf, ev, this, args, rawArgs, strippedArgs);
             if (args.length >= 1 && args[0].equals("🤷")) { // Usar a ajuda caso 🤷 seja usado
                 explain(context);

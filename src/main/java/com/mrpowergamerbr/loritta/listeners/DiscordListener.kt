@@ -74,8 +74,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro iremos ver se a mensagem contém algo "interessante"
 					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
 						// Primeiro iremos verificar se a mensagem é "válida"
-						// 11 chars por millisegundo
-						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 11
+						// 10 chars por millisegundo
+						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 10
 
 						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
 
@@ -86,7 +86,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								var gainedXp = Math.min(100, Loritta.random.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
-								lorittaProfile.lastMessageSent = System.currentTimeMillis()
 								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
 								loritta save lorittaProfile
 
@@ -97,6 +96,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
+
+					lorittaProfile.lastMessageSent = System.currentTimeMillis()
+					loritta save lorittaProfile
 
 					if (serverConfig.aminoConfig.fixAminoImages) {
 						for (attachments in event.message.attachments) {
