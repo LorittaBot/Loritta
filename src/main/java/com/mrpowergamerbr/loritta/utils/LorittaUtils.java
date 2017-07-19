@@ -190,7 +190,7 @@ public class LorittaUtils {
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && toBeDownloaded == null) {
+		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
 			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
 			attach:
@@ -285,7 +285,7 @@ public class LorittaUtils {
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && toBeDownloaded == null) {
+		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
 			List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 
 			attach:
