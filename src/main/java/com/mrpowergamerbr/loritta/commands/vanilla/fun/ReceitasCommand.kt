@@ -42,33 +42,47 @@ class ReceitasCommand : CommandBase() {
 
 			val jsoup = Jsoup.connect("http://anamariabraga.globo.com/Publicacao/Filtrar?term=" + URLEncoder.encode(query, "UTF-8") + "&pagina=1&quantidadePorPagina=30").get()
 
+			println(jsoup.body())
+
 			var classes = jsoup.getElementsByClass("col-lg-4");
 
-			if (classes.size > 0) {
-				var c = classes[0];
-				var links = c.select("a[href]");
-				var comida = c.select("h3");
-				var reason = c.getElementsByClass("text-uppercase")[0];
-				var img = c.getElementsByClass("hover-zoom")[0]
+			var finalMessage: DiscordMessage? = null
 
-				var embed = DiscordEmbed.builder()
-						.thumbnail(ThumbnailEmbed(img.attr("abs:data-image"), null, 700, 700))
-						.title(comida.html())
-						.description("Um delícioso " + reason.html() + " para a sua família!\n\n[Link](" + links[0].attr("abs:href") + ")")
-						.build()
+			for (c in classes) {
+				try {
+					var links = c.select("a[href]");
+					var comida = c.select("h3");
+					var reason = c.getElementsByClass("text-uppercase")[0].text()
 
-				var message = DiscordMessage.builder()
-						.username("Louro José")
-						.embed(embed)
-						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
-						.content(" ")
-						.build();
-				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
+					var img = c.getElementsByClass("hover-zoom")[0].attr("abs:data-image")
+
+					var embed = DiscordEmbed.builder()
+							.thumbnail(ThumbnailEmbed(img, null, 700, 700))
+							.title("\uD83E\uDD58 ${comida.html()}")
+							.url(links[0].attr("abs:href"))
+							.description("Um artigo da categoria \"$reason\" para a sua família! Delícioso! \uD83D\uDC26")
+							.color(744725)
+							.build()
+
+					var message = DiscordMessage.builder()
+							.username("Louro José")
+							.embed(embed)
+							.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
+							.content(context.getAsMention(true))
+							.build();
+
+					finalMessage = message;
+				} catch (e: IndexOutOfBoundsException) {
+				}
+			}
+
+			if (finalMessage != null) {
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), finalMessage);
 			} else {
 				var message = DiscordMessage.builder()
 						.username("Louro José")
 						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
-						.content("Não encontrei nada relacionado a \"${query}\" no livro de receitas da Ana Maria Braga!")
+						.content(context.getAsMention(true) + "Não encontrei nada relacionado a \"${query}\" no livro de receitas da Ana Maria Braga!")
 						.build();
 
 				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message);
