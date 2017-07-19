@@ -74,8 +74,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro iremos ver se a mensagem contém algo "interessante"
 					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
 						// Primeiro iremos verificar se a mensagem é "válida"
-						// 10 chars por millisegundo
-						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 10
+						// 11 chars por millisegundo
+						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 11
 
 						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
 
@@ -83,7 +83,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							var nonRepeatedCharsMessage = event.message.strippedContent.replace(Regex("(.)\\1{1,}"), "$1")
 
 							if (nonRepeatedCharsMessage.length >= 5) {
-								var gainedXp = Math.min(100, Loritta.random.nextInt(1, (Math.max(2, nonRepeatedCharsMessage.length / 5))))
+								var gainedXp = Math.min(100, Loritta.random.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
 								lorittaProfile.lastMessageSent = System.currentTimeMillis()
