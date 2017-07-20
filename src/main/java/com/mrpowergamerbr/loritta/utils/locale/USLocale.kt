@@ -29,5 +29,8 @@ class USLocale : BaseLocale() {
 		AMINO_YOUR_IMAGE = "Your image `{0}`!"
 		AMINO_NO_IMAGE_FOUND = "I didn't find any \".Amino\" images in your message... \uD83D\uDE1E"
 		AMINO_CONVERT = "convert"
+
+		// YoutubeMp3Command.kt
+		YOUTUBEMP3_ERROR_WHEN_CONVERTING = "An error ocurred when trying to convert the video to MP3... \uD83D\uDE1E"
 	}
 }

@@ -76,7 +76,11 @@ class YoutubeMp3Command : CommandBase() {
 				val progressJsonResponse = JsonParser().parse(readerProgress).asJsonObject // Base
 
 				val progress = progressJsonResponse.get("progress").asString;
-
+				if (progressJsonResponse.has("error")) {
+					mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_ERROR_WHEN_CONVERTING)
+					this.cancel()
+					return@fixedRateTimer
+				}
 				if (progress == "1" && lastProgress != progress) {
 					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + "Baixando vídeo...").complete()
 				}

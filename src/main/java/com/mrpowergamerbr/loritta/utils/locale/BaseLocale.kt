@@ -28,4 +28,7 @@ open class BaseLocale {
 	var AMINO_YOUR_IMAGE = "Sua imagem `{0}`!"
 	var AMINO_NO_IMAGE_FOUND = "Eu não encontrei nenhuma imagem \".Amino\" na sua mensagem... \uD83D\uDE1E"
 	var AMINO_CONVERT = "converter"
+
+	// YoutubeMp3Command.kt
+	var YOUTUBEMP3_ERROR_WHEN_CONVERTING = "Ocorreu um erro ao tentar converter o vídeo para MP3... \uD83D\uDE1E"
 }
