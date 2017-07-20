@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
@@ -54,9 +53,7 @@ class PrimeirasPalavrasCommand : CommandBase() {
 
 			ImageUtils.drawTextWrapSpaces(str, 4, 277 + font.size, 342, 0, baseGraph.getFontMetrics(), baseGraph)
 
-			val builder = MessageBuilder().append(context.getAsMention(true))
-
-			context.sendFile(bi, "tirinha_baby.png", builder.build())
+			context.sendFile(bi, "tirinha_baby.png", context.getAsMention(true))
 		} else {
 			this.explain(context)
 		}
