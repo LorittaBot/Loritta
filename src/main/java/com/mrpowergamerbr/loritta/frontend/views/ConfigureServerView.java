@@ -173,6 +173,8 @@ public class ConfigureServerView {
                     template = RssFeedsConfigView.render(context, temmie, sc);
                 } else if (context.request().path().endsWith("autorole")) {
                     template = AutoroleConfigView.render(context, temmie, sc);
+                }  else if (context.request().path().endsWith("eventlog")) {
+                    template = EventLogConfigView.render(context, temmie, sc);
                 } else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());

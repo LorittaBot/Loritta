@@ -439,3 +439,20 @@ class ServerFanClubEntry {
 		this.fancyJoinDate = guild.selfMember.joinDate.humanize()
 	}
 }
+
+class PanelOptionWrapper(
+		val obj: Any,
+		val id: String,
+		val description: String) {
+	var result: Any
+
+	init {
+		val field = obj.javaClass.getDeclaredField(id)
+		field.isAccessible = true
+		result = false
+
+		if (field.type == Boolean::class.javaPrimitiveType) {
+			result = field.getBoolean(obj)
+		}
+	}
+}

@@ -37,10 +37,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	// ===[ EVENT LOG ]===
 	// Users
 	override fun onGenericUser(event: GenericUserEvent) {
-		// Somente a Shard 0 pode atualizar informações do GenericUserEvent
-		// Todas as shards recebem a notificação de GenericUserEvent, causando
-		// problemas se TODAS as shards resolvessem processar este evento!
-		if (event.jda.shardInfo.shardId != 0) { return; }
 		thread {
 			// Atualizar coisas como user é mais difícil
 			val embed = EmbedBuilder()
@@ -66,7 +62,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val inputStream = ByteArrayInputStream(os.toByteArray())
 
 				// E agora nós iremos anunciar a troca para todos os servidores
-				for (guild in lorittaShards.getGuilds()) {
+				for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
 					if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
 						val config = loritta.getServerConfigForGuild(guild.id)
 						val locale = loritta.getLocaleById(config.localeId)
