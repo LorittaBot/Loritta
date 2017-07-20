@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import net.dv8tion.jda.core.MessageBuilder
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -91,8 +90,6 @@ class NyanCatCommand : CommandBase() {
 
 		bi.graphics.drawImage(catRight, x, 0, null)
 
-		val builder = MessageBuilder()
-		builder.append(context.getAsMention(true))
-		context.sendFile(ImageUtils.toBufferedImage(bi.getScaledInstance(bi.width * 4, bi.height * 4, BufferedImage.SCALE_AREA_AVERAGING)), "nyan_cat.png", builder.build())
+		context.sendFile(ImageUtils.toBufferedImage(bi.getScaledInstance(bi.width * 4, bi.height * 4, BufferedImage.SCALE_AREA_AVERAGING)), "nyan_cat.png", context.getAsMention(true))
 	}
 }

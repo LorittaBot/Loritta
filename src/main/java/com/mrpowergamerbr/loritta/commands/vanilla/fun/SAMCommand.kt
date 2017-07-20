@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Image
 import java.io.File
 import javax.imageio.ImageIO
@@ -36,14 +35,14 @@ class SAMCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		var div = 1.5
+		var div: Double? = 1.5
 
 		if (context.args.size >= 2) {
-			try {
-				div = context.args[1].toDouble()
-			} catch (e: Exception) {
+			div = context.args[1].toDoubleOrNull()
+		}
 
-			}
+		if (div == null) {
+			div = 1.5
 		}
 
 		val image = LorittaUtils.getImageFromContext(context, 0)
@@ -62,8 +61,6 @@ class SAMCommand : CommandBase() {
 
 		image.graphics.drawImage(seloSouthAmericaMemes, x, y, null)
 
-		val builder = MessageBuilder()
-		builder.append(context.getAsMention(true))
-		context.sendFile(image, "south_america_memes.png", builder.build())
+		context.sendFile(image, "south_america_memes.png", context.getAsMention(true))
 	}
 }
