@@ -87,7 +87,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
 								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
-								loritta save lorittaProfile
 
 								val userData = (serverConfig.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
 								userData.xp = userData.xp + gainedXp
