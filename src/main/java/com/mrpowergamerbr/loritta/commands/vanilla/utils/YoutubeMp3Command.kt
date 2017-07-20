@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandBase
@@ -58,7 +59,7 @@ class YoutubeMp3Command : CommandBase() {
 			var title = checkJsonResponse.get("title").asString
 
 			if (title == "none") {
-				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Link inválido!");
+				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Link inválido!").complete();
 				return;
 			}
 
@@ -76,8 +77,8 @@ class YoutubeMp3Command : CommandBase() {
 				val progressJsonResponse = JsonParser().parse(readerProgress).asJsonObject // Base
 
 				val progress = progressJsonResponse.get("progress").asString;
-				if (progressJsonResponse.has("error")) {
-					mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_ERROR_WHEN_CONVERTING)
+				if (progressJsonResponse.has("error") && progressJsonResponse["error"].string.isNotEmpty()) {
+					mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_ERROR_WHEN_CONVERTING).complete()
 					this.cancel()
 					return@fixedRateTimer
 				}
