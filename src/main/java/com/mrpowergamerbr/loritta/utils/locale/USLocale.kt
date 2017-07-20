@@ -9,6 +9,17 @@ class USLocale : BaseLocale() {
 	init {
 		// Generic
 		SEARCH = "search"
+		PROCESSING = "Processing"
+		INVALID_NUMBER = "`{0}` is a unrecognizable number for a bot like me, sorry. \uD83D\uDE22"
+
+		// Event Log
+		EVENTLOG_USER_ID = "User ID: {0}"
+		EVENTLOG_AVATAR_CHANGED = "**{0} changed avatars**"
+		EVENTLOG_NAME_CHANGED = "**{0} changed username!**\n\nPrevious username: `{1}`\nNew username: `{2}`"
+		EVENTLOG_CHANNEL_CREATED = "**Created text channel {0}**"
+		EVENTLOG_CHANNEL_NAME_UPDATED = "**{0}''s name was changed!**\n\nPrevious name: `{1}`\nNew name: `{2}`"
+		EVENTLOG_CHANNEL_POSITION_UPDATED = "**{0}''s position was changed!**\n\nPrevious position: `{1}`\nNew position: `{2}`"
+		EVENTLOG_CHANNEL_DELETED = "**Deleted text channel `{0}`**"
 
 		// CommandBase.kt
 		HOW_TO_USE = "How to use"

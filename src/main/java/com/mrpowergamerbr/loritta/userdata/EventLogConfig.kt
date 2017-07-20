@@ -11,6 +11,10 @@ data class EventLogConfig(
 	var messageDeleted: Boolean,
 	var bulkMessageDelete: Boolean,
 	var channelCreated: Boolean,
+	var channelNameUpdated: Boolean,
+	var channelTopicUpdated: Boolean,
+	var channelPositionUpdated: Boolean,
+	var channelDeleted: Boolean,
 	var roleCreated: Boolean,
 	var roleDeleted: Boolean,
 	var roleUpdated: Boolean,
@@ -19,11 +23,11 @@ data class EventLogConfig(
 	var nicknameChanges: Boolean,
 	var usernameChanges: Boolean,
 	var avatarChanges: Boolean,
-	var moderadorCommands: Boolean,
+	var moderatorCommands: Boolean,
 	var voiceChannelJoins: Boolean,
 	var voiceChannelLeaves: Boolean,
 	var voiceChannelMoves: Boolean,
 	var inviteManager: Boolean
 	) {
-	constructor() : this(false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
+	constructor() : this(false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
 }

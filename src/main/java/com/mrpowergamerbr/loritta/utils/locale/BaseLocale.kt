@@ -11,6 +11,16 @@ open class BaseLocale {
 	var PROCESSING = "Processando"
 	var INVALID_NUMBER = "Número `{0}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22"
 
+	// Event Log
+	var EVENTLOG_USER_ID = "ID do usuário: {0}"
+	var EVENTLOG_AVATAR_CHANGED = "**{0} alterou o avatar**"
+	var EVENTLOG_NAME_CHANGED = "**{0} alterou o nome!**\n\nAntigo nome: `{1}`\nNovo nome: `{2}`"
+	var EVENTLOG_CHANNEL_CREATED = "**Canal de texto {0} criado**"
+	var EVENTLOG_CHANNEL_NAME_UPDATED = "**Nome de {0} foi alterado!**\n\nAntigo nome: `{1}`\nNovo nome: `{2}`"
+	var EVENTLOG_CHANNEL_TOPIC_UPDATED = "**Tópico de {0} foi alterado!**\n\nAntigo tópico: `{1}`\nNovo tópico: `{2}`"
+	var EVENTLOG_CHANNEL_POSITION_UPDATED = "**Posição de {0} foi alterado!**\n\nAntiga posição: `{1}`\nNova posição: `{2}`"
+	var EVENTLOG_CHANNEL_DELETED = "**Canal de texto `{0}` foi deletado**"
+
 	// CommandBase.kt
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
