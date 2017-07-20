@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
+import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -161,9 +162,12 @@ class Loritta {
 		AudioSourceManagers.registerLocalSource(playerManager)
 
 		val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
+		val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
+
 		// Vamos registrar o nosso event listener em todas as shards!
 		for (jda in lorittaShards.shards) {
 			jda.addEventListener(discordListener) // Hora de registrar o nosso listener
+			jda.addEventListener(eventLogListener) // E o nosso outro listener também!
 		}
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}

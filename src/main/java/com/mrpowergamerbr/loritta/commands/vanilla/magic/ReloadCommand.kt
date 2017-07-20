@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
+import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
@@ -52,9 +53,13 @@ class ReloadCommand : CommandBase() {
 				}
 			}
 
+			val discordListener = DiscordListener(LorittaLauncher.loritta)
+			val eventLogListener = EventLogListener(LorittaLauncher.loritta)
+
 			// Registrar novos listeners
 			LorittaLauncher.loritta.lorittaShards.shards.forEach {
-				it.addEventListener(DiscordListener(LorittaLauncher.loritta))
+				it.addEventListener(discordListener)
+				it.addEventListener(eventLogListener)
 			}
 		}
 
