@@ -29,7 +29,12 @@ public abstract class CommandBase {
     }
 
     public String getDescription(CommandContext context) {
-        return getDescription(context.locale);
+        // TODO: Temporário
+        String description = getDescription(context.locale);
+        if (description.equals("Insira descrição do comando aqui!")) {
+            return getDescription();
+        }
+        return description;
     }
 
     public String getDescription(BaseLocale locale) {
