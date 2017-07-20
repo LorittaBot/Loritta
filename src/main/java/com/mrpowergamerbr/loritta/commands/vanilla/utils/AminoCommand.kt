@@ -7,6 +7,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.time.ZoneOffset
@@ -17,8 +19,8 @@ class AminoCommand : CommandBase() {
 		return "amino"
 	}
 
-	override fun getDescription(): String {
-		return "Comandos relacionados ao Amino! ([http://aminoapps.com/](http://aminoapps.com/))"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.AMINO_DESCRIPTION
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -33,7 +35,7 @@ class AminoCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.size > 0) {
 			if (context.args.size > 1) {
-				if (context.args[0] == "pesquisar") {
+				if (context.args[0] == context.locale.SEARCH) {
 					// Pesquisar uma comunidade no Amino
 					var aminoClient = AminoClient(Loritta.config.aminoEmail, Loritta.config.aminoPassword, Loritta.config.aminoDeviceId);
 					aminoClient.login();
@@ -53,31 +55,31 @@ class AminoCommand : CommandBase() {
 						embed.setDescription(community.tagline);
 						embed.addField("\uD83D\uDD17 Link", community.link, true);
 						embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);
-						embed.addField("\uD83D\uDC65 Membros", community.membersCount.toString(), true);
-						embed.addField("\uD83C\uDF0E Linguagem", community.primaryLanguage, true);
-						embed.addField("\uD83D\uDD25 Calor da Comunidade", community.communityHeat, true);
-						embed.addField("\uD83D\uDCC5 Criado em", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
+						embed.addField("\uD83D\uDC65 ${context.locale.AMINO_MEMBERS}", community.membersCount.toString(), true);
+						embed.addField("\uD83C\uDF0E ${context.locale.AMINO_LANGUAGE}", community.primaryLanguage, true);
+						embed.addField("\uD83D\uDD25 ${context.locale.AMINO_COMMUNITY_HEAT}", community.communityHeat, true);
+						embed.addField("\uD83D\uDCC5 ${context.locale.AMINO_CREATED_IN}", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
 						embed.setColor(Color(255, 112, 125));
 						embed.setThumbnail(community.icon)
 
 						context.sendMessage(context.asMention, embed.build());
 					} else {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nenhuma comunidade chamada `$args`!")
+						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_COULDNT_FIND.msgFormat(args))
 					}
 				}
 			} else {
-				if (context.args[0] == "converter") { // Converter imagens .Amino para imagens normais
+				if (context.args[0] == context.locale.AMINO_CONVERT) { // Converter imagens .Amino para imagens normais
 					if (context.message.attachments.isNotEmpty()) {
 						val attachment = context.message.attachments[0]
 
 						if (attachment.isImage) {
 							val imagem = LorittaUtils.downloadImage(attachment.url)
 
-							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + "Sua imagem `${context.message.attachments[0].fileName}`!")
+							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + context.locale.AMINO_YOUR_IMAGE.msgFormat(context.message.attachments[0].fileName))
 							return;
 						}
 					}
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem \".Amino\" na sua mensagem... \uD83D\uDE1E")
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_NO_IMAGE_FOUND)
 					return;
 				}
 				context.explain()
