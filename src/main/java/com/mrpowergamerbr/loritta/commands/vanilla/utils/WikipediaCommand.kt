@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
@@ -57,7 +58,7 @@ class WikipediaCommand : CommandBase() {
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo
 
 				if (entryWikiContent.key == "-1") { // -1 = Nenhuma página encontrada
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIPEDIA_COULDNT_FIND)
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIPEDIA_COULDNT_FIND.msgFormat(query))
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString
