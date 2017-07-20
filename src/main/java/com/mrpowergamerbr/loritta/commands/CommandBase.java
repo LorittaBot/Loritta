@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.loritta.utils.TextUtilsKt;
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -24,10 +25,14 @@ public abstract class CommandBase {
     public abstract String getLabel();
 
     public String getDescription() {
-        return "Insira descrição do comando aqui!";
+        return getDescription(LorittaLauncher.loritta.getLocaleById("default"));
     }
 
     public String getDescription(CommandContext context) {
+        return getDescription(context.locale);
+    }
+
+    public String getDescription(BaseLocale locale) {
         return "Insira descrição do comando aqui!";
     }
 

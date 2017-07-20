@@ -14,5 +14,6 @@ class USLocale : BaseLocale() {
 		// HelloWorldCommand.kt
 		HELLO_WORLD = "Hello world! {0}"
 		HELLO_WORLD_DESCRIPTION = "A simple command used to test Loritta's locale system."
+		USING_LOCALE = "Using {0} as locale!"
 	}
 }

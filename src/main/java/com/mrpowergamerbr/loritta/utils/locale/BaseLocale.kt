@@ -13,4 +13,5 @@ open class BaseLocale {
 	// HelloWorldCommand.kt
 	var HELLO_WORLD = "Olá mundo! {0}"
 	var HELLO_WORLD_DESCRIPTION = "Um simples comando para testar o sistema de localização da Loritta."
+	var USING_LOCALE = "Agora estou usando {0} como locale!"
 }
