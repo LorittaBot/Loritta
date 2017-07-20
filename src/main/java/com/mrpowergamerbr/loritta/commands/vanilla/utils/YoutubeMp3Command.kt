@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.io.StringReader
 import kotlin.concurrent.fixedRateTimer
 
@@ -25,7 +26,7 @@ class YoutubeMp3Command : CommandBase() {
 		return listOf("youtube2mp3", "youtubemp3")
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Pegue o download de um vídeo do YouTube em MP3!"
 	}
 
@@ -71,9 +72,7 @@ class YoutubeMp3Command : CommandBase() {
 				var progressResponse = HttpRequest.get("https://d.yt-downloader.org/progress.php?callback=$callbackId&id=$hash&_=1498315402819").body().replace(callbackId, "")
 				progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
 
-				println(progressResponse)
 				val readerProgress = StringReader(progressResponse)
-				val jsonReaderProgress = JsonReader(reader)
 				val progressJsonResponse = JsonParser().parse(readerProgress).asJsonObject // Base
 
 				val progress = progressJsonResponse.get("progress").asString;
