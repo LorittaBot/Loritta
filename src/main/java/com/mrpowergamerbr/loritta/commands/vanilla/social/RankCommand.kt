@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import java.awt.*
 import java.awt.geom.Path2D
@@ -40,8 +41,31 @@ class RankCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		val list = mutableListOf<RankWrapper>()
-		context.config.userData
-				.forEach { list.add(RankWrapper(it.key, it.value)) }
+
+		var global = false
+
+		if (context.args.isNotEmpty() && context.args[0] == "global") {
+			global = true
+			val map = mutableMapOf<String, Int>()
+
+			for (document in loritta.mongo.getDatabase("loritta").getCollection("servers").find()) {
+				var config = loritta.ds.get(ServerConfig::class.java, document["_id"])
+				config.userData.forEach {
+					map.put(it.key, it.value.xp + map.getOrDefault(it.key, 0))
+				}
+			}
+
+			for ((id, xp) in map) {
+				val dummy = LorittaServerUserData()
+				dummy.xp = xp
+				list.add(RankWrapper(id, dummy))
+			}
+
+			println(list.size)
+		} else {
+			context.config.userData
+					.forEach { list.add(RankWrapper(it.key, it.value)) }
+		}
 
 		list.sortBy { it.userData.xp }
 		list.reverse()
@@ -79,10 +103,10 @@ class RankCommand : CommandBase() {
 			if (idx >= 6) {
 				break;
 			}
-			var member = context.guild.getMemberById(id)
+			var member = lorittaShards.getUserById(id)
 
 			if (member != null) {
-				var image = LorittaUtils.downloadImage(member.user.effectiveAvatarUrl)
+				var image = LorittaUtils.downloadImage(member.effectiveAvatarUrl)
 						.getScaledInstance(40, 40, BufferedImage.SCALE_SMOOTH)
 						.toBufferedImage()
 						.makeRoundedCorners(9999)
@@ -120,7 +144,7 @@ class RankCommand : CommandBase() {
 				graphics.drawImage(solidBackground, 0, currentY, null)
 				graphics.color = Color.BLACK
 				graphics.drawImage(image, 2, currentY + 1, null)
-				graphics.drawStringWrap(member.effectiveName + if (currentUserData == userData) { " 👈" } else "", 62, currentY + graphics.fontMetrics.ascent + 2)
+				graphics.drawStringWrap(member.name + if (currentUserData == userData) { " 👈" } else "", 62, currentY + graphics.fontMetrics.ascent + 2)
 
 				graphics.color = Color(115, 127, 141, 75)
 				graphics.drawString("XP Total: ${userData.xp} | Nível Atual: ${userData.getCurrentLevel().currentLevel}", 62, currentY + 39)
@@ -142,10 +166,11 @@ class RankCommand : CommandBase() {
 				.deriveFont(32F)
 		graphics.font = bebasNeue
 		graphics.color = Color(210, 210, 210)
-		ImageUtils.drawCenteredString(graphics, "Ranking do ${context.guild.name}", Rectangle(0, 1, 400, 46), bebasNeue)
+		val titleText = if (global) "Ranking Global" else "Ranking do ${context.guild.name}"
+		ImageUtils.drawCenteredString(graphics, titleText, Rectangle(0, 1, 400, 46), bebasNeue)
 
 		graphics.color = Color.WHITE
-		ImageUtils.drawCenteredString(graphics, "Ranking do ${context.guild.name}", Rectangle(0, 0, 400, 45), bebasNeue)
+		ImageUtils.drawCenteredString(graphics, titleText, Rectangle(0, 0, 400, 45), bebasNeue)
 
 		context.sendFile(image.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
 	}

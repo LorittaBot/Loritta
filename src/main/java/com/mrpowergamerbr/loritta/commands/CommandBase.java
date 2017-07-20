@@ -102,9 +102,6 @@ public abstract class CommandBase {
             rawMessage = rawMessage.replaceFirst("<@!" + Loritta.config.getClientId() + "> ", "");
             label = getLabel();
         }
-        if (ev.getGuild().getId().equals("268353819409252352")) {
-            System.out.println(rawMessage);
-        }
         run = rawMessage.replace("\n", " ").split(" ")[0].equalsIgnoreCase(label);
         if (!run) {
             for (String alias : this.getAliases()) {
