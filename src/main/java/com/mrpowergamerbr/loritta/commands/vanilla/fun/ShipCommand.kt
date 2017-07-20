@@ -74,7 +74,7 @@ class ShipCommand : CommandBase() {
 	}
 
 	override fun needsToUploadFiles(): Boolean {
-		return super.needsToUploadFiles()
+		return true
 	}
 
     override fun run(context: CommandContext) {
