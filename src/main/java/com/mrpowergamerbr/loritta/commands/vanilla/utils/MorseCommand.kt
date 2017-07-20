@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.fromMorse
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toMorse
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -22,8 +23,8 @@ class MorseCommand : CommandBase() {
 		return listOf("Loritta")
 	}
 
-	override fun getDescription(): String {
-		return "Codifica/Decodifica uma mensagem em código morse"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MORSE_DESCRIPTION
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -38,13 +39,13 @@ class MorseCommand : CommandBase() {
 			val fromMorse = message.fromMorse()
 
 			if (toMorse.trim().isEmpty()) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não consegui transformar a sua mensagem para código morse... Talvez você tenha colocado apenas caracteres que não existem em código morse!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MORSE_FAIL)
 				return;
 			}
 
 			val embed = EmbedBuilder();
 
-			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB Morse para Texto" else "\uD83D\uDC49\uD83D\uDCFB Texto para Morse")
+			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB ${context.locale.MORSE_TO_FROM}" else "\uD83D\uDC49\uD83D\uDCFB ${context.locale.MORSE_FROM_TO}")
 			embed.setDescription("*beep* *boop*```${if (fromMorse.isNotEmpty()) fromMorse else toMorse}```")
 			embed.setColor(Color(153, 170, 181))
 

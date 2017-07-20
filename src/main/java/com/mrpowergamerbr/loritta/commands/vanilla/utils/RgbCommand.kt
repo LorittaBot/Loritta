@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.awt.Color
 
 
@@ -16,8 +18,8 @@ class RgbCommand : CommandBase() {
 		return "hexadecimal"
 	}
 
-	override fun getDescription(): String {
-		return "Transforme uma cor hexadecimal para RGB"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.RGB_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -36,9 +38,9 @@ class RgbCommand : CommandBase() {
 
 			try {
 				var color = Color.decode(hex);
-				context.sendMessage(context.getAsMention(true) + "Transformei a sua cor `$hex` para RGB! ${color.red}, ${color.green}, ${color.blue}")
+				context.sendMessage(context.getAsMention(true) + context.locale.RGB_TRANSFORMED.msgFormat(hex, color.red, color.green, color.blue))
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "A cor `$hex` não é uma cor hexadecimal válida!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.locale.RGB_INVALID.msgFormat(hex))
 				return;
 			}
 		} else {

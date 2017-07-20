@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.io.StringReader
 import kotlin.concurrent.fixedRateTimer
 
@@ -27,7 +28,7 @@ class YoutubeMp3Command : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return "Pegue o download de um vídeo do YouTube em MP3!"
+		return locale.YOUTUBEMP3_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -40,7 +41,7 @@ class YoutubeMp3Command : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.size == 1) {
-			var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "Processando...");
+			var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale.PROCESSING}...");
 
 			var link = context.args[0]
 			link = link.replace("https://www.youtube.com/watch?v=", "");
@@ -60,7 +61,7 @@ class YoutubeMp3Command : CommandBase() {
 			var title = checkJsonResponse.get("title").asString
 
 			if (title == "none") {
-				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Link inválido!").complete();
+				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_INVALID_LINK).complete();
 				return;
 			}
 
@@ -82,10 +83,10 @@ class YoutubeMp3Command : CommandBase() {
 					return@fixedRateTimer
 				}
 				if (progress == "1" && lastProgress != progress) {
-					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + "Baixando vídeo...").complete()
+					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_DOWNLOADING_VIDEO).complete()
 				}
 				if (progress == "2" && lastProgress != progress) {
-					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + "Convertendo vídeo...").complete()
+					mensagem.editMessage("💭 **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_CONVERTING_VIDEO).complete()
 				}
 				if (progress == "3") {
 					var serverId = progressJsonResponse.get("sid").asString;
@@ -122,7 +123,7 @@ class YoutubeMp3Command : CommandBase() {
 						"29" -> serverName = "tjljs"
 						"30" -> serverName = "ywjkg"
 					}
-					mensagem.editMessage("📥 **|** " + context.getAsMention(true) + "Pronto! Seu vídeo está pronto para ser baixado em MP3! https://$serverName.yt-downloader.org/download.php?id=$hash").complete()
+					mensagem.editMessage("📥 **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_FINISHED.msgFormat("https://$serverName.yt-downloader.org/download.php?id=$hash")).complete()
 					this.cancel()
 				}
 				lastProgress = progress;

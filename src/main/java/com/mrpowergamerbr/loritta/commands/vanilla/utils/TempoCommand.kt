@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.io.StringReader
@@ -27,8 +29,8 @@ class TempoCommand : CommandBase() {
 		return listOf("previsão", "previsao")
 	}
 
-	override fun getDescription(): String {
-		return "Verifique a temperatura de uma cidade!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.TEMPO_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -94,18 +96,18 @@ class TempoCommand : CommandBase() {
 					icon = "\uD83C\uDF2B ";
 				}
 
-				embed.setTitle("Previsão do tempo para $realCityName, $countryShort")
+				embed.setTitle(context.locale.TEMPO_PREVISAO_PARA.msgFormat(realCityName, countryShort))
 				embed.setDescription(icon + description);
 				embed.setColor(Color(0, 210, 255));
-				embed.addField("🌡 Temperatura", "**Atual: **$now ºC\n**Máxima: **$max ºC\n**Mínima: **$min ºC", true);
-				embed.addField("💦 Umidade", "$humidity%", true);
-				embed.addField("🌬 Velocidade do Vento", "$windSpeed km/h", true);
-				embed.addField("🏋 Pressão do Ar", "$pressure kPA", true);
+				embed.addField("🌡 ${context.locale.TEMPO_TEMPERATURA}", "**${context.locale.TEMPO_ATUAL}: **$now ºC\n**${context.locale.TEMPO_MAX}: **$max ºC\n**${context.locale.TEMPO_MIN}: **$min ºC", true);
+				embed.addField("💦 ${context.locale.TEMPO_UMIDADE}", "$humidity%", true);
+				embed.addField("🌬 ${context.locale.TEMPO_VELOCIDADE_VENTO}", "$windSpeed km/h", true);
+				embed.addField("🏋 ${context.locale.TEMPO_PRESSAO_AR}", "$pressure kPA", true);
 
 				context.sendMessage(embed.build());
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei uma cidade chamada `$cidade`!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TEMPO_COULDNT_FIND.msgFormat(cidade))
 			}
 		} else {
 			this.explain(context);

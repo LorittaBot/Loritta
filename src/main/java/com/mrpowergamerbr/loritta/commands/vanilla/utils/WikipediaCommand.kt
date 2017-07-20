@@ -5,6 +5,8 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
@@ -16,8 +18,8 @@ class WikipediaCommand : CommandBase() {
 		return "wikipedia"
 	}
 
-	override fun getDescription(): String {
-		return "Mostra uma versão resumida de uma página do Wikipedia"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.WIKIPEDIA_DESCRIPTION
 	}
 
 	override fun getUsage(): String {
@@ -55,7 +57,7 @@ class WikipediaCommand : CommandBase() {
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo
 
 				if (entryWikiContent.key == "-1") { // -1 = Nenhuma página encontrada
-					context.sendMessage(context.getAsMention(true) + "Não consegui encontrar nada relacionado á **" + query + "** 😞")
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIPEDIA_COULDNT_FIND)
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString

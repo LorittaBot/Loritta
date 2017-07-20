@@ -6,14 +6,16 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 class MoneyCommand : CommandBase() {
 	override fun getLabel(): String {
 		return "money"
 	}
 
-	override fun getDescription(): String {
-		return "Transforma o valor de uma moeda em outra moeda. (Por exemplo: Ver quanto está valendo o dólar em relação ao real)"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MONEY_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -32,7 +34,7 @@ class MoneyCommand : CommandBase() {
 			}
 
 			if (multiply == null) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Número `${context.args[2]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.msgFormat(context.args[2]))
 				return;
 			}
 
@@ -47,17 +49,17 @@ class MoneyCommand : CommandBase() {
 			val validCurrencies = validCurrResponse.get("rates").asJsonObject.entrySet().joinToString(transform = { "`${it.key}`" })
 
 			if (fixerResponse.has("error")) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$from` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(from, validCurrencies))
 				return
 			}
 			val rates = fixerResponse.get("rates").asJsonObject
 			if (!rates.has(to)) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$to` não é uma moeda válida! 💸\n**Moedas válidas:** $validCurrencies")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(to, validCurrencies))
 				return
 			}
 
 			val converted = rates.get(to).asDouble
-			context.sendMessage(context.getAsMention(true) + "💵 **$multiply " + from + " para " + to + ":** " + (converted * multiply) + " " + to)
+			context.sendMessage(context.getAsMention(true) + context.locale.MONEY_CONVERTED.msgFormat(multiply, from, to, (converted * multiply)))
 		} else {
 			this.explain(context)
 		}

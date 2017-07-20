@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -23,8 +24,8 @@ class OCRCommand : CommandBase() {
 		return listOf("ler", "read")
 	}
 
-	override fun getDescription(): String {
-		return "Pega o texto em uma imagem usando OCR"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.OCR_DESCRIPTION
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -54,7 +55,7 @@ class OCRCommand : CommandBase() {
 		try {
 			builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
 		} catch (e: Exception) {
-			builder.setDescription("**Não encontrei nenhum texto nesta imagem...**")
+			builder.setDescription("**${context.locale.OCR_COUDLNT_FIND}**")
 		}
 		context.sendMessage(context.getAsMention(true), builder.build())
 	}

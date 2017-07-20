@@ -93,8 +93,8 @@ fun String.stripCodeMarks(): String {
 	return this.replace("`", "")
 }
 
-fun String.msgFormat(vararg: Any): String {
-	return MessageFormat.format(this, vararg);
+fun String.msgFormat(vararg arguments: Any): String {
+	return MessageFormat.format(this, *arguments);
 }
 
 fun String.fromMorse(): String {

@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.nodes.Document
 import java.util.*
@@ -17,8 +19,8 @@ class PackageInfoCommand : CommandBase() {
 		return "correios"
 	}
 
-	override fun getDescription(): String {
-		return "Mostra o status de uma encomenda dos correios, funciona com os Correios (Brasil) e a CTT (Portugal)"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.PACKAGEINFO_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -62,7 +64,7 @@ class PackageInfoCommand : CommandBase() {
 					var objeto = correios.objeto[0];
 
 					if (objeto.categoria == "ERRO: Objeto não encontrado na base de dados dos Correios.") {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "**Não consegui encontrar o objeto `$packageId` no banco de dados do Correios!**")
+						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_COULDNT_FIND.msgFormat(packageId))
 						return;
 					}
 
@@ -80,7 +82,7 @@ class PackageInfoCommand : CommandBase() {
 					context.sendMessage(embed.build());
 				}
 			} catch (e: Exception) {
-				context.sendMessage(context.getAsMention(true) + "**Código de rastreio inválido!**")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_INVALID.msgFormat(packageId))
 			}
 
 		} else {
