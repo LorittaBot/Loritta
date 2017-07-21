@@ -82,7 +82,7 @@ open class BaseLocale {
 	// MoneyCommand.kt
 	var MONEY_DESCRIPTION = "Transforma o valor de uma moeda em outra moeda. (Por exemplo: Ver quanto está valendo o dólar em relação ao real)"
 	var MONEY_INVALID_CURRENCY = "`{0}` não é uma moeda válida! \uD83D\uDCB8\n**Moedas válidas:** {1}"
-	var MONEY_CONVERTED = "💵 **{0} {1} para {2}**: {3} {1}"
+	var MONEY_CONVERTED = "💵 **{0} {1} para {2}**: {3} {2}"
 
 	// MorseCommand.kt
 	var MORSE_DESCRIPTION = "Codifica/Decodifica uma mensagem em código morse"

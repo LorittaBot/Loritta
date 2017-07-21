@@ -81,7 +81,7 @@ class USLocale : BaseLocale() {
 		// MoneyCommand.kt
 		MONEY_DESCRIPTION = "Converts a currency to another. (Example: View how much dollar is costing compared to real)"
 		MONEY_INVALID_CURRENCY = "`{0}` is not a valid currency! \uD83D\uDCB8\n**Valid currencies:** {1}"
-		MONEY_CONVERTED = "💵 **{0} {1} to {2}**: {3} {1}"
+		MONEY_CONVERTED = "💵 **{0} {1} to {2}**: {3} {2}"
 
 		// MorseCommand.kt
 		MORSE_DESCRIPTION = "Encodes/Decodes a message in morse code"
