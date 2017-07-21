@@ -34,7 +34,7 @@ class SobreMimCommand : CommandBase() {
         var profile = context.lorittaUser.profile;
         if (context.args.size > 0) {
             profile.aboutMe = context.args.joinToString(" ");
-            context.sendMessage(context.getAsMention(true) + context.locale.SOBREMIM_DESCRIPTION.msgFormat(profile.aboutMe))
+            context.sendMessage(context.getAsMention(true) + context.locale.SOBREMIM_CHANGED.msgFormat(profile.aboutMe))
             loritta save profile
         } else {
             this.explain(context);
