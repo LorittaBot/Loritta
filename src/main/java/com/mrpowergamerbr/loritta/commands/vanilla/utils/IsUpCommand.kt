@@ -4,6 +4,8 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.net.UnknownHostException
 import java.util.*
 
@@ -12,8 +14,8 @@ class IsUpCommand : CommandBase() {
 		return "isup"
 	}
 
-	override fun getDescription(): String {
-		return "Verifica se um website está online!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.ISUP_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -39,16 +41,16 @@ class IsUpCommand : CommandBase() {
 						.code();
 
 				if (response in 100..308) {
-					context.sendMessage(context.getAsMention(true) + "É só você, para mim `$url` está online! (**Código:**  $response)");
+					context.sendMessage(context.getAsMention(true) + context.locale.ISUP_ONLINE.msgFormat(url, response));
 				} else {
-					context.sendMessage(context.getAsMention(true) + "Não é só você! Para mim `$url` também está offline! (**Código:** $response)");
+					context.sendMessage(context.getAsMention(true) + context.locale.ISUP_OFFLINE.msgFormat(url, response));
 				}
 			} catch (e: Exception) {
 				var reason = e.message;
 				if (e.cause is UnknownHostException) {
-					reason = "`$url não existe!`";
+					reason = context.locale.ISUP_UNKNOWN_HOST.msgFormat(url);
 				}
-				context.sendMessage(context.getAsMention(true) + "Não é só você! Para mim `$url` também está offline! (**Erro:**: $reason)");
+				context.sendMessage(context.getAsMention(true) + context.locale.ISUP_OFFLINE.msgFormat(url, reason));
 			}
 		} else {
 			this.explain(context);

@@ -1,11 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
+import com.mrpowergamerbr.loritta.utils.save
 import java.text.DateFormatSymbols
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,8 +28,8 @@ class LembrarCommand : CommandBase() {
 		return "tempo mensagem"
 	}
 
-	override fun getDescription(): String {
-		return "Precisa lembrar de dar comida para o dog? Talvez você queira marcar um lembrete para que no futuro você possa ver se você conseguir fazer todos os seus \"Life Goals\" deste ano? Então crie um lembrete!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.LEMBRAR_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -125,9 +128,9 @@ class LembrarCommand : CommandBase() {
 
 			profile.reminders.add(reminder);
 
-			LorittaLauncher.getInstance().ds.save(profile)
+			loritta save profile
 
-			context.sendMessage(context.getAsMention(true) + "Eu irei te lembrar em ${instant.dayOfMonth}/${strMonth}/${instant.year} às ${instant.hour}:${instant.minute}!")
+			context.sendMessage(context.getAsMention(true) + context.locale.LEMBRAR_SUCCESS.msgFormat(instant.dayOfMonth, strMonth, instant.year, instant.hour, instant.minute))
 		} else {
 			this.explain(context);
 		}

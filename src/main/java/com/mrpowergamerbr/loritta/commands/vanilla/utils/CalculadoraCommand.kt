@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
 class CalculadoraCommand : CommandBase() {
@@ -19,8 +21,8 @@ class CalculadoraCommand : CommandBase() {
 		return "conta"
 	}
 
-	override fun getDescription(): String {
-		return "Calcula uma expressão aritmética"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.CALC_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -37,9 +39,9 @@ class CalculadoraCommand : CommandBase() {
 			try {
 				val result = LorittaUtils.evalMath(expression)
 
-				context.sendMessage(context.getAsMention(true) + "Resultado: `$result`")
+				context.sendMessage(context.getAsMention(true) + context.locale.CALC_RESULT.msgFormat(result))
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "`$expression` não é uma expressão artimética válida!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.CALC_INVALID.msgFormat(expression))
 			}
 		} else {
 			this.explain(context)

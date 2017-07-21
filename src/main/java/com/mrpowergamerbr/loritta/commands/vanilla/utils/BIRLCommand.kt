@@ -10,6 +10,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
@@ -18,8 +20,8 @@ class BIRLCommand : CommandBase() {
 		return "birl"
 	}
 
-	override fun getDescription(): String {
-		return "Compila um código criado em BIRL (Bambam's \"It's show time\" Recursive Language)"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.BIRL_DESCRIPTION
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -56,16 +58,16 @@ class BIRLCommand : CommandBase() {
 				if (!json["error"].isJsonNull) {
 					embed.setDescription(json["error"].string)
 				} else {
-					embed.addField("Resultado", "```${json["stdout"].string}```", false)
+					embed.addField(context.locale.BIRL_RESULT, "```${json["stdout"].string}```", false)
 				}
 
 				context.sendMessage(context.getAsMention(true), embed.build())
 			} else {
 				// Os \u200D são zero width joiners, usado para o Discord não parsear os code blocks
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Códigos em BIRL devem estar entre blocos de código, por exemplo:\n`${context.config.commandPrefix}birl\n```HORA DO SHOW\n" +
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BIRL_INFO.msgFormat("${context.config.commandPrefix}birl```HORA DO SHOW" +
 						"    CE QUER VER ESSA PORRA? (\"Hello, World! Porra!\\n\");\n" +
 						"    BORA CUMPADE 0;\n" +
-						"BIRL```\n`Para mais informações: https://birl-language.github.io/")
+						"BIRL```"))
 			}
 		} else {
 			context.explain()

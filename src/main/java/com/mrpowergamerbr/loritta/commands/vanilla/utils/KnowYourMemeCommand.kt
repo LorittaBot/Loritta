@@ -10,6 +10,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.net.URLEncoder
@@ -23,8 +25,8 @@ class KnowYourMemeCommand : CommandBase() {
 		return listOf("kym")
 	}
 
-	override fun getDescription(): String {
-		return "Procura um meme no KnowYourMeme"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.KYM_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -47,7 +49,7 @@ class KnowYourMemeCommand : CommandBase() {
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$query` no KnowYourMeme...")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.KYM_COULDNT_FIND.msgFormat(query))
 				return;
 			} else {
 				println(response)
@@ -61,7 +63,7 @@ class KnowYourMemeCommand : CommandBase() {
 				val summary = if (meme.obj.has("summary")) {
 					meme["summary"].string
 				} else {
-					"Sem descrição..."
+					context.locale.KYM_NO_DESCRIPTION
 				}
 				val url = meme["url"].string
 
@@ -70,8 +72,8 @@ class KnowYourMemeCommand : CommandBase() {
 				embed.setTitle("<:kym:331052564357578754> $name", "http://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
-				embed.addField("\uD83C\uDF1F Origem", if (origin.isNotBlank()) origin else "Desconhecido", true)
-				embed.addField("\uD83D\uDCC6 Data", if (originDate.isNotBlank()) originDate else "Desconhecido", true)
+				embed.addField("\uD83C\uDF1F ${context.locale.KYM_ORIGIN}", if (origin.isNotBlank()) origin else context.locale.KYM_UNKNOWN, true)
+				embed.addField("\uD83D\uDCC6 ${context.locale.KYM_DATE}", if (originDate.isNotBlank()) originDate else context.locale.KYM_UNKNOWN, true)
 				embed.setColor(Color(18, 19, 63))
 
 				context.sendMessage(embed.build())

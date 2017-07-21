@@ -223,7 +223,6 @@ object LorittaUtilsKotlin {
 
 					if (count >= required) {
 						loritta.skipTrack(e.textChannel)
-						e.textChannel.sendMessage("🤹 Música pulada!").complete()
 					}
 				}
 			}

@@ -93,7 +93,7 @@ fun String.stripCodeMarks(): String {
 	return this.replace("`", "")
 }
 
-fun String.msgFormat(vararg arguments: Any): String {
+fun String.msgFormat(vararg arguments: Any?): String {
 	return MessageFormat.format(this, *arguments);
 }
 

@@ -3,6 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.digest.DigestUtils
 
 
@@ -15,8 +17,8 @@ class Md5Command : CommandBase() {
 		return "mensagem"
 	}
 
-	override fun getDescription(): String {
-		return "Encripta uma mensagem usando MD5"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MD5_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -33,7 +35,7 @@ class Md5Command : CommandBase() {
 
 			val encrypted = DigestUtils.md5Hex(mensagem)
 
-			context.sendMessage(context.getAsMention(true) + "`$mensagem` em MD5: `$encrypted`")
+			context.sendMessage(context.getAsMention(true) + context.locale.MD5_RESULT.msgFormat(mensagem, encrypted))
 		} else {
 			this.explain(context)
 		}

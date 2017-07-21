@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
 class AnagramaCommand : CommandBase() {
@@ -19,8 +21,8 @@ class AnagramaCommand : CommandBase() {
 		return listOf("shuffle")
 	}
 
-	override fun getDescription(): String {
-		return "Cria um anagrama de uma palavra!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.ANAGRAMA_DESCRIPTION
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
@@ -40,7 +42,7 @@ class AnagramaCommand : CommandBase() {
 
 			val shuffledWord = shuffledChars.joinToString(separator = "");
 
-			context.sendMessage("✍ **|** " + context.getAsMention(true) + "Seu anagrama é... `$shuffledWord` \uD83D\uDE4B")
+			context.sendMessage("✍ **|** " + context.getAsMention(true) + "${context.locale.ANAGRAMA_RESULT.msgFormat(shuffledWord)} \uD83D\uDE4B")
 		} else {
 			this.explain(context);
 		}

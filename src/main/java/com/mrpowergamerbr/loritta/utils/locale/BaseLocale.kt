@@ -68,6 +68,53 @@ open class BaseLocale {
 	var HELLO_WORLD_DESCRIPTION = "Um simples comando para testar o sistema de localização da Loritta."
 	var USING_LOCALE = "Agora estou usando {0} como locale!"
 
+	// LembrarCommand.kt
+	var LEMBRAR_DESCRIPTION = "Precisa lembrar de dar comida para o dog? Talvez você queira marcar um lembrete para que no futuro você possa ver se você conseguir fazer todos os seus \"Life Goals\" deste ano? Então crie um lembrete!"
+	var LEMBRAR_SUCCESS = "Eu irei te lembrar em {0}/{1}/{2} às {3}:{4}!"
+
+	// KnowYourMemeCommand.kt
+	var KYM_DESCRIPTION = "Procura um meme no KnowYourMeme"
+	var KYM_COULDNT_FIND = "Não encontrei nada relacionado a `{0}`!"
+	var KYM_NO_DESCRIPTION = "Sem descrição..."
+	var KYM_ORIGIN = "Origem"
+	var KYM_DATE = "Data"
+	var KYM_UNKNOWN = "Desconhecido"
+
+	// IsUpCommand.kt
+	var ISUP_DESCRIPTION = "Verifica se um website está online!"
+	var ISUP_ONLINE = "É só você, para mim `{0}` está online! (**Código:** {1})"
+	var ISUP_OFFLINE = "Não é só você, para mim `{0}` também está offline! (**Erro:** {1})"
+	var ISUP_UNKNOWN_HOST = "`{0} não existe!`"
+
+	// HexCommand.kt
+	var HEX_DESCRIPTION = "Transforme uma cor RGB para hexadecimal"
+	var HEX_RESULT = "Transformei a sua cor `{0}, {1}, {2} {3}` para hexadecimal! `{4}`"
+	var HEX_BAD_ARGS = "Todos os argumentos devem ser números!"
+
+	// EncurtarCommand.kt
+	var BITLY_DESCRIPTION = "Encurta um link usando o bit.ly"
+	var BITLY_INVALID = "A URL `{0}` é inválida!"
+
+	// TODO: DicioCommand.kt
+
+	// CalculadoraCommand.kt
+	var CALC_DESCRIPTION = "Calcula uma expressão aritmética"
+	var CALC_RESULT = "Resultado: `{0}`"
+	var CALC_INVALID = "`{0}` não é uma expressão artimética válida!"
+
+	// BIRLCommand.kt
+	var BIRL_DESCRIPTION = "Compila um código criado em BIRL (Bambam's \"It's show time\" Recursive Language)"
+	var BIRL_RESULT = "Resultado"
+	var BIRL_INFO = "Códigos em BIRL devem estar entre blocos de código, por exemplo:\n`{0}`Para mais informações: https://birl-language.github.io/"
+
+	// AnagramaCommand.kt
+	var ANAGRAMA_DESCRIPTION = "Crie um anagrama de uma palavra!"
+	var ANAGRAMA_RESULT = "Seu anagrama é... `{0}`"
+
+	// Md5Command.kt
+	var MD5_DESCRIPTION = "Encripta uma mensagem usando MD5"
+	var MD5_RESULT = "`{0}` em MD5: `{1}`"
+
 	// AminoCommand.kt
 	var AMINO_DESCRIPTION = "Comandos relacionados ao Amino! ([http://aminoapps.com/](http://aminoapps.com/))"
 	var AMINO_MEMBERS = "Membros"

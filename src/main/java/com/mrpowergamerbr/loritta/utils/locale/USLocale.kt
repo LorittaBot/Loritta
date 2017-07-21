@@ -67,6 +67,53 @@ class USLocale : BaseLocale() {
 		HELLO_WORLD_DESCRIPTION = "A simple command used to test Loritta's locale system."
 		USING_LOCALE = "Using {0} as locale!"
 
+		// LembrarCommand.kt
+		LEMBRAR_DESCRIPTION = "Do you need to remember to give food to your doggo? Maybe you want to create a reminder so in the future you can see if you could do all your \"Life Goals\" of this year? Then create a reminder!"
+		LEMBRAR_SUCCESS = "I will remind you in {0}/{1}/{2} {3}:{4}!"
+
+		// KnowYourMemeCommand.kt
+		KYM_DESCRIPTION = "Search a meme in KnowYourMeme"
+		KYM_COULDNT_FIND = "I couldn''t find anything related to `{0}`!"
+		KYM_NO_DESCRIPTION = "No description..."
+		KYM_ORIGIN = "Origin"
+		KYM_DATE = "Date"
+		KYM_UNKNOWN = "Unknown"
+
+		// IsUpCommand.kt
+		ISUP_DESCRIPTION = "Verify if a website is online!"
+		ISUP_ONLINE = "It''s only you, for me `{0}` is online! (**Response:** {1})"
+		ISUP_OFFLINE = "It''s not only you, for me `{0}` is also offline! (**Error:** {1})"
+		ISUP_UNKNOWN_HOST = "`{0} doesn''t exist!`"
+
+		// HexCommand.kt
+		HEX_DESCRIPTION = "Transform a RGB color to hexadecimal"
+		HEX_RESULT = "I transformed your color `{0}, {1}, {2} {3}` to hexadecimal! `{4}`"
+		HEX_BAD_ARGS = "All arguments must be numbers!"
+
+		// EncurtarCommand.kt
+		BITLY_DESCRIPTION = "Shorten a link using bit.ly"
+		BITLY_INVALID = "`{0}` is an invalid URL!"
+
+		// TODO: DicioCommand.kt
+
+		// CalculadoraCommand.kt
+		CALC_DESCRIPTION = "Calculates a arithmetic expression"
+		CALC_RESULT = "Result: `{0}`"
+		CALC_INVALID = "`{0}` is not a valid artihmetic expression!"
+
+		// BIRLCommand.kt
+		BIRL_DESCRIPTION = "Compiles a code created in BIRL (Bambam's \"It's show time\" Recursive Language)"
+		BIRL_RESULT = "Result"
+		BIRL_INFO = "Codes in BIRL must be within code blocks, example:\n`{0}`For more information: https://birl-language.github.io/"
+
+		// AnagramaCommand.kt
+		ANAGRAMA_DESCRIPTION = "Creates a anagram of an word!"
+		ANAGRAMA_RESULT = "Your anagram is... `{0}`"
+
+		// Md5Command.kt
+		MD5_DESCRIPTION = "Encrypts a message using MD5"
+		MD5_RESULT = "`{0}` in MD5: `{1}`"
+
 		// AminoCommand.kt
 		AMINO_DESCRIPTION = "Commands related to Amino! ([http://aminoapps.com/](http://aminoapps.com/))"
 		AMINO_MEMBERS = "Members"
