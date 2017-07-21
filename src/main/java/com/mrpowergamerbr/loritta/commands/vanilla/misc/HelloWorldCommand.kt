@@ -21,6 +21,29 @@ class HelloWorldCommand : CommandBase() {
 		if (context.userHandle.id == Loritta.config.ownerId && context.args.isNotEmpty()) {
 			var newLocale = context.args[0]
 
+			if (newLocale == "info") {
+				var text = "**Progresso de tradução das localizações:**\n"
+				val default = loritta.getLocaleById("default")
+				val strings = default::class.java.declaredFields.size
+				text += "**Número de Textos:** $strings\n"
+				for ((id, locale) in loritta.locales) {
+					if (id != "default") {
+						var translatedStrings = 0
+
+						for (field in default::class.java.declaredFields) {
+							field.isAccessible = true
+							println("${field.get(locale)} - ${field.get(default)}")
+							if (field.get(locale) != field.get(default)) {
+								translatedStrings++
+							}
+						}
+
+						text += "**Locale $id:** $translatedStrings de $strings textos traduzidos\n"
+					}
+				}
+				context.sendMessage(text)
+				return
+			}
 			context.config.localeId = newLocale
 
 			loritta save context.config
