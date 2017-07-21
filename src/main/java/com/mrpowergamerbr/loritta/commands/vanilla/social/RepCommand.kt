@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.concurrent.TimeUnit
 
 class RepCommand : CommandBase() {
@@ -16,8 +18,8 @@ class RepCommand : CommandBase() {
         return listOf("reputation", "reputação", "reputacao");
     }
 
-    override fun getDescription(): String {
-        return "Dê reputação para outro usuário!";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.REP_DESCRIPTON;
     }
 
     override fun getCategory(): CommandCategory {
@@ -35,19 +37,19 @@ class RepCommand : CommandBase() {
             var user = context.message.mentionedUsers[0];
 
             if (user == context.userHandle) {
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você não pode dar reputação para si mesmo, bobinho!");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_SELF);
                 return;
             }
 
             var diff = System.currentTimeMillis() - profile.lastReputationGiven;
 
             if (3.6e+6 > diff) {
-                var fancy = String.format("%02d minutos e %02d segundos",
+                var fancy = String.format(context.locale.MINUTES_AND_SECONDS,
                         60 - (TimeUnit.MILLISECONDS.toMinutes(diff)),
                         60 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)))
                 );
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você precisa esperar **$fancy** antes de poder dar outra reputação!");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_WAIT.msgFormat(fancy));
                 return;
             }
 
@@ -59,7 +61,7 @@ class RepCommand : CommandBase() {
             // E vamos salvar a última vez que o usuário deu reputação para o usuário
             profile.lastReputationGiven = System.currentTimeMillis();
 
-            context.sendMessage("☝ **|** " + context.getAsMention(true) + "deu um ponto de reputação para " + user.asMention + "!");
+            context.sendMessage("☝ **|** " + context.getAsMention(true) + context.locale.REP_SUCCESS.msgFormat(user.asMention));
 
 			// E vamos salvar as configurações
 			LorittaLauncher.loritta.ds.save(givenProfile);

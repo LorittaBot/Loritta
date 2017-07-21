@@ -10,6 +10,8 @@ open class BaseLocale {
 	var SEARCH = "pesquisar"
 	var PROCESSING = "Processando"
 	var INVALID_NUMBER = "Número `{0}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22"
+	var MINUTES_AND_SECONDS = "%02d minutos e %02d segundos"
+	var NSFW_IMAGE = "**Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o \"{0}\" é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore \uD83D\uDE1E)"
 
 	// Event Log
 	var EVENTLOG_USER_ID = "ID do usuário: {0}"
@@ -24,6 +26,42 @@ open class BaseLocale {
 	// CommandBase.kt
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
+
+	// BackgroundCommand.kt
+	var BACKGROUND_DESCRIPTION = "Que tal dar uma renovada no papel de parede do seu perfil?"
+	var BACKGROUND_CENTRAL = "Central de Papéis de Parede"
+	var BACKGROUND_INFO = "**Querendo alterar o seu papel de parede do seu perfil? Então você veio ao lugar certo!**\n" +
+			"\n" +
+			"Clique em \uD83D\uDDBC para ver seu papel de parede atual\n" +
+			"Clique em \uD83D\uDED2 para ver os templates padrões" +
+			"\n" +
+			"\n" +
+			"Querendo enviar seu próprio papel de parede? Sem problemas! Envie uma imagem 400x300 no chat e, junto com a imagem, escreva `{0}background`! (Você também pode enviar o link da imagem junto com o comando que eu também irei aceitar!)\n\n(Não envie backgrounds com coisas NSFW! Se você enviar, sua conta será banida de usar qualquer funcionalidade minha!)"
+	var BACKGROUND_INVALID_IMAGE = "Imagem inválida! Tem certeza que isto é um link válido? Se puder, baixe a imagem e faça upload diretamente no Discord!"
+	var BACKGROUND_UPDATED = "Papel de parede atualizado!"
+	var BACKGROUND_EDITED = "Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!"
+	var BACKGROUND_YOUR_CURRENT_BG = "Seu papel de parede atual"
+	var BACKGROUND_TEMPLATE_INFO = "Clique em ⬅ para voltar um template\n" +
+			"Clique em ➡ para avançar um template\n" +
+			"Clique em ✅ para usar este template como seu papel de parede"
+
+	// DiscriminatorCommand.kt
+	var DISCRIM_DESCRIPTION = "Veja usuários que possuem o mesmo discriminador que você ou de outro usuário!"
+	var DISCRIM_NOBODY = "Ninguém que eu conheça possui o discriminator `#${0}`!"
+
+	// RankCommand.kt
+	var RANK_DESCRIPTION = "Veja o ranking do servidor atual!"
+	var RANK_INFO = "XP Total: {0} | Nível Atual: {1}"
+
+	// RepCommand.kt
+	var REP_DESCRIPTON = "Dê reputação para outro usuário!"
+	var REP_SELF = "Você não pode dar reputação para si mesmo, bobinho!"
+	var REP_WAIT = "Você precisa esperar **{0}** antes de poder dar outra reputação!"
+	var REP_SUCCESS = "deu um ponto de reputação para {0}!"
+
+	// SobreMimCommand.kt
+	var SOBREMIM_DESCRIPTION = "Altere o \"Sobre Mim\" no comando de perfil!"
+	var SOBREMIM_CHANGED = "Sua mensagem de perfil foi alterada para `{0}`!"
 
 	// HelloWorldCommand.kt
 	var HELLO_WORLD = "Olá mundo! {0}"

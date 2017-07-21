@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 class DiscriminatorCommand : CommandBase() {
     override fun getLabel(): String {
@@ -19,8 +21,8 @@ class DiscriminatorCommand : CommandBase() {
         return listOf("discrim", "discriminador");
     }
 
-    override fun getDescription(): String {
-        return "Veja usuários que possuem o mesmo discriminador que você ou de outro usuário!"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.DISCRIM_DESCRIPTION
     }
 
 	override fun getExample(): List<String> {
@@ -49,7 +51,7 @@ class DiscriminatorCommand : CommandBase() {
 				idx++;
 			}
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Ninguém que eu conheça possui o discriminator `#$discriminator`!");
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.DISCRIM_NOBODY.msgFormat(discriminator));
 			return;
 		}
 

@@ -1,9 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.save
 import java.util.*
 
 class SobreMimCommand : CommandBase() {
@@ -19,8 +22,8 @@ class SobreMimCommand : CommandBase() {
          return Arrays.asList("aboutme");
     }
 
-    override fun getDescription(): String {
-        return "Altere o \"Sobre Mim\" no comando de perfil!";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.SOBREMIM_DESCRIPTION;
     }
 
     override fun getCategory(): CommandCategory {
@@ -31,8 +34,8 @@ class SobreMimCommand : CommandBase() {
         var profile = context.lorittaUser.profile;
         if (context.args.size > 0) {
             profile.aboutMe = context.args.joinToString(" ");
-            context.sendMessage(context.getAsMention(true) + "Sua mensagem de perfil foi alterada para " + profile.aboutMe + "!")
-            LorittaLauncher.getInstance().ds.save(profile);
+            context.sendMessage(context.getAsMention(true) + context.locale.SOBREMIM_DESCRIPTION.msgFormat(profile.aboutMe))
+            loritta save profile
         } else {
             this.explain(context);
         }

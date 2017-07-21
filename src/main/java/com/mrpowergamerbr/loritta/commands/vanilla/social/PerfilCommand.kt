@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -218,7 +219,13 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         drawWithShadow(userProfile.getReputation().toString(), 235, offset + 208, 9999, 9999, graphics)
         graphics.font = bariolRegular.deriveFont(12F)
 
-        drawWithShadow(userProfile.aboutMe, 89, 254, 388, 9999, graphics);
+        var aboutMe = if (Loritta.config.clientId == userProfile.userId) {
+            "Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, \"Lori\") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!"
+        } else {
+            userProfile.aboutMe
+        }
+
+        drawWithShadow(aboutMe, 89, 254, 388, 9999, graphics);
 
         if (!userProfile.games.isEmpty()) {
             graphics.font = bariolRegular.deriveFont(10F)

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
@@ -19,8 +20,8 @@ class RankCommand : CommandBase() {
 		return "rank";
 	}
 
-	override fun getDescription(): String {
-		return "Veja o ranking do servidor atual!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.RANK_DESCRIPTION;
 	}
 
 	override fun getAliases(): List<String> {
@@ -146,11 +147,13 @@ class RankCommand : CommandBase() {
 				graphics.drawImage(image, 2, currentY + 1, null)
 				graphics.drawStringWrap(member.name + if (currentUserData == userData) { " 👈" } else "", 62, currentY + graphics.fontMetrics.ascent + 2)
 
+				val text = context.locale.RANK_INFO.msgFormat(userData.xp, userData.getCurrentLevel().currentLevel)
+
 				graphics.color = Color(115, 127, 141, 75)
-				graphics.drawString("XP Total: ${userData.xp} | Nível Atual: ${userData.getCurrentLevel().currentLevel}", 62, currentY + 39)
+				graphics.drawString(text, 62, currentY + 39)
 
 				graphics.color = Color(115, 127, 141)
-				graphics.drawString("XP Total: ${userData.xp} | Nível Atual: ${userData.getCurrentLevel().currentLevel}", 62, currentY + 38)
+				graphics.drawString(text, 62, currentY + 38)
 
 				graphics.color = Color.BLACK
 				currentY += 42;

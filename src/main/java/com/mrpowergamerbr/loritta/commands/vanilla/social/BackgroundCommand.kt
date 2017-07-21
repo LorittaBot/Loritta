@@ -6,6 +6,8 @@ import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -24,8 +26,8 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         return "<novo background>"
     }
 
-    override fun getDescription(): String {
-        return "Permite alterar o background do seu perfil!";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.BACKGROUND_DESCRIPTION;
     }
 
     override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
@@ -66,7 +68,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
-						.setTitle("\uD83D\uDDBC Seu background atual")
+						.setTitle("\uD83D\uDDBC ${context.locale.BACKGROUND_YOUR_CURRENT_BG}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
 				msg.editMessage(builder.build()).complete();
@@ -103,9 +105,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				context.metadata.put("templateIdx", index)
 				var builder = EmbedBuilder()
 						.setTitle("\uD83D\uDED2 Templates")
-						.setDescription("Clique em ⬅ para voltar um template\n" +
-								"Clique em ➡ para avançar um template\n" +
-								"Clique em ✅ para usar este template como seu background")
+						.setDescription(context.locale.BACKGROUND_TEMPLATE_INFO)
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
@@ -124,7 +124,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 	}
 
 	fun setAsBackground(link: String, context: CommandContext) {
-		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "Processando...");
+		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale.PROCESSING}...");
 
 		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(link, "UTF-8"))
 				.header("X-Mashape-Key", Loritta.config.mashapeKey)
@@ -137,12 +137,12 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
 		if (apiResponse.has("error")) {
-			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Imagem inválida! Tem certeza que isto é um link válido? Se puder, baixe a imagem e faça upload diretamente no Discord!").complete()
+			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
 			return;
 		}
 
 		if (apiResponse.get("rating_label").asString == "adult") {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + "**Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o " + context.getAsMention(false) + " é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore 😞)").complete()
+			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
 			return;
 		}
 
@@ -163,20 +163,14 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		}
 		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"));
 
-		context.sendMessage("✨ **|** " + context.getAsMention(true) + "Background atualizado! (${apiResponse.get("rating_label").asString})" + if (needsEditing) " Como a sua imagem não era 400x300, eu precisei mexer um pouquinho nela!" else "")
+		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.locale.BACKGROUND_UPDATED + if (needsEditing) " ${context.locale.BACKGROUND_EDITED}!" else "")
 		return;
 	}
 
 	fun getFirstPageEmbed(context: CommandContext): MessageEmbed {
 		var builder = net.dv8tion.jda.core.EmbedBuilder()
-				.setTitle("\uD83D\uDE4B Central de Papéis de Parede")
-				.setDescription("**Querendo alterar o seu background do seu perfil? Então você veio ao lugar certo!**\n" +
-						"\n" +
-						"Clique em \uD83D\uDDBC para ver seu background atual\n" +
-						"Clique em \uD83D\uDED2 para ver os templates padrões" +
-						"\n" +
-						"\n" +
-						"Querendo enviar seu próprio background? Sem problemas! Envie uma imagem 400x300 no chat e, junto com a imagem, escreva `" + context.config.commandPrefix + "background`! (Você também pode enviar o link da imagem junto com o comando que eu também irei aceitar!)\n\n(Não envie backgrounds com coisas NSFW! Se você enviar, sua conta será banida de usar qualquer funcionalidade minha!)")
+				.setTitle("\uD83D\uDE4B ${context.locale.BACKGROUND_CENTRAL}")
+				.setDescription(context.locale.BACKGROUND_INFO.msgFormat(context.config.commandPrefix))
 				.setColor(Color(0, 223, 142))
 		return builder.build()
 	}
