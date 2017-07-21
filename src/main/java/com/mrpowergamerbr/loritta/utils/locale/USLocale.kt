@@ -78,7 +78,56 @@ class USLocale : BaseLocale() {
 		AMINO_NO_IMAGE_FOUND = "I didn't find any \".Amino\" images in your message... \uD83D\uDE1E"
 		AMINO_CONVERT = "convert"
 
+		// MoneyCommand.kt
+		MONEY_DESCRIPTION = "Converts a currency to another. (Example: View how much dollar is costing compared to real)"
+		MONEY_INVALID_CURRENCY = "`{0}` is not a valid currency! \uD83D\uDCB8\n**Valid currencies:** {1}"
+		MONEY_CONVERTED = "💵 **{0} {1} to {2}**: {3} {1}"
+
+		// MorseCommand.kt
+		MORSE_DESCRIPTION = "Encodes/Decodes a message in morse code"
+		MORSE_FROM_TO = "Text to Morse"
+		MORSE_TO_FROM = "Morse to Text"
+		MORSE_FAIL = "I couldn''t transform your message in morse code... Maybe you used characters that doesn''t exist in morse code!"
+
+		// OCRCommand.kt
+		OCR_DESCRIPTION = "Reads the text in a image using OCR"
+		OCR_COUDLNT_FIND = "I didn''t find any text in that image..."
+
+		// PackageInfo.kt
+		PACKAGEINFO_DESCRIPTION = "Shows the status of a postal package, works with Correios (Brasil) and CTT (Portugal)"
+		PACKAGEINFO_INVALID = "`{0}` is not a valid postal code!"
+		PACKAGEINFO_COULDNT_FIND = "I didn''t find the object `{0}` in Correios'' database!"
+
+		// RgbCommand.kt
+		RGB_DESCRIPTION = "Transform a hexadecimal color to RGB"
+		RGB_TRANSFORMED = "I transformed your color `{0}` to RGB! {1}, {2}, {3}"
+		RGB_INVALID = "The color `{0}` is not a valid hexadecimal color!"
+
+		// TempoCommand.kt
+		TEMPO_DESCRIPTION = "Verify the temperature of a city!"
+		TEMPO_PREVISAO_PARA = "Weather forecast for {0}, {1}"
+		TEMPO_TEMPERATURA = "Temperature"
+		TEMPO_UMIDADE = "Humidity"
+		TEMPO_VELOCIDADE_VENTO = "Wind Speed"
+		TEMPO_PRESSAO_AR = "Air Pressure"
+		TEMPO_ATUAL = "Current"
+		TEMPO_MAX = "Maximum"
+		TEMPO_MIN = "Minium"
+		TEMPO_COULDNT_FIND = "I didn''t find any city named `{0}`!"
+
+		// TranslateCommand.kt
+		TRANSLATE_DESCRIPTION = "Translates a sentence to another language"
+
+		// WikipediaCommand.kt
+		WIKIPEDIA_DESCRIPTION = "Shows a summary of a Wikipedia page"
+		WIKIPEDIA_COULDNT_FIND = "I didn''t find anything related to `{0}`!"
+
 		// YoutubeMp3Command.kt
+		YOUTUBEMP3_DESCRIPTION = "Download a YouTube video in MP3!"
 		YOUTUBEMP3_ERROR_WHEN_CONVERTING = "An error ocurred when trying to convert the video to MP3... \uD83D\uDE1E"
+		YOUTUBEMP3_INVALID_LINK = "Invalid link!"
+		YOUTUBEMP3_DOWNLOADING_VIDEO = "Downloading video"
+		YOUTUBEMP3_CONVERTING_VIDEO = "Converting video"
+		YOUTUBEMP3_FINISHED = "Done! Your video is now ready to be downloaded in MP3! {0}"
 	}
 }
