@@ -267,6 +267,9 @@ class Loritta {
 		val musicConfig = context.config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
 
+		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
+		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
+
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...

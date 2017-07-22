@@ -36,7 +36,6 @@ class TocarCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
-			context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
 				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_MUTED.msgFormat())
