@@ -48,7 +48,7 @@ class TocarCommand : CommandBase() {
 		}
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL)
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você precisa estar no canal de música para poder colocar músicas!")
 			return
 		}
 		if (context.args.size >= 1) {

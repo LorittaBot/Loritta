@@ -67,6 +67,55 @@ class USLocale : BaseLocale() {
 		HELLO_WORLD_DESCRIPTION = "A simple command used to test Loritta's locale system."
 		USING_LOCALE = "Using {0} as locale!"
 
+		// ===[ COMMANDS - MUSIC ]===
+		// MusicInfoCommand.kt & PlaylistCommand.kt
+		MUSICINFO_DESCRIPTION = "Shows the current track."
+		MUSICINFO_NOMUSIC = "Nothing is playing right now... Why don''t you play one? `+play music`"
+		MUSICINFO_INQUEUE = "In queue..."
+		MUSICINFO_NOMUSIC_SHORT = "No tracks..."
+		MUSICINFO_REQUESTED_BY = "requested by"
+		MUSICINFO_LENGTH = "Length"
+		MUSICINFO_VIEWS = "Views"
+		MUSICINFO_LIKES = "Likes"
+		MUSICINFO_DISLIKES = "Dislikes"
+		MUSICINFO_COMMENTS = "Comments"
+		MUSICINFO_SKIPTITLE = "Do you want to skip this track?"
+		MUSICINFO_SKIPTUTORIAL = "**Then react with \uD83E\uDD26 in this message!** (If 75% of the users in the music channel reacts with \uD83E\uDD26, I will skip the song!)"
+
+		// PularCommand.kt
+		PULAR_DESCRIPTION = "Skips a track."
+		PULAR_MUSICSKIPPED = "Track skipped!"
+
+		// TocarCommand.kt
+		TOCAR_DESCRIPTION = "Queues a track to be played!"
+		TOCAR_MUTED = "Someone muted me in the voice channel... \uD83D\uDE1E Please, ask someone of this server administration to unmute me!"
+		TOCAR_CANTTALK = "I don't have permission to talk in the voice channel... \uD83D\uDE1E Please, ask someone of this server administration to give permission so I can play some beats!"
+		TOCAR_NOTINCHANNEL = "You need to be in the music channel to queue songs!"
+
+		// VolumeCommand.kt
+		VOLUME_DESCRIPTION = "Change the song volume"
+		VOLUME_TOOHIGH = "Do you wanna be deaf? Well, you can, but I''m also listening and I don''t want to."
+		VOLUME_TOOLOW = "Nope, using negative numbers won''t mute it so much that would cause it to be permanently banned from earth."
+		VOLUME_LOWER = "I will turn down the song volume! Sorry if I bothered you with the volume..."
+		VOLUME_HIGHER = "I will turn up the song volume! You better not play trash!"
+		VOLUME_EXCEPTION = "Okay, let''s change the volume to 💩 then... I wonder how I will change the volume to that..."
+
+		// ~ generic ~
+		MUSIC_MAX = "Track too long! A track must have, at least `{0}`!"
+		MUSIC_ADDED = "Added to the queue `{0}`!"
+		MUSIC_PLAYLIST_ADDED = "Added to queue {0} songs!"
+		MUSIC_PLAYLIST_ADDED_IGNORED = "Added to the queue {0} songs! (ignored {1} tracks due to its length!)"
+		MUSIC_NOTFOUND = "I couldn''t find anything related to `{0}` on YouTube... Try using the video link instead of searching for it!"
+		MUSIC_ERROR = "Ih Serjão Sujou!\n`{0}`\n(Probably it is a VEVO video and they only let you watch the video in YouTube''s website... \uD83D\uDE22)"
+
+		// ===[ COMMANDS - UNDERTALE ]===
+		// UndertaleBattleCommand.kt
+		UTBATTLE_DESCRIPTION = "Creates a speech bubble like in Undertale"
+		UTBATTLE_INVALID = "Monster `{0}` is not valid! **Valid monsters:** `{1}`"
+
+		// UndertaleBoxCommand.kt
+		UTBOX_DESCRIPTION = "Creates a dialog box like in Undertale"
+
 		// LembrarCommand.kt
 		LEMBRAR_DESCRIPTION = "Do you need to remember to give food to your doggo? Maybe you want to create a reminder so in the future you can see if you could do all your \"Life Goals\" of this year? Then create a reminder!"
 		LEMBRAR_SUCCESS = "I will remind you in {0}/{1}/{2} {3}:{4}!"

@@ -26,7 +26,9 @@ class HelloWorldCommand : CommandBase() {
 				val default = loritta.getLocaleById("default")
 				val strings = default::class.java.declaredFields.size
 				text += "**Número de Textos:** $strings\n\n"
+				context.sendMessage(text)
 				for ((id, locale) in loritta.locales) {
+					text = ""
 					if (id != "default") {
 						var translatedStrings = 0
 						var missing = mutableListOf<String>();
@@ -46,9 +48,9 @@ class HelloWorldCommand : CommandBase() {
 							text += "**Textos faltando...** " + missing.joinToString(", ") + "\n"
 						}
 						text += "\n"
+						context.sendMessage(if (text.length > 2000) text.substring(0..1999) else text)
 					}
 				}
-				context.sendMessage(text)
 				return
 			}
 			context.config.localeId = newLocale
