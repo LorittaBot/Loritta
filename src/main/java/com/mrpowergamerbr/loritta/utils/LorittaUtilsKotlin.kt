@@ -138,19 +138,19 @@ object LorittaUtilsKotlin {
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis))
 		);
 
-		embed.addField("\uD83D\uDD52 Duração", "`$elapsed`/`$fancy`", true);
+		embed.addField("\uD83D\uDD52 ${context.locale.MUSICINFO_LENGTH.msgFormat()}", "`$elapsed`/`$fancy`", true);
 
 		if (playingTrack.sourceManager.sourceName == "youtube") {
 			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA Visualizações", metaTrack.metadata.get("viewCount"), true);
-			embed.addField("\uD83D\uDE0D Gostei", metaTrack.metadata.get("likeCount"), true);
-			embed.addField("\uD83D\uDE20 Não Gostei", metaTrack.metadata.get("dislikeCount"), true);
-			embed.addField("\uD83D\uDCAC Comentários", metaTrack.metadata.get("commentCount"), true);
+			embed.addField("\uD83D\uDCFA ${context.locale.MUSICINFO_VIEWS.msgFormat()}", metaTrack.metadata.get("viewCount"), true);
+			embed.addField("\uD83D\uDE0D ${context.locale.MUSICINFO_LIKES.msgFormat()}", metaTrack.metadata.get("likeCount"), true);
+			embed.addField("\uD83D\uDE20 ${context.locale.MUSICINFO_DISLIKES.msgFormat()}", metaTrack.metadata.get("dislikeCount"), true);
+			embed.addField("\uD83D\uDCAC ${context.locale.MUSICINFO_COMMENTS.msgFormat()}", metaTrack.metadata.get("commentCount"), true);
 			embed.setThumbnail(metaTrack.metadata.get("thumbnail"))
 			embed.setAuthor("${playingTrack.info.author}", null, metaTrack.metadata.get("channelIcon"))
 		}
 
-		embed.addField("\uD83D\uDCAB Quer pular a música?", "**Então use \uD83E\uDD26 nesta mensagem!** (Se 75% das pessoas no canal de música reagirem com \uD83E\uDD26, eu irei pular a música!)", false)
+		embed.addField("\uD83D\uDCAB ${context.locale.MUSICINFO_SKIPTITLE.msgFormat()}", context.locale.MUSICINFO_SKIPTUTORIAL.msgFormat(), false)
 		return embed.build()
 	}
 
@@ -158,20 +158,20 @@ object LorittaUtilsKotlin {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
-		embed.setTitle("\uD83C\uDFB6 Na fila...")
+		embed.setTitle("\uD83C\uDFB6 ${context.locale.MUSICINFO_INQUEUE.msgFormat()}")
 		embed.setColor(Color(93, 173, 236))
 
 		val songs = manager.scheduler.queue.toList()
 		val currentTrack = manager.scheduler.currentTrack
 		if (currentTrack != null) {
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (pedido por ${currentTrack.user.asMention})\n";
-			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (pedido por ${it.user.asMention})" })
+			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale.MUSICINFO_REQUESTED_BY.msgFormat()} ${currentTrack.user.asMention})\n";
+			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.locale.MUSICINFO_REQUESTED_BY.msgFormat()} ${it.user.asMention})" })
 			if (text.length >= 2048) {
 				text = text.substring(0, 2047);
 			}
 			embed.setDescription(text)
 		} else {
-			embed.setDescription("Nenhuma música...");
+			embed.setDescription(context.locale.MUSICINFO_NOMUSIC_SHORT.msgFormat());
 		}
 		return embed.build();
 	}
@@ -222,7 +222,7 @@ object LorittaUtilsKotlin {
 					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
 
 					if (count >= required) {
-						loritta.skipTrack(e.textChannel)
+						loritta.skipTrack(context)
 					}
 				}
 			}

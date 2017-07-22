@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 class TocarCommand : CommandBase() {
@@ -12,8 +14,8 @@ class TocarCommand : CommandBase() {
 		return "tocar"
 	}
 
-	override fun getDescription(): String {
-		return "Adiciona uma música para a fila da DJ Loritta!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.TOCAR_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -36,17 +38,17 @@ class TocarCommand : CommandBase() {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_MUTED.msgFormat())
 				return
 			}
 			if (selfMember.voiceState.isSuppressed) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_CANTTALK.msgFormat())
 				return
 			}
 		}
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Você precisa estar no canal de música para poder colocar músicas!")
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL)
 			return
 		}
 		if (context.args.size >= 1) {

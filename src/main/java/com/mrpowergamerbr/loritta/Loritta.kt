@@ -34,8 +34,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.managers.AudioManager
+import okhttp3.OkHttpClient
 import org.jibble.jmegahal.JMegaHal
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
@@ -129,9 +129,17 @@ class Loritta {
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
 
+		val okHttpBuilder = OkHttpClient.Builder()
+				.connectTimeout(25, TimeUnit.SECONDS)
+				.readTimeout(25, TimeUnit.SECONDS)
+				.writeTimeout(25, TimeUnit.SECONDS)
 		for (idx in 0..generateShards) {
 			println("Iniciando Shard $idx...")
-			val shard = JDABuilder(AccountType.BOT).useSharding(idx, Loritta.config.shards).setToken(Loritta.config.clientToken).buildBlocking();
+			val shard = JDABuilder(AccountType.BOT)
+					.useSharding(idx, Loritta.config.shards)
+					.setToken(Loritta.config.clientToken)
+					.setHttpClientBuilder(okHttpBuilder)
+					.buildBlocking();
 			lorittaShards.shards.add(shard)
 		}
 
@@ -262,11 +270,11 @@ class Loritta {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.getDuration() > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
-						channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Música grande demais! Uma música deve ter, no máximo, `$final` de duração!").queue();
+						channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_MAX.msgFormat(final)).queue();
 						return;
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila `${track.info.title}`!").queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
 
 				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 			}
@@ -279,7 +287,7 @@ class Loritta {
 						track = playlist.tracks[0]
 					}
 
-					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila `${track.info.title}`!").queue()
+					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
 
 					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 				} else { // Mas se ela aceita...
@@ -297,9 +305,9 @@ class Loritta {
 					}
 
 					if (ignored == 0) {
-						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila ${playlist.tracks.size} músicas!").queue()
+						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(playlist.tracks.size)).queue()
 					} else {
-						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + "Adicionado na fila ${playlist.tracks.size} músicas! (ignorado $ignored + faixas por serem muito grandes!)").queue()
+						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(playlist.tracks.size, ignored)).queue()
 					}
 				}
 			}
@@ -315,11 +323,11 @@ class Loritta {
 						return;
 					}
 				}
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não encontrei nada relacionado a `$trackUrl` no YouTube... Tente colocar para tocar o link do vídeo!").queue();
+				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_NOTFOUND.msgFormat(trackUrl)).queue();
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Ih Serjão Sujou! `${exception.message}`\n(Provavelmente é um vídeo da VEVO e eles só deixam ver a música no site do YouTube... \uD83D\uDE22)").queue();
+				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_ERROR.msgFormat(exception.message)).queue();
 			}
 		})
 	}
@@ -367,11 +375,11 @@ class Loritta {
 		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
 	}
 
-	fun skipTrack(channel: TextChannel) {
-		val musicManager = getGuildAudioPlayer(channel.getGuild());
+	fun skipTrack(context: CommandContext) {
+		val musicManager = getGuildAudioPlayer(context.getGuild());
 		musicManager.scheduler.nextTrack();
-
-		channel.sendMessage("🤹 Música pulada!").queue();
+		val channel = context.event.channel
+		channel.sendMessage("🤹 ${context.locale.PULAR_MUSICSKIPPED.msgFormat()}").queue();
 	}
 
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {

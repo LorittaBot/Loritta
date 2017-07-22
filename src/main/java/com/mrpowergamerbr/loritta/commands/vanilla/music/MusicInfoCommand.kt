@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
@@ -13,8 +15,8 @@ class MusicInfoCommand : CommandBase() {
 		return "tocando"
 	}
 
-	override fun getDescription(): String {
-		return "Fala a música que está tocando agora."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MUSICINFO_DESCRIPTION
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -28,7 +30,7 @@ class MusicInfoCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (manager.player.playingTrack == null) {
-			context.sendMessage(context.getAsMention(true) + "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`")
+			context.sendMessage(context.getAsMention(true) + context.locale.MUSICINFO_NOMUSIC.msgFormat())
 		} else {
 			val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
 			val message = context.sendMessage(embed)

@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 class PularCommand : CommandBase() {
@@ -11,8 +13,8 @@ class PularCommand : CommandBase() {
 		return "pular"
 	}
 
-	override fun getDescription(): String {
-		return "Pula uma música."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.PULAR_DESCRIPTION.msgFormat()
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -28,6 +30,6 @@ class PularCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		LorittaLauncher.getInstance().skipTrack(context.event.textChannel)
+		LorittaLauncher.loritta.skipTrack(context)
 	}
 }

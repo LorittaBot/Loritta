@@ -27,6 +27,7 @@ open class BaseLocale {
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
 
+	// ===[ COMMANDS - SOCIAL ]===
 	// BackgroundCommand.kt
 	var BACKGROUND_DESCRIPTION = "Que tal dar uma renovada no papel de parede do seu perfil?"
 	var BACKGROUND_CENTRAL = "Central de Papéis de Parede"
@@ -68,6 +69,56 @@ open class BaseLocale {
 	var HELLO_WORLD_DESCRIPTION = "Um simples comando para testar o sistema de localização da Loritta."
 	var USING_LOCALE = "Agora estou usando {0} como locale!"
 
+	// ===[ COMMANDS - MUSIC ]===
+	// MusicInfoCommand.kt & PlaylistCommand.kt
+	var MUSICINFO_DESCRIPTION = "Fala a música que está tocando agora."
+	var MUSICINFO_NOMUSIC = "Nenhuma música está tocando... Que tal tocar uma? `+tocar música`"
+	var MUSICINFO_INQUEUE = "Na fila..."
+	var MUSICINFO_NOMUSIC_SHORT = "Nenhuma música..."
+	var MUSICINFO_REQUESTED_BY = "pedido por"
+	var MUSICINFO_LENGTH = "Duração"
+	var MUSICINFO_VIEWS = "Visualizações"
+	var MUSICINFO_LIKES = "Gostei"
+	var MUSICINFO_DISLIKES = "Não Gostei"
+	var MUSICINFO_COMMENTS = "Comentários"
+	var MUSICINFO_SKIPTITLE = "Quer pular a música?"
+	var MUSICINFO_SKIPTUTORIAL = "**Então use \uD83E\uDD26  nesta mensagem!** (Se 75% das pessoas no canal de música reagirem com \uD83E\uDD26, eu irei pular a música!)"
+
+	// PularCommand.kt
+	var PULAR_DESCRIPTION = "Pula uma música."
+	var PULAR_MUSICSKIPPED = "Música pulada!"
+
+	// TocarCommand.kt
+	var TOCAR_DESCRIPTION = "Adiciona uma música para a fila da DJ Loritta!"
+	var TOCAR_MUTED = "Alguém me mutou no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração para desmutar!"
+	var TOCAR_CANTTALK = "Eu não tenho permissão para falar no canal de voz... \uD83D\uDE1E Por favor, peça para alguém da administração dar permissão para eu poder soltar alguns batidões!"
+	var TOCAR_NOTINCHANNEL = "Você precisa estar no canal de música para poder colocar músicas!"
+
+	// VolumeCommand.kt
+	var VOLUME_DESCRIPTION = "Altera o volume da música"
+	var VOLUME_TOOHIGH = "Você quer ficar surdo? Bem, você pode querer, mas eu também estou escutando e eu não quero."
+	var VOLUME_TOOLOW = "Não cara, colocar números negativos não irá deixar a música tão mutada que ela é banida do planeta terra."
+	var VOLUME_LOWER = "irei diminuir o volume do batidão! Desculpe se eu te incomodei com a música alta..."
+	var VOLUME_HIGHER = "irei aumentar o volume do batidão! Se segura aí que agora você vai sentir as ondas sonoras!"
+	var VOLUME_EXCEPTION = "Ok, vamos alterar o volume para 💩 então... coloque um número válido por favor!"
+
+	// ~ generic ~
+	var MUSIC_MAX = "Música grande demais! Uma música deve ter, no máximo, `{0}` de duração!"
+	var MUSIC_ADDED = "Adicionado na fila `{0}`!"
+	var MUSIC_PLAYLIST_ADDED = "Adicionado na fila {0} músicas!"
+	var MUSIC_PLAYLIST_ADDED_IGNORED = "Adicionado na fila {0} músicas! (ignorado {1} faixas por serem muito grandes!)"
+	var MUSIC_NOTFOUND = "Não encontrei nada relacionado a `{0}` no YouTube... Tente colocar para tocar o link do vídeo!"
+	var MUSIC_ERROR = "Ih Serjão Sujou!\n`{0}`\n(Provavelmente é um vídeo da VEVO e eles só deixam ver a música no site do YouTube... \uD83D\uDE22)"
+
+	// ===[ COMMANDS - UNDERTALE ]===
+	// UndertaleBattleCommand.kt
+	var UTBATTLE_DESCRIPTION = "Cria um balão de fala igual ao do Undertale"
+	var UTBATTLE_INVALID = "Monstro `{0}` não é válido! **Lista de monstros válidos:** `{1}`"
+
+	// UndertaleBoxCommand.kt
+	var UTBOX_DESCRIPTION = "Cria uma caixa de diálogo igual ao do Undertale"
+
+	// ===[ COMMANDS - UTILS ]===
 	// LembrarCommand.kt
 	var LEMBRAR_DESCRIPTION = "Precisa lembrar de dar comida para o dog? Talvez você queira marcar um lembrete para que no futuro você possa ver se você conseguir fazer todos os seus \"Life Goals\" deste ano? Então crie um lembrete!"
 	var LEMBRAR_SUCCESS = "Eu irei te lembrar em {0}/{1}/{2} às {3}:{4}!"
