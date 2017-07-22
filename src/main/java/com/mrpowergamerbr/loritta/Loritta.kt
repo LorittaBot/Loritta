@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.FunkLocale
 import com.mrpowergamerbr.loritta.utils.locale.USLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
@@ -233,6 +234,7 @@ class Loritta {
 	 */
 	fun loadLocales() {
 		locales.put("us", USLocale())
+		locales.put("funk", FunkLocale())
 		locales.put("default", BaseLocale())
 	}
 
