@@ -16,20 +16,16 @@ $Id: JMegaHal.java,v 1.4 2004/02/01 13:24:06 pjm2 Exp $
 
 package org.jibble.jmegahal;
 
+import com.google.common.collect.ImmutableMap;
+import com.mrpowergamerbr.loritta.Loritta;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
-import com.mrpowergamerbr.loritta.Loritta;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JMegaHal implements Serializable {
 
@@ -221,15 +217,15 @@ public class JMegaHal implements Serializable {
 	}
 
 	// This maps a single word to a HashSet of all the Quads it is in.
-	private HashMap<String,  HashSet<Quad>> words = new HashMap<String, HashSet<Quad>>();
+	private ConcurrentHashMap<String,  HashSet<Quad>> words = new ConcurrentHashMap<String, HashSet<Quad>>();
 
 	// A self-referential HashMap of Quads.
-	private HashMap<Quad, Quad> quads = new HashMap<Quad, Quad>();
+	private ConcurrentHashMap<Quad, Quad> quads = new ConcurrentHashMap<Quad, Quad>();
 
 	// This maps a Quad onto a Set of Strings that may come next.
-	private HashMap<Quad, HashSet<String>> next = new HashMap<Quad, HashSet<String>>();
+	private ConcurrentHashMap<Quad, HashSet<String>> next = new ConcurrentHashMap<Quad, HashSet<String>>();
 
 	// This maps a Quad onto a Set of Strings that may come before it.
-	private HashMap<Quad, HashSet<String>> previous = new HashMap<Quad, HashSet<String>>();
+	private ConcurrentHashMap<Quad, HashSet<String>> previous = new ConcurrentHashMap<Quad, HashSet<String>>();
 
 }
