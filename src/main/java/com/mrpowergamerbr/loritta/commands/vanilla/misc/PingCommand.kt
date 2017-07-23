@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
@@ -10,8 +12,8 @@ class PingCommand : CommandBase() {
         return "ping"
     }
 
-    override fun getDescription(): String {
-        return "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testar!"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.PING_DESCRIPTION.msgFormat()
     }
 
     override fun run(context: CommandContext) {

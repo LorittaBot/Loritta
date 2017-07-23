@@ -12,6 +12,7 @@ class USLocale : BaseLocale() {
 		PROCESSING = "Processing"
 		INVALID_NUMBER = "`{0}` is a unrecognizable number for a bot like me, sorry. \uD83D\uDE22"
 		MINUTES_AND_SECONDS = "%02d minutes and %02d seconds"
+		NSFW_IMAGE = "**Pornographic image (NSFW) detected**\n\n{0}... are you really serious that you would use *that* as your wallpaper? Do you really think someone would look at your wallpaper and say \"wow, \"{0}\" is wonderful because he wastes his time watching other people making out because he can't go outside and meet new people\"?\n\nNo, nobody will say that, please, for me, change your life and stop doing that.\n\n(If this was a false positive then... I don''t know, ignore me \uD83D\uDE1E)"
 
 		// Event Log
 		EVENTLOG_USER_ID = "User ID: {0}"
@@ -19,6 +20,7 @@ class USLocale : BaseLocale() {
 		EVENTLOG_NAME_CHANGED = "**{0} changed username!**\n\nPrevious username: `{1}`\nNew username: `{2}`"
 		EVENTLOG_CHANNEL_CREATED = "**Created text channel {0}**"
 		EVENTLOG_CHANNEL_NAME_UPDATED = "**{0}''s name was changed!**\n\nPrevious name: `{1}`\nNew name: `{2}`"
+		EVENTLOG_CHANNEL_TOPIC_UPDATED = "**{0}''s topic was changed!**\n\nPrevious topic: `{1}`\nNew topic: `{2}`"
 		EVENTLOG_CHANNEL_POSITION_UPDATED = "**{0}''s position was changed!**\n\nPrevious position: `{1}`\nNew position: `{2}`"
 		EVENTLOG_CHANNEL_DELETED = "**Deleted text channel `{0}`**"
 
@@ -26,6 +28,69 @@ class USLocale : BaseLocale() {
 		HOW_TO_USE = "How to use"
 		EXAMPLE = "Example"
 
+		// ===[ COMMANDS - DISCORD ]===
+		// AvatarCommand.kt
+		AVATAR_DESCRIPTION = "Gets the avatar of an user"
+		AVATAR_CLICKHERE = "Click [here]({0}) to download the image!"
+		AVATAR_LORITTACUTE = "I know I''m cute!"
+
+		// BotInfoCommand.kt
+		BOTINFO_DESCRIPTION = "Shows interesting (and some very useless) informations about me!"
+		BOTINFO_TITLE = "Howdy, my name is Loritta!"
+		BOTINFO_EMBED_INFO = "Howdy, my name is Loritta (or, to close friends, \"Lori\") and I''m just a cute bot for Discord with lots of cool features!\n\n" +
+				"I''m in **{0} guilds** and I know **{1} different users** (Wow, so many users)! I was made using **JDA** in **Java & Kotlin** and, if you want to see my source code, [click here](http://bit.ly/lorittagit)!\n\n" +
+				"My website is https://loritta.website/ and, if you want know more about me, [click here](http://bit.ly/lorittad) to join my Discord guild!\n\n" +
+				"I''m awake since **{2}** ago \uD83D\uDE34 (in other words, my current uptime) and I have **{3} different commands**!"
+		BOTINFO_HONORABLE_MENTIONS = "Honorable Mentions"
+		BOTINFO_MENTIONS = "`MrPowerGamerBR#4185` If it wasn''t for him, I probably wouldn''t even exist!\n" +
+				"`Giovanna_GGold#2454 (Gabriela Giulian)` She was who made this **beautiful** \uD83D\uDE0D drawing of that thumbnail! [Click here to view the drawing!](https://loritta.website/assets/img/loritta_fixed_final_cropped.png) (and she captured all my cuteness and prettiness \uD83D\uDE0A)!\n" +
+				"`{0}#{1}` Because you''re talking with me! \uD83D\uDE04"
+		BOTINFO_CREATEDBY = "Loritta was created by MrPowerGamerBR"
+
+		// EmojiCommand.kt
+		EMOJI_DESCRIPTION = "View emojis in a size that you don''t need to use a magnify glass just to understand them!"
+
+		// InviteCommand.kt
+		INVITE_DESCRIPTION = "Sends the invite link to add me in other servers!"
+		INVITE_INFO = "Do you want to add me in other servers? Then click [here]({0}) to add me in other server!\n\nIf you want to configure anything (like my prefix, activate commands, etc) then access my administration panel clicking [here]({1})!\n\nAnd, of course, join my guild to give suggestions, report bugs and much more! {2}"
+
+		// ServerInfoCommand.kt
+		SERVERINFO_DESCRIPTION = "View some informations about the current server!"
+		SERVERINFO_OWNER = "Owner"
+		SERVERINFO_REGION = "Region"
+		SERVERINFO_CHANNELS = "Channels"
+		SERVERINFO_CHANNELS_TEXT = "Text"
+		SERVERINFO_CHANNELS_VOICE = "Voice"
+		SERVERINFO_CREATED_IN = "Created in"
+		SERVERINFO_JOINED_IN = "Joined in"
+		SERVERINFO_MEMBERS = "Members"
+		SERVERINFO_ONLINE = "Online"
+		SERVERINFO_AWAY = "Away"
+		SERVERINFO_BUSY = "Do Not Disturb"
+		SERVERINFO_OFFLINE = "Offline"
+		SERVERINFO_PEOPLE = "People"
+		SERVERINFO_BOTS = "Bots"
+		SERVERINFO_ROLES = "Roles"
+		SERVERINFO_CUSTOM_EMOJIS = "Custom emojis"
+
+		// ===[ COMMANDS - MISC ]===
+		// AjudaCommand.kt
+		AJUDA_DESCRIPTION = "Shows all the commands I can do, however this will only show the available commands on the current server you are in!"
+		AJUDA_SENT_IN_PRIVATE = "I sent to you via private messages, check your direct messages!"
+		AJUDA_INTRODUCE_MYSELF = "Howdy {0}, my name is Loritta (or, for close friends, \"Lori\") and I''m just a simple bot for Discord!\n\nMy objective is to be a bot with general functions, extremely modular, easy to use and super customizable for every server! (Want to add me to your server? Then click [here]({1}))!\n\nCurrently you are viewing the help for **{2}**!"
+		AJUDA_MY_HELP = "Loritta Help"
+
+		// AngelCommand.kt
+		ANGEL_DESCRIPTION = "Shows an angel too pure for this cruel world :^)"
+
+		// EscolherCommand.kt
+		ESCOLHER_DESCRIPTION = "Needing some help to choose something? Then let me choose for you!"
+		ESCOLHER_RESULT = "I chose `{0}`!"
+
+		// PingCommand.kt
+		PING_DESCRIPTION = "A test command to see if I''m working, I recommend leaving this enabled for testing purposes!"
+
+		// ===[ COMMANDS - SOCIAL ]===
 		// BackgroundCommand.kt
 		BACKGROUND_DESCRIPTION = "Why not spice up your profile with a new fancy wallpaper?"
 		BACKGROUND_CENTRAL = "Wallpaper Central"

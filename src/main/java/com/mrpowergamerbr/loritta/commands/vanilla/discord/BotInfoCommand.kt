@@ -3,6 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.lang.management.ManagementFactory
@@ -17,8 +19,8 @@ class BotInfoCommand : CommandBase() {
 		return listOf("info")
 	}
 
-	override fun getDescription(): String {
-		return "Mostra informações interessantes (e algumas bem inúteis) sobre a Loritta."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.BOTINFO_DESCRIPTION.msgFormat()
 	}
 
 	override fun run(context: CommandContext) {
@@ -44,17 +46,12 @@ class BotInfoCommand : CommandBase() {
 		sb.append(seconds)
 		sb.append("s")
 
-		embed.setAuthor("Olá, eu me chamo Loritta! 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
+		embed.setAuthor("${context.locale.BOTINFO_TITLE.msgFormat()} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setThumbnail("https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription("Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\") e sou apenas um bot para o Discord fofo e com várias funcionalidades supimpas!\n\n" +
-				"Eu estou em **${LorittaLauncher.getInstance().lorittaShards.getGuilds().size} servidores** e eu conheço **${LorittaLauncher.getInstance().lorittaShards.getUsers().size} pessoas diferentes** (Wow, quanta gente)! Eu fui feita usando **JDA** em **Java & Kotlin** e, se você quiser ver meu código-fonte, [clique aqui](http://bit.ly/lorittagit)!\n\n" +
-				"Meu website é https://loritta.website/ e, se você quiser saber mais sobre mim, [clique aqui](http://bit.ly/lorittad) para entrar no meu servidor no Discord!\n\n" +
-				"Já fazem **${sb.toString()}** desde que eu acordei \uD83D\uDE34 (ou seja, meu uptime atual) e atualmente eu tenho **${LorittaLauncher.getInstance().commandManager.commandMap.size} comandos diferentes**!")
-		embed.addField("Menções Honrosas", "`MrPowerGamerBR#4185` Se não fosse por ele, eu nem iria existir!\n"
-				+ "`Giovanna_GGold#2454 (Gabriela Giulian)` Ela que fez esta **linda** \uD83D\uDE0D arte minha da miniatura! [Clique aqui para ver o desenho!](https://loritta.website/assets/img/loritta_fixed_final_cropped.png) (e ela capturou toda a minha fofura & beleza \uD83D\uDE0A)!\n"
-				+ "`" + context.userHandle.name + "#" + context.userHandle.discriminator + "` Por estar falando comigo! \uD83D\uDE04", false)
-		embed.setFooter("Loritta foi criada por MrPowerGamerBR - https://mrpowergamerbr.com/", "https://mrpowergamerbr.com/assets/img/avatar.png")
+		embed.setDescription(context.locale.BOTINFO_EMBED_INFO.msgFormat(LorittaLauncher.loritta.lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size))
+		embed.addField("\uD83C\uDFC5 ${context.locale.BOTINFO_HONORABLE_MENTIONS.msgFormat()}", context.locale.BOTINFO_MENTIONS.msgFormat(context.userHandle.name, context.userHandle.discriminator), false)
+		embed.setFooter("${context.locale.BOTINFO_CREATEDBY.msgFormat()} - https://mrpowergamerbr.com/", "https://mrpowergamerbr.com/assets/img/avatar.png")
 		context.sendMessage(embed.build())
 	}
 }

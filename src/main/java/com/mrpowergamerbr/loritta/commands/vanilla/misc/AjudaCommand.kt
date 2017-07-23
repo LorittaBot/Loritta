@@ -5,8 +5,9 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -20,8 +21,8 @@ class AjudaCommand : CommandBase() {
         return "ajuda"
     }
 
-    override fun getDescription(): String {
-        return "Mostra todos os comandos disponíveis que eu posso executar, lembrando que isto só irá mostrar os comandos habilitados no servidor que você executou a ajuda!"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.AJUDA_DESCRIPTION.msgFormat()
     }
 
     override fun getAliases(): List<String> {
@@ -30,14 +31,14 @@ class AjudaCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
         if (true /* cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE) */) {
-            context.event.textChannel.sendMessage(context.getAsMention(true) + "Enviei para você no privado! ;)").complete()
+            context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
         }
 
-        var description = "Olá " + context.userHandle.asMention + ", eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui](https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975))!\n\nAtualmente você está vendo a ajuda do **" + context.guild.name + "**!"
+        var description = context.locale.AJUDA_INTRODUCE_MYSELF.msgFormat(context.userHandle.asMention, "https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975", context.guild.name)
 
         var builder = EmbedBuilder()
                 .setColor(Color(0, 193, 223))
-                .setTitle("💁 Ajuda da Loritta")
+                .setTitle("💁 ${context.locale.AJUDA_MY_HELP.msgFormat()}")
                 .setDescription(description)
                 .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
@@ -45,22 +46,14 @@ class AjudaCommand : CommandBase() {
 
         val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 
-        val socialCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.SOCIAL, "http://i.imgur.com/Ql6EiAw.png")
-        val discordCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")
-        val minecraftCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png")
-        val undertaleCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
-        val pokemonCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.POKEMON, "http://i.imgur.com/2l5kKCp.png")
-        val funCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
-        val miscCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
-        val utilsCmds = getCommandsFor(context.config, disabledCommands, CommandCategory.UTILS, "http://i.imgur.com/eksGMGw.png")
-
-        val aboutMe = EmbedBuilder()
-        aboutMe.setTitle("Sobre o Criador", null)
-        aboutMe.setThumbnail("http://i.imgur.com/nhBZ8i4.png")
-        aboutMe.setDescription("Loritta foi criado pelo MrPowerGamerBR. :wink:")
-        aboutMe.addField("Website", "http://mrpowergamerbr.com/", true)
-        aboutMe.addField("Discord", "MrPowerGamerBR#4185", true)
-        aboutMe.addField("Twitter", "@mrpowergamerbr", true)
+        val socialCmds = getCommandsFor(context, disabledCommands, CommandCategory.SOCIAL, "http://i.imgur.com/Ql6EiAw.png")
+        val discordCmds = getCommandsFor(context, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")
+        val minecraftCmds = getCommandsFor(context, disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png")
+        val undertaleCmds = getCommandsFor(context, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
+        val pokemonCmds = getCommandsFor(context, disabledCommands, CommandCategory.POKEMON, "http://i.imgur.com/2l5kKCp.png")
+        val funCmds = getCommandsFor(context, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
+        val miscCmds = getCommandsFor(context, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
+        val utilsCmds = getCommandsFor(context, disabledCommands, CommandCategory.UTILS, "http://i.imgur.com/eksGMGw.png")
 
         val sparklyPower = EmbedBuilder()
                 .setColor(Color(0, 255, 168))
@@ -135,11 +128,12 @@ class AjudaCommand : CommandBase() {
         return messages;
     }
 
-    fun getCommandsFor(conf: ServerConfig, availableCommands: List<CommandBase>, cat: CommandCategory, image: String): MutableList<MessageEmbed> {
+    fun getCommandsFor(context: CommandContext, availableCommands: List<CommandBase>, cat: CommandCategory, image: String): MutableList<MessageEmbed> {
         val embeds = ArrayList<MessageEmbed>();
         var embed = EmbedBuilder()
         embed.setTitle(cat.fancyTitle, null)
         embed.setThumbnail(image)
+        val conf = context.config
 
         var color = Color(255, 255, 255);
 
@@ -169,7 +163,7 @@ class AjudaCommand : CommandBase() {
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-                    var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.description + "\n";
+                    var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.getDescription(context) + "\n";
                     if ((description + toBeAdded).length > 2048) {
                         embed.setDescription(description);
                         embeds.add(embed.build());
@@ -177,7 +171,7 @@ class AjudaCommand : CommandBase() {
                         embed.setColor(color)
                         description = "";
                     }
-                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.description + "\n";
+                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.getDescription(context) + "\n";
                 }
             }
             embed.setDescription(description)

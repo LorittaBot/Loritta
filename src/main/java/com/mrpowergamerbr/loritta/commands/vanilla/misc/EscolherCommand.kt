@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 class EscolherCommand : CommandBase() {
     override fun getLabel(): String {
@@ -14,8 +16,8 @@ class EscolherCommand : CommandBase() {
         return listOf("choose");
     }
 
-    override fun getDescription(): String {
-        return "Precisando de ajuda para escolher alguma coisa? Então deixe-me escolher para você!"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.ESCOLHER_DESCRIPTION.msgFormat()
     }
 
 	override fun getExample(): List<String> {
@@ -32,7 +34,7 @@ class EscolherCommand : CommandBase() {
 
 			// Hora de escolher algo aleatório!
 			var chosen = split[Loritta.random.nextInt(split.size)];
-			context.sendMessage(context.getAsMention(true) + "Eu escolhi `" + chosen + "`!");
+			context.sendMessage(context.getAsMention(true) + "${context.locale.ESCOLHER_RESULT.msgFormat(chosen)}");
 		} else {
 			context.explain()
 		}

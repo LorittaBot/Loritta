@@ -4,11 +4,13 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.MessageBuilder
 
 class EmojiCommand : CommandBase() {
-	override fun getDescription(): String {
-		return "Veja emojis em um tamanho que você não precise usar uma lupa para tentar entender eles!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.EMOJI_DESCRIPTION.msgFormat()
 	}
 
 	override fun getCategory(): CommandCategory {

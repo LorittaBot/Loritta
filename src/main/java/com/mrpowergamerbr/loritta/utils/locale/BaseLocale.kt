@@ -27,6 +27,68 @@ open class BaseLocale {
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
 
+	// ===[ COMMANDS - DISCORD ]===
+	// AvatarCommand.kt
+	var AVATAR_DESCRIPTION = "Pega o avatar de um usuário do Discord"
+	var AVATAR_CLICKHERE = "Clique [aqui]({0}) para baixar a imagem!"
+	var AVATAR_LORITTACUTE = "Eu sei que eu sou muito fofa!"
+
+	// BotInfoCommand.kt
+	var BOTINFO_DESCRIPTION = "Mostra informações interessantes (e algumas bem inúteis) sobre mim!"
+	var BOTINFO_TITLE = "Olá, eu me chamo Loritta!"
+	var BOTINFO_EMBED_INFO = "Olá, eu me chamo Loritta (ou para amigos mais próximos, \"Lori\") e sou apenas um bot para o Discord fofo e com várias funcionalidades supimpas!\n\n" +
+			"Eu estou em **{0} servidores** e eu conheço **{1} pessoas diferentes** (Wow, quanta gente)! Eu fui feita usando **JDA** em **Java & Kotlin** e, se você quiser ver meu código-fonte, [clique aqui](http://bit.ly/lorittagit)!\n\n" +
+			"Meu website é https://loritta.website/ e, se você quiser saber mais sobre mim, [clique aqui](http://bit.ly/lorittad) para entrar no meu servidor no Discord!\n\n" +
+			"Já fazem **{2}** desde que eu acordei \uD83D\uDE34 (ou seja, meu uptime atual) e atualmente eu tenho **{3} comandos diferentes**!"
+	var BOTINFO_HONORABLE_MENTIONS = "Menções Honrosas"
+	var BOTINFO_MENTIONS = "`MrPowerGamerBR#4185` Se não fosse por ele, eu nem iria existir!\n" +
+			"`Giovanna_GGold#2454 (Gabriela Giulian)` Ela que fez esta **linda** \uD83D\uDE0D arte minha da miniatura! [Clique aqui para ver o desenho!](https://loritta.website/assets/img/loritta_fixed_final_cropped.png) (e ela capturou toda a minha fofura & beleza \uD83D\uDE0A)!\n" +
+			"`{0}#{1}` Por estar falando comigo! \uD83D\uDE04"
+	var BOTINFO_CREATEDBY = "Loritta foi criada por MrPowerGamerBR"
+
+	// EmojiCommand.kt
+	var EMOJI_DESCRIPTION = "Veja emojis em um tamanho que você não precise usar uma lupa para tentar entender eles!"
+
+	// InviteCommand.kt
+	var INVITE_DESCRIPTION = "Envia o link do convite para adicionar a Loritta em outros servidores!"
+	var INVITE_INFO = "Você quer me adicionar em outros servidores/guilds do Discord? Então clique [aqui]({0}) para me adicionar em outro servidor!\n\nSe você quiser configurar algumas coisas (como o meu prefixo, comandos ativados, etc) então acesse o painel de administração clicando [aqui]({1})!\n\nE, é claro, entre na guild da Loritta para dar sugestões, reportar bugs e muito mais! {2}"
+
+	// ServerInfoCommand.kt
+	var SERVERINFO_DESCRIPTION = "Veja as informações do servidor do Discord atual!"
+	var SERVERINFO_OWNER = "Dono"
+	var SERVERINFO_REGION = "Região"
+	var SERVERINFO_CHANNELS = "Canais"
+	var SERVERINFO_CHANNELS_TEXT = "Texto"
+	var SERVERINFO_CHANNELS_VOICE = "Voz"
+	var SERVERINFO_CREATED_IN = "Criado em"
+	var SERVERINFO_JOINED_IN = "Entrei aqui em"
+	var SERVERINFO_MEMBERS = "Membros"
+	var SERVERINFO_ONLINE = "Online"
+	var SERVERINFO_AWAY = "Ausente"
+	var SERVERINFO_BUSY = "Ocupado"
+	var SERVERINFO_OFFLINE = "Offline"
+	var SERVERINFO_PEOPLE = "Pessoas"
+	var SERVERINFO_BOTS = "Bots"
+	var SERVERINFO_ROLES = "Cargos"
+	var SERVERINFO_CUSTOM_EMOJIS = "Emojis customizados"
+
+	// ===[ COMMANDS - MISC ]===
+	// AjudaCommand.kt
+	var AJUDA_DESCRIPTION = "Mostra todos os comandos disponíveis que eu posso executar, lembrando que isto só irá mostrar os comandos habilitados no servidor que você executou a ajuda!"
+	var AJUDA_SENT_IN_PRIVATE = "Enviei para você no privado, veja suas mensagens diretas!"
+	var AJUDA_INTRODUCE_MYSELF = "Olá {0}, eu me chamo Loritta (ou, para amigos(as) mais próximos(as), \"Lori\") e eu sou apenas um simples bot para o Discord!\n\nO meu objetivo é ser um bot com várias funções, extremamente modular, fácil de usar e super customizável para qualquer servidor/guild brasileiro poder usar! (Quer me adicionar no seu servidor? Então clique [aqui]({1}))!\n\nAtualmente você está vendo a ajuda do **{2}**!"
+	var AJUDA_MY_HELP = "Ajuda da Loritta"
+
+	// AngelCommand.kt
+	var ANGEL_DESCRIPTION = "Mostra um anjo muito puro para este mundo cruel :^)"
+
+	// EscolherCommand.kt
+	var ESCOLHER_DESCRIPTION = "Precisando de ajuda para escolher alguma coisa? Então deixe-me escolher para você!"
+	var ESCOLHER_RESULT = "Eu escolhi `{0}`!"
+
+	// PingCommand.kt
+	var PING_DESCRIPTION = "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testar!"
+
 	// ===[ COMMANDS - SOCIAL ]===
 	// BackgroundCommand.kt
 	var BACKGROUND_DESCRIPTION = "Que tal dar uma renovada no papel de parede do seu perfil?"
