@@ -48,7 +48,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			// Atualizar avatar
 			if (event is UserAvatarUpdateEvent) {
 				// Primeiro iremos criar a imagem do update
-				val oldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.previousAvatarUrl.replace("jpg", "png") else event.user.defaultAvatarUrl).getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+				val oldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png")).getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 				val newAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png")).getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 
 				val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
