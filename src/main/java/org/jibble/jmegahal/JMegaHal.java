@@ -173,7 +173,7 @@ public class JMegaHal implements Serializable {
 		LinkedList<String> parts = new LinkedList<String>();
 
 		Quad[] quads;
-		if (words.containsKey(word)) {
+		if (words != null && words.containsKey(word)) {
 			quads = (Quad[]) ((HashSet<?>) words.get(word)).toArray(new Quad[0]);
 		}
 		else {
