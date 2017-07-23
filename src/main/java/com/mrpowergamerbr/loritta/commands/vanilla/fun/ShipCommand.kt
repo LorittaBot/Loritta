@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
@@ -15,50 +17,12 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class ShipCommand : CommandBase() {
-	val valor90 = listOf("😍 %ship% Os dois se amam! 😍",
-			"💗 %ship% Casal mais perfeito? Impossível! 💗",
-			"☠ %ship% Nem a *dona* morte separa! 😂",
-			"😋 %ship% Casal mais perfeito que eu! 😋",
-			"😚 %ship% Casal? Casal que nada! Eles já são casados! 😚")
-
-	val valor80 = listOf("😏 %ship% Mas esses dois já se conhecem faz muito tempo... 😏",
-			"😊 %ship% Claro que os dois são um lindo casal! 😊",
-			"😜 %ship% Casal mais grudento que Despacito! 😜",
-			"😄 %ship% Se os dois já não namoram eu estaria surpresa! 😄")
-
-	val valor70 = listOf("🙂 %ship% Prevejo um casal fofo se formando! 🙂",
-			"😄 %ship% Só precisa de um pouco mais de conversa para rolar! 😜",
-			"😊 %ship% Os dois foram feitos um para o outro! 😊",
-			"😄 %ship% Sim! 😄")
-
-	val valor60 = listOf("🙂 %ship% Se o/a %user% parasse de ser um pouco tímido(a)... 😏",
-			"😊 %ship% Tem um pouco de interesses compatíveis aí 😊",
-			"🙂 %ship% Eu aprovo esse casal! 🙂",
-			"😄 %ship% Sim! 😄")
-
-	val valor50 = listOf("😶 %ship% Amigos... Mas talvez né... 😏",
-			"😊 %ship% Talvez... Só precisa o/a %user% querer! 😶",
-			"😶 %ship% Eu queria ver esse casal funcionar 😶")
-
-	val valor40 = listOf("😶 %ship% É... talvez, eu acho... 🙁",
-			"😶 %ship% Nada é impossível, mas... 🙁",
-			"😶 %ship% Se dois quererem, talvez dê certo... Mas... 😶")
-
-	val valor30 = listOf("😕 %ship% Acho que não seria um belo casal... 🙁",
-			"😶 %ship% Parece que só são conhecidos... 😶")
-
-	val valor20 = listOf("😐 %ship% Se o(a) %user% não tivesse deixado na friendzone... 😐")
-
-	val valor10 = listOf("😐 %ship% Eu queria muito falar que é possível, mas... 😢")
-
-	val valor0 = listOf("😭 %ship% As possibilidades de ter este casal são quase impossíveis! 😭")
-
     override fun getLabel(): String {
         return "ship"
     }
 
-    override fun getDescription(): String {
-        return "Veja se um casal daria certo (ou não!)"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.SHIP_DESCRIPTION.f()
     }
 
 	override fun getExample(): List<String> {
@@ -79,7 +43,7 @@ class ShipCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
 		if (context.message.mentionedUsers.size == 2) {
-			var texto = context.getAsMention(true) + "\n💖 **Hmmm, será que nós temos um novo casal aqui?** 💖\n";
+			var texto = context.getAsMention(true) + "\n💖 **${context.locale.SHIP_NEW_COUPLE.f()}** 💖\n";
 
 			for (user in context.message.mentionedUsers) {
 				texto += "`${user.name}`\n";
@@ -124,25 +88,25 @@ class ShipCommand : CommandBase() {
 
 			var messages = listOf("Isto nunca deverá aparecer!");
 			if (percentage >= 90) {
-				messages = valor90;
+				messages = context.locale.SHIP_valor90;
 			} else if (percentage >= 80) {
-				messages = valor80;
+				messages = context.locale.SHIP_valor80;
 			} else if (percentage >= 70) {
-				messages = valor70;
+				messages = context.locale.SHIP_valor70;
 			} else if (percentage >= 60) {
-				messages = valor60;
+				messages = context.locale.SHIP_valor60;
 			} else if (percentage >= 50) {
-				messages = valor50;
+				messages = context.locale.SHIP_valor50;
 			} else if (percentage >= 40) {
-				messages = valor40;
+				messages = context.locale.SHIP_valor40;
 			} else if (percentage >= 30) {
-				messages = valor30;
+				messages = context.locale.SHIP_valor30;
 			} else if (percentage >= 20) {
-				messages = valor20;
+				messages = context.locale.SHIP_valor20;
 			} else if (percentage >= 10) {
-				messages = valor10;
+				messages = context.locale.SHIP_valor10;
 			} else if (percentage >= 0) {
-				messages = valor0;
+				messages = context.locale.SHIP_valor0;
 			}
 
 			var emoji: BufferedImage;

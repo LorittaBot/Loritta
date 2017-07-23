@@ -3,6 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class ClapifyCommand : CommandBase() {
     override fun getLabel(): String {
@@ -13,8 +15,8 @@ class ClapifyCommand : CommandBase() {
         return listOf("baterpalmasinator");
     }
 
-    override fun getDescription(): String {
-        return "Quando👏você👏precisa👏chamar👏a👏atenção👏de👏alguém👏da👏maneira👏mais👏irritante👏possível!"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.CLAPIFY_DESCRIPTION.f()
     }
 
 	override fun getExample(): List<String> {

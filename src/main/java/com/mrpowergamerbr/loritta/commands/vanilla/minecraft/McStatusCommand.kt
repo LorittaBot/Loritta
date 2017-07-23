@@ -5,6 +5,8 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
@@ -13,8 +15,8 @@ class McStatusCommand : CommandBase() {
         return "mcstatus";
     }
 
-    override fun getDescription(): String {
-        return "Verifica se os servidores da Mojang estão online";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.MCSTATUS_DESCRIPTION.msgFormat();
     }
 
     override fun getCategory(): CommandCategory {
@@ -25,7 +27,7 @@ class McStatusCommand : CommandBase() {
         var body = HttpRequest.get("https://mcapi.ca/mcstatus").body();
 
         var builder = EmbedBuilder()
-                .setTitle("📡 Status da Mojang", "https://help.mojang.com/")
+                .setTitle("📡 ${context.locale.MCSTATUS_MOJANG_STATUS.msgFormat()}", "https://help.mojang.com/")
                 .setColor(Color.GREEN);
 
         var json = JsonParser().parse(body);

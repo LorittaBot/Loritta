@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 class SoftBanCommand : CommandBase() {
@@ -11,8 +13,8 @@ class SoftBanCommand : CommandBase() {
 		return "softban"
 	}
 
-	override fun getDescription(): String {
-		return "Faz um \"softban\" em um usuário, ou seja, o usuário é banido e desbanido logo em seguida, usado para deletar as mensagens do usuário."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.SOFTBAN_DESCRIPTION.msgFormat()
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -52,11 +54,11 @@ class SoftBanCommand : CommandBase() {
 				}
 
 				if (days > 7) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " É impossível softbanir alguém por mais de 7 dias!");
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS.msgFormat());
 					return;
 				}
 				if (0 > days) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " É impossível softbanir alguém por menos de 0 dias! (E como isso iria funcionar?)");
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS.msgFormat());
 					return;
 				}
 
@@ -64,12 +66,12 @@ class SoftBanCommand : CommandBase() {
 				if (context.args.size > 1) {
 					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
 				}
-				context.guild.controller.ban(id, days, "Softbanned por " + context.userHandle.name + "#" + context.userHandle.discriminator + if (reason != null) " (Motivo: " + reason + ")" else "").complete();
+				context.guild.controller.ban(id, days, context.locale.SOFTBAN_BY.msgFormat(context.userHandle.name + "#" + context.userHandle.discriminator) + if (reason != null) " (${context.locale.HACKBAN_REASON.msgFormat()}: " + reason + ")" else "").complete();
 				context.guild.controller.unban(id).complete()
 
-				context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi softbanned com sucesso!");
+				context.sendMessage(context.getAsMention(true) + context.locale.SOFTBAN_SUCCESS.msgFormat(id));
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para softbanir este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_NO_PERM.msgFormat())
 			}
 		} else {
 			this.explain(context);

@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Jankenpon
 import com.mrpowergamerbr.loritta.utils.Jankenpon.JankenponStatus
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.io.File
 import java.io.IOException
 
@@ -14,8 +16,8 @@ class PedraPapelTesouraCommand : CommandBase() {
 		return "ppt"
 	}
 
-	override fun getDescription(): String {
-		return "Jogue Pedra, Papel ou Tesoura! (jankenpon, ou a versão abrasileirada: jokenpô)"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.PPT_DESCRIPTION.f()
 	}
 
 	override fun getUsage(): String {
@@ -47,19 +49,20 @@ class PedraPapelTesouraCommand : CommandBase() {
 
 				var fancy: String? = null
 				if (status == JankenponStatus.WIN) {
-					fancy = "**Parabéns, você ganhou! \uD83D\uDE0A**"
+					fancy = "**${context.locale.PPT_WIN.f()} \uD83D\uDE0A**"
 				}
 				if (status == JankenponStatus.LOSE) {
-					fancy = "**Que pena... você perdeu, mas o que vale é a intenção! \uD83D\uDE42**"
+					fancy = "**${context.locale.PPT_LOSE.f()} \uD83D\uDE42**"
 				}
 				if (status == JankenponStatus.DRAW) {
-					fancy = "**Empate! Que tal uma revanche? \uD83D\uDE0A**"
+					fancy = "**${context.locale.PPT_DRAW.f()} \uD83D\uDE0A**"
 				}
-				context.sendMessage(context.getAsMention(true) + "Você escolheu " + janken.emoji + ", eu escolhi " + opponent.emoji + "\n" + fancy)
+				context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f(janken.emoji, opponent.emoji) + "\n" + fancy)
 			} else {
 				if (playerValue.equals("jesus", ignoreCase = true)) {
-					val fancy = "**Empate...? 🤔 🤷**"
-					context.sendMessage(context.getAsMention(true) + "Você escolheu 🙇 *JESUS CRISTO*🙇, eu escolhi 🙇 *JESUS CRISTO*🙇\n" + fancy)
+					val fancy = "**${context.locale.PPT_MAYBE_DRAW.f()} 🤔 🤷**"
+					val jesus = "🙇 *${context.locale.PPT_JESUS_CHRIST.f()}* 🙇"
+					context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f(jesus, jesus) + "\n" + fancy)
 				} else if (playerValue.equals("velberan", ignoreCase = true)) {
 					val opponent = Jankenpon.values()[Loritta.random.nextInt(Jankenpon.values().size)]
 
@@ -70,10 +73,10 @@ class PedraPapelTesouraCommand : CommandBase() {
 					} catch (e: IOException) {
 						e.printStackTrace()
 					}
-
 				} else {
-					val fancy = "**Que pena... você perdeu, dá próxima vez escolha algo que seja válido, ok? \uD83D\uDE09**"
-					context.sendMessage(context.getAsMention(true) + "Você escolheu 💩, eu escolhi 🙇 *JESUS CRISTO*🙇\n" + fancy)
+					val fancy = "**${context.locale.PPT_INVALID.f()} \uD83D\uDE09**"
+					val jesus = "🙇 *${context.locale.PPT_JESUS_CHRIST.f()}* 🙇"
+					context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f("💩", jesus) + "\n" + fancy)
 				}
 			}
 		} else {

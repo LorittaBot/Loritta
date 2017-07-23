@@ -97,6 +97,10 @@ fun String.msgFormat(vararg arguments: Any?): String {
 	return MessageFormat.format(this, *arguments);
 }
 
+fun String.f(vararg arguments: Any?): String {
+	return msgFormat(*arguments)
+}
+
 fun String.fromMorse(): String {
 	// Criar uma string vazia para guardar a nossa mensagem em texto comum
 	var text = "";

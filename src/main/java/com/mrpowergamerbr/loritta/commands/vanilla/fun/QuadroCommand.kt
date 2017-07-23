@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -19,8 +21,8 @@ class QuadroCommand : CommandBase() {
 		return listOf("frame", "wolverine")
 	}
 
-	override fun getDescription(): String {
-		return "Coloca alguém em um quadro com o Wolverine olhando para ele";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.QUADRO_DESCRIPTION.f();
 	}
 
 	override fun getExample(): List<String> {

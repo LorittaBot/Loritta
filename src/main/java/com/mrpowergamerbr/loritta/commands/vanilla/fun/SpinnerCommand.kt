@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlin.concurrent.thread
 
 class SpinnerCommand : CommandBase() {
@@ -15,8 +17,8 @@ class SpinnerCommand : CommandBase() {
         return listOf("fidget");
     }
 
-    override fun getDescription(): String {
-        return "Gira um fidget spinner! Quanto tempo será que ele irá ficar rodando?"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.SPINNER_DESCRIPTION.f()
     }
 
 	override fun getCategory(): CommandCategory {
@@ -29,11 +31,11 @@ class SpinnerCommand : CommandBase() {
 		var random = listOf("<:spinner1:327243530244325376>", "<:spinner2:327245670052397066>", "<:spinner3:327246151591919627>") // Pegar um spinner aleatório
 		var spinner = random[Loritta.random.nextInt(random.size)]
 
-		var msg = context.sendMessage(context.getAsMention(true) + "$spinner Girando o fidget spinner...")
+		var msg = context.sendMessage(context.getAsMention(true) + "$spinner ${context.locale.SPINNER_SPINNING.f()}")
 		thread {
 			Thread.sleep((time * 1000).toLong());
 			msg.delete().complete()
-			context.sendMessage(context.getAsMention(true) + "$spinner Seu spinner girou por **$time** segundos!")
+			context.sendMessage(context.getAsMention(true) + "$spinner ${context.locale.SPINNER_SPINNED.f(time)}")
 		}
     }
 }

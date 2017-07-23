@@ -3,6 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
 class AvaliarWaifuCommand : CommandBase() {
@@ -14,8 +16,8 @@ class AvaliarWaifuCommand : CommandBase() {
 		return listOf("ratemywaifu", "avaliarminhawaifu", "notawaifu");
 	}
 
-	override fun getDescription(): String {
-		return "Receba uma nota para a sua Waifu!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.RATEWAIFU_DESCRIPTION
 	}
 
 	override fun getExample(): List<String> {
@@ -39,42 +41,42 @@ class AvaliarWaifuCommand : CommandBase() {
 			var random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + joined.hashCode().toLong()) // Usar um random sempre com a mesma seed
 			var nota = random.nextInt(0, 11);
 
-			var reason = "Simplesmente perfeita! Não trocaria de Waifu se fosse você!"
+			var reason = context.locale.RATEWAIFU_10.f()
 
 			if (nota == 9) {
-				reason = "Uma Waifu excelente, ótima escolha. <:osama:325332212255948802>";
+				reason = "${context.locale.RATEWAIFU_9.f()} <:osama:325332212255948802>";
 			}
 			if (nota == 8) {
-				reason = "Uma Waifu que acerta em todos os pontos bons da vida.";
+				reason = context.locale.RATEWAIFU_8.f();
 			}
 			if (nota == 7) {
-				reason = "Nem todas as Waifus são perfeitas, mas qual seria a graça de viver com alguém perfeito? 😊";
+				reason = "${context.locale.RATEWAIFU_7.f()} 😊";
 			}
 			if (nota == 6) {
-				reason = "Se fosse nota de escola sua Waifu ela seria \"acima da média\"";
+				reason = context.locale.RATEWAIFU_6.f();
 			}
 			if (nota == 5) {
-				reason = "Nem tão ruim, nem tão boa, bem \"normal\"";
+				reason = context.locale.RATEWAIFU_5.f();
 			}
 			if (nota == 4) {
-				reason = "Não que a sua Waifu seja ruim, pelo contrário! Ela tem potencial para ser algo mais *interessante*!";
+				reason = context.locale.RATEWAIFU_4.f();
 			}
 			if (nota == 3) {
-				reason = "Sua Waifu precisa de mais substância.";
+				reason = context.locale.RATEWAIFU_3.f();
 			}
 			if (nota == 2) {
-				reason = "Não é por nada não mas, se eu você fosse, eu trocaria de Waifu...";
+				reason = context.locale.RATEWAIFU_2.f();
 			}
 			if (nota == 1) {
-				reason = "Sem chance, troca de Waifu hoje mesmo para garantir sua sanidade.";
+				reason = context.locale.RATEWAIFU_1.f();
 			}
 			if (nota == 0) {
-				reason = "🤦 Troque de Waifu por favor.";
+				reason = "🤦 ${context.locale.RATEWAIFU_0.f()}";
 			}
 			var strNota = nota.toString();
 			if (joined == "Loritta") {
 				strNota = "∞";
-				reason = "Sou perfeita!"
+				reason = "${context.locale.RATEWAIFU_IM_PERFECT.f()} <:loritta_quebrada:338679008210190336>!"
 			}
 			if (joined == "Tatsumaki") {
 				strNota = "10";
@@ -92,7 +94,7 @@ class AvaliarWaifuCommand : CommandBase() {
 				strNota = "8";
 				reason = "Uma boa Waifu, mas precisa ser alguém menos zueiro e, é claro, alguém que não fica travando toda hora."
 			}
-			context.sendMessage(context.getAsMention(true) + "Eu dou uma nota **$strNota/10** para `$joined`! **$reason**");
+			context.sendMessage(context.getAsMention(true) + context.locale.RATEWAIFU_RESULT.f(strNota, joined, reason));
 		} else {
 			this.explain(context);
 		}

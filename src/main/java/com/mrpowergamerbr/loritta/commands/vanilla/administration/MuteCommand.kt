@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Role
 import java.awt.Color
@@ -18,8 +20,8 @@ class MuteCommand : CommandBase() {
 		return listOf("mutar", "silenciar")
 	}
 
-	override fun getDescription(): String {
-		return "Silencia um usuário por um período de tempo determinado"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MUTE_DESCRIPTION.msgFormat()
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -52,17 +54,17 @@ class MuteCommand : CommandBase() {
 				}
 
 				if (id == Loritta.config.clientId) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Você não pode me silenciar, bobinho!")
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUTE_CANT_MUTE_ME.msgFormat())
 					return
 				}
 
 				// Vamos pegar se a nossa role existe
-				var mutedRoles = context.guild.getRolesByName("Silenciado", false)
+				var mutedRoles = context.guild.getRolesByName(context.locale.MUTE_ROLE_NAME, false)
 				var mutedRole: Role? = null
 				if (mutedRoles.isEmpty()) {
 					// Se não existe, vamos criar ela!
 					mutedRole = context.guild.controller.createRole()
-							.setName("Silenciado")
+							.setName(context.locale.MUTE_ROLE_NAME)
 							.setColor(Color.BLACK)
 							.complete()
 				} else {
@@ -92,14 +94,14 @@ class MuteCommand : CommandBase() {
 				if (member.roles.contains(mutedRole)) {
 					context.guild.controller.removeRolesFromMember(member, mutedRole).complete()
 
-					context.sendMessage(context.getAsMention(true) + "Usuário `$id` magicamente aprendeu a falar de novo!");
+					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_OFF.msgFormat(id));
 				} else {
 					context.guild.controller.addRolesToMember(member, mutedRole).complete()
 
-					context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi silenciado com sucesso!");
+					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_ON.msgFormat(id));
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para silenciar este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUTE_NO_PERM.msgFormat());
 			}
 		} else {
 			this.explain(context);

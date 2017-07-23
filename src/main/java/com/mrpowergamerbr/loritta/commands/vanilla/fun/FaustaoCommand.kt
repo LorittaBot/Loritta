@@ -4,7 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
@@ -45,8 +47,8 @@ class FaustaoCommand : CommandBase() {
 		return CommandCategory.FUN
 	}
 
-	override fun getDescription(): String {
-		return "Invoque o querido Faustão no seu servidor!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.FAUSTAO_DESCRIPTION.f()
 	}
 
 	override fun hasCommandFeedback(): Boolean {

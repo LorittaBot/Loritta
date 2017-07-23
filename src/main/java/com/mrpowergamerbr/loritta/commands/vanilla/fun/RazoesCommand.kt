@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
@@ -23,8 +25,8 @@ class RazoesCommand : CommandBase() {
 		return listOf("razões", "reasons")
 	}
 
-	override fun getDescription(): String {
-		return "Qual é a sua razão para viver?";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.RAZOES_DESCRIPTION.f()
 	}
 
 	override fun getExample(): List<String> {

@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Image
 import java.io.File
 import java.util.*
@@ -16,8 +18,8 @@ class DrakeCommand : CommandBase() {
 		return "drake"
 	}
 
-	override fun getDescription(): String {
-		return "Cria um meme do Drake usando dois usuários da sua guild!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.DRAKE_DESCRIPTION.f()
 	}
 
 	override fun getExample(): List<String> {

@@ -5,14 +5,16 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.gifs.TrumpGIF
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 
 class TrumpCommand : CommandBase() {
 	override fun getLabel(): String {
 		return "trump"
 	}
 
-	override fun getDescription(): String {
-		return "O que será que o senhor presidente Trump está mostrando hoje?";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.TRUMP_DESCRIPTION.msgFormat();
 	}
 
 	override fun getExample(): List<String> {

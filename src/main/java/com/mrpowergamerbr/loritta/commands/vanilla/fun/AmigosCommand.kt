@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.image.BufferedImage
 import java.io.File
@@ -15,8 +17,8 @@ class AmigosCommand : CommandBase() {
 		return "amigos"
 	}
 
-	override fun getDescription(): String {
-		return "Obrigado por serem **VOCÊ NÃO** os melhores amigos de todos!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.AMIGOS_DESCRIPTION.f();
 	}
 
 	override fun getCategory(): CommandCategory {

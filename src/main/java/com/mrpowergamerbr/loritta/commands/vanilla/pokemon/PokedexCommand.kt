@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.util.*
@@ -14,8 +16,8 @@ class PokedexCommand : CommandBase() {
         return "pokedex";
     }
 
-    override fun getDescription(): String {
-        return "Pesquisa informações sobre um Pokémon"
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.POKEDEX_DESCRIPTION.msgFormat()
     }
 
     override fun getCategory(): CommandCategory {
@@ -71,11 +73,11 @@ class PokedexCommand : CommandBase() {
 			var strAbilities = "";
 			var strDexTypes = dexTypes.joinToString(separator = ", ", transform = { it.attr("alt") });
 
-			embed.addField("Tipos", strDexTypes, true);
+			embed.addField(context.locale.POKEDEX_TYPES.msgFormat(), strDexTypes, true);
 
-			embed.addField("Adicionado na Geração", pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
+			embed.addField(context.locale.POKEDEX_ADDED_IN_GEN.msgFormat(), pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
 
-			embed.addField("Número na Pokédex", pokeInfoValue[1].text(), true)
+			embed.addField(context.locale.POKEDEX_NUMBER.msgFormat(), pokeInfoValue[1].text(), true)
 
 			for (el in abilities) {
 				// title
@@ -84,15 +86,15 @@ class PokedexCommand : CommandBase() {
 				strAbilities += "**$title** - $description\n";
 			}
 
-			embed.addField("Habilidades", strAbilities, true);
+			embed.addField(context.locale.POKEDEX_ABILITIES.msgFormat(), strAbilities, true);
 
-			var strTraining = "**Base EXP:** ${trainingInfoValue[0].text()}" +
-					"\n**Effort points:** ${trainingInfoValue[1].text()}" +
-					"\n**Taxa de Captura:** ${trainingInfoValue[2].text()}" +
-					"\n**Base happiness:** ${trainingInfoValue[3].text()}" +
-					"\n**Taxa de crescimento:** ${trainingInfoValue[4].text()}";
+			var strTraining = "**${context.locale.POKEDEX_BASE_EXP.msgFormat()}:** ${trainingInfoValue[0].text()}" +
+					"\n**${context.locale.POKEDEX_EFFORT_POINTS.msgFormat()}:** ${trainingInfoValue[1].text()}" +
+					"\n**${context.locale.POKEDEX_CAPTURE_RATE.msgFormat()}:** ${trainingInfoValue[2].text()}" +
+					"\n**${context.locale.POKEDEX_BASE_HAPPINESS.msgFormat()}:** ${trainingInfoValue[3].text()}" +
+					"\n**${context.locale.POKEDEX_GROWTH_RATE.msgFormat()}:** ${trainingInfoValue[4].text()}";
 
-			embed.addField("Treinamento", strTraining, true)
+			embed.addField("${context.locale.POKEDEX_TRAINING.msgFormat()}", strTraining, true)
 
 			var strEvolutions = "";
 
@@ -113,7 +115,7 @@ class PokedexCommand : CommandBase() {
 				}
 			}
 
-			embed.addField("Evoluções", strEvolutions, true)
+			embed.addField("${context.locale.POKEDEX_EVOLUTIONS.msgFormat()}", strEvolutions, true)
 
 			context.sendMessage(embed.build())
 

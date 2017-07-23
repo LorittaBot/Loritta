@@ -7,6 +7,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.*
 
 class McUUIDCommand : CommandBase() {
@@ -14,8 +16,8 @@ class McUUIDCommand : CommandBase() {
         return "mcuuid";
     }
 
-    override fun getDescription(): String {
-        return "Pega a UUID de um usuário";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale.MCUUID_DESCRIPTION.msgFormat();
     }
 
     override fun getUsage(): String {
@@ -40,9 +42,9 @@ class McUUIDCommand : CommandBase() {
             try {
                 var json = JsonParser().parse(data).asJsonObject;
 
-                context.sendMessage(context.getAsMention(true) + "A UUID de " + player + ": `" + LorittaUtils.getUUID(json["id"].string) + "`");
+                context.sendMessage(context.getAsMention(true) + context.locale.MCUUID_RESULT.msgFormat(player, LorittaUtils.getUUID(json["id"].string)))
             } catch (e: IllegalStateException) {
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Player não encontrado! Tem certeza que `" + player + "` é uma conta válida?");
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCUUID_INVALID.msgFormat(player));
             }
         } else {
             this.explain(context);

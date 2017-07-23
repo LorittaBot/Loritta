@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import java.util.*
+
 /**
  * Classe de localização base, por padrão em PT-BR
  *
@@ -26,6 +28,38 @@ open class BaseLocale {
 	// CommandBase.kt
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
+
+	// ===[ COMMANDS - ADMINISTRATION ]===
+	// HackBanCommand.kt
+	var HACKBAN_DESCRIPTION = "Permite banir um usuário pelo ID dele antes de ele entrar no seu servidor!"
+	var HACKBAN_BY = "Hackbanned por {0}"
+	var HACKBAN_REASON = "Motivo"
+	var HACKBAN_SUCCESS = "Usuário `{0}` foi banido com sucesso!"
+	var HACKBAN_NO_PERM = "Não tenho permissão para banir este usuário!"
+
+	// LimparCommand.kt
+	var LIMPAR_DESCRIPTION = "Limpa o chat do canal de texto atual."
+	var LIMPAR_INVALID_RANGE = "Eu só consigo limpar entre 2 até 100 mensagens passadas!"
+	var LIMPAR_SUCCESS = "Chat limpo por {0}!"
+
+	// MuteCommand.kt
+	var MUTE_DESCRIPTION = "Silencia um usuário por um período de tempo determinado"
+	var MUTE_CANT_MUTE_ME = "Você não pode me silenciar, bobinho!"
+	var MUTE_ROLE_NAME = "Silenciado"
+	var MUTE_NO_PERM = "Não tenho permissão para silenciar este usuário!"
+	var MUTE_SUCCESS_ON = "Usuário `{0}` foi silenciado com sucesso!"
+	var MUTE_SUCCESS_OFF = "Usuário `{0}` magicamente aprendeu a falar de novo!"
+
+	// RoleIdCommand.kt
+	var ROLEID_DESCRIPTION = "Pega o ID de um cargo do Discord"
+
+	// SoftBanCommand.kt
+	var SOFTBAN_DESCRIPTION = "Faz um \"softban\" em um usuário, ou seja, o usuário é banido e desbanido logo em seguida, usado para deletar as mensagens do usuário."
+	var SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS = "É impossível softbanir alguém por mais de 7 dias!"
+	var SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS = "É impossível softbanir alguém por menos de 0 dias! (E como isso iria funcionar?)"
+	var SOFTBAN_BY = "Softbanned por {0}"
+	var SOFTBAN_SUCCESS = "Usuário `{0}` foi softbanned com sucesso!"
+	var SOFTBAN_NO_PERM = "Não tenho permissão para softbanir este usuário!"
 
 	// ===[ COMMANDS - DISCORD ]===
 	// AvatarCommand.kt
@@ -71,6 +105,266 @@ open class BaseLocale {
 	var SERVERINFO_BOTS = "Bots"
 	var SERVERINFO_ROLES = "Cargos"
 	var SERVERINFO_CUSTOM_EMOJIS = "Emojis customizados"
+
+	// ===[ COMMANDS - FUN ]===
+	// AmigosCommand.kt
+	var AMIGOS_DESCRIPTION = "Obrigado por serem **VOCÊ NÃO** os melhores amigos de todos!"
+
+	// AmizadeCommand.kt
+	var AMIZADE_DESCRIPTION = "Avise que acabou a sua amizade com alguém de uma maneira simples e fácil!"
+	var AMIZADE_AMIZADE_COM = "A amizade com {0}"
+	var AMIZADE_ENDED = "acabou"
+	var AMIZADE_NOW = "Agora"
+	var AMIZADE_IS_MY = "é o(a) meu(minha)"
+	var AMIZADE_BEST_FRIEND = "melhor amigo(a)"
+
+	// AvaliarWaifuCommand.kt
+	var RATEWAIFU_DESCRIPTION = "Receba uma nota para a sua Waifu!"
+	var RATEWAIFU_10 = "Simplesmente perfeita! Não trocaria de Waifu se fosse você!"
+	var RATEWAIFU_9 = "Uma Waifu excelente, ótima escolha."
+	var RATEWAIFU_8 = "Uma Waifu que acerta em todos os pontos bons da vida."
+	var RATEWAIFU_7 = "Nem todas as Waifus são perfeitas, mas qual seria a graça de viver com alguém perfeito?";
+	var RATEWAIFU_6 = "Se fosse nota de escola sua Waifu ela seria \"acima da média\"";
+	var RATEWAIFU_5 = "Nem tão ruim, nem tão boa, bem \"normal\"";
+	var RATEWAIFU_4 = "Não que a sua Waifu seja ruim, pelo contrário! Ela tem potencial para ser algo mais *interessante*!";
+	var RATEWAIFU_3= "Sua Waifu precisa de mais substância.";
+	var RATEWAIFU_2= "Não é por nada não mas, se eu você fosse, eu trocaria de Waifu...";
+	var RATEWAIFU_1= "Sem chance, troca de Waifu hoje mesmo para garantir sua sanidade.";
+	var RATEWAIFU_0 = "Troque de Waifu por favor.";
+	var RATEWAIFU_IM_PERFECT = "Sou perfeita!"
+	var RATEWAIFU_RESULT = "Eu dou uma nota **{0}/10** para `{1}`! **{2}**"
+
+	// CaraCoroaCommand.kt
+	var CARACOROA_DESCRIPTION = "Gire uma moeda e veja se irá cair cara ou coroa! Perfeito para descobrir quem irá ir primeiro em uma partida de futebas"
+	var CARACOROA_HEADS = "Cara"
+	var CARACOROA_TAILS = "Coroa"
+
+	// CepoCommand.kt
+	var CEPO_DESCRIPTION = "Destrua alguém no estilo Gugu Gaiteiro!"
+
+	// ClapifyCommand.kt
+	var CLAPIFY_DESCRIPTION = "Quando👏você👏precisa👏chamar👏a👏atenção👏de👏alguém👏da👏maneira👏mais👏irritante👏possível!"
+
+	// DeusCommand.kt
+	var DEUS_DESCRIPTION = "Coloca alguém em uma pesquisa do Google sobre \"Deus\""
+
+	// DeusesCommand.kt
+	var DEUSES_DESCRIPTION = "Caralho, olha os Deuses mano!"
+
+	// DiscordiaCommand.kt
+	var DISCORDIA_DESCRIPTION = "Mostre a sua reação quando você recebe uma notificação inútil do Discord!"
+
+	// DrakeCommand.kt
+	var DRAKE_DESCRIPTION = "Cria um meme do Drake usando dois usuários da sua guild!"
+
+	// FaustãoCommand.kt
+	var FAUSTAO_DESCRIPTION = "Invoque o querido Faustão no seu servidor!"
+
+	// FraseToscaCommand.kt
+	var FRASETOSCA_DESCRIPTION = "Cria uma frase tosca utilizando várias mensagens recicladas recebidas pela Loritta"
+	var FRASETOSCA_GABRIELA = "Gabriela, a amiga da Loritta"
+
+	// GangueCommand.kt
+	var GANGUE_DESCRIPTION = "Gangue da quebrada"
+
+	// InverterCommand.kt
+	var INVERTER_DESCRIPTION = "Inverte a cor de uma imagem"
+
+	// LavaCommand.kt
+	var LAVA_DESCRIPTION = "O chão é...? Decida o que você quiser!"
+
+	// LavaReversoCommand.kt
+	var LAVAREVERSO_DESCRIPTION = "O chão é...? Decida o que você quiser!"
+
+	// TODO: Textos na imagem
+
+	// MagicBallCommand.kt
+	var VIEIRINHA_DESCRIPTION = "Pergunte algo para o Vieirinha"
+	val VIEIRINHA_responses = Arrays.asList(
+			"Vai incomodar outra pessoa, obrigado.",
+			"Não sei, mas eu sei que eu moro lá no Cambuci.",
+			"Do jeito que eu vejo, sim.",
+			"Hmmmm... 🤔",
+			"Não posso falar sobre isso.",
+			"Não.",
+			"Sim.",
+			"Eu responderia, mas não quero ferir seus sentimentos.",
+			"Provavelmente sim",
+			"Provavelmente não",
+			"Minhas fontes dizem que sim",
+			"Minhas fontes dizem que não",
+			"Você pode acreditar nisso",
+			"Minha resposta é não",
+			"Minha resposta é sim",
+			"Do jeito que eu vejo, não.",
+			"Melhor não falar isto para você agora...",
+			"Sim, com certeza!",
+			"Também queria saber...",
+			"A minha resposta não importa, o que importa é você seguir o seu coração. 😘",
+			"Talvez...",
+			"Acho que sim.",
+			"Acho que não.",
+			"Talvez sim.",
+			"Talvez não.",
+			"Sim!",
+			"Não!",
+			"¯\\_(ツ)_/¯")
+
+	// NyanCatCommand.kt
+	var NYANCAT_DESCRIPTION = "Nyan Cat, diretamente no seu servidor! E você pode pedir o tamanho do Nyan Cat igual quando você pede algum sanduíche no Subway!"
+
+	// PedraPapelTesouraCommand.kt
+	var PPT_DESCRIPTION = "Jogue Pedra, Papel ou Tesoura! (jankenpon, ou a versão abrasileirada: jokenpô)"
+	var PPT_WIN = "Parabéns, você ganhou!"
+	var PPT_LOSE = "Que pena... você perdeu, mas o que vale é a intenção!"
+	var PPT_DRAW = "Empate! Que tal uma revanche?"
+	var PPT_CHOSEN = "Você escolheu {0}, eu escolhi {1}"
+	var PPT_JESUS_CHRIST = "JESUS CRISTO"
+	var PPT_MAYBE_DRAW = "Empate...?"
+	var PPT_INVALID = "Que pena... você perdeu, dá próxima vez escolha algo que seja válido, ok?"
+
+	// PerdaoCommand.kt
+	var PERDAO_DESCRIPTION = "Um monstro desses merece perdão?"
+
+	// PerfeitoCommand.kt
+	var PERFEITO_DESCRIPTION = "Será que \"Nada é perfeito\" mesmo?"
+
+	// PretoEBrancoCommand.kt
+	var PRETOEBRANCO_DESCRIPTION = "Relembre os belos momentos ao imprimir trabalhos para a escola, quando suas belas imagens coloridas no Word viravam imagens irreconhecíveis em preto e branco, só porque não tinha tinta colorida!"
+
+	// PrimeirasPalavrasCommand.kt
+	var PRIMEIRAS_DESCRIPTION = "Ai meu deus... as primeiras palavras do bebê!"
+
+	// QuadroCommand.kt
+	var QUADRO_DESCRIPTION = "Coloca alguém em um quadro com o Wolverine olhando para ele"
+
+	// QualidadeCommand.kt
+	var QUALIDADE_DESCRIPTION = "Cria uma mensagem com Q U A L I D A D E & S I N C R O N I A"
+
+	// TODO: RandomSAMCommand.kt & RandomMemeguy1997.kt
+
+	// RazoesCommand.kt
+	var RAZOES_DESCRIPTION = "Qual é a sua razão para viver?"
+
+	// ReceitasCommand.kt
+	var RECEITAS_DESCRIPTION = "Procure receitas delíciosas da Ana Maria Braga™!"
+	var RECEITAS_INFO = "Um artigo da categoria \"{0}\" para a sua família! Delícioso! \uD83D\uDC26"
+	var RECEITAS_COULDNT_FIND = "Não encontrei nada relacionado a \"{0}\" no livro de receitas da Ana Maria Braga!"
+
+	// RollCommand.kt
+	var ROLL_DESCRIPTION = "Rola um dado e fala o resultado dele, perfeito quando você quer jogar um Monopoly maroto mas perdeu os dados."
+	var ROLL_INVALID_NUMBER = "Número inválido!"
+	var ROLL_RESULT = "Resultado"
+
+	// SAMCommand.kt
+	var SAM_DESCRIPTION = "Adiciona uma marca da água do South America Memes em uma imagem"
+
+	// ShipCommand.kt
+	var SHIP_DESCRIPTION = "Veja se um casal daria certo (ou não!)"
+	var SHIP_NEW_COUPLE = "Hmmm, será que nós temos um novo casal aqui?"
+
+	var SHIP_valor90 = listOf("😍 %ship% Os dois se amam! 😍",
+			"💗 %ship% Casal mais perfeito? Impossível! 💗",
+			"☠ %ship% Nem a *dona* morte separa! 😂",
+			"😋 %ship% Casal mais perfeito que eu! 😋",
+			"😚 %ship% Casal? Casal que nada! Eles já são casados! 😚")
+
+	var SHIP_valor80 = listOf("😏 %ship% Mas esses dois já se conhecem faz muito tempo... 😏",
+			"😊 %ship% Claro que os dois são um lindo casal! 😊",
+			"😜 %ship% Casal mais grudento que Despacito! 😜",
+			"😄 %ship% Se os dois já não namoram eu estaria surpresa! 😄")
+
+	var SHIP_valor70 = listOf("🙂 %ship% Prevejo um casal fofo se formando! 🙂",
+			"😄 %ship% Só precisa de um pouco mais de conversa para rolar! 😜",
+			"😊 %ship% Os dois foram feitos um para o outro! 😊",
+			"😄 %ship% Sim! 😄")
+
+	var SHIP_valor60 = listOf("🙂 %ship% Se o/a %user% parasse de ser um pouco tímido(a)... 😏",
+			"😊 %ship% Tem um pouco de interesses compatíveis aí 😊",
+			"🙂 %ship% Eu aprovo esse casal! 🙂",
+			"😄 %ship% Sim! 😄")
+
+	var SHIP_valor50 = listOf("😶 %ship% Amigos... Mas talvez né... 😏",
+			"😊 %ship% Talvez... Só precisa o/a %user% querer! 😶",
+			"😶 %ship% Eu queria ver esse casal funcionar 😶")
+
+	var SHIP_valor40 = listOf("😶 %ship% É... talvez, eu acho... 🙁",
+			"😶 %ship% Nada é impossível, mas... 🙁",
+			"😶 %ship% Se dois quererem, talvez dê certo... Mas... 😶")
+
+	var SHIP_valor30 = listOf("😕 %ship% Acho que não seria um belo casal... 🙁",
+			"😶 %ship% Parece que só são conhecidos... 😶")
+
+	var SHIP_valor20 = listOf("😐 %ship% Se o(a) %user% não tivesse deixado na friendzone... 😐")
+
+	var SHIP_valor10 = listOf("😐 %ship% Eu queria muito falar que é possível, mas... 😢")
+
+	var SHIP_valor0 = listOf("😭 %ship% As possibilidades de ter este casal são quase impossíveis! 😭")
+
+	// SpinnerCommand.kt
+	var SPINNER_DESCRIPTION = "Gira um fidget spinner! Quanto tempo será que ele irá ficar rodando?"
+	var SPINNER_SPINNING = "Girando o fidget spinner..."
+	var SPINNER_SPINNED = "Seu spinner girou por **{0}** segundos!"
+
+	// TretaNewsCommand.kt
+	var TRETANEWS_DESCRIPTION = "VOOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS ENTÃO VAMOS DIRETO PARA AS NOTÍCIAS"
+
+	// TristeRealidadeCommand.kt
+	var TRISTEREALIDADE_DESCRIPTION = "Cria uma triste realidade no seu servidor"
+
+	// TrumpCommand.kt
+	var TRUMP_DESCRIPTION = "O que será que o senhor presidente Trump está mostrando hoje?"
+
+	// VaporondaCommand.kt
+	var VAPORONDA_DESCRIPTION = "Cria uma mensagem com ａｅｓｔｈｅｔｉｃｓ"
+
+	// VaporQualidadeCommand.kt
+	var VAPORQUALIDADE_DESCRIPTION = "Quando você mistura Q U A L I D A D E e ａｅｓｔｈｅｔｉｃｓ"
+
+	// WikiaCommand.kt
+	var WIKIA_DESCRIPTION = "Procure algo em uma fandom na wikia"
+	var WIKIA_COULDNT_FIND = "Não consegui encontrar nada relacionado á `{0}` na wikia `{1}`!"
+
+	// YouTubeCommand.kt
+	var YOUTUBE_DESCRIPTION = "Procura um vídeo no YouTube"
+	var YOUTUBE_RESULTS_FOR = "Resultados para `{0}`"
+	var YOUTUBE_COULDNT_FIND = "Não consegui encontrar nada relacionado á `{0}`!"
+	var YOUTUBE_CHANNEL = "Canal"
+
+	// ===[ COMMANDS - MINECRAFT ]===
+	// McAvatarCommand.kt
+	var MCAVATAR_DESCRIPTION = "Mostra o avatar de uma conta do Minecraft, caso a conta não exista ele irá mostrar a skin padrão (Steve)"
+	var MCAVATAR_AVATAR_DE = "Avatar de {0}"
+
+	// McBodyCommand.kt
+	var MCBODY_DESCRIPTION = "Mostra o corpo de uma conta do Minecraft, caso a conta não exista ele irá mostrar a skin padrão (Steve)"
+	var MCBODY_BODY_DE = "Estátua de {0}"
+
+	// McHeadCommand.kt
+	var MCHEAD_DESCRIPTION = "Mostra a cabeça de uma conta do Minecraft, caso a conta não exista ele irá mostrar a skin padrão (Steve)"
+	var MCHEAD_HEAD_DE = "Cabeça de {0}"
+
+	// McQueryCommand.kt
+	var MCQUERY_DESCRIPTION = "Mostra quantos players um servidor de Minecraft tem"
+	var MCQUERY_OFFLINE = "Servidor `{0}:{1}` não existe ou está offline!"
+	var MCQUERY_VERSION = "Versão"
+	var MCQUERY_PROTOCOL = "Protocolo"
+
+	// McSignCommand.kt
+	var MCSIGN_DESCRIPTION = "Escreve um texto em uma placa do Minecraft!"
+
+	// McStatusCommand.kt
+	var MCSTATUS_DESCRIPTION = "Verifica se os servidores da Mojang estão online"
+	var MCSTATUS_MOJANG_STATUS = "Status da Mojang"
+
+	// McUUIDCommand.kt
+	var MCUUID_DESCRIPTION = "Pega a UUID de um usuário"
+	var MCUUID_RESULT = "A UUID de `{0}`: `{1}`"
+	var MCUUID_INVALID = "Player não encontrado! Tem certeza que `{0}` é uma conta válida?"
+
+	// OfflineUUIDCommand.kt
+	var OFFLINEUUID_DESCRIPTION = "Pega a UUID offline (ou seja, de servidores sem autenticação da Mojang) de um player"
+	var OFFLINEUUID_RESULT = "**UUID offline (sem autenticação da Mojang) de `{0}`:** `{1}`"
 
 	// ===[ COMMANDS - MISC ]===
 	// AjudaCommand.kt
@@ -171,6 +465,21 @@ open class BaseLocale {
 	var MUSIC_PLAYLIST_ADDED_IGNORED = "Adicionado na fila {0} músicas! (ignorado {1} faixas por serem muito grandes!)"
 	var MUSIC_NOTFOUND = "Não encontrei nada relacionado a `{0}` no YouTube... Tente colocar para tocar o link do vídeo!"
 	var MUSIC_ERROR = "Ih Serjão Sujou!\n`{0}`\n(Provavelmente é um vídeo da VEVO e eles só deixam ver a música no site do YouTube... \uD83D\uDE22)"
+
+	// ===[ COMMANDS - POKÉMON ]===
+	// PokedexCommand.kt
+	var POKEDEX_DESCRIPTION = "Pesquisa informações sobre um Pokémon"
+	var POKEDEX_TYPES = "Tipos"
+	var POKEDEX_ADDED_IN_GEN = "Adicionado na Geração"
+	var POKEDEX_NUMBER = "Número na Pokédex"
+	var POKEDEX_ABILITIES = "Habilidades"
+	var POKEDEX_BASE_EXP = "Base EXP"
+	var POKEDEX_EFFORT_POINTS = "Effort Points"
+	var POKEDEX_CAPTURE_RATE = "Taxa de Captura"
+	var POKEDEX_BASE_HAPPINESS = "Base happiness"
+	var POKEDEX_GROWTH_RATE = "Taxa de crescimento"
+	var POKEDEX_TRAINING = "Treinamento"
+	var POKEDEX_EVOLUTIONS = "Evoluções"
 
 	// ===[ COMMANDS - UNDERTALE ]===
 	// UndertaleBattleCommand.kt

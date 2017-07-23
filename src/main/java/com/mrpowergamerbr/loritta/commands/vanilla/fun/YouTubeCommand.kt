@@ -12,6 +12,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
@@ -29,8 +31,8 @@ class YouTubeCommand : CommandBase() {
 		return "youtube"
 	}
 
-	override fun getDescription(): String {
-		return "Procura um vídeo no YouTube"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.YOUTUBE_DESCRIPTION.msgFormat()
 	}
 
 	override fun getExample(): List<String> {
@@ -65,7 +67,7 @@ class YouTubeCommand : CommandBase() {
 				var embed = EmbedBuilder();
 				embed.setColor(Color(217, 66, 52));
 				embed.setDescription(format);
-				embed.setTitle("<:youtube:314349922885566475> Resultados para `$query`");
+				embed.setTitle("<:youtube:314349922885566475> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
 				var mensagem = context.sendMessage(embed.build());
 				// Adicionar os reactions
 				for (i in 0..Math.min(5, items.size) - 1) {
@@ -74,7 +76,7 @@ class YouTubeCommand : CommandBase() {
 				// mensagem.addReaction("❌").complete();
 				return;
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Eu não encontrei nada relacionado a `$query`!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBE_COULDNT_FIND.msgFormat(query))
 			}
 		} else {
 			context.explain()
@@ -112,7 +114,7 @@ class YouTubeCommand : CommandBase() {
 			var channelId = item.snippet.channelId;
 			embed.setThumbnail("http://i.ytimg.com/i/$channelId/1.jpg");
 			embed.addField("Link", "https://youtu.be/${item.id.videoId}", true);
-			embed.addField("Canal", "${item.snippet.channelTitle}", true);
+			embed.addField("${context.locale.YOUTUBE_CHANNEL.msgFormat()}", "${item.snippet.channelTitle}", true);
 			embed.setColor(Color(217, 66, 52));
 
 			// Criar novo embed!

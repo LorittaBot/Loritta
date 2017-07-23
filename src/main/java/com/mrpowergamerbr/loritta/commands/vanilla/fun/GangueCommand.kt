@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.image.BufferedImage
@@ -16,8 +18,8 @@ class GangueCommand : CommandBase() {
 		return "gangue"
 	}
 
-	override fun getDescription(): String {
-		return "Gangue da quebrada";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.GANGUE_DESCRIPTION.f()
 	}
 
 	override fun getExample(): List<String> {

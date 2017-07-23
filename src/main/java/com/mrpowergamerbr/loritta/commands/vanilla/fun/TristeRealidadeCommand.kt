@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
@@ -25,8 +27,8 @@ class TristeRealidadeCommand : CommandBase() {
 		return "tristerealidade"
 	}
 
-	override fun getDescription(): String {
-		return "Cria uma triste realidade no seu servidor"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.TRISTEREALIDADE_DESCRIPTION.f()
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -126,10 +128,5 @@ class TristeRealidadeCommand : CommandBase() {
 	class TristeRealidadeCommandOptions : CommandOptions() {
 		var mentionEveryone = false // Caso esteja ativado, todos que aparecerem serão mencionados
 		var hideDiscordTags = false // Caso esteja ativado, todas as discord tags não irão aparecer na imagem
-	}
-
-	companion object {
-		val HIDE_DISCORD_TAGS = "esconderTagsDoDiscord"
-		val MENTION_USERS = "mencionarUsuarios"
 	}
 }

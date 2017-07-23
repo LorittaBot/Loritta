@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -16,8 +18,8 @@ class DeusesCommand : CommandBase() {
 		return "deuses"
 	}
 
-	override fun getDescription(): String {
-		return "Caralho, olha os Deuses mano!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.DEUSES_DESCRIPTION.f();
 	}
 
 	override fun getExample(): List<String> {

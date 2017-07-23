@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import java.util.*
 
@@ -10,8 +12,8 @@ class RoleIdCommand : CommandBase() {
 		return "roleid"
 	}
 
-	override fun getDescription(): String {
-		return "Pega o ID de um cargo do Discord"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.ROLEID_DESCRIPTION.msgFormat()
 	}
 
 	override fun getUsage(): String {

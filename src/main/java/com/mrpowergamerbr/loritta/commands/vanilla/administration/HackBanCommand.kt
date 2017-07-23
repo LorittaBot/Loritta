@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 class HackBanCommand : CommandBase() {
@@ -11,8 +13,8 @@ class HackBanCommand : CommandBase() {
 		return "hackban"
 	}
 
-	override fun getDescription(): String {
-		return "Permite banir um usuário pelo ID dele antes de ele entrar no seu servidor!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.HACKBAN_DESCRIPTION.msgFormat()
 	}
 
 	override fun getExample(): List<String> {
@@ -40,11 +42,11 @@ class HackBanCommand : CommandBase() {
 				if (context.args.size > 1) {
 					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
 				}
-				context.guild.controller.ban(id, 0, "Hackbanned por " + context.userHandle.name + "#" + context.userHandle.discriminator + if (reason != null) " (Motivo: " + reason + ")" else "").complete();
+				context.guild.controller.ban(id, 0, context.locale.HACKBAN_REASON.msgFormat(context.userHandle.name + "#" + context.userHandle.discriminator) + if (reason != null) " (${context.locale.HACKBAN_REASON.msgFormat()}: " + reason + ")" else "").complete();
 
-				context.sendMessage(context.getAsMention(true) + "Usuário `$id` foi banido com sucesso!");
+				context.sendMessage(context.getAsMention(true) + context.locale.HACKBAN_SUCCESS.msgFormat(id));
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + " Não tenho permissão para banir este usuário!");
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.HACKBAN_NO_PERM.msgFormat());
 			}
 		} else {
 			this.explain(context);

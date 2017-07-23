@@ -3,14 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class QualidadeCommand : CommandBase() {
 	override fun getLabel(): String {
 		return "qualidade"
 	}
 
-	override fun getDescription(): String {
-		return "Cria uma mensagem com Q U A L I D A D E & S I N C R O N I A"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.QUALIDADE_DESCRIPTION.f()
 	}
 
 	override fun getUsage(): String {

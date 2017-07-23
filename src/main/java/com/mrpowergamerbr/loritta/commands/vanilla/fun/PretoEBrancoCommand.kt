@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.image.BufferedImage
 import java.util.*
 
@@ -17,8 +19,8 @@ class PretoEBrancoCommand : CommandBase() {
 		return listOf("preto&branco")
 	}
 
-	override fun getDescription(): String {
-		return "Relembre os belos momentos ao imprimir trabalhos para a escola, quando suas belas imagens coloridas no Word viravam imagens irreconhecíveis em preto e branco, só porque não tinha tinta colorida!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.PRETOEBRANCO_DESCRIPTION.f()
 	}
 
 	override fun getExample(): List<String> {

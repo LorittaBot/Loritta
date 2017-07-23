@@ -7,8 +7,9 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
 import java.util.*
 
@@ -17,8 +18,8 @@ class McQueryCommand : CommandBase() {
 		return "mcquery"
 	}
 
-	override fun getDescription(): String {
-		return "Mostra quantos players um servidor de Minecraft tem"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MCQUERY_DESCRIPTION.msgFormat()
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -61,7 +62,7 @@ class McQueryCommand : CommandBase() {
 			}
 			if (serverResponse.has("error")) { // E se ainda está com erro... bem, desisto.
 				// desisto :(
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Servidor `" + ip + ":" + port + "` não existe ou está offline!")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCQUERY_OFFLINE.msgFormat(ip, port))
 				return
 			}
 			val builder = EmbedBuilder()
@@ -78,8 +79,8 @@ class McQueryCommand : CommandBase() {
 			}
 
 			addIfExists(builder, serverResponse, "Software", "software", true)
-			addIfExists(builder, serverResponse, "Versão", "version", true)
-			addIfExists(builder, plainResponse, "Protocolo", "protocol", true) // Protocolo só tem no plain
+			addIfExists(builder, serverResponse, "${context.locale.MCQUERY_VERSION.msgFormat()}", "version", true)
+			addIfExists(builder, plainResponse, "${context.locale.MCQUERY_PROTOCOL.msgFormat()}", "protocol", true) // Protocolo só tem no plain
 
 			if (serverResponse.has("list")) { // Players online
 				val list = StringBuilder()
@@ -103,9 +104,7 @@ class McQueryCommand : CommandBase() {
 
 			builder.setThumbnail("https://mcapi.ca/query/$hostname:$port/icon") // E agora o server-icon do servidor
 
-			val message = MessageBuilder().append(context.getAsMention(true)).setEmbed(builder.build()).build()
-
-			context.sendMessage(message)
+			context.sendMessage(context.getAsMention(true), builder.build())
 		} else {
 			context.explain()
 		}

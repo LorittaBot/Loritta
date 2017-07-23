@@ -4,8 +4,9 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
 
 class McBodyCommand : CommandBase() {
@@ -13,8 +14,8 @@ class McBodyCommand : CommandBase() {
 		return "mcbody"
 	}
 
-	override fun getDescription(): String {
-		return "Mostra o corpo de uma conta do Minecraft, caso a conta não exista ele irá mostrar a skin padrão (Steve)"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.MCBODY_DESCRIPTION.msgFormat()
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -43,11 +44,9 @@ class McBodyCommand : CommandBase() {
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:330435576392318978> Estátua de " + nickname)
+			builder.setTitle("<:grass:330435576392318978> ${context.locale.MCBODY_BODY_DE.msgFormat(nickname)}")
 
-			val message = MessageBuilder().append(context.getAsMention(true)).setEmbed(builder.build()).build()
-
-			context.sendFile(bufferedImage, "avatar.png", message)
+			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
 class RollCommand : CommandBase() {
@@ -11,8 +13,8 @@ class RollCommand : CommandBase() {
 		return "rolar"
 	}
 
-	override fun getDescription(): String {
-		return "Rola um dado e fala o resultado dele, perfeito quando você quer jogar um Monopoly maroto mas perdeu os dados."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.ROLL_DESCRIPTION.f()
 	}
 
 	override fun getAliases(): List<String> {
@@ -38,17 +40,17 @@ class RollCommand : CommandBase() {
 				value = context.args[0].toLong()
 				Loritta.random.nextLong(1, value + 1)
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Número `${context.args[0]}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22")
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
 				return
 			}
 
 		}
 
 		if (0 >= value) {
-			context.sendMessage(context.getAsMention(true) + "Número inválido!")
+			context.sendMessage(context.getAsMention(true) + context.locale.ROLL_INVALID_NUMBER.f())
 			return
 		}
 
-		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **Resultado:** " + Loritta.random.nextLong(1, value + 1))
+		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** " + Loritta.random.nextLong(1, value + 1))
 	}
 }

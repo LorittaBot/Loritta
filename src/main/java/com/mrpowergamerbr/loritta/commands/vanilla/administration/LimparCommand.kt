@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 
@@ -12,8 +14,8 @@ class LimparCommand : CommandBase() {
 		return "limpar"
 	}
 
-	override fun getDescription(): String {
-		return "Limpa o chat do canal de texto atual."
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.LIMPAR_DESCRIPTION.msgFormat()
 	}
 
 	override fun getUsage(): String {
@@ -37,12 +39,12 @@ class LimparCommand : CommandBase() {
 			val toClear = context.args[0].toIntOrNull()
 
 			if (toClear == null) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}`${context.args[0]}` é um número inválido!")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.INVALID_NUMBER.msgFormat(context.args[0])}")
 				return
 			}
 
 			if (toClear !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}Eu só consigo limpar entre 2 até 100 mensagens passadas!")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.LIMPAR_INVALID_RANGE.msgFormat()}")
 				return
 			}
 
@@ -59,7 +61,7 @@ class LimparCommand : CommandBase() {
 
 			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
 
-			context.sendMessage("Chat limpo por " + context.handle.asMention + "!")
+			context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
 		} else {
 			this.explain(context)
 		}

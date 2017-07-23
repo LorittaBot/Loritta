@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -15,8 +17,8 @@ class NyanCatCommand : CommandBase() {
 		return "nyan"
 	}
 
-	override fun getDescription(): String {
-		return "Nyan Cat, diretamente no seu servidor! E você pode pedir o tamanho do Nyan Cat igual quando você pede algum sanduíche no Subway!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.NYANCAT_DESCRIPTION.f()
 	}
 
 	override fun getUsage(): String {

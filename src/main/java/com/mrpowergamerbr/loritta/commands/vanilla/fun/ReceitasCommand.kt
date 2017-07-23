@@ -3,7 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`;
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed
@@ -20,8 +22,8 @@ class ReceitasCommand : CommandBase() {
 		return Arrays.asList("receitas");
 	}
 
-	override fun getDescription(): String {
-		return "Procure receitas delíciosas da Ana Maria Braga™!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.RECEITAS_DESCRIPTION.f();
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -64,7 +66,7 @@ class ReceitasCommand : CommandBase() {
 							.thumbnail(ThumbnailEmbed(img, null, 700, 700))
 							.title("\uD83E\uDD58 ${comida.html()}")
 							.url(links[0].attr("abs:href"))
-							.description("Um artigo da categoria \"$reason\" para a sua família! Delícioso! \uD83D\uDC26")
+							.description(context.locale.RECEITAS_INFO.f(reason))
 							.color(744725)
 							.build()
 
@@ -86,7 +88,7 @@ class ReceitasCommand : CommandBase() {
 				var message = DiscordMessage.builder()
 						.username("Louro José")
 						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
-						.content(context.getAsMention(true) + "Não encontrei nada relacionado a \"${query}\" no livro de receitas da Ana Maria Braga!")
+						.content(context.getAsMention(true) + context.locale.RECEITAS_COULDNT_FIND.f(query))
 						.build();
 
 				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message);

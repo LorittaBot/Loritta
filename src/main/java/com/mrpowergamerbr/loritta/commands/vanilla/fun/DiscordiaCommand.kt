@@ -4,7 +4,9 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.gifs.MentionGIF
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class DiscordiaCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -15,8 +17,8 @@ class DiscordiaCommand : CommandBase() {
 		return listOf("discórdia")
 	}
 
-	override fun getDescription(): String {
-		return "Mostre a sua reação quando você recebe uma notificação inútil do Discord!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.DISCORDIA_DESCRIPTION.f();
 	}
 
 	override fun getExample(): List<String> {
