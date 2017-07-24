@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import com.google.gson.GsonBuilder
+
 class FunkLocale : BaseLocale() {
 	init {
 		INVALID_NUMBER = "Ei vacilão, coloca um número válido em vez de ficar de vacilo. \uD83D\uDE22"
@@ -175,4 +177,10 @@ class FunkLocale : BaseLocale() {
 		MUSIC_PLAYLIST_ADDED = "Adicionado no baile de favela {0} batidões!"
 		MUSIC_PLAYLIST_ADDED_IGNORED = "Adicionado no baile de favela {0} batidões! (ignorado {1} faixas por serem muito grandes!)"
 	}
+}
+
+fun main(args: Array<String>) {
+	val gson = GsonBuilder().setPrettyPrinting().create().toJson(FunkLocale())
+
+	println(gson)
 }

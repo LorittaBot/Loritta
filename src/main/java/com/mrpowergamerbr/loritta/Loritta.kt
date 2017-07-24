@@ -262,17 +262,28 @@ class Loritta {
 					field.isAccessible = true
 
 					val ogValue = field.get(default)
-					val changedValue = field.get(default)
+					val changedValue = field.get(locale)
 
-					if (changedValue == null) {
+					if (changedValue == null || ogValue.equals(changedValue)) {
 						field.set(locale, ogValue)
-						jsonObject["[Traduzir!]${field.name}"] = ogValue
+						jsonObject[field.name] = null
+						if (ogValue is List<*>) {
+							val tree = prettyGson.toJsonTree(ogValue)
+							jsonObject["[Translate!]${field.name}"] = tree
+						} else {
+							jsonObject["[Translate!]${field.name}"] = ogValue
+						}
 					} else {
-						jsonObject[field.name] = changedValue
+						if (changedValue is List<*>) {
+							val tree = prettyGson.toJsonTree(changedValue)
+							jsonObject[field.name] = tree
+						} else {
+							jsonObject[field.name] = changedValue
+						}
 					}
 				}
 
-				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject)))
+				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
 	}
