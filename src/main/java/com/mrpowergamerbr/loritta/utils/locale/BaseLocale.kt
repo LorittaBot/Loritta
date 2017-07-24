@@ -415,6 +415,7 @@ open class BaseLocale {
 	// RankCommand.kt
 	var RANK_DESCRIPTION = "Veja o ranking do servidor atual!"
 	var RANK_INFO = "XP Total: {0} | Nível Atual: {1}"
+	var RANK_SERVER_RANK = "Ranking do {0}"
 
 	// RepCommand.kt
 	var REP_DESCRIPTON = "Dê reputação para outro usuário!"

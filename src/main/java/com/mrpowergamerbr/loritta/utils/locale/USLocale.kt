@@ -411,6 +411,7 @@ class USLocale : BaseLocale() {
 		// RankCommand.kt
 		RANK_DESCRIPTION = "View this server rank!"
 		RANK_INFO = "Total XP: {0} | Current Level: {1}"
+		RANK_SERVER_RANK = "{0}''s Rank"
 
 		// RepCommand.kt
 		REP_DESCRIPTON = "Give reputation to another user!"

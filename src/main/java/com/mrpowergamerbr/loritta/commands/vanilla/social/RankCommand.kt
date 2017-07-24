@@ -169,7 +169,7 @@ class RankCommand : CommandBase() {
 				.deriveFont(32F)
 		graphics.font = bebasNeue
 		graphics.color = Color(210, 210, 210)
-		val titleText = if (global) "Ranking Global" else "Ranking do ${context.guild.name}"
+		val titleText = if (global) "Ranking Global" else context.locale.RANK_SERVER_RANK.f(context.guild.name)
 		ImageUtils.drawCenteredString(graphics, titleText, Rectangle(0, 1, 400, 46), bebasNeue)
 
 		graphics.color = Color.WHITE
