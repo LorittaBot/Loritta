@@ -225,7 +225,7 @@ class USLocale : BaseLocale() {
 		PPT_INVALID = "What a shame... you lost, next time choose something that is valid, okay?"
 
 		// PerdaoCommand.kt
-		PERDAO_DESCRIPTION = "A monster like this deserves Um monstro desses merece forgiveness?"
+		PERDAO_DESCRIPTION = "A monster like this deserves forgiveness?"
 
 		// PerfeitoCommand.kt
 		PERFEITO_DESCRIPTION = "Is \"Nothing is perfect\" anyway?"
@@ -365,7 +365,7 @@ class USLocale : BaseLocale() {
 		MCUUID_INVALID = "Player not found! Are you sure `{0}` is a valid account?"
 
 		// OfflineUUIDCommand.kt
-		OFFLINEUUID_DESCRIPTION = "Gerts the offline UUID (that is, servers without Mojang authentication) of a player"
+		OFFLINEUUID_DESCRIPTION = "Gets the offline UUID (that is, servers without Mojang authentication) of a player"
 		OFFLINEUUID_RESULT = "**`{0}`''s offline UUID (without Mojang''s authentication):** `{1}`"
 
 		// ===[ COMMANDS - MISC ]===
