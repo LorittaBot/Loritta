@@ -42,7 +42,7 @@ class TristeRealidadeCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		val cmdOpti = context.config.getCommandOptionsFor(this) as TristeRealidadeCommandOptions
 
-		val bi = ImageIO.read(File(Loritta.FOLDER + "meme_1.png")) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.FOLDER + context.locale.TRISTEREALIDADE_FILE.f())) // Primeiro iremos carregar o nosso template
 		var x = 0
 		var y = 0
 

@@ -11,6 +11,29 @@ class FunkLocale : BaseLocale() {
 		// HelloWorldCommand.kt
 		HELLO_WORLD = "Coê rapaziada! {0}"
 
+		// AmizadeCommand.kt
+		AMIZADE_AMIZADE_COM = "{0} vacilou demais"
+		AMIZADE_ENDED = ""
+		AMIZADE_NOW = "Agora"
+		AMIZADE_IS_MY = "é o novo"
+		AMIZADE_BEST_FRIEND = "parça dos rolês"
+
+		// AvaliarWaifuCommand.kt
+		RATEWAIFU_10 = "Novinha 10/10, nunca trocaria de novinha se fosse você!"
+		RATEWAIFU_9 = "Uma novinha excelente, tá ligado?"
+		RATEWAIFU_8 = "Uma novinha que adora sair nos rolês com o novinho."
+		RATEWAIFU_7 = "Nem todas as novinhas são perfeitas tá ligado? Mas essa novinha é responsa, recomendo!";
+		RATEWAIFU_6 = "Essa novinha tem a mesma nota que você tirou lá no ensino fundamental";
+		RATEWAIFU_5 = "Novinha 5/10, bem de boa";
+		RATEWAIFU_4 = "Essa novinha é meio mascarada, mas é gente boa";
+		RATEWAIFU_3 = "Essa novinha precisa de mais substância.";
+		RATEWAIFU_2 = "Ow menor, essa novinha conspira com os parças, troca de novinha ae menor...";
+		RATEWAIFU_1 = "Sê loco? Essa daí é mó mercenária, sai dessa lek.";
+		RATEWAIFU_0 = "Menor, sai disso por favor.";
+
+		// TristeRealidade.kt
+		TRISTEREALIDADE_FILE = "tristerealidade_funk.png"
+
 		// AjudaCommand.kt
 		AJUDA_SENT_IN_PRIVATE = "Joguei o treco lá no privado tá ligado? Bora lá ver nas suas mensagens diretas!"
 

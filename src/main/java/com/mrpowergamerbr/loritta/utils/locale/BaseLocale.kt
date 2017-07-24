@@ -127,9 +127,9 @@ open class BaseLocale {
 	var RATEWAIFU_6 = "Se fosse nota de escola sua Waifu ela seria \"acima da média\"";
 	var RATEWAIFU_5 = "Nem tão ruim, nem tão boa, bem \"normal\"";
 	var RATEWAIFU_4 = "Não que a sua Waifu seja ruim, pelo contrário! Ela tem potencial para ser algo mais *interessante*!";
-	var RATEWAIFU_3= "Sua Waifu precisa de mais substância.";
-	var RATEWAIFU_2= "Não é por nada não mas, se eu você fosse, eu trocaria de Waifu...";
-	var RATEWAIFU_1= "Sem chance, troca de Waifu hoje mesmo para garantir sua sanidade.";
+	var RATEWAIFU_3 = "Sua Waifu precisa de mais substância.";
+	var RATEWAIFU_2 = "Não é por nada não mas, se eu você fosse você, eu trocaria de Waifu...";
+	var RATEWAIFU_1 = "Sem chance, troca de Waifu hoje mesmo para garantir sua sanidade.";
 	var RATEWAIFU_0 = "Troque de Waifu por favor.";
 	var RATEWAIFU_IM_PERFECT = "Sou perfeita!"
 	var RATEWAIFU_RESULT = "Eu dou uma nota **{0}/10** para `{1}`! **{2}**"
@@ -311,6 +311,7 @@ open class BaseLocale {
 
 	// TristeRealidadeCommand.kt
 	var TRISTEREALIDADE_DESCRIPTION = "Cria uma triste realidade no seu servidor"
+	var TRISTEREALIDADE_FILE = "meme_1.png"
 
 	// TrumpCommand.kt
 	var TRUMP_DESCRIPTION = "O que será que o senhor presidente Trump está mostrando hoje?"
@@ -382,6 +383,11 @@ open class BaseLocale {
 
 	// PingCommand.kt
 	var PING_DESCRIPTION = "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testar!"
+
+	// LanguageCommand.kt
+	var LANGUAGE_DESCRIPTION = "Permite alterar a linguagem que a Loritta fala em seu servidor!"
+	var LANGUAGE_INFO = "Clique na linguagem desejada!\n{0}"
+	var LANGUAGE_USING_LOCALE = "Agora eu irei falar em `{0}`!"
 
 	// ===[ COMMANDS - SOCIAL ]===
 	// BackgroundCommand.kt

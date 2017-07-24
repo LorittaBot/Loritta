@@ -233,8 +233,8 @@ class Loritta {
 	 * Inicia os locales da Loritta
 	 */
 	fun loadLocales() {
-		locales.put("us", USLocale())
-		locales.put("funk", FunkLocale())
+		locales.put("en-us", USLocale())
+		locales.put("pt-funk", FunkLocale())
 		locales.put("default", BaseLocale())
 	}
 
