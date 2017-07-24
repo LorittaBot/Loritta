@@ -15,6 +15,7 @@ class USLocale : BaseLocale() {
 		INVALID_NUMBER = "`{0}` is a unrecognizable number for a bot like me, sorry. \uD83D\uDE22"
 		MINUTES_AND_SECONDS = "%02d minutes and %02d seconds"
 		NSFW_IMAGE = "**Pornographic image (NSFW) detected**\n\n{0}... are you really serious that you would use *that* as your wallpaper? Do you really think someone would look at your wallpaper and say \"wow, \"{0}\" is wonderful because he wastes his time watching other people making out because he can't go outside and meet new people\"?\n\nNo, nobody will say that, please, for me, change your life and stop doing that.\n\n(If this was a false positive then... I don''t know, ignore me \uD83D\uDE1E)"
+		MENTION_RESPONSE = "Howdy {0}! My prefix on this server is `{1}` To see what I can do, use `{1}help`!"
 
 		// Event Log
 		EVENTLOG_USER_ID = "User ID: {0}"

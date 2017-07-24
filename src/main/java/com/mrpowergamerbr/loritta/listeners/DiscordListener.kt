@@ -5,10 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.humanize
-import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.ChannelType
@@ -41,6 +38,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
+					val locale = loritta.getLocaleById(serverConfig.localeId)
 
 					if (ownerProfile.isBanned) { // Se o dono está banido...
 						if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
@@ -50,7 +48,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (event.message.rawContent.replace("!", "") == "<@297153970613387264>") {
-						event.textChannel.sendMessage("Olá " + event.message.author.asMention + "! Meu prefixo neste servidor é `" + serverConfig.commandPrefix + "` Para ver o que eu posso fazer, use `" + serverConfig.commandPrefix + "ajuda`!").complete()
+						event.textChannel.sendMessage(locale.MENTION_RESPONSE.f(event.message.author.asMention, serverConfig.commandPrefix)).complete()
 					}
 
 					event.member.roles.forEach {

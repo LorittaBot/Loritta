@@ -14,6 +14,7 @@ open class BaseLocale {
 	var INVALID_NUMBER = "Número `{0}` é algo irreconhecível para um bot como eu, sorry. \uD83D\uDE22"
 	var MINUTES_AND_SECONDS = "%02d minutos e %02d segundos"
 	var NSFW_IMAGE = "**Imagem pornográfica (NSFW) detectada!**\n\nQue feio... Sério mesmo que você queria usar *isto* como seu background? Você acha mesmo que alguém vai ver seu background e vai falar \"nossa, o \"{0}\" é maravilhoso porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue pegar ninguém!\"?\n\nNão, ninguém irá falar isto, mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, me ignore \uD83D\uDE1E)"
+	var MENTION_RESPONSE = "Olá {0}! Meu prefixo neste servidor é `{1}` Para ver o que eu posso fazer, use `{1}ajuda`!"
 
 	// Event Log
 	var EVENTLOG_USER_ID = "ID do usuário: {0}"
