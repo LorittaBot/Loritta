@@ -14,6 +14,7 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
@@ -254,6 +255,25 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				.getDatabase("loritta")
 				.getCollection("servers")
 				.deleteMany(Filters.eq("_id", e.guild.id)) // Tchau! :(
+	}
+
+	override fun onGuildJoin(event: GuildJoinEvent) {
+		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
+		val region = event.guild.region
+		val regionName = region.name
+		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+
+		// EN-US
+		if (regionName.startsWith("US") ||
+				regionName.startsWith("EU") || // TODO: EN-UK
+				regionName.startsWith("London")) {
+			serverConfig.localeId = "en-us"
+		}
+
+		// E depois iremos salvar a configuração do servidor
+		loritta save serverConfig
+
+		// TODO: Talvez enviar uma mensagem privada para todos os membros que possuem MANAGE_SERVER, com algumas informações importantes sobre mim
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
