@@ -48,7 +48,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocales().get(conf.localeId);
+		this.locale = LorittaLauncher.loritta.getLocaleById(conf.localeId);
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
@@ -58,7 +58,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocales().get(conf.localeId);
+		this.locale = LorittaLauncher.loritta.getLocaleById(conf.localeId);
 	}
 
 	public boolean isPrivateChannel() {
