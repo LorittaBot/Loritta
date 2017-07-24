@@ -30,7 +30,6 @@ class LanguageCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		context.guild.publicRole.manager.revokePermissions(Permission.MESSAGE_MENTION_EVERYONE)
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
