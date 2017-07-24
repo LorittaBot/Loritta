@@ -84,8 +84,8 @@ open class BaseLocale {
 	var EMOJI_DESCRIPTION = "Veja emojis em um tamanho que você não precise usar uma lupa para tentar entender eles!"
 
 	// InviteCommand.kt
-	var INVITE_DESCRIPTION = "Envia o link do convite para adicionar a Loritta em outros servidores!"
-	var INVITE_INFO = "Você quer me adicionar em outros servidores/guilds do Discord? Então clique [aqui]({0}) para me adicionar em outro servidor!\n\nSe você quiser configurar algumas coisas (como o meu prefixo, comandos ativados, etc) então acesse o painel de administração clicando [aqui]({1})!\n\nE, é claro, entre na guild da Loritta para dar sugestões, reportar bugs e muito mais! {2}"
+	var INVITE_DESCRIPTION = "Envia o link do convite para me adicionar em outros servidores!"
+	var INVITE_INFO = "Você quer me adicionar em outros servidores/guilds do Discord? Então clique [aqui]({0}) para me adicionar em outro servidor!\n\nSe você quiser configurar algumas coisas (como o meu prefixo, comandos ativados, etc) então acesse o painel de administração clicando [aqui]({1})!\n\nE, é claro, entre na minha guild para dar sugestões, reportar bugs e muito mais! {2}"
 
 	// ServerInfoCommand.kt
 	var SERVERINFO_DESCRIPTION = "Veja as informações do servidor do Discord atual!"
@@ -161,7 +161,7 @@ open class BaseLocale {
 	var FAUSTAO_DESCRIPTION = "Invoque o querido Faustão no seu servidor!"
 
 	// FraseToscaCommand.kt
-	var FRASETOSCA_DESCRIPTION = "Cria uma frase tosca utilizando várias mensagens recicladas recebidas pela Loritta"
+	var FRASETOSCA_DESCRIPTION = "Cria uma frase tosca utilizando várias mensagens recicladas recebidas por mim"
 	var FRASETOSCA_GABRIELA = "Gabriela, a amiga da Loritta"
 
 	// GangueCommand.kt
@@ -180,7 +180,7 @@ open class BaseLocale {
 
 	// MagicBallCommand.kt
 	var VIEIRINHA_DESCRIPTION = "Pergunte algo para o Vieirinha"
-	val VIEIRINHA_responses = Arrays.asList(
+	var VIEIRINHA_responses = Arrays.asList(
 			"Vai incomodar outra pessoa, obrigado.",
 			"Não sei, mas eu sei que eu moro lá no Cambuci.",
 			"Do jeito que eu vejo, sim.",
@@ -385,7 +385,7 @@ open class BaseLocale {
 	var PING_DESCRIPTION = "Um comando de teste para ver se eu estou funcionando, recomendo que você deixe isto ligado para testar!"
 
 	// LanguageCommand.kt
-	var LANGUAGE_DESCRIPTION = "Permite alterar a linguagem que a Loritta fala em seu servidor!"
+	var LANGUAGE_DESCRIPTION = "Permite alterar a linguagem que eu falo em seu servidor!"
 	var LANGUAGE_INFO = "Clique na linguagem desejada!\n{0}"
 	var LANGUAGE_USING_LOCALE = "Agora eu irei falar em `{0}`!"
 
@@ -428,7 +428,7 @@ open class BaseLocale {
 
 	// HelloWorldCommand.kt
 	var HELLO_WORLD = "Olá mundo! {0}"
-	var HELLO_WORLD_DESCRIPTION = "Um simples comando para testar o sistema de localização da Loritta."
+	var HELLO_WORLD_DESCRIPTION = "Um simples comando para testar o meu sistema de linguagem."
 	var USING_LOCALE = "Agora estou usando {0} como locale!"
 
 	// ===[ COMMANDS - MUSIC ]===

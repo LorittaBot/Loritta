@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import java.util.*
+
 /**
  * US localization
  *
@@ -27,6 +29,38 @@ class USLocale : BaseLocale() {
 		// CommandBase.kt
 		HOW_TO_USE = "How to use"
 		EXAMPLE = "Example"
+
+		// ===[ COMMANDS - ADMINISTRATION ]===
+		// HackBanCommand.kt
+		HACKBAN_DESCRIPTION = "Bans an usar via ID before he joins your server!"
+		HACKBAN_BY = "Hackbanned by {0}"
+		HACKBAN_REASON = "Reason"
+		HACKBAN_SUCCESS = "User `{0}` was successfully banned!"
+		HACKBAN_NO_PERM = "I don''t have permission to ban this user!"
+
+		// LimparCommand.kt
+		LIMPAR_DESCRIPTION = "Clears the chat of the current text channel."
+		LIMPAR_INVALID_RANGE = "I can only clear messages between 2 and 100!"
+		LIMPAR_SUCCESS = "Chat cleared by {0}!"
+
+		// MuteCommand.kt
+		MUTE_DESCRIPTION = "Mutes an user for a time period"
+		MUTE_CANT_MUTE_ME = "You can''t mute me, silly!"
+		MUTE_ROLE_NAME = "Muted"
+		MUTE_NO_PERM = "I don''t have permission to mute this user!"
+		MUTE_SUCCESS_ON = "User `{0}` was successfully muted!"
+		MUTE_SUCCESS_OFF = "User `{0}` magically learned how to speak again!"
+
+		// RoleIdCommand.kt
+		ROLEID_DESCRIPTION = "Gets the ID of a role"
+
+		// SoftBanCommand.kt
+		SOFTBAN_DESCRIPTION = "Does a \"softban\" in an user, that means, the user is banned and then quickly unbanned later, used to delete the messages of an user."
+		SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS = "It''s impossible to softban someone for more than 7 days!"
+		SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS = "It''s impossible to softban someone for less than 0 days! (And how that would''ve work?)"
+		SOFTBAN_BY = "Softbanned by {0}"
+		SOFTBAN_SUCCESS = "User `{0}` was successfully softbanned!"
+		SOFTBAN_NO_PERM = "I don''t have permission to softban this user!"
 
 		// ===[ COMMANDS - DISCORD ]===
 		// AvatarCommand.kt
@@ -72,6 +106,267 @@ class USLocale : BaseLocale() {
 		SERVERINFO_BOTS = "Bots"
 		SERVERINFO_ROLES = "Roles"
 		SERVERINFO_CUSTOM_EMOJIS = "Custom emojis"
+
+		// ===[ COMMANDS - FUN ]===
+		// AmigosCommand.kt
+		AMIGOS_DESCRIPTION = "Thanks for being **NOT YOU** the best friends of all!"
+
+		// AmizadeCommand.kt
+		AMIZADE_DESCRIPTION = "Tell someone that your friendship ended in a simple and easy way!"
+		AMIZADE_AMIZADE_COM = "Friendship ended with {0}"
+		AMIZADE_ENDED = ""
+		AMIZADE_NOW = "Now"
+		AMIZADE_IS_MY = "is my"
+		AMIZADE_BEST_FRIEND = "best friend"
+
+		// AvaliarWaifuCommand.kt
+		RATEWAIFU_DESCRIPTION = "Get a note for your Waifu!"
+		RATEWAIFU_10 = "Simply perfect! I wouldn''t change Waifus if I was you!"
+		RATEWAIFU_9 = "An excellent waifu, good choice."
+		RATEWAIFU_8 = "A Waifu that hits all the good points in life."
+		RATEWAIFU_7 = "Not every Waifu is perfect, but what would be the fun in living with someone perfect?";
+		RATEWAIFU_6 = "If this was an school grade your Waifu would be \"passing grade\"";
+		RATEWAIFU_5 = "Not that bad, but also not that good, quite \"normal\"";
+		RATEWAIFU_4 = "Not that your Waifu is bad, on the contrary! She has the potential to be something more *juicy*!";
+		RATEWAIFU_3 = "Your Waifu needs more substance.";
+		RATEWAIFU_2 = "Don''t get me wrong, but if I was you, I would change your Waifu...";
+		RATEWAIFU_1 = "No chance, change your Waifu now to ensure your sanity.";
+		RATEWAIFU_0 = "Please change your Waifu.";
+		RATEWAIFU_IM_PERFECT = "I''m pretty!"
+		RATEWAIFU_RESULT = "`{1}`''s score **{0}/10**! **{2}**"
+
+		// CaraCoroaCommand.kt
+		CARACOROA_DESCRIPTION = "Spin a coin and see if it will be heads or tails! Perfect to figure out who will be the first in a soccer match"
+		CARACOROA_HEADS = "Heads"
+		CARACOROA_TAILS = "Tails"
+
+		// CepoCommand.kt
+		CEPO_DESCRIPTION = "Destroy someone, Gugu Gaiteiro style!"
+
+		// ClapifyCommand.kt
+		CLAPIFY_DESCRIPTION = "When👏you👏need👏to👏call👏the👏attention👏of👏something👏in👏the👏worst👏way\uD83D\uDC4Fpossible!"
+
+		// DeusCommand.kt
+		DEUS_DESCRIPTION = "Places someone in a Google search about \"God\""
+
+		// DeusesCommand.kt
+		DEUSES_DESCRIPTION = "Holy shit, look at the Gods, bro!"
+
+		// DiscordiaCommand.kt
+		DISCORDIA_DESCRIPTION = "Show your reaction when you receive a useless notification from Discord!"
+
+		// DrakeCommand.kt
+		DRAKE_DESCRIPTION = "Creates a Drake meme using two users from your guild!"
+
+		// FaustãoCommand.kt
+		FAUSTAO_DESCRIPTION = "Invoke the darling Faustão in your server!"
+
+		// FraseToscaCommand.kt
+		FRASETOSCA_DESCRIPTION = "Creates a corny phrase using various recycled messages received by me"
+		FRASETOSCA_GABRIELA = "Gabriela, Loritta''s friend"
+
+		// GangueCommand.kt
+		GANGUE_DESCRIPTION = "Gang from the quebrada"
+
+		// InverterCommand.kt
+		INVERTER_DESCRIPTION = "Inverts the color in an image"
+
+		// LavaCommand.kt
+		LAVA_DESCRIPTION = "The floor is...? Decide what you want!"
+
+		// LavaReversoCommand.kt
+		LAVAREVERSO_DESCRIPTION = "The floor is...? Decide what you want!"
+
+		// TODO: Textos na imagem
+
+		// MagicBallCommand.kt
+		VIEIRINHA_DESCRIPTION = "Ask something to Vieirinha"
+		VIEIRINHA_responses = Arrays.asList(
+				"Go bother someone else, thank you.",
+				"I don''t know, but I know that I live in Cambuci.",
+				"In the way I see it, yes.",
+				"Hmmmm... 🤔",
+				"I can''t talk about that.",
+				"No.",
+				"Yes.",
+				"I would''ve replied, but I don''t want to hurt your feelings.",
+				"Probably yes",
+				"Probably not",
+				"My sources say yes",
+				"My sources say no",
+				"You can believe that",
+				"My answer is no",
+				"My answer is yes",
+				"In the way I see it, no.",
+				"Better not say it to you now...",
+				"Yes for sure!",
+				"I also wanted to know...",
+				"My answer does not matter, what matters is that you follow your heart. 😘",
+				"Maybe...",
+				"I think so.",
+				"I think not.",
+				"Maybe yes.",
+				"Maybe not.",
+				"Yes!",
+				"No!",
+				"¯\\_(ツ)_/¯")
+
+		// NyanCatCommand.kt
+		NYANCAT_DESCRIPTION = "Nyan Cat, directly on your server! And you can also ask the size of your Nyan Cat like how you ask sandwiches in Subway!"
+
+		// PedraPapelTesouraCommand.kt
+		PPT_DESCRIPTION = "Play Rock, Paper and Scissors! (jankenpon)"
+		PPT_WIN = "Congratulations, you won!"
+		PPT_LOSE = "What a shame... you lost, but what counts is the intention!"
+		PPT_DRAW = "A tie! How about a rematch?"
+		PPT_CHOSEN = "You chosen {0}, I''ve chosen {1}"
+		PPT_JESUS_CHRIST = "JESUS CHRIST"
+		PPT_MAYBE_DRAW = "Draw...?"
+		PPT_INVALID = "What a shame... you lost, next time choose something that is valid, okay?"
+
+		// PerdaoCommand.kt
+		PERDAO_DESCRIPTION = "A monster like this deserves Um monstro desses merece forgiveness?"
+
+		// PerfeitoCommand.kt
+		PERFEITO_DESCRIPTION = "Is \"Nothing is perfect\" anyway?"
+
+		// PretoEBrancoCommand.kt
+		PRETOEBRANCO_DESCRIPTION = "Recall the beautiful moments when printing jobs for school, when your beautiful color images in Word turned unrecognizable black and white images just because it had no colored ink!"
+
+		// PrimeirasPalavrasCommand.kt
+		PRIMEIRAS_DESCRIPTION = "Oh my god, the baby''s first words"
+
+		// QuadroCommand.kt
+		QUADRO_DESCRIPTION = "Places someone in a frame with Wolverine looking to it"
+
+		// QualidadeCommand.kt
+		QUALIDADE_DESCRIPTION = "Creates a message with Q U A L I T Y & S Y N C"
+
+		// TODO: RandomSAMCommand.kt & RandomMemeguy1997.kt
+
+		// RazoesCommand.kt
+		RAZOES_DESCRIPTION = "What''s your reason to live?"
+
+		// ReceitasCommand.kt
+		RECEITAS_DESCRIPTION = "Search delicious receipes from Ana Maria Braga™!"
+		RECEITAS_INFO = "An article in category \"{0}\" for you family! Delicious! \uD83D\uDC26"
+		RECEITAS_COULDNT_FIND = "I couldn''t find anything related to \"{0}\" in Ana''s receibe book!"
+
+		// RollCommand.kt
+		ROLL_DESCRIPTION = "Rolls an dice and tells its result, perfect when you want to play Monopoly but you lost the dices."
+		ROLL_INVALID_NUMBER = "Invalid number!"
+		ROLL_RESULT = "Result"
+
+		// SAMCommand.kt
+		SAM_DESCRIPTION = "Adds an South America Memes watermark to an image"
+
+		// ShipCommand.kt
+		SHIP_DESCRIPTION = "Check if a couple would work (or not!)"
+		SHIP_NEW_COUPLE = "Hmmm, do we have a new couple here?"
+
+		SHIP_valor90 = listOf("😍 %ship% The two love each other! 😍",
+				"💗 %ship% A more perfect couple? Impossible! 💗",
+				"☠ %ship% Not even the *grim* reaper separate! 😂",
+				"😋 %ship% Couple more perfect than me! 😋",
+				"😚 %ship% Couple? Pfft, they are already married! 😚")
+
+		SHIP_valor80 = listOf("😏 %ship% But these two have known each other for a long time... 😏",
+				"😊 %ship% Of course they are a beautiful couple! 😊",
+				"😜 %ship% Couple more sticky than Despacito! 😜",
+				"😄 %ship% If the two aren''t dating I would be surprised! 😄")
+
+		SHIP_valor70 = listOf("🙂 %ship% I foresee a cute couple forming! 🙂",
+				"😄 %ship% Just need a little more talk to be a couple! 😜",
+				"😊 %ship% Both were made for each other! 😊",
+				"😄 %ship% Yes! 😄")
+
+		SHIP_valor60 = listOf("🙂 %ship% If %user% stopped being so shy... 😏",
+				"😊 %ship% There''s a bit of compatible interestesTem um pouco de interests there 😊",
+				"🙂 %ship% I approve this couple! 🙂",
+				"😄 %ship% Yes! 😄")
+
+		SHIP_valor50 = listOf("😶 %ship% Friend... but... 😏",
+				"😊 %ship% Maybe... Just need %user% to want it! 😶",
+				"😶 %ship% I want to see this couple working 😶")
+
+		SHIP_valor40 = listOf("😶 %ship% Yeah... maybe, I guess... 🙁",
+				"😶 %ship% Nothing is impossible, but... 🙁",
+				"😶 %ship% If both want it, maybe it will work... But... 😶")
+
+		SHIP_valor30 = listOf("😕 %ship% I don''t think this would be a good couple... 🙁",
+				"😶 %ship% They are just acquainted... 😶")
+
+		SHIP_valor20 = listOf("😐 %ship% If %user% didn''t leave in the friendzone... 😐")
+
+		SHIP_valor10 = listOf("😐 %ship% I really wanted to say that this is possible, but... 😢")
+
+		SHIP_valor0 = listOf("😭 %ship% The possibilies to this couple work out are almost impossible! 😭")
+
+		// SpinnerCommand.kt
+		SPINNER_DESCRIPTION = "Spins a fidget spinner! For how much time it will keep spinning?"
+		SPINNER_SPINNING = "Spinning the fidget spinner..."
+		SPINNER_SPINNED = "Your spinner spinned for **{0}** seconds!"
+
+		// TretaNewsCommand.kt
+		TRETANEWS_DESCRIPTION = "YOOOOOOOOOU ARE WATCHING TRETA NEWS SO LET''S GO DIRECTLY TO THE NEWS"
+
+		// TristeRealidadeCommand.kt
+		TRISTEREALIDADE_DESCRIPTION = "Creates a sad reality in your guild"
+		TRISTEREALIDADE_FILE = "tristerealidade_us.png"
+
+		// TrumpCommand.kt
+		TRUMP_DESCRIPTION = "What presient Trump is showing today?"
+
+		// VaporondaCommand.kt
+		VAPORONDA_DESCRIPTION = "Creates a message with ａｅｓｔｈｅｔｉｃｓ"
+
+		// VaporQualidadeCommand.kt
+		VAPORQUALIDADE_DESCRIPTION = "When you mix Q U A L I T Y and ａｅｓｔｈｅｔｉｃｓ"
+
+		// WikiaCommand.kt
+		WIKIA_DESCRIPTION = "Searches something in a Wikia fandom"
+		WIKIA_COULDNT_FIND = "I couldn''t find anything related to `{0}` in wiki `{1}`!"
+
+		// YouTubeCommand.kt
+		YOUTUBE_DESCRIPTION = "Searches a video in YouTube"
+		YOUTUBE_RESULTS_FOR = "Results for `{0}`"
+		YOUTUBE_COULDNT_FIND = "I couldn''t find anything related to `{0}`!"
+		YOUTUBE_CHANNEL = "Channel"
+
+		// ===[ COMMANDS - MINECRAFT ]===
+		// McAvatarCommand.kt
+		MCAVATAR_DESCRIPTION = "Shows the avatar of a Minecraft account, if the account doesn''t exist it will show the default skin (Steve)"
+		MCAVATAR_AVATAR_DE = "{0}''s avatar"
+
+		// McBodyCommand.kt
+		MCBODY_DESCRIPTION = "Shows the body of a Minecraft account, if the account doesn''t exist it will show the default skin (Steve)"
+		MCBODY_BODY_DE = "{0}''s body"
+
+		// McHeadCommand.kt
+		MCHEAD_DESCRIPTION = "Shows the head of a Minecraft account, if the account doesn''t exist it will show the default skin (Steve)"
+		MCHEAD_HEAD_DE = "{0}''s head"
+
+		// McQueryCommand.kt
+		MCQUERY_DESCRIPTION = "Queries a Minecraft server"
+		MCQUERY_OFFLINE = "Server `{0}:{1}` doesn''t exist or it is offline!"
+		MCQUERY_VERSION = "Version"
+		MCQUERY_PROTOCOL = "Protocol"
+
+		// McSignCommand.kt
+		MCSIGN_DESCRIPTION = "Writes a text in a Minecraft sign!"
+
+		// McStatusCommand.kt
+		MCSTATUS_DESCRIPTION = "Checks if Mojang''s server are online"
+		MCSTATUS_MOJANG_STATUS = "Mojang''s status"
+
+		// McUUIDCommand.kt
+		MCUUID_DESCRIPTION = "Gets the UUID from an user"
+		MCUUID_RESULT = "`{0}`''s UUID: `{1}`"
+		MCUUID_INVALID = "Player not found! Are you sure `{0}` is a valid account?"
+
+		// OfflineUUIDCommand.kt
+		OFFLINEUUID_DESCRIPTION = "Gerts the offline UUID (that is, servers without Mojang authentication) of a player"
+		OFFLINEUUID_RESULT = "**`{0}`''s offline UUID (without Mojang''s authentication):** `{1}`"
 
 		// ===[ COMMANDS - MISC ]===
 		// AjudaCommand.kt
@@ -172,6 +467,21 @@ class USLocale : BaseLocale() {
 		MUSIC_PLAYLIST_ADDED_IGNORED = "Added to the queue {0} songs! (ignored {1} tracks due to its length!)"
 		MUSIC_NOTFOUND = "I couldn''t find anything related to `{0}` on YouTube... Try using the video link instead of searching for it!"
 		MUSIC_ERROR = "Ih Serjão Sujou!\n`{0}`\n(Probably it is a VEVO video and they only let you watch the video in YouTube''s website... \uD83D\uDE22)"
+
+		// ===[ COMMANDS - POKÉMON ]===
+		// PokedexCommand.kt
+		POKEDEX_DESCRIPTION = "Gets information about a Pokémon"
+		POKEDEX_TYPES = "Types"
+		POKEDEX_ADDED_IN_GEN = "Added in Generation"
+		POKEDEX_NUMBER = "Pokédex Index"
+		POKEDEX_ABILITIES = "Abilities"
+		POKEDEX_BASE_EXP = "Base EXP"
+		POKEDEX_EFFORT_POINTS = "Effort Points"
+		POKEDEX_CAPTURE_RATE = "Capture Rate"
+		POKEDEX_BASE_HAPPINESS = "Base happiness"
+		POKEDEX_GROWTH_RATE = "Growth Rate"
+		POKEDEX_TRAINING = "Training"
+		POKEDEX_EVOLUTIONS = "Evolutions"
 
 		// ===[ COMMANDS - UNDERTALE ]===
 		// UndertaleBattleCommand.kt
