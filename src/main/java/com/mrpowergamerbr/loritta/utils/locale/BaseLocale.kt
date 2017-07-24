@@ -30,6 +30,13 @@ open class BaseLocale {
 	var HOW_TO_USE = "Como usar"
 	var EXAMPLE = "Exemplo"
 
+	// ===[ WEBSITE ]===
+	var WEBSITE_ABOUT = "Sobre a Loritta"
+	var WEBSITE_INTRO = """<p>Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, "Lori") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!</p>
+<p>Eu tenho várias funções para entreterimento (como comandos engraçados e memes), funções sociais (sistema de perfil com XP e reputação), extremamente customizável (você pode ativar/desativar qualquer comando meu, alterar meu prefixo para o que você quiser e muito mais!) e com um simples foco: <b>Ser o melhor bot brasileiro para o Discord!</b></p>
+</div>
+<p>Um dos motivos que me fizeram me tornar o que eu sou hoje é a falta de bots brasileiros para o Discord, já que muitos servidores brasileiros no Discord usam bots "de baixa qualidade" em português ou usam bots que falam (na verdade escrevem) em inglês... e convenhamos, nenhuma dessas opções parece agradável para os usuários... e por isto que eu prometo mudar isto!</p>"""
+
 	// ===[ COMMANDS - ADMINISTRATION ]===
 	// HackBanCommand.kt
 	var HACKBAN_DESCRIPTION = "Permite banir um usuário pelo ID dele antes de ele entrar no seu servidor!"

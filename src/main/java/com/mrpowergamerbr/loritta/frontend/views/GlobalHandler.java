@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.frontend.views;
 
+import com.google.common.collect.Lists;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
@@ -8,6 +9,7 @@ import com.mrpowergamerbr.loritta.frontend.utils.PaniniUtils;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import lombok.experimental.ExtensionMethod;
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,9 +19,7 @@ import org.jooby.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,6 +80,33 @@ public class GlobalHandler {
                     .arguments(arguments);
 
             Object obj = null;
+
+            String acceptLanguage = context.request().header("Accept-Language").value("en-US");
+
+            // Vamos parsear!
+            List<Locale.LanguageRange> ranges = Lists.reverse(Locale.LanguageRange.parse(acceptLanguage));
+
+            BaseLocale defaultLocale = LorittaLauncher.loritta.getLocaleById("default");
+            BaseLocale lorittaLocale = LorittaLauncher.loritta.getLocaleById("default");
+
+            for (Locale.LanguageRange range : ranges) {
+                String localeId = range.getRange();
+                boolean bypassCheck = false;
+                if (localeId.equals("pt-br") || localeId.equals("pt")) {
+                    localeId = "default";
+                    bypassCheck = true;
+                }
+                if (localeId.equals("en")) {
+                    localeId = "en-us";
+                }
+                BaseLocale parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId);
+                if (bypassCheck || defaultLocale != parsedLocale) {
+                    lorittaLocale = parsedLocale;
+                }
+            }
+
+            context.contextVars().put("locale", lorittaLocale);
+
             if (arguments.length == 0) {
                 obj = HomeView.render(context);
             } else if (arguments.is(0, "doar")) {
