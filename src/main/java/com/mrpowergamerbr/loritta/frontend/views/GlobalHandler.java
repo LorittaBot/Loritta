@@ -90,7 +90,7 @@ public class GlobalHandler {
             BaseLocale lorittaLocale = LorittaLauncher.loritta.getLocaleById("default");
 
             for (Locale.LanguageRange range : ranges) {
-                String localeId = range.getRange();
+                String localeId = range.getRange().toLowerCase();
                 boolean bypassCheck = false;
                 if (localeId.equals("pt-br") || localeId.equals("pt")) {
                     localeId = "default";
@@ -103,6 +103,10 @@ public class GlobalHandler {
                 if (bypassCheck || defaultLocale != parsedLocale) {
                     lorittaLocale = parsedLocale;
                 }
+            }
+
+            if (context.request().param("locale").isSet()) {
+                lorittaLocale = LorittaLauncher.loritta.getLocaleById(context.request().param("locale").value());
             }
 
             context.contextVars().put("locale", lorittaLocale);

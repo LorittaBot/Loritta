@@ -3,8 +3,11 @@ package com.mrpowergamerbr.loritta
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.set
 import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import com.mongodb.MongoClient
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -19,8 +22,6 @@ import com.mrpowergamerbr.loritta.utils.amino.AminoRepostThread
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.FunkLocale
-import com.mrpowergamerbr.loritta.utils.locale.USLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -60,6 +61,8 @@ class Loritta {
 		val FOLDER = "/home/servers/loritta/assets/" // Pasta usada na Loritta
 		@JvmField
 		val TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
+		@JvmField
+		val LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
 		@JvmStatic
 		var temmieMercadoPago: TemmieMercadoPago? = null // Usado na página de "doar"
 
@@ -234,9 +237,44 @@ class Loritta {
 	 */
 	fun loadLocales() {
 		locales.clear()
-		locales.put("en-us", USLocale())
-		locales.put("pt-funk", FunkLocale())
-		locales.put("default", BaseLocale())
+
+		// Carregar todos os locales
+		val localesFolder = File(Loritta.LOCALES)
+		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+		for (file in localesFolder.listFiles()) {
+			if (file.extension == "json") {
+				// Carregar o BaseLocale baseado no locale atual
+				val localeAsText = file.readText(Charsets.UTF_8)
+				val locale = prettyGson.fromJson(localeAsText, BaseLocale::class.java)
+
+				locales.put(file.nameWithoutExtension, locale)
+				// Yay!
+			}
+		}
+
+		val default = getLocaleById("default")
+
+		// E agora preencher valores nulos e salvar as traduções
+		for ((id, locale) in locales) {
+			if (id != "default") {
+				val jsonObject = JsonParser().parse(Loritta.gson.toJson(locale))
+				for (field in locale::class.java.declaredFields) {
+					field.isAccessible = true
+
+					val ogValue = field.get(default)
+					val changedValue = field.get(default)
+
+					if (changedValue == null) {
+						field.set(locale, ogValue)
+						jsonObject["[Traduzir!]${field.name}"] = ogValue
+					} else {
+						jsonObject[field.name] = changedValue
+					}
+				}
+
+				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject)))
+			}
+		}
 	}
 
 	fun getLocaleById(localeId: String): BaseLocale {

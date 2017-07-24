@@ -31,6 +31,18 @@ class USLocale : BaseLocale() {
 		HOW_TO_USE = "How to use"
 		EXAMPLE = "Example"
 
+		// ===[ WEBSITE ]===
+		WEBSITE_ABOUT = "About Loritta"
+		WEBSITE_PARTNERS = "Partners"
+		WEBSITE_MYSERVER = "My Discord Server"
+		WEBSITE_SERVERFANCLUB = "Servers in Loritta's Fan Club"
+		WEBSITE_STATISTICS = "Statistics"
+		WEBSITE_INTRO = """<p>Howdy, my name is Loritta (or, with my friends call me "Lori") i just a simple brazilian bot for Discord's Servers with various functions you never see before!
+</p>I have various functions to entertaining (with very funny commands and memes), social functions (profile, EXP and reputation systems), extremely customizable (you can switch on/off any command my, Alter my prefix for what you want and more)
+and with only focus: <b>Be the better brazilian bot to the Discord!</b></p>
+</div>
+<p>One of the reasons that made me become what I am today is the lack of Brazilian bots for Discord, since many Brazilian servers in Discord use bots of "low quality" in Portuguese or use bots that speak (actually write) in English ... and let's see, none of these options seem nice to users ... and that's why I promise to change it!</p>"""
+
 		// ===[ COMMANDS - ADMINISTRATION ]===
 		// HackBanCommand.kt
 		HACKBAN_DESCRIPTION = "Bans an usar via ID before he joins your server!"
