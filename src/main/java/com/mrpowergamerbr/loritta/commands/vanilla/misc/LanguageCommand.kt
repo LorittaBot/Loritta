@@ -57,6 +57,7 @@ class LanguageCommand : CommandBase() {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
 			context.sendMessage("\uD83C\uDFA4 **|** ${context.locale.LANGUAGE_USING_LOCALE.f(localeId)}")
+			msg.delete().complete()
 		}
 	}
 }
