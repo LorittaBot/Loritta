@@ -5,6 +5,74 @@ class FunkLocale : BaseLocale() {
 		INVALID_NUMBER = "Ei vacilão, coloca um número válido em vez de ficar de vacilo. \uD83D\uDE22"
 		NSFW_IMAGE = "**Vacilo com as novinhas detectado!**\n\nCoê mermão, pra que usar *isto* no seu papel de parede? Cê loko menor, cê acha mesmo que os grandes MCs vão olhar pra você e falar \"nossa, o \"{0}\" tem style porque ele gasta o tempo dele vendo pessoas se pegando porque ele não consegue falar com uma novinha!\"?\n\nNão parça, eles vão ficar bolado com você, tá ligado? Mude sua vida, pare de fazer isto.\n\n(Se isto foi um falso positivo então... sei lá, abafa o caso \uD83D\uDE1E)"
 
+		// Event Log
+		EVENTLOG_USER_ID = "ID do usuário: {0}"
+		EVENTLOG_AVATAR_CHANGED = "**{0} alterou o style**"
+
+		// ===[ COMMANDS - ADMINISTRATION ]===
+		// HackBanCommand.kt
+		HACKBAN_SUCCESS = "Vacilão `{0}` foi banido com sucesso!"
+		HACKBAN_NO_PERM = "Não tenho permissão para banir este vacilão!"
+
+		// LimparCommand.kt
+		LIMPAR_INVALID_RANGE = "Eu só consigo passar o rodo nas últimas 2 até 100 mensagens, tá ligado?"
+		LIMPAR_SUCCESS = "Rodo foi passado por {0}!"
+
+		// MuteCommand.kt
+		MUTE_CANT_MUTE_ME = "Ei vacilão, não dá para você me silenciar, tá ligado?"
+		MUTE_NO_PERM = "Não tenho permissão para silenciar este vacilão!"
+		MUTE_SUCCESS_ON = "Vacilão `{0}` foi silenciado com sucesso!"
+		MUTE_SUCCESS_OFF = "Vacilão `{0}` magicamente aprendeu a falar de novo!"
+
+		// SoftBanCommand.kt
+		SOFTBAN_SUCCESS = "Vacilão `{0}` foi softbanned com sucesso!"
+		SOFTBAN_NO_PERM = "Não tenho permissão para softbanir este vacilão!"
+
+		// ===[ COMMANDS - DISCORD ]===
+		INVITE_INFO = "Ei sangue bom, tá querendo que eu entre na sua favela no Discord? Demorô então! Só clica [aqui]({0}) para me adicionar na sua favela!\n\nSe você quiser configurar umas paradas (como o meu prefixo, comandos ativados, etc) então dá uma passada no meu barraco clicando [aqui]({1})!\n\nE, é claro, entre na minha favela para dar sugestões, reportar bugs e muito mais! {2}"
+
+		// ===[ COMMANDS - FUN ]===
+		// ShipCommand.kt
+		SHIP_NEW_COUPLE = "Cê loko menor, será que nós temos um novo casal aqui?"
+
+		SHIP_valor90 = listOf("😍 %ship% Os dois se amam! 😍",
+				"💗 %ship% Casal mais perfeito? Impossível! 💗",
+				"☠ %ship% Nem a PM separa! 😂",
+				"😋 %ship% Casal mais perfeito que eu! 😋",
+				"😚 %ship% Casal? Casal que nada! Eles já são casados! 😚")
+
+		SHIP_valor80 = listOf("😏 %ship% Mas esses dois já se conhecem faz muito tempo... 😏",
+				"😊 %ship% Claro que os dois são um lindo casal! 😊",
+				"😜 %ship% Casal mais grudento que Ondas Sonoras do MC Davi™! 😜",
+				"😄 %ship% Se os dois já não namoram eu estaria surpresa! 😄")
+
+		SHIP_valor70 = listOf("🙂 %ship% Prevejo um casal maneiro se formando! 🙂",
+				"😄 %ship% Só precisa de um pouco mais de conversa para rolar! 😜",
+				"😊 %ship% Os dois foram feitos um para o outro! 😊",
+				"😄 %ship% Sim! 😄")
+
+		SHIP_valor60 = listOf("🙂 %ship% Se o/a %user% parasse de ser um pouco vacilão... 😏",
+				"😊 %ship% Tem um pouco de interesses compatíveis aí 😊",
+				"🙂 %ship% Eu aprovo esse casal! 🙂",
+				"😄 %ship% Sim! 😄")
+
+		SHIP_valor50 = listOf("😶 %ship% Parças... Mas talvez né... 😏",
+				"😊 %ship% Talvez... Só precisa o/a %user% querer, tá ligado? 😶",
+				"😶 %ship% Eu queria ver esse casal funcionar 😶")
+
+		SHIP_valor40 = listOf("😶 %ship% É... mas um deles é mercenário... 🙁",
+				"😶 %ship% Nada é impossível, mas... 🙁",
+				"😶 %ship% Se dois quererem, talvez dê certo... Mas... 😶")
+
+		SHIP_valor30 = listOf("😕 %ship% Acho que não seria um belo casal... 🙁",
+				"😶 %ship% Só vivem na mesma comunidade mesmo... 😶")
+
+		SHIP_valor20 = listOf("😐 %ship% Se o(a) %user% não fosse vacilão... 😐")
+
+		SHIP_valor10 = listOf("😐 %ship% Já vi esses dois nas quebradas por aí e só deram vacilo... 😢")
+
+		SHIP_valor0 = listOf("😭 %ship% Os dois são vacilões desde quando nasceram, cê acha mesmo que ia ser um casal? 😭")
+
 		// CommandBase.kt
 		HOW_TO_USE = "Como embrazar"
 
