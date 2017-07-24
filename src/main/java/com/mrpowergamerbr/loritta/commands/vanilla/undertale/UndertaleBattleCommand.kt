@@ -98,7 +98,7 @@ class UndertaleBattleCommand : CommandBase() {
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)); // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "${context.locale.UTBATTLE_INVALID}".msgFormat(validMonsterList.joinToString(", ")))
+                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "${context.locale.UTBATTLE_INVALID}".msgFormat(monster, validMonsterList.joinToString(", ")))
             }
         } else {
             this.explain(context);
