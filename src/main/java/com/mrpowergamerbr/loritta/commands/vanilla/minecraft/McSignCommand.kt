@@ -72,7 +72,7 @@ class McSignCommand : CommandBase() {
 				'2' to Color(0, 170, 0),
 				'3' to Color(0, 170, 170),
 				'4' to Color(170, 0, 0),
-				'5' to Color(170, 0, 0),
+				'5' to Color(170, 0, 170),
 				'6' to Color(255, 170, 0),
 				'7' to Color(170, 170, 170),
 				'8' to Color(85, 85, 85),
