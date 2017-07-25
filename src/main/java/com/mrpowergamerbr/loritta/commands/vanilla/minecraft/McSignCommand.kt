@@ -4,11 +4,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.awt.Color
 import java.awt.Font
+import java.awt.Graphics
 import java.awt.Rectangle
 import java.io.File
 import java.io.FileInputStream
@@ -55,7 +55,7 @@ class McSignCommand : CommandBase() {
 			var currentY = 2;
 
 			for (i in 0..lines.size - 1) {
-				ImageUtils.drawCenteredString(graphics, lines[i], Rectangle(0, currentY, 192, 23), minecraftia);
+				drawCenteredStringColored(graphics, lines[i], Rectangle(0, currentY, 192, 23), minecraftia);
 				currentY += 23;
 			}
 
@@ -63,5 +63,54 @@ class McSignCommand : CommandBase() {
 		} else {
 			context.explain()
 		}
+	}
+
+	fun drawCenteredStringColored(graphics: Graphics, text: String, rect: Rectangle, font: Font) {
+		val colors = mapOf(
+				'0' to Color(0, 0, 0),
+				'1' to Color(0, 0, 170),
+				'2' to Color(0, 170, 0),
+				'3' to Color(0, 170, 170),
+				'4' to Color(170, 0, 0),
+				'5' to Color(170, 0, 0),
+				'6' to Color(255, 170, 0),
+				'7' to Color(170, 170, 170),
+				'8' to Color(85, 85, 85),
+				'9' to Color(85, 85, 255),
+				'a' to Color(85, 255, 85),
+				'b' to Color(85, 255, 255),
+				'c' to Color(255, 85, 85),
+				'd' to Color(255, 85, 255),
+				'e' to Color(255, 255, 85),
+				'f' to Color(255, 255, 255)
+		)
+		var colored = text.replace("&", "§")
+		var stripped = colored.replace(Regex("(?i)§[0-9A-FK-OR]"), "")
+		// Get the FontMetrics
+		val metrics = graphics.getFontMetrics(font)
+		// Determine the X coordinate for the text
+		val x = rect.x + (rect.width - metrics.stringWidth(stripped)) / 2
+		// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
+		val y = rect.y + (rect.height - metrics.height) / 2 + metrics.ascent
+
+		var currentX = x;
+		var nextIsColor = false;
+		// Dar um loop em todos os chars da nossa string
+		for (char in colored) {
+			if (char == '§') { // Controlador de cor!
+				nextIsColor = true
+				continue
+			}
+			if (nextIsColor) {
+				nextIsColor = false
+				if (colors.containsKey(char)) {
+					graphics.color = colors[char]
+				}
+				continue
+			}
+			graphics.drawString(char.toString(), currentX, y)
+			currentX += metrics.charWidth(char)
+		}
+		graphics.color = Color(0, 0, 0)
 	}
 }
