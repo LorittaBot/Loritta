@@ -105,6 +105,10 @@ class McSignCommand : CommandBase() {
 				nextIsColor = false
 				if (colors.containsKey(char)) {
 					graphics.color = colors[char]
+					graphics.font = font
+				}
+				if (char == 'l') {
+					graphics.font = graphics.font.deriveFont(Font.BOLD)
 				}
 				continue
 			}
