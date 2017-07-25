@@ -32,12 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.mrpowergamerbr.loritta.utils.TextUtilsKt.f;
+
 public class LorittaUtils {
 	public static final String ERROR = "<:erro:326509900115083266>";
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + "Eu não tenho permissão para enviar arquivos neste canal! \uD83D\uDE22");
+			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.IMAGE_UPLOAD_NO_PERM) + " \uD83D\uDE22");
 			return false;
 		}
 		return true;
@@ -45,13 +47,14 @@ public class LorittaUtils {
 
 	public static boolean handleIfBanned(CommandContext context, LorittaProfile profile) {
 		if (profile.isBanned()) {
-			context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "Você está **banido**\n\n**Motivo:** " + profile.getBanReason() + "\n\nSe você acha que o ban foi injusto (duvido que foi injusto) ou se você se arrependeu, envie uma mensagem privada para `MrPowerGamerBR#4185` pedindo para ser desbanido!\n\nDesculpe pela inconveniência... \uD83D\uDE1E");
+			context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + f(context.locale.USER_IS_LORITTABANNED, profile.getBanReason()));
 			return true;
 		}
 		return false;
 	}
 
 	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
+		// TODO: Localization
 		if (serverConf.warnOnMissingPermission()) {
 			for (Member member : guild.getMembers()) {
 				if (member.isOwner()) {
@@ -85,7 +88,7 @@ public class LorittaUtils {
 	 */
 	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + "Eu não encontrei nenhuma imagem válida para eu usar! (Eu tento pegar imagens em links, upload de imagens, avatares de usuários mencionados, emojis... mas eu encontrei nada nessa sua mensagem!)");
+			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.NO_VALID_IMAGE));
 			return false;
 		}
 		return true;

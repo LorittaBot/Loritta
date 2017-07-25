@@ -13,6 +13,13 @@ open class BaseLocale {
 	lateinit var MINUTES_AND_SECONDS: String
 	lateinit var NSFW_IMAGE: String
 	lateinit var MENTION_RESPONSE: String
+	lateinit var IMAGE_UPLOAD_NO_PERM: String
+	lateinit var USER_IS_LORITTABANNED: String
+	lateinit var NO_TALK_PERMISSION: String
+	lateinit var NO_VALID_IMAGE: String
+	lateinit var NO_PERMISSION: String
+	lateinit var CANT_USE_IN_PRIVATE: String
+	lateinit var DJ_LORITTA_DISABLED: String
 
 	// Event Log
 	lateinit var EVENTLOG_USER_ID: String
@@ -44,6 +51,14 @@ open class BaseLocale {
 	lateinit var WEBSITE_SERVERFANCLUB: String
 	lateinit var WEBSITE_STATISTICS: String
 	lateinit var WEBSITE_INTRO: String
+	lateinit var WEBSITE_DEFAULT_TITLE: String
+	lateinit var WEBSITE_SERVERS: String
+	lateinit var WEBSITE_USING_LORITTA: String
+	lateinit var WEBSITE_DIFFERENT_USERS: String
+	lateinit var WEBSITE_IN_SERVERS_USING_LORITTA: String
+	lateinit var WEBSITE_WITHOUT_RESTARTING: String
+
+	lateinit var ADMINP_CHOOSE_A_SERVER: String
 
 	// ===[ COMMANDS - ADMINISTRATION ]===
 	// HackBanCommand.kt
