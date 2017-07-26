@@ -110,6 +110,9 @@ class McSignCommand : CommandBase() {
 				if (char == 'l') {
 					graphics.font = graphics.font.deriveFont(Font.BOLD)
 				}
+				if (char == 'o') {
+					graphics.font = graphics.font.deriveFont(Font.ITALIC)
+				}
 				continue
 			}
 			graphics.drawString(char.toString(), currentX, y)

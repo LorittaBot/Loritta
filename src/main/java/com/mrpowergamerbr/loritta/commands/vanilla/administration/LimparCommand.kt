@@ -59,6 +59,11 @@ class LimparCommand : CommandBase() {
 				}
 			}
 
+			if (toDelete.size !in 2..100) {
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.LIMPAR_INVALID_RANGE.msgFormat()}")
+				return
+			}
+
 			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
 
 			context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
