@@ -62,31 +62,31 @@ class GangueCommand : CommandBase() {
 		val template = ImageIO.read(File(Loritta.FOLDER + "cocielo/cocielo.png")); // Template
 		val overlay = ImageIO.read(File(Loritta.FOLDER + "cocielo/overlay.png")); // Overlay
 
-		val scaled = contextImage.getScaledInstance(236, 236, BufferedImage.SCALE_SMOOTH)
+		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
-				.makeRoundedCorners(80)
-		val scaled2 = contextImage2.getScaledInstance(191, 230, BufferedImage.SCALE_SMOOTH)
+				.makeRoundedCorners(20)
+		val scaled2 = contextImage2.getScaledInstance(47, 57, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
-				.makeRoundedCorners(80)
-		val scaled3 = contextImage3.getScaledInstance(202, 202, BufferedImage.SCALE_SMOOTH)
+				.makeRoundedCorners(20)
+		val scaled3 = contextImage3.getScaledInstance(50, 50, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
-				.makeRoundedCorners(80)
-		val scaled4 = contextImage4.getScaledInstance(213, 233, BufferedImage.SCALE_SMOOTH)
+				.makeRoundedCorners(20)
+		val scaled4 = contextImage4.getScaledInstance(53, 58, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
-				.makeRoundedCorners(80)
-		val scaled5 = contextImage5.getScaledInstance(174, 174, BufferedImage.SCALE_SMOOTH)
+				.makeRoundedCorners(20)
+		val scaled5 = contextImage5.getScaledInstance(43, 43, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
-				.makeRoundedCorners(80)
+				.makeRoundedCorners(20)
 
 		// Porque nós precisamos rotacionar
 		val rotated = javaxt.io.Image(scaled5)
 		rotated.rotate(335.0);
 
-		template.graphics.drawImage(scaled, 867, 322, null);
-		template.graphics.drawImage(scaled2, 571, 349, null);
-		template.graphics.drawImage(scaled3, 1381, 320, null);
-		template.graphics.drawImage(scaled4, 112, 565, null);
-		template.graphics.drawImage(rotated.bufferedImage, 1160, -20, null);
+		template.graphics.drawImage(scaled, 216, 80, null);
+		template.graphics.drawImage(scaled2, 142, 87, null);
+		template.graphics.drawImage(scaled3, 345, 80, null);
+		template.graphics.drawImage(scaled4, 28, 141, null);
+		template.graphics.drawImage(rotated.bufferedImage, 290, -5, null);
 		template.graphics.drawImage(overlay, 0, 0, null);
 		context.sendFile(template, "gangue.png", context.getAsMention(true));
 	}
