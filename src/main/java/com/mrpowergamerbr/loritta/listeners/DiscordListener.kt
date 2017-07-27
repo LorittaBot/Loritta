@@ -47,6 +47,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
+					if (loritta.ignoreIds.contains(event.author.id)) { // Se o usuário está sendo ignorado...
+						if (lorittaProfile.isBanned) { // E ele ainda está banido...
+							return@execute // Então flw galerinha
+						} else {
+							// Se não, vamos remover ele da lista do ignoreIds
+							loritta.ignoreIds.remove(event.author.id)
+						}
+					}
+
 					if (event.message.rawContent.replace("!", "") == "<@297153970613387264>") {
 						event.textChannel.sendMessage(locale.MENTION_RESPONSE.f(event.message.author.asMention, serverConfig.commandPrefix)).complete()
 					}

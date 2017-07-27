@@ -82,6 +82,7 @@ class Loritta {
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
 	var serversFanClub = listOf<ServerFanClub>()
 	var locales = mutableMapOf<String, BaseLocale>()
+	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
