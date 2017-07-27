@@ -104,7 +104,7 @@ open abstract class CommandBase {
 		return false
 	}
 
-	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, profile: LorittaProfile): Boolean {
+	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, profile: LorittaProfile): Boolean {
 		val message = ev.message.content
 		var rawMessage = ev.message.rawContent
 		var run = false
@@ -134,7 +134,6 @@ open abstract class CommandBase {
 			}
 		}
 		if (run) {
-			LorittaUtilsKotlin.trackCommands(ev.message)
 			if (hasCommandFeedback()) {
 				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
@@ -143,6 +142,16 @@ open abstract class CommandBase {
 					ev.channel.sendTyping().complete()
 				}
 			}
+			// Cooldown
+			val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
+
+			if (5000 > diff) {
+				ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.member.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
+				return true
+			}
+
+			LorittaUtilsKotlin.trackCommands(ev.message)
+
 			var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)

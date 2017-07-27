@@ -85,6 +85,7 @@ class Loritta {
 	var serversFanClub = listOf<ServerFanClub>()
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
+	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<Any, Any>().asMap()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB

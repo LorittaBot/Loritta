@@ -115,7 +115,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
-							if (cmd.handle(event, serverConfig, lorittaProfile)) {
+							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
 								val cmdOpti = serverConfig.getCommandOptionsFor(cmd)
 								if (serverConfig.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
 									event.message.delete().complete()
@@ -152,7 +152,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
-					if (cmd.handle(event, serverConfig, profile)) {
+					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), profile)) {
 						return@execute
 					}
 				}

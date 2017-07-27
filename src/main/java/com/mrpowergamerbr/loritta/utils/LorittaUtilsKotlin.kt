@@ -402,14 +402,23 @@ object LorittaUtilsKotlin {
 		textChannel.sendMessage(messageBuilder.build()).queue()
 	}
 
+	val commandQueue = mutableListOf<String>()
+	var lastUpdate = System.currentTimeMillis()
+
 	@JvmStatic
 	fun trackCommands(message: Message) {
 		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336932935838203904")
 
-		val messageBuilder = MessageBuilder()
-		messageBuilder.append("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.strippedContent.stripCodeMarks()}`")
-		textChannel.sendMessage(messageBuilder.build()).queue()
+		commandQueue.add("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.strippedContent.stripCodeMarks()}`")
+
+		if (lastUpdate > 5000) {
+			lastUpdate = System.currentTimeMillis()
+
+			val toBeSent = commandQueue.joinToString("\n")
+
+			textChannel.sendMessage(toBeSent).queue()
+		}
 	}
 }
 
