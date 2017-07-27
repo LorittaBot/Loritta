@@ -39,8 +39,8 @@ open abstract class CommandBase {
 		return CommandCategory.MISC
 	}
 
-	open fun getUsage(): String {
-		return null!!
+	open fun getUsage(): String? {
+		return null
 	}
 
 	open fun getDetailedUsage(): Map<String, String> {
@@ -65,8 +65,8 @@ open abstract class CommandBase {
 
 	open abstract fun run(context: CommandContext)
 
-	open fun getExtendedDescription(): String {
-		return null!!
+	open fun getExtendedDescription(): String? {
+		return null
 	}
 
 	open fun needsToUploadFiles(): Boolean {
@@ -110,13 +110,13 @@ open abstract class CommandBase {
 		var run = false
 		var byMention = false
 		var label = conf.commandPrefix + getLabel()
-		if (rawMessage.startsWith("<@" + Loritta.config.clientId + ">") || rawMessage.startsWith("<@!" + Loritta.config.clientId + ">")) {
+		if (rawMessage.startsWith("<@" + Loritta.config.clientId + "> ") || rawMessage.startsWith("<@!" + Loritta.config.clientId + "> ")) {
 			byMention = true
-			rawMessage = rawMessage.replaceFirst(("<@" + Loritta.config.clientId + "> ").toRegex(), "")
-			rawMessage = rawMessage.replaceFirst(("<@!" + Loritta.config.clientId + "> ").toRegex(), "")
-			label = label
+			rawMessage = rawMessage.replaceFirst("<@" + Loritta.config.clientId + "> ", "")
+			rawMessage = rawMessage.replaceFirst("<@!" + Loritta.config.clientId + "> ", "")
+			label = getLabel()
 		}
-		run = rawMessage.replace("\n", " ").split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0].equals(label, ignoreCase = true)
+		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
 		if (!run) {
 			for (alias in this.getAliases()) {
 				label = conf.commandPrefix + alias
@@ -143,7 +143,6 @@ open abstract class CommandBase {
 					ev.channel.sendTyping().complete()
 				}
 			}
-			val cmd = label
 			var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
