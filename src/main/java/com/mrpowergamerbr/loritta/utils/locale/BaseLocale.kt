@@ -1,11 +1,20 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import com.mrpowergamerbr.loritta.utils.f
+
 /**
  * Classe de localização base, por padrão em PT-BR
  *
  * Locales diferentes devem extender esta classe
  */
 open class BaseLocale {
+	var strings = mutableMapOf<String, String>()
+
+	fun get(key: String, vararg arguments: Any?): String {
+		return strings.get(key)!!.f(*arguments)
+	}
+
+	// TODO: Depreciar fields, usar HashMap
 	// Generic
 	lateinit var SEARCH: String
 	lateinit var PROCESSING: String

@@ -3,7 +3,9 @@ package com.mrpowergamerbr.loritta
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
+import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -239,21 +241,34 @@ class Loritta {
 	fun loadLocales() {
 		locales.clear()
 
+		// Carregar primeiro o locale padrão
+		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
+		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
+		val defaultLocale = gson.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
+		val defaultJsonLocale = JsonParser().parse(localeAsText).obj // Mas também parsear como JSON
+
+		defaultJsonLocale.entrySet().forEach { (key, value) ->
+			if (!value.isJsonArray) { // TODO: Listas!
+				defaultLocale.strings.put(key, value.string)
+			}
+		}
+
+		// E depois guardar o nosso default locale
+		locales.put("default", defaultLocale)
+
 		// Carregar todos os locales
 		val localesFolder = File(Loritta.LOCALES)
 		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 		for (file in localesFolder.listFiles()) {
-			if (file.extension == "json") {
+			if (file.extension == "json" && file.nameWithoutExtension != "default") {
 				// Carregar o BaseLocale baseado no locale atual
 				val localeAsText = file.readText(Charsets.UTF_8)
 				val locale = prettyGson.fromJson(localeAsText, BaseLocale::class.java)
-
+				locale.strings = HashMap<String, String>(defaultLocale.strings) // Clonar strings do default locale
 				locales.put(file.nameWithoutExtension, locale)
 				// Yay!
 			}
 		}
-
-		val default = getLocaleById("default")
 
 		// E agora preencher valores nulos e salvar as traduções
 		for ((id, locale) in locales) {
@@ -262,7 +277,7 @@ class Loritta {
 				for (field in locale::class.java.declaredFields) {
 					field.isAccessible = true
 
-					val ogValue = field.get(default)
+					val ogValue = field.get(defaultLocale)
 					val changedValue = field.get(locale)
 
 					if (changedValue == null || ogValue.equals(changedValue)) {
@@ -280,7 +295,19 @@ class Loritta {
 							jsonObject[field.name] = tree
 						} else {
 							jsonObject[field.name] = changedValue
+							locale.strings.put(field.name, changedValue as String)
 						}
+					}
+				}
+
+				// E usar a HashMap também!
+				for ((id, ogValue) in defaultLocale.strings) {
+					val changedValue = locale.get(id)
+
+					if (changedValue.equals(ogValue)) {
+						jsonObject["[Translate!]$id"] = ogValue
+					} else {
+						jsonObject[id] = changedValue
 					}
 				}
 
