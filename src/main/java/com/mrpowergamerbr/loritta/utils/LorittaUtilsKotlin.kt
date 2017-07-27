@@ -385,7 +385,7 @@ object LorittaUtilsKotlin {
 			if (t != null && t.cause != null && message != null) {
 				description = message.trim { it <= ' ' }
 			} else if (t != null) {
-				description = ExceptionUtils.getStackTrace(t).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(t).length))
+				description = ExceptionUtils.getStackTrace(t).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(t).length))
 			}
 		}
 		builder.setDescription("```$description```")
