@@ -417,6 +417,8 @@ object LorittaUtilsKotlin {
 
 			val toBeSent = commandQueue.joinToString("\n")
 
+			commandQueue.clear()
+
 			textChannel.sendMessage(toBeSent).queue()
 		}
 	}

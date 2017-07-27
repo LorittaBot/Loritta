@@ -150,6 +150,8 @@ open abstract class CommandBase {
 				return true
 			}
 
+			loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
+
 			LorittaUtilsKotlin.trackCommands(ev.message)
 
 			var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
