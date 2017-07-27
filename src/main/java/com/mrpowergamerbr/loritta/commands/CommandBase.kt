@@ -134,6 +134,14 @@ open abstract class CommandBase {
 			}
 		}
 		if (run) {
+			// Cooldown
+			val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
+
+			if (1250 > diff) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
+				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis()) // E vamos guardar o tempo atual
+				return true
+			}
+
 			if (hasCommandFeedback()) {
 				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
@@ -142,8 +150,6 @@ open abstract class CommandBase {
 					ev.channel.sendTyping().complete()
 				}
 			}
-			// Cooldown
-			val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
 
 			if (5000 > diff) {
 				ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.member.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
