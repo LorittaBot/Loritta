@@ -43,13 +43,13 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Loritt
 
         // Primeiro iremos verificar as roles
         for (role in member.roles) {
-            if (role.name.equals("Comando: " + context.cmd.label)) { // Se o cara tem uma role chamada "Comando: labeldocomando"
+            if (role.name.equals("Comando: " + context.cmd.getLabel())) { // Se o cara tem uma role chamada "Comando: labeldocomando"
                 return true;
             }
         }
 
         // E, finalmente, iremos verificar as permissões do usuário
-        if (member.hasPermission(context.event.textChannel, context.cmd.discordPermissions)) {
+        if (member.hasPermission(context.event.textChannel, context.cmd.getDiscordPermissions())) {
             return true;
         }
 

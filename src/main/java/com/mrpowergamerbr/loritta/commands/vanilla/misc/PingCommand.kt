@@ -20,7 +20,7 @@ class PingCommand : CommandBase() {
         context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + context.event.jda.ping + "ms (Shard ${context.event.jda.shardInfo.shardId})")
     }
 
-    override fun onCommandReactionFeedback(context: CommandContext?, e: GenericMessageReactionEvent?, msg: Message) {
-        msg.editMessage("kk eae men").complete();
+    override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
+        msg.editMessage(context.getAsMention(true) + "kk eae men").complete();
     }
 }

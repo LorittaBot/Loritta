@@ -158,12 +158,12 @@ class AjudaCommand : CommandBase() {
         embed.setColor(color)
 
         var description = "*" + cat.description + "*\n\n";
-        val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.category == cat }.collect(Collectors.toList<CommandBase>())
+        val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.getCategory() == cat }.collect(Collectors.toList<CommandBase>())
 
         if (!categoryCmds.isEmpty()) {
             for (cmd in categoryCmds) {
                 if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-                    var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+                    var toBeAdded = "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
                     if ((description + toBeAdded).length > 2048) {
                         embed.setDescription(description);
                         embeds.add(embed.build());
@@ -171,7 +171,7 @@ class AjudaCommand : CommandBase() {
                         embed.setColor(color)
                         description = "";
                     }
-                    description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.usage != null) " `" + cmd.usage + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+                    description += "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
                 }
             }
             embed.setDescription(description)

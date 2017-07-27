@@ -39,8 +39,8 @@ class UndertaleBattleCommand : CommandBase() {
         return "monstro mensagem"
     }
 
-    override fun run(context: CommandContext?) {
-        if (context!!.args.size >= 2) {
+    override fun run(context: CommandContext) {
+        if (context.args.size >= 2) {
             // Argumento 1: Monstro
             // Argumento 2...: Mensagem
             var monster = context.args.get(0).toLowerCase(); // Monstro
