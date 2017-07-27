@@ -144,13 +144,13 @@ open abstract class CommandBase {
 				}
 			}
 			val cmd = label
-			var args = message.stripCodeMarks().split(" ").drop(0).toTypedArray()
-			var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").drop(0).toTypedArray()
-			var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").drop(0).toTypedArray()
+			var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
+			var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
+			var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			if (byMention) {
-				args = args.drop(0).toTypedArray()
-				rawArgs = rawArgs.drop(0).toTypedArray()
-				strippedArgs = strippedArgs.drop(0).toTypedArray()
+				args = args.remove(0)
+				rawArgs = rawArgs.remove(0)
+				strippedArgs = strippedArgs.remove(0)
 			}
 			val context = CommandContext(conf, ev, this, args, rawArgs, strippedArgs)
 			if (args.size >= 1 && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado

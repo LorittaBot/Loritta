@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateUtils
 import org.jsoup.Jsoup
@@ -50,6 +51,10 @@ fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 
 fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY: Int = 9999) {
 	ImageUtils.drawTextWrap(text, x, y, maxX, maxY, this.fontMetrics, this)
+}
+
+fun Array<String>.remove(index: Int): Array<String> {
+	return ArrayUtils.remove(this, index)
 }
 
 /**
