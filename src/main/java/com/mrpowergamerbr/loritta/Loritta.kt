@@ -275,6 +275,7 @@ class Loritta {
 			if (id != "default") {
 				val jsonObject = JsonParser().parse(Loritta.gson.toJson(locale))
 				for (field in locale::class.java.declaredFields) {
+					if (field.name == "strings") { continue }
 					field.isAccessible = true
 
 					val ogValue = field.get(defaultLocale)
