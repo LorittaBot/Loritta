@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.f
  * Locales diferentes devem extender esta classe
  */
 open class BaseLocale {
+	@Transient
 	var strings = mutableMapOf<String, String>()
 
 	fun get(key: String, vararg arguments: Any?): String {
