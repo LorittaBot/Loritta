@@ -239,7 +239,7 @@ class Loritta {
 	 * Inicia os locales da Loritta
 	 */
 	fun loadLocales() {
-		locales.clear()
+		val locales = mutableMapOf<String, BaseLocale>()
 
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
@@ -315,6 +315,9 @@ class Loritta {
 				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
+
+		this.locales.clear()
+		this.locales = locales
 	}
 
 	fun getLocaleById(localeId: String): BaseLocale {
