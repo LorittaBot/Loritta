@@ -64,7 +64,7 @@ class SpigotMcCommand : CommandBase() {
 
 			if (json.isJsonObject) {
 				// Erro!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.locale.get("SPIGOTMC_COULDNT_FIND", query))
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("SPIGOTMC_COULDNT_FIND", query))
 				return
 			} else {
 				val array = json.array
@@ -84,7 +84,7 @@ class SpigotMcCommand : CommandBase() {
 					}
 					embed.setDescription(format);
 					embed.setTitle("<:spigotmc:340147970362179594> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
-					var mensagem = context.sendMessage(embed.build());
+					var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
 						mensagem.addReaction(indexes[i]).complete();

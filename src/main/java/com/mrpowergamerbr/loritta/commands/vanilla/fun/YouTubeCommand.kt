@@ -68,7 +68,7 @@ class YouTubeCommand : CommandBase() {
 				embed.setColor(Color(217, 66, 52));
 				embed.setDescription(format);
 				embed.setTitle("<:youtube:314349922885566475> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
-				var mensagem = context.sendMessage(embed.build());
+				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
 				for (i in 0..Math.min(5, items.size) - 1) {
 					mensagem.addReaction(indexes[i]).complete();
