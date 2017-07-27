@@ -134,6 +134,7 @@ public class CommandManager {
         commandMap.add(new McHeadCommand());
         commandMap.add(new McBodyCommand());
         commandMap.add(new McSignCommand());
+        commandMap.add(new SpigotMcCommand());
 
         // =======[ UNDERTALE ]========
         commandMap.add(new UndertaleBoxCommand());
