@@ -109,7 +109,7 @@ open abstract class CommandBase {
 		var rawMessage = ev.message.rawContent
 		var run = false
 		var byMention = false
-		var label = conf.commandPrefix() + getLabel()
+		var label = conf.commandPrefix + getLabel()
 		if (rawMessage.startsWith("<@" + Loritta.config.clientId + ">") || rawMessage.startsWith("<@!" + Loritta.config.clientId + ">")) {
 			byMention = true
 			rawMessage = rawMessage.replaceFirst(("<@" + Loritta.config.clientId + "> ").toRegex(), "")
@@ -119,7 +119,7 @@ open abstract class CommandBase {
 		run = rawMessage.replace("\n", " ").split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0].equals(label, ignoreCase = true)
 		if (!run) {
 			for (alias in this.getAliases()) {
-				label = conf.commandPrefix() + alias
+				label = conf.commandPrefix + alias
 				if (rawMessage.startsWith(label)) {
 					run = true
 					break
@@ -187,17 +187,17 @@ open abstract class CommandBase {
 
 	fun explain(context: CommandContext) {
 		val conf = context.config
-		val ev = context.getEvent()
-		if (conf.explainOnCommandRun()) {
+		val ev = context.event
+		if (conf.explainOnCommandRun) {
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + conf.commandPrefix() + this.getLabel() + "`")
+			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + conf.commandPrefix + this.getLabel() + "`")
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
 			var cmdInfo = getDescription(context) + "\n\n"
 
-			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + conf.commandPrefix() + this.getLabel() + usage + "\n"
+			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + conf.commandPrefix + this.getLabel() + usage + "\n"
 
 			if (!this.getDetailedUsage().isEmpty()) {
 				for ((key, value) in this.getDetailedUsage()) {
@@ -210,14 +210,14 @@ open abstract class CommandBase {
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
 			for (example in this.getExample()) { // Adicionar todos os exemplos simples
-				examples.add(conf.commandPrefix() + this.getLabel() + if (example.isEmpty()) "" else " `$example`")
+				examples.add(conf.commandPrefix + this.getLabel() + if (example.isEmpty()) "" else " `$example`")
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-				examples.add(conf.commandPrefix() + this.getLabel() + if (key.isEmpty()) "" else " `$key` - **$value**")
+				examples.add(conf.commandPrefix + this.getLabel() + if (key.isEmpty()) "" else " `$key` - **$value**")
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + conf.commandPrefix() + this.getLabel()
+				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + conf.commandPrefix + this.getLabel()
 			} else {
 				cmdInfo += "**" + context.locale.EXAMPLE + (if (this.getExample().size == 1) "" else "s") + ":**\n"
 				for (example in examples) {
@@ -228,7 +228,7 @@ open abstract class CommandBase {
 			embed.setFooter(ev.author.name + "#" + ev.author.discriminator, ev.author.effectiveAvatarUrl) // Adicionar quem executou o comando
 			embed.setTimestamp(Instant.now())
 
-			if (conf.explainInPrivate()) {
+			if (conf.explainInPrivate) {
 				ev.author.openPrivateChannel().complete().sendMessage(embed.build()).complete()
 			} else {
 				ev.channel.sendMessage(embed.build()).complete()
