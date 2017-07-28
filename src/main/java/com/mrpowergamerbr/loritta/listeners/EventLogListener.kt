@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -86,7 +85,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			// Atualizar nome
 			if (event is UserNameUpdateEvent) {
 				// E agora nós iremos anunciar a troca para todos os servidores
-				for (guild in lorittaShards.getGuilds()) {
+				for (guild in event.jda.guilds) {
 					if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
 						val config = loritta.getServerConfigForGuild(guild.id)
 						val locale = loritta.getLocaleById(config.localeId)
