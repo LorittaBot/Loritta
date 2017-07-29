@@ -201,6 +201,7 @@ font-family: "Comic Sans MS", "Comic Sans", cursive;
 border-radius: 16px;
 box-shadow: 0px 0px 8px 14px rgb(8, 8, 74);
 padding: 2px;
+display: hidden;
 }
 
 #populationInfo {
@@ -213,7 +214,6 @@ background-color: white;
 </head>
 <body>
 <div id="popup">
-<img src="https://cdn.discordapp.com/emojis/268889114022117376.png"></img>
 </div>
 <div id="populationInfo">
 LorittaLand</br>

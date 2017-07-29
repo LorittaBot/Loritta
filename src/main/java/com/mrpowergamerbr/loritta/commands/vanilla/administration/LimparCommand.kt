@@ -7,6 +7,9 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.utils.MiscUtil
+
+
 
 
 class LimparCommand : CommandBase() {
@@ -49,24 +52,38 @@ class LimparCommand : CommandBase() {
 			}
 
 			val toDelete = mutableListOf<String>()
+			var ignoredMessages = 0
 			context.event.textChannel.history.retrievePast(toClear).complete().forEach { msg ->
+				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
 				if (context.message.mentionedUsers.isNotEmpty()) {
 					if (context.message.mentionedUsers.contains(msg.author)) {
-						toDelete.add(msg.id)
+						if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
+							toDelete.add(msg.id)
+						} else {
+							ignoredMessages++
+						}
 					}
 				} else {
-					toDelete.add(msg.id)
+					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
+						toDelete.add(msg.id)
+					} else {
+						ignoredMessages++
+					}
 				}
 			}
 
 			if (toDelete.size !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.LIMPAR_INVALID_RANGE.msgFormat()}")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.get("LIMPAR_COUDLNT_FIND_MESSAGES")}")
 				return
 			}
 
 			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
 
-			context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
+			if (ignoredMessages == 0) {
+				context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
+			} else {
+				context.sendMessage(context.locale.get("LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.asMention, ignoredMessages))
+			}
 		} else {
 			this.explain(context)
 		}
