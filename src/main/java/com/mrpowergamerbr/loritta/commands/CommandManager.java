@@ -70,6 +70,7 @@ public class CommandManager {
         commandMap.add(new AmizadeCommand());
         commandMap.add(new PretoEBrancoCommand());
         commandMap.add(new PerdaoCommand());
+        commandMap.add(new RipVidaCommand());
 
         // =======[ MISC ]======
         commandMap.add(new AjudaCommand());
