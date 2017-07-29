@@ -42,7 +42,7 @@ object CitySimulatorView {
 			val centerY = 127
 			val population = guild.members.size
 			var popCheck = population
-
+			val gridValues = mutableListOf<GridValue>()
 			val image = BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB_PRE)
 
 			val graphics = image.graphics
@@ -54,6 +54,7 @@ object CitySimulatorView {
 
 					// println(distance)
 					// println((distance - fartest))
+					gridValues.add(GridValue(x, y, distance))
 					if (random.nextInt((distance - fartest).toInt(), 1) in -5..0) {
 						grid[x][y] = 1
 					}
@@ -97,7 +98,7 @@ object CitySimulatorView {
 					roadX = 132;
 					roadY = 122;
 				}
-				for (i in 0..population / 16) {
+				for (i in 0..population / 8) {
 					val distance = Math.sqrt(Math.pow((centerX - roadX).toDouble(), 2.toDouble()) + Math.pow((centerY - roadY).toDouble(), 2.toDouble()));
 
 					if (ticks > 2 && random.nextInt((distance - fartest).toInt(), 1) in -15..0) {
@@ -146,24 +147,23 @@ object CitySimulatorView {
 				}
 			}
 
+			gridValues.sortBy { it.distanceToCore }
 			var riskyFactor = 0
-			endpopulation@ for (z in 0..3) {
-				for (x in 0..255) {
-					for (y in 0..255) {
-						val result = isNearRoad(x, y, grid);
-						if (result.canBuild && riskyFactor >= result.riskyFactor) {
-							if (canBuildAt(x, y, 2, grid)) {
-								grid[x][y] = twoByTwoResidential.entries.toList()[random.nextInt(twoByTwoResidential.entries.size)].key
-								setBuildingType(x, y, 2, 100, grid)
-								popCheck -= 1
-							}
-							if (canBuildAt(x, y, 1, grid)) {
-								grid[x][y] = oneByOneResidential.entries.toList()[random.nextInt(oneByOneResidential.entries.size)].key
-								popCheck -= 1
-							}
-							if (0 >= popCheck) {
-								break@endpopulation
-							}
+			endpopulation@ for (z in 0..5) {
+				for ((x, y) in gridValues) {
+					val result = isNearRoad(x, y, grid);
+					if (result.canBuild && riskyFactor >= result.riskyFactor) {
+						if (canBuildAt(x, y, 2, grid)) {
+							grid[x][y] = twoByTwoResidential.entries.toList()[random.nextInt(twoByTwoResidential.entries.size)].key
+							setBuildingType(x, y, 2, 100, grid)
+							popCheck -= 1
+						}
+						if (canBuildAt(x, y, 1, grid)) {
+							grid[x][y] = oneByOneResidential.entries.toList()[random.nextInt(oneByOneResidential.entries.size)].key
+							popCheck -= 1
+						}
+						if (0 >= popCheck) {
+							break@endpopulation
 						}
 					}
 				}
@@ -181,6 +181,7 @@ object CitySimulatorView {
 			  src="https://code.jquery.com/jquery-3.2.1.min.js"
 			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
 			  crossorigin="anonymous"></script>
+<script src="https://loritta.website/assets/loricity/jquery.glow.js"></script>
 <style>
 body {
 background-image: url("https://loritta.website/assets/loricity/background.png");
@@ -237,6 +238,7 @@ ${'$'}(document).on('mousemove', function(e){
             var audio = new Audio('https://loritta.website/assets/loricity/snd_mouseover.ogg');
             audio.play();
         }
+        ${'$'}(details).glow({ radius: "20", color:"green"});
         isHovering = true
         ${'$'}('#popup').html(${'$'}(details).attr('data-sctitle'))
 		${'$'}('#popup').css({
@@ -255,6 +257,7 @@ ${'$'}(document).on('mousemove', function(e){
 </body>
 </html>"""
 			var index = 1
+			var popIndex = 0
 			for (x in 0..255) {
 				for (y in 0..255) {
 					val bld = grid[x][y]
@@ -284,7 +287,7 @@ ${'$'}(document).on('mousemove', function(e){
 						val output = ByteArrayOutputStream()
 						ImageIO.write(lorittaImage.bufferedImage, "png", output)
 						val encodedFile = DatatypeConverter.printBase64Binary(output.toByteArray())
-						strBuilder.append("<img id=\"cityCore\" src=\"data:image/png;base64, $encodedFile\" style=\"z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">")
+						strBuilder.append("<img id=\"cityCore\" src=\"data:image/png;base64, $encodedFile\" style=\"pointer-events: none; z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">")
 						// println(encodedFile)
 					}
 					if (bld == 3) {
@@ -296,11 +299,11 @@ ${'$'}(document).on('mousemove', function(e){
 						graphics.color = Color.RED
 						graphics.fillRect(x, y, 1, 1)
 						val scBld = oneByOneResidential.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-sctitle=\"kk eae men</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-sctitle=\"${guild.members[popIndex++].effectiveName}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
 					}
 					if (twoByTwoResidential.containsKey(bld)) {
 						val scBld = twoByTwoResidential.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-sctitle=\"irineu, você não sabe e nem eu</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (329 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-sctitle=\"${guild.members[popIndex++].effectiveName}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (329 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
 					}
 					currentX += 16
 					currentY -= 8
@@ -373,6 +376,8 @@ ${'$'}(document).on('mousemove', function(e){
 	}
 
 	data class RoadResult(val canBuild: Boolean, val riskyFactor: Double)
+
+	data class GridValue(val x: Int, val y: Int, val distanceToCore: Double)
 
 	data class SimCityBuilding(
 			val tileName: String,
