@@ -11,6 +11,22 @@ import javax.imageio.ImageIO
 import javax.xml.bind.DatatypeConverter
 
 object CitySimulatorView {
+	enum class RoadDirection(val direction: Int) {
+		NORTH(0),
+		SOUTH(1),
+		EAST(2),
+		WEST(3);
+
+		fun takeATurn(): List<RoadDirection> {
+			when(this) {
+				RoadDirection.NORTH -> return listOf(RoadDirection.EAST, RoadDirection.WEST)
+				RoadDirection.SOUTH -> return listOf(RoadDirection.EAST, RoadDirection.WEST)
+				RoadDirection.EAST -> return listOf(RoadDirection.NORTH, RoadDirection.SOUTH)
+				RoadDirection.WEST -> return listOf(RoadDirection.NORTH, RoadDirection.SOUTH)
+			}
+		}
+	}
+
 	@JvmStatic
 	fun render(context: RenderContext): Any {
 		val guildId = context.arguments[1]
@@ -66,11 +82,22 @@ object CitySimulatorView {
 			// Carregar os userdatas dos usuários
 			val serverConfig = loritta.getServerConfigForGuild(guildId)
 			val userDataClone = HashMap<String, LorittaServerUserData>(serverConfig.userData)
+			val toRemove = mutableListOf<String>()
 
 			guild.members.forEach {
 				if (!userDataClone.containsKey(it.user.id)) {
 					userDataClone.put(it.user.id, LorittaServerUserData())
 				}
+			}
+
+			userDataClone.forEach { id, data ->
+				if (guild.getMemberById(id) == null) {
+					toRemove.add(id)
+				}
+			}
+
+			toRemove.forEach {
+				userDataClone.remove(it)
 			}
 
 			val userDataEntries = userDataClone.entries
@@ -135,33 +162,33 @@ object CitySimulatorView {
 				}
 			}
 
-			var direction = 0
+			var direction: RoadDirection = RoadDirection.NORTH
 			var ticks = 0
 
 			for (z in 0..3) {
 				var roadX = 122;
-				var roadY = 122;
+				var roadY = 127;
+				direction = RoadDirection.SOUTH
 				if (z == 1) {
-					roadX = 122;
-					roadY = 132;
+					roadX = 132;
+					roadY = 127;
+					direction = RoadDirection.NORTH
 				}
 				if (z == 2) {
-					roadX = 132;
+					roadX = 127;
 					roadY = 132;
+					direction = RoadDirection.EAST
 				}
 				if (z == 3) {
-					roadX = 132;
+					roadX = 127;
 					roadY = 122;
+					direction = RoadDirection.WEST
 				}
-				for (i in 0..buildingCount / 8) {
+				for (i in 0..buildingCount) {
 					val distance = Math.sqrt(Math.pow((centerX - roadX).toDouble(), 2.toDouble()) + Math.pow((centerY - roadY).toDouble(), 2.toDouble()));
 
-					if (ticks > 2 && random.nextInt((distance - fartest).toInt(), 1) in -15..0) {
-						var newDirection = direction
-						while (newDirection == direction) {
-							newDirection = random.nextInt(0, 4)
-						}
-						direction = newDirection
+					if (ticks > 2 && random.nextInt((distance - fartest).toInt(), 1) in -7..0) {
+						direction = direction.takeATurn()[random.nextInt(0, 2)]
 						ticks = 0
 					}
 
@@ -169,31 +196,23 @@ object CitySimulatorView {
 					var oldY = roadY
 
 					when (direction) {
-						0 -> roadX++
-						1 -> roadX--
-						2 -> roadY++
-						3 -> roadY--
+						RoadDirection.NORTH -> roadX++
+						RoadDirection.SOUTH -> roadX--
+						RoadDirection.EAST -> roadY++
+						RoadDirection.WEST -> roadY--
 					}
 
 					if (roadX !in 0..255 || roadY !in 0..255) {
 						roadX = oldX
 						roadY = oldY
-						var newDirection = direction
-						while (newDirection == direction) {
-							newDirection = random.nextInt(0, 4)
-						}
-						direction = newDirection
+						direction = direction.takeATurn()[random.nextInt(0, 2)]
 						// ticks = 0
 					}
 
 					if (grid[roadX][roadY] == 2 || grid[roadX][roadY] == -1) {
 						roadX = oldX
 						roadY = oldY
-						var newDirection = direction
-						while (newDirection == direction) {
-							newDirection = random.nextInt(0, 4)
-						}
-						direction = newDirection
+						direction = direction.takeATurn()[random.nextInt(0, 2)]
 						ticks = 0
 					}
 
@@ -205,11 +224,15 @@ object CitySimulatorView {
 			gridValues.sortBy { it.distanceToCore }
 			var riskyFactor = 0
 			var comercialBuildingsCheck = comercialBuildings
+			var cityMoney = 0.0
 			endpopulation@ for (z in 0..5) {
 				for ((x, y) in gridValues) {
 					val result = isNearRoad(x, y, grid);
 					if (result.canBuild && riskyFactor >= result.riskyFactor) {
 						var toBuildNow = random.nextInt(0, 2)
+						if (toBuildNow == 1 && idToComercial.entries.toMutableList().size == 0) {
+							toBuildNow = 0
+						}
 						if (toBuildNow == 0) {
 							val userLivingHere = userDataClone.toList()[population - popCheck]
 							ownerGrid[x][y] = guild.getMemberById(userLivingHere.first)?.effectiveName ?: "Saiu do servidor..."
@@ -240,6 +263,7 @@ object CitySimulatorView {
 								var quantity = owner.value
 
 								quantity -= 1
+								cityMoney += 500
 
 								if (quantity == 0) {
 									idToComercial.remove(owner.key)
@@ -305,7 +329,9 @@ background-color: white;
 LorittaLand</br>
 Cidade: ${guild.name}</br>
 População: ${guild.members.size}</br>
-Grana: §40028922
+Grana: §$cityMoney</br>
+popCheck: $popCheck</br>
+comercialBuildingsCheck: $comercialBuildingsCheck</br>
 </div>
 <div id="sc2000">
 {{ code }}
@@ -418,7 +444,7 @@ ${'$'}(document).on('mousemove', function(e){
 					}
 					if (oneByOneComercial.containsKey(bld)) {
 						val scBld = oneByOneComercial.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"Prédio comercial de ${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"Prédio comercial de ${owner}</br></br>+§500 para a cidade</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
 					}
 					currentX += 16
 					currentY -= 8
