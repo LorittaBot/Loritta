@@ -166,91 +166,101 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} // Ignorar reactions de bots
 
 		if (loritta.messageContextCache.containsKey(e.messageId)) {
-			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
-			val t = object : Thread() {
-				override fun run() {
-					val msg = e.channel.getMessageById(e.messageId).complete()
-					if (msg != null) {
-						context.cmd.onCommandReactionFeedback(context, e, msg)
-					}
-				}
-			}
-			t.start()
-		}
-
-		thread {
-			val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
-			val guild = e.guild
-			// Sistema de Starboard
-			if (conf.starboardConfig.isEnabled) {
-				if (e.reactionEmote.name == "⭐") {
-					val msg = e.textChannel.getMessageById(e.messageId).complete()
-					if (msg != null) {
-						val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
-
-						if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
-							var starboardMessageId = conf.starboardEmbeds[e.messageId]
-							var starboardMessage: Message? = null;
-							if (starboardMessageId != null) {
-								starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
-							}
-
-							val embed = EmbedBuilder()
-							val count = e.reaction.users.complete().size;
-							var content = msg.rawContent
-							embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
-							embed.setFooter(msg.creationTime.humanize(), null)
-							embed.setColor(Color(255, 255, 200 - (count * 20)))
-
-							var emoji = "⭐";
-
-							if (count >= 5) {
-								emoji = "\uD83C\uDF1F";
-							}
-							if (count >= 10) {
-								emoji = "\uD83C\uDF20";
-							}
-							if (count >= 15) {
-								emoji = "\uD83D\uDCAB";
-							}
-							if (count >= 20) {
-								emoji = "\uD83C\uDF0C";
-							}
-
-							var hasImage = false;
-							if (msg.attachments.isNotEmpty()) { // Se tem attachments...
-								content += "\n**Arquivos:**\n"
-								for (attach in msg.attachments) {
-									if (attach.isImage && !hasImage) { // Se é uma imagem...
-										embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
-										hasImage = true;
-									}
-									content += attach.url + "\n"
-								}
-							}
-
-							embed.setDescription(content)
-
-							val starCountMessage = MessageBuilder()
-							starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
-							starCountMessage.setEmbed(embed.build())
-
-							if (starboardMessage != null) {
-								if (1 > count) { // Remover embed já que o número de stars é menos que 0
-									starboardMessage.delete().complete()
-									conf.starboardEmbeds.remove(msg.id)
-									LorittaLauncher.loritta.ds.save(conf)
-									return@thread;
-								}
-								starboardMessage.editMessage(starCountMessage.build()).complete()
-							} else {
-								starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
-							}
-							conf.starboardEmbeds.put(msg.id, starboardMessage?.id)
-							LorittaLauncher.loritta.ds.save(conf)
+			try {
+				val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
+				val t = object : Thread() {
+					override fun run() {
+						val msg = e.channel.getMessageById(e.messageId).complete()
+						if (msg != null) {
+							context.cmd.onCommandReactionFeedback(context, e, msg)
 						}
 					}
 				}
+				t.start()
+			} catch (exception: Exception) {
+				exception.printStackTrace()
+				LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
+			}
+		}
+
+		thread {
+			try {
+				val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
+				val guild = e.guild
+				// Sistema de Starboard
+				if (conf.starboardConfig.isEnabled) {
+					if (e.reactionEmote.name == "⭐") {
+						val msg = e.textChannel.getMessageById(e.messageId).complete()
+						if (msg != null) {
+							val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
+
+							if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
+								var starboardMessageId = conf.starboardEmbeds[e.messageId]
+								var starboardMessage: Message? = null;
+								if (starboardMessageId != null) {
+									starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
+								}
+
+								val embed = EmbedBuilder()
+								val count = e.reaction.users.complete().size;
+								var content = msg.rawContent
+								embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
+								embed.setFooter(msg.creationTime.humanize(), null)
+								embed.setColor(Color(255, 255, 200 - (count * 20)))
+
+								var emoji = "⭐";
+
+								if (count >= 5) {
+									emoji = "\uD83C\uDF1F";
+								}
+								if (count >= 10) {
+									emoji = "\uD83C\uDF20";
+								}
+								if (count >= 15) {
+									emoji = "\uD83D\uDCAB";
+								}
+								if (count >= 20) {
+									emoji = "\uD83C\uDF0C";
+								}
+
+								var hasImage = false;
+								if (msg.attachments.isNotEmpty()) { // Se tem attachments...
+									content += "\n**Arquivos:**\n"
+									for (attach in msg.attachments) {
+										if (attach.isImage && !hasImage) { // Se é uma imagem...
+											embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
+											hasImage = true;
+										}
+										content += attach.url + "\n"
+									}
+								}
+
+								embed.setDescription(content)
+
+								val starCountMessage = MessageBuilder()
+								starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
+								starCountMessage.setEmbed(embed.build())
+
+								if (starboardMessage != null) {
+									if (1 > count) { // Remover embed já que o número de stars é menos que 0
+										starboardMessage.delete().complete()
+										conf.starboardEmbeds.remove(msg.id)
+										LorittaLauncher.loritta.ds.save(conf)
+										return@thread;
+									}
+									starboardMessage.editMessage(starCountMessage.build()).complete()
+								} else {
+									starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
+								}
+								conf.starboardEmbeds.put(msg.id, starboardMessage?.id)
+								LorittaLauncher.loritta.ds.save(conf)
+							}
+						}
+					}
+				}
+			} catch (exception: Exception) {
+				exception.printStackTrace()
+				LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 			}
 		}
 	}
@@ -326,14 +336,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()
+				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
 			}
 		}
 	}
 
-	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent?) {
+	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
 		loritta.executor.execute {
 			try {
-				val conf = loritta.getServerConfigForGuild(event!!.guild.id)
+				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
 				if (conf.joinLeaveConfig.isEnabled) {
 					if (conf.joinLeaveConfig.tellOnLeave) {
@@ -353,6 +364,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()
+				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
 		}
 	}

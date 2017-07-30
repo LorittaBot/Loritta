@@ -375,11 +375,15 @@ object LorittaUtilsKotlin {
 	}
 
 	fun sendStackTrace(message: Message, t: Throwable) {
+		sendStackTrace("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`", t)
+	}
+
+	fun sendStackTrace(message: String, t: Throwable) {
 		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336834673441243146")
 
 		val messageBuilder = MessageBuilder()
-		messageBuilder.append("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`")
+		messageBuilder.append(message)
 		val builder = EmbedBuilder()
 		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 		var description = "Irineu, você não sabe e nem eu!"
