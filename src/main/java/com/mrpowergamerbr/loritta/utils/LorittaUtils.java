@@ -74,6 +74,9 @@ public class LorittaUtils {
 		message = message.replace("{user}", e.getMember().getUser().getName());
 		message = message.replace("{nickname}", e.getMember().getEffectiveName());
 		message = message.replace("{guild}", e.getGuild().getName());
+		message = message.replace("{guildsize}", String.valueOf(e.getGuild().getMembers().size()));
+		message = message.replace("{@owner}", e.getGuild().getOwner().getAsMention());
+		message = message.replace("{owner}", e.getGuild().getOwner().getEffectiveName());
 		return message;
 	}
 
@@ -82,6 +85,9 @@ public class LorittaUtils {
 		message = message.replace("{user}", e.getMember().getUser().getName());
 		message = message.replace("{nickname}", e.getMember().getEffectiveName());
 		message = message.replace("{guild}", e.getGuild().getName());
+		message = message.replace("{guildsize}", String.valueOf(e.getGuild().getMembers().size()));
+		message = message.replace("{@owner}", e.getGuild().getOwner().getAsMention());
+		message = message.replace("{owner}", e.getGuild().getOwner().getEffectiveName());
 		return message;
 	}
 
