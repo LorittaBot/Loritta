@@ -33,6 +33,10 @@ class HackBanCommand : CommandBase() {
 		return false
 	}
 
+	override fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.BAN_MEMBERS)
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			try {

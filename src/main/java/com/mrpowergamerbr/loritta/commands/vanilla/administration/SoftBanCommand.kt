@@ -35,6 +35,10 @@ class SoftBanCommand : CommandBase() {
 		return listOf(Permission.BAN_MEMBERS)
 	}
 
+	override fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.BAN_MEMBERS)
+	}
+
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}

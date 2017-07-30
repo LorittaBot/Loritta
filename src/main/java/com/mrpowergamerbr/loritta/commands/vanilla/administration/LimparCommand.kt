@@ -37,6 +37,10 @@ class LimparCommand : CommandBase() {
 		return listOf(Permission.MESSAGE_MANAGE)
 	}
 
+	override fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.MESSAGE_MANAGE)
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			val toClear = context.args[0].toIntOrNull()

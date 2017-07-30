@@ -79,11 +79,20 @@ open abstract class CommandBase {
 
 	/**
 	 * Retorna as permissões necessárias para utilizar este comando
-
+	 *
 	 * @return A lista de permissões necessárias
 	 */
 	open fun getDiscordPermissions(): List<Permission> {
 		return listOf()
+	}
+
+	/**
+	 * Retorna as permissões necessárias para eu poder usar este comando
+	 *
+	 * @return A lista de permissões necessárias
+	 */
+	open fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.MESSAGE_EMBED_LINKS)
 	}
 
 	/**
@@ -159,6 +168,26 @@ open abstract class CommandBase {
 			loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
 
 			LorittaUtilsKotlin.trackCommands(ev.message)
+
+			// Verificar se a Loritta possui todas as permissões necessárias
+			var botPermissions = ArrayList<Permission>(getBotPermissions())
+			botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
+			val missingPermissions = getBotPermissions().filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) }
+
+			if (missingPermissions.isNotEmpty()) {
+				// oh no
+				var required = ""
+				missingPermissions.forEach {
+					val permissionTranslation = locale.get("PERMISSION_${it.name}")
+					if (required.isNotEmpty()) {
+						required += ", " + permissionTranslation
+					} else {
+						required += permissionTranslation
+					}
+				}
+				ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}")
+				return true
+			}
 
 			var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").toTypedArray().remove(0)

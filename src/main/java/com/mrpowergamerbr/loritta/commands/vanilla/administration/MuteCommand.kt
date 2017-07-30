@@ -37,7 +37,11 @@ class MuteCommand : CommandBase() {
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.BAN_MEMBERS)
+		return listOf(Permission.MANAGE_ROLES)
+	}
+
+	override fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.MANAGE_ROLES)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
