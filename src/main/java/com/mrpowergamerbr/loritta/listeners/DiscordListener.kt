@@ -330,8 +330,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 					if (conf.joinLeaveConfig.tellOnPrivate) { // Talvez o sistema de avisar no privado esteja ativado!
-						val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
-						event.user.openPrivateChannel().complete().sendMessage(msg).complete() // Pronto!
+						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou é um bot!
+							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
+							event.user.openPrivateChannel().complete().sendMessage(msg).complete() // Pronto!
+						}
 					}
 				}
 			} catch (e: Exception) {
