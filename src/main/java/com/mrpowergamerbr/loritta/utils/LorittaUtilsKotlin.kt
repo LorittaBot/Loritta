@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.utils.MiscUtil
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateUtils
@@ -74,6 +75,15 @@ val lorittaShards: LorittaShards
  */
 infix fun <T> Loritta.save(obj: T) {
 	loritta.ds.save(obj)
+}
+
+fun String.isValidSnowflake(): Boolean {
+	try {
+		MiscUtil.parseSnowflake(this)
+		return true
+	} catch (e: NumberFormatException) {
+		return false
+	}
 }
 
 object LorittaUtilsKotlin {
