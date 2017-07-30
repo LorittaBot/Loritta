@@ -4,6 +4,10 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.dv8tion.jda.core.EmbedBuilder
+import java.awt.Color
+import java.time.Instant
+import java.util.ArrayList
 
 class LorittaBanCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -23,6 +27,13 @@ class LorittaBanCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
+		if (true) {
+			val embed = EmbedBuilder()
+			embed.setDescription("hello world")
+			context.event.channel.sendMessage(embed.build()).complete()
+			return
+		}
+
 		if (context.args.size >= 2) {
 			var monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";

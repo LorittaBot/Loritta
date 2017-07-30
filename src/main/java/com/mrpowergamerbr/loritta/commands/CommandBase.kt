@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.utils.PermissionUtil
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -172,7 +173,7 @@ open abstract class CommandBase {
 			// Verificar se a Loritta possui todas as permissões necessárias
 			var botPermissions = ArrayList<Permission>(getBotPermissions())
 			botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
-			val missingPermissions = getBotPermissions().filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) }
+			val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
 
 			if (missingPermissions.isNotEmpty()) {
 				// oh no
@@ -185,7 +186,7 @@ open abstract class CommandBase {
 						required += permissionTranslation
 					}
 				}
-				ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}")
+				ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
 				return true
 			}
 
