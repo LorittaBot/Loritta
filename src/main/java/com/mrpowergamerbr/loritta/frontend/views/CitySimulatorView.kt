@@ -118,6 +118,10 @@ object CitySimulatorView {
 
 			val filledUserData = userDataEntries.toMutableList()
 
+			filledUserData.sortedBy {
+				it.value.xp
+			}
+
 			buildingCount += comercialBuildings
 
 			// XP do usuário com mais XP no servidor
@@ -137,7 +141,7 @@ object CitySimulatorView {
 					// println(distance)
 					// println((distance - fartest))
 					gridValues.add(GridValue(x, y, distance))
-					if (random.nextInt((distance - fartest).toInt(), 1) in -15..0) {
+					if (random.nextInt((distance - fartest).toInt(), 1) in -25..0) {
 						grid[x][y] = 1
 					}
 				}
@@ -166,6 +170,7 @@ object CitySimulatorView {
 			var ticks = 0
 
 			for (z in 0..3) {
+				ticks = 0
 				var roadX = 122;
 				var roadY = 127;
 				direction = RoadDirection.SOUTH
@@ -184,7 +189,7 @@ object CitySimulatorView {
 					roadY = 122;
 					direction = RoadDirection.WEST
 				}
-				for (i in 0..buildingCount) {
+				for (i in 0..buildingCount / 4) {
 					val distance = Math.sqrt(Math.pow((centerX - roadX).toDouble(), 2.toDouble()) + Math.pow((centerY - roadY).toDouble(), 2.toDouble()));
 
 					if (ticks > 2 && random.nextInt((distance - fartest).toInt(), 1) in -7..0) {
@@ -222,62 +227,65 @@ object CitySimulatorView {
 			}
 
 			gridValues.sortBy { it.distanceToCore }
-			var riskyFactor = 0
 			var comercialBuildingsCheck = comercialBuildings
 			var cityMoney = 0.0
-			endpopulation@ for (z in 0..5) {
-				for ((x, y) in gridValues) {
-					val result = isNearRoad(x, y, grid);
-					if (result.canBuild && riskyFactor >= result.riskyFactor) {
-						var toBuildNow = random.nextInt(0, 2)
-						if (toBuildNow == 1 && idToComercial.entries.toMutableList().size == 0) {
-							toBuildNow = 0
+			var stackOverflowTest = 0
+			endpopulation@ for ((x, y) in gridValues) {
+				if (stackOverflowTest > (65025 * 2)) {
+					stackOverflowTest = -1
+					break@endpopulation
+				}
+				stackOverflowTest++
+
+				val result = isNearRoad(x, y, grid);
+				if (result.canBuild) {
+					var toBuildNow = random.nextInt(0, 2)
+					if (toBuildNow == 1 && idToComercial.entries.toMutableList().size == 0) {
+						toBuildNow = 0
+					}
+					if (toBuildNow == 0) {
+						val userLivingHere = filledUserData[population - popCheck]
+						ownerGrid[x][y] = guild.getMemberById(userLivingHere.key)?.effectiveName ?: "Saiu do servidor..."
+						if (canBuildAt(x, y, 2, grid)) {
+							grid[x][y] = twoByTwoResidential.entries.toList()[random.nextInt(twoByTwoResidential.entries.size)].key
+							setBuildingType(x, y, 2, 100, grid)
+							popCheck -= 1
 						}
-						if (toBuildNow == 0) {
-							val userLivingHere = userDataClone.toList()[population - popCheck]
-							ownerGrid[x][y] = guild.getMemberById(userLivingHere.first)?.effectiveName ?: "Saiu do servidor..."
-							if (canBuildAt(x, y, 2, grid)) {
-								grid[x][y] = twoByTwoResidential.entries.toList()[random.nextInt(twoByTwoResidential.entries.size)].key
-								setBuildingType(x, y, 2, 100, grid)
-								popCheck -= 1
+						if (canBuildAt(x, y, 1, grid)) {
+							if (userLivingHere.value.xp.toDouble() / maxXp.toDouble() >= 66) {
+								grid[x][y] = oneByOneResidentialRich.entries.toList()[random.nextInt(oneByOneResidentialRich.entries.size)].key
+							} else if (userLivingHere.value.xp.toDouble() / maxXp.toDouble() >= 33) {
+								grid[x][y] = oneByOneResidentialMedium.entries.toList()[random.nextInt(oneByOneResidentialMedium.entries.size)].key
+							} else {
+								grid[x][y] = oneByOneResidentialLow.entries.toList()[random.nextInt(oneByOneResidentialLow.entries.size)].key
 							}
-							if (canBuildAt(x, y, 1, grid)) {
-								if (userLivingHere.second.xp.toDouble() / maxXp.toDouble() >= 66) {
-									grid[x][y] = oneByOneResidentialRich.entries.toList()[random.nextInt(oneByOneResidentialRich.entries.size)].key
-								} else if (userLivingHere.second.xp.toDouble() / maxXp.toDouble() >= 33) {
-									grid[x][y] = oneByOneResidentialMedium.entries.toList()[random.nextInt(oneByOneResidentialMedium.entries.size)].key
-								} else {
-									grid[x][y] = oneByOneResidentialLow.entries.toList()[random.nextInt(oneByOneResidentialLow.entries.size)].key
-								}
-								popCheck -= 1
-							}
-						} else if (toBuildNow == 1) {
-							if (canBuildAt(x, y, 1, grid)) {
-								grid[x][y] = oneByOneComercial.entries.toList()[random.nextInt(oneByOneComercial.entries.size)].key
-								comercialBuildingsCheck -= 1
-
-								val owner = idToComercial.entries.toMutableList()[random.nextInt(idToComercial.entries.size)]
-
-								ownerGrid[x][y] = guild.getMemberById(owner.key)?.effectiveName ?: "Saiu do servidor..."
-
-								var quantity = owner.value
-
-								quantity -= 1
-								cityMoney += 500
-
-								if (quantity == 0) {
-									idToComercial.remove(owner.key)
-								} else {
-									idToComercial.put(owner.key, quantity)
-								}
-							}
+							popCheck -= 1
 						}
-						if (0 >= popCheck && comercialBuildingsCheck >= 0) {
-							break@endpopulation
+					} else if (toBuildNow == 1) {
+						if (canBuildAt(x, y, 1, grid)) {
+							grid[x][y] = oneByOneComercial.entries.toList()[random.nextInt(oneByOneComercial.entries.size)].key
+							comercialBuildingsCheck -= 1
+
+							val owner = idToComercial.entries.toMutableList()[random.nextInt(idToComercial.entries.size)]
+
+							ownerGrid[x][y] = guild.getMemberById(owner.key)?.effectiveName ?: "Saiu do servidor..."
+
+							var quantity = owner.value
+
+							quantity -= 1
+							cityMoney += 500
+
+							if (quantity == 0) {
+								idToComercial.remove(owner.key)
+							} else {
+								idToComercial.put(owner.key, quantity)
+							}
 						}
 					}
+					if (0 >= popCheck && comercialBuildingsCheck >= 0) {
+						break@endpopulation
+					}
 				}
-				riskyFactor++
 			}
 
 			var strBuilder = StringBuilder();
@@ -332,6 +340,7 @@ População: ${guild.members.size}</br>
 Grana: §$cityMoney</br>
 popCheck: $popCheck</br>
 comercialBuildingsCheck: $comercialBuildingsCheck</br>
+stackOverflowTest: ${if (stackOverflowTest == -1) "rip loop daora" else ":)"}</br>
 </div>
 <div id="sc2000">
 {{ code }}
@@ -467,8 +476,8 @@ ${'$'}(document).on('mousemove', function(e){
 		// Sendo x e y o centro aonde *deveria* colocar a casa
 		val roadResults = mutableListOf<RoadResult>()
 
-		for (roadX in x - 2..x + 2) {
-			for (roadY in y - 2..y + 2) {
+		for (roadX in x - 3..x + 3) {
+			for (roadY in y - 3..y + 3) {
 				if (roadX in 0..255 && roadY in 0..255) {
 					val bld = grid[roadX][roadY]
 
@@ -493,7 +502,7 @@ ${'$'}(document).on('mousemove', function(e){
 				if (roadX in 0..255 && roadY in 0..255) {
 					val bld = grid[roadX][roadY]
 
-					if (bld != 0) {
+					if (bld != 0 && bld != 1) {
 						return false
 					}
 				} else {
