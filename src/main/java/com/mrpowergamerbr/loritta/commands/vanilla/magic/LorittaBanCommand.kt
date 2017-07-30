@@ -27,13 +27,6 @@ class LorittaBanCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		if (true) {
-			val embed = EmbedBuilder()
-			embed.setDescription("hello world")
-			context.event.channel.sendMessage(embed.build()).complete()
-			return
-		}
-
 		if (context.args.size >= 2) {
 			var monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";

@@ -1,8 +1,11 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -20,6 +23,9 @@ import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.user.GenericUserEvent
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
@@ -149,6 +155,82 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setDescription("\uD83D\uDEAE ${locale.EVENTLOG_CHANNEL_DELETED.msgFormat(event.channel.name)}")
 
 						textChannel.sendMessage(embed.build()).complete()
+						return@thread
+					}
+				}
+			}
+		}
+	}
+
+	// Mensagens
+	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+		thread {
+			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+
+			if (eventLogConfig.isEnabled) {
+				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.rawContent)
+			}
+		}
+	}
+
+	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+		thread {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+			val locale = loritta.getLocaleById(config.localeId)
+			val eventLogConfig = config.eventLogConfig
+
+			if (eventLogConfig.isEnabled && eventLogConfig.messageEdit) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
+				if (textChannel != null) {
+					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
+					if (storedMessageDocument != null) {
+						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
+						val embed = EmbedBuilder()
+						embed.setTimestamp(Instant.now())
+
+						embed.setColor(Color(35, 209, 96))
+
+						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
+						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, oldMessage.content, event.message.rawContent)}")
+						embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
+
+						textChannel.sendMessage(embed.build()).complete()
+
+						oldMessage.content = event.message.rawContent
+
+						loritta save oldMessage
+						return@thread
+					}
+				}
+			}
+		}
+	}
+
+	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+		thread {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+			val locale = loritta.getLocaleById(config.localeId)
+			val eventLogConfig = config.eventLogConfig
+
+			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+
+				if (textChannel != null) {
+					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
+					if (storedMessageDocument != null) {
+						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
+						val embed = EmbedBuilder()
+						embed.setTimestamp(Instant.now())
+
+						embed.setColor(Color(35, 209, 96))
+
+						embed.setAuthor(oldMessage.authorName, null, null)
+						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_DELETED", oldMessage.content)}")
+						// embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
+
+						textChannel.sendMessage(embed.build()).complete()
+
+						loritta.mongo.getDatabase("loritta").getCollection("storedmessages").deleteOne(Filters.eq("_id", event.messageId))
 						return@thread
 					}
 				}

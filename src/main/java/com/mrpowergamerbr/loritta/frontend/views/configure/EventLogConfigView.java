@@ -43,6 +43,8 @@ public class EventLogConfigView {
 
 		options.add(new PanelOptionWrapper(eventLogConfig, "memberBanned", "Avisar quando alguém for banido"));
 		options.add(new PanelOptionWrapper(eventLogConfig, "memberUnbanned", "Avisar quando alguém for desbanido"));
+		options.add(new PanelOptionWrapper(eventLogConfig, "messageEdit", "Avisar quando uma mensagem for editada"));
+		options.add(new PanelOptionWrapper(eventLogConfig, "messageDeleted", "Avisar quando uma mensagem for deletada"));
 		options.add(new PanelOptionWrapper(eventLogConfig, "channelCreated", "Avisar quando um canal for criado"));
 		options.add(new PanelOptionWrapper(eventLogConfig, "channelNameUpdated", "Avisar quando o nome de um canal de texto for alterado"));
 		options.add(new PanelOptionWrapper(eventLogConfig, "channelTopicUpdated", "Avisar quando o tópico de um canal de texto for alterado"));
