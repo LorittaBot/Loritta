@@ -640,7 +640,7 @@ padding: 5px;
 </style>
 <script>
 function showCityInfo(name, id, size) {
-    document.getElementById("cityInfo").innerHTML = '<iframe frameBorder="0" seamless="0" style="width: 100%; height:50%" src="https://loritta.website/loricity/render/' + id + '"></iframe>';
+    document.getElementById("cityInfo").innerHTML = '<iframe frameBorder="0" seamless="0" style="width: 100%; height:100%" src="https://loritta.website/loricity/render/' + id + '"></iframe>';
 }
 </script>
 <div id="wrapper">
@@ -654,7 +654,7 @@ function showCityInfo(name, id, size) {
 		html += """
 </div>
 <div id="cityInfo">
-<iframe frameBorder="0" seamless="0" style="width: 100%; height:50%" src="https://loritta.website/loricity/render/297732013006389252"></iframe>
+<iframe frameBorder="0" seamless="0" style="width: 100%; height:100%" src="https://loritta.website/loricity/render/297732013006389252"></iframe>
 </div>
 </div>
             </div>
