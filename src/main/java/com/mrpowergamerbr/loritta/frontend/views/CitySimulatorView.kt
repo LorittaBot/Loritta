@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.frontend.views
 
+import com.google.common.html.HtmlEscapers
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.*
+import org.apache.commons.lang3.StringEscapeUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -141,7 +143,7 @@ object CitySimulatorView {
 					// println(distance)
 					// println((distance - fartest))
 					gridValues.add(GridValue(x, y, distance))
-					if (random.nextInt((distance - fartest).toInt(), 1) in -25..0) {
+					if (random.nextInt((distance - fartest).toInt(), 1) in -17..0) {
 						grid[x][y] = 1
 					}
 				}
@@ -289,8 +291,24 @@ object CitySimulatorView {
 			}
 
 			var strBuilder = StringBuilder();
+			var canvasCode = StringBuilder()
+			var popupCode = StringBuilder()
 			var currentX = 0
 			var currentY = 1728
+
+			val serverIcon = LorittaUtils.downloadImage(guild.iconUrl.replace("jpg", "png")).getScaledInstance(288, 320, BufferedImage.TYPE_INT_ARGB_PRE).toBufferedImage()
+
+
+			val lorittaImage = LorittaImage(serverIcon)
+			lorittaImage.setCorners(
+					0F, 248F,
+					144F, 176F,
+					287F, 248F,
+					144F, 319F
+			)
+			val output = ByteArrayOutputStream()
+			ImageIO.write(lorittaImage.bufferedImage, "png", output)
+			val encodedFile = DatatypeConverter.printBase64Binary(output.toByteArray())
 
 			var html = """<html>
 <head>
@@ -389,6 +407,131 @@ ${'$'}(document).on('mousemove', function(e){
 </script>
 </body>
 </html>"""
+
+			if (context.request.param("canvas").isSet()) {
+				html = """<html>
+<head>
+ <meta charset="UTF-8">
+<script
+			  src="https://code.jquery.com/jquery-3.2.1.min.js"
+			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			  crossorigin="anonymous"></script>
+<style>
+body {
+background-image: url("https://loritta.website/assets/loricity/background.png");
+}
+#sc2000 img {
+position: absolute;
+border: 0;
+}
+#popup {
+position: absolute;
+float: left;
+pointer-events: none;
+white-space: nowrap;
+background-color: rgb(8, 8, 74);
+color: #f2f2f2;
+opacity: 0.8;
+font-family: "Comic Sans MS", "Comic Sans", cursive;
+border-radius: 16px;
+box-shadow: 0px 0px 8px 14px rgb(8, 8, 74);
+padding: 2px;
+display: hidden;
+}
+
+#populationInfo {
+position: fixed;
+top: 0;
+left: 0;
+background-color: white;
+}
+</style>
+</head>
+<body>
+<div id="popup">
+</div>
+<div id="populationInfo">
+LorittaLand</br>
+Cidade: ${guild.name}</br>
+População: ${guild.members.size}</br>
+Grana: §$cityMoney</br>
+popCheck: $popCheck</br>
+comercialBuildingsCheck: $comercialBuildingsCheck</br>
+stackOverflowTest: ${if (stackOverflowTest == -1) "rip loop daora" else ":)"}</br>
+</div>
+<canvas id="sc2000" width="9999" height="9999" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+</br>
+<img src="https://loritta.website/assets/loricity/trees.png" id="trees0"></img>
+<img src="https://loritta.website/assets/loricity/road_v2.png" id="road_v2"></img>
+<img src="https://loritta.website/assets/loricity/apts0.png" id="apts0"></img>
+<img src="https://loritta.website/assets/loricity/house.png" id="house"></img>
+<img src="https://loritta.website/assets/loricity/house0.png" id="house0"></img>
+<img src="https://loritta.website/assets/loricity/house1.png" id="house1"></img>
+<img src="https://loritta.website/assets/loricity/lc_house0.png" id="lc_house0"></img>
+<img src="https://loritta.website/assets/loricity/mc_house0.png" id="mc_house0"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial0.png" id="sm_comercial0"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial1.png" id="sm_comercial1"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial2.png" id="sm_comercial2"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial3.png" id="sm_comercial3"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial4.png" id="sm_comercial4"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial5.png" id="sm_comercial5"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial6.png" id="sm_comercial6"></img>
+<img src="https://loritta.website/assets/loricity/sm_comercial7.png" id="sm_comercial7"></img>
+<img src="data:image/png;base64, $encodedFile" id="cityCore"></img>
+<script>
+
+window.onload = function() {
+    var c = document.getElementById("sc2000");
+    var ctx=c.getContext("2d");
+    {{ canvas_code }}
+
+    var rects = [
+		{{ popup_code }}
+        {x: 0, y: 0, w: 0, h: 0, popup: "heya."}    // etc.
+    ], i = 0, r;
+
+document.getElementById("sc2000").onmousemove = function(e) {
+
+  // important: correct mouse position:
+  var rect = this.getBoundingClientRect(),
+      x = e.clientX - rect.left,
+      y = e.clientY - rect.top,
+      i = 0, r;
+
+ var c = document.getElementById("sc2000");
+  var ctx=c.getContext("2d");
+
+  while(r = rects[i++]) {
+    // add a single rect to path:
+    ctx.beginPath();
+    ctx.rect(r.x, r.y, r.w, r.h);
+
+    // check if we hover it, fill red, if not fill it blue
+
+if (ctx.isPointInPath(x, y)) {
+        ${'$'}('#popup').html(r.popup)
+		${'$'}('#popup').css({
+		   left:  e.pageX + 1,
+		   top:   e.pageY + 1,
+			"display": "inherit",
+           "z-index": "999999"
+		});
+        break;
+} else {
+		${'$'}('#popup').css({
+			"display": "none"
+		});
+}
+  }
+
+};
+};
+</script>
+</body>
+</html>"""
+			}
 			var index = 1
 			var popIndex = 0
 			for (x in 0..255) {
@@ -401,7 +544,8 @@ ${'$'}(document).on('mousemove', function(e){
 					if (bld == 1) {
 						graphics.color = Color.GREEN
 						graphics.fillRect(x, y, 1, 1)
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/trees.png\" style=\"pointer-events: none; z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">\n")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/trees.png\" style=\"pointer-events: none; z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">\n")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"trees0\"),$currentX,$currentY);")
 					}
 					if (bld == 2) {
 						graphics.color = Color.MAGENTA
@@ -420,40 +564,53 @@ ${'$'}(document).on('mousemove', function(e){
 						val output = ByteArrayOutputStream()
 						ImageIO.write(lorittaImage.bufferedImage, "png", output)
 						val encodedFile = DatatypeConverter.printBase64Binary(output.toByteArray())
-						strBuilder.append("<img id=\"cityCore\" src=\"data:image/png;base64, $encodedFile\" style=\"pointer-events: none; z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">")
+						strBuilder.append("<img class=\"sctile\" id=\"cityCore\" src=\"data:image/png;base64, $encodedFile\" style=\"pointer-events: none; z-index: -$y; top: ${currentY}px; left: ${currentX}px;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"cityCore\"), $currentX, ${currentY});")
 						// println(encodedFile)
 					}
 					if (bld == 3) {
 						graphics.color = Color.BLUE
 						graphics.fillRect(x, y, 1, 1)
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/road_v2.png\" data-zindex=\"$y\" data-sctitle=\"Uma rua qualquer...</br></br>$x, $y\" style=\"cursor:crosshair; z-index: -$y; top: ${currentY + (320 - 16)}px; left: ${currentX}px;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/road_v2.png\" data-zindex=\"$y\" data-sctitle=\"Uma rua qualquer...</br></br>$x, $y\" style=\"cursor:crosshair; z-index: -$y; top: ${currentY + (320 - 16)}px; left: ${currentX}px;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"road_v2\"), $currentX, ${currentY + (320 - 16)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (320 - 16)}, w: 32, h: 16, popup: \"Uma rua qualquer...</br></br>$x, $y\"},")
 					}
 					val owner = ownerGrid[x][y]
 					if (oneByOneResidentialRich.containsKey(bld)) {
 						graphics.color = Color.RED
 						graphics.fillRect(x, y, 1, 1)
 						val scBld = oneByOneResidentialRich.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"${scBld.tileName}\"), $currentX, ${currentY + (320 - scBld.size)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (320 - scBld.size)}, w: 32, h: ${scBld.size}, popup: \"${HtmlEscapers.htmlEscaper().escape(owner)}</br></br>$x, $y\"},")
 					}
 					if (oneByOneResidentialMedium.containsKey(bld)) {
 						graphics.color = Color.RED
 						graphics.fillRect(x, y, 1, 1)
 						val scBld = oneByOneResidentialMedium.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"${scBld.tileName}\"), $currentX, ${currentY + (320 - scBld.size)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (320 - scBld.size)}, w: 32, h: ${scBld.size}, popup: \"${HtmlEscapers.htmlEscaper().escape(owner)}</br></br>$x, $y\"},")
 					}
 					if (oneByOneResidentialLow.containsKey(bld)) {
 						graphics.color = Color.RED
 						graphics.fillRect(x, y, 1, 1)
 						val scBld = oneByOneResidentialLow.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"${scBld.tileName}\"), $currentX, ${currentY + (320 - scBld.size)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (320 - scBld.size)}, w: 32, h: ${scBld.size}, popup: \"${HtmlEscapers.htmlEscaper().escape(owner)}</br></br>$x, $y\"},")
 					}
 					if (twoByTwoResidential.containsKey(bld)) {
 						val scBld = twoByTwoResidential.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (329 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"${owner}</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (329 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"${scBld.tileName}\"), $currentX, ${currentY + (329 - scBld.size)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (329 - scBld.size)}, w: 64, h: ${scBld.size}, popup: \"${HtmlEscapers.htmlEscaper().escape(owner)}</br></br>$x, $y\"},")
 					}
 					if (oneByOneComercial.containsKey(bld)) {
 						val scBld = oneByOneComercial.get(bld)!!
-						strBuilder.append("<img src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"Prédio comercial de ${owner}</br></br>+§500 para a cidade</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						strBuilder.append("<img class=\"sctile\" src=\"https://loritta.website/assets/loricity/${scBld.tileName}.png\" data-zindex=\"$y\" data-sctitle=\"Prédio comercial de ${owner}</br></br>+§500 para a cidade</br></br>$x, $y\" style=\"z-index: -$y; top: ${currentY + (320 - scBld.size)}px; left: ${currentX}px; cursor:crosshair;\">")
+						canvasCode.append("ctx.drawImage(document.getElementById(\"${scBld.tileName}\"), $currentX, ${currentY + (320 - scBld.size)});")
+						popupCode.append("{x: $currentX, y: ${currentY + (320 - scBld.size)}, w: 32, h: ${scBld.size}, popup: \"Prédio comercial de ${HtmlEscapers.htmlEscaper().escape(owner)}</br></br>+§500 para a cidade</br></br>$x, $y\"},")
 					}
 					currentX += 16
 					currentY -= 8
@@ -465,7 +622,7 @@ ${'$'}(document).on('mousemove', function(e){
 			}
 
 			// ImageIO.write(image, "png", File("D:\\citytest.png"))
-			return html.replace("{{ code }}", strBuilder.toString())
+			return html.replace("{{ code }}", strBuilder.toString()).replace("{{ canvas_code }}", canvasCode.toString()).replace("{{ popup_code }}", popupCode.toString())
 		} else {
 			return "Queria saber da onde você tirou essa guild... \uD83D\uDE45"
 		}
