@@ -306,7 +306,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					rolesId.forEach { // E pegar a role dependendo do ID!
 						val role = event.guild.getRoleById(it)
 
-						if (role != null) {
+						if (role != null && !role.isPublicRole && !role.isManaged && event.member.canInteract(role)) {
 							roles.add(role)
 						}
 					}
