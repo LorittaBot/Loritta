@@ -456,6 +456,11 @@ class Loritta {
 	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
+		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}! (State: ${guild.audioManager.isConnected}")
+
+		if (!guild.selfMember.voiceState.inVoiceChannel() && guild.audioManager.isConnected) {
+			// Se a Loritta está
+		}
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
 		musicManager.scheduler.queue(trackWrapper);
@@ -475,7 +480,15 @@ class Loritta {
 			audioManager.closeAudioConnection(); // Desconecte do canal atual!
 		}
 
+		if (!audioManager.isAttemptingToConnect && audioManager.isConnected && !audioManager.guild.selfMember.voiceState.inVoiceChannel()) {
+			// Corrigir bug que simplesmente eu desconecto de um canal de voz magicamente
+
+			// Quando isto acontecer, nós iremos vazar, vlw flw
+			audioManager.closeAudioConnection()
+		}
+
 		val channels = audioManager.guild.voiceChannels.filter{ it.id == id }
+
 		if (channels.isNotEmpty()) {
 			audioManager.openAudioConnection(channels[0])
 		}

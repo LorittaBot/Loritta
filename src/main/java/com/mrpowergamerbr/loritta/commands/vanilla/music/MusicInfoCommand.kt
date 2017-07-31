@@ -28,6 +28,7 @@ class MusicInfoCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
+		context.guild.selfMember.voiceState.channel
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (manager.player.playingTrack == null) {
 			context.sendMessage(context.getAsMention(true) + context.locale.MUSICINFO_NOMUSIC.msgFormat())
