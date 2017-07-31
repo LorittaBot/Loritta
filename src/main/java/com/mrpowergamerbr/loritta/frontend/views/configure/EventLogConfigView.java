@@ -18,7 +18,7 @@ public class EventLogConfigView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
 			throws PebbleException {
 		EventLogConfig eventLogConfig = sc.eventLogConfig;
-		if (context.request().param("memberBanned").isSet()) { // O usuário está salvando as configurações?
+		if (context.request().param("saving").isSet()) { // O usuário está salvando as configurações?
 			try {
 				for (Field f : eventLogConfig.getClass().getDeclaredFields()) {
 					f.setAccessible(true);
