@@ -39,13 +39,13 @@ class NashornTask implements Callable<Void> {
 					while (running) {
 						System.out.println("bytes: " + sunBean.getThreadAllocatedBytes(id));
 						autoKill++;
-						if (sunBean.getThreadAllocatedBytes(id) > 113701120 || autoKill > 250) {
+						if (sunBean.getThreadAllocatedBytes(id) > 227402240 || autoKill > 600) {
 							System.out.println("!!! Matando thread");
 							running = false;
 							currentThread.stop(); // stop now!
 						}
 						try {
-							Thread.sleep(50);
+							Thread.sleep(25);
 						} catch (Exception e) {
 						}
 					}
@@ -57,12 +57,13 @@ class NashornTask implements Callable<Void> {
 			engine.eval(javaScript);
 			invocable.invokeFunction("nashornCommand", context);
 		} catch (Exception e) {
+			e.printStackTrace();
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU");
 			builder.setDescription("```" + (e.getCause() != null ?
 					e.getCause().getMessage().trim() :
 					ExceptionUtils.getStackTrace(e)
-							.substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length()))) + "```");
+							.substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length()))) + "```");
 			builder.setFooter(
 					"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null);
 			builder.setColor(Color.RED);

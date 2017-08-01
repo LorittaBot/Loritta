@@ -125,6 +125,8 @@ public class GlobalHandler {
                 obj = LorittaFanClubServersView.render(context);
             } else if (arguments.is(0, "loricity")) {
                 obj = CitySimulatorView.render(context);
+            } else if (arguments.is(0, "nashdocs")) {
+                obj = NashornDocsView.render(context);
             } else if (arguments.is(0, "auth")) {
                 if (req.param("code").isSet()) { // Se o code está marcado, então é um pedido de autenticação via OAuth2
                     String code = req.param("code").value();

@@ -68,7 +68,11 @@ var reply=function(mensagem){ return contexto.reply(mensagem); };
 var sendMessage=function(mensagem){ return contexto.sendMessage(mensagem); };
 var sendImage=function(imagem, mensagem){ return contexto.sendImage(imagem, mensagem || " "); };
 var getArgument=function(index){ return contexto.getArgument(index); };
-var argument=function(index, mensagem){ return contexto.argument(index, mensagem); };
+var getRawArgument=function(index){ return contexto.getRawArgument(index); };
+var getStrippedArgument=function(index){ return contexto.getStrippedArgument(index); };
+var getArguments=function(){ return contexto.getArguments(); };
+var getRawArguments=function(){ return contexto.getRawArguments(); };
+var getStrippedArguments=function(){ return contexto.getStrippedArguments(); };
 var joinArguments=function(delimitador){ return contexto.joinArguments(delimitador || " "); };
 var createImage=function(x, y){ return contexto.createImage(x, y); };
 var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
@@ -76,10 +80,11 @@ var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
 		try {
-			val executor = Executors.newScheduledThreadPool(2)
+			val executor = Executors.newSingleThreadExecutor()
 			val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {$inlineMethods$javaScript}", ogContext, context))
-			future.get(3, TimeUnit.SECONDS)
+			future.get(15, TimeUnit.SECONDS)
 		} catch (e: Exception) {
+			e.printStackTrace()
 			val builder = EmbedBuilder()
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 			var description = "Irineu, você não sabe e nem eu!"
@@ -89,7 +94,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
 					description =  (e.cause as Throwable).message!!.trim { it <= ' ' }
 				} else if (e != null) {
-					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length))
+					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
 				}
 			}
 			builder.setDescription("```$description```")
@@ -109,4 +114,11 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			return false
 		}
 	}
+
+	@Target(AnnotationTarget.FUNCTION)
+	annotation class NashornDocs(
+			val description: String = "",
+			val arguments: String = "",
+			val example: String = ""
+			)
 }

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 
 import javax.imageio.ImageIO
@@ -19,9 +20,10 @@ class NashornContext(
 ) {
 	var message: NashornMessage = NashornMessage(context.message)
 	private var sentMessages = 0 // Quantas mensagens foram enviadas, usado para não levar rate limit
-	private val lastMessageSent = 0L // Quando foi a última mensagem enviada
+	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
 	var sender: NashornMember = NashornMember(context.handle)
 
+	@NashornCommand.NashornDocs(arguments = "mensagem")
 	fun reply(mensagem: String): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -29,16 +31,17 @@ class NashornContext(
 			if (diff > 2000) {
 				throw LorittaNashornException("Mais de 3 mensagens em menos de 2 segundos!")
 			} else {
-				diff = 0L
+				lastMessageSent = 0L
 				sentMessages = 0
 			}
 		}
 
 		sentMessages++
-		diff = System.currentTimeMillis()
+		lastMessageSent = System.currentTimeMillis()
 		return NashornMessage(context.sendMessage(context.getAsMention(true) + mensagem))
 	}
 
+	@NashornCommand.NashornDocs(arguments = "mensagem")
 	fun sendMessage(mensagem: String): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -46,17 +49,18 @@ class NashornContext(
 			if (diff > 2000) {
 				throw LorittaNashornException("Mais de 3 mensagens em menos de 2 segundos!")
 			} else {
-				diff = 0L
+				lastMessageSent = 0L
 				sentMessages = 0
 			}
 		}
 
 		sentMessages++
-		diff = System.currentTimeMillis()
+		lastMessageSent = System.currentTimeMillis()
 		return NashornMessage(context.sendMessage(mensagem))
 	}
 
 	@Throws(NoSuchFieldException::class, IllegalAccessException::class, IOException::class)
+	@NashornCommand.NashornDocs(arguments = "imagem, mensagem")
 	@JvmOverloads fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -64,13 +68,13 @@ class NashornContext(
 			if (diff > 2000) {
 				throw LorittaNashornException("Mais de 3 mensagens em menos de 2 segundos!")
 			} else {
-				diff = 0L
+				lastMessageSent = 0L
 				sentMessages = 0
 			}
 		}
 
 		sentMessages++
-		diff = System.currentTimeMillis()
+		lastMessageSent = System.currentTimeMillis()
 
 		// Reflection, já que nós não podemos acessar o BufferedImage
 
@@ -85,22 +89,68 @@ class NashornContext(
 		return NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
 	}
 
-	fun joinArguments(idx: Int): String {
-		return context.args[idx]
-	}
-
+	@NashornCommand.NashornDocs(arguments = "delimitador")
 	@JvmOverloads fun joinArguments(delimitador: String = " "): String {
 		return context.args.joinToString(delimitador).trim { it <= ' ' }
 	}
 
-	fun getArgument(idx: Int, mensagem: String): Boolean {
-		return mensagem == context.args[idx]
+	@NashornCommand.NashornDocs(arguments = "index, mensagem")
+	fun isArgument(idx: Int, mensagem: String): Boolean {
+		try {
+			return mensagem == context.args[idx]
+		} catch (e: IndexOutOfBoundsException) {
+			return false
+		}
 	}
 
+	@NashornCommand.NashornDocs(arguments = "index")
+	fun getArgument(idx: Int): String? {
+		try {
+			return context.args[idx]
+		} catch (e: IndexOutOfBoundsException) {
+			return null
+		}
+	}
+
+	@NashornCommand.NashornDocs(arguments = "index")
+	fun getRawArgument(idx: Int): String? {
+		try {
+			return context.rawArgs[idx]
+		} catch (e: IndexOutOfBoundsException) {
+			return null
+		}
+	}
+
+	@NashornCommand.NashornDocs(arguments = "index")
+	fun getStrippedArgument(idx: Int): String? {
+		try {
+			return context.strippedArgs[idx]
+		} catch (e: IndexOutOfBoundsException) {
+			return null
+		}
+	}
+
+	@NashornCommand.NashornDocs()
+	fun getArguments(): Array<out String> {
+		return context.args
+	}
+
+	@NashornCommand.NashornDocs()
+	fun getRawArguments(): Array<out String> {
+		return context.rawArgs
+	}
+
+	@NashornCommand.NashornDocs()
+	fun getStrippedArguments(): Array<out String> {
+		return context.strippedArgs
+	}
+
+	@NashornCommand.NashornDocs(arguments = "x, y")
 	fun createImage(x: Int, y: Int): NashornImage {
 		return NashornImage(x, y)
 	}
 
+	@NashornCommand.NashornDocs(arguments = "index")
 	fun getImageFromContext(argumento: Int): NashornImage? {
 		val bufferedImage = LorittaUtils.getImageFromContext(context, argumento)
 
@@ -111,6 +161,7 @@ class NashornContext(
 		}
 	}
 
+	@NashornCommand.NashornDocs()
 	fun getGuild(): NashornGuild {
 		return NashornGuild(context, context.message.guild)
 	}
