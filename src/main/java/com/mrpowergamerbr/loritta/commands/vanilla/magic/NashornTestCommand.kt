@@ -27,6 +27,6 @@ class NashornTestCommand : CommandBase() {
 
 		val nashornCmd = NashornCommand("teste", javaScript)
 
-		nashornCmd.handle(context.event, context.config, context.locale, context.lorittaUser.profile)
+		nashornCmd.run(context)
 	}
 }
