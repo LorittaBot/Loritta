@@ -434,17 +434,9 @@ class Loritta {
 			}
 
 			override fun noMatches() {
-				if (musicConfig.urls.contains(trackUrl)) {
-					musicConfig.urls.remove(trackUrl);
-					ds.save(config);
-				}
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				if (musicConfig.urls.contains(trackUrl)) {
-					musicConfig.urls.remove(trackUrl);
-					ds.save(config);
-				}
 			}
 		})
 	}
