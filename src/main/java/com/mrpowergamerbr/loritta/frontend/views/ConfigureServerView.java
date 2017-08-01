@@ -53,128 +53,132 @@ public class ConfigureServerView {
                 context.contextVars().put("serverConfig", sc);
                 Map<CommandBase, CommandOptions> cmdOptions = new HashMap<>();
 
-                for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-                    CommandOptions cmdOpti = sc.getCommandOptionsFor(cmdBase);
-                    cmdOptions.put(cmdBase, cmdOpti);
-                }
+                if (context.arguments.length > 3) {
+                    String argument = context.arguments[3];
 
-                System.out.println("Website: " + cmdOptions.size());
+                    for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+                        CommandOptions cmdOpti = sc.getCommandOptionsFor(cmdBase);
+                        cmdOptions.put(cmdBase, cmdOpti);
+                    }
 
-                context.contextVars().put("cmdOptions", cmdOptions);
+                    System.out.println("Website: " + cmdOptions.size());
 
-                if (context.request().path().endsWith("commands")) {
-                    if (context.request().param("editingCommandOptions").isSet()) {
-                        String val = context.request().param("editingCommandOptions").value();
-                        for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-                            if (cmdBase.getClass().getSimpleName().equals(val)) {
-                                CommandOptions cmdOpti = sc.getCommandOptionsFor(cmdBase);
+                    context.contextVars().put("cmdOptions", cmdOptions);
 
-                                for (Field f : cmdOpti.getClass().getFields()) {
-                                    try {
-                                        if (context.request().param(f.getName()).isSet()) {
-                                            f.setBoolean(cmdOpti, true);
-                                        } else {
-                                            f.setBoolean(cmdOpti, false);
+                    if (context.request().path().endsWith("commands")) {
+                        if (context.request().param("editingCommandOptions").isSet()) {
+                            String val = context.request().param("editingCommandOptions").value();
+                            for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+                                if (cmdBase.getClass().getSimpleName().equals(val)) {
+                                    CommandOptions cmdOpti = sc.getCommandOptionsFor(cmdBase);
+
+                                    for (Field f : cmdOpti.getClass().getFields()) {
+                                        try {
+                                            if (context.request().param(f.getName()).isSet()) {
+                                                f.setBoolean(cmdOpti, true);
+                                            } else {
+                                                f.setBoolean(cmdOpti, false);
+                                            }
+                                        } catch (IllegalArgumentException | IllegalAccessException e) {
+                                            e.printStackTrace();
                                         }
-                                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                                        e.printStackTrace();
                                     }
+                                    sc.commandOptions().put(cmdBase.getClass().getSimpleName(), cmdOpti);
+                                    break;
                                 }
-                                sc.commandOptions().put(cmdBase.getClass().getSimpleName(), cmdOpti);
-                                break;
                             }
                         }
-                    }
-                    if (context.request().param("editingCmds").isSet()) {
-                        ArrayList<String> enabledModules = new ArrayList<String>();
-                        for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-                            if (!context.request().param(cmdBase.getClass().getSimpleName()).isSet()) {
+                        if (context.request().param("editingCmds").isSet()) {
+                            ArrayList<String> enabledModules = new ArrayList<String>();
+                            for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
+                                if (!context.request().param(cmdBase.getClass().getSimpleName()).isSet()) {
+                                    enabledModules.add(cmdBase.getClass().getSimpleName());
+                                }
+                            }
+                            sc.disabledCommands(enabledModules);
+                        }
+                        if (context.request().param("editingTristeRealidade").isSet()) {
+                            TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
+                            cmdOpti.setMentionEveryone(context.request().param("mentionEveryone").isSet());
+                            cmdOpti.setHideDiscordTags(context.request().param("hideDiscordTags").isSet());
+                            sc.commandOptions().put("TristeRealidadeCommand", cmdOpti);
+                        }
+                        if (context.request().param("activateAllCommands").isSet()) {
+                            ArrayList<String> enabledModules = new ArrayList<String>();
+                            sc.disabledCommands(enabledModules);
+                        }
+                        if (context.request().param("deactivateAllCommands").isSet()) {
+                            ArrayList<String> enabledModules = new ArrayList<String>();
+                            for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
                                 enabledModules.add(cmdBase.getClass().getSimpleName());
                             }
+                            sc.disabledCommands(enabledModules);
                         }
-                        sc.disabledCommands(enabledModules);
-                    }
-                    if (context.request().param("editingTristeRealidade").isSet()) {
-                        TristeRealidadeCommandOptions cmdOpti = new TristeRealidadeCommand.TristeRealidadeCommandOptions();
-                        cmdOpti.setMentionEveryone(context.request().param("mentionEveryone").isSet());
-                        cmdOpti.setHideDiscordTags(context.request().param("hideDiscordTags").isSet());
-                        sc.commandOptions().put("TristeRealidadeCommand", cmdOpti);
-                    }
-                    if (context.request().param("activateAllCommands").isSet()) {
-                        ArrayList<String> enabledModules = new ArrayList<String>();
-                        sc.disabledCommands(enabledModules);
-                    }
-                    if (context.request().param("deactivateAllCommands").isSet()) {
-                        ArrayList<String> enabledModules = new ArrayList<String>();
+                        LorittaLauncher.getInstance().getDs().save(sc);
                         for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-                            enabledModules.add(cmdBase.getClass().getSimpleName());
+                            context.contextVars().put("commandOption" + cmdBase.getClass().getSimpleName(), new CommandOptions());
                         }
-                        sc.disabledCommands(enabledModules);
+                        for (Entry<String, CommandOptions> entry : sc.commandOptions().entrySet()) {
+                            context.contextVars().put("commandOption" + entry.getKey(), entry.getValue());
+                        }
+
+                        context.contextVars().put("whereAmI", "moduleConfig");
+
+                        template = LorittaWebsite.getEngine().getTemplate("module_config.html");
+                        context.contextVars().put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
+                        context.contextVars().put("disabledCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsDisabledIn(sc));
+                    } else if (context.request().path().endsWith("joinconfig")) {
+                        if (context.request().param("canalJoin").isSet()) { // O usuário está salvando as configurações?
+                            JoinLeaveConfig jlCnf = sc.joinLeaveConfig();
+                            jlCnf.setEnabled(context.request().param("enableModule").isSet());
+                            jlCnf.setTellOnJoin(context.request().param("tellOnJoin").isSet());
+                            jlCnf.setTellOnLeave(context.request().param("tellOnLeave").isSet());
+                            jlCnf.setCanalJoinId(context.request().param("canalJoin").value());
+                            jlCnf.setCanalLeaveId(context.request().param("canalLeave").value());
+                            jlCnf.setJoinMessage(context.request().param("joinMessage").value());
+                            jlCnf.setLeaveMessage(context.request().param("leaveMessage").value());
+                            jlCnf.setTellOnPrivate(context.request().param("tellOnPrivate").isSet());
+                            jlCnf.setJoinPrivateMessage(context.request().param("privateMessage").value());
+
+                            sc.joinLeaveConfig(jlCnf);
+                            LorittaLauncher.getInstance().getDs().save(sc);
+                        }
+                        context.contextVars().put("whereAmI", "joinConfig");
+
+                        template = LorittaWebsite.getEngine().getTemplate("join_config.html");
+                    } else if (context.request().path().endsWith("music")) {
+                        if (context.request().param("musicGuildId").isSet()) { // O usuário está salvando as configurações?
+                            MusicConfig mscCnf = sc.musicConfig();
+                            mscCnf.setEnabled(context.request().param("enableModule").isSet());
+                            mscCnf.setMusicGuildId(context.request().param("musicGuildId").value());
+                            mscCnf.setHasMaxSecondRestriction(context.request().param("maxSecEnabled").isSet());
+                            mscCnf.setMaxSeconds(context.request().param("maxSec").intValue());
+                            mscCnf.setAutoPlayWhenEmpty(context.request().param("autoPlayEnabled").isSet());
+                            mscCnf.setUrls(Arrays.asList(context.request().param("musicUrls").value().split(";")));
+                            mscCnf.setAllowPlaylists(context.request().param("allowPlaylists").isSet());
+
+                            sc.musicConfig(mscCnf);
+                            LorittaLauncher.getInstance().getDs().save(sc);
+                        }
+                        context.contextVars().put("playlist", StringUtils.join(sc.musicConfig().getUrls(), ";"));
+                        context.contextVars().put("whereAmI", "musicConfig");
+
+                        template = LorittaWebsite.getEngine().getTemplate("music_config.html");
+                    } else if (argument.equals("nashorn")) {
+                        template = NashornCommandsView.render(context, temmie, sc);
+                    } else if (context.request().path().endsWith("amino")) {
+                        template = AminoConfigView.render(context, temmie, sc);
+                    } else if (context.request().path().endsWith("youtube")) {
+                        template = YouTubeConfigView.render(context, temmie, sc);
+                    } else if (context.request().path().endsWith("starboard")) {
+                        template = StarboardConfigView.render(context, temmie, sc);
+                    } else if (context.request().path().endsWith("rss")) {
+                        template = RssFeedsConfigView.render(context, temmie, sc);
+                    } else if (context.request().path().endsWith("autorole")) {
+                        template = AutoroleConfigView.render(context, temmie, sc);
+                    }  else if (context.request().path().endsWith("eventlog")) {
+                        template = EventLogConfigView.render(context, temmie, sc);
                     }
-                    LorittaLauncher.getInstance().getDs().save(sc);
-                    for (CommandBase cmdBase : LorittaLauncher.getInstance().getCommandManager().getCommandMap()) {
-                        context.contextVars().put("commandOption" + cmdBase.getClass().getSimpleName(), new CommandOptions());
-                    }
-                    for (Entry<String, CommandOptions> entry : sc.commandOptions().entrySet()) {
-                        context.contextVars().put("commandOption" + entry.getKey(), entry.getValue());
-                    }
-
-                    context.contextVars().put("whereAmI", "moduleConfig");
-
-                    template = LorittaWebsite.getEngine().getTemplate("module_config.html");
-                    context.contextVars().put("availableCmds", LorittaLauncher.getInstance().getCommandManager().getCommandMap());
-                    context.contextVars().put("disabledCmds", LorittaLauncher.getInstance().getCommandManager().getCommandsDisabledIn(sc));
-                } else if (context.request().path().endsWith("joinconfig")) {
-                    if (context.request().param("canalJoin").isSet()) { // O usuário está salvando as configurações?
-                        JoinLeaveConfig jlCnf = sc.joinLeaveConfig();
-                        jlCnf.setEnabled(context.request().param("enableModule").isSet());
-                        jlCnf.setTellOnJoin(context.request().param("tellOnJoin").isSet());
-                        jlCnf.setTellOnLeave(context.request().param("tellOnLeave").isSet());
-                        jlCnf.setCanalJoinId(context.request().param("canalJoin").value());
-                        jlCnf.setCanalLeaveId(context.request().param("canalLeave").value());
-                        jlCnf.setJoinMessage(context.request().param("joinMessage").value());
-                        jlCnf.setLeaveMessage(context.request().param("leaveMessage").value());
-                        jlCnf.setTellOnPrivate(context.request().param("tellOnPrivate").isSet());
-                        jlCnf.setJoinPrivateMessage(context.request().param("privateMessage").value());
-
-                        sc.joinLeaveConfig(jlCnf);
-                        LorittaLauncher.getInstance().getDs().save(sc);
-                    }
-                    context.contextVars().put("whereAmI", "joinConfig");
-
-                    template = LorittaWebsite.getEngine().getTemplate("join_config.html");
-                } else if (context.request().path().endsWith("music")) {
-                    if (context.request().param("musicGuildId").isSet()) { // O usuário está salvando as configurações?
-                        MusicConfig mscCnf = sc.musicConfig();
-                        mscCnf.setEnabled(context.request().param("enableModule").isSet());
-                        mscCnf.setMusicGuildId(context.request().param("musicGuildId").value());
-                        mscCnf.setHasMaxSecondRestriction(context.request().param("maxSecEnabled").isSet());
-                        mscCnf.setMaxSeconds(context.request().param("maxSec").intValue());
-                        mscCnf.setAutoPlayWhenEmpty(context.request().param("autoPlayEnabled").isSet());
-                        mscCnf.setUrls(Arrays.asList(context.request().param("musicUrls").value().split(";")));
-                        mscCnf.setAllowPlaylists(context.request().param("allowPlaylists").isSet());
-
-                        sc.musicConfig(mscCnf);
-                        LorittaLauncher.getInstance().getDs().save(sc);
-                    }
-                    context.contextVars().put("playlist", StringUtils.join(sc.musicConfig().getUrls(), ";"));
-                    context.contextVars().put("whereAmI", "musicConfig");
-
-                    template = LorittaWebsite.getEngine().getTemplate("music_config.html");
-                } else if (context.request().path().endsWith("nashorn")) {
-                    template = NashornCommandsView.render(context, temmie, sc);
-                } else if (context.request().path().endsWith("amino")) {
-                    template = AminoConfigView.render(context, temmie, sc);
-                } else if (context.request().path().endsWith("youtube")) {
-                    template = YouTubeConfigView.render(context, temmie, sc);
-                } else if (context.request().path().endsWith("starboard")) {
-                    template = StarboardConfigView.render(context, temmie, sc);
-                } else if (context.request().path().endsWith("rss")) {
-                    template = RssFeedsConfigView.render(context, temmie, sc);
-                } else if (context.request().path().endsWith("autorole")) {
-                    template = AutoroleConfigView.render(context, temmie, sc);
-                }  else if (context.request().path().endsWith("eventlog")) {
-                    template = EventLogConfigView.render(context, temmie, sc);
                 } else {
                     if (context.request().param("commandPrefix").isSet()) {
                         sc.commandPrefix(context.request().param("commandPrefix").value());

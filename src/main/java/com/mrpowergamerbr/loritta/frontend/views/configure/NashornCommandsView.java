@@ -15,6 +15,57 @@ import java.util.ArrayList;
 public class NashornCommandsView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
 			throws PebbleException {
+		context.contextVars().put("whereAmI", "nashornCommands");
+
+		if (context.arguments.length > 4) {
+			String editor = context.arguments[4];
+
+			if (editor.equalsIgnoreCase("editor")) {
+				NashornCommand def = new NashornCommand();
+				def.javaScript = "responder(\"Loritta \uD83D\uDE18\");";
+				context.contextVars().put("editingCommand", def);
+
+				if (context.request.param("commandResponse").isSet()) {
+					// Salvando!
+					NashornCommand toSave = new NashornCommand();
+					ArrayList<NashornCommand> toRemove = new ArrayList<>();
+
+					for (NashornCommand nash : sc.nashornCommands) {
+						if (nash.id.toString().equals(context.request.param("commandId").value())) {
+							toSave = nash;
+							toRemove.add(nash);
+						}
+					}
+
+					sc.nashornCommands.removeAll(toRemove);
+					toSave.javaScript = context.request.param("commandResponse").value();
+					toSave.label = context.request.param("commandName").value();
+					sc.nashornCommands.add(toSave);
+
+					LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
+
+					try {
+						context.response.redirect("https://loritta.website/config/servidor/" + sc.guildId + "/nashorn");
+					} catch (Throwable e) {
+
+					}
+				} else {
+					if (context.arguments.length > 5) {
+						String id = context.arguments[5];
+
+						for (NashornCommand nash : sc.nashornCommands) {
+							if (nash.id.toString().equals(id)) {
+								context.contextVars().put("editingCommand", nash);
+							}
+						}
+					}
+
+					PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("command_editor.html");
+
+					return template;
+				}
+			}
+		}
 		if (context.request().param("deleteCommand").isSet()) {
 			ArrayList<NashornCommand> toRemove = new ArrayList<NashornCommand>();
 
@@ -28,16 +79,6 @@ public class NashornCommandsView {
 
 			LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
 		}
-		if (context.request().param("commandName").isSet()) {
-			// Hora de criar um novo comando!
-			NashornCommand customCommand = new NashornCommand(context.request().param("commandName").value(), context.request().param("commandResponse").value());
-
-			sc.nashornCommands().add(customCommand); // E agora adicione o nosso novo comando customizado no ServerConfig...
-
-			LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
-		}
-
-		context.contextVars().put("whereAmI", "nashornCommands");
 
 		PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("nashorn.html");
 		return template;
