@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.nashorn;
 
+import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public class NashornCommand {
+public class NashornCommand extends CommandBase {
 	public ObjectId id = new ObjectId(); // Object ID único para cada comando
 	public String label; // label do comando
 	public String javaScript; // código em JS do comando
@@ -49,49 +51,12 @@ public class NashornCommand {
 		this.javaScript = javaScript;
 	}
 
-	@Deprecated
-	public boolean handle(MessageReceivedEvent ev, String message, ServerConfig conf) {
-		if (message.startsWith(conf.commandPrefix + label)) {
-			ev.getChannel().sendTyping().complete();
-			String cmd = label;
-			String onlyArgs = message.substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
-					.collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
-			run(context, new NashornContext(context));
-			return true;
-		}
-		return false;
+	@Override
+	public void run(CommandContext context) {
+		nashornRun(context, new NashornContext(context));
 	}
 
-	public boolean handle(MessageReceivedEvent ev, ServerConfig conf, LorittaProfile profile) {
-		String message = ev.getMessage().getContent();
-
-		if (message.startsWith(conf.commandPrefix + label)) {
-			ev.getChannel().sendTyping().complete();
-			String cmd = label;
-			String onlyArgs = TextUtilsKt.stripCodeMarks(message.substring(message.indexOf(cmd) + cmd.length())); // wow, such workaround, very bad
-			String[] args = Arrays.asList(onlyArgs.split(" ")).stream().filter((str) -> !str.isEmpty())
-					.collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsRaw = ev.getMessage().getRawContent().substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-			String[] rawArgs = Arrays.asList(onlyArgsRaw.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			String onlyArgsStripped = TextUtilsKt.stripCodeMarks(ev.getMessage().getStrippedContent()).substring(message.indexOf(cmd) + cmd.length()); // wow, such workaround, very bad
-			String[] strippedArgs = Arrays.asList(onlyArgsStripped.split(" ")).stream().filter((str) -> !str.isEmpty()).collect(Collectors.toList()).toArray(new String[0]);
-			CommandContext context = new CommandContext(conf, ev, null, args, rawArgs, strippedArgs);
-			if (LorittaUtils.handleIfBanned(context, profile)) {
-				return true;
-			}
-			run(context, new NashornContext(context));
-			return true;
-		}
-		return false;
-	}
-
-	public void run(CommandContext ogContext, NashornContext context) {
+	public void nashornRun(CommandContext ogContext, NashornContext context) {
 		NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
 
 		ScriptEngine engine = factory.getScriptEngine(new NashornClassFilter());

@@ -58,6 +58,10 @@ public class ServerConfig {
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {
+        if (cmd instanceof NashornCommand) { // Se é um comando feito em Nashorn...
+            // Vamos retornar uma configuração padrão!
+            return new CommandOptions();
+        }
         if (commandOptions.containsKey(cmd.getClass().getSimpleName())) {
             return commandOptions.get(cmd.getClass().getSimpleName());
         }

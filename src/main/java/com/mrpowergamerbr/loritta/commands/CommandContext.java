@@ -98,13 +98,11 @@ public class CommandContext {
 	public boolean canUseCommand() { return lorittaUser.canUseCommand(this); }
 
 	public String getAsMention(boolean addSpace) {
-		if (cmd != null) {
-			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-			if (cmdOptions.override()) {
-				return (cmdOptions.mentionOnCommandOutput() ?
-						lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
-						"");
-			}
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		if (cmdOptions.override()) {
+			return (cmdOptions.mentionOnCommandOutput() ?
+					lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
+					"");
 		}
 		return lorittaUser.getAsMention(true);
 	}
@@ -119,11 +117,9 @@ public class CommandContext {
 
 	public Message sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		if (cmd != null) {
-			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-				privateReply = cmdOptions.commandOutputInPrivate();
-			}
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(message).complete();
@@ -145,11 +141,9 @@ public class CommandContext {
 
 	public Message sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		if (cmd != null) {
-			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-				privateReply = cmdOptions.commandOutputInPrivate();
-			}
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
@@ -175,17 +169,17 @@ public class CommandContext {
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null);
 
 			for (DiscordEmbed embed : message.getEmbeds()) {
-                builder.setImage(embed.getImage() != null ? embed.getImage().getUrl() : null);
-                if (embed.getTitle() != null) {
-                    builder.setTitle(builder.getDescriptionBuilder().toString() + "\n\n**" + embed.getTitle() + "**");
-                }
-                if (embed.getDescription() != null) {
-                    builder.setDescription(builder.getDescriptionBuilder().toString() + "\n\n" + embed.getDescription());
-                }
-                if (embed.getThumbnail() != null) {
-                    builder.setThumbnail(embed.getThumbnail().getUrl());
-                }
-            }
+				builder.setImage(embed.getImage() != null ? embed.getImage().getUrl() : null);
+				if (embed.getTitle() != null) {
+					builder.setTitle(builder.getDescriptionBuilder().toString() + "\n\n**" + embed.getTitle() + "**");
+				}
+				if (embed.getDescription() != null) {
+					builder.setDescription(builder.getDescriptionBuilder().toString() + "\n\n" + embed.getDescription());
+				}
+				if (embed.getThumbnail() != null) {
+					builder.setThumbnail(embed.getThumbnail().getUrl());
+				}
+			}
 			sendMessage(builder.build());
 		}
 	}
@@ -236,11 +230,9 @@ public class CommandContext {
 
 	public Message sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		if (cmd != null) {
-			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-				privateReply = cmdOptions.commandOutputInPrivate();
-			}
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
@@ -265,11 +257,9 @@ public class CommandContext {
 
 	public Message sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
-		if (cmd != null) {
-			CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-			if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-				privateReply = cmdOptions.commandOutputInPrivate();
-			}
+		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
+			privateReply = cmdOptions.commandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();

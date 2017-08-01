@@ -127,7 +127,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
-						if (cmd.handle(event, serverConfig, lorittaProfile)) {
+						if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
 							if (serverConfig.deleteMessageAfterCommand) {
 								event.message.delete().complete()
 							}
