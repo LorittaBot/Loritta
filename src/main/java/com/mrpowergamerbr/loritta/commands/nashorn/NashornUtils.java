@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.nashorn;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornImage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

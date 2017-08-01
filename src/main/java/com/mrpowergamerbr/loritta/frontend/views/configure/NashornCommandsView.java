@@ -31,7 +31,7 @@ public class NashornCommandsView {
 					ArrayList<NashornCommand> toRemove = new ArrayList<>();
 
 					for (NashornCommand nash : sc.nashornCommands) {
-						if (nash.id.toString().equals(context.request.param("commandId").value())) {
+						if (nash.getId().toString().equals(context.request.param("commandId").value())) {
 							toSave = nash;
 							toRemove.add(nash);
 						}
@@ -39,7 +39,7 @@ public class NashornCommandsView {
 
 					sc.nashornCommands.removeAll(toRemove);
 					toSave.javaScript = context.request.param("commandResponse").value();
-					toSave.label = context.request.param("commandName").value();
+					toSave.setJsLabel(context.request.param("commandName").value());
 					sc.nashornCommands.add(toSave);
 
 					LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
@@ -54,7 +54,7 @@ public class NashornCommandsView {
 						String id = context.arguments[5];
 
 						for (NashornCommand nash : sc.nashornCommands) {
-							if (nash.id.toString().equals(id)) {
+							if (nash.getId().toString().equals(id)) {
 								context.contextVars().put("editingCommand", nash);
 							}
 						}
