@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.remove
 import java.util.*
 
 class RollCommand : CommandBase() {
@@ -26,7 +28,7 @@ class RollCommand : CommandBase() {
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("", "12", "24")
+		return listOf("", "12", "24", "2d20", "3d5", "4d10")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -34,11 +36,31 @@ class RollCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
+
+		var quantity = 1L
 		var value: Long = 6
-		if (context.args.size == 1) {
+		var expression = ""
+
+		if (context.args.size >= 1) {
 			try {
-				value = context.args[0].toLong()
+				if (context.args[0].contains("d")) {
+					val values = context.args[0].split("d")
+					quantity = values[0].toLong()
+					value = values[1].toLong()
+				} else {
+					value = context.args[0].toLong()
+				}
 				Loritta.random.nextLong(1, value + 1)
+				if (context.args.size >= 2) {
+					expression = context.args.remove(0).joinToString(" ")
+					try {
+						LorittaUtils.evalMath(Loritta.random.nextLong(1, value + 1).toString() + expression).toInt().toString()
+					} catch (ex: RuntimeException) {
+						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
+						return
+					}
+
+				}
 			} catch (e: Exception) {
 				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
 				return
@@ -51,6 +73,13 @@ class RollCommand : CommandBase() {
 			return
 		}
 
-		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** " + Loritta.random.nextLong(1, value + 1))
+		val rolled = mutableListOf<String>()
+
+		for (i in 1..quantity) {
+			rolled.add(LorittaUtils.evalMath(Loritta.random.nextLong(1, value + 1).toString() + expression).toInt().toString())
+		}
+
+		val result = rolled.joinToString(", ")
+		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** " + result)
 	}
 }
