@@ -275,6 +275,17 @@ class Loritta {
 		for ((id, locale) in locales) {
 			if (id != "default") {
 				val jsonObject = JsonParser().parse(Loritta.gson.toJson(locale))
+
+				val localeFile = File(Loritta.LOCALES, "$id.json")
+				val asJson = JsonParser().parse(localeFile.readText()).obj
+
+				for ((id, obj) in asJson.entrySet()) {
+					if (obj.isJsonPrimitive && obj.asJsonPrimitive.isString) {
+						locale.strings.put(id, obj.string)
+					}
+				}
+
+				// Usando Reflection TODO: Remover
 				for (field in locale::class.java.declaredFields) {
 					if (field.name == "strings") { continue }
 					field.isAccessible = true
@@ -302,14 +313,14 @@ class Loritta {
 					}
 				}
 
-				// E usar a HashMap também!
 				for ((id, ogValue) in defaultLocale.strings) {
-					val changedValue = locale.strings.get(id)
+					val changedValue = locale.strings[id]
 
-					if (changedValue.equals(ogValue)) {
+					if (ogValue.equals(changedValue)) {
 						jsonObject["[Translate!]$id"] = ogValue
 					} else {
 						jsonObject[id] = changedValue
+						locale.strings.put(id, changedValue!!)
 					}
 				}
 
