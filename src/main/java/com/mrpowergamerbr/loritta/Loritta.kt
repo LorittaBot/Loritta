@@ -304,7 +304,7 @@ class Loritta {
 
 				// E usar a HashMap também!
 				for ((id, ogValue) in defaultLocale.strings) {
-					val changedValue = locale.get(id)
+					val changedValue = locale.strings.get(id)
 
 					if (changedValue.equals(ogValue)) {
 						jsonObject["[Translate!]$id"] = ogValue
