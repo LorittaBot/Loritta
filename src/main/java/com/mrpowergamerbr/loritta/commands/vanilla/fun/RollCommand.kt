@@ -99,7 +99,7 @@ class RollCommand : CommandBase() {
 			response += " = ${finalResult.toInt()}`"
 		}
 
-		if (rolledSides.size == 1) {
+		if (rolledSides.size == 1 && expression.isEmpty()) {
 			response = "**${finalResult.toInt()}**"
 		} else {
 			response = "**${finalResult.toInt()}** ($response)"
