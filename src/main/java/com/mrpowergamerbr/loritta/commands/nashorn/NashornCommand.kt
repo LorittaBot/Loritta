@@ -81,7 +81,7 @@ var getImageFromContext=function(argumento) { return contexto.pegarImagemDoConte
 var getGuild=function() { return contexto.getGuild(); };"""
 		try {
 			val executor = Executors.newSingleThreadExecutor()
-			val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {$inlineMethods$javaScript}", ogContext, context))
+			val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
 			future.get(15, TimeUnit.SECONDS)
 		} catch (e: Exception) {
 			e.printStackTrace()
