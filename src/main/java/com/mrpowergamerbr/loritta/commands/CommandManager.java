@@ -71,6 +71,7 @@ public class CommandManager {
         commandMap.add(new PretoEBrancoCommand());
         commandMap.add(new PerdaoCommand());
         commandMap.add(new RipVidaCommand());
+        commandMap.add(new AtaCommand());
 
         // =======[ MISC ]======
         commandMap.add(new AjudaCommand());
