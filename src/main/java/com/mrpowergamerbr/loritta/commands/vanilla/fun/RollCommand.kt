@@ -59,7 +59,9 @@ class RollCommand : CommandBase() {
 						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
 						return
 					}
-
+					if (!expression.startsWith(" ")) {
+						expression += " " // Para deixar bonitinho
+					}
 				}
 			} catch (e: Exception) {
 				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
@@ -76,7 +78,13 @@ class RollCommand : CommandBase() {
 		val rolled = mutableListOf<String>()
 
 		for (i in 1..quantity) {
-			rolled.add(LorittaUtils.evalMath(Loritta.random.nextLong(1, value + 1).toString() + expression).toInt().toString())
+			val rolledSide = Loritta.random.nextLong(1, value + 1)
+			val result = LorittaUtils.evalMath(rolledSide.toString() + expression).toInt().toString()
+			if (expression.isNotEmpty()) {
+				rolled.add("**$result** ($rolledSide $expression = $result)")
+			} else {
+				rolled.add("**$result**")
+			}
 		}
 
 		val result = rolled.joinToString(", ")
