@@ -52,10 +52,11 @@ class LanguageCommand : CommandBase() {
 			}
 			context.config.localeId = localeId
 			loritta save context.config
+			val newLocale = loritta.getLocaleById(localeId)
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
-			context.sendMessage("\uD83C\uDFA4 **|** ${context.locale.LANGUAGE_USING_LOCALE.f(localeId)}")
+			context.sendMessage("\uD83C\uDFA4 **|** ${newLocale.get("LANGUAGE_USING_LOCALE", localeId)}")
 			msg.delete().complete()
 		}
 	}
