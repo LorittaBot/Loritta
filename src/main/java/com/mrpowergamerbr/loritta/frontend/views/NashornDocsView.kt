@@ -31,23 +31,5 @@ object NashornDocsView {
 	data class NashornPebbleClassWrapper(
 			val clazz: Class<*>,
 			val id: String
-	) {
-
-	}
-
-	data class PanelSectionWrapper(
-			val name: String,
-			val id: String,
-			val description: String,
-			val options: List<PanelOptionWrapper>
-	)
-
-	data class PanelOptionWrapper(
-			val functionName: String,
-			val arguments: String,
-			val explain: Map<String, String>,
-			val description: String,
-			val example: String,
-			val returns: String
 	)
 }
