@@ -11,11 +11,14 @@ import com.mrpowergamerbr.loritta.commands.vanilla.fun.TristeRealidadeCommand.Tr
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.frontend.views.configure.*;
+import com.mrpowergamerbr.loritta.userdata.AutoroleConfig;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Role;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
@@ -30,12 +33,14 @@ public class ConfigureServerView {
         try {
             List<TemmieGuild> guilds = temmie.getUserGuilds();
             boolean allowed = false;
+            Guild jdaGuild = null;
             for (TemmieGuild guild : guilds) {
                 if (guild.getId().equals(guildId)) {
                     allowed = LorittaWebsite.canManageGuild(guild);
                     context.contextVars().put("currentServer", guild);
 
-                    context.contextVars().put("currentServerJda", LorittaLauncher.getInstance().getLorittaShards().getGuildById(guild.getId()));
+                    jdaGuild = LorittaLauncher.getInstance().getLorittaShards().getGuildById(guild.getId());
+                    context.contextVars().put("currentServerJda", jdaGuild);
                     break;
                 }
             }
@@ -193,9 +198,35 @@ public class ConfigureServerView {
                         LorittaLauncher.getInstance().getDs().save(sc);
                     }
 
+
+                    if (context.request.param("blacklistedChannels").isSet()) {
+	                    sc.blacklistedChannels = new ArrayList<String>(Arrays.asList(context.request().param("blacklistedChannels").value().split(";")));
+                        LorittaLauncher.loritta.ds.save(sc);
+                    }
+
+                    // Filtrar canais inválidos
+                    ArrayList<String> toRemove = new ArrayList<>();
+
+                    for (String id : sc.blacklistedChannels) {
+                    	try {
+		                    if (jdaGuild.getTextChannelById(id) == null) {
+			                    toRemove.add(id);
+		                    }
+	                    } catch (Exception e) {
+		                    toRemove.add(id);
+	                    }
+                    }
+
+                    if (!toRemove.isEmpty()) {
+	                    sc.blacklistedChannels.removeAll(toRemove);
+	                    LorittaLauncher.loritta.ds.save(sc);
+                    }
+
                     context.contextVars().put("whereAmI", "mainPage");
+                    context.contextVars().put("blacklistedChannels", StringUtils.join(sc.blacklistedChannels, ";"));
 
                     context.contextVars().put("commandPrefix", sc.commandPrefix());
+	                context.contextVars().put("config", sc);
                     template = LorittaWebsite.getEngine().getTemplate("server_config.html");
                 }
 

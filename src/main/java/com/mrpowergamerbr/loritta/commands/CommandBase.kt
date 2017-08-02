@@ -115,6 +115,8 @@ open abstract class CommandBase {
 	}
 
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, profile: LorittaProfile): Boolean {
+		if (conf.blacklistedChannels.contains(ev.channel.id))
+			return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 		val message = ev.message.content
 		var rawMessage = ev.message.rawContent
 		var run = false
@@ -144,6 +146,12 @@ open abstract class CommandBase {
 			}
 		}
 		if (run) {
+			// Carregar as opções de comandos
+			val cmdOptions = conf.getCommandOptionsFor(this)
+
+			if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))
+				return true // Ignorar canais bloqueados
+
 			// Cooldown
 			val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
 

@@ -3,6 +3,9 @@ package com.mrpowergamerbr.loritta.commands;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Accessors(fluent = true)
 public class CommandOptions {
@@ -13,6 +16,7 @@ public class CommandOptions {
 	public boolean commandOutputInPrivate = false; // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
 	public boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
 	public boolean deleteMessageAfterCommand = false; // Deletar mensagem do comando após executar ele?
+	public List<String> blacklistedChannels = new ArrayList<String>(); // Canais em que este comando é bloqueado
 	// Comandos podem extender a classe CommandOptions para colocar novas opções
 
 	// TODO: Remover

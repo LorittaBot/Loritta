@@ -41,6 +41,7 @@ public class ServerConfig {
     public boolean commandOutputInPrivate = false; // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
     public boolean warnOnMissingPermission = false; // Avisar quando a Loritta não tem permissão para falar em um canal específico
     public boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
+    public ArrayList<String> blacklistedChannels = new ArrayList<String>(); // Canais em que os comandos são bloqueados
 
     public ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
