@@ -238,7 +238,7 @@ open abstract class CommandBase {
 				return true
 			} catch (e: Exception) {
 				e.printStackTrace()
-				LorittaUtilsKotlin.sendStackTrace("[`${ev.guild.name}`] **Starboard ${ev.member.user.name}**", e)
+				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
