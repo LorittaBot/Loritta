@@ -75,19 +75,36 @@ class RollCommand : CommandBase() {
 			return
 		}
 
-		val rolled = mutableListOf<String>()
+		val rolledSides = mutableListOf<Long>()
 
+		var response = ""
 		for (i in 1..quantity) {
 			val rolledSide = Loritta.random.nextLong(1, value + 1)
-			val result = LorittaUtils.evalMath(rolledSide.toString() + expression).toInt().toString()
-			if (expression.isNotEmpty()) {
-				rolled.add("**$result** ($rolledSide $expression = $result)")
-			} else {
-				rolled.add("**$result**")
-			}
+			rolledSides.add(rolledSide)
 		}
 
-		val result = rolled.joinToString(", ")
-		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** " + result)
+		response = rolledSides.joinToString(" + ")
+
+		var finalResult = 0F
+
+		rolledSides.forEach {
+			finalResult += it
+		}
+
+		if (expression.isNotEmpty()) {
+			response += " = ${finalResult.toInt()} `${expression.trim()}";
+
+			finalResult = LorittaUtils.evalMath(finalResult.toString() + expression).toFloat()
+
+			response += " = ${finalResult.toInt()}`"
+		}
+
+		if (rolledSides.size == 1) {
+			response = "**${finalResult.toInt()}**"
+		} else {
+			response = "**${finalResult.toInt()}** ($response)"
+		}
+
+		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** ${response}")
 	}
 }

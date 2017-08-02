@@ -9,12 +9,20 @@ import net.dv8tion.jda.core.entities.User
  * a Loritta possa controlar as mensagens enviadas de uma maneira segura (para não abusarem da API do Discord)
  */
 open class NashornUser(internal val user: User) {
-	@NashornCommand.NashornDocs()
+	@NashornCommand.NashornDocs("Retorna o nome do usuário.",
+			"",
+"""
+reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getDiscriminator() + " 👀");
+""")
 	fun getName(): String {
 		return user.name
 	}
 
-	@NashornCommand.NashornDocs()
+	@NashornCommand.NashornDocs("Retorna o discriminador do usuário.",
+			"",
+			"""
+reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getDiscriminator() + " 👀");
+""")
 	fun getDiscriminator(): String {
 		return user.discriminator
 	}
