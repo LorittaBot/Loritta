@@ -23,7 +23,11 @@ class NashornContext(
 	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
 	var sender: NashornMember = NashornMember(context.handle)
 
-	@NashornCommand.NashornDocs(arguments = "mensagem")
+	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual, a mensagem será \"@Usuário mensagem\", caso a opção de mencionar usuários do servidor esteja desativada, a menção não aparecerá!",
+	"mensagem",
+"""
+reply("Olá, eu me chamo Loritta!");
+""")
 	fun reply(mensagem: String): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -41,7 +45,11 @@ class NashornContext(
 		return NashornMessage(context.sendMessage(context.getAsMention(true) + mensagem))
 	}
 
-	@NashornCommand.NashornDocs(arguments = "mensagem")
+	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual.",
+			"mensagem",
+			"""
+sendMessage("Olá, eu ainda me chamo Loritta!");
+""")
 	fun sendMessage(mensagem: String): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -60,7 +68,13 @@ class NashornContext(
 	}
 
 	@Throws(NoSuchFieldException::class, IllegalAccessException::class, IOException::class)
-	@NashornCommand.NashornDocs(arguments = "imagem, mensagem")
+	@NashornCommand.NashornDocs("Envia uma imagem no canal de texto atual.",
+			"imagem, mensagem",
+"""
+var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a imagem será o meu avatar!
+imagem.write("fofa!", cor(128, 128, 128), 20, 20);
+sendImage(imagem, "😄");
+""")
 	@JvmOverloads fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
@@ -150,7 +164,13 @@ class NashornContext(
 		return NashornImage(x, y)
 	}
 
-	@NashornCommand.NashornDocs(arguments = "index")
+	@NashornCommand.NashornDocs("Retorna uma imagem dependendo do contexto atual.",
+			"index",
+	"""
+var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a imagem será o meu avatar!
+imagem.write("fofa!", cor(128, 128, 128), 20, 20);
+sendImage(imagem, "😄");
+""")
 	fun getImageFromContext(argumento: Int): NashornImage? {
 		val bufferedImage = LorittaUtils.getImageFromContext(context, argumento)
 
@@ -161,7 +181,14 @@ class NashornContext(
 		}
 	}
 
-	@NashornCommand.NashornDocs()
+	@NashornCommand.NashornDocs(
+			"Retorna a guild (ou seja, o servidor) atual.",
+			"",
+"""
+var guild = getGuild();
+reply("Você está na guild " + guild.getName() + "! 😎");
+"""
+	)
 	fun getGuild(): NashornGuild {
 		return NashornGuild(context, context.message.guild)
 	}
