@@ -44,7 +44,7 @@ class ServerInfoCommand : CommandBase() {
 		embed.addField("👥 ${context.locale.SERVERINFO_MEMBERS.msgFormat()} (${context.guild.members.size})", "<:online:313956277808005120> **${context.locale.SERVERINFO_ONLINE.msgFormat()}:** ${context.guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.locale.SERVERINFO_AWAY.msgFormat()}:** ${context.guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.locale.SERVERINFO_BUSY.msgFormat()}:** ${context.guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.locale.SERVERINFO_OFFLINE.msgFormat()}:** ${context.guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.locale.SERVERINFO_PEOPLE.msgFormat()}:** ${context.guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.locale.SERVERINFO_BOTS.msgFormat()}:** ${context.guild.members.filter{ it.user.isBot }.size}", true) // Membros da Guild
 		embed.setThumbnail(context.guild.iconUrl)
 
-		var roles = "";
+		/* var roles = "";
 		var roleList = ArrayList<String>()
 
 		for (role in context.guild.roles) {
@@ -82,7 +82,7 @@ class ServerInfoCommand : CommandBase() {
 
 		for (i in 1..emotesList.size - 1) {
 			embed.addField("", emotesList[i], false);
-		}
+		} */
 
 		context.sendMessage(embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}
