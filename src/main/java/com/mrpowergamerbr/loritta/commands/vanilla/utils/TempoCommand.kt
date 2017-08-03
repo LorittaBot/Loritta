@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
@@ -60,7 +61,7 @@ class TempoCommand : CommandBase() {
 				var humidity = status.getAsJsonObject("main").get("humidity").asDouble;
 				var windSpeed = status.getAsJsonObject("wind").get("speed").asDouble;
 				var realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString;
-				var countryShort = cidadeJsonResponse.get("city").asJsonObject.get("country").asString;
+				var countryShort = if (cidadeJsonResponse["city"].obj.has("country")) cidadeJsonResponse.get("city").asJsonObject.get("country").asString else realCityName;
 				var icon = "";
 
 				var embed = EmbedBuilder();
