@@ -22,8 +22,12 @@ class DiscordBotsInfoThread : Thread("Discord Bot Info Thread") {
 
 	fun updateStatus() {
 		try {
-			val body = HttpRequest.post("https://bots.discord.pw/api/bots/" + Loritta.config.clientId + "/stats")
+			val discordBotsPw = HttpRequest.post("https://bots.discord.pw/api/bots/" + Loritta.config.clientId + "/stats")
 					.authorization(Loritta.config.discordBotsKey).acceptJson().contentType("application/json")
+					.send("{ \"server_count\": " + loritta.lorittaShards.getGuilds().size + " }").body()
+
+			val discordBotsOrg = HttpRequest.post("https://discordbots.org/api/bots/${Loritta.config.clientId}/stats")
+					.authorization(Loritta.config.discordBotsOrgKey).acceptJson().contentType("application/json")
 					.send("{ \"server_count\": " + loritta.lorittaShards.getGuilds().size + " }").body()
 		} catch (e: Exception) {
 			e.printStackTrace()
