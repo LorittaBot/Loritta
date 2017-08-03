@@ -182,8 +182,13 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									// Novo vídeo! Yay!
 									var message = youTubeConfig.videoSentMessage;
 
-									if (message == null) {
-										continue; }
+									if (message == null) { continue; }
+
+									if (message.isEmpty()) {
+										message = "{link}"
+										youTubeConfig.videoSentMessage = message
+										loritta save config
+									}
 
 									message = message.replace("{canal}", channelTitle);
 									message = message.replace("{título}", title);

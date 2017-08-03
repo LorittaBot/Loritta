@@ -69,9 +69,16 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										// E envie para os canais necessários o nosso texto
 										var message = feedInfo.newMessage
 
+										if (message.isEmpty()) {
+											message = "{link}"
+											feedInfo.newMessage = message
+											loritta save config
+										}
+
 										if (feedEntry.description != null) {
 											message = message.replace("{descrição}", feedEntry.description);
 										}
+
 										message = message.replace("{título}", feedEntry.title);
 										message = message.replace("{link}", feedEntry.link);
 
