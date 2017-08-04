@@ -116,4 +116,10 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 	fun isOwner(): Boolean {
 		return member.isOwner
 	}
+
+	@NashornCommand.NashornDocs("Altera o nome de um usuário",
+			"novoNickname")
+	fun setNickname(nickname: String) {
+		member.guild.controller.setNickname(member, nickname).complete()
+	}
 }

@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -56,6 +57,10 @@ class EmojiCommand : CommandBase() {
 				var value = LorittaUtils.toUnicode(emoji.codePointAt(0)) // Vamos usar codepoints porque emojis
 				value = value.substring(2) // Remover coisas desnecessárias
 				try {
+					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
+						context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}${context.locale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")
+						return
+					}
 					val emojiImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/$value.png")
 					context.sendFile(emojiImage, "emoji.png", MessageBuilder().append(" ").build())
 				} catch (e: Exception) {
