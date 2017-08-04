@@ -50,7 +50,7 @@ class OjjoCommand : CommandBase() {
 		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
 		tx.translate(-rightSide.getWidth(null).toDouble(), 0.0);
 		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-		val rightSideFlipped = op.filter(image, null);
+		val rightSideFlipped = op.filter(rightSide, null);
 
 		image.graphics.drawImage(rightSideFlipped, 0, 0, null)
 

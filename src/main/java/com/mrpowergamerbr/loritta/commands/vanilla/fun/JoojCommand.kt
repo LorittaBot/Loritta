@@ -50,7 +50,7 @@ class JoojCommand : CommandBase() {
 		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
 		tx.translate(-leftSide.getWidth(null).toDouble(), 0.0);
 		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-		val leftSideFlipped = op.filter(image, null);
+		val leftSideFlipped = op.filter(leftSide, null);
 
 		image.graphics.drawImage(leftSideFlipped, image.width / 2, 0, null)
 
