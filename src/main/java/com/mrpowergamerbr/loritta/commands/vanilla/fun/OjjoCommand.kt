@@ -18,7 +18,7 @@ class OjjoCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("OJJO_COMMAND")
+		return locale.get("OJJO_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -44,7 +44,7 @@ class OjjoCommand : CommandBase() {
 
 		if (!LorittaUtils.isValidImage(context, image)) { return }
 
-		val rightSide = image.getSubimage(image.width / 2, 0, image.width, image.height)
+		val rightSide = image.getSubimage(image.width / 2, 0, image.width / 2, image.height)
 
 		// Girar a imagem horizontalmente
 		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
