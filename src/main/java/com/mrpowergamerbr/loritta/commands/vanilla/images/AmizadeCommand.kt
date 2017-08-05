@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
@@ -22,7 +22,7 @@ class AmizadeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.AMIZADE_DESCRIPTION.f()
+		return locale.get("AMIZADE_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -30,7 +30,7 @@ class AmizadeCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN;
+		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.Loritta
@@ -34,7 +34,7 @@ class DrakeCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
+		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {

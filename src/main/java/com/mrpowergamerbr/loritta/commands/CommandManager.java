@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.*;
+import com.mrpowergamerbr.loritta.commands.vanilla.images.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;

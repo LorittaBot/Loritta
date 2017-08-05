@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
@@ -15,7 +16,7 @@ class TocarCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TOCAR_DESCRIPTION
+		return locale.get("TOCAR_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -46,24 +47,19 @@ class TocarCommand : CommandBase() {
 				return
 			}
 		}
-		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
-			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL.msgFormat())
-			return
-		}
 		if (context.args.size >= 1) {
 			val music = context.args.joinToString(" ")
 
 			if (music.equals("reset", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				LorittaLauncher.getInstance().musicManagers.remove(context.guild.idLong)
+				loritta.musicManagers.remove(context.guild.idLong)
 				return
 			}
 
 			if (music.equals("limpar", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild).scheduler.queue.clear()
+				loritta.getGuildAudioPlayer(context.guild).scheduler.queue.clear()
 				return
 			}
-			LorittaLauncher.getInstance().loadAndPlay(context, music)
+			loritta.checkAndLoad(context, music)
 		} else {
 			context.explain()
 		}

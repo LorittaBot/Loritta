@@ -22,7 +22,7 @@ public class NashornCommandsView {
 
 			if (editor.equalsIgnoreCase("editor")) {
 				NashornCommand def = new NashornCommand();
-				def.javaScript = "responder(\"Loritta \uD83D\uDE18\");";
+				def.javaScript = "reply(\"Loritta \uD83D\uDE18\");";
 				context.contextVars().put("editingCommand", def);
 
 				if (context.request.param("commandResponse").isSet()) {

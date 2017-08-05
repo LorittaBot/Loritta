@@ -346,9 +346,19 @@ class Loritta {
 			musicManagers.put(guildId, musicManager)
 		}
 
-		guild.getAudioManager().setSendingHandler(musicManager.sendHandler)
+		guild.audioManager.sendingHandler = musicManager.sendHandler
 
 		return musicManager
+	}
+
+	fun checkAndLoad(context: CommandContext, trackUrl: String): Boolean {
+		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
+			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
+			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL.msgFormat())
+			return false
+		}
+		loadAndPlay(context, trackUrl)
+		return true
 	}
 
 	fun loadAndPlay(context: CommandContext, trackUrl: String) {

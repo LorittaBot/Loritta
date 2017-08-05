@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`;
+package com.mrpowergamerbr.loritta.commands.vanilla.utils;
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -23,11 +23,11 @@ class ReceitasCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.RECEITAS_DESCRIPTION.f();
+		return locale.get("RECEITAS_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN;
+		return CommandCategory.UTILS
 	}
 
 	override fun hasCommandFeedback(): Boolean {

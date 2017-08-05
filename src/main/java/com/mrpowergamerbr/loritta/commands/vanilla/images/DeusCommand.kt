@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
@@ -11,17 +11,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerdaoCommand : CommandBase() {
+class DeusCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "perdao"
+		return "deus"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PERDAO_DESCRIPTION.f();
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("perdão")
+		return locale.DEUS_DESCRIPTION.f()
 	}
 
 	override fun getExample(): List<String> {
@@ -29,7 +25,7 @@ class PerdaoCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN;
+		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {
@@ -45,16 +41,11 @@ class PerdaoCommand : CommandBase() {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "perdao.png")); // Template
+		var template = ImageIO.read(File(Loritta.FOLDER + "deus.png")); // Template
 
-		// RULE OF THREE!!11!
-		// larguraOriginal - larguraDoContextImage
-		// alturaOriginal - X
-		var newHeight = (contextImage.width * template.height) / template.width
+		var scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
+		template.graphics.drawImage(scaled, 1, 1, null);
 
-		var scaledTemplate = template.getScaledInstance(contextImage.width, Math.max(newHeight, 1), BufferedImage.SCALE_SMOOTH)
-		contextImage.graphics.drawImage(scaledTemplate, 0, contextImage.height - scaledTemplate.getHeight(null), null);
-
-		context.sendFile(contextImage, "perdao.png", context.getAsMention(true));
+		context.sendFile(template, "deus.png", context.getAsMention(true));
 	}
 }

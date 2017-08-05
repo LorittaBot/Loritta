@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.CommandBase
@@ -12,13 +12,13 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.util.*
 
-class JoojCommand : CommandBase() {
+class OjjoCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "jooj"
+		return "ojjo"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("JOOJ_DESCRIPTION")
+		return locale.get("OJJO_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -32,7 +32,7 @@ class JoojCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
+		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -44,16 +44,16 @@ class JoojCommand : CommandBase() {
 
 		if (!LorittaUtils.isValidImage(context, image)) { return }
 
-		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)
+		val rightSide = image.getSubimage(image.width / 2, 0, image.width / 2, image.height)
 
 		// Girar a imagem horizontalmente
 		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
-		tx.translate(-leftSide.getWidth(null).toDouble(), 0.0);
+		tx.translate(-rightSide.getWidth(null).toDouble(), 0.0);
 		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-		val leftSideFlipped = op.filter(leftSide, null);
+		val rightSideFlipped = op.filter(rightSide, null);
 
-		image.graphics.drawImage(leftSideFlipped, image.width / 2, 0, null)
+		image.graphics.drawImage(rightSideFlipped, 0, 0, null)
 
-		context.sendFile(image, "jooj.png", context.getAsMention(true))
+		context.sendFile(image, "ojjo.png", context.getAsMention(true))
 	}
 }

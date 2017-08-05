@@ -9,6 +9,8 @@ data class MusicConfig(
 		var urls: MutableList<String>,
 		var voteToSkip: Boolean,
 		var required: Int,
-		var allowPlaylists: Boolean) {
-	constructor() : this(false, null, true, 420, false, mutableListOf<String>(), true, 75, false)
+		var allowPlaylists: Boolean,
+		var logToChannel: Boolean,
+		var channelId: String?) {
+	constructor() : this(false, null, true, 420, false, mutableListOf<String>(), true, 75, false, false, null)
 }

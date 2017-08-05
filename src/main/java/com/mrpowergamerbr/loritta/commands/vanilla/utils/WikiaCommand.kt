@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.JsonParser
@@ -22,7 +22,7 @@ class WikiaCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.WIKIA_DESCRIPTION.msgFormat()
+		return locale.get("WIKIA_DESCRIPTION")
 	}
 
 	override fun getUsage(): String {
@@ -39,7 +39,7 @@ class WikiaCommand : CommandBase() {
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
+		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext) {

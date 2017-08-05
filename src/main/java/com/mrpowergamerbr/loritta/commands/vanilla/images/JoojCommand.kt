@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
+package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.CommandBase
@@ -7,20 +7,18 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import java.awt.geom.AffineTransform
+import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.util.*
 
-class PretoEBrancoCommand : CommandBase() {
+class JoojCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "pretoebranco"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("preto&branco")
+		return "jooj"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PRETOEBRANCO_DESCRIPTION.f()
+		return locale.get("JOOJ_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -29,12 +27,12 @@ class PretoEBrancoCommand : CommandBase() {
 
 	override fun getDetailedUsage(): Map<String, String> {
 		return ImmutableMap.builder<String, String>()
-				.put("mensagem", "Usuário sortudo")
+				.put("imagem", "imagem")
 				.build()
 	}
 
 	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
+		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -46,9 +44,16 @@ class PretoEBrancoCommand : CommandBase() {
 
 		if (!LorittaUtils.isValidImage(context, image)) { return }
 
-		val blackAndWhite = BufferedImage(image.width, image.height, BufferedImage.TYPE_BYTE_GRAY)
-		blackAndWhite.graphics.drawImage(image, 0, 0, null)
+		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)
 
-		context.sendFile(blackAndWhite, "pretoebranco.png", context.getAsMention(true))
+		// Girar a imagem horizontalmente
+		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
+		tx.translate(-leftSide.getWidth(null).toDouble(), 0.0);
+		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		val leftSideFlipped = op.filter(leftSide, null);
+
+		image.graphics.drawImage(leftSideFlipped, image.width / 2, 0, null)
+
+		context.sendFile(image, "jooj.png", context.getAsMention(true))
 	}
 }

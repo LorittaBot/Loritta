@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.core.EmbedBuilder
@@ -88,8 +89,9 @@ class YouTubeCommand : CommandBase() {
 			if (context.metadata.contains("playMusic")) {
 				var item = context.metadata.get("playMusic") as YouTubeItem;
 
-				LorittaLauncher.loritta.loadAndPlay(context, "https://youtu.be/${item.id.videoId}")
-				context.metadata.remove("playMusic");
+				if (loritta.checkAndLoad(context, "https://youtu.be/${item.id.videoId}")) {
+					context.metadata.remove("playMusic")
+				}
 				return;
 			}
 			var item: YouTubeItem;

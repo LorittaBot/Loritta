@@ -54,12 +54,15 @@ class AjudaCommand : CommandBase() {
 
         val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 
+        val adminCmds = getCommandsFor(context, disabledCommands, CommandCategory.ADMIN, "http://i.imgur.com/Ql6EiAw.png")
         val socialCmds = getCommandsFor(context, disabledCommands, CommandCategory.SOCIAL, "http://i.imgur.com/Ql6EiAw.png")
         val discordCmds = getCommandsFor(context, disabledCommands, CommandCategory.DISCORD, "https://lh3.googleusercontent.com/_4zBNFjA8S9yjNB_ONwqBvxTvyXYdC7Nh1jYZ2x6YEcldBr2fyijdjM2J5EoVdTpnkA=w300")
         val minecraftCmds = getCommandsFor(context, disabledCommands, CommandCategory.MINECRAFT, "http://i.imgur.com/gKBHNzL.png")
         val undertaleCmds = getCommandsFor(context, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
         val pokemonCmds = getCommandsFor(context, disabledCommands, CommandCategory.POKEMON, "http://i.imgur.com/2l5kKCp.png")
+        val musicCmds = getCommandsFor(context, disabledCommands, CommandCategory.MUSIC, "http://i.imgur.com/ssNe7dx.png")
         val funCmds = getCommandsFor(context, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
+        val imagesCmds = getCommandsFor(context, disabledCommands, CommandCategory.IMAGES, "http://i.imgur.com/ssNe7dx.png")
         val miscCmds = getCommandsFor(context, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
         val utilsCmds = getCommandsFor(context, disabledCommands, CommandCategory.UTILS, "http://i.imgur.com/eksGMGw.png")
 
@@ -82,6 +85,9 @@ class AjudaCommand : CommandBase() {
 
         val cmdOptions = context.config.getCommandOptionsFor(this)
 
+        if (adminCmds != null) {
+            fastEmbedSend(context, adminCmds);
+        }
         if (socialCmds != null) {
             fastEmbedSend(context, socialCmds);
         }
@@ -97,8 +103,14 @@ class AjudaCommand : CommandBase() {
         if (pokemonCmds != null) {
             fastEmbedSend(context, pokemonCmds);
         }
+        if (musicCmds != null) {
+            fastEmbedSend(context, musicCmds);
+        }
         if (funCmds != null) {
             fastEmbedSend(context, funCmds);
+        }
+        if (imagesCmds != null) {
+            fastEmbedSend(context, imagesCmds);
         }
         if (miscCmds != null) {
             fastEmbedSend(context, miscCmds);
