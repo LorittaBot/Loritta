@@ -33,11 +33,12 @@ class LanguageCommand : CommandBase() {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
-		val validLanguages = "\uD83C\uDDE7\uD83C\uDDF7 Português-Brasil\n<:loritta_quebrada:338679008210190336> Português-Funk\n\uD83C\uDDFA\uD83C\uDDF8 English-US"
+		val validLanguages = "\uD83C\uDDE7\uD83C\uDDF7 Português-Brasil\n<:loritta_quebrada:338679008210190336> Português-Funk\n\uD83C\uDDF5\uD83C\uDDF9 Português-Portugal\n\uD83C\uDDFA\uD83C\uDDF8 English-US"
 		embed.setDescription(context.locale.LANGUAGE_INFO.f(validLanguages))
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").complete()
 		message.addReaction("loritta_quebrada:338679008210190336").complete()
+		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").complete()
 		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").complete()
 	}
 
@@ -50,6 +51,10 @@ class LanguageCommand : CommandBase() {
 			if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
 				localeId = "en-us"
 			}
+			if (e.reactionEmote.name == "\uD83C\uDDF5\uD83C\uDDF9") {
+				localeId = "pt-pt"
+			}
+
 			context.config.localeId = localeId
 			loritta save context.config
 			val newLocale = loritta.getLocaleById(localeId)
