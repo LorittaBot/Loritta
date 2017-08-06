@@ -182,6 +182,7 @@ open abstract class CommandBase {
 				// Verificar se a Loritta possui todas as permissões necessárias
 				var botPermissions = ArrayList<Permission>(getBotPermissions())
 				botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
+				botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
 				val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
 
 				if (missingPermissions.isNotEmpty()) {
