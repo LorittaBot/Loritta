@@ -171,6 +171,8 @@ class AjudaCommand : CommandBase() {
             color = Color(255, 176, 0);
         } else if (cat == CommandCategory.UTILS) {
             color = Color(176, 146, 209);
+        } else if (cat == CommandCategory.MUSIC) {
+            color = Color(124, 91, 197)
         } else {
             color = Color(186, 0, 239);
         }
