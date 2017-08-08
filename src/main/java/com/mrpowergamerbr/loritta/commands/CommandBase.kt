@@ -156,7 +156,7 @@ open abstract class CommandBase {
 				// Cooldown
 				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
 
-				if (1250 > diff) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
+				if (1250 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
 					loritta.userCooldown.put(ev.author.id, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
@@ -170,7 +170,7 @@ open abstract class CommandBase {
 					}
 				}
 
-				if (5000 > diff) {
+				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
 					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.member.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
 					return true
 				}
