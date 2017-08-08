@@ -14,9 +14,11 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.StringReader
+import java.net.URLDecoder
 import java.net.URLEncoder
 
 class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
@@ -129,8 +131,15 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		}
 	}
 
-	fun setAsBackground(link: String, context: CommandContext) {
+	fun setAsBackground(link0: String, context: CommandContext) {
+		var link = link0
 		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale.PROCESSING}...");
+
+		val params = getQueryParameters(link)
+
+		if (params.containsKey("imgurl")) {
+			link = params["imgurl"]!!
+		}
 
 		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(link, "UTF-8"))
 				.header("X-Mashape-Key", Loritta.config.mashapeKey)
@@ -179,5 +188,38 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				.setDescription(context.locale.BACKGROUND_INFO.msgFormat(context.config.commandPrefix))
 				.setColor(Color(0, 223, 142))
 		return builder.build()
+	}
+
+	fun getQueryParameters(url: String): Map<String, String> {
+		val params = mutableMapOf<String, String>()
+
+		var queryName: String = ""
+		var queryParam: String = ""
+		var isQueryName = false
+		var isQueryParam = false
+		for (char in url) {
+			if (char == '=') {
+				isQueryName = false
+				isQueryParam = true
+				continue
+			}
+			if (char == '&' || char == '?') {
+				isQueryName = true
+				if (isQueryParam) {
+					params.put(queryName, queryParam)
+					queryName = "";
+					queryParam = "";
+					isQueryParam = false
+				}
+				continue
+			}
+			if (isQueryName) {
+				queryName += char
+			}
+			if (isQueryParam) {
+				queryParam += char
+			}
+		}
+		return params
 	}
 }
