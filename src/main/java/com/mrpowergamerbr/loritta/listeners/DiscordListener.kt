@@ -346,6 +346,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
 		loritta.executor.execute {
 			try {
+				if (event.user.id == Loritta.config.clientId) {
+					return@execute
+				}
+
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
 				if (conf.joinLeaveConfig.isEnabled) {
