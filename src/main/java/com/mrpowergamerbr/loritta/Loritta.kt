@@ -79,7 +79,7 @@ class Loritta {
 	}
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val executor = Executors.newScheduledThreadPool(64) // Threads
+	val executor = Executors.newScheduledThreadPool(24) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
