@@ -142,6 +142,8 @@ public class ConfigureServerView {
                             jlCnf.setLeaveMessage(context.request().param("leaveMessage").value());
                             jlCnf.setTellOnPrivate(context.request().param("tellOnPrivate").isSet());
                             jlCnf.setJoinPrivateMessage(context.request().param("privateMessage").value());
+                            jlCnf.setTellOnBan(context.request().param("tellOnBan").isSet());
+                            jlCnf.setBanMessage(context.request().param("banMessage").value());
 
                             sc.joinLeaveConfig(jlCnf);
                             LorittaLauncher.getInstance().getDs().save(sc);

@@ -360,7 +360,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						if (textChannel != null) {
 							if (textChannel.canTalk()) {
-								val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.leaveMessage, event)
+								var msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.leaveMessage, event)
+								val banList = guild.bans.complete()
+								if (banList.contains(event.user)) {
+									if (!conf.joinLeaveConfig.tellOnBan)
+										return@execute
+
+									if (conf.joinLeaveConfig.banMessage.isNotEmpty()) {
+										msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.banMessage, event)
+									}
+								}
 								textChannel.sendMessage(msg).complete()
 							} else {
 								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)

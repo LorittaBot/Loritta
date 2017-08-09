@@ -293,7 +293,7 @@ object LorittaUtilsKotlin {
 				.connectTimeout(10000)
 				.readTimeout(10000)
 				.body()
-		
+
 		val json = JsonParser().parse(response)
 
 		var url: String? = null;
