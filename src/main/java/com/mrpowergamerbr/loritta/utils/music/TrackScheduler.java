@@ -3,12 +3,17 @@ package com.mrpowergamerbr.loritta.utils.music;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlinKt;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,7 +60,19 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (!player.startTrack(track.getTrack(), true)) {
 			queue.offer(track);
 		} else {
-			this.currentTrack = track;
+			currentTrack = track;
+
+			ServerConfig config = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+
+			if (config.musicConfig.getLogToChannel()) {
+				TextChannel textChannel = guild.getTextChannelById(config.musicConfig.getChannelId());
+
+				if (textChannel.canTalk()) {
+					MessageEmbed embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true);
+
+					textChannel.sendMessage(embed).complete();
+				}
+			}
 		}
 	}
 

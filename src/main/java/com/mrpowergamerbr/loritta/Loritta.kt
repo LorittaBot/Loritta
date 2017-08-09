@@ -476,9 +476,9 @@ class Loritta {
 		}
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
-		musicManager.scheduler.queue(trackWrapper);
-
 		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
+
+		musicManager.scheduler.queue(trackWrapper);
 	}
 
 	fun skipTrack(context: CommandContext) {

@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -131,7 +132,12 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createTrackInfoEmbed(context: CommandContext): MessageEmbed {
-		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+		return createTrackInfoEmbed(context.guild, context.locale, false)
+	}
+
+	@JvmStatic
+	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
+		val manager = loritta.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack;
 		val metaTrack = manager.scheduler.currentTrack;
 		val embed = EmbedBuilder()
@@ -153,19 +159,21 @@ object LorittaUtilsKotlin {
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis))
 		);
 
-		embed.addField("\uD83D\uDD52 ${context.locale.MUSICINFO_LENGTH.msgFormat()}", "`$elapsed`/`$fancy`", true);
+		embed.addField("\uD83D\uDD52 ${locale.MUSICINFO_LENGTH.msgFormat()}", "`$elapsed`/`$fancy`", true);
 
 		if (playingTrack.sourceManager.sourceName == "youtube") {
 			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${context.locale.MUSICINFO_VIEWS.msgFormat()}", metaTrack.metadata.get("viewCount"), true);
-			embed.addField("\uD83D\uDE0D ${context.locale.MUSICINFO_LIKES.msgFormat()}", metaTrack.metadata.get("likeCount"), true);
-			embed.addField("\uD83D\uDE20 ${context.locale.MUSICINFO_DISLIKES.msgFormat()}", metaTrack.metadata.get("dislikeCount"), true);
-			embed.addField("\uD83D\uDCAC ${context.locale.MUSICINFO_COMMENTS.msgFormat()}", metaTrack.metadata.get("commentCount"), true);
+			embed.addField("\uD83D\uDCFA ${locale.get("MUSICINFO_VIEWS")}", metaTrack.metadata["viewCount"], true);
+			embed.addField("\uD83D\uDE0D ${locale.get("MUSICINFO_LIKES")}", metaTrack.metadata["likeCount"], true);
+			embed.addField("\uD83D\uDE20 ${locale.get("MUSICINFO_DISLIKES")}", metaTrack.metadata["dislikeCount"], true);
+			embed.addField("\uD83D\uDCAC ${locale.get("MUSICINFO_COMMENTS")}", metaTrack.metadata["commentCount"], true);
 			embed.setThumbnail(metaTrack.metadata.get("thumbnail"))
-			embed.setAuthor("${playingTrack.info.author}", null, metaTrack.metadata.get("channelIcon"))
+			embed.setAuthor("${playingTrack.info.author}", null, metaTrack.metadata["channelIcon"])
 		}
 
-		embed.addField("\uD83D\uDCAB ${context.locale.MUSICINFO_SKIPTITLE.msgFormat()}", context.locale.MUSICINFO_SKIPTUTORIAL.msgFormat(), false)
+		if (!stripSkipInfo)
+			embed.addField("\uD83D\uDCAB ${locale.get("MUSICINFO_SKIPTITLE")}", locale.get("MUSICINFO_SKIPTUTORIAL"), false)
+
 		return embed.build()
 	}
 

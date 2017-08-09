@@ -159,6 +159,8 @@ public class ConfigureServerView {
                             mscCnf.setAutoPlayWhenEmpty(context.request().param("autoPlayEnabled").isSet());
                             mscCnf.setUrls(Arrays.asList(context.request().param("musicUrls").value().split(";")));
                             mscCnf.setAllowPlaylists(context.request().param("allowPlaylists").isSet());
+                            mscCnf.setLogToChannel(context.request().param("logToChannel").isSet());
+                            mscCnf.setChannelId(context.request().param("channelId").value());
 
                             sc.musicConfig(mscCnf);
                             LorittaLauncher.getInstance().getDs().save(sc);
