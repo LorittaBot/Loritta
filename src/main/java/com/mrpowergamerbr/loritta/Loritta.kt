@@ -138,9 +138,9 @@ class Loritta {
 		val generateShards = Loritta.config.shards - 1
 
 		val okHttpBuilder = OkHttpClient.Builder()
-				.connectTimeout(25, TimeUnit.SECONDS)
-				.readTimeout(25, TimeUnit.SECONDS)
-				.writeTimeout(25, TimeUnit.SECONDS)
+				.connectTimeout(60, TimeUnit.SECONDS)
+				.readTimeout(60, TimeUnit.SECONDS)
+				.writeTimeout(60, TimeUnit.SECONDS)
 		for (idx in 0..generateShards) {
 			println("Iniciando Shard $idx...")
 			val shard = JDABuilder(AccountType.BOT)
