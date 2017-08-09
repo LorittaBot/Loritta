@@ -36,6 +36,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
+import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
@@ -147,8 +148,21 @@ class Loritta {
 					.useSharding(idx, Loritta.config.shards)
 					.setToken(Loritta.config.clientToken)
 					.setHttpClientBuilder(okHttpBuilder)
-					.buildBlocking();
+					.buildAsync();
 			lorittaShards.shards.add(shard)
+		}
+
+		var finishedLogIn = false
+
+		while (!finishedLogIn) {
+			for (jda in lorittaShards.shards) {
+				if (jda.status != JDA.Status.CONNECTED) {
+					finishedLogIn = false
+					continue
+				} else {
+					finishedLogIn = true
+				}
+			}
 		}
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
