@@ -38,6 +38,8 @@ class IsUpCommand : CommandBase() {
 			try {
 				var response = HttpRequest.get(url)
 						.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
+						.connectTimeout(5000)
+						.readTimeout(5000)
 						.code();
 
 				if (response in 100..308) {
