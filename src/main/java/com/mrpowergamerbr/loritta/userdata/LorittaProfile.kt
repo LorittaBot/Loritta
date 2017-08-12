@@ -8,7 +8,8 @@ import org.mongodb.morphia.annotations.Indexed
 /**
  * Perfil de um usuário que usa a Loritta
  */
-@Entity(value = "users") class LorittaProfile {
+@Entity(value = "users", noClassnameStored = true)
+class LorittaProfile {
     constructor()
 
     constructor(userId: String) : this() {

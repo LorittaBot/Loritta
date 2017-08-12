@@ -19,7 +19,7 @@ import java.util.HashMap;
 @Getter
 @Setter
 @Accessors(fluent = true)
-@Entity(value = "servers")
+@Entity(value = "servers", noClassnameStored = true)
 @ToString
 public class ServerConfig {
     @Id
