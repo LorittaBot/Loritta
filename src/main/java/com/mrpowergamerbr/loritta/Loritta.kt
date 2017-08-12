@@ -455,9 +455,19 @@ class Loritta {
 			}
 
 			override fun noMatches() {
+				if (!trackUrl.contains("list")) { // É uma playlist? Se não for...
+					// Vamos remover a URL da configuração!
+					musicConfig.urls.remove(trackUrl)
+					loritta save config
+				}
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
+				if (!trackUrl.contains("list")) { // É uma playlist? Se não for...
+					// Vamos remover a URL da configuração!
+					musicConfig.urls.remove(trackUrl)
+					loritta save config
+				}
 			}
 		})
 	}
