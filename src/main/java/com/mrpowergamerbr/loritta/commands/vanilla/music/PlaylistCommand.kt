@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
@@ -13,8 +14,12 @@ class PlaylistCommand : CommandBase() {
 		return "playlist"
 	}
 
-	override fun getDescription(): String {
-		return "Mostra as próximas músicas que serão tocadas na DJ Loritta!"
+	override fun getAliases(): List<String> {
+		return listOf("list")
+	}
+
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.get("PLAYLIST_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
