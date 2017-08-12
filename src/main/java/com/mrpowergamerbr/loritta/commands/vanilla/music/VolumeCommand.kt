@@ -16,7 +16,7 @@ class VolumeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.VOLUME_DESCRIPTION.msgFormat()
+		return locale.get("VOLUME_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {

@@ -26,6 +26,10 @@ class RepCommand : CommandBase() {
          return CommandCategory.SOCIAL;
     }
 
+    override fun getExample(): List<String> {
+        return listOf("@Loritta", "@MrPowerGamerBR")
+    }
+
     override fun canUseInPrivateChannel(): Boolean {
         return false
     }

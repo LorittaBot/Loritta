@@ -122,6 +122,9 @@ public class CommandManager {
         commandMap.add(new VolumeCommand());
         commandMap.add(new PlaylistCommand());
         commandMap.add(new PularCommand());
+        commandMap.add(new PausarCommand());
+        commandMap.add(new ResumirCommand());
+	    commandMap.add(new SeekCommand());
 
         // =======[ DISCORD ]=======
         commandMap.add(new BotInfoCommand());
