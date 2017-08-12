@@ -16,6 +16,6 @@ class CaraCoroaCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		context.sendMessage(context.getAsMention(true) + if (Loritta.random.nextBoolean()) "\uD83D\uDE46\u200D **${context.locale.CARACOROA_HEADS.f()}!**" else "\uD83D\uDC51 **${context.locale.CARACOROA_TAILS.f()}!**")
+		context.sendMessage(context.getAsMention(true) + if (Loritta.random.nextBoolean()) "<:cara:345994349969932291> **${context.locale.CARACOROA_HEADS.f()}!**" else "<:coroa:345994350498545674> **${context.locale.CARACOROA_TAILS.f()}!**")
 	}
 }
