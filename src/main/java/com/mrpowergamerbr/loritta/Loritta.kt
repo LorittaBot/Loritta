@@ -175,9 +175,6 @@ class Loritta {
 
 			LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 
-			AudioSourceManagers.registerRemoteSources(playerManager)
-			AudioSourceManagers.registerLocalSource(playerManager)
-
 			val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
 			val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
 
@@ -191,6 +188,9 @@ class Loritta {
 			musicManagers = HashMap()
 			playerManager = DefaultAudioPlayerManager()
 
+			AudioSourceManagers.registerRemoteSources(playerManager)
+			AudioSourceManagers.registerLocalSource(playerManager)
+			
 			LorittaUtils.startAutoPlaylist()
 
 			val messageListener = MusicMessageListener(this)
@@ -469,7 +469,7 @@ class Loritta {
 			}
 
 			override fun noMatches() {
-				if (!trackUrl.contains("list")) { // É uma playlist? Se não for...
+				if (false || !trackUrl.contains("list")) { // É uma playlist? Se não for...
 					// Vamos remover a URL da configuração!
 					musicConfig.urls.remove(trackUrl)
 					loritta save config
@@ -477,7 +477,7 @@ class Loritta {
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				if (!trackUrl.contains("list")) { // É uma playlist? Se não for...
+				if (false || !trackUrl.contains("list")) { // É uma playlist? Se não for...
 					// Vamos remover a URL da configuração!
 					musicConfig.urls.remove(trackUrl)
 					loritta save config
