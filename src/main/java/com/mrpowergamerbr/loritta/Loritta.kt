@@ -190,7 +190,7 @@ class Loritta {
 
 			AudioSourceManagers.registerRemoteSources(playerManager)
 			AudioSourceManagers.registerLocalSource(playerManager)
-			
+
 			LorittaUtils.startAutoPlaylist()
 
 			val messageListener = MusicMessageListener(this)
