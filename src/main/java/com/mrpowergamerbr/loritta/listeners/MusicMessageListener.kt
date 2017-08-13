@@ -1,0 +1,52 @@
+package com.mrpowergamerbr.loritta.listeners
+
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
+
+class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
+	override fun onMessageReceived(event: MessageReceivedEvent) {
+		if (event.author.isBot) { // Se uma mensagem de um bot, ignore a mensagem!
+			return
+		}
+		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
+			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
+				return
+			}
+			loritta.executor.execute {
+				try {
+					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
+					val locale = loritta.getLocaleById(serverConfig.localeId)
+
+					// Primeiro os comandos vanilla da Loritta(tm)
+					loritta.commandManager.commandMap.forEach { cmd ->
+						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
+							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
+								val cmdOpti = serverConfig.getCommandOptionsFor(cmd)
+								if (serverConfig.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
+									event.message.delete().complete()
+								}
+								return@execute
+							}
+						}
+					}
+				} catch (e: Exception) {
+					e.printStackTrace()
+					LorittaUtilsKotlin.sendStackTrace(event.message, e)
+				}
+			}
+		}
+	}
+}

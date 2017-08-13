@@ -464,7 +464,10 @@ public class LorittaUtils {
 			}
 		};
 		new Thread(onlineUpdater, "Game & Time Updater").start(); // Pronto!
+	}
 
+
+	public static void startAutoPlaylist() {
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {
 				for (Guild guild :  LorittaLauncher.loritta.getLorittaShards().getGuilds()) {

@@ -147,6 +147,13 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
+				if (requiresMusicEnabled()) {
+					// Ignorar comandos de música em uma instância não somente para música
+					if (!loritta.isMusicOnly) {
+						return true
+					}
+				}
+
 				// Carregar as opções de comandos
 				val cmdOptions = conf.getCommandOptionsFor(this)
 

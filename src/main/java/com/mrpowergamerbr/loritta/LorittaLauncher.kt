@@ -50,8 +50,14 @@ object LorittaLauncher {
 			return
 		}
 
+		var isMusicOnly = false
+
+		if (args.isNotEmpty() && args[0].equals("-music")) {
+			isMusicOnly = true
+		}
+
 		// Iniciar instância da Loritta
-		loritta = Loritta(config)
+		loritta = Loritta(config, isMusicOnly)
 		loritta.start()
 	}
 }
