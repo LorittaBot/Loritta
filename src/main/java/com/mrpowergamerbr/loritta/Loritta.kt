@@ -157,7 +157,7 @@ class Loritta {
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
-		
+
 		if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
 			val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }

@@ -440,7 +440,7 @@ object LorittaUtilsKotlin {
 		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336932935838203904")
 
-		commandQueue.add("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.strippedContent.stripCodeMarks()}`")
+		commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
 
 		if (lastUpdate > 5000) {
 			lastUpdate = System.currentTimeMillis()
