@@ -43,7 +43,7 @@ public class GlobalHandler {
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
 
-            contextVars.put("fanClubServers", LorittaUtilsKotlin.getServersInFanClub());
+            contextVars.put("fanClubServers", LorittaLauncher.loritta.getServersFanClub());
 
             Object temmieObj = null;
             if (req.session().get("discordAuthCode").isSet()) {

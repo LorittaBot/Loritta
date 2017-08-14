@@ -79,11 +79,12 @@ class Loritta {
 	}
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val executor = Executors.newScheduledThreadPool(24) // Threads
+	val executor = Executors.newScheduledThreadPool(64) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
-	var serversFanClub = listOf<ServerFanClub>()
+	var rawServersFanClub = listOf<ServerFanClub>()
+	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
 	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<Any, Any>().asMap()
@@ -105,7 +106,6 @@ class Loritta {
 	// Constructor da Loritta
 	constructor(config: LorittaConfig, isMusicOnly: Boolean) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
-		loadServersFromFanClub()
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube(config.youtubeKey)
@@ -156,7 +156,8 @@ class Loritta {
 		}
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
-
+		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
+		
 		if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
 			val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
@@ -247,7 +248,8 @@ class Loritta {
 	 * Carrega todos os servidores do Fã Clube da Loritta
 	 */
 	fun loadServersFromFanClub() {
-		serversFanClub = gson.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
+		rawServersFanClub = gson.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
+		LorittaUtilsKotlin.generateServersInFanClub()
 	}
 
 	/**

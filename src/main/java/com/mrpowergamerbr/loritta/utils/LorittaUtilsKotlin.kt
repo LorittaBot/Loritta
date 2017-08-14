@@ -386,9 +386,9 @@ object LorittaUtilsKotlin {
 	}
 
 	@JvmStatic
-	fun getServersInFanClub(): List<ServerFanClubEntry> {
+	fun generateServersInFanClub() {
 		val entries = mutableListOf<ServerFanClubEntry>()
-		loritta.serversFanClub.forEach{
+		loritta.rawServersFanClub.forEach{
 			val guild = lorittaShards.getGuildById(it.serverId)
 			if (guild != null) {
 				entries.add(ServerFanClubEntry(it.id,
@@ -397,7 +397,7 @@ object LorittaUtilsKotlin {
 						it.description))
 			}
 		}
-		return entries
+		loritta.serversFanClub = entries
 	}
 
 	fun sendStackTrace(message: Message, t: Throwable) {
