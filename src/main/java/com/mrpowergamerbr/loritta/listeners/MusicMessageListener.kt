@@ -36,10 +36,6 @@ class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
 							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
-								val cmdOpti = serverConfig.getCommandOptionsFor(cmd)
-								if (serverConfig.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
-									event.message.delete().complete()
-								}
 								return@execute
 							}
 						}

@@ -114,6 +114,13 @@ open abstract class CommandBase {
 		return false
 	}
 
+	/**
+	 * Retorna se o comando só funciona em uma instância de música
+	 */
+	open fun onlyInMusicInstance(): Boolean {
+		return false
+	}
+
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, profile: LorittaProfile): Boolean {
 		if (conf.blacklistedChannels.contains(ev.channel.id))
 			return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -147,7 +154,7 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
-				if (requiresMusicEnabled()) {
+				if (requiresMusicEnabled() || onlyInMusicInstance()) {
 					// Ignorar comandos de música em uma instância não somente para música
 					if (!loritta.isMusicOnly) {
 						return true
@@ -244,6 +251,11 @@ open abstract class CommandBase {
 					}
 				}
 				run(context)
+
+				val cmdOpti = context.config.getCommandOptionsFor(this)
+				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand)) {
+					ev.message.delete().complete()
+				}
 				return true
 			} catch (e: Exception) {
 				e.printStackTrace()

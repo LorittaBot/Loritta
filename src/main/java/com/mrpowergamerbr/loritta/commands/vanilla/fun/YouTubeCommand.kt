@@ -44,6 +44,10 @@ class YouTubeCommand : CommandBase() {
 		return CommandCategory.FUN
 	}
 
+	override fun onlyInMusicInstance(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.size >= 1) {
 			var query = context.args.joinToString(" ");

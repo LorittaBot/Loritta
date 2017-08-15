@@ -116,10 +116,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
 							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
-								val cmdOpti = serverConfig.getCommandOptionsFor(cmd)
-								if (serverConfig.deleteMessageAfterCommand || cmdOpti.deleteMessageAfterCommand) {
-									event.message.delete().complete()
-								}
 								return@execute
 							}
 						}
@@ -128,9 +124,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
 						if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
-							if (serverConfig.deleteMessageAfterCommand) {
-								event.message.delete().complete()
-							}
 							return@execute
 						}
 					}

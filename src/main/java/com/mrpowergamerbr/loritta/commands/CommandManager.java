@@ -46,7 +46,6 @@ public class CommandManager {
 			commandMap.add(new TretaNewsCommand());
 			commandMap.add(new MagicBallCommand());
 			commandMap.add(new FraseToscaCommand());
-			commandMap.add(new YouTubeCommand());
 			commandMap.add(new SAMCommand());
 			commandMap.add(new NyanCatCommand());
 			commandMap.add(new WikiaCommand());
@@ -169,6 +168,7 @@ public class CommandManager {
 		commandMap.add(new PausarCommand());
 		commandMap.add(new ResumirCommand());
 		commandMap.add(new SeekCommand());
+		commandMap.add(new YouTubeCommand());
 
 		for (CommandBase cmdBase : this.getCommandMap()) {
 			defaultCmdOptions.put(cmdBase.getClass().getSimpleName(), CommandOptions.class);
