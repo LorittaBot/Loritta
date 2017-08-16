@@ -258,8 +258,6 @@ object LorittaUtilsKotlin {
 	fun getRandomPostFromPage(page: String): FacebookPostWrapper? {
 		val response = HttpRequest
 				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
-				.connectTimeout(50000)
-				.readTimeout(50000)
 				.body()
 
 		val json = JsonParser().parse(response)
@@ -290,8 +288,6 @@ object LorittaUtilsKotlin {
 	 */
 	fun getRandomPostFromGroup(group: String): FacebookPostWrapper? {
 		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
-				.connectTimeout(50000)
-				.readTimeout(50000)
 				.body()
 
 		val json = JsonParser().parse(response)

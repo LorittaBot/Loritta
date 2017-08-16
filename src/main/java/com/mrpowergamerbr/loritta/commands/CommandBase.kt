@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.PermissionUtil
 import java.awt.Color
 import java.time.Instant
@@ -253,7 +254,7 @@ open abstract class CommandBase {
 				run(context)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
-				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand)) {
+				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand )) {
 					ev.message.delete().complete()
 				}
 				return true
