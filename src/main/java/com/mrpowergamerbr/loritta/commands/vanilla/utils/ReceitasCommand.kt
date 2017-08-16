@@ -48,8 +48,6 @@ class ReceitasCommand : CommandBase() {
 
 			val jsoup = Jsoup.connect("http://anamariabraga.globo.com/Publicacao/Filtrar?term=" + URLEncoder.encode(query, "UTF-8") + "&pagina=1&quantidadePorPagina=30&tipoPublicacao=&idCategoria=&videoOnly=false").get()
 
-			println(jsoup.body())
-
 			var classes = jsoup.getElementsByClass("col-lg-4");
 
 			var finalMessage: DiscordMessage? = null
