@@ -53,8 +53,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			// Atualizar avatar
 			if (event is UserAvatarUpdateEvent) {
 				// Primeiro iremos criar a imagem do update
-				val oldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png")).getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
-				val newAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png")).getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+				val rawOldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png"))
+				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
+
+				if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
+					return@thread
+
+				val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+				val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 
 				val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
 				val graphics = base.graphics
@@ -75,7 +81,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
 							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
-							if (textChannel != null) {
+							if (textChannel != null && textChannel.canTalk()) {
 								embed.setDescription("\uD83D\uDDBC **${locale.EVENTLOG_AVATAR_CHANGED.msgFormat(event.user.asMention)}**")
 								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
 
@@ -99,7 +105,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (config.eventLogConfig.usernameChanges && config.eventLogConfig.isEnabled) {
 							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
-							if (textChannel != null) {
+							if (textChannel != null && textChannel.canTalk()) {
 								embed.setDescription("\uD83D\uDCDD **${locale.EVENTLOG_NAME_CHANGED.msgFormat(event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}")}**")
 								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
 
@@ -126,7 +132,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled) {
 				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
-				if (textChannel != null) {
+				if (textChannel != null && textChannel.canTalk()) {
 					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
 						embed.setDescription("\uD83C\uDF1F ${locale.EVENTLOG_CHANNEL_CREATED.msgFormat(event.channel.asMention)}")
 
@@ -181,7 +187,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageEdit) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
-				if (textChannel != null) {
+				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
 					if (storedMessageDocument != null) {
 						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
@@ -215,7 +221,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 
-				if (textChannel != null) {
+				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
 					if (storedMessageDocument != null) {
 						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
@@ -245,7 +251,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
 
-				if (textChannel != null) {
+				if (textChannel != null && textChannel.canTalk()) {
 					val embed = EmbedBuilder()
 					embed.setTimestamp(Instant.now())
 

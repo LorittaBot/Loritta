@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.Role
@@ -33,7 +34,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
-			loritta.executor.execute {
+			thread {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
@@ -43,13 +44,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (ownerProfile.isBanned) { // Se o dono está banido...
 						if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 							event.guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-							return@execute
+							return@thread
 						}
 					}
 
 					if (loritta.ignoreIds.contains(event.author.id)) { // Se o usuário está sendo ignorado...
 						if (lorittaProfile.isBanned) { // E ele ainda está banido...
-							return@execute // Então flw galerinha
+							return@thread // Então flw galerinha
 						} else {
 							// Se não, vamos remover ele da lista do ignoreIds
 							loritta.ignoreIds.remove(event.author.id)
@@ -62,7 +63,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					event.member.roles.forEach {
 						if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
-							return@execute
+							return@thread
 						}
 					}
 
@@ -116,7 +117,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
 							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
-								return@execute
+								return@thread
 							}
 						}
 					}
@@ -124,7 +125,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
 						if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
-							return@execute
+							return@thread
 						}
 					}
 
@@ -135,18 +136,18 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			loritta.executor.execute {
+			thread {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
 					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
-					return@execute
+					return@thread
 				}
 
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
 					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), profile)) {
-						return@execute
+						return@thread
 					}
 				}
 			}
@@ -354,13 +355,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (textChannel != null) {
 							if (textChannel.canTalk()) {
 								var msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.leaveMessage, event)
-								val banList = guild.bans.complete()
-								if (banList.contains(event.user)) {
-									if (!conf.joinLeaveConfig.tellOnBan)
-										return@execute
 
-									if (conf.joinLeaveConfig.banMessage.isNotEmpty()) {
-										msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.banMessage, event)
+								// Para a mensagem de ban nós precisamos ter a permissão de banir membros
+								if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
+									val banList = guild.bans.complete()
+									if (banList.contains(event.user)) {
+										if (!conf.joinLeaveConfig.tellOnBan)
+											return@execute
+
+										if (conf.joinLeaveConfig.banMessage.isNotEmpty()) {
+											msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.banMessage, event)
+										}
 									}
 								}
 								textChannel.sendMessage(msg).complete()

@@ -78,6 +78,7 @@ public class CommandManager {
 			commandMap.add(new AtaCommand());
 			commandMap.add(new JoojCommand());
 			commandMap.add(new OjjoCommand());
+			commandMap.add(new HojeCommand());
 
 			// =======[ MISC ]======
 			commandMap.add(new AjudaCommand());
