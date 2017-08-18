@@ -42,7 +42,7 @@ class McHeadCommand : CommandBase() {
 
 			builder.setTitle("<:grass:330435576392318978> ${context.locale.get("MCHEAD_HEAD_DE", nickname)}")
 
-			context.sendFile(bufferedImage, "avatar.png", builder.build())
+			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}
