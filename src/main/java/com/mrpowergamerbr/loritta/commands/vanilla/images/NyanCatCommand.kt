@@ -43,7 +43,6 @@ class NyanCatCommand : CommandBase() {
 		var isDog = false
 		if (context.args.size == 1) {
 			var nonRepeatedCharsMessage = context.args[0].replace(Regex("(.)\\1{1,}"), "$1")
-			println(nonRepeatedCharsMessage)
 			isDog = nonRepeatedCharsMessage.equals("dog", true)
 			times = StringUtils.countMatches(context.args[0], if (isDog) "o" else "a")
 		}
