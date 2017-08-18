@@ -21,7 +21,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 		while (true) {
 			checkRepost(aminoClient);
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		}
 	}
 

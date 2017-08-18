@@ -15,7 +15,7 @@ class McBodyCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCBODY_DESCRIPTION.msgFormat()
+		return locale.get("MCBODY_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -44,9 +44,9 @@ class McBodyCommand : CommandBase() {
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:330435576392318978> ${context.locale.MCBODY_BODY_DE.msgFormat(nickname)}")
+			builder.setTitle("<:grass:330435576392318978> ${context.locale.get("MCBODY_BODY_DE", nickname)}")
 
-			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
+			context.sendFile(bufferedImage, "avatar.png", builder.build())
 		} else {
 			context.explain()
 		}

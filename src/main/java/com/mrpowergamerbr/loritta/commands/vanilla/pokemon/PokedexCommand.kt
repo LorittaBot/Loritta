@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
+import java.awt.Color
 import java.util.*
 
 class PokedexCommand : CommandBase() {
@@ -48,7 +49,7 @@ class PokedexCommand : CommandBase() {
 			var jsoup = Jsoup.parse(response);
 
 			var name = jsoup.getElementById("dex-page-name").html();
-			var description = jsoup.getElementById("dex-pokemon-genus").html();
+			var description = jsoup.getElementById("dex-pokemon-genus")?.html() ?: ""
 			var spriteDiv = jsoup.getElementById("dex-pokemon-portrait-sprite");
 			var sprite = "https://veekun.com" + spriteDiv.getElementsByTag("img")[0].attr("src");
 			var abilities = jsoup.getElementsByClass("pokemon-abilities");
@@ -66,9 +67,12 @@ class PokedexCommand : CommandBase() {
 
 			var embed = EmbedBuilder();
 
-			embed.setTitle(name, "https://veekun.com/dex/pokemon/${context.args[0].toLowerCase()}");
-			embed.setDescription(description);
-			embed.setThumbnail(sprite);
+			embed.apply {
+				setTitle("<:pokeball:343837491905691648> $name", "https://veekun.com/dex/pokemon/${context.args[0].toLowerCase()}")
+				setDescription(description)
+				setThumbnail(sprite)
+				setColor(Color(255, 28, 28))
+			}
 
 			var strAbilities = "";
 			var strDexTypes = dexTypes.joinToString(separator = ", ", transform = { it.attr("alt") });

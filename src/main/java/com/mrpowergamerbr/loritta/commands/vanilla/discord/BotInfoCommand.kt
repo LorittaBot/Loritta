@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -20,7 +21,7 @@ class BotInfoCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.BOTINFO_DESCRIPTION.msgFormat()
+		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
 	override fun run(context: CommandContext) {
@@ -49,9 +50,9 @@ class BotInfoCommand : CommandBase() {
 		embed.setAuthor("${context.locale.BOTINFO_TITLE.msgFormat()} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setThumbnail("https://loritta.website/assets/img/loritta_guild_v4.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(context.locale.BOTINFO_EMBED_INFO.msgFormat(LorittaLauncher.loritta.lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size))
-		embed.addField("\uD83C\uDFC5 ${context.locale.BOTINFO_HONORABLE_MENTIONS.msgFormat()}", context.locale.BOTINFO_MENTIONS.msgFormat(context.userHandle.name, context.userHandle.discriminator), false)
-		embed.setFooter("${context.locale.BOTINFO_CREATEDBY.msgFormat()} - https://mrpowergamerbr.com/", "https://mrpowergamerbr.com/assets/img/avatar.png")
+		embed.setDescription(context.locale.get("BOTINFO_EMBED_INFO", lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size))
+		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
+		embed.setFooter("${context.locale.get("BOTINFO_CREATEDBY")} - https://mrpowergamerbr.com/", "https://mrpowergamerbr.com/assets/img/avatar.png?timestamp=${System.currentTimeMillis()}")
 		context.sendMessage(embed.build())
 	}
 }

@@ -15,7 +15,7 @@ class McAvatarCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCAVATAR_DESCRIPTION.msgFormat()
+		return locale.get("MCAVATAR_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -40,9 +40,9 @@ class McAvatarCommand : CommandBase() {
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:330435576392318978> ${context.locale.MCAVATAR_AVATAR_DE.msgFormat(nickname)}")
+			builder.setTitle("<:grass:330435576392318978> ${context.locale.get("MCAVATAR_AVATAR_DE", nickname)}")
 
-			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
+			context.sendFile(bufferedImage, "avatar.png", builder.build())
 		} else {
 			context.explain()
 		}

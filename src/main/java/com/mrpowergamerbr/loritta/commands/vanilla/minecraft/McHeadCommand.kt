@@ -15,7 +15,7 @@ class McHeadCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCHEAD_DESCRIPTION.msgFormat()
+		return locale.get("MCHEAD_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -40,9 +40,9 @@ class McHeadCommand : CommandBase() {
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:330435576392318978> ${context.locale.MCHEAD_HEAD_DE.msgFormat(nickname)}")
+			builder.setTitle("<:grass:330435576392318978> ${context.locale.get("MCHEAD_HEAD_DE", nickname)}")
 
-			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
+			context.sendFile(bufferedImage, "avatar.png", builder.build())
 		} else {
 			context.explain()
 		}

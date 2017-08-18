@@ -24,7 +24,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 		while (true) {
 			checkNewVideos();
-			Thread.sleep(5000); // Só 5s de delay!
+			Thread.sleep(10000); // Só 10s de delay!
 		}
 	}
 

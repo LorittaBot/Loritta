@@ -15,7 +15,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 		while (true) {
 			checkRssFeeds();
-			Thread.sleep(5000); // Só 5s de delay!
+			Thread.sleep(10000); // Só 5s de delay!
 		}
 	}
 

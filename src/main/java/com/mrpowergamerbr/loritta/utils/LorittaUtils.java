@@ -396,6 +396,32 @@ public class LorittaUtils {
 		return bytes;
 	}
 
+	public static void updateStatus() {
+		if (false) {
+			for (User user : LorittaLauncher.loritta.getLorittaShards().getUsers()) {
+				LorittaProfile lorittaProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.getId());
+				List<Guild> mutualGuilds = LorittaLauncher.loritta.getLorittaShards().getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
+				List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
+				if (!mutualGuilds.isEmpty()) {
+					Member member = mutualGuilds.get(0).getMember(user);
+					if (member.getOnlineStatus() != OnlineStatus.OFFLINE) {
+						lorittaProfile.setTempoOnline(lorittaProfile.getTempoOnline() + 5); // Em segundos
+						Game game = member.getGame();
+
+						if (game != null) {
+							String gameName = game.getName();
+							gameName = gameName.replace(".", "[---DOT---]");
+							gameName = gameName.replace("$", "[---DOLLAR---]");
+							lorittaProfile.getGames().put(gameName, 5 + lorittaProfile.getGames().getOrDefault(gameName, 0L));
+						}
+						LorittaLauncher.loritta.ds.save(lorittaProfile);
+					}
+				}
+				LorittaLauncher.loritta.ds.save(toUpdate);
+			}
+		}
+	}
+
 	@Deprecated
 	public static void startNotMigratedYetThreads() {
 		Runnable reminders = () -> {
@@ -435,27 +461,7 @@ public class LorittaUtils {
 
 		Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
 			while (true) {
-				for (User user : LorittaLauncher.loritta.getLorittaShards().getUsers()) {
-					LorittaProfile lorittaProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.getId());
-					List<Guild> mutualGuilds =  LorittaLauncher.loritta.getLorittaShards().getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
-					List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
-					if (!mutualGuilds.isEmpty()) {
-						Member member = mutualGuilds.get(0).getMember(user);
-						if (member.getOnlineStatus() != OnlineStatus.OFFLINE) {
-							lorittaProfile.setTempoOnline(lorittaProfile.getTempoOnline() + 5); // Em segundos
-							Game game = member.getGame();
-
-							if (game != null) {
-								String gameName = game.getName();
-								gameName = gameName.replace(".", "[---DOT---]");
-								gameName = gameName.replace("$", "[---DOLLAR---]");
-								lorittaProfile.getGames().put(gameName, 5 + lorittaProfile.getGames().getOrDefault(gameName, 0L));
-							}
-							LorittaLauncher.loritta.ds.save(lorittaProfile);
-						}
-					}
-					LorittaLauncher.loritta.ds.save(toUpdate);
-				}
+				updateStatus();
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
