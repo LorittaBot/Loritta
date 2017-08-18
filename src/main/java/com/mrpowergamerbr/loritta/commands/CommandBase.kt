@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -194,26 +195,29 @@ open abstract class CommandBase {
 
 				LorittaUtilsKotlin.trackCommands(ev.message)
 
-				// Verificar se a Loritta possui todas as permissões necessárias
-				var botPermissions = ArrayList<Permission>(getBotPermissions())
-				botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
-				botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
-				botPermissions.add(Permission.MESSAGE_HISTORY)
-				val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
+				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
+				if (ev.isFromType(ChannelType.TEXT)) {
+					// Verificar se a Loritta possui todas as permissões necessárias
+					var botPermissions = ArrayList<Permission>(getBotPermissions())
+					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
+					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
+					botPermissions.add(Permission.MESSAGE_HISTORY)
+					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
 
-				if (missingPermissions.isNotEmpty()) {
-					// oh no
-					var required = ""
-					missingPermissions.forEach {
-						val permissionTranslation = locale.get("PERMISSION_${it.name}")
-						if (required.isNotEmpty()) {
-							required += ", " + permissionTranslation
-						} else {
-							required += permissionTranslation
+					if (missingPermissions.isNotEmpty()) {
+						// oh no
+						var required = ""
+						missingPermissions.forEach {
+							val permissionTranslation = locale.get("PERMISSION_${it.name}")
+							if (required.isNotEmpty()) {
+								required += ", " + permissionTranslation
+							} else {
+								required += permissionTranslation
+							}
 						}
+						ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
+						return true
 					}
-					ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
-					return true
 				}
 
 				var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)

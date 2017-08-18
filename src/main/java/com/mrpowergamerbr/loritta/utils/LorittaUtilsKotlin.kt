@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -401,7 +402,11 @@ object LorittaUtilsKotlin {
 	}
 
 	fun sendStackTrace(message: Message, t: Throwable) {
-		sendStackTrace("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`", t)
+		if (message.isFromType(ChannelType.TEXT)) {
+			sendStackTrace("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`", t)
+		} else {
+			sendStackTrace("[`Mensagem Direta`] **${message.author.name}**: `${message.rawContent}`", t)
+		}
 	}
 
 	fun sendStackTrace(message: String, t: Throwable) {
@@ -440,7 +445,11 @@ object LorittaUtilsKotlin {
 		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336932935838203904")
 
-		commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
+		if (message.isFromType(ChannelType.TEXT)) {
+			commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
+		} else {
+			commandQueue.add("[`Mensagem Direta`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
+		}
 
 		if (lastUpdate > 5000) {
 			lastUpdate = System.currentTimeMillis()
