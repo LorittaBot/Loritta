@@ -58,7 +58,7 @@ class SimsimiCommand : CommandBase() {
 				context.sendMessage(webhook, DiscordMessage.builder()
 						.username(context.locale.get("SIMSIMI_NAME"))
 						.content(context.getAsMention(true) + response)
-						.avatarUrl("https://loritta.website/assets/img/simsimi.png")
+						.avatarUrl("https://loritta.website/assets/img/simsimi_face.png?v=3")
 						.build())
 			} else {
 				var text = loritta.hal.sentence

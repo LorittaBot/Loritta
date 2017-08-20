@@ -80,6 +80,7 @@ public class CommandManager {
 			commandMap.add(new OjjoCommand());
 			commandMap.add(new HojeCommand());
 			commandMap.add(new SimsimiCommand());
+			commandMap.add(new AkinatorCommand());
 
 			// =======[ IMAGENS ]======
 			commandMap.add(new GetOverHereCommand());
