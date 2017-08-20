@@ -21,7 +21,7 @@ class MuteCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MUTE_DESCRIPTION.msgFormat()
+		return locale.get("MUTE_DESCRIPTION")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -58,7 +58,7 @@ class MuteCommand : CommandBase() {
 				}
 
 				if (id == Loritta.config.clientId) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUTE_CANT_MUTE_ME.msgFormat())
+					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUTE_CANT_MUTE_ME"))
 					return
 				}
 

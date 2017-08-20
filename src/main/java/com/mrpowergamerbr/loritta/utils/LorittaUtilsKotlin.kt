@@ -510,3 +510,9 @@ class PanelOptionWrapper(
 		}
 	}
 }
+
+class ServerMiscInfo(
+		val members: Long,
+		val bots: Long,
+		val joinDate: String
+)

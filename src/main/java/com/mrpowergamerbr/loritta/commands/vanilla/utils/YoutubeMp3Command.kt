@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -28,7 +30,7 @@ class YoutubeMp3Command : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.YOUTUBEMP3_DESCRIPTION
+		return locale.get("YOUTUBEMP3_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
@@ -50,7 +52,7 @@ class YoutubeMp3Command : CommandBase() {
 			var videoId = link;
 			var callbackId = "lorittaCallback";
 
-			var checkResponse = HttpRequest.get("https://d.yt-downloader.org/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1498314662109").body().replace(callbackId, "")
+			var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1498314662109").body().replace(callbackId, "")
 			checkResponse = checkResponse.removePrefix("(").removeSuffix(")");
 
 			val reader = StringReader(checkResponse)
@@ -70,7 +72,7 @@ class YoutubeMp3Command : CommandBase() {
 			// after a 100ms delay
 			val fixedRateTimer = fixedRateTimer(name = "YTMP3 Progress Check Thread",
 					initialDelay = 0, period = 1000) {
-				var progressResponse = HttpRequest.get("https://d.yt-downloader.org/progress.php?callback=$callbackId&id=$hash&_=1498315402819").body().replace(callbackId, "")
+				var progressResponse = HttpRequest.get("https://d.ymcdn.cc/progress.php?callback=$callbackId&id=$hash&_=1498315402819").body().replace(callbackId, "")
 				progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
 
 				val readerProgress = StringReader(progressResponse)
@@ -92,38 +94,38 @@ class YoutubeMp3Command : CommandBase() {
 					var serverId = progressJsonResponse.get("sid").asString;
 					var serverName = "";
 					when (serverId) {
-						"1" -> serverName = "fzaqn"
-						"2" -> serverName = "agobe"
-						"3" -> serverName = "topsa"
-						"4" -> serverName = "hcqwb"
-						"5" -> serverName = "gdasz"
-						"6" -> serverName = "iooab"
-						"7" -> serverName = "idvmg"
-						"8" -> serverName = "bjtpp"
-						"9" -> serverName = "sbist"
-						"10" -> serverName = "gxgkr"
-						"11" -> serverName = "njmvd"
-						"12" -> serverName = "trciw"
-						"13" -> serverName = "sjjec"
-						"14" -> serverName = "puust"
-						"15" -> serverName = "ocnuq"
-						"16" -> serverName = "qxqnh"
-						"17" -> serverName = "jureo"
-						"18" -> serverName = "obdzo"
-						"19" -> serverName = "wavgy"
-						"20" -> serverName = "qlmqh"
-						"21" -> serverName = "avatv"
-						"22" -> serverName = "upajk"
-						"23" -> serverName = "tvqmt"
-						"24" -> serverName = "xqqqh"
-						"25" -> serverName = "xrmrw"
-						"26" -> serverName = "fjhlv"
-						"27" -> serverName = "ejtbn"
-						"28" -> serverName = "urynq"
-						"29" -> serverName = "tjljs"
-						"30" -> serverName = "ywjkg"
+						"1" -> serverName = "odg"
+						"2" -> serverName = "ado"
+						"3" -> serverName = "jld"
+						"4" -> serverName = "tzg"
+						"5" -> serverName = "uuj"
+						"6" -> serverName = "bkl"
+						"7" -> serverName = "fnw"
+						"8" -> serverName = "eeq"
+						"9" -> serverName = "ebr"
+						"10" -> serverName = "asx"
+						"11" -> serverName = "ghn"
+						"12" -> serverName = "eal"
+						"13" -> serverName = "hrh"
+						"14" -> serverName = "quq"
+						"15" -> serverName = "zki"
+						"16" -> serverName = "tff"
+						"17" -> serverName = "aol"
+						"18" -> serverName = "eeu"
+						"19" -> serverName = "kkr"
+						"20" -> serverName = "yui"
+						"21" -> serverName = "yyd"
+						"22" -> serverName = "hdi"
+						"23" -> serverName = "ddb"
+						"24" -> serverName = "iir"
+						"25" -> serverName = "ihi"
+						"26" -> serverName = "heh"
+						"27" -> serverName = "xaa"
+						"28" -> serverName = "nim"
+						"29" -> serverName = "omp"
+						"30" -> serverName = "eez"
 					}
-					mensagem.editMessage("📥 **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_FINISHED.msgFormat("https://$serverName.yt-downloader.org/download.php?id=$hash")).complete()
+					mensagem.editMessage("📥 **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_FINISHED.msgFormat("https://$serverName.ymcdn.cc/download.php?id=$hash")).complete()
 					this.cancel()
 				}
 				lastProgress = progress;

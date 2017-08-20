@@ -8,10 +8,12 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.PaniniUtils;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlinKt;
+import com.mrpowergamerbr.loritta.utils.ServerMiscInfo;
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import lombok.experimental.ExtensionMethod;
+import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooby.Request;
 import org.jooby.Response;
@@ -43,6 +45,29 @@ public class GlobalHandler {
             contextVars.put("totalUsers", LorittaLauncher.getInstance().getLorittaShards().getUsers().size());
             contextVars.put("epochMillis", System.currentTimeMillis());
 
+            List<Guild> servers = LorittaLauncher.loritta.getLorittaShards().getGuilds();
+
+            servers.sort(new Comparator<Guild>() {
+                @Override
+                public int compare(Guild o1, Guild o2) {
+                    long realMembers1 = o1.getMembers().size() - o1.getMembers().stream().filter(it -> (it.getUser().isBot())).count();
+                    long realMembers2 = o2.getMembers().size() - o2.getMembers().stream().filter(it -> (it.getUser().isBot())).count();
+                    return new Long(realMembers2).compareTo(realMembers1);
+                }
+            });
+
+            HashMap<Guild, ServerMiscInfo> miscInfo = new HashMap<Guild, ServerMiscInfo>();
+
+            for (Guild guild : servers) {
+                long bots = guild.getMembers().stream().filter(it -> (it.getUser().isBot())).count();
+                long members = guild.getMembers().stream().filter(it -> (!it.getUser().isBot())).count();
+                String since = LorittaUtilsKotlinKt.humanize(guild.getSelfMember().getJoinDate());
+	            ServerMiscInfo misc = new ServerMiscInfo(members, bots, since);
+	            miscInfo.put(guild, misc);
+            }
+
+            contextVars.put("serversMiscInfo", miscInfo);
+            contextVars.put("servers", servers);
             contextVars.put("fanClubServers", LorittaLauncher.loritta.getServersFanClub());
 
             Object temmieObj = null;

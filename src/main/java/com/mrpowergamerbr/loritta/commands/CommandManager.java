@@ -80,6 +80,9 @@ public class CommandManager {
 			commandMap.add(new OjjoCommand());
 			commandMap.add(new HojeCommand());
 
+			// =======[ IMAGENS ]======
+			commandMap.add(new GetOverHereCommand());
+
 			// =======[ MISC ]======
 			commandMap.add(new AjudaCommand());
 			commandMap.add(new PingCommand());
