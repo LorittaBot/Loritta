@@ -129,7 +129,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
-					loritta.hal.add(event.message.content.toLowerCase()) // TODO: Filtrar links
+					val toLearn = event.message.strippedContent.toLowerCase()
+							.replace("@everyone", "")
+							.replace("@here", "")
+							.replace("@", "")
+					loritta.hal.add(toLearn) // TODO: Filtrar links
 				} catch (e: Exception) {
 					e.printStackTrace()
 					LorittaUtilsKotlin.sendStackTrace(event.message, e)

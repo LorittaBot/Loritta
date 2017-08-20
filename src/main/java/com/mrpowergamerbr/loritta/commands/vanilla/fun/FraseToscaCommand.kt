@@ -33,7 +33,7 @@ class FraseToscaCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		var text: String
-		if (context.args.size >= 1) {
+		if (context.args.isNotEmpty()) {
 			text = loritta.hal.getSentence(context.args.joinToString(" ").toLowerCase())
 		} else {
 			text = loritta.hal.sentence
@@ -41,7 +41,7 @@ class FraseToscaCommand : CommandBase() {
 		text = if (text.length > 400) text.substring(0, 400) + "..." else text
 		val webhook = getOrCreateWebhook(context.event.textChannel, "Frase Tosca")
 		context.sendMessage(webhook, DiscordMessage.builder()
-				.username(context.locale.FRASETOSCA_GABRIELA.f())
+				.username(context.locale.get("FRASETOSCA_GABRIELA"))
 				.content(context.getAsMention(true) + text)
 				.avatarUrl("http://i.imgur.com/aATogAg.png")
 				.build())
