@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.double
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.long
@@ -51,7 +52,7 @@ class AkinatorCommand : CommandBase() {
 		val stepInfo = jsonSession["PARAMETERS"]["STEP_INFORMATION"]
 
 		var question = stepInfo["QUESTION"].string
-		var progression = stepInfo["PROGRESSION"].int
+		var progression = stepInfo["PROGRESSION"].double
 		var step = stepInfo["STEP"].int
 		var answers = stepInfo["ANSWERS"]["ANSWER"].array
 
@@ -104,7 +105,7 @@ class AkinatorCommand : CommandBase() {
 				val session = context.metadata["session"] as Long
 				val signature = context.metadata["signature"] as Long
 				var step = context.metadata["step"] as Int
-				val answer = if (e.reactionEmote.name == "1⃣") {
+				var answer = if (e.reactionEmote.name == "1⃣") {
 					0
 				} else if (e.reactionEmote.name == "2⃣") {
 					1
@@ -118,17 +119,43 @@ class AkinatorCommand : CommandBase() {
 					0
 				}
 
-				val response = HttpRequest.get("http://api-pt3.akinator.com/ws/answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&answer=$answer")
-						.body()
+				val response = if (e.reactionEmote.name == "⏪") {
+					HttpRequest.get("http://api-pt3.akinator.com/ws/cancel_answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step")
+							.body()
+				} else {
+					HttpRequest.get("http://api-pt3.akinator.com/ws/answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&answer=$answer")
+							.body()
+				}
 
 				val xmlJSONObj = XML.toJSONObject(response);
 
 				val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-				val jsonAnswer = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]
+				println(jsonPrettyPrintString)
+
+				val jsonResult = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]
+
+				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
+					val builder = EmbedBuilder().apply {
+						setTitle("<:akinator:348903800540758017> Akinator")
+						setDescription(context.locale.get("AKINATOR_TIMEOUT"))
+						setColor(Color(20, 158, 255))
+					}
+
+					context.metadata.remove("channel")
+					context.metadata.remove("signature")
+					context.metadata.remove("session")
+					context.metadata.remove("step")
+
+					msg.clearReactions().complete()
+					msg.editMessage(builder.build()).complete()
+
+					return
+				}
+				val jsonAnswer = jsonResult["PARAMETERS"]
 
 				var question = jsonAnswer["QUESTION"].string
-				var progression = jsonAnswer["PROGRESSION"].int
+				var progression = jsonAnswer["PROGRESSION"].double
 				step = jsonAnswer["STEP"].int
 				var answers = jsonAnswer["ANSWERS"]["ANSWER"].array
 
@@ -168,6 +195,20 @@ class AkinatorCommand : CommandBase() {
 					context.metadata["step"] = step
 
 					msg.editMessage(builder.build()).complete()
+
+					if (msg.reactions.filter { it.emote.name == "⏪"}.count() == 0) {
+						if (step > 0) {
+							msg.addReaction("⏪").complete()
+						}
+					} else {
+						if (step == 0) {
+							msg.reactions.forEach {
+								if (it.emote.name == "⏪") {
+									it.removeReaction(context.userHandle).complete()
+								}
+							}
+						}
+					}
 				} else {
 					val response = HttpRequest.get("http://api-pt3.akinator.com/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
 							.body()
