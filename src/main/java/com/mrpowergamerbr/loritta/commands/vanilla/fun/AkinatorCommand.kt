@@ -131,8 +131,6 @@ class AkinatorCommand : CommandBase() {
 
 				val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-				println(jsonPrettyPrintString)
-
 				val jsonResult = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]
 
 				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
