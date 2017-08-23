@@ -100,7 +100,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					if (serverConfig.aminoConfig.fixAminoImages) {
 						for (attachments in event.message.attachments) {
-							if (attachments.fileName.endsWith(".Amino")) {
+							if (attachments.fileName.endsWith(".Amino") || attachments.fileName == "Amino") {
 								val bufferedImage = LorittaUtils.downloadImage(attachments.url)
 
 								val os = ByteArrayOutputStream()

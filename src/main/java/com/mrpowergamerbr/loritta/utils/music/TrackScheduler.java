@@ -68,9 +68,31 @@ public class TrackScheduler extends AudioEventAdapter {
 				TextChannel textChannel = guild.getTextChannelById(config.musicConfig.getChannelId());
 
 				if (textChannel.canTalk()) {
-					MessageEmbed embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true);
+					Thread t = new Thread() {
+						public void run() {
+							int seconds = 0;
 
-					textChannel.sendMessage(embed).complete();
+							while (true) {
+								if (seconds >= 5) {
+									return;
+								}
+
+								if (!track.getMetadata().isEmpty()) {
+									MessageEmbed embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true);
+
+									textChannel.sendMessage(embed).complete();
+									return;
+								}
+								seconds++;
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					};
+					t.start();
 				}
 			}
 		}

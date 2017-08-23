@@ -492,14 +492,11 @@ class Loritta {
 
 		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}! (State: ${guild.audioManager.isConnected}")
 
-		if (!guild.selfMember.voiceState.inVoiceChannel() && guild.audioManager.isConnected) {
-			// Se a Loritta está
-		}
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
-		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
-
 		musicManager.scheduler.queue(trackWrapper);
+
+		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
 	}
 
 	fun skipTrack(context: CommandContext) {
