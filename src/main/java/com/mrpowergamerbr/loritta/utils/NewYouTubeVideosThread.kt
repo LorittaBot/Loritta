@@ -16,8 +16,9 @@ import java.util.*
 
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
-	val lastVideos = HashMap<String, String>(); // HashMap usada para guardar o ID do último vídeo
-	val lastVideosTime = HashMap<String, String>(); // HashMap usada para guardar a data do último vídeo
+	// val lastVideos = HashMap<String, String>(); // HashMap usada para guardar o ID do último vídeo
+	// val lastVideosTime = HashMap<String, String>(); // HashMap usada para guardar a data do último vídeo
+	val lastItemTime = HashMap<String, NewYouTubeVideosThread.YouTubeCheck>(); // HashMap usada para guardar a data do útimo item na RSS
 
 	override fun run() {
 		super.run()
@@ -33,45 +34,42 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			var servers = LorittaLauncher.loritta.mongo
 					.getDatabase("loritta")
 					.getCollection("servers")
-					.find(Filters.eq("youTubeConfig.isEnabled", true))
+					.find(Filters.exists("youTubeConfig.channels", true))
 
 			for (server in servers) {
 				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
 
 				var youTubeConfig = config.youTubeConfig;
 
-				if (youTubeConfig.isEnabled) { // Está ativado?
-					var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
+				var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
 
-					if (guild != null) {
-						var textChannel = guild.getTextChannelById(youTubeConfig.repostToChannelId);
+				if (guild != null) {
+					for (youTubeInfo in youTubeConfig.channels) {
+						var textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId);
 
 						if (textChannel != null) { // Wow, diferente de null!
 							if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-								if (!youTubeConfig.channelUrl!!.startsWith("http")) {
-									youTubeConfig.channelUrl = "http://" + youTubeConfig.channelUrl;
+								if (!youTubeInfo.channelUrl!!.startsWith("http")) {
+									youTubeInfo.channelUrl = "http://" + youTubeInfo.channelUrl;
 
 									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
 								}
-								if (youTubeConfig.channelId == null) { // Omg é null
+								if (youTubeInfo.channelId == null) { // Omg é null
 									try {
-										var jsoup = Jsoup.connect(youTubeConfig.channelUrl).get() // Hora de pegar a página do canal...
+										var jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
 
 										var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
 
-										youTubeConfig.channelId = id; // E salvar o ID!
+										youTubeInfo.channelId = id; // E salvar o ID!
 
 										LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
 									} catch (e: Exception) {
-										// Se deu ruim, desative o módulo!
-										youTubeConfig.isEnabled = false;
-										LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
 										continue;
 									}
 								}
 
 								// E agora sim iremos pegar os novos vídeos!
-								var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
+								var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeInfo.channelId}&key=${Loritta.config.youtubeKey}")
 										.body();
 
 								var parser = JsonParser();
@@ -87,13 +85,13 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
 										.body();
 
-								var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeConfig.channelId}&key=${Loritta.config.youtubeKey}")
+								var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeInfo.channelId}&key=${Loritta.config.youtubeKey}")
 										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
 										.useCaches(false) // YouPobre(tm)
 										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
 										.body();
 
-								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeConfig.channelId}")
+								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeInfo.channelId}")
 										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
 										.useCaches(false) // YouPobre(tm)
 										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
@@ -110,7 +108,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								var searchJson = JsonParser().parse(newVideosSearch);
 								var jsonSearch = searchJson.get("items").asJsonArray[0];
 
-								var lastId = lastVideos.getOrDefault(guild.id, null);
+								val checkedVideos = lastItemTime.getOrDefault(guild.id, NewYouTubeVideosThread.YouTubeCheck());
+								var lastId = checkedVideos.checked.getOrDefault(youTubeInfo.channelId, null);
 
 								var snippet = jsonItem.get("snippet").asJsonObject
 								var searchSnippet = jsonSearch.get("snippet").asJsonObject
@@ -158,17 +157,16 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 								if (lastId == null) {
 									// Se é null, só salve o ID do último vídeo atual e ignore!
-									lastVideos.put(guild.id, videoId);
-
 									// E também salve o tempo atual
 									val tz = TimeZone.getTimeZone("UTC")
 									val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
 									df.timeZone = tz
-									lastVideosTime.put(guild.id, df.format(Date()));
+									checkedVideos.checked.put(youTubeInfo.channelId!!, Pair(videoId, df.format(Date())))
+									lastItemTime[guild.id] = checkedVideos
 									continue;
 								}
 
-								val lastDate = lastVideosTime.getOrDefault(guild.id, null);
+								val lastDate = checkedVideos?.checked?.get(guild.id)?.second;
 								if (lastDate != null) {
 									// Data do último vídeo enviado
 									val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
@@ -178,15 +176,16 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									}
 								}
 
-								if (lastId != videoId) {
+								if (lastId.first != videoId) {
 									// Novo vídeo! Yay!
-									var message = youTubeConfig.videoSentMessage;
+									var message = youTubeInfo.videoSentMessage;
 
-									if (message == null) { continue; }
+									if (message == null) {
+										continue; }
 
 									if (message.isEmpty()) {
 										message = "{link}"
-										youTubeConfig.videoSentMessage = message
+										youTubeInfo.videoSentMessage = message
 										loritta save config
 									}
 
@@ -197,9 +196,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 									textChannel.sendMessage(message).complete();
 
-									lastVideos.put(guild.id, videoId);
-									lastVideosTime.put(guild.id, date);
-
+									checkedVideos.checked.put(youTubeInfo.channelId!!, Pair(videoId, date))
+									lastItemTime[guild.id] = checkedVideos
 									println("Atualizado pela source: $source")
 								}
 							}
@@ -210,5 +208,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
+	}
+
+	data class YouTubeCheck(
+			var checked: HashMap<String, Pair<String, String>>
+	) {
+		constructor() : this(HashMap<String, Pair<String, String>>())
 	}
 }

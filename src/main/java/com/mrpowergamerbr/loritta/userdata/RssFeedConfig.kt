@@ -1,10 +1,9 @@
 package com.mrpowergamerbr.loritta.userdata
 
 data class RssFeedConfig(
-	var isEnabled: Boolean, // Está ativado?
 	var feeds: MutableList<FeedInfo> // Feeds
 	) {
-	constructor() : this(false, mutableListOf<FeedInfo>())
+	constructor() : this(mutableListOf<FeedInfo>())
 
 	data class FeedInfo(
 		var feedUrl: String?, // URL da Feed

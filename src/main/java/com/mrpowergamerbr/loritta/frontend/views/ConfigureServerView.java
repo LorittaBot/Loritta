@@ -175,11 +175,11 @@ public class ConfigureServerView {
                         template = NashornCommandsView.render(context, temmie, sc);
                     } else if (context.request().path().endsWith("amino")) {
                         template = AminoConfigView.render(context, temmie, sc);
-                    } else if (context.request().path().endsWith("youtube")) {
+                    } else if (argument.equals("youtube")) {
                         template = YouTubeConfigView.render(context, temmie, sc);
                     } else if (context.request().path().endsWith("starboard")) {
                         template = StarboardConfigView.render(context, temmie, sc);
-                    } else if (context.request().path().endsWith("rss")) {
+                    } else if (argument.equals("rss")) {
                         template = RssFeedsConfigView.render(context, temmie, sc);
                     } else if (context.request().path().endsWith("autorole")) {
                         template = AutoroleConfigView.render(context, temmie, sc);

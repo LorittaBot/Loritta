@@ -5,37 +5,88 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.userdata.RssFeedConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.userdata.YouTubeConfig;
+import com.mrpowergamerbr.loritta.utils.FeedEntry;
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class YouTubeConfigView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
 			throws PebbleException {
-		if (context.request().param("repostToChannelId").isSet()) { // O usuário está salvando as configurações?
+		context.contextVars().put("whereAmI", "youTubeConfig");
+
+		if (context.arguments.length > 4) {
+			String editor = context.arguments[4];
+
+			if (editor.equalsIgnoreCase("editor")) {
+				YouTubeConfig youTubeConfig = sc.youTubeConfig;
+				YouTubeConfig.YouTubeInfo def = new YouTubeConfig.YouTubeInfo("", "", "", "");
+
+				if (context.arguments.length > 5) {
+					String id = context.arguments[5];
+
+					int intId = Integer.valueOf(id);
+
+					def = sc.youTubeConfig.getChannels().get(intId);
+
+					if (context.request.param("repostToChannelId").isSet()) {
+						sc.youTubeConfig.getChannels().remove(def);
+					}
+				}
+
+				if (context.request.param("repostToChannelId").isSet()) { // Salvando!
+					def.setChannelUrl(context.request().param("channelUrl").value());
+					def.setRepostToChannelId(context.request().param("repostToChannelId").value());
+					def.setVideoSentMessage(context.request().param("videoSentMessage").value());
+
+					if (!def.getChannelUrl().startsWith("http")) {
+						def.setChannelUrl("http://" + def.getChannelUrl());
+					}
+
+					try {
+						Document jsoup = Jsoup.connect(def.getChannelUrl()).get(); // Hora de pegar a página do canal...
+
+						String id = jsoup.getElementsByAttribute("data-channel-external-id").get(0).attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
+
+						def.setChannelId(id); // E salvar o ID!
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					youTubeConfig.getChannels().add(def);
+					sc.youTubeConfig = youTubeConfig;
+					LorittaLauncher.getInstance().getDs().save(sc);
+
+					try {
+						context.response.redirect("https://loritta.website/config/servidor/" + sc.guildId + "/youtube");
+					} catch (Throwable e) {
+
+					}
+					PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("empty.html");
+					return template;
+				} else {
+					context.contextVars.put("config", def);
+
+					PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("youtube_editor.html");
+					return template;
+				}
+			}
+		}
+
+		if (context.request().param("deleteCommand").isSet()) { // O usuário está deletando uma feed?
+			int feedId = context.request().param("deleteCommand").intValue();
 			YouTubeConfig youTubeConfig = sc.youTubeConfig;
-			youTubeConfig.setEnabled(context.request().param("enableModule").isSet());
-			youTubeConfig.setChannelUrl(context.request().param("channelUrl").value());
-			youTubeConfig.setRepostToChannelId(context.request().param("repostToChannelId").value());
-			youTubeConfig.setVideoSentMessage(context.request().param("videoSentMessage").value());
-
-			if (!youTubeConfig.getChannelUrl().startsWith("http")) {
-				youTubeConfig.setChannelUrl("http://" + youTubeConfig.getChannelUrl());
-			}
-			try {
-				Document jsoup = Jsoup.connect(youTubeConfig.getChannelUrl()).get(); // Hora de pegar a página do canal...
-
-				String id = jsoup.getElementsByAttribute("data-channel-external-id").get(0).attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
-
-				youTubeConfig.setChannelId(id); // E salvar o ID!
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			sc.youTubeConfig(youTubeConfig);
+			youTubeConfig.getChannels().remove(feedId);
+			sc.youTubeConfig = youTubeConfig;
 			LorittaLauncher.getInstance().getDs().save(sc);
 		}
+
 		context.contextVars().put("whereAmI", "youTubeConfig");
 
 		PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("youtube_config.html");
