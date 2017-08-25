@@ -489,19 +489,40 @@ public class LorittaUtils {
 				}
 				for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
 					if (mm.player.getPlayingTrack() == null) {
-						ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(mm.scheduler.getGuild().getId());
+						Thread x = new Thread(() -> {
+							long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(mm.scheduler.getGuild().getId(), 0L);
 
-						if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
-							String trackUrl = conf.musicConfig().getUrls().get(
-									Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+							if (5000 > diff * 1000)
 
-							// E agora carregue a música
-							LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
-						}
+							{
+								return; // bye
+							}
+
+							ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(mm.scheduler.getGuild().getId());
+
+							if (conf.musicConfig().
+
+									getAutoPlayWhenEmpty() && !conf.musicConfig().
+
+									getUrls().
+
+									isEmpty())
+
+							{
+								String trackUrl = conf.musicConfig().getUrls().get(
+										Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+
+								// E agora carregue a música
+								LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
+
+								LorittaLauncher.getInstance().getSongThrottle().put(mm.scheduler.guild.getId(), System.currentTimeMillis());
+							}
+						});
+						x.start();
 					}
 				}
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(12500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
