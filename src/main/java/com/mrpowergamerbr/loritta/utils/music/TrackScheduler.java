@@ -114,6 +114,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (audioTrackWrapper == null) {
 			// Ok, Audio Track é null!
 			// Vamos pegar o ServerConfig deste servidor
+
+			long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
+
+			if (5000 > diff * 1000) {
+				return; // bye
+			}
+
 			ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(guild.getId());
 			
 			if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
@@ -121,6 +128,9 @@ public class TrackScheduler extends AudioEventAdapter {
 				
 				// E agora carregue a música
 				LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl); // Só vai meu parça
+
+				// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
+				LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());
 			}
 		}
 	}

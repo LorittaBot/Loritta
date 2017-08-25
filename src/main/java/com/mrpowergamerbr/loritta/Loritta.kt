@@ -100,6 +100,7 @@ class Loritta {
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
+	var songThrottle = mutableMapOf<String, Long>()
 
 	var isMusicOnly: Boolean = false
 
@@ -376,11 +377,19 @@ class Loritta {
 		loadAndPlay(context, trackUrl, false);
 	}
 
+	val failedSongsUrls = mutableSetOf<String>()
+	val unmatchedSongsUrls = mutableSetOf<String>()
+
 	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
+
+		if (failedSongsUrls.contains(trackUrl)) {
+			channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_ERROR.msgFormat("\uD83E\uDD37")).queue();
+			return
+		}
 
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
@@ -447,6 +456,7 @@ class Loritta {
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
+				failedSongsUrls.add(trackUrl)
 				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_ERROR.msgFormat(exception.message)).queue();
 			}
 		})
@@ -455,6 +465,10 @@ class Loritta {
 	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
 		val musicConfig = config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
+
+		if (failedSongsUrls.contains(trackUrl) || unmatchedSongsUrls.contains(trackUrl)) {
+			return
+		}
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
@@ -466,19 +480,11 @@ class Loritta {
 			}
 
 			override fun noMatches() {
-				if (false || !trackUrl.contains("list")) { // É uma playlist? Se não for...
-					// Vamos remover a URL da configuração!
-					musicConfig.urls.remove(trackUrl)
-					loritta save config
-				}
+				unmatchedSongsUrls.add(trackUrl)
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				if (false || !trackUrl.contains("list")) { // É uma playlist? Se não for...
-					// Vamos remover a URL da configuração!
-					musicConfig.urls.remove(trackUrl)
-					loritta save config
-				}
+				failedSongsUrls.add(trackUrl)
 			}
 		})
 	}
