@@ -35,13 +35,15 @@ import java.awt.image.BufferedImage
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 fun OffsetDateTime.humanize(): String {
+	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
 	val months = DateFormatSymbols().getMonths();
-	return "${this.dayOfMonth} de ${months[this.month.value - 1]}, ${this.year} às ${this.hour.toString().padStart(2, '0')}:${this.minute.toString().padStart(2, '0')}";
+	return "${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
 }
 
 fun Image.toBufferedImage() : BufferedImage {

@@ -237,6 +237,54 @@ public class LorittaUtils {
 	}
 
 	/**
+	 * Retorna um usuário dependendo do contexto
+	 *
+	 * @param context
+	 * @param argument
+	 * @return uma user com a imagem
+	 */
+	public static User getUserFromContext(CommandContext context, int argument) {
+		User realUser = null; // Usuário
+		if (context.getRawArgs().length > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
+			String link = context.getRawArgs()[argument]; // Ok, será que isto é uma URL?
+
+			// Vamos verificar por menções
+			if (realUser == null) {
+				// Uma menção do Discord é + ou - assim: <@123170274651668480>
+				for (User user : context.getMessage().getMentionedUsers()) {
+					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
+						// Diferente de null? Então vamos usar o avatar do usuário!
+						realUser = user;
+						break;
+					}
+				}
+			}
+
+			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+			if (!context.isPrivateChannel() && realUser == null) {
+				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
+
+				if (!matchedMembers.isEmpty()) {
+					realUser = matchedMembers.get(0).getUser();
+				}
+			}
+
+			// Ok, então só pode ser um ID do Discord!
+			if (realUser == null) {
+				try {
+					User user = LorittaLauncher.getInstance().getLorittaShards().getUserById(link);
+
+					if (user != null) { // Pelo visto é!
+						realUser = user;
+					}
+				} catch (Exception e) {}
+			}
+		}
+
+		return realUser;
+	}
+
+	/**
 	 * Retorna uma URL dependendo do contexto
 	 *
 	 * @param context
