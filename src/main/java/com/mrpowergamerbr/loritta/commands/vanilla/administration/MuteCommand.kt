@@ -37,7 +37,7 @@ class MuteCommand : CommandBase() {
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES)
+		return listOf(Permission.KICK_MEMBERS)
 	}
 
 	override fun getBotPermissions(): List<Permission> {
