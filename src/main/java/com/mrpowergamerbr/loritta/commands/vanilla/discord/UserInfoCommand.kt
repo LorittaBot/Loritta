@@ -77,7 +77,7 @@ class UserInfoCommand : CommandBase() {
 
 			val sharedServers = lorittaShards.getMutualGuilds(member.user)
 
-			var servers = sharedServers.joinToString(separator = ", ", transform = { "**${it.name}**"})
+			var servers = sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
 
 			if (servers.length >= 1024) {
 				servers = servers.substring(0..1020) + "...";
@@ -86,7 +86,7 @@ class UserInfoCommand : CommandBase() {
 			embed.addField("\uD83C\uDF0E " + context.locale.get("USERINFO_SHARED_SERVERS") + " (${sharedServers.size})", servers, true)
 			embed.addField("\uD83D\uDCE1 " + context.locale.get("USERINFO_STATUS"), member.onlineStatus.name, true)
 
-			val roles = member.roles.joinToString(separator = ", ", transform = { "**${it.name}**"});
+			val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}"});
 
 			embed.addField("\uD83D\uDCBC " + context.locale.get("USERINFO_ROLES"), if (roles.isNotEmpty()) roles else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 
