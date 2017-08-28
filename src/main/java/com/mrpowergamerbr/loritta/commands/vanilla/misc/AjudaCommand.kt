@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 import java.io.File
 import java.util.stream.Collectors
@@ -34,7 +35,7 @@ class AjudaCommand : CommandBase() {
 		try {
 			context.userHandle.openPrivateChannel().complete()
 
-			if (true /* cmdOptions.getAsBoolean(TELL_SENT_IN_PRIVATE) */) {
+			if (!context.isPrivateChannel) {
 				context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
 			}
 
@@ -118,9 +119,12 @@ class AjudaCommand : CommandBase() {
 			context.sendMessage(sparklyPower.build())
 			context.sendMessage(additionalInfoEmbed.build())
 		}
-		catch (e: Exception) {
-			context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("AJUDA_ERROR_WHEN_OPENING_DM"))
-			return
+		catch (e: ErrorResponseException) {
+			if (e.errorCode == 50007) { // Usuário tem as DMs desativadas
+				context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("AJUDA_ERROR_WHEN_OPENING_DM"))
+				return
+			}
+			throw e
 		}
 	}
 
