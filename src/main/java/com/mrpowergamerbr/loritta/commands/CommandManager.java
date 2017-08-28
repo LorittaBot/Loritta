@@ -85,6 +85,7 @@ public class CommandManager {
 
 			// =======[ IMAGENS ]======
 			commandMap.add(new GetOverHereCommand());
+			commandMap.add(new RomeroBrittoCommand());
 
 			// =======[ MISC ]======
 			commandMap.add(new AjudaCommand());
