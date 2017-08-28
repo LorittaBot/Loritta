@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.utils
 
 import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.entities.impl.GameImpl
 import net.dv8tion.jda.core.managers.Presence
 
 /**
@@ -71,7 +71,7 @@ class LorittaShards {
     /**
      * Atualiza a presença do bot em todas as shards
      */
-    fun setGame(game: GameImpl) {
+    fun setGame(game: Game) {
         for (shard in shards) {
             shard.presence.game = game
         }
