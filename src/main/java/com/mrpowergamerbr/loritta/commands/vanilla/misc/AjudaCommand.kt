@@ -121,11 +121,6 @@ class AjudaCommand : CommandBase() {
 
         context.sendMessage(sparklyPower.build())
         context.sendMessage(additionalInfoEmbed.build())
-
-        firstMsgSent.pin().complete();
-
-        // E agora vamos enviar o aviso do pin
-        context.sendFile(File(Loritta.FOLDER + "pinned.png"), "aviso.png", "**Se você quiser voltar para o topo das mensagens de ajuda do " + context.guild.name + ", então clique nas mensagens fixadas!**")
     }
 
     /**
