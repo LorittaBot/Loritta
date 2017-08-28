@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -35,10 +38,13 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
+	val handledUsernameChanges = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
+
 	// ===[ EVENT LOG ]===
 	// Users
 	override fun onGenericUser(event: GenericUserEvent) {
@@ -96,6 +102,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 			// Atualizar nome
 			if (event is UserNameUpdateEvent) {
+				// Antes nós iremos salvar o nome velho do usuário no profile dele
+				if (!handledUsernameChanges.containsKey(event.user.id)) {
+					// É necessário fazer isto já que todas as shards irão receber a notificação de username change
+					handledUsernameChanges.put(event.user.id, System.currentTimeMillis())
+					val newName = event.user.name
+					val newDiscriminator = event.user.discriminator
+					val changedAt = System.currentTimeMillis()
+
+					val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
+
+					val profile = loritta.getLorittaProfileForUser(event.user.id)
+
+					profile.usernameChanges.add(changeWrapper)
+
+					loritta save profile
+				}
+
 				// E agora nós iremos anunciar a troca para todos os servidores
 				for (guild in event.jda.guilds) {
 					if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!

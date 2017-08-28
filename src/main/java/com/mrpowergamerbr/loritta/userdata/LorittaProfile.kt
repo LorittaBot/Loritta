@@ -30,6 +30,7 @@ class LorittaProfile {
     var lastReputationGiven: Long = 0;
     var lastMessageSent: Long = 0; // Última vez que o usuário enviou uma mensagem
 	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
+    var usernameChanges: MutableList<UsernameChange> = arrayListOf()
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
@@ -52,4 +53,6 @@ class LorittaProfile {
     }
 
     data class XpWrapper(val currentLevel: Int, val expLeft: Int)
+
+    data class UsernameChange(val changedAt: Long, val username: String, val discriminator: String)
 }
