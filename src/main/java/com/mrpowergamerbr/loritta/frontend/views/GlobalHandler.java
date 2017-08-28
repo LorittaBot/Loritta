@@ -98,15 +98,9 @@ public class GlobalHandler {
             sb.append(" segundos");
             contextVars.put("uptime", sb.toString());
 
-            RenderContext context = new RenderContext()
-                    .contextVars(contextVars)
-                    .request(req)
-                    .response(res)
-                    .arguments(arguments);
-
             Object obj = null;
 
-            String acceptLanguage = context.request().header("Accept-Language").value("en-US");
+            String acceptLanguage = req.header("Accept-Language").value("en-US");
 
             // Vamos parsear!
             List<Locale.LanguageRange> ranges = Lists.reverse(Locale.LanguageRange.parse(acceptLanguage));
@@ -130,9 +124,16 @@ public class GlobalHandler {
                 }
             }
 
-            if (context.request().param("locale").isSet()) {
-                lorittaLocale = LorittaLauncher.loritta.getLocaleById(context.request().param("locale").value());
+            if (req.param("locale").isSet()) {
+                lorittaLocale = LorittaLauncher.loritta.getLocaleById(req.param("locale").value());
             }
+
+            RenderContext context = new RenderContext()
+                    .contextVars(contextVars)
+                    .request(req)
+                    .response(res)
+                    .arguments(arguments)
+                    .locale(lorittaLocale);
 
             context.contextVars().put("locale", lorittaLocale);
 

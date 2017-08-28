@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.frontend.utils;
 
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,4 +20,5 @@ public class RenderContext {
 	public Response response;
 	public Map<String, Object> contextVars;
 	public String[] arguments;
+	public BaseLocale locale;
 }

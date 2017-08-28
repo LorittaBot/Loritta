@@ -41,20 +41,20 @@ public class EventLogConfigView {
 
 		List<PanelOptionWrapper> options = new ArrayList<>();
 
-		options.add(new PanelOptionWrapper(eventLogConfig, "memberBanned", "Avisar quando alguém for banido"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "memberUnbanned", "Avisar quando alguém for desbanido"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "messageEdit", "Avisar quando uma mensagem for editada"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "messageDeleted", "Avisar quando uma mensagem for deletada"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "channelCreated", "Avisar quando um canal for criado"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "channelNameUpdated", "Avisar quando o nome de um canal de texto for alterado"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "channelTopicUpdated", "Avisar quando o tópico de um canal de texto for alterado"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "channelPositionUpdated", "Avisar quando a posição de um canal de texto for alterada"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "channelDeleted", "Avisar quando um canal de texto"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "nicknameChanges", "Avisar quando alguém alterar o nickname"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "usernameChanges", "Avisar quando alguém alterar o nome"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "avatarChanges", "Avisar quando alguém alterar o avatar"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "voiceChannelJoins", "Avisar quando alguém entrar em um canal de voz"));
-		options.add(new PanelOptionWrapper(eventLogConfig, "voiceChannelLeaves", "Avisar quando alguém sair de um canal de voz"));
+		options.add(new PanelOptionWrapper(eventLogConfig, "memberBanned", context.locale.get("ADMINP_EVENTLOG_MEMBER_BAN")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "memberUnbanned", context.locale.get("ADMINP_EVENTLOG_MEMBER_UNBAN")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "messageEdit", context.locale.get("ADMINP_EVENTLOG_MESSAGE_EDIT")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "messageDeleted", context.locale.get("ADMINP_EVENTLOG_MESSAGE_DELETE")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "channelCreated", context.locale.get("ADMINP_EVENTLOG_CHANNEL_CREATED")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "channelNameUpdated", context.locale.get("ADMINP_EVENTLOG_CHANNEL_NAME_CHANGED")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "channelTopicUpdated", context.locale.get("ADMINP_EVENTLOG_CHANNEL_TOPIC_UPDATED")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "channelPositionUpdated", context.locale.get("ADMINP_EVENTLOG_CHANNEL_POSITION_UPDATED")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "channelDeleted", context.locale.get("ADMINP_EVENTLOG_CHANNEL_DELETED")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "nicknameChanges", context.locale.get("ADMINP_EVENTLOG_SERVER_NICK_CHANGE")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "usernameChanges", context.locale.get("ADMINP_EVENTLOG_USERNAME_CHANGE")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "avatarChanges", context.locale.get("ADMINP_EVENTLOG_AVATAR_CHANGE")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "voiceChannelJoins", context.locale.get("ADMINP_EVENTLOG_VOICE_JOIN")));
+		options.add(new PanelOptionWrapper(eventLogConfig, "voiceChannelLeaves", context.locale.get("ADMINP_EVENTLOG_VOICE_LEAVE")));
 
 		context.contextVars().put("options", options);
 
