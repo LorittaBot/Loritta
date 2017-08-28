@@ -56,21 +56,24 @@ class UserInfoCommand : CommandBase() {
 		val embed = EmbedBuilder()
 
 		embed.apply {
-			embed.setThumbnail(member.user.effectiveAvatarUrl)
-			embed.setTitle("<:discord:314003252830011395> ${member.effectiveName}", null)
-			embed.setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
+			setThumbnail(member.user.effectiveAvatarUrl)
+			setTitle("<:discord:314003252830011395> ${member.effectiveName}", null)
+			setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
 
-			if (context.lorittaUser.profile.usernameChanges.isNotEmpty()) {
-				val sortedChanges = context.lorittaUser.profile.usernameChanges.sortedBy { it.changedAt }
+			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
+
+			if (lorittaProfile.usernameChanges.isNotEmpty()) {
+				val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }
 				val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n",  transform = {
 					"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize() + ")"
 				})
-				embed.setDescription(alsoKnownAs)
+				setDescription(alsoKnownAs)
 			}
-			embed.addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${member.user.name}#${member.user.discriminator}", true)
-			embed.addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), member.user.id, true)
-			embed.addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), member.user.creationTime.humanize(), true)
-			embed.addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(), true)
+
+			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${member.user.name}#${member.user.discriminator}", true)
+			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), member.user.id, true)
+			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), member.user.creationTime.humanize(), true)
+			addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(), true)
 
 			val sharedServers = lorittaShards.getMutualGuilds(member.user)
 

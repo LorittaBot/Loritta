@@ -54,5 +54,6 @@ class LorittaProfile {
 
     data class XpWrapper(val currentLevel: Int, val expLeft: Int)
 
-    data class UsernameChange(val changedAt: Long, val username: String, val discriminator: String)
+    data class UsernameChange(val changedAt: Long = 0L, val username: String = "???", val discriminator: String = "0000") {
+	}
 }
