@@ -34,7 +34,7 @@ class BIRLCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val joined = context.rawArgs.joinToString(" ");
+			val joined = context.message.rawContent
 
 			val split = joined.split("```")
 

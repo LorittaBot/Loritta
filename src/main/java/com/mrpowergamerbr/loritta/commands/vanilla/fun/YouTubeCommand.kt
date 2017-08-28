@@ -32,8 +32,12 @@ class YouTubeCommand : CommandBase() {
 		return "youtube"
 	}
 
+	override fun getAliases() : List<String> {
+		return listOf("yt")
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.YOUTUBE_DESCRIPTION.msgFormat()
+		return locale.get("YOUTUBE_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
