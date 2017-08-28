@@ -129,6 +129,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
+					// Executar todos os onCommandMessageReceivedFeedback
+					loritta.messageContextCache.values.forEach {
+						commandContext -> (commandContext as CommandContext).cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
+					}
+
 					val toLearn = event.message.strippedContent.toLowerCase()
 							.replace("@everyone", "")
 							.replace("@here", "")
