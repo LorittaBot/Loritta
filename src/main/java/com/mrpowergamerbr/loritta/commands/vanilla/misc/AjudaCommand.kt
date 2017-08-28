@@ -39,15 +39,20 @@ class AjudaCommand : CommandBase() {
 				context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
 			}
 
-			var description = context.locale.AJUDA_INTRODUCE_MYSELF.msgFormat(context.userHandle.asMention, "https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975", context.guild.name)
+			var description = context.locale.get(
+					"AJUDA_INTRODUCE_MYSELF",
+					context.userHandle.asMention,
+					"https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975",
+					context?.guild?.name ?: "\uD83E\uDD37"
+			)
 
 			var builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))
-					.setTitle("💁 ${context.locale.AJUDA_MY_HELP.msgFormat()}")
+					.setTitle("💁 ${context.locale.get("AJUDA_MY_HELP")}")
 					.setDescription(description)
 					.setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
-			var firstMsgSent = fastEmbedSend(context, listOf(builder.build()))[0] // Nós iremos dar pin nela
+			fastEmbedSend(context, listOf(builder.build()));
 
 			val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 
@@ -79,8 +84,6 @@ class AjudaCommand : CommandBase() {
 					+ "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
 					+ "[Amou o Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/doar)\n"
 					+ "[Website do MrPowerGamerBR](https://mrpowergamerbr.com/)")
-
-			val cmdOptions = context.config.getCommandOptionsFor(this)
 
 			if (adminCmds != null) {
 				fastEmbedSend(context, adminCmds);
