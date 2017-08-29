@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.music.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand;
@@ -145,6 +146,9 @@ public class CommandManager {
 			commandMap.add(new McBodyCommand());
 			commandMap.add(new McSignCommand());
 			commandMap.add(new SpigotMcCommand());
+
+			// =======[ ROBLOX ]========
+			commandMap.add(new RbUserCommand());
 
 			// =======[ UNDERTALE ]========
 			commandMap.add(new UndertaleBoxCommand());

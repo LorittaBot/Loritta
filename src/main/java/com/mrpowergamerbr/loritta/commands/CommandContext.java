@@ -225,7 +225,7 @@ public class CommandContext {
 		MessageBuilder messageBuilder = new MessageBuilder();
 		messageBuilder.setEmbed(message);
 		messageBuilder.append(" ");
-		return sendFile(data, name, message);
+		return sendFile(data, name, messageBuilder.build());
 	}
 
 	public Message sendFile(InputStream data, String name, Message message) {
