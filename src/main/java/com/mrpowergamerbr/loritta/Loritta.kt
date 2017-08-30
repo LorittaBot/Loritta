@@ -406,6 +406,37 @@ class Loritta {
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
 
+		if (playlistCache.contains(trackUrl)) {
+			val songs = playlistCache[trackUrl]!!
+
+			if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
+				var track = songs[0]
+
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
+
+				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
+			} else { // Mas se ela aceita...
+				var ignored = 0;
+				for (track in songs) {
+					if (musicConfig.hasMaxSecondRestriction) {
+						if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+							ignored++;
+							continue;
+						}
+					}
+
+					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+				}
+
+				if (ignored == 0) {
+					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(songs.size)).queue()
+				} else {
+					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(songs.size, ignored)).queue()
+				}
+			}
+			return
+		}
+
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
@@ -421,6 +452,7 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
+				playlistCache[trackUrl] = playlist.tracks
 				if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
 					var track = playlist.selectedTrack
 
@@ -441,8 +473,7 @@ class Loritta {
 							}
 						}
 
-						play(context, musicManager,
-								AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+						play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
 					}
 
 					if (ignored == 0) {
