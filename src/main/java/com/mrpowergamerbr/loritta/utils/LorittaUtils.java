@@ -538,10 +538,12 @@ public class LorittaUtils {
 	}
 
 	public static void manageAutoPlaylists() {
-		for (Guild guild :  LorittaLauncher.loritta.getLorittaShards().getGuilds()) {
-			ServerConfig conf =  LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+		for (Document document :  LorittaLauncher.loritta.mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("musicConfig.isEnabled", true))) {
+			ServerConfig conf =  LorittaLauncher.loritta.ds.get(ServerConfig.class, document.get("_id"));
 
-			if (conf.musicConfig().isEnabled()) {
+			Guild guild = LorittaLauncher.loritta.getLorittaShards().getGuildById(conf.guildId);
+
+			if (guild != null && conf.musicConfig().isEnabled()) {
 				LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
 				VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
 				if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
