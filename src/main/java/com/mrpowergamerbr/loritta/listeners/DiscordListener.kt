@@ -326,7 +326,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (textChannel != null) {
 							if (textChannel.canTalk()) {
 								val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinMessage, event)
-								textChannel.sendMessage(msg).complete()
+								textChannel.sendMessage(msg.substringIfNeeded()).complete()
 							} else {
 								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)
 							}
@@ -335,7 +335,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (conf.joinLeaveConfig.tellOnPrivate) { // Talvez o sistema de avisar no privado esteja ativado!
 						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou é um bot!
 							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
-							event.user.openPrivateChannel().complete().sendMessage(msg).complete() // Pronto!
+							event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
 						}
 					}
 				}
@@ -377,7 +377,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 										}
 									}
 								}
-								textChannel.sendMessage(msg).complete()
+								textChannel.sendMessage(msg.substringIfNeeded()).complete()
 							} else {
 								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)
 							}

@@ -278,7 +278,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									message = message.replace("{descrição}", description);
 									message = message.replace("{link}", "https://youtu.be/" + videoId);
 
-									textChannel.sendMessage(message).complete();
+									textChannel.sendMessage(message.substringIfNeeded()).complete();
 
 									checkedVideos.checked.put(youTubeInfo.channelId!!, Pair(videoId, date))
 									lastItemTime[guild.id] = checkedVideos
