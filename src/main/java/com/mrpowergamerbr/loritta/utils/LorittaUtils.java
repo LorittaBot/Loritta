@@ -562,7 +562,7 @@ public class LorittaUtils {
 	public static void startRandomSong(Guild guild) {
 		long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
 
-		if (30000 > diff) {
+		if (5000 > diff) {
 			return; // bye
 		}
 

@@ -390,9 +390,9 @@ class Loritta {
 
 	val failedSongsUrls = mutableMapOf<String, String>()
 	val unmatchedSongsUrls = mutableSetOf<String>()
+	val playlistCache = mutableMapOf<String, List<AudioTrack>>()
 
 	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
-		System.out.println("[2] Loading " + trackUrl + "!")
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
@@ -475,11 +475,19 @@ class Loritta {
 	}
 
 	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
-		System.out.println("[2] Loading " + trackUrl + "!")
 		val musicConfig = config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
 
 		if (failedSongsUrls.contains(trackUrl) || unmatchedSongsUrls.contains(trackUrl)) {
+			return
+		}
+
+		if (playlistCache.contains(trackUrl)) {
+			val songs = playlistCache[trackUrl]!!
+
+			val track = songs[Loritta.random.nextInt(0, songs.size)]
+
+			play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
 			return
 		}
 
@@ -489,6 +497,7 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
+				playlistCache[trackUrl] = playlist.tracks
 				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
 			}
 
