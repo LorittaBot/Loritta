@@ -40,7 +40,7 @@ import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
-import okhttp3.OkHttpClient
+import kotlin.collections.set
 import org.jibble.jmegahal.JMegaHal
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
@@ -377,7 +377,7 @@ class Loritta {
 		loadAndPlay(context, trackUrl, false);
 	}
 
-	val failedSongsUrls = mutableSetOf<String>()
+	val failedSongsUrls = mutableMapOf<String, String>()
 	val unmatchedSongsUrls = mutableSetOf<String>()
 
 	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
@@ -387,7 +387,7 @@ class Loritta {
 		val musicManager = getGuildAudioPlayer(guild);
 
 		if (failedSongsUrls.contains(trackUrl)) {
-			channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_ERROR.msgFormat("\uD83E\uDD37")).queue();
+			channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR",failedSongsUrls[trackUrl])).queue();
 			return
 		}
 
@@ -397,7 +397,7 @@ class Loritta {
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
-					if (track.getDuration() > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
 						channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_MAX.msgFormat(final)).queue();
 						return;
@@ -421,7 +421,7 @@ class Loritta {
 					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 				} else { // Mas se ela aceita...
 					var ignored = 0;
-					for (track in playlist.getTracks()) {
+					for (track in playlist.tracks) {
 						if (musicConfig.hasMaxSecondRestriction) {
 							if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 								ignored++;
@@ -452,12 +452,12 @@ class Loritta {
 						return;
 					}
 				}
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_NOTFOUND.msgFormat(trackUrl)).queue();
+				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_NOTFOUND", trackUrl)).queue();
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				failedSongsUrls.add(trackUrl)
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_ERROR.msgFormat(exception.message)).queue();
+				failedSongsUrls[trackUrl] = exception.message!!
+				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR", exception.message)).queue();
 			}
 		})
 	}
@@ -484,7 +484,7 @@ class Loritta {
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				failedSongsUrls.add(trackUrl)
+				failedSongsUrls[trackUrl] = exception.message!!
 			}
 		})
 	}
