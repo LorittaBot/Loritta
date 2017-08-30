@@ -156,7 +156,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								searchVideoId = jsonSearch["id"]["videoId"].string
 								searchCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(searchSnippet["publishedAt"].string)
 								searchDate = searchSnippet["publishedAt"].string
-								
+
 								// RSS FEED
 								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeInfo.channelId}")
 										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)

@@ -251,7 +251,8 @@ open abstract class CommandBase {
 				}
 				if (requiresMusicEnabled()) {
 					if (!context.config.musicConfig.isEnabled) {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.DJ_LORITTA_DISABLED.f() + " \uD83D\uDE1E")
+						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
+						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("DJ_LORITTA_DISABLED") + " \uD83D\uDE1E" + if (canManage) context.locale.get("DJ_LORITTA_HOW_TO_ENABLE") else "")
 						return true
 					}
 				}
