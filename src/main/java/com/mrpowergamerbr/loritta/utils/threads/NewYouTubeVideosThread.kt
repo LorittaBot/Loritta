@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils
+package com.mrpowergamerbr.loritta.utils.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
@@ -10,6 +10,9 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.text.SimpleDateFormat
@@ -19,7 +22,7 @@ import java.util.*
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	// val lastVideos = HashMap<String, String>(); // HashMap usada para guardar o ID do último vídeo
 	// val lastVideosTime = HashMap<String, String>(); // HashMap usada para guardar a data do último vídeo
-	val lastItemTime = HashMap<String, NewYouTubeVideosThread.YouTubeCheck>(); // HashMap usada para guardar a data do útimo item na RSS
+	val lastItemTime = HashMap<String, YouTubeCheck>(); // HashMap usada para guardar a data do útimo item na RSS
 
 	override fun run() {
 		super.run()
@@ -193,7 +196,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									continue
 								}
 
-								val checkedVideos = lastItemTime.getOrDefault(guild.id, NewYouTubeVideosThread.YouTubeCheck());
+								val checkedVideos = lastItemTime.getOrDefault(guild.id, YouTubeCheck());
 								var lastId = checkedVideos.checked.getOrDefault(youTubeInfo.channelId, null);
 
 								// after & equals, para que nós possamos no mínimo "preencher" os valores padrões

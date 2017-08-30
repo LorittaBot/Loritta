@@ -1,7 +1,8 @@
-package com.mrpowergamerbr.loritta.utils
+package com.mrpowergamerbr.loritta.utils.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.loritta
 
 /**
  * Thread que atualiza os servidores que a Loritta no Discord Bots está a cada 10 segundos

@@ -1,6 +1,7 @@
-package com.mrpowergamerbr.loritta.utils
+package com.mrpowergamerbr.loritta.utils.threads
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.EntityBuilder
 import net.dv8tion.jda.core.entities.Game
 import java.lang.management.ManagementFactory
