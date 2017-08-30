@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.threads
+package com.mrpowergamerbr.loritta.threads
 
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher

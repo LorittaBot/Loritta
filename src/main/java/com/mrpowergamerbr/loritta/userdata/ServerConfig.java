@@ -45,6 +45,7 @@ public class ServerConfig {
 
     public ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
+
     public JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig();

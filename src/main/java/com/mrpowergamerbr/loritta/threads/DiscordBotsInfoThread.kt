@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.threads
+package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
