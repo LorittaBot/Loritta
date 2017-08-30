@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils.music;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlinKt;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -113,25 +114,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		// Okay então, vamos pegar nossas próprias coisas
 		if (audioTrackWrapper == null) {
 			// Ok, Audio Track é null!
-			// Vamos pegar o ServerConfig deste servidor
-
-			long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
-
-			if (5000 > diff * 1000) {
-				return; // bye
-			}
-
-			ServerConfig conf = LorittaLauncher.getInstance().getServerConfigForGuild(guild.getId());
-			
-			if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
-				String trackUrl = conf.musicConfig().getUrls().get(Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
-				
-				// E agora carregue a música
-				LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl); // Só vai meu parça
-
-				// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-				LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());
-			}
+			LorittaUtils.startRandomSong(guild);
 		}
 	}
 

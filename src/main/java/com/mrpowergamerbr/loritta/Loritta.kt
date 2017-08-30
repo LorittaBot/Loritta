@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mongodb.MongoClient
 import com.mongodb.client.model.Filters
+import com.mongodb.internal.thread.DaemonThreadFactory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
@@ -52,8 +53,8 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
-
 
 /**
  * Classe principal da Loritta
@@ -188,6 +189,12 @@ class Loritta {
 			// Iniciar coisas musicais
 			musicManagers = HashMap()
 			playerManager = DefaultAudioPlayerManager()
+
+			val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
+
+			trackInfoExecutorServiceField.isAccessible = true
+			val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
+			trackInfoExecutorService.maximumPoolSize = 100
 
 			AudioSourceManagers.registerRemoteSources(playerManager)
 			AudioSourceManagers.registerLocalSource(playerManager)
@@ -385,6 +392,7 @@ class Loritta {
 	val unmatchedSongsUrls = mutableSetOf<String>()
 
 	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
+		System.out.println("[2] Loading " + trackUrl + "!")
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
@@ -467,6 +475,7 @@ class Loritta {
 	}
 
 	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
+		System.out.println("[2] Loading " + trackUrl + "!")
 		val musicConfig = config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
 
@@ -480,7 +489,7 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
-				play(guild, config, musicManager, AudioTrackWrapper(playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)], true, guild.selfMember.user, HashMap<String, String>()))
+				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
 			}
 
 			override fun noMatches() {

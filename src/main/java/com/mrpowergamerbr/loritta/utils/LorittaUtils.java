@@ -25,6 +25,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -524,51 +526,7 @@ public class LorittaUtils {
 	public static void startAutoPlaylist() {
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {
-				for (Guild guild :  LorittaLauncher.loritta.getLorittaShards().getGuilds()) {
-					ServerConfig conf =  LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
-
-					if (conf.musicConfig().isEnabled()) {
-						LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
-						VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
-						if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-							LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
-						}
-					}
-				}
-				for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
-					if (mm.player.getPlayingTrack() == null) {
-						Thread x = new Thread(() -> {
-							long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(mm.scheduler.getGuild().getId(), 0L);
-
-							if (5000 > diff * 1000)
-
-							{
-								return; // bye
-							}
-
-							ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(mm.scheduler.getGuild().getId());
-
-							if (conf.musicConfig().
-
-									getAutoPlayWhenEmpty() && !conf.musicConfig().
-
-									getUrls().
-
-									isEmpty())
-
-							{
-								String trackUrl = conf.musicConfig().getUrls().get(
-										Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
-
-								// E agora carregue a música
-								LorittaLauncher.getInstance().loadAndPlayNoFeedback(mm.scheduler.getGuild(), conf, trackUrl); // Só vai meu parça
-
-								LorittaLauncher.getInstance().getSongThrottle().put(mm.scheduler.guild.getId(), System.currentTimeMillis());
-							}
-						});
-						x.start();
-					}
-				}
+				manageAutoPlaylists();
 				try {
 					Thread.sleep(12500);
 				} catch (InterruptedException e) {
@@ -577,6 +535,49 @@ public class LorittaUtils {
 			}
 		};
 		new Thread(playlistMagic, "Playlist Magic").start(); // Pronto!
+	}
+
+	public static void manageAutoPlaylists() {
+		for (Guild guild :  LorittaLauncher.loritta.getLorittaShards().getGuilds()) {
+			ServerConfig conf =  LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+
+			if (conf.musicConfig().isEnabled()) {
+				LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
+				VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
+				if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+					LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
+				}
+			}
+		}
+		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
+			if (mm.player.getPlayingTrack() == null) {
+				Thread x = new Thread(() -> {
+					startRandomSong(mm.scheduler.getGuild());
+				});
+				x.start();
+			}
+		}
+	}
+
+	public static void startRandomSong(Guild guild) {
+		long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
+
+		if (30000 > diff) {
+			return; // bye
+		}
+
+		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+
+		if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
+			String trackUrl = conf.musicConfig().getUrls().get(
+					Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+
+			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
+			LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());
+
+			// E agora carregue a música
+			LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl); // Só vai meu parça
+		}
 	}
 
 	public static String toUnicode(int ch) {
