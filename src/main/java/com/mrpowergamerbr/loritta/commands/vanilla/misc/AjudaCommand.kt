@@ -69,14 +69,6 @@ class AjudaCommand : CommandBase() {
 			val miscCmds = getCommandsFor(context, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
 			val utilsCmds = getCommandsFor(context, disabledCommands, CommandCategory.UTILS, "http://i.imgur.com/eksGMGw.png")
 
-			val sparklyPower = EmbedBuilder()
-					.setColor(Color(0, 255, 168))
-			sparklyPower.setTitle("Reclames do Plim Plim #1", null)
-			sparklyPower.setThumbnail("http://sparklypower.net/SparklyPower_Logo_250.png")
-			sparklyPower.setDescription("Gostou da qualidade do Loritta? Gosta de Minecraft? Survival? Que tal jogar no SparklyPower então? :slight_smile:")
-			sparklyPower.addField("Website", "https://sparklypower.net/", true)
-			sparklyPower.addField("IP", "jogar.sparklypower.net (Versão 1.11.2)", true)
-
 			val additionalInfoEmbed = EmbedBuilder()
 			additionalInfoEmbed.setTitle("Informações Adicionais", null)
 					.setColor(Color(0, 193, 223))
@@ -123,7 +115,6 @@ class AjudaCommand : CommandBase() {
 				fastEmbedSend(context, utilsCmds);
 			}
 
-			context.sendMessage(sparklyPower.build())
 			context.sendMessage(additionalInfoEmbed.build())
 		}
 		catch (e: ErrorResponseException) {
