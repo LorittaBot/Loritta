@@ -126,4 +126,9 @@ class NashornMessage(private val message: Message) {
 	fun unpin() {
 		message.unpin().complete()
 	}
+
+	@NashornCommand.NashornDocs()
+	fun getTextChannel(): NashornTextChannel {
+		return NashornTextChannel(message.textChannel)
+	}
 }

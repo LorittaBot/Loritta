@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
+import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -45,6 +46,7 @@ public class ServerConfig {
 
     public ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
+    public ArrayList<NashornEventHandler> nashornEventHandlers = new ArrayList<>();
 
     public JoinLeaveConfig joinLeaveConfig = new JoinLeaveConfig();
     public MusicConfig musicConfig = new MusicConfig();

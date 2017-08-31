@@ -173,6 +173,8 @@ public class ConfigureServerView {
                         template = LorittaWebsite.getEngine().getTemplate("music_config.html");
                     } else if (argument.equals("nashorn")) {
                         template = NashornCommandsView.render(context, temmie, sc);
+                    } else if (argument.equals("events")) {
+                        template = NashornEventsView.render(context, temmie, sc);
                     } else if (context.request().path().endsWith("amino")) {
                         template = AminoConfigView.render(context, temmie, sc);
                     } else if (argument.equals("youtube")) {
@@ -183,7 +185,7 @@ public class ConfigureServerView {
                         template = RssFeedsConfigView.render(context, temmie, sc);
                     } else if (context.request().path().endsWith("autorole")) {
                         template = AutoroleConfigView.render(context, temmie, sc);
-                    }  else if (context.request().path().endsWith("eventlog")) {
+                    } else if (context.request().path().endsWith("eventlog")) {
                         template = EventLogConfigView.render(context, temmie, sc);
                     }
                 } else {

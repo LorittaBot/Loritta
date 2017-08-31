@@ -113,6 +113,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
+					for (eventHandler in serverConfig.nashornEventHandlers) {
+						eventHandler.handleMessageReceived(event)
+					}
+
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
