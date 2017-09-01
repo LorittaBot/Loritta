@@ -10,14 +10,19 @@ class StoredMessage {
 	lateinit var messageId: String
 	lateinit var authorName: String
 	lateinit var content: String
-
+	lateinit var authorId: String
+	lateinit var channelId: String
+	lateinit var attachments: MutableList<String>
 	constructor() {
 
 	}
 
-	constructor(messageId: String, authorName: String, content: String) {
+	constructor(messageId: String, authorName: String, content: String, authorId: String, channelId: String, attachments: MutableList<String>) {
 		this.messageId = messageId
 		this.authorName = authorName
 		this.content = content
+		this.authorId = authorId
+		this.channelId = channelId
+		this.attachments = attachments
 	}
 }

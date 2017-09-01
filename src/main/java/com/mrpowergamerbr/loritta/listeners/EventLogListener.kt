@@ -88,7 +88,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
 							if (textChannel != null && textChannel.canTalk()) {
-								embed.setDescription("\uD83D\uDDBC **${locale.EVENTLOG_AVATAR_CHANGED.msgFormat(event.user.asMention)}**")
+								embed.setDescription("\uD83D\uDDBC **${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}**")
 								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
 
 								val message = MessageBuilder().append(" ").setEmbed(embed.build())
@@ -197,7 +197,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled) {
-				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.rawContent)
+				val attachments = mutableListOf<String>()
+
+				event.message.attachments.forEach {
+					attachments.add(it.url)
+				}
+
+				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.rawContent, event.author.id, event.message.channel.id, attachments)
 			}
 		}
 	}
@@ -217,10 +223,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
-						embed.setColor(Color(35, 209, 96))
+						embed.setColor(Color(238, 241, 0))
 
 						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, oldMessage.content, event.message.rawContent)}")
+						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, oldMessage.content, event.message.rawContent, event.message.textChannel.asMention)}")
 						embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
 
 						textChannel.sendMessage(embed.build()).complete()
@@ -251,10 +257,17 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
-						embed.setColor(Color(35, 209, 96))
+						embed.setColor(Color(221, 0, 0))
 
 						embed.setAuthor(oldMessage.authorName, null, null)
-						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_DELETED", oldMessage.content)}")
+
+						var deletedMessage = "\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_DELETED", oldMessage.content, "<#${oldMessage.channelId}>")}"
+
+						if (oldMessage.attachments.isNotEmpty()) {
+							deletedMessage += "${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + oldMessage.attachments.joinToString(separator = "\n")
+						}
+
+						embed.setDescription(deletedMessage)
 						// embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
 
 						textChannel.sendMessage(embed.build()).complete()
