@@ -201,7 +201,7 @@ open abstract class CommandBase {
 					var botPermissions = ArrayList<Permission>(getBotPermissions())
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
 					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
-					// botPermissions.add(Permission.MESSAGE_HISTORY)
+					botPermissions.add(Permission.MESSAGE_ADD_REACTION)
 					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
 
 					if (missingPermissions.isNotEmpty()) {
