@@ -263,7 +263,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						var deletedMessage = "\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_DELETED", oldMessage.content, "<#${oldMessage.channelId}>")}"
 
-						if (oldMessage.attachments.isNotEmpty()) {
+
+						if (oldMessage.attachments != null && oldMessage.attachments.isNotEmpty()) {
 							deletedMessage += "${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + oldMessage.attachments.joinToString(separator = "\n")
 						}
 

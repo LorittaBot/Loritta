@@ -6,10 +6,16 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
+import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.Color
+import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.io.File
+import java.io.FileInputStream
 import java.util.*
+import javax.imageio.ImageIO
 
 class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
     override fun getLabel(): String {
@@ -32,19 +38,105 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
         return false
     }
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
     override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
-        if (!LorittaUtils.canUploadFiles(context)) {
-            return
-        }
         var userData = context.config.userData.getOrDefault(context.userHandle.id, LorittaServerUserData());
-        var base = java.awt.image.BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
+        var base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
         val graphics = base.graphics as java.awt.Graphics2D;
         graphics.setRenderingHint(
                 java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
                 java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+		var userProfile = context.lorittaUser.profile
+
+        if (context.guild.id == "268353819409252352") {
+			val user = context.userHandle
+
+            val profileWrapper = ImageIO.read(File(Loritta.FOLDER, "profile_wrapper_v2.png"))
+
+			var background: BufferedImage?
+
+			var file = File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
+
+			background = when {
+				file.exists() -> ImageIO.read(File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
+				else -> ImageIO.read(File(Loritta.FOLDER + "default_background.png")) // Background padrão
+			}
+
+            val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(72, 72, BufferedImage.SCALE_SMOOTH)
+
+			graphics.drawImage(background, 0, 0, null); // Background fica atrás de tudo
+
+			graphics.drawImage(profileWrapper, 0, 0, null)
+
+			graphics.drawImage(avatar, 4, 4, null);
+
+			val guildImages = ArrayList<java.awt.Image>();
+
+			val guilds = LorittaLauncher.getInstance().lorittaShards.getGuilds()
+					.filter { guild -> guild.isMember(user) }
+					.sortedByDescending { it.members.size }
+
+			var idx = 0;
+			for (guild in guilds) {
+				if (guild.iconUrl != null) {
+					if (idx > 20) {
+						break;
+					}
+					try {
+						val connection = java.net.URL(guild.iconUrl).openConnection() as java.net.HttpURLConnection
+						connection.setRequestProperty(
+								"User-Agent",
+								"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+						var guild = javax.imageio.ImageIO.read(connection.inputStream)
+						var guildImg = guild.getScaledInstance(18, 18, java.awt.Image.SCALE_SMOOTH).toBufferedImage()
+						guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1)
+						guildImg = guildImg.makeRoundedCorners(999)
+						guildImages.add(guildImg)
+						idx++;
+					} catch (e: Exception) {
+					}
+				}
+			}
+
+			var guildX = 81;
+			var guildY = 233;
+			for (guild in guildImages) {
+				graphics.drawImage(guild, guildX, guildY, null);
+				guildX += 19;
+			}
+
+			// Escrever o "Sobre Mim"
+			val bariolRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
+					java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "bariol_regular.otf")))
+
+			graphics.font = bariolRegular.deriveFont(13F)
+
+			graphics.color = Color(128, 128, 128, 128)
+			ImageUtils.drawTextWrapSpaces(userProfile.aboutMe, 2, 253 + graphics.fontMetrics.descent + 8, 400, 9999, graphics.fontMetrics, graphics)
+			graphics.color = Color(255, 255, 255)
+			ImageUtils.drawTextWrapSpaces(userProfile.aboutMe, 2, 253 + graphics.fontMetrics.descent + 7, 400, 9999, graphics.fontMetrics, graphics)
+
+			// Escrever nome do usuário
+			val oswaldRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
+					java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "oswald_regular.ttf")))
+					.deriveFont(23F)
+
+			graphics.font = oswaldRegular
+
+			graphics.color = Color(128, 128, 128, 128)
+			graphics.drawString(user.name, 82, 22)
+			graphics.color = Color(255, 255, 255)
+			graphics.drawString(user.name, 82, 22)
+
+			context.sendFile(base.makeRoundedCorners(15), "perfil.png", context.getAsMention(true))
+            return
+		}
+
         val profileWrapper = javax.imageio.ImageIO.read(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "profile_wrapper.png")); // Wrapper do perfil
-        var userProfile = context.lorittaUser.profile
         var user = if (context.message.mentionedUsers.size == 1) context.message.mentionedUsers[0] else context.userHandle
         if (user == null) {
             context.sendMessage(context.getAsMention(true) + "Não foi encontrado nenhum usuário com este nome!");
@@ -56,7 +148,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
             userData = context.config.userData.getOrDefault(context.message.mentionedUsers[0].id, LorittaServerUserData());
         }
 
-        var background: java.awt.image.BufferedImage?;
+        var background: BufferedImage?;
 
         var file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
         if (file.exists()) {

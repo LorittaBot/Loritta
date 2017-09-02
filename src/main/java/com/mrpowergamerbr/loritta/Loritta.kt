@@ -425,7 +425,7 @@ class Loritta {
 						}
 					}
 
-					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+					play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()));
 				}
 
 				if (ignored == 0) {

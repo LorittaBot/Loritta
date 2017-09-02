@@ -12,7 +12,7 @@ class StoredMessage {
 	lateinit var content: String
 	lateinit var authorId: String
 	lateinit var channelId: String
-	lateinit var attachments: MutableList<String>
+	var attachments: MutableList<String> = mutableListOf<String>()
 	constructor() {
 
 	}
