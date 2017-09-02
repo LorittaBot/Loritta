@@ -206,7 +206,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		graphics.font = bariol11
 		ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 83, 66, 13), bariol11)
 
-		context.sendFile(base, "profile.png", "📝 **|** " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
+		context.sendFile(base.makeRoundedCorners(15), "profile.png", "📝 **|** " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
 	}
 
 	fun drawWithShadow(text: String, x: Int, y: Int, maxX: Int, maxY: Int, graphics: Graphics) {
