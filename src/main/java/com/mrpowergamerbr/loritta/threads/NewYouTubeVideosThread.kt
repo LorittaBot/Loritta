@@ -61,7 +61,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								}
 								if (youTubeInfo.channelId == null) { // Omg é null
 									try {
-										val jsoup = Jsoup.connect(def.channelUrl).get() // Hora de pegar a página do canal...
+										val jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
 
 										val pattern = Pattern.compile("\"browseId\":\"([A-z0-9_-]+)\"")
 
