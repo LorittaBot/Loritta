@@ -305,7 +305,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				if (conf.autoroleConfig.isEnabled) { // Está ativado?
+				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
 					val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
 
 					val roles = mutableListOf<Role>()

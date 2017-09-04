@@ -46,11 +46,11 @@ class HackBanCommand : CommandBase() {
 				if (context.args.size > 1) {
 					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
 				}
-				context.guild.controller.ban(id, 0, context.locale.HACKBAN_REASON.msgFormat(context.userHandle.name + "#" + context.userHandle.discriminator) + if (reason != null) " (${context.locale.HACKBAN_REASON.msgFormat()}: " + reason + ")" else "").complete();
+				context.guild.controller.ban(id, 0, context.locale["HACKBAN_REASON", context.userHandle.name + "#" + context.userHandle.discriminator] + if (reason != null) " (${context.locale["HACKBAN_REASON"]}: " + reason + ")" else "").complete();
 
-				context.sendMessage(context.getAsMention(true) + context.locale.HACKBAN_SUCCESS.msgFormat(id));
+				context.sendMessage(context.getAsMention(true) + context.locale["HACKBAN_SUCCESS", id]);
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.HACKBAN_NO_PERM.msgFormat());
+				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale["HACKBAN_NO_PERM"]);
 			}
 		} else {
 			this.explain(context);
