@@ -21,7 +21,7 @@ class RankCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.RANK_DESCRIPTION;
+		return locale["RANK_DESCRIPTION"]
 	}
 
 	override fun getAliases(): List<String> {
@@ -71,8 +71,6 @@ class RankCommand : CommandBase() {
 		list.sortBy { it.userData.xp }
 		list.reverse()
 
-		var idx = 0;
-
 		var currentIndex = 0;
 		var currentUserData: LorittaServerUserData? = null;
 
@@ -84,34 +82,51 @@ class RankCommand : CommandBase() {
 			currentIndex++;
 		}
 
-		val image = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
-		val graphics = image.graphics as Graphics2D
+		val rankHeader = ImageIO.read(File(Loritta.FOLDER, "rank_header.png"))
+		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
+		val graphics = base.graphics as Graphics2D
 
-		graphics.color = Color.BLACK
-		graphics.font = Font.createFont(Font.TRUETYPE_FONT,
-				FileInputStream(File(Loritta.FOLDER + "whitney_500.ttf"))).deriveFont(14F)
 		graphics.setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		var currentY = 48;
+				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
-		var serverIcon = LorittaUtils.downloadImage(if (context.guild.iconUrl != null) context.guild.iconUrl.replace("jpg", "png") else "https://loritta.website/assets/img/unknown.png")
-				.getScaledInstance(40, 40, BufferedImage.SCALE_SMOOTH)
-				.toBufferedImage()
-				.makeRoundedCorners(9999)
+		val serverIconUrl = if (context.guild.iconUrl != null) {
+			context.guild.iconUrl.replace("jpg", "png")
+		} else {
+			"https://loritta.website/assets/img/unknown.png"
+		}
+
+		val serverIcon = LorittaUtils.downloadImage(serverIconUrl).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+
+		graphics.drawImage(serverIcon, 259, -52, null)
+
+		graphics.drawImage(rankHeader, 0, 0, null)
+
+		val oswaldRegular10 = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
+				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "oswald_regular.ttf")))
+				.deriveFont(10F)
+
+		val oswaldRegular16 = oswaldRegular10
+				.deriveFont(16F)
+
+		val oswaldRegular20 = oswaldRegular10
+				.deriveFont(20F)
+
+		graphics.font = oswaldRegular16
+
+		ImageUtils.drawCenteredString(graphics, if (global) "Ranking Global" else context.guild.name, Rectangle(0, 0, 268, 37), oswaldRegular16)
+
+		var idx = 0
+		var currentY = 37;
 
 		for ((id, userData) in list) {
-			if (idx >= 6) {
-				break;
+			if (idx >= 5) {
+				break
 			}
+
 			var member = lorittaShards.getUserById(id)
 
 			if (member != null) {
-				var image = LorittaUtils.downloadImage(member.effectiveAvatarUrl)
-						.getScaledInstance(40, 40, BufferedImage.SCALE_SMOOTH)
-						.toBufferedImage()
-						.makeRoundedCorners(9999)
-
 				val userProfile = loritta.getLorittaProfileForUser(id)
 				val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
 				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
@@ -119,63 +134,48 @@ class RankCommand : CommandBase() {
 				val rankBackground = LorittaUtils.downloadImage(imageUrl)
 				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
 						.toBufferedImage()
-						.getSubimage(0, idx * 42, 400, 42), 0, currentY, null)
-				graphics.color = Color(255, 255, 255, 230)
+						.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
 
-				var solidBackground = BufferedImage(400, 45, BufferedImage.TYPE_INT_ARGB_PRE)
-				var solidGraphics = solidBackground.graphics as Graphics2D
-				solidGraphics.color = Color.BLACK
+				graphics.color = Color(0, 0, 0, 127)
+				graphics.fillRect(0, currentY, 400, 53)
+
+				graphics.color = Color(255, 255, 255)
+
+				graphics.font = oswaldRegular20
+
+				ImageUtils.drawTextWrap(member.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
+
+				graphics.font = oswaldRegular16
+
+				ImageUtils.drawTextWrap("XP total // " + userData.xp, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+
+				graphics.font = oswaldRegular10
+
+				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+
+				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
+
+				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
+				val avatarGraphics = editedAvatar.graphics as Graphics2D
 
 				val path = Path2D.Double()
-				path.moveTo(0.0, 0.0)
-				path.lineTo(0.0, 42.0)
-				path.lineTo(235.0, 42.0)
-				path.lineTo(277.0, 0.0)
+				path.moveTo(0.0, 45.0)
+				path.lineTo(132.0, 45.0)
+				path.lineTo(143.0, 98.0)
+				path.lineTo(0.0, 98.0)
 				path.closePath()
 
-				solidGraphics.clip = path
-				var gp = GradientPaint(
-						0.0f, 0.0f,
-						Color(250, 250, 250, 240),
-						0.0f, 45.0f,
-						Color(243, 243, 243, 240));
-				solidGraphics.paint = gp;
-				solidGraphics.fillRect(0, 0, 400, 45)
+				avatarGraphics.clip = path
 
-				graphics.drawImage(solidBackground, 0, currentY, null)
-				graphics.color = Color.BLACK
-				graphics.drawImage(image, 2, currentY + 1, null)
-				graphics.drawStringWrap(member.name + if (currentUserData == userData) { " 👈" } else "", 62, currentY + graphics.fontMetrics.ascent + 2)
+				avatarGraphics.drawImage(avatar, 0, 0, null)
 
-				val text = context.locale.RANK_INFO.msgFormat(userData.xp, userData.getCurrentLevel().currentLevel)
-
-				graphics.color = Color(115, 127, 141, 75)
-				graphics.drawString(text, 62, currentY + 39)
-
-				graphics.color = Color(115, 127, 141)
-				graphics.drawString(text, 62, currentY + 38)
-
-				graphics.color = Color.BLACK
-				currentY += 42;
+				editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
+				graphics.drawImage(editedAvatar, 0, currentY, null)
+				idx++
+				currentY += 53;
 			}
-			idx++;
 		}
-
-		graphics.drawImage(ImageIO.read(File(Loritta.FOLDER, "rank_wrapper.png")), 0, 0, null)
-		graphics.drawImage(serverIcon, 2, 3, null)
-
-		val bebasNeue = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "BebasNeue.otf")))
-				.deriveFont(32F)
-		graphics.font = bebasNeue
-		graphics.color = Color(210, 210, 210)
-		val titleText = if (global) "Ranking Global" else context.locale.RANK_SERVER_RANK.f(context.guild.name)
-		ImageUtils.drawCenteredString(graphics, titleText, Rectangle(0, 1, 400, 46), bebasNeue)
-
-		graphics.color = Color.WHITE
-		ImageUtils.drawCenteredString(graphics, titleText, Rectangle(0, 0, 400, 45), bebasNeue)
-
-		context.sendFile(image.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
+		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
 	}
 
 	data class RankWrapper(

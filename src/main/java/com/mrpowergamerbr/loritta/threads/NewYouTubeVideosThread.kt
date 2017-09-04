@@ -17,6 +17,7 @@ import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
@@ -60,13 +61,19 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								}
 								if (youTubeInfo.channelId == null) { // Omg é null
 									try {
-										var jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
+										val jsoup = Jsoup.connect(def.channelUrl).get() // Hora de pegar a página do canal...
 
-										var id = jsoup.getElementsByAttribute("data-channel-external-id")[0].attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
+										val pattern = Pattern.compile("\"browseId\":\"([A-z0-9_-]+)\"")
 
-										youTubeInfo.channelId = id; // E salvar o ID!
+										val matcher = pattern.matcher(jsoup.html())
 
-										LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+										if (matcher.find()) {
+											val id = matcher.group(1)
+
+											youTubeInfo.channelId = id // E salvar o ID!
+										} else {
+											continue;
+										}
 									} catch (e: Exception) {
 										continue;
 									}

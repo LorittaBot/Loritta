@@ -11,8 +11,8 @@ open class BaseLocale {
 	@Transient
 	var strings = mutableMapOf<String, String>()
 
-	fun get(key: String, vararg arguments: Any?): String {
-		return strings.get(key)!!.f(*arguments)
+	operator fun get(key: String, vararg arguments: Any?): String {
+		return strings[key]!!.f(*arguments)
 	}
 
 	// TODO: Depreciar fields, usar HashMap

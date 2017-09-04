@@ -12,9 +12,14 @@ import com.mrpowergamerbr.loritta.utils.FeedEntry;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class YouTubeConfigView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
@@ -52,9 +57,15 @@ public class YouTubeConfigView {
 					try {
 						Document jsoup = Jsoup.connect(def.getChannelUrl()).get(); // Hora de pegar a página do canal...
 
-						String id = jsoup.getElementsByAttribute("data-channel-external-id").get(0).attr("data-channel-external-id"); // Que possuem o atributo "data-channel-external-id" (que é o ID do canal)
+						Pattern pattern = Pattern.compile("\"browseId\":\"([A-z0-9_-]+)\"");
 
-						def.setChannelId(id); // E salvar o ID!
+						Matcher matcher = pattern.matcher(jsoup.html());
+
+						if (matcher.find()) {
+							String id = matcher.group(1);
+
+							def.setChannelId(id); // E salvar o ID!
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
