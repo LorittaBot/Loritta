@@ -388,54 +388,14 @@ class Loritta {
 		loadAndPlay(context, trackUrl, false);
 	}
 
-	val failedSongsUrls = mutableMapOf<String, String>()
-	val unmatchedSongsUrls = mutableSetOf<String>()
-	val playlistCache = mutableMapOf<String, List<AudioTrack>>()
-
 	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
 
-		if (failedSongsUrls.contains(trackUrl)) {
-			channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR",failedSongsUrls[trackUrl])).queue();
-			return
-		}
-
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
-
-		if (playlistCache.contains(trackUrl)) {
-			val songs = playlistCache[trackUrl]!!
-
-			if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
-				var track = songs[0]
-
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
-
-				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()))
-			} else { // Mas se ela aceita...
-				var ignored = 0;
-				for (track in songs) {
-					if (musicConfig.hasMaxSecondRestriction) {
-						if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-							ignored++;
-							continue;
-						}
-					}
-
-					play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()));
-				}
-
-				if (ignored == 0) {
-					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(songs.size)).queue()
-				} else {
-					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(songs.size, ignored)).queue()
-				}
-			}
-			return
-		}
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
@@ -452,7 +412,6 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist.tracks
 				if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
 					var track = playlist.selectedTrack
 
@@ -499,7 +458,6 @@ class Loritta {
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				failedSongsUrls[trackUrl] = exception.message!!
 				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR", exception.message)).queue();
 			}
 		})
@@ -509,35 +467,19 @@ class Loritta {
 		val musicConfig = config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
 
-		if (failedSongsUrls.contains(trackUrl) || unmatchedSongsUrls.contains(trackUrl)) {
-			return
-		}
-
-		if (playlistCache.contains(trackUrl)) {
-			val songs = playlistCache[trackUrl]!!
-
-			val track = songs[Loritta.random.nextInt(0, songs.size)].makeClone()
-
-			play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
-			return
-		}
-
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
 				play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist.tracks
 				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
 			}
 
 			override fun noMatches() {
-				unmatchedSongsUrls.add(trackUrl)
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				failedSongsUrls[trackUrl] = exception.message!!
 			}
 		})
 	}
