@@ -107,6 +107,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				var currentUrl = templates[index];
 
 				if (e.reactionEmote.name == "✅") {
+					msg.delete().complete()
 					setAsBackground(currentUrl, context)
 					return;
 				}
