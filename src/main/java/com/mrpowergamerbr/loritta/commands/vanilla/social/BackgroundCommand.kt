@@ -148,18 +148,23 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 				.acceptJson()
 				.body()
 
-		val reader = StringReader(response)
-		val jsonReader = JsonReader(reader)
-		val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+		// Nós iremos ignorar caso a API esteja sobrecarregada
+		try {
+			val reader = StringReader(response)
+			val jsonReader = JsonReader(reader)
+			val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
-		if (apiResponse.has("error")) {
-			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
-			return;
-		}
+			if (apiResponse.has("error")) {
+				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
+				return;
+			}
 
-		if (apiResponse.get("rating_label").asString == "adult") {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
-			return;
+			if (apiResponse.get("rating_label").asString == "adult") {
+				mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
+				return;
+			}
+		} catch (e: Exception) {
+			println("Ignorando verificação de conteúdo NSFW para usuário ${context.userHandle.name} (${context.userHandle.id})! - Causa: ${e.message} - Resposta: $response")
 		}
 
 		var bufferedImage = LorittaUtils.downloadImage(link)

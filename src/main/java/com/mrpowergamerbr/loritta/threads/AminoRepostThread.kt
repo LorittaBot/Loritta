@@ -90,25 +90,26 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 										break;
 									}
 									// Enviar mensagem
-									var embed = EmbedBuilder();
-									embed.setAuthor(post.author.nickname, null, post.author.icon)
-									embed.setTitle(post.title)
-									embed.setDescription(post.content)
-									embed.setColor(Color.WHITE);
+									var embed = EmbedBuilder().apply {
+										setAuthor(post.author.nickname, null, post.author.icon)
+										setTitle(post.title)
+										setDescription(post.content)
+										setColor(Color(255, 112, 125))
 
-									if (post.mediaList != null) {
-										var obj = post.mediaList;
-										var inside = obj.get(0);
+										if (post.mediaList != null) {
+											var obj = post.mediaList;
+											var inside = obj[0];
 
-										if (inside is List<*>) {
-											var link = inside.get(1) as String;
+											if (inside is List<*>) {
+												var link = inside.get(1) as String;
 
-											if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
-												embed.setImage(link);
+												if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
+													setImage(link);
+												}
 											}
 										}
+										setFooter("Enviado as " + post.modifiedTime, null);
 									}
-									embed.setFooter("Enviado as " + post.modifiedTime, null);
 									textChannel.sendMessage(embed.build()).complete()
 								}
 
