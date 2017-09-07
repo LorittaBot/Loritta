@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>AminoREAPI</artifactId>
-            <version>8163c41cb2</version>
+            <version>a03635cfcc</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
