@@ -55,13 +55,12 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
 		var userProfile = context.lorittaUser.profile
 
-
 		var contextUser = LorittaUtils.getUserFromContext(context, 0)
 		var user = if (contextUser != null) contextUser else context.userHandle
 
-		if (context.message.mentionedUsers.size == 1) {
-			userProfile = loritta.getLorittaProfileForUser(context.message.mentionedUsers[0].id)
-			userData = context.config.userData.getOrDefault(context.message.mentionedUsers[0].id, LorittaServerUserData());
+		if (contextUser != null)
+			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
+			userData = context.config.userData.getOrDefault(contextUser.id, LorittaServerUserData());
 		}
 
 		val profileWrapper = ImageIO.read(File(Loritta.FOLDER, "profile_wrapper_v2.png"))
