@@ -28,12 +28,37 @@ reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().g
 	}
 
 	@NashornCommand.NashornDocs()
+	fun getId(): String {
+		return user.id
+	}
+
+	@NashornCommand.NashornDocs()
 	fun getAvatarUrl(): String {
 		return user.effectiveAvatarUrl
 	}
 
 	@NashornCommand.NashornDocs()
+	fun getDefaultAvatarUrl(): String {
+		return user.defaultAvatarUrl
+	}
+
+	@NashornCommand.NashornDocs()
 	fun getAvatar(): NashornImage {
 		return NashornImage(LorittaUtils.downloadImage(getAvatarUrl()))
+	}
+
+	@NashornCommand.NashornDocs()
+	fun getAsMention(): String {
+		return user.asMention
+	}
+
+	@NashornCommand.NashornDocs()
+	fun isBot(): Boolean {
+		return user.isBot
+	}
+
+	@NashornCommand.NashornDocs()
+	fun isFake(): Boolean {
+		return user.isFake
 	}
 }

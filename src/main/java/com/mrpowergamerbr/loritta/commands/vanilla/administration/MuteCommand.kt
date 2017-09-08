@@ -21,7 +21,7 @@ class MuteCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("MUTE_DESCRIPTION")
+		return locale["MUTE_DESCRIPTION"]
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

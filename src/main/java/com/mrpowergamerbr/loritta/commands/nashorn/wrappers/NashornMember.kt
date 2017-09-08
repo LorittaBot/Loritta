@@ -48,11 +48,6 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 	}
 
 	@NashornCommand.NashornDocs()
-	fun getAsMention(): String {
-		return member.asMention
-	}
-
-	@NashornCommand.NashornDocs()
 	fun inVoiceChannel(): Boolean {
 		return member.voiceState.inVoiceChannel()
 	}

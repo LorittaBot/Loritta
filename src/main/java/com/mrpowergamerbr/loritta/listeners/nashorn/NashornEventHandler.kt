@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.listeners.nashorn
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornGuild
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMessage
+import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornTextChannel
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornUser
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
@@ -56,6 +57,14 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 
 		fun getAuthor(): NashornUser {
 			return NashornUser(event.author)
+		}
+
+		fun getTextChannel(): NashornTextChannel {
+			return NashornTextChannel(event.textChannel)
+		}
+
+		fun getMessageId(): String {
+			return event.messageId
 		}
 	}
 }

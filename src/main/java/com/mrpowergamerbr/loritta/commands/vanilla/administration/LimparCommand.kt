@@ -18,7 +18,7 @@ class LimparCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.LIMPAR_DESCRIPTION.msgFormat()
+		return locale["LIMPAR_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -46,12 +46,12 @@ class LimparCommand : CommandBase() {
 			val toClear = context.args[0].toIntOrNull()
 
 			if (toClear == null) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.INVALID_NUMBER.msgFormat(context.args[0])}")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["INVALID_NUMBER", context.args[0]]}")
 				return
 			}
 
 			if (toClear !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.LIMPAR_INVALID_RANGE.msgFormat()}")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
 				return
 			}
 
@@ -77,7 +77,7 @@ class LimparCommand : CommandBase() {
 			}
 
 			if (toDelete.size !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale.get("LIMPAR_COUDLNT_FIND_MESSAGES")}")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 				return
 			}
 
@@ -86,7 +86,7 @@ class LimparCommand : CommandBase() {
 			if (ignoredMessages == 0) {
 				context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
 			} else {
-				context.sendMessage(context.locale.get("LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.asMention, ignoredMessages))
+				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.asMention, ignoredMessages])
 			}
 		} else {
 			this.explain(context)

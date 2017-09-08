@@ -14,7 +14,7 @@ class HackBanCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.HACKBAN_DESCRIPTION.msgFormat()
+		return locale["HACKBAN_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
