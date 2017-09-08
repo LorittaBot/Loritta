@@ -3,9 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandCategory
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
@@ -27,8 +29,8 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		return Arrays.asList("profile");
 	}
 
-	override fun getDescription(): String {
-		return "Mostra o seu perfil!";
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["PERFIL_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -43,7 +45,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		return true
 	}
 
-	override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
+	override fun run(context: CommandContext) {
 		var userData = context.config.userData.getOrDefault(context.userHandle.id, LorittaServerUserData());
 		var base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
 		val graphics = base.graphics as java.awt.Graphics2D;
@@ -53,11 +55,9 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
 		var userProfile = context.lorittaUser.profile
 
-		var user = if (context.message.mentionedUsers.size == 1) context.message.mentionedUsers[0] else context.userHandle
-		if (user == null) {
-			context.sendMessage(context.getAsMention(true) + "Não foi encontrado nenhum usuário com este nome!");
-			return;
-		}
+
+		var contextUser = LorittaUtils.getUserFromContext(context, 0)
+		var user = if (contextUser != null) contextUser else context.userHandle
 
 		if (context.message.mentionedUsers.size == 1) {
 			userProfile = loritta.getLorittaProfileForUser(context.message.mentionedUsers[0].id)
@@ -124,17 +124,17 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
 			graphics.font = minecraftia.deriveFont(8F);
 
-			val textToBeDrawn = "+" + (guilds.size - 14) + " guilds"
+			val textToBeDrawn = "+" + (guilds.size - 16) + " guilds"
 
 			graphics.color = Color(0, 0, 0)
 			val textSize = graphics.fontMetrics.stringWidth(textToBeDrawn)
-			graphics.drawString("+" + (guilds.size - 14) + " guilds", 398 - textSize, 227)
-			graphics.drawString("+" + (guilds.size - 14) + " guilds", 396 - textSize, 227)
-			graphics.drawString("+" + (guilds.size - 14) + " guilds", 397 - textSize, 228)
-			graphics.drawString("+" + (guilds.size - 14) + " guilds", 397 - textSize, 226)
+			graphics.drawString(textToBeDrawn, 398 - textSize, 227)
+			graphics.drawString(textToBeDrawn, 396 - textSize, 227)
+			graphics.drawString(textToBeDrawn, 397 - textSize, 228)
+			graphics.drawString(textToBeDrawn, 397 - textSize, 226)
 
 			graphics.color = Color(255, 255, 255)
-			graphics.drawString("+" + (guilds.size - 14) + " guilds", 397 - graphics.fontMetrics.stringWidth(textToBeDrawn), 227)
+			graphics.drawString(textToBeDrawn, 397 - graphics.fontMetrics.stringWidth(textToBeDrawn), 227)
 		}
 
 		// Escrever o "Sobre Mim"
@@ -144,7 +144,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		graphics.font = bariolRegular.deriveFont(13F)
 
 		var aboutMe = if (Loritta.config.clientId == userProfile.userId) {
-			"Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, \"Lori\") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!"
+			context.locale["PERFIL_LORITTA_DESCRIPTION"]
 		} else {
 			userProfile.aboutMe
 		}
@@ -157,11 +157,11 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		// Informações sobre o usuário
 		graphics.font = bariolRegular.deriveFont(11F)
 
-		graphics.drawString("XP Total", 80, 39)
+		graphics.drawString(context.locale["PERFIL_TOTAL_XP"], 80, 39)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) ":)" else userProfile.xp.toString(), 220, 39)
-		ImageUtils.drawTextWrap("XP no ${context.guild.name}", 80, 55, 9999, 9999, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrap(context.locale["PERFIL_XP_GUILD", context.guild.name], 80, 55, 9999, 9999, graphics.fontMetrics, graphics)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) ";)" else userData.xp.toString(), 220, 55)
-		graphics.drawString("Sonhos", 80, 71)
+		graphics.drawString(context.locale["PERFIL_ECONOMY"], 80, 71)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else "0", 220, 71)
 		// Escrever nome do usuário
 		val oswaldRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
@@ -187,7 +187,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
 		graphics.font = oswaldRegular11
 
-		ImageUtils.drawCenteredString(graphics, "Sobre Mim", Rectangle(0, 232, 61, 19), oswaldRegular11)
+		ImageUtils.drawCenteredString(graphics, context.locale["PERFIL_SOBRE_MIM"], Rectangle(0, 232, 61, 19), oswaldRegular11)
 
 		// Barrinha de XP
 		graphics.drawImage(emptyBar, 0, 0, null)
@@ -207,7 +207,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 83, 66, 13), bariol11)
 		ImageUtils.drawCenteredString(graphics, "lvl ${xpWrapper.currentLevel}", Rectangle(67, 83, 47, 13), bariol11)
 
-		context.sendFile(base.makeRoundedCorners(15), "profile.png", "📝 **|** " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
+		context.sendFile(base.makeRoundedCorners(15), "profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"]); // E agora envie o arquivo
 	}
 
 	fun drawWithShadow(text: String, x: Int, y: Int, maxX: Int, maxY: Int, graphics: Graphics) {
