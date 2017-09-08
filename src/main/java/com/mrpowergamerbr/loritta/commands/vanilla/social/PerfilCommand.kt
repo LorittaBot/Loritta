@@ -205,6 +205,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		val bariol11 = bariolRegular.deriveFont(11F)
 		graphics.font = bariol11
 		ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 83, 66, 13), bariol11)
+		ImageUtils.drawCenteredString(graphics, "lvl ${xpWrapper.currentLevel}", Rectangle(67, 83, 47, 13), bariol11)
 
 		context.sendFile(base.makeRoundedCorners(15), "profile.png", "📝 **|** " + context.getAsMention(true) + "Perfil"); // E agora envie o arquivo
 	}
