@@ -58,7 +58,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		var contextUser = LorittaUtils.getUserFromContext(context, 0)
 		var user = if (contextUser != null) contextUser else context.userHandle
 
-		if (contextUser != null)
+		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
 			userData = context.config.userData.getOrDefault(contextUser.id, LorittaServerUserData());
 		}
