@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
 import java.io.ByteArrayInputStream
@@ -295,9 +296,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		// E depois iremos salvar a configuração do servidor
-		loritta save serverConfig
+		thread {
+			loritta save serverConfig
 
-		// TODO: Talvez enviar uma mensagem privada para todos os membros que possuem MANAGE_SERVER, com algumas informações importantes sobre mim
+			event.guild.members.forEach {
+				if (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR)) {
+					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/3rXgN8x", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
+
+					try {
+						it.user.openPrivateChannel().complete().sendMessage(message).complete()
+					} catch (e: PermissionException) {
+
+					}
+				}
+			}
+		}
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
