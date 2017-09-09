@@ -197,6 +197,7 @@ public class ConfigureServerView {
                     if (context.request().param("commandMagic").isSet()) {
                         sc.explainOnCommandRun(context.request().param("explainOnCommandRun").isSet());
                         sc.mentionOnCommandOutput(context.request().param("mentionOnCommandOutput").isSet());
+                        sc.deleteMessageAfterCommand(context.request().param("deleteMessageAfterCommand").isSet());
                         sc.debugOptions().enableAllModules(context.request().param("enableAllModules").isSet());
                         sc.warnOnMissingPermission(context.request().param("warnOnMissingPermission").isSet());
                         LorittaLauncher.getInstance().getDs().save(sc);
