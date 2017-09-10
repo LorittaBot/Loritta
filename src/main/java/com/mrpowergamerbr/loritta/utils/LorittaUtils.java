@@ -65,7 +65,7 @@ public class LorittaUtils {
 		// TODO: Localization
 		if (serverConf.warnOnMissingPermission()) {
 			for (Member member : guild.getMembers()) {
-				if (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS)) {
+				if (!member.getUser().isBot() && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
 					try {
 						member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
 					} catch (ErrorResponseException e){
