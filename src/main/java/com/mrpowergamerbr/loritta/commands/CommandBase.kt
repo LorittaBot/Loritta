@@ -177,13 +177,13 @@ open abstract class CommandBase {
 					return true
 				}
 
+				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
+					return true
+				}
+				
 				if (hasCommandFeedback()) {
-					if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-						LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
-						return true
-					} else {
-						ev.channel.sendTyping().complete()
-					}
+					ev.channel.sendTyping().complete()
 				}
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
