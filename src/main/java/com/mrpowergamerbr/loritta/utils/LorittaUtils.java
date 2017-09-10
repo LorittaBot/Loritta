@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -64,8 +65,14 @@ public class LorittaUtils {
 		// TODO: Localization
 		if (serverConf.warnOnMissingPermission()) {
 			for (Member member : guild.getMembers()) {
-				if (member.isOwner()) {
-					member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
+				if (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS)) {
+					try {
+						member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
+					} catch (ErrorResponseException e){
+						if (e.getErrorResponse().getCode() == 50007) { // Usuário tem as DMs desativadas
+							continue;
+						}
+					}
 				}
 			}
 		}

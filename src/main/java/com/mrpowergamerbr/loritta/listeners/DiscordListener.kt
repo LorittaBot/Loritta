@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
@@ -350,9 +351,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 					if (conf.joinLeaveConfig.tellOnPrivate) { // Talvez o sistema de avisar no privado esteja ativado!
-						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou é um bot!
+						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
 							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
-							event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
+							try {
+								event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
+							} catch (e: ErrorResponseException) {
+								if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
+									return@execute
+								}
+								throw e
+							}
 						}
 					}
 				}

@@ -24,7 +24,7 @@ class AjudaCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.AJUDA_DESCRIPTION.msgFormat()
+		return locale["AJUDA_DESCRIPTION"]
 	}
 
 	override fun getAliases(): List<String> {
@@ -116,10 +116,9 @@ class AjudaCommand : CommandBase() {
 			}
 
 			context.sendMessage(additionalInfoEmbed.build())
-		}
-		catch (e: ErrorResponseException) {
-			if (e.errorCode == 50007) { // Usuário tem as DMs desativadas
-				context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("AJUDA_ERROR_WHEN_OPENING_DM"))
+		} catch (e: ErrorResponseException) {
+			if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
+				context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"])
 				return
 			}
 			throw e
