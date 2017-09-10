@@ -259,8 +259,11 @@ open abstract class CommandBase {
 				run(context)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
-				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand )) {
-					ev.message.delete().complete()
+				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand)) {
+					val message = ev.message.textChannel.history.getMessageById(ev.messageId)
+					if (message != null) { // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
+						ev.message.delete().complete()
+					}
 				}
 				return true
 			} catch (e: Exception) {

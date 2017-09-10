@@ -9,9 +9,6 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.utils.MiscUtil
 
-
-
-
 class LimparCommand : CommandBase() {
 	override fun getLabel(): String {
 		return "limpar"
@@ -57,15 +54,11 @@ class LimparCommand : CommandBase() {
 
 			val toDelete = mutableListOf<String>()
 			var ignoredMessages = 0
-			context.event.textChannel.history.retrievePast(toClear).complete().forEach { msg ->
+			for (msg in context.event.textChannel.history.retrievePast(toClear).complete()) {
 				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
 				if (context.message.mentionedUsers.isNotEmpty()) {
-					if (context.message.mentionedUsers.contains(msg.author)) {
-						if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
-							toDelete.add(msg.id)
-						} else {
-							ignoredMessages++
-						}
+					if (!context.message.mentionedUsers.contains(msg.author)) {
+						continue;
 					}
 				} else {
 					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
@@ -77,14 +70,14 @@ class LimparCommand : CommandBase() {
 			}
 
 			if (toDelete.size !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 				return
 			}
 
 			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
 
 			if (ignoredMessages == 0) {
-				context.sendMessage(context.locale.LIMPAR_SUCCESS.msgFormat(context.asMention))
+				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.asMention])
 			} else {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.asMention, ignoredMessages])
 			}
