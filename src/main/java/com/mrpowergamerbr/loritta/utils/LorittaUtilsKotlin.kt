@@ -165,12 +165,13 @@ object LorittaUtilsKotlin {
 		embed.addField("\uD83D\uDD52 ${locale.MUSICINFO_LENGTH.msgFormat()}", "`$elapsed`/`$fancy`", true);
 
 		if (playingTrack.sourceManager.sourceName == "youtube") {
+			val viewCount = if (metaTrack.metadata.containsKey("viewCount")) metaTrack.metadata["viewCount"] else "???"
 			val likeCount = if (metaTrack.metadata.containsKey("likeCount")) metaTrack.metadata["likeCount"] else "???"
 			val dislikeCount = if (metaTrack.metadata.containsKey("dislikeCount")) metaTrack.metadata["dislikeCount"] else "???"
 			val commentCount = if (metaTrack.metadata.containsKey("commentCount")) metaTrack.metadata["commentCount"] else "???"
 
 			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${locale.get("MUSICINFO_VIEWS")}", metaTrack.metadata["viewCount"], true);
+			embed.addField("\uD83D\uDCFA ${locale.get("MUSICINFO_VIEWS")}", viewCount, true);
 			embed.addField("\uD83D\uDE0D ${locale.get("MUSICINFO_LIKES")}", likeCount, true);
 			embed.addField("\uD83D\uDE20 ${locale.get("MUSICINFO_DISLIKES")}", dislikeCount, true);
 			embed.addField("\uD83D\uDCAC ${locale.get("MUSICINFO_COMMENTS")}", commentCount, true);
