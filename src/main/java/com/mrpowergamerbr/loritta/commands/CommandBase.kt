@@ -181,7 +181,7 @@ open abstract class CommandBase {
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true
 				}
-				
+
 				if (hasCommandFeedback()) {
 					ev.channel.sendTyping().complete()
 				}

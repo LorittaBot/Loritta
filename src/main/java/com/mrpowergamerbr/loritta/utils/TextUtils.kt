@@ -101,11 +101,11 @@ fun String.f(vararg arguments: Any?): String {
 	return msgFormat(*arguments)
 }
 
-fun String.substringIfNeeded(range: IntRange = 0..2000, suffix: String = "..."): String {
+fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = "..."): String {
 	if (this.length - 1 in range)
 		return this
 
-	return this.substring(0..1997) + suffix
+	return this.substring(0 until 1997) + suffix
 }
 
 fun String.fromMorse(): String {
