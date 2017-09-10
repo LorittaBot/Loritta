@@ -33,7 +33,7 @@ class AjudaCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		try {
-			context.userHandle.openPrivateChannel().complete()
+			val privateChannel = context.userHandle.openPrivateChannel().complete()
 
 			if (!context.isPrivateChannel) {
 				context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
@@ -52,7 +52,7 @@ class AjudaCommand : CommandBase() {
 					.setDescription(description)
 					.setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
-			fastEmbedSend(context, listOf(builder.build()));
+			privateChannel.sendMessage(builder.build()).complete()
 
 			val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 
