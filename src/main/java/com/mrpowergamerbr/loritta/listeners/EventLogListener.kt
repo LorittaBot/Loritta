@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.listeners
 import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
+import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
@@ -33,10 +33,12 @@ import net.dv8tion.jda.core.events.user.GenericUserEvent
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.bson.Document
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.net.URL
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -204,6 +206,25 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.rawContent, event.author.id, event.message.channel.id, attachments)
+
+				// Agora nós iremos fazer reupload dos attachments para o pomf
+				val reuploadedAttachments = mutableListOf<String>()
+
+				for (attachmentUrl in attachments) {
+					val url = URL(attachmentUrl)
+					val conn = url.openConnection()
+					conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+					val content = conn.getInputStream().use { it.readBytes() }
+					val split = attachmentUrl.split("/")
+					val pomfUrl = PomfUtils.uploadFile(content, split.last())
+
+					reuploadedAttachments.add(pomfUrl ?: attachmentUrl)
+				}
+
+				// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
+				loritta.mongo.getDatabase("loritta")
+						.getCollection("storedmessages")
+						.updateOne(Filters.eq("_id", event.message.id), Document("\$set", Document("attachments", reuploadedAttachments)))
 			}
 		}
 	}

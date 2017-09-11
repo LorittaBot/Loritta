@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
 import java.io.File
@@ -62,6 +63,15 @@ class ReloadCommand : CommandBase() {
 				it.addEventListener(eventLogListener)
 			}
 		}
+
+		val serverConfig = loritta.getServerConfigForGuild("167278734049673216")
+		serverConfig.nsfwFilterConfig.isEnabled = true
+		serverConfig.nsfwFilterConfig.reportOnChannelId = "315566454454091777"
+		serverConfig.nsfwFilterConfig.removeMessage = true
+		serverConfig.nsfwFilterConfig.warnMessage = "<:Wilson:304231637263319042> **|** {@user} Que feio, pra que enviar imagens obscenas no chat? Queria saber o que seus pais achariam se tivessem visto você fazendo isso. \uD83D\uDE22 (Se foi um falso positivo, então me ignore...)"
+		serverConfig.nsfwFilterConfig.reportMessage = "@here **{@user} enviou uma imagem polêmica no chat!** (na verdade não tenho certeza... sei lá galerinha, analisa aí pfv)\n\nLink da imagem: <{url}>"
+
+		loritta save serverConfig
 
 		context.sendMessage("Loritta recarregada com sucesso!")
 	}

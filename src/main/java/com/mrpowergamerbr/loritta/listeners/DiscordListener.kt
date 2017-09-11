@@ -5,7 +5,14 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.NSFWResponse
+import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
+import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -24,6 +31,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
@@ -66,6 +74,64 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					event.member.roles.forEach {
 						if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
 							return@thread
+						}
+					}
+
+					// ===[ FILTRO NSFW ]===
+					if (serverConfig.nsfwFilterConfig.isEnabled && !serverConfig.nsfwFilterConfig.ignoreChannels.contains(event.message.textChannel.id)) {
+						thread {
+							val map = mutableMapOf<String, NSFWResponse>()
+
+							for (attachment in event.message.attachments.filter { it.isImage }) {
+								map.put(attachment.url, LorittaUtilsKotlin.getImageStatus(attachment.url))
+							}
+
+							if (map.isNotEmpty()) {
+								for ((key, value) in map) {
+									if (value == NSFWResponse.NSFW) {
+										val nsfwFilterConfig = serverConfig.nsfwFilterConfig
+										// !!! NSFW
+										// Vamos fazer reupload da ibagem
+										val url = URL(key)
+										val conn = url.openConnection()
+										conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+										val content = conn.getInputStream().use { it.readBytes() }
+										val split = key.split("/")
+										val pomfUrl = PomfUtils.uploadFile(content, split.last()) ?: return@thread
+
+										// Feito, agora vamos deletar a mensagem...
+										if (nsfwFilterConfig.removeMessage)
+											event.message.delete().complete()
+
+										// Repostar para o nosso querido canal de reposts
+										val textChannel = event.guild.getTextChannelById(serverConfig.nsfwFilterConfig.reportOnChannelId)
+										if (textChannel != null && textChannel.canTalk() && nsfwFilterConfig.reportMessage != null) {
+											var reportMessage = nsfwFilterConfig.reportMessage!!
+
+											reportMessage = reportMessage.replace("{@user}", event.member.asMention)
+											reportMessage = reportMessage.replace("{user}", event.member.user.name)
+											reportMessage = reportMessage.replace("{nickname}", event.member.effectiveName)
+											reportMessage = reportMessage.replace("{url}", pomfUrl)
+
+											textChannel.sendMessage(reportMessage).queue()
+										}
+
+										val sentIn = event.message.textChannel
+
+										if (sentIn.canTalk() && nsfwFilterConfig.warnMessage != null) {
+											var warnMessage = nsfwFilterConfig.warnMessage!!
+
+											warnMessage = warnMessage.replace("{@user}", event.member.asMention)
+											warnMessage = warnMessage.replace("{user}", event.member.user.name)
+											warnMessage = warnMessage.replace("{nickname}", event.member.effectiveName)
+
+											sentIn.sendMessage(warnMessage).queue()
+										}
+
+										return@thread
+									}
+								}
+							}
 						}
 					}
 
@@ -117,21 +183,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					for (eventHandler in serverConfig.nashornEventHandlers) {
 						eventHandler.handleMessageReceived(event)
-					}
-
-					thread {
-						val map = mutableMapOf<String, NSFWResponse>()
-
-						for (attachment in event.message.attachments.filter { it.isImage }) {
-							map.put(attachment.url, LorittaUtilsKotlin.getImageStatus(attachment.url))
-						}
-
-						if (map.isNotEmpty()) {
-							println("Status NSFW para ${event.author.name}...")
-							for ((key, value) in map) {
-								println("  * " + key + " ~ " + value.name)
-							}
-						}
 					}
 
 					// Primeiro os comandos vanilla da Loritta(tm)
@@ -220,40 +271,40 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 							if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
 								var starboardMessageId = conf.starboardEmbeds[e.messageId]
-								var starboardMessage: Message? = null;
+								var starboardMessage: Message? = null
 								if (starboardMessageId != null) {
 									starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
 								}
 
 								val embed = EmbedBuilder()
-								val count = e.reaction.users.complete().size;
+								val count = e.reaction.users.complete().size
 								var content = msg.rawContent
 								embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
 								embed.setFooter(msg.creationTime.humanize(), null)
 								embed.setColor(Color(255, 255, 200 - (count * 20)))
 
-								var emoji = "⭐";
+								var emoji = "⭐"
 
 								if (count >= 5) {
-									emoji = "\uD83C\uDF1F";
+									emoji = "\uD83C\uDF1F"
 								}
 								if (count >= 10) {
-									emoji = "\uD83C\uDF20";
+									emoji = "\uD83C\uDF20"
 								}
 								if (count >= 15) {
-									emoji = "\uD83D\uDCAB";
+									emoji = "\uD83D\uDCAB"
 								}
 								if (count >= 20) {
-									emoji = "\uD83C\uDF0C";
+									emoji = "\uD83C\uDF0C"
 								}
 
-								var hasImage = false;
+								var hasImage = false
 								if (msg.attachments.isNotEmpty()) { // Se tem attachments...
 									content += "\n**Arquivos:**\n"
 									for (attach in msg.attachments) {
 										if (attach.isImage && !hasImage) { // Se é uma imagem...
 											embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
-											hasImage = true;
+											hasImage = true
 										}
 										content += attach.url + "\n"
 									}
@@ -270,7 +321,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 										starboardMessage.delete().complete()
 										conf.starboardEmbeds.remove(msg.id)
 										LorittaLauncher.loritta.ds.save(conf)
-										return@thread;
+										return@thread
 									}
 									starboardMessage.editMessage(starCountMessage.build()).complete()
 								} else {
