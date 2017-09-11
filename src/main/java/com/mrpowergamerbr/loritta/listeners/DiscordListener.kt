@@ -119,6 +119,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						eventHandler.handleMessageReceived(event)
 					}
 
+					thread {
+						val map = mutableMapOf<String, NSFWResponse>()
+
+						for (attachment in event.message.attachments.filter { it.isImage }) {
+							map.put(attachment.url, LorittaUtilsKotlin.getImageStatus(attachment.url))
+						}
+
+						if (map.isNotEmpty()) {
+							println("Status NSFW para ${event.author.name}...")
+							for ((key, value) in map) {
+								println("  * " + key + " ~ " + value.name)
+							}
+						}
+					}
+
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
@@ -301,7 +316,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			loritta save serverConfig
 
 			event.guild.members.forEach {
-				if (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR)) {
+				if (it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/3rXgN8x", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
 
 					try {

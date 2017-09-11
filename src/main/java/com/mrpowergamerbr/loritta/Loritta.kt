@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientOptions
 import com.mongodb.client.model.Filters
 import com.mongodb.internal.thread.DaemonThreadFactory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -138,7 +139,12 @@ class Loritta {
 
 		println("Iniciando MongoDB...")
 
-		mongo = MongoClient() // Hora de iniciar o MongoClient
+		val builder = MongoClientOptions.Builder().apply {
+			connectionsPerHost(2000);
+		}
+		val options = builder.build()
+
+		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 		morphia = Morphia() // E o Morphia
 		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
 		generateDummyServerConfig()

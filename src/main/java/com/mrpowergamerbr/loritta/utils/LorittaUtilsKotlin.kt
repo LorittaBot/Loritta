@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -32,6 +33,8 @@ import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
+import java.io.StringReader
+import java.net.URLEncoder
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -90,6 +93,10 @@ fun String.isValidSnowflake(): Boolean {
 	}
 }
 
+enum class NSFWResponse {
+	OK, ERROR, NSFW, EXCEPTION
+}
+
 object LorittaUtilsKotlin {
 	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
 		val rg : Random = Random()
@@ -100,6 +107,33 @@ object LorittaUtilsKotlin {
 			items[randomPosition] = tmp
 		}
 		return items
+	}
+
+	fun getImageStatus(url: String): NSFWResponse {
+		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
+				.header("X-Mashape-Key", Loritta.config.mashapeKey)
+				.header("Accept", "application/json")
+				.acceptJson()
+				.body()
+
+		// Nós iremos ignorar caso a API esteja sobrecarregada
+		try {
+			val reader = StringReader(response)
+			val jsonReader = JsonReader(reader)
+			val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+
+			if (apiResponse.has("error")) {
+				return NSFWResponse.ERROR
+			}
+
+			if (apiResponse.get("rating_label").asString == "adult") {
+				return NSFWResponse.NSFW
+			}
+		} catch (e: Exception) {
+			println("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
+			return NSFWResponse.EXCEPTION
+		}
+		return NSFWResponse.OK
 	}
 
 	@JvmStatic

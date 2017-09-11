@@ -7,6 +7,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.NSFWResponse
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -22,21 +24,21 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
-    override fun getLabel(): String {
-        return "background";
-    }
+	override fun getLabel(): String {
+		return "background";
+	}
 
-    override fun getUsage(): String {
-        return "<novo background>"
-    }
+	override fun getUsage(): String {
+		return "<novo background>"
+	}
 
-    override fun getDescription(locale: BaseLocale): String {
-        return locale.BACKGROUND_DESCRIPTION;
-    }
+	override fun getDescription(locale: BaseLocale): String {
+		return locale.BACKGROUND_DESCRIPTION;
+	}
 
-    override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
-        return CommandCategory.SOCIAL
-    }
+	override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
+		return CommandCategory.SOCIAL
+	}
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -46,21 +48,21 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)
 	}
 
-    override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
-        var userProfile = context.lorittaUser.profile
+	override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
+		var userProfile = context.lorittaUser.profile
 
-        val link = LorittaUtils.getURLFromContext(context, 0, 1, 2048);
+		val link = LorittaUtils.getURLFromContext(context, 0, 1, 2048);
 
-        if (link != null) {
+		if (link != null) {
 			setAsBackground(link, context);
-            return;
-        }
-        var embed = getFirstPageEmbed(context)
-        val message = context.sendMessage(embed);
+			return;
+		}
+		var embed = getFirstPageEmbed(context)
+		val message = context.sendMessage(embed);
 
 		message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
 		message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
-    }
+	}
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
 		if (e.user == context.userHandle) { // Somente o usuário que executou o comando pode interagir com o comando!
@@ -142,29 +144,20 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 			link = params["imgurl"]!!
 		}
 
-		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(link, "UTF-8"))
-				.header("X-Mashape-Key", Loritta.config.mashapeKey)
-				.header("Accept", "application/json")
-				.acceptJson()
-				.body()
+		val status = LorittaUtilsKotlin.getImageStatus(link)
 
-		// Nós iremos ignorar caso a API esteja sobrecarregada
-		try {
-			val reader = StringReader(response)
-			val jsonReader = JsonReader(reader)
-			val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+		if (status == NSFWResponse.ERROR) {
+			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
+			return
+		}
 
-			if (apiResponse.has("error")) {
-				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
-				return;
-			}
+		if (status == NSFWResponse.NSFW) {
+			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
+			return
+		}
 
-			if (apiResponse.get("rating_label").asString == "adult") {
-				mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
-				return;
-			}
-		} catch (e: Exception) {
-			println("Ignorando verificação de conteúdo NSFW para usuário ${context.userHandle.name} (${context.userHandle.id})! - Causa: ${e.message} - Resposta: $response")
+		if (status == NSFWResponse.EXCEPTION) {
+			println("* Usuário: ${context.userHandle.name} (${context.userHandle.id})")
 		}
 
 		var bufferedImage = LorittaUtils.downloadImage(link)
