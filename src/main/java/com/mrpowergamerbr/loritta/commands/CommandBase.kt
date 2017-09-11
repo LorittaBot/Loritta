@@ -4,16 +4,19 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.remove
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
-import net.dv8tion.jda.core.utils.PermissionUtil
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -260,10 +263,9 @@ open abstract class CommandBase {
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
 				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand)) {
-					val message = ev.message.textChannel.getMessageById(ev.messageId).complete()
-					if (message != null) { // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-						ev.message.delete().complete()
-					}
+					ev.message.textChannel.getMessageById(ev.messageId).queue({ // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
+						it.delete().complete()
+					})
 				}
 				return true
 			} catch (e: Exception) {
