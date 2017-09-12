@@ -80,15 +80,23 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// ===[ FILTRO NSFW ]===
 					if (serverConfig.nsfwFilterConfig.isEnabled && !serverConfig.nsfwFilterConfig.ignoreChannels.contains(event.message.textChannel.id)) {
 						thread {
-							val map = mutableMapOf<String, NSFWResponse>()
+							val map = mutableMapOf<String, Pair<NSFWResponse, NSFWResponse>>()
 
 							for (attachment in event.message.attachments.filter { it.isImage }) {
-								map.put(attachment.url, LorittaUtilsKotlin.getImageStatus(attachment.url))
+								map.put(attachment.url, Pair(LorittaUtilsKotlin.getImageStatus(attachment.url), LorittaUtilsKotlin.getImageStatus(attachment.url)))
+							}
+
+							val linkRegEx = Regex("(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]\\.[^\\s]{2,})")
+							val matcher = linkRegEx.toPattern().matcher(event.message.content)
+
+							while (matcher.find()) {
+								val url = matcher.group(1).replace(">", "")
+								map.put(url, Pair(LorittaUtilsKotlin.getImageStatus(url), LorittaUtilsKotlin.getImageStatus(url)))
 							}
 
 							if (map.isNotEmpty()) {
 								for ((key, value) in map) {
-									if (value == NSFWResponse.NSFW) {
+									if (value.first == NSFWResponse.NSFW && value.second == NSFWResponse.NSFW) {
 										val nsfwFilterConfig = serverConfig.nsfwFilterConfig
 										// !!! NSFW
 										// Vamos fazer reupload da ibagem

@@ -118,6 +118,7 @@ object LorittaUtilsKotlin {
 
 		// Nós iremos ignorar caso a API esteja sobrecarregada
 		try {
+			println(url + " ~ " + response)
 			val reader = StringReader(response)
 			val jsonReader = JsonReader(reader)
 			val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
