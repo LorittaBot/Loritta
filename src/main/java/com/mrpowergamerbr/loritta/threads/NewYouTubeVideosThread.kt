@@ -63,7 +63,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									try {
 										val jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
 
-										val pattern = Pattern.compile("\"browseId\":\"([A-z0-9_-]+)\"")
+										val pattern = Pattern.compile("\"key\":\"browse_id\",\"value\":\"([A-z0-9_-]+)\"");
 
 										val matcher = pattern.matcher(jsoup.html())
 

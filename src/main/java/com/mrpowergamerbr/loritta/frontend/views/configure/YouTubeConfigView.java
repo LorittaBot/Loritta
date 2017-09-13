@@ -5,19 +5,12 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
-import com.mrpowergamerbr.loritta.userdata.RssFeedConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.userdata.YouTubeConfig;
-import com.mrpowergamerbr.loritta.utils.FeedEntry;
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
-import net.dv8tion.jda.core.entities.TextChannel;
-import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +50,7 @@ public class YouTubeConfigView {
 					try {
 						Document jsoup = Jsoup.connect(def.getChannelUrl()).get(); // Hora de pegar a página do canal...
 
-						Pattern pattern = Pattern.compile("\"browseId\":\"([A-z0-9_-]+)\"");
+						Pattern pattern = Pattern.compile("\"key\":\"browse_id\",\"value\":\"([A-z0-9_-]+)\"");
 
 						Matcher matcher = pattern.matcher(jsoup.html());
 
