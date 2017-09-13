@@ -1,11 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -52,7 +50,10 @@ class YoutubeMp3Command : CommandBase() {
 			var videoId = link;
 			var callbackId = "lorittaCallback";
 
-			var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1498314662109").body().replace(callbackId, "")
+			var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1498314662109")
+					.userAgent("Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+					.body()
+					.replace(callbackId, "")
 			checkResponse = checkResponse.removePrefix("(").removeSuffix(")");
 
 			val reader = StringReader(checkResponse)
@@ -72,7 +73,10 @@ class YoutubeMp3Command : CommandBase() {
 			// after a 100ms delay
 			val fixedRateTimer = fixedRateTimer(name = "YTMP3 Progress Check Thread",
 					initialDelay = 0, period = 1000) {
-				var progressResponse = HttpRequest.get("https://d.ymcdn.cc/progress.php?callback=$callbackId&id=$hash&_=1498315402819").body().replace(callbackId, "")
+				var progressResponse = HttpRequest.get("https://d.ymcdn.cc/progress.php?callback=$callbackId&id=$hash&_=1498315402819")
+						.userAgent("Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+						.body()
+						.replace(callbackId, "")
 				progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
 
 				val readerProgress = StringReader(progressResponse)
