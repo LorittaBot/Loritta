@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -118,7 +119,7 @@ class AjudaCommand : CommandBase() {
 			context.sendMessage(additionalInfoEmbed.build())
 		} catch (e: ErrorResponseException) {
 			if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
-				context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"])
+				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"])
 				return
 			}
 			throw e

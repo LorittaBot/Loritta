@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.f
@@ -84,7 +85,7 @@ open abstract class CommandBase {
 	}
 
 	/**
-	 * Retorna as permissões necessárias para utilizar este comando
+	 * Retorna as permissões necessárias para o usuário poder utilizar este comando
 	 *
 	 * @return A lista de permissões necessárias
 	 */
@@ -98,7 +99,7 @@ open abstract class CommandBase {
 	 * @return A lista de permissões necessárias
 	 */
 	open fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MESSAGE_EMBED_LINKS)
+		return listOf()
 	}
 
 	/**
@@ -218,7 +219,7 @@ open abstract class CommandBase {
 								required += permissionTranslation
 							}
 						}
-						ev.textChannel.sendMessage(LorittaUtils.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
+						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
 						return true
 					}
 				}
@@ -232,7 +233,7 @@ open abstract class CommandBase {
 					strippedArgs = strippedArgs.remove(0)
 				}
 				val context = CommandContext(conf, ev, this, args, rawArgs, strippedArgs)
-				if (args.size >= 1 && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
+				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					explain(context)
 					return true
 				}
@@ -244,7 +245,7 @@ open abstract class CommandBase {
 					return true
 				}
 				if (context.isPrivateChannel && !canUseInPrivateChannel()) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.CANT_USE_IN_PRIVATE.f())
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.CANT_USE_IN_PRIVATE.f())
 					return true
 				}
 				if (needsToUploadFiles()) {
@@ -255,7 +256,7 @@ open abstract class CommandBase {
 				if (requiresMusicEnabled()) {
 					if (!context.config.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("DJ_LORITTA_DISABLED") + " \uD83D\uDE1E" + if (canManage) context.locale.get("DJ_LORITTA_HOW_TO_ENABLE", "https://loritta.website/auth") else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("DJ_LORITTA_DISABLED") + " \uD83D\uDE1E" + if (canManage) context.locale.get("DJ_LORITTA_HOW_TO_ENABLE", "https://loritta.website/auth") else "")
 						return true
 					}
 				}

@@ -9,7 +9,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -64,7 +64,7 @@ class BIRLCommand : CommandBase() {
 				context.sendMessage(context.getAsMention(true), embed.build())
 			} else {
 				// Os \u200D são zero width joiners, usado para o Discord não parsear os code blocks
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BIRL_INFO.msgFormat("${context.config.commandPrefix}birl```HORA DO SHOW" +
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BIRL_INFO.msgFormat("${context.config.commandPrefix}birl```HORA DO SHOW" +
 						"    CE QUER VER ESSA PORRA? (\"Hello, World! Porra!\\n\");\n" +
 						"    BORA CUMPADE 0;\n" +
 						"BIRL```"))

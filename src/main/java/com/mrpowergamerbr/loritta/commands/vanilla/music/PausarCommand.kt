@@ -4,9 +4,8 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
 class PausarCommand : CommandBase() {
@@ -38,7 +37,7 @@ class PausarCommand : CommandBase() {
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.isPaused) {
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_ALREADY_PAUSED", context.config.commandPrefix))
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_ALREADY_PAUSED", context.config.commandPrefix))
 		} else {
 			manager.player.isPaused = true
 			context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_PAUSADO", context.config.commandPrefix))

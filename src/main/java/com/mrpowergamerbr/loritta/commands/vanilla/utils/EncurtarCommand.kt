@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
@@ -44,7 +44,7 @@ class EncurtarCommand : CommandBase() {
 			if (short != null && short != "INVALID_URI") {
 				context.sendMessage(context.getAsMention(true) + short)
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BITLY_INVALID.msgFormat(context.args[0]))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BITLY_INVALID.msgFormat(context.args[0]))
 			}
 		} else {
 			context.explain()

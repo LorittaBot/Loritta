@@ -1,10 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -39,11 +38,11 @@ class TocarCommand : CommandBase() {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_MUTED.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_MUTED.msgFormat())
 				return
 			}
 			if (selfMember.voiceState.isSuppressed) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_CANTTALK.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_CANTTALK.msgFormat())
 				return
 			}
 		}

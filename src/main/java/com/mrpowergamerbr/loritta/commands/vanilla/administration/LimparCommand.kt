@@ -3,9 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.utils.MiscUtil
 
@@ -43,12 +42,12 @@ class LimparCommand : CommandBase() {
 			val toClear = context.args[0].toIntOrNull()
 
 			if (toClear == null) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["INVALID_NUMBER", context.args[0]]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["INVALID_NUMBER", context.args[0]]}")
 				return
 			}
 
 			if (toClear !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
 				return
 			}
 
@@ -70,7 +69,7 @@ class LimparCommand : CommandBase() {
 			}
 
 			if (toDelete.size !in 2..100) {
-				context.sendMessage("${LorittaUtils.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 				return
 			}
 

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -64,7 +65,7 @@ class AminoCommand : CommandBase() {
 
 						context.sendMessage(context.asMention, embed.build());
 					} else {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_COULDNT_FIND.msgFormat(args))
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_COULDNT_FIND.msgFormat(args))
 					}
 				}
 			} else {
@@ -79,7 +80,7 @@ class AminoCommand : CommandBase() {
 							return;
 						}
 					}
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_NO_IMAGE_FOUND)
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_NO_IMAGE_FOUND)
 					return;
 				}
 				context.explain()

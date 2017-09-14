@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.io.StringReader
@@ -64,7 +64,7 @@ class YoutubeMp3Command : CommandBase() {
 			var title = checkJsonResponse.get("title").asString
 
 			if (title == "none") {
-				mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_INVALID_LINK).complete();
+				mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_INVALID_LINK).complete();
 				return;
 			}
 
@@ -84,7 +84,7 @@ class YoutubeMp3Command : CommandBase() {
 
 				val progress = progressJsonResponse.get("progress").asString;
 				if (progressJsonResponse.has("error") && progressJsonResponse["error"].string.isNotEmpty()) {
-					mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_ERROR_WHEN_CONVERTING).complete()
+					mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBEMP3_ERROR_WHEN_CONVERTING).complete()
 					this.cancel()
 					return@fixedRateTimer
 				}

@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.remove
 import java.util.*
 
@@ -56,7 +56,7 @@ class RollCommand : CommandBase() {
 					try {
 						LorittaUtils.evalMath(Loritta.random.nextLong(1, value + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
 						return
 					}
 					if (!expression.startsWith(" ")) {
@@ -64,7 +64,7 @@ class RollCommand : CommandBase() {
 					}
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
 				return
 			}
 

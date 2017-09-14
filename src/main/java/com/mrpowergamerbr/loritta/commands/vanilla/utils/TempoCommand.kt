@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -108,7 +108,7 @@ class TempoCommand : CommandBase() {
 				context.sendMessage(embed.build());
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TEMPO_COULDNT_FIND.msgFormat(cidade))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TEMPO_COULDNT_FIND.msgFormat(cidade))
 			}
 		} else {
 			this.explain(context);

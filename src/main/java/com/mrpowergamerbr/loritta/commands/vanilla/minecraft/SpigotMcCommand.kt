@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -64,7 +65,7 @@ class SpigotMcCommand : CommandBase() {
 
 			if (json.isJsonObject) {
 				// Erro!
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("SPIGOTMC_COULDNT_FIND", query))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("SPIGOTMC_COULDNT_FIND", query))
 				return
 			} else {
 				val array = json.array

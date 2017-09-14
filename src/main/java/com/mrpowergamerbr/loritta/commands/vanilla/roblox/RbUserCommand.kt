@@ -12,6 +12,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -191,7 +192,7 @@ class RbUserCommand : CommandBase() {
 					return
 				}
 			}
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.locale.get("RBUSER_COULDNT_FIND", username) + " \uD83D\uDE22")
+			context.sendMessage(Constants.ERROR + " **|** " + context.locale.get("RBUSER_COULDNT_FIND", username) + " \uD83D\uDE22")
 		} else {
 			context.explain()
 		}

@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -98,7 +99,7 @@ class UndertaleBattleCommand : CommandBase() {
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)); // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "${context.locale.UTBATTLE_INVALID}".msgFormat(monster, validMonsterList.joinToString(", ")))
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "${context.locale.UTBATTLE_INVALID}".msgFormat(monster, validMonsterList.joinToString(", ")))
             }
         } else {
             this.explain(context);

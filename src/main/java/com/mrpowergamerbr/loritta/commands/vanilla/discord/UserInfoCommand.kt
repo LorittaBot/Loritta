@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -47,7 +48,7 @@ class UserInfoCommand : CommandBase() {
 		}
 
 		if (!context.guild.isMember(user)) {
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.locale.get("USERINFO_NOT_MEMBER"))
+			context.sendMessage(Constants.ERROR + " **|** " + context.locale.get("USERINFO_NOT_MEMBER"))
 			return
 		}
 

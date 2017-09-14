@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -78,10 +78,10 @@ class QuoteCommand : CommandBase() {
 
 					temmie!!.sendMessage(dm)
 				} else {
-					context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_UNKNOWN_MESSAGE"))
+					context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_UNKNOWN_MESSAGE"))
 				}
 			} else {
-				context.sendMessage(LorittaUtils.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_NOT_VALID_SNOWFLAKE", context.args[0]))
+				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_NOT_VALID_SNOWFLAKE", context.args[0]))
 			}
 		} else {
 			context.explain()

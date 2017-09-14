@@ -27,6 +27,7 @@ import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -402,7 +403,7 @@ class Loritta {
 	fun checkAndLoad(context: CommandContext, trackUrl: String): Boolean {
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL.msgFormat())
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL.msgFormat())
 			return false
 		}
 		loadAndPlay(context, trackUrl)
@@ -427,7 +428,7 @@ class Loritta {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
-						channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_MAX.msgFormat(final)).queue();
+						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_MAX.msgFormat(final)).queue();
 						return;
 					}
 				}
@@ -479,11 +480,11 @@ class Loritta {
 						return;
 					}
 				}
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_NOTFOUND", trackUrl)).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_NOTFOUND", trackUrl)).queue();
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR", exception.message)).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR", exception.message)).queue();
 			}
 		})
 	}

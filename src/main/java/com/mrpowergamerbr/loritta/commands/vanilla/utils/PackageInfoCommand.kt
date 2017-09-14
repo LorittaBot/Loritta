@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -64,7 +64,7 @@ class PackageInfoCommand : CommandBase() {
 					var objeto = correios.objeto[0];
 
 					if (objeto.categoria == "ERRO: Objeto não encontrado na base de dados dos Correios.") {
-						context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_COULDNT_FIND.msgFormat(packageId))
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_COULDNT_FIND.msgFormat(packageId))
 						return;
 					}
 
@@ -82,7 +82,7 @@ class PackageInfoCommand : CommandBase() {
 					context.sendMessage(embed.build());
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_INVALID.msgFormat(packageId))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_INVALID.msgFormat(packageId))
 			}
 
 		} else {

@@ -4,8 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 
 class RandomSAMCommand : CommandBase() {
@@ -41,7 +40,7 @@ class RandomSAMCommand : CommandBase() {
 		if (post != null) {
 			context.sendFile(post.image, "south_america_memes.png", "<:sam:331592756969603073> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `${post.description}`")
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
 		}
 	}
 }

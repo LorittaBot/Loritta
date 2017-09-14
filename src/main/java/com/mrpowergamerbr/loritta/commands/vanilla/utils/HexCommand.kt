@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ColorUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
@@ -40,7 +40,7 @@ class HexCommand : CommandBase() {
 
 				context.sendMessage(context.getAsMention(true) + context.locale.HEX_RESULT.msgFormat(r, g, b, ColorUtils().getColorNameFromRgb(r, g, b), hex))
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.HEX_BAD_ARGS)
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.HEX_BAD_ARGS)
 			}
 		} else {
 			context.explain()

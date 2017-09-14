@@ -5,7 +5,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
@@ -34,7 +34,7 @@ class MoneyCommand : CommandBase() {
 			}
 
 			if (multiply == null) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.msgFormat(context.args[2]))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.msgFormat(context.args[2]))
 				return;
 			}
 
@@ -49,12 +49,12 @@ class MoneyCommand : CommandBase() {
 			val validCurrencies = validCurrResponse.get("rates").asJsonObject.entrySet().joinToString(transform = { "`${it.key}`" })
 
 			if (fixerResponse.has("error")) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(from, validCurrencies))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(from, validCurrencies))
 				return
 			}
 			val rates = fixerResponse.get("rates").asJsonObject
 			if (!rates.has(to)) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(to, validCurrencies))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MONEY_INVALID_CURRENCY.msgFormat(to, validCurrencies))
 				return
 			}
 

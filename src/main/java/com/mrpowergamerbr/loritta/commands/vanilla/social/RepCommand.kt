@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.concurrent.TimeUnit
@@ -41,7 +41,7 @@ class RepCommand : CommandBase() {
             var user = context.message.mentionedUsers[0];
 
             if (user == context.userHandle) {
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_SELF);
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_SELF);
                 return;
             }
 
@@ -53,7 +53,7 @@ class RepCommand : CommandBase() {
                         60 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)))
                 );
-                context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_WAIT.msgFormat(fancy));
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_WAIT.msgFormat(fancy));
                 return;
             }
 

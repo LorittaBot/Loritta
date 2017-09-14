@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -43,14 +43,14 @@ class DicioCommand : CommandBase() {
 					.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
 			val response = httpRequest.body();
 			if (httpRequest.code() == 404) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
 				return;
 			}
 			val jsoup = Jsoup.parse(response);
 
 			// Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
 			if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de")) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
 				return;
 			}
 

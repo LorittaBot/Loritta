@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.fromMorse
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -39,7 +40,7 @@ class MorseCommand : CommandBase() {
 			val fromMorse = message.fromMorse()
 
 			if (toMorse.trim().isEmpty()) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.MORSE_FAIL)
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MORSE_FAIL)
 				return;
 			}
 

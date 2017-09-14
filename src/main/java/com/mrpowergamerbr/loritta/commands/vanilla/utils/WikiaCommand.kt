@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -57,7 +57,7 @@ class WikiaCommand : CommandBase() {
 				val wikiaResponse = JsonParser().parse(jsonReader).asJsonObject // Base
 
 				if (wikiaResponse.has("exception")) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
 				} else {
 					val item = wikiaResponse.get("items").asJsonArray.get(0).asJsonObject // Nós iremos pegar o 0, já que é o primeiro resultado
 
@@ -73,7 +73,7 @@ class WikiaCommand : CommandBase() {
 					context.sendMessage(embed.build()) // Envie a mensagem!
 				}
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
 			}
 		} else {
 			this.explain(context);

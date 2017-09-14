@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
@@ -41,11 +41,11 @@ class VolumeCommand : CommandBase() {
 			try {
 				val vol = Integer.valueOf(context.args[0])
 				if (vol > 100) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_TOOHIGH.msgFormat())
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_TOOHIGH.msgFormat())
 					return
 				}
 				if (0 > vol) {
-					context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_TOOLOW.msgFormat())
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_TOOLOW.msgFormat())
 					return
 				}
 				if (manager.player.volume > vol) {
@@ -55,7 +55,7 @@ class VolumeCommand : CommandBase() {
 				}
 				manager.player.volume = Integer.valueOf(context.args[0])!!
 			} catch (e: Exception) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_EXCEPTION.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.VOLUME_EXCEPTION.msgFormat())
 			}
 		} else {
 			context.explain()

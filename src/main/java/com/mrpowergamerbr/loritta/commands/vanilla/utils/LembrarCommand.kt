@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -104,7 +104,7 @@ class LembrarCommand : CommandBase() {
 			}
 
 			if (years == null || months == null || weeks == null || days == null || hours == null || minutes == null || seconds == null) {
-				context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + "Tempo de espera inválido! Talvez você tenha colocado um tempo muito grande...")
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Tempo de espera inválido! Talvez você tenha colocado um tempo muito grande...")
 				return;
 			}
 			// Agora vamos somar!

@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.NSFWResponse
@@ -147,7 +148,7 @@ class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		val status = LorittaUtilsKotlin.getImageStatus(link)
 
 		if (status == NSFWResponse.ERROR) {
-			mensagem.editMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
+			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
 			return
 		}
 

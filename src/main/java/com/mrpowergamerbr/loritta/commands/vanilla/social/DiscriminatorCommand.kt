@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
@@ -51,7 +51,7 @@ class DiscriminatorCommand : CommandBase() {
 				idx++;
 			}
 		} else {
-			context.sendMessage(LorittaUtils.ERROR + " **|** " + context.getAsMention(true) + context.locale.DISCRIM_NOBODY.msgFormat(discriminator));
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.DISCRIM_NOBODY.msgFormat(discriminator));
 			return;
 		}
 
