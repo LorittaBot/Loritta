@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -36,7 +37,7 @@ class YouTubeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("YOUTUBE_DESCRIPTION")
+		return locale["YOUTUBE_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
@@ -52,18 +53,18 @@ class YouTubeCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		if (context.args.size >= 1) {
+		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");
 			val items = YouTubeUtils.searchVideosOnYouTube(query)
 
 			if (items.isNotEmpty()) {
 				var format = "";
 				var youtubeKey = Loritta.config.youtubeKey;
-				for (i in 0..Math.min(5, items.size) - 1) {
+				for (i in 0 until Math.min(5, items.size)) {
 					var item = items[i];
 					var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
-					var parser = JsonParser();
-					var json = parser.parse(response).asJsonObject;
+					var parser = JsonParser()
+					var json = parser.parse(response).asJsonObject
 					var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
 					var duration = java.time.Duration.parse(strDuration)
 					var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS); // Nós não podemos pegar o tempo diretamente porque é "unsupported"
@@ -78,10 +79,9 @@ class YouTubeCommand : CommandBase() {
 				embed.setTitle("<:youtube:314349922885566475> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
 				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
-				for (i in 0..Math.min(5, items.size) - 1) {
+				for (i in 0 until Math.min(5, items.size)) {
 					mensagem.addReaction(indexes[i]).complete();
 				}
-				// mensagem.addReaction("❌").complete();
 				return;
 			} else {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBE_COULDNT_FIND.msgFormat(query))
@@ -93,25 +93,31 @@ class YouTubeCommand : CommandBase() {
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
 		if (e.user == context.userHandle) { // Somente quem executou o comando pode interagir!
-			if (context.metadata.contains("playMusic")) {
-				var item = context.metadata.get("playMusic") as YouTubeItem;
-
-				if (loritta.checkAndLoad(context, "https://youtu.be/${item.id.videoId}")) {
-					context.metadata.remove("playMusic")
+			if (context.metadata.contains("currentItem")) {
+				var item = context.metadata["currentItem"] as YouTubeItem;
+				if (e.reactionEmote.name == "▶") {
+					if (loritta.checkAndLoad(context, "https://youtu.be/${item.id.videoId}")) {
+						context.metadata.remove("currentItem")
+					}
 				}
-				return;
+
+				if (e.reactionEmote.name == "\uD83D\uDCE5") {
+					MiscUtils.sendYouTubeVideoMp3(context, "https://youtu.be/${item.id.videoId}")
+				}
+				return
 			}
+
 			var item: YouTubeItem;
 			if (e.reactionEmote.name == "1⃣") {
-				item = context.metadata.get("0") as YouTubeItem;
+				item = context.metadata["0"] as YouTubeItem;
 			} else if (e.reactionEmote.name == "2⃣") {
-				item = context.metadata.get("1") as YouTubeItem;
+				item = context.metadata["1"] as YouTubeItem;
 			} else if (e.reactionEmote.name == "3⃣") {
-				item = context.metadata.get("2") as YouTubeItem;
+				item = context.metadata["2"] as YouTubeItem;
 			} else if (e.reactionEmote.name == "4⃣") {
-				item = context.metadata.get("3") as YouTubeItem;
+				item = context.metadata["3"] as YouTubeItem;
 			} else {
-				item = context.metadata.get("4") as YouTubeItem;
+				item = context.metadata["4"] as YouTubeItem;
 			}
 
 			// Remover todos os reactions
@@ -123,17 +129,20 @@ class YouTubeCommand : CommandBase() {
 			var channelId = item.snippet.channelId;
 			embed.setThumbnail("http://i.ytimg.com/i/$channelId/1.jpg");
 			embed.addField("Link", "https://youtu.be/${item.id.videoId}", true);
-			embed.addField("${context.locale.YOUTUBE_CHANNEL.msgFormat()}", "${item.snippet.channelTitle}", true);
+			embed.addField("${context.locale["YOUTUBE_CHANNEL"]}", "${item.snippet.channelTitle}", true);
 			embed.setColor(Color(217, 66, 52));
 
 			// Criar novo embed!
 			msg.editMessage(embed.build()).complete();
 
+			context.metadata.put("currentItem", item);
+
 			if (context.config.musicConfig.isEnabled) {
 				// Se o sistema de músicas está ativado...
 				msg.addReaction("▶").complete(); // Vamos colocar um ícone para tocar!
-				context.metadata.put("playMusic", item);
 			}
+
+			msg.addReaction("\uD83D\uDCE5").complete(); // Adicionar ícone para baixar a música em MP3
 		}
 	}
 }
