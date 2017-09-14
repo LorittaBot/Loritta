@@ -147,19 +147,16 @@ class YouTubeCommand : CommandBase() {
 			val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
 
 			var embed = EmbedBuilder();
-			embed.setTitle("<:youtube:314349922885566475> ${item.snippet.title}");
-			embed.setDescription(item.snippet.description);
-			var channelId = item.snippet.channelId;
-			embed.setThumbnail("http://i.ytimg.com/i/$channelId/1.jpg");
-			embed.addField("Link", "https://youtu.be/${item.id.videoId}", true);
+			embed.setTitle("<:youtube:314349922885566475> ${item.snippet.title}", "https://youtu.be/${item.id.videoId}")
+			embed.setDescription(item.snippet.description)
+			embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
 
-			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true);
-			embed.addField("\uD83D\uDE0D ${context.locale["MUSICINFO_LIKES"]}", likeCount, true);
-			embed.addField("\uD83D\uDE20 ${context.locale["MUSICINFO_DISLIKES"]}", dislikeCount, true);
-			embed.addField("\uD83D\uDCAC ${context.locale["MUSICINFO_COMMENTS"]}", commentCount, true);
+			embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
+			embed.addField("\uD83D\uDE0D ${context.locale["MUSICINFO_LIKES"]}", likeCount, true)
+			embed.addField("\uD83D\uDE20 ${context.locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
+			embed.addField("\uD83D\uDCAC ${context.locale["MUSICINFO_COMMENTS"]}", commentCount, true)
 			embed.setThumbnail(thumbnail)
-			embed.setAuthor("${item.snippet.channelTitle}", null, channelIcon)
+			embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
 
 			embed.setColor(Color(217, 66, 52));
 
