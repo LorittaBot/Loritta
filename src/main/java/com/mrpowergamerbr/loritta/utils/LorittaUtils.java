@@ -10,10 +10,16 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder;
-import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Message.Attachment;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
@@ -26,8 +32,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -453,32 +457,6 @@ public class LorittaUtils {
 		return bytes;
 	}
 
-	public static void updateStatus() {
-		if (false) {
-			for (User user : LorittaLauncher.loritta.getLorittaShards().getUsers()) {
-				LorittaProfile lorittaProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.getId());
-				List<Guild> mutualGuilds = LorittaLauncher.loritta.getLorittaShards().getMutualGuilds(user); // Pegar as guilds que o usuário e a Loritta estão (para poder pegar o jogo)
-				List<LorittaProfile> toUpdate = new ArrayList<LorittaProfile>();
-				if (!mutualGuilds.isEmpty()) {
-					Member member = mutualGuilds.get(0).getMember(user);
-					if (member.getOnlineStatus() != OnlineStatus.OFFLINE) {
-						lorittaProfile.setTempoOnline(lorittaProfile.getTempoOnline() + 5); // Em segundos
-						Game game = member.getGame();
-
-						if (game != null) {
-							String gameName = game.getName();
-							gameName = gameName.replace(".", "[---DOT---]");
-							gameName = gameName.replace("$", "[---DOLLAR---]");
-							lorittaProfile.getGames().put(gameName, 5 + lorittaProfile.getGames().getOrDefault(gameName, 0L));
-						}
-						LorittaLauncher.loritta.ds.save(lorittaProfile);
-					}
-				}
-				LorittaLauncher.loritta.ds.save(toUpdate);
-			}
-		}
-	}
-
 	@Deprecated
 	public static void startNotMigratedYetThreads() {
 		Runnable reminders = () -> {
@@ -515,18 +493,6 @@ public class LorittaUtils {
 			}
 		};
 		new Thread(reminders, "Reminders Thread").start();
-
-		Runnable onlineUpdater = () -> {  // Agora iremos iniciar o presence updater
-			while (true) {
-				updateStatus();
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		new Thread(onlineUpdater, "Game & Time Updater").start(); // Pronto!
 	}
 
 

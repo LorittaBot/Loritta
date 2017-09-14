@@ -21,8 +21,6 @@ class LorittaProfile {
     var userId: String? = null;
     var xp: Int = 0 // XP do usuário
     var aboutMe: String = "A Loritta é minha amiga!";
-    var tempoOnline: Long = 0;
-    var games = HashMap<String, Long>();
     var isBanned = false;
     var banReason: String? = null;
     var reminders: MutableList<Reminder> = arrayListOf();
