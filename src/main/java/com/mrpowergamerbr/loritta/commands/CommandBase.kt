@@ -142,10 +142,11 @@ open abstract class CommandBase {
 			label = getLabel()
 		}
 		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
+		val rawArguments = rawMessage.split(" ")
 		if (!run) {
 			for (alias in this.getAliases()) {
 				label = if (byMention) alias else conf.commandPrefix + alias
-				if (rawMessage.startsWith(label)) {
+				if (rawArguments[0].equals(label, true)) {
 					run = true
 					break
 				}
