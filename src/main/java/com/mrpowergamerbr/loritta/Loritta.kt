@@ -13,27 +13,33 @@ import com.google.gson.JsonParser
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.model.Filters
-import com.mongodb.internal.thread.DaemonThreadFactory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.MusicMessageListener
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
-import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
+import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
+import com.mrpowergamerbr.loritta.utils.LorittaShards
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry
+import com.mrpowergamerbr.loritta.utils.YouTubeUtils
+import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
+import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
+import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
@@ -47,7 +53,6 @@ import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import okhttp3.OkHttpClient
-import kotlin.collections.set
 import org.jibble.jmegahal.JMegaHal
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
@@ -95,6 +100,11 @@ class Loritta {
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
 	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<Any, Any>().asMap()
+
+	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
+	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
+	var memeguy1997PageCache = mutableListOf<FacebookPostWrapper>()
+	var memeguy1997GroupCache = mutableListOf<FacebookPostWrapper>()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
@@ -187,6 +197,8 @@ class Loritta {
 			UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
 			DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
+
+			FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
 			LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 
