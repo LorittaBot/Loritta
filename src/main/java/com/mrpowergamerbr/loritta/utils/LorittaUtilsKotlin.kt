@@ -340,12 +340,12 @@ object LorittaUtilsKotlin {
 		var image: BufferedImage? = null;
 
 		for (post in json["data"].array) {
-			var foundUrl = post["attachments"]["data"][0]["url"].string;
+			var foundUrl = post["attachments"]["data"][0]["url"].string
 
 			if (!foundUrl.contains("video")) {
 				try { // Provavelmente não é o que nós queremos
 					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
-					description = post["message"].string
+					description = if (post.obj.has("message")) post["message"].string else ""
 					image = LorittaUtils.downloadImage(url, 4000)
 					if (image != null) {
 						return FacebookPostWrapper(url, description, image)
