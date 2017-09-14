@@ -144,17 +144,10 @@ open abstract class CommandBase {
 		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
 		if (!run) {
 			for (alias in this.getAliases()) {
-				label = conf.commandPrefix + alias
+				label = if (byMention) alias else conf.commandPrefix + alias
 				if (rawMessage.startsWith(label)) {
 					run = true
 					break
-				}
-				if (byMention) {
-					label = alias
-					if (rawMessage.startsWith(label)) {
-						run = true
-						break
-					}
 				}
 			}
 		}
