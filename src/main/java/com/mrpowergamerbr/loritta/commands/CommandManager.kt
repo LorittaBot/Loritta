@@ -73,7 +73,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.HelloWorldCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.LanguageCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand
@@ -194,7 +193,6 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(QuoteCommand())
 			commandMap.add(SayCommand())
 			commandMap.add(EscolherCommand())
-			commandMap.add(HelloWorldCommand())
 			commandMap.add(LanguageCommand())
 
 			// =======[ SOCIAL ]======
