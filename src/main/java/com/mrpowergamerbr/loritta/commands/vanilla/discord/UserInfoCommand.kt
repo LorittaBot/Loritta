@@ -65,10 +65,23 @@ class UserInfoCommand : CommandBase() {
 
 			if (lorittaProfile.usernameChanges.isNotEmpty()) {
 				val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }
-				val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n",  transform = {
+				var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n",  transform = {
 					"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize() + ")"
 				})
-				setDescription(alsoKnownAs)
+				// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
+				var alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
+
+				var aux = mutableListOf<String>()
+
+				var length = 0
+				for (line in alsoKnownAsLines) {
+					if (length + line.length >= 2000) {
+						break
+					}
+					aux.add(line)
+					length += line.length
+				}
+				setDescription(aux.reversed().joinToString(separator = "\n"))
 			}
 
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${member.user.name}#${member.user.discriminator}", true)
