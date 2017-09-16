@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -32,33 +31,30 @@ class UserInfoCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val user = if (context.message.mentionedUsers.isNotEmpty()) {
-			context.message.mentionedUsers[0]
-		} else {
-			if (context.args.isNotEmpty()) {
-				LorittaUtils.getUserFromContext(context, 0)
-			} else {
-				null
-			}
-		}
+		val user = LorittaUtils.getUserFromContext(context, 0)
 
 		if (user == null) {
 			this.explain(context);
 			return
 		}
 
-		if (!context.guild.isMember(user)) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.locale.get("USERINFO_NOT_MEMBER"))
-			return
+		val member = if (context.guild.isMember(user)) {
+			context.guild.getMember(user)
+		} else {
+			null
 		}
-
-		val member = context.guild.getMember(user)
 
 		val embed = EmbedBuilder()
 
 		embed.apply {
-			setThumbnail(member.user.effectiveAvatarUrl)
-			setTitle("<:discord:314003252830011395> ${member.effectiveName}", null)
+			setThumbnail(user.effectiveAvatarUrl)
+			var nickname = user.name
+
+			if (member != null) {
+				nickname = member.effectiveName
+			}
+
+			setTitle("<:discord:314003252830011395> $nickname", null)
 			setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
@@ -84,12 +80,13 @@ class UserInfoCommand : CommandBase() {
 				setDescription(aux.reversed().joinToString(separator = "\n"))
 			}
 
-			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${member.user.name}#${member.user.discriminator}", true)
-			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), member.user.id, true)
-			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), member.user.creationTime.humanize(), true)
-			addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(), true)
+			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${user.name}#${user.discriminator}", true)
+			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), user.id, true)
+			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), user.creationTime.humanize(), true)
+			if (member != null)
+				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(), true)
 
-			val sharedServers = lorittaShards.getMutualGuilds(member.user)
+			val sharedServers = lorittaShards.getMutualGuilds(user)
 
 			var servers = sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
 
@@ -97,18 +94,20 @@ class UserInfoCommand : CommandBase() {
 				servers = servers.substring(0..1020) + "...";
 			}
 
-			embed.addField("\uD83C\uDF0E " + context.locale.get("USERINFO_SHARED_SERVERS") + " (${sharedServers.size})", servers, true)
-			embed.addField("\uD83D\uDCE1 " + context.locale.get("USERINFO_STATUS"), member.onlineStatus.name, true)
+			embed.addField("\uD83C\uDF0E " + context.locale["USERINFO_SHARED_SERVERS"] + " (${sharedServers.size})", servers, true)
+			if (member != null) {
+				addField("\uD83D\uDCE1 " + context.locale["USERINFO_STATUS"], member.onlineStatus.name, true)
 
-			val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}"});
+				val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}" });
 
-			embed.addField("\uD83D\uDCBC " + context.locale.get("USERINFO_ROLES"), if (roles.isNotEmpty()) roles else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+			}
 
 			val profile = loritta.getLorittaProfileForUser(user.id)
 
 			val offset = Instant.ofEpochMilli(profile.lastMessageSent).atZone(ZoneId.systemDefault()).toOffsetDateTime();
 
-			embed.addField("\uD83D\uDC40 " + context.locale.get("USERINFO_LAST_SEEN"), offset.humanize(), true)
+			addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(), true)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
