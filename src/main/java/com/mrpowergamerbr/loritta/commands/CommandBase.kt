@@ -180,7 +180,7 @@ open abstract class CommandBase {
 					return true
 				}
 
-				if (hasCommandFeedback()) {
+				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
 					ev.channel.sendTyping().queue()
 				}
 
