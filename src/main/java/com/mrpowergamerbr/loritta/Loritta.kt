@@ -243,13 +243,8 @@ class Loritta {
 	 * @return ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
-		val doc = mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("_id", guildId)).first();
-		if (doc != null) {
-			val config = ds.get(ServerConfig::class.java, doc.get("_id"));
-			return config;
-		} else {
-			return ServerConfig().apply { this.guildId = guildId }
-		}
+		val serverConfig = ds.createQuery(ServerConfig::class.java).field("_id").equal(guildId).get()
+		return serverConfig ?: ServerConfig().apply { this.guildId = guildId }
 	}
 
 	/**
@@ -259,13 +254,8 @@ class Loritta {
 	 * @return LorittaProfile
 	 */
 	fun getLorittaProfileForUser(userId: String): LorittaProfile {
-		val doc = mongo.getDatabase("loritta").getCollection("users").find(Filters.eq("_id", userId)).first();
-		if (doc != null) {
-			val profile = ds.get(LorittaProfile::class.java, doc.get("_id"));
-			return profile;
-		} else {
-			return LorittaProfile(userId);
-		}
+		val userProfile = ds.createQuery(LorittaProfile::class.java).field("_id").equal(userId).get()
+		return userProfile ?: LorittaProfile(userId)
 	}
 
 	/**
