@@ -12,7 +12,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite

@@ -181,7 +181,7 @@ open abstract class CommandBase {
 				}
 
 				if (hasCommandFeedback()) {
-					ev.channel.sendTyping().complete()
+					ev.channel.sendTyping().queue()
 				}
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
