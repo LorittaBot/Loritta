@@ -415,7 +415,11 @@ object LorittaUtilsKotlin {
 					entryItem = jsoup.select("channel item").first()
 					dateRss = jsoup.select("channel item pubDate").first().text();
 					val sdf = if (!dateRss.matches(Regex("[0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+"))) {
-						SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
+						if (dateRss[3] == ',') {
+							SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
+						} else {
+							SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
+						}
 					} else { // Algumas rss feeds usam este estilo de data (bug?)
 						SimpleDateFormat("dd/mm/yyyy HH:mm:ss", Locale.ENGLISH)
 					}
