@@ -7,10 +7,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.NSFWResponse
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.humanize
-import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
@@ -31,7 +29,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
@@ -74,72 +71,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					event.member.roles.forEach {
 						if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
 							return@thread
-						}
-					}
-
-					// ===[ FILTRO NSFW ]===
-					if (serverConfig.nsfwFilterConfig.isEnabled && !serverConfig.nsfwFilterConfig.ignoreChannels.contains(event.message.textChannel.id)) {
-						thread {
-							val map = mutableMapOf<String, Pair<NSFWResponse, NSFWResponse>>()
-
-							for (attachment in event.message.attachments.filter { it.isImage }) {
-								map.put(attachment.url, Pair(LorittaUtilsKotlin.getImageStatus(attachment.url), LorittaUtilsKotlin.getImageStatus(attachment.url)))
-							}
-
-							val linkRegEx = Regex("(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]\\.[^\\s]{2,})")
-							val matcher = linkRegEx.toPattern().matcher(event.message.content)
-
-							while (matcher.find()) {
-								val url = matcher.group(1).replace(">", "")
-								map.put(url, Pair(LorittaUtilsKotlin.getImageStatus(url), LorittaUtilsKotlin.getImageStatus(url)))
-							}
-
-							if (map.isNotEmpty()) {
-								for ((key, value) in map) {
-									if (value.first == NSFWResponse.NSFW && value.second == NSFWResponse.NSFW) {
-										val nsfwFilterConfig = serverConfig.nsfwFilterConfig
-										// !!! NSFW
-										// Vamos fazer reupload da ibagem
-										val url = URL(key)
-										val conn = url.openConnection()
-										conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-										val content = conn.getInputStream().use { it.readBytes() }
-										val split = key.split("/")
-										val pomfUrl = PomfUtils.uploadFile(content, split.last()) ?: return@thread
-
-										// Feito, agora vamos deletar a mensagem...
-										if (nsfwFilterConfig.removeMessage)
-											event.message.delete().complete()
-
-										// Repostar para o nosso querido canal de reposts
-										val textChannel = event.guild.getTextChannelById(serverConfig.nsfwFilterConfig.reportOnChannelId)
-										if (textChannel != null && textChannel.canTalk() && nsfwFilterConfig.reportMessage != null) {
-											var reportMessage = nsfwFilterConfig.reportMessage!!
-
-											reportMessage = reportMessage.replace("{@user}", event.member.asMention)
-											reportMessage = reportMessage.replace("{user}", event.member.user.name)
-											reportMessage = reportMessage.replace("{nickname}", event.member.effectiveName)
-											reportMessage = reportMessage.replace("{url}", pomfUrl)
-
-											textChannel.sendMessage(reportMessage).queue()
-										}
-
-										val sentIn = event.message.textChannel
-
-										if (sentIn.canTalk() && nsfwFilterConfig.warnMessage != null) {
-											var warnMessage = nsfwFilterConfig.warnMessage!!
-
-											warnMessage = warnMessage.replace("{@user}", event.member.asMention)
-											warnMessage = warnMessage.replace("{user}", event.member.user.name)
-											warnMessage = warnMessage.replace("{nickname}", event.member.effectiveName)
-
-											sentIn.sendMessage(warnMessage).queue()
-										}
-
-										return@thread
-									}
-								}
-							}
 						}
 					}
 

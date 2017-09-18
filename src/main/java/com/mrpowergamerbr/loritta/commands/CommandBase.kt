@@ -181,7 +181,7 @@ open abstract class CommandBase {
 				}
 
 				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
-					ev.channel.sendTyping().queue()
+					ev.channel.sendTyping().complete()
 				}
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
@@ -254,6 +254,7 @@ open abstract class CommandBase {
 						return true
 					}
 				}
+
 				run(context)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
