@@ -175,6 +175,7 @@ class Loritta {
 					.useSharding(idx, Loritta.config.shards)
 					.setToken(Loritta.config.clientToken)
 					.setHttpClientBuilder(okHttpBuilder)
+					.setCorePoolSize(4)
 					.buildBlocking()
 			lorittaShards.shards.add(shard)
 		}
