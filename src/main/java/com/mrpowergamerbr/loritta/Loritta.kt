@@ -18,11 +18,13 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.MusicMessageListener
+import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
+import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -169,14 +171,17 @@ class Loritta {
 				.readTimeout(60, TimeUnit.SECONDS)
 				.writeTimeout(60, TimeUnit.SECONDS)
 
+		val updateTimeListener = UpdateTimeListener(this);
+
 		for (idx in 0..generateShards) {
 			println("Iniciando Shard $idx...")
 			val shard = JDABuilder(AccountType.BOT)
 					.useSharding(idx, Loritta.config.shards)
 					.setToken(Loritta.config.clientToken)
 					.setHttpClientBuilder(okHttpBuilder)
-					.setCorePoolSize(4)
+					.setCorePoolSize(8)
 					.buildBlocking()
+			shard.addEventListener(updateTimeListener)
 			lorittaShards.shards.add(shard)
 		}
 
@@ -233,6 +238,7 @@ class Loritta {
 				jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
 			}
 		}
+		ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 

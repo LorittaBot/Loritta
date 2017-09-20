@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.managers.Presence
  */
 class LorittaShards {
     var shards: MutableList<JDA> = ArrayList<JDA>();
+    val lastJdaEventTime = mutableMapOf<JDA, Long>()
 
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {
