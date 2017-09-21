@@ -59,7 +59,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				var guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId} demorou mais de 10 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
+					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId}${if (loritta.isMusicOnly) " (\uD83C\uDFB6)" else ""}demorou mais de 10 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
 				}
 				val shardId = deadShard.shardInfo.shardId
 
@@ -89,7 +89,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${shard.shardInfo.shardId} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
+					textChannel.sendMessage("Shard ${shard.shardInfo.shardId}${if (loritta.isMusicOnly) " (\uD83C\uDFB6)" else ""} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
 				}
 			}
 		}
