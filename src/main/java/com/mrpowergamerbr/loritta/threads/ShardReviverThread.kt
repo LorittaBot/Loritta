@@ -56,7 +56,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 			for (deadShard in deadShards) {
 				println("Reiniciando shard ${deadShard.shardInfo.shardId}")
-				val guild = loritta.lorittaShards.getGuildById("297732013006389252")
+				var guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
 					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId} demorou mais de 10 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
@@ -86,7 +86,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 				lorittaShards.shards.add(shard)
 
-				val guild = loritta.lorittaShards.getGuildById("297732013006389252")
+				guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
 					textChannel.sendMessage("Shard ${shard.shardInfo.shardId} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
