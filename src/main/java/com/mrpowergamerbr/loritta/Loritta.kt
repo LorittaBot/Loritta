@@ -96,12 +96,12 @@ class Loritta {
 	val executor = Executors.newScheduledThreadPool(64) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
-	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Any, Any>().asMap()
+	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
 	var rawServersFanClub = listOf<ServerFanClub>()
 	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
-	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<Any, Any>().asMap()
+	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<String, Long>().asMap()
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
