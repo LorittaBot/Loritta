@@ -83,6 +83,8 @@ class ShardReviverThread : Thread("Shard Reviver") {
 					shard.addEventListener(updateTimeListener)
 					shard.addEventListener(messageListener)
 				}
+
+				lorittaShards.shards.add(deadShard)
 			}
 		}
 	}
