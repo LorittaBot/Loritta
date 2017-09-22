@@ -35,7 +35,7 @@ class TranslateCommand : CommandBase() {
 
 			try {
 				val translatedText = GoogleTranslateUtils.translate(text, "auto", strLang)
-				context.sendMessage(context.getAsMention(true) + translatedText!!)
+				context.sendMessage(context.getAsMention(true) + translatedText!!.replace("@everyone", "").replace("@here", ""))
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
