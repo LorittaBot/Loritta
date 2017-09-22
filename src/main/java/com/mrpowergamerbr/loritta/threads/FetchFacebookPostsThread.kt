@@ -14,34 +14,27 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 
 	fun fetchPosts() {
 		try {
-			val pagePostSAM = LorittaUtilsKotlin.getRandomPostFromPage("samemes2")
-			val groupPostSAM = LorittaUtilsKotlin.getRandomPostFromGroup("293117011064847")
-			val pagePostMemeguy = LorittaUtilsKotlin.getRandomPostFromPage("memeguy1997")
-			val groupPostMemeguy = LorittaUtilsKotlin.getRandomPostFromGroup("380626148947201")
+			val pagePostsSAM = LorittaUtilsKotlin.getRandomPostsFromPage("samemes2")
+			val groupPostsSAM = LorittaUtilsKotlin.getRandomPostsFromGroup("293117011064847")
+			val pagePostsMemeguy = LorittaUtilsKotlin.getRandomPostsFromPage("memeguy1997")
+			val groupPostsMemeguy = LorittaUtilsKotlin.getRandomPostsFromGroup("380626148947201")
 
-			if (pagePostSAM != null) {
-				if (loritta.southAmericaMemesPageCache.size > 20) {
-					loritta.southAmericaMemesPageCache.removeAt(0)
-				}
-				loritta.southAmericaMemesPageCache.add(pagePostSAM)
+			loritta.southAmericaMemesPageCache.addAll(pagePostsSAM)
+			loritta.southAmericaMemesGroupCache.addAll(groupPostsSAM)
+			loritta.memeguy1997PageCache.addAll(pagePostsMemeguy)
+			loritta.memeguy1997GroupCache.addAll(groupPostsMemeguy)
+
+			if (loritta.southAmericaMemesPageCache.size > 20) {
+				loritta.southAmericaMemesPageCache = loritta.southAmericaMemesPageCache.subList(19, loritta.southAmericaMemesPageCache.size)
 			}
-			if (groupPostSAM != null) {
-				if (loritta.southAmericaMemesGroupCache.size > 20) {
-					loritta.southAmericaMemesGroupCache.removeAt(0)
-				}
-				loritta.southAmericaMemesGroupCache.add(groupPostSAM)
+			if (loritta.southAmericaMemesGroupCache.size > 20) {
+				loritta.southAmericaMemesGroupCache = loritta.southAmericaMemesGroupCache.subList(19, loritta.southAmericaMemesGroupCache.size)
 			}
-			if (pagePostMemeguy != null) {
-				if (loritta.memeguy1997PageCache.size > 20) {
-					loritta.memeguy1997PageCache.removeAt(0)
-				}
-				loritta.memeguy1997PageCache.add(pagePostMemeguy)
+			if (loritta.memeguy1997PageCache.size > 20) {
+				loritta.memeguy1997PageCache = loritta.memeguy1997PageCache.subList(19, loritta.memeguy1997PageCache.size)
 			}
-			if (groupPostMemeguy != null) {
-				if (loritta.memeguy1997GroupCache.size > 20) {
-					loritta.memeguy1997GroupCache.removeAt(0)
-				}
-				loritta.memeguy1997GroupCache.add(groupPostMemeguy)
+			if (loritta.memeguy1997GroupCache.size > 20) {
+				loritta.memeguy1997GroupCache = loritta.memeguy1997GroupCache.subList(19, loritta.memeguy1997GroupCache.size)
 			}
 		} catch (e: Exception) {
 

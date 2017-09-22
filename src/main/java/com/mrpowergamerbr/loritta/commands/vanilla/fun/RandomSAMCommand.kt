@@ -38,7 +38,7 @@ class RandomSAMCommand : CommandBase() {
 		}
 
 		if (post != null) {
-			context.sendFile(post.image, "south_america_memes.png", "<:sam:331592756969603073> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) `${post.description}`")
+			context.sendMessage("<:sam:331592756969603073> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) ${post.url} `${post.description}`")
 		} else {
 			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
 		}

@@ -298,7 +298,7 @@ object LorittaUtilsKotlin {
 	/**
 	 * Pega um post aleatório de uma página do Facebook
 	 */
-	fun getRandomPostFromPage(page: String): FacebookPostWrapper? {
+	fun getRandomPostsFromPage(page: String): List<FacebookPostWrapper> {
 		val response = HttpRequest
 				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
 				.body()
@@ -307,7 +307,8 @@ object LorittaUtilsKotlin {
 
 		var url: String? = null;
 		var description: String? = null;
-		var image: BufferedImage? = null;
+
+		val posts = mutableListOf<FacebookPostWrapper>()
 
 		for (post in json["data"].array) {
 			var foundUrl = post["attachments"]["data"][0]["url"].string;
@@ -316,20 +317,17 @@ object LorittaUtilsKotlin {
 				try { // Provavelmente não é o que nós queremos
 					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
 					description = post["attachments"]["data"][0]["description"].string
-					image = LorittaUtils.downloadImage(url, 4000)
-					if (image != null) {
-						return FacebookPostWrapper(url, description, image)
-					}
+					posts.add(FacebookPostWrapper(url, description))
 				} catch (e: Exception) {}
 			}
 		}
-		return null;
+		return posts
 	}
 
 	/**
 	 * Pega um post aleatório de um grupo do Facebook
 	 */
-	fun getRandomPostFromGroup(group: String): FacebookPostWrapper? {
+	fun getRandomPostsFromGroup(group: String): List<FacebookPostWrapper> {
 		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
 				.body()
 
@@ -337,7 +335,8 @@ object LorittaUtilsKotlin {
 
 		var url: String? = null;
 		var description: String? = null;
-		var image: BufferedImage? = null;
+
+		val posts = mutableListOf<FacebookPostWrapper>()
 
 		for (post in json["data"].array) {
 			var foundUrl = post["attachments"]["data"][0]["url"].string
@@ -346,16 +345,11 @@ object LorittaUtilsKotlin {
 				try { // Provavelmente não é o que nós queremos
 					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
 					description = if (post.obj.has("message")) post["message"].string else ""
-					image = LorittaUtils.downloadImage(url, 4000)
-					if (image != null) {
-						return FacebookPostWrapper(url, description, image)
-					}
-				} catch (e: Exception) {
-					e.printStackTrace()
-				}
+					posts.add(FacebookPostWrapper(url, description))
+				} catch (e: Exception) {}
 			}
 		}
-		return null;
+		return posts
 	}
 
 	@JvmStatic
@@ -531,8 +525,7 @@ object LorittaUtilsKotlin {
 
 data class FacebookPostWrapper(
 		val url: String,
-		val description: String,
-		val image: BufferedImage)
+		val description: String)
 
 data class FeedEntry(
 		val title: String,
