@@ -173,7 +173,7 @@ public class LorittaUtils {
 			}
 
 			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (!context.isPrivateChannel() && toBeDownloaded == null) {
+			if (!context.isPrivateChannel() && toBeDownloaded == null && !link.isEmpty()) {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
@@ -274,7 +274,7 @@ public class LorittaUtils {
 			}
 
 			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (!context.isPrivateChannel() && realUser == null) {
+			if (!context.isPrivateChannel() && realUser == null && !link.isEmpty()) {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
