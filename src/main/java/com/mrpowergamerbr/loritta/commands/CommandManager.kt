@@ -42,6 +42,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.InverterCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.JoojCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaReversoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.ManiaTitleCardCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.NyanCatCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.OjjoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.PerdaoCommand
@@ -185,6 +186,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(GetOverHereCommand())
 			commandMap.add(RomeroBrittoCommand())
 			commandMap.add(StudiopolisTvCommand())
+			commandMap.add(ManiaTitleCardCommand())
 
 			// =======[ MISC ]======
 			commandMap.add(AjudaCommand())

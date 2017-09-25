@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
@@ -35,6 +34,7 @@ class McBodyCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
+		context.handle
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]
 
