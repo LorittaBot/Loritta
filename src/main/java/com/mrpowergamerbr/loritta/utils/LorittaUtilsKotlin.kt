@@ -463,7 +463,7 @@ object LorittaUtilsKotlin {
 
 	fun sendStackTrace(message: Message, t: Throwable) {
 		if (message.isFromType(ChannelType.TEXT)) {
-			sendStackTrace("[`${message.guild.name}` -> `${message.channel.name}`] **${message.author.name}**: `${message.rawContent}`", t)
+			sendStackTrace("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.rawContent.stripCodeMarks()}`", t)
 		} else {
 			sendStackTrace("[`Mensagem Direta`] **${message.author.name}**: `${message.rawContent}`", t)
 		}
