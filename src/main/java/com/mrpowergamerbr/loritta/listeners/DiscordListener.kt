@@ -343,7 +343,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
-					if (conf.joinLeaveConfig.tellOnJoin) { // E o sistema de avisar ao entrar está ativado?
+					if (conf.joinLeaveConfig.tellOnJoin && conf.joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 						val guild = event.guild
 
 						val textChannel = guild.getTextChannelById(conf.joinLeaveConfig.canalJoinId)
@@ -357,7 +357,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
-					if (conf.joinLeaveConfig.tellOnPrivate) { // Talvez o sistema de avisar no privado esteja ativado!
+					if (conf.joinLeaveConfig.tellOnPrivate && conf.joinLeaveConfig.joinPrivateMessage.isNotEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
 						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
 							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
 							try {
@@ -388,7 +388,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
 				if (conf.joinLeaveConfig.isEnabled) {
-					if (conf.joinLeaveConfig.tellOnLeave) {
+					if (conf.joinLeaveConfig.tellOnLeave && conf.joinLeaveConfig.leaveMessage.isNotEmpty()) {
 						val guild = event.guild
 
 						val textChannel = guild.getTextChannelById(conf.joinLeaveConfig.canalLeaveId)
