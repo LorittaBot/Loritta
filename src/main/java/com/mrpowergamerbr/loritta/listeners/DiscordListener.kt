@@ -326,22 +326,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
-
-					val roles = mutableListOf<Role>()
-
-					rolesId.forEach { // E pegar a role dependendo do ID!
-						val role = event.guild.getRoleById(it)
-
-						if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
-							roles.add(role)
-						}
-					}
-
-					event.guild.controller.addRolesToMember(event.member, roles).complete() // E adicione todas as roles no usuário
-				}
-
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
 					if (conf.joinLeaveConfig.tellOnJoin && conf.joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 						val guild = event.guild
@@ -357,16 +341,38 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
+
 					if (conf.joinLeaveConfig.tellOnPrivate && conf.joinLeaveConfig.joinPrivateMessage.isNotEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
 						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
 							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
 							try {
 								event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
 							} catch (e: ErrorResponseException) {
-								if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
-									return@execute
+								if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
+									throw e
 								}
-								throw e
+							}
+						}
+					}
+
+					if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+						val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
+
+						val roles = mutableListOf<Role>()
+
+						rolesId.forEach { // E pegar a role dependendo do ID!
+							val role = event.guild.getRoleById(it)
+
+							if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
+								roles.add(role)
+							}
+						}
+
+						if (roles.isNotEmpty()) {
+							if (roles.size == 1) {
+								event.guild.controller.addSingleRoleToMember(event.member, roles[0]).complete()
+							} else {
+								event.guild.controller.addRolesToMember(event.member, roles).complete()
 							}
 						}
 					}
