@@ -18,7 +18,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 		while (true) {
 			checkRssFeeds();
-			Thread.sleep(10000); // Só 5s de delay!
+			Thread.sleep(10000); // Só 10s de delay!
 		}
 	}
 
@@ -30,7 +30,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 					.find(Filters.exists("rssFeedConfig.feeds", true))
 
 			for (server in servers) {
-				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
+				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server["_id"]);
 
 				var rssFeedConfig = config.rssFeedConfig;
 
@@ -86,7 +86,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 									// E só por diversão, vamos salvar todas as tags do entry!
 									for (element in feedEntry.entry.select("*")) {
-										message = message.replace("{rss_${element.tagName()}", element.text());
+										message = message.replace("{rss_${element.tagName()}}", element.text());
 									}
 
 									textChannel.sendMessage(message).complete(); // Envie a mensagem
