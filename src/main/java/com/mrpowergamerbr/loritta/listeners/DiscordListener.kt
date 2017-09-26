@@ -370,11 +370,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						if (roles.isNotEmpty()) {
 							if (roles.size == 1) {
-								event.guild.controller.addSingleRoleToMember(event.member, roles[0]).complete()
+								event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
 							} else {
-								event.guild.controller.addRolesToMember(event.member, roles).complete()
+								event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
 							}
 						}
+
 					}
 				}
 			} catch (e: Exception) {
