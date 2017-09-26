@@ -21,9 +21,7 @@ import java.util.regex.Pattern
 
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
-	// val lastVideos = HashMap<String, String>(); // HashMap usada para guardar o ID do último vídeo
-	// val lastVideosTime = HashMap<String, String>(); // HashMap usada para guardar a data do último vídeo
-	val lastItemTime = HashMap<String, YouTubeCheck>(); // HashMap usada para guardar a data do útimo item na RSS
+	val lastItemTime = HashMap<String, YouTubeCheck>(); // HashMap usada para guardar a data do útimo item na verificação de vídeos
 
 	override fun run() {
 		super.run()
@@ -164,8 +162,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								searchDescription = searchSnippet["description"].string
 								searchChannelTitle = searchSnippet["channelTitle"].string
 								searchVideoId = jsonSearch["id"]["videoId"].string
-								searchCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(searchSnippet["publishedAt"].string)
 								searchDate = searchSnippet["publishedAt"].string
+								searchCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(searchDate)
 
 								// RSS FEED
 								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeInfo.channelId}")
@@ -188,14 +186,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								rssDate = df.format(rssCalendar.time)
 								rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(df.format(rssCalendar!!.time)) // Agora vamos guardar a data verdadeira!
 
-								currentCalendar = if (playlistCalendar != null) {
-									playlistCalendar
-								} else if (searchCalendar != null) {
-									searchCalendar
-								} else if (rssCalendar != null) {
-									rssCalendar
-								} else {
-									null
+								currentCalendar = when {
+									playlistCalendar != null -> playlistCalendar
+									searchCalendar != null -> searchCalendar
+									rssCalendar != null -> rssCalendar
+									else -> null
 								}
 
 								if (currentCalendar == null) {
@@ -257,16 +252,16 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									df.timeZone = tz
 									checkedVideos.checked.put(youTubeInfo.channelId!!, Pair(videoId, df.format(Date())))
 									lastItemTime[guild.id] = checkedVideos
-									continue;
+									continue
 								}
 
-								val lastDate = checkedVideos?.checked?.get(guild.id)?.second;
+								val lastDate = checkedVideos.checked[guild.id]?.second
 								if (lastDate != null) {
 									// Data do último vídeo enviado
 									val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
 
-									if (currentCalendar.before(lastCalendar) || currentCalendar.equals(lastCalendar)) {
-										continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+									if (currentCalendar.before(lastCalendar) || currentCalendar == lastCalendar) {
+										continue // Na verdade o vídeo atual é mais velho! Ignore então! :)
 									}
 								}
 
@@ -275,7 +270,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									var message = youTubeInfo.videoSentMessage;
 
 									if (message == null) {
-										continue; }
+										continue
+									}
 
 									if (message.isEmpty()) {
 										message = "{link}"
