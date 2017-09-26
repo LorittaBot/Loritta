@@ -31,19 +31,21 @@ class ReloadCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
+		val oldCommandCount = loritta.commandManager.commandMap.size
+
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
 		val config = Loritta.gson.fromJson(json, LorittaConfig::class.java)
 		Loritta.config = config
 
-		LorittaLauncher.getInstance().morphia = Morphia()
-		LorittaLauncher.getInstance().ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
-		LorittaLauncher.getInstance().generateDummyServerConfig()
+		loritta.morphia = Morphia()
+		loritta.ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
+		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
 
 		if (context.args.isNotEmpty() && context.args[0] == "listeners") {
-			context.sendMessage("Recarregando listeners...")
+			context.sendMessage(context.getAsMention(true) + "Recarregando listeners...")
 
 			// Desregistrar listeners
 			LorittaLauncher.loritta.lorittaShards.shards.forEach {
@@ -63,6 +65,6 @@ class ReloadCommand : CommandBase() {
 			}
 		}
 		
-		context.sendMessage("Loritta recarregada com sucesso!")
+		context.sendMessage(context.getAsMention(true) + "Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**")
 	}
 }

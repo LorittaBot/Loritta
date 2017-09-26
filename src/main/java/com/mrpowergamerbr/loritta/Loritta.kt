@@ -89,6 +89,8 @@ class Loritta {
 		@JvmStatic
 		val gson = Gson() // Gson
 		@JvmStatic
+		val jsonParser = JsonParser() // Json Parser
+		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 	}
 	// ===[ LORITTA ]===

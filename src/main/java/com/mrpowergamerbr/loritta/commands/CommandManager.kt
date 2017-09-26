@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ClapifyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FraseToscaCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.PedraPapelTesouraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.QualidadeCommand
@@ -181,6 +182,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(HojeCommand())
 			commandMap.add(SimsimiCommand())
 			commandMap.add(AkinatorCommand())
+			commandMap.add(GameJoltCommand())
 
 			// =======[ IMAGENS ]======
 			commandMap.add(GetOverHereCommand())
