@@ -60,7 +60,7 @@ class GameJoltCommand : CommandBase() {
 				val game = games[i]
 				val id = game["id"]
 				val title = game["title"].string
-				val path = game["path"].string
+				val path = game["slug"].string
 				val url = "https://gamejolt.com/games/$path/$id"
 
 				format += "${indexes[i]} **[${title}]($url)**\n"
@@ -113,7 +113,7 @@ class GameJoltCommand : CommandBase() {
 		val developerAvatar = game["developer"]["img_avatar"].string
 		val developerUsername = game["developer"]["username"].string
 		val title = game["title"].string
-		val path = game["path"].string
+		val path = game["slug"].string
 		val url = "https://gamejolt.com/games/$path/$id"
 		val imgThumbnail = game["img_thumbnail"].string
 		val isWindowsCompat = game["compatibility"].obj.has("os_windows")
