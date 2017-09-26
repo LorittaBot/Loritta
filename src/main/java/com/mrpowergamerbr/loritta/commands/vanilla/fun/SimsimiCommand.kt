@@ -47,30 +47,33 @@ class SimsimiCommand : CommandBase() {
 			val get = HttpRequest.get("http://api.simsimi.com/request.p?key=${Loritta.config.simsimiKey}&lc=$locale&ft=1.0&text=${URLEncoder.encode(query, "UTF-8")}")
 					.body()
 
-			val json = JsonParser().parse(get).obj
+			val jsonElement = JsonParser().parse(get)
+			if (!jsonElement.isJsonNull) {
+				val json = JsonParser().parse(get).obj
 
-			if (json.has("response")) {
-				val response = json["response"].string
-						.replace("@everyone", "")
-						.replace("@here", "")
+				if (json.has("response")) {
+					val response = json["response"].string
+							.replace("@everyone", "")
+							.replace("@here", "")
 
-				val webhook = getOrCreateWebhook(context.event.textChannel, "Simsimi")
-				context.sendMessage(webhook, DiscordMessage.builder()
-						.username(context.locale.get("SIMSIMI_NAME"))
-						.content(context.getAsMention(true) + response)
-						.avatarUrl("https://loritta.website/assets/img/simsimi_face.png?v=3")
-						.build())
-			} else {
-				var text = loritta.hal.sentence
-
-				text = if (text.length > 400) text.substring(0, 400) + "..." else text
-				val webhook = getOrCreateWebhook(context.event.textChannel, "Frase Tosca")
-				context.sendMessage(webhook, DiscordMessage.builder()
-						.username(context.locale.get("FRASETOSCA_GABRIELA"))
-						.content(context.getAsMention(true) + context.locale.get("SIMSIMI_FAIL") + text)
-						.avatarUrl("http://i.imgur.com/aATogAg.png")
-						.build())
+					val webhook = getOrCreateWebhook(context.event.textChannel, "Simsimi")
+					context.sendMessage(webhook, DiscordMessage.builder()
+							.username(context.locale.get("SIMSIMI_NAME"))
+							.content(context.getAsMention(true) + response)
+							.avatarUrl("https://loritta.website/assets/img/simsimi_face.png?v=3")
+							.build())
+					return
+				}
 			}
+			var text = loritta.hal.sentence
+
+			text = if (text.length > 400) text.substring(0, 400) + "..." else text
+			val webhook = getOrCreateWebhook(context.event.textChannel, "Frase Tosca")
+			context.sendMessage(webhook, DiscordMessage.builder()
+					.username(context.locale.get("FRASETOSCA_GABRIELA"))
+					.content(context.getAsMention(true) + context.locale.get("SIMSIMI_FAIL") + text)
+					.avatarUrl("http://i.imgur.com/aATogAg.png")
+					.build())
 		} else {
 			context.explain()
 		}
