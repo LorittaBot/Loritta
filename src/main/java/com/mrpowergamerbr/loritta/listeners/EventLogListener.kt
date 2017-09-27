@@ -116,6 +116,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					val profile = loritta.getLorittaProfileForUser(event.user.id)
 
+					if (profile.usernameChanges.isEmpty()) {
+						profile.usernameChanges.add((LorittaProfile.UsernameChange(event.user.creationTime.toEpochSecond() * 1000, event.user.name, event.user.discriminator)))
+					}
+
 					profile.usernameChanges.add(changeWrapper)
 
 					loritta save profile
