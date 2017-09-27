@@ -28,10 +28,11 @@ object MiscUtils {
 		link = link.replace("http://m.youtu.be/", "");
 
 		var videoId = link;
-		var callbackId = "lorittaCallback";
+		var callbackId = "jQuery321008352795758680609_1506530165791"
 
-		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1498314662109")
-				.userAgent(Constants.USER_AGENT)
+		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1506530165795")
+				.referer("https://ytmp3.cc/")
+				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
 				.body()
 				.replace(callbackId, "")
 		checkResponse = checkResponse.removePrefix("(").removeSuffix(")");
@@ -54,7 +55,7 @@ object MiscUtils {
 		val fixedRateTimer = fixedRateTimer(name = "YTMP3 Progress Check Thread",
 				initialDelay = 0, period = 1000) {
 			var progressResponse = HttpRequest.get("https://d.ymcdn.cc/progress.php?callback=$callbackId&id=$hash&_=1498315402819")
-					.userAgent("Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+					.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
 					.body()
 					.replace(callbackId, "")
 			progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
