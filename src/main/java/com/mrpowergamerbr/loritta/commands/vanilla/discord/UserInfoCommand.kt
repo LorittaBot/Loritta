@@ -32,11 +32,10 @@ class UserInfoCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val user = LorittaUtils.getUserFromContext(context, 0)
+		var user = LorittaUtils.getUserFromContext(context, 0)
 
 		if (user == null) {
-			this.explain(context);
-			return
+			user = context.userHandle
 		}
 
 		val member = if (context.guild.isMember(user)) {
