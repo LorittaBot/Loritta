@@ -139,6 +139,8 @@ public class GlobalHandler {
 
             if (arguments.length == 0) {
                 obj = HomeView.render(context);
+            } else if (arguments.is(0, "owo")) {
+                obj = OwoView.render(context);
             } else if (arguments.is(0, "doar")) {
                 obj = DonateView.render(context);
             } else if (arguments.is(0, "comandos")) {
