@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.social
+package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.JsonParser

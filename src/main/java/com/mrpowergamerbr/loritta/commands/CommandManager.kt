@@ -70,6 +70,8 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McBodyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McHeadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McSignCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McStatusCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
@@ -91,8 +93,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.DiscriminatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.InviteCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.McStatusCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.McUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RepCommand
