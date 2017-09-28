@@ -96,7 +96,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.social.McUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RepCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.SayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.SobreMimCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
@@ -195,7 +194,6 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(PingCommand())
 			commandMap.add(AngelCommand())
 			commandMap.add(QuoteCommand())
-			commandMap.add(SayCommand())
 			commandMap.add(EscolherCommand())
 			commandMap.add(LanguageCommand())
 
