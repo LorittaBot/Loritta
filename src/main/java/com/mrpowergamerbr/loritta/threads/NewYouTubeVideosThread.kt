@@ -10,6 +10,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
@@ -112,8 +113,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								var rssCalendar: Calendar? = null
 								var rssDate: String? = null
 
-								var parser = JsonParser()
-								var json = parser.parse(response)
+								var json = jsonParser.parse(response)
 
 								// PLAYLIST
 								if (json["items"].array.size() > 0) {
@@ -126,7 +126,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 											.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
 											.body()
 
-									var videosJson = JsonParser().parse(newVideos);
+									var videosJson = jsonParser.parse(newVideos);
 									if (videosJson["items"].array.size() > 0) { // Se estiver vazio, quer dizer que o canal não tem vídeos!
 										var jsonItem = videosJson["items"].array[0];
 
@@ -148,7 +148,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
 										.body();
 
-								var searchJson = JsonParser().parse(newVideosSearch);
+								var searchJson = jsonParser.parse(newVideosSearch);
 
 								// Se tem erro, quer dizer que *provavelmente* o canal não existe
 								if (searchJson.obj.has("error")) {

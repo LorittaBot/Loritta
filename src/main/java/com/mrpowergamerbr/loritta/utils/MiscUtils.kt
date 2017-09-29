@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.io.StringReader
@@ -39,7 +38,7 @@ object MiscUtils {
 
 		val reader = StringReader(checkResponse)
 		val jsonReader = JsonReader(reader)
-		val checkJsonResponse = JsonParser().parse(jsonReader).obj // Base
+		val checkJsonResponse = jsonParser.parse(jsonReader).obj // Base
 
 		var hash = checkJsonResponse["hash"].string
 		var title = checkJsonResponse["title"].asString
@@ -61,7 +60,7 @@ object MiscUtils {
 			progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
 
 			val readerProgress = StringReader(progressResponse)
-			val progressJsonResponse = JsonParser().parse(readerProgress).obj // Base
+			val progressJsonResponse = jsonParser.parse(readerProgress).obj // Base
 
 			val progress = progressJsonResponse.get("progress").string
 			if (progressJsonResponse.has("error") && progressJsonResponse["error"].string.isNotEmpty()) {

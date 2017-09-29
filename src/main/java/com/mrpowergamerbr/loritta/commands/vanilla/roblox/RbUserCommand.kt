@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
@@ -49,7 +50,7 @@ class RbUserCommand : CommandBase() {
 			val body = HttpRequest.get("https://www.roblox.com/search/users/results?keyword=${URLEncoder.encode(username, "UTF-8")}&maxRows=12&startIndex=0")
 					.body()
 
-			val response = JsonParser().parse(body).obj
+			val response = jsonParser.parse(body).obj
 
 			if (response["UserSearchResults"].isJsonArray) {
 				val users = response["UserSearchResults"].array
@@ -65,7 +66,7 @@ class RbUserCommand : CommandBase() {
 					val avatarBody = HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
 							.body()
 
-					val avatarResponse = JsonParser().parse(avatarBody).obj
+					val avatarResponse = jsonParser.parse(avatarBody).obj
 
 					// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
 					val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
@@ -84,7 +85,7 @@ class RbUserCommand : CommandBase() {
 					val followingBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 							.body()
 
-					val followingResponse = JsonParser().parse(followingBody)
+					val followingResponse = jsonParser.parse(followingBody)
 
 					val totalFollowing = followingResponse["TotalFriends"].int
 
@@ -92,7 +93,7 @@ class RbUserCommand : CommandBase() {
 					val followersBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Followers&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 							.body()
 
-					val followersResponse = JsonParser().parse(followersBody)
+					val followersResponse = jsonParser.parse(followersBody)
 
 					val totalFollowers = followersResponse["TotalFriends"].int
 
@@ -100,7 +101,7 @@ class RbUserCommand : CommandBase() {
 					val friendsBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=AllFriends&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 							.body()
 
-					val friendsResponse = JsonParser().parse(friendsBody)
+					val friendsResponse = jsonParser.parse(friendsBody)
 
 					val totalFriends = friendsResponse["TotalFriends"].int
 
@@ -113,7 +114,7 @@ class RbUserCommand : CommandBase() {
 						val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/robloxcollections-json?userId=$userId")
 								.body()
 
-						val robloxCollections = JsonParser().parse(robloxCollectionsResponse).obj
+						val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 						for (coll in robloxCollections["CollectionsItems"].array) {
 							if (x >= 333) {
@@ -135,7 +136,7 @@ class RbUserCommand : CommandBase() {
 						val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId")
 								.body()
 
-						val robloxCollections = JsonParser().parse(robloxCollectionsResponse).obj
+						val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 						for (coll in robloxCollections["Assets"].array) {
 							if (x >= 333) {

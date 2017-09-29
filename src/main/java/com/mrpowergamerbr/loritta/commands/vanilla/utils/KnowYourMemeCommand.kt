@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.Loritta.Companion.jsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -45,7 +46,7 @@ class KnowYourMemeCommand : CommandBase() {
 					.body() // Vamos pegar a response...
 
 			// E vamos parsear!
-			val json = JsonParser().parse(response).obj
+			val json = jsonParser.parse(response).obj
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...

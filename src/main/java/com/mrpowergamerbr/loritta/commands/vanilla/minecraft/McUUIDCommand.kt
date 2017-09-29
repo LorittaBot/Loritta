@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.*
@@ -41,7 +41,7 @@ class McUUIDCommand : CommandBase() {
 
 
             try {
-                var json = JsonParser().parse(data).asJsonObject;
+                var json = jsonParser.parse(data).asJsonObject;
 
                 context.sendMessage(context.getAsMention(true) + context.locale.MCUUID_RESULT.msgFormat(player, LorittaUtils.getUUID(json["id"].string)))
             } catch (e: IllegalStateException) {

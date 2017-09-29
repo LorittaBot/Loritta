@@ -2,12 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -52,11 +51,11 @@ class McQueryCommand : CommandBase() {
 
 			var body = HttpRequest.get("https://mcapi.ca/query/$hostname:$port/extensive").body()
 			// Vamos tentar realizar primeiro uma extensive query
-			var serverResponse = JsonParser().parse(body).asJsonObject // Base
+			var serverResponse = jsonParser.parse(body).asJsonObject // Base
 			// Nós também iremos pegar a "plain response", para alguns servidores aonde a extensive query é muito... "extensive" (exemplo: MOTD)
 			body = HttpRequest.get("https://mcapi.ca/query/$hostname:$port/info").body()
 			// Vamos tentar realizar primeiro uma extensive query
-			val plainResponse = JsonParser().parse(body).asJsonObject // Response padrão então
+			val plainResponse = jsonParser.parse(body).asJsonObject // Response padrão então
 
 			if (serverResponse.has("error")) {
 				serverResponse = plainResponse // Ok, se serverResponse (extensive) está com erro, vamos apenas "trocar" a resposta

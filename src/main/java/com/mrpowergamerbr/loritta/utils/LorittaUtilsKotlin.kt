@@ -77,6 +77,9 @@ val loritta: Loritta
 val lorittaShards: LorittaShards
 	get() = LorittaLauncher.loritta.lorittaShards
 
+val jsonParser: JsonParser
+	get() = Loritta.jsonParser
+
 /**
  * Salva um objeto usando o Datastore do MongoDB
  */
@@ -121,7 +124,7 @@ object LorittaUtilsKotlin {
 			println(url + " ~ " + response)
 			val reader = StringReader(response)
 			val jsonReader = JsonReader(reader)
-			val apiResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+			val apiResponse = jsonParser.parse(jsonReader).asJsonObject // Base
 
 			if (apiResponse.has("error")) {
 				return NSFWResponse.ERROR
@@ -303,7 +306,7 @@ object LorittaUtilsKotlin {
 				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
 				.body()
 
-		val json = JsonParser().parse(response)
+		val json = jsonParser.parse(response)
 
 		var url: String? = null;
 		var description: String? = null;
@@ -331,7 +334,7 @@ object LorittaUtilsKotlin {
 		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.random.nextInt(0, 1000)}")
 				.body()
 
-		val json = JsonParser().parse(response)
+		val json = jsonParser.parse(response)
 
 		var url: String? = null;
 		var description: String? = null;

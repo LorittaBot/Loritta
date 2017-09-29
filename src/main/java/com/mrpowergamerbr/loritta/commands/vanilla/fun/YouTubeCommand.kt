@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -64,7 +65,7 @@ class YouTubeCommand : CommandBase() {
 				for (i in 0 until Math.min(5, items.size)) {
 					var item = items[i];
 					var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
-					var parser = JsonParser()
+					var parser = jsonParser
 					var json = parser.parse(response).asJsonObject
 					var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
 					var duration = java.time.Duration.parse(strDuration)

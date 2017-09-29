@@ -8,10 +8,10 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
@@ -41,7 +41,7 @@ class AkinatorCommand : CommandBase() {
 
 		val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-		val jsonSession = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]
+		val jsonSession = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
 
 		val identification = jsonSession["PARAMETERS"]["IDENTIFICATION"].obj
 
@@ -131,7 +131,7 @@ class AkinatorCommand : CommandBase() {
 
 				val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-				val jsonResult = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]
+				val jsonResult = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
 
 				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
 					val builder = EmbedBuilder().apply {
@@ -215,7 +215,7 @@ class AkinatorCommand : CommandBase() {
 
 					val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-					val jsonAnswer = JsonParser().parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
+					val jsonAnswer = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
 
 					val builder = EmbedBuilder().apply {
 						setTitle("<:akinator:348903800540758017> ${jsonAnswer["NAME"].string}")

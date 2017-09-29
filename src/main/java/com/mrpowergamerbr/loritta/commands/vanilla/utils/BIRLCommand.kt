@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -50,7 +50,7 @@ class BIRLCommand : CommandBase() {
 						.send(obj.toString())
 						.body();
 
-				val json = JsonParser().parse(response)
+				val json = jsonParser.parse(response)
 
 				val embed = EmbedBuilder()
 				embed.setColor(Color(221, 45, 36));

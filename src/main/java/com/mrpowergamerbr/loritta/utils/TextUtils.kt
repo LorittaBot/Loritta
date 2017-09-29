@@ -113,7 +113,7 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 }
 
 fun String.escapeMentions(): String {
-	return this.replace(Regex("\\\\+@"), "@").replace("@", "\\@")
+	return this.replace(Regex("\\\\+@"), "@").replace("@", "@\u200B")
 }
 
 fun String.fromMorse(): String {

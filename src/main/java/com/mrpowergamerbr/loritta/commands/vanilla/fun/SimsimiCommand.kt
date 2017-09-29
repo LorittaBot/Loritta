@@ -3,12 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -47,14 +48,13 @@ class SimsimiCommand : CommandBase() {
 			val get = HttpRequest.get("http://api.simsimi.com/request.p?key=${Loritta.config.simsimiKey}&lc=$locale&ft=1.0&text=${URLEncoder.encode(query, "UTF-8")}")
 					.body()
 
-			val jsonElement = JsonParser().parse(get)
+			val jsonElement = jsonParser.parse(get)
 			if (!jsonElement.isJsonNull) {
-				val json = JsonParser().parse(get).obj
+				val json = jsonParser.parse(get).obj
 
 				if (json.has("response")) {
 					val response = json["response"].string
-							.replace("@everyone", "")
-							.replace("@here", "")
+							.escapeMentions()
 
 					val webhook = getOrCreateWebhook(context.event.textChannel, "Simsimi")
 					context.sendMessage(webhook, DiscordMessage.builder()

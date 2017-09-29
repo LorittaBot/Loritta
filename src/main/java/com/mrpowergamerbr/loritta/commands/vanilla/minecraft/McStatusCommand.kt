@@ -1,10 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -30,7 +30,7 @@ class McStatusCommand : CommandBase() {
                 .setTitle("📡 ${context.locale.MCSTATUS_MOJANG_STATUS.msgFormat()}", "https://help.mojang.com/")
                 .setColor(Color.GREEN);
 
-        var json = JsonParser().parse(body);
+        var json = jsonParser.parse(body);
         for (section in json.asJsonObject.entrySet()) {
             var status = section.value.asJsonObject.get("status").asString;
             var prefix = if (section.key.contains("minecraft")) "<:grass:330435576392318978> " else "<:mojang:330436377831538689>";

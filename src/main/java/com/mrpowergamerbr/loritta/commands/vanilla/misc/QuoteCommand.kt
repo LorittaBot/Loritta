@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -53,8 +54,7 @@ class QuoteCommand : CommandBase() {
 					}
 
 					var content = msg.author.asMention + " " + context.event.message.rawContent.replace(context.config.commandPrefix + "mencionar " + context.args[0], "").trim { it <= ' ' }
-					content = content.replace("@here", "")
-					content = content.replace("@everyone", "")
+					content = content.escapeMentions()
 
 					val embed = DiscordEmbed
 							.builder()

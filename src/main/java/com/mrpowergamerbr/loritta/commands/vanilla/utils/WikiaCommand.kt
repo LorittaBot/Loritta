@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -54,7 +54,7 @@ class WikiaCommand : CommandBase() {
 			val jsonReader = JsonReader(reader)
 			jsonReader.isLenient = true
 			try {
-				val wikiaResponse = JsonParser().parse(jsonReader).asJsonObject // Base
+				val wikiaResponse = jsonParser.parse(jsonReader).asJsonObject // Base
 
 				if (wikiaResponse.has("exception")) {
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))

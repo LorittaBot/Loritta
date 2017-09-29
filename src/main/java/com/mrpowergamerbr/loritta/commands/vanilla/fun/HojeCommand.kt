@@ -3,16 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
-import org.apache.commons.lang3.StringUtils
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.net.URLEncoder
@@ -46,7 +43,7 @@ class HojeCommand : CommandBase() {
 		val query = "$day de " + DateFormatSymbols().months[month].toLowerCase()
 		val url = "https://$languageId.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&titles=" + URLEncoder.encode(query, "UTF-8")
 		val wikipediaResponse = HttpRequest.get(url).body()
-		val wikipedia = JsonParser().parse(wikipediaResponse).asJsonObject // Base
+		val wikipedia = jsonParser.parse(wikipediaResponse).asJsonObject // Base
 		val wikiQuery = wikipedia["query"].obj // Query
 		val wikiPages = wikiQuery["pages"].obj // Páginas
 		val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo

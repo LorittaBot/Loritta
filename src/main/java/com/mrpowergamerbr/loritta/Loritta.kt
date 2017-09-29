@@ -293,7 +293,7 @@ class Loritta {
 		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
 		val defaultLocale = gson.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
-		val defaultJsonLocale = JsonParser().parse(localeAsText).obj // Mas também parsear como JSON
+		val defaultJsonLocale = jsonParser.parse(localeAsText).obj // Mas também parsear como JSON
 
 		defaultJsonLocale.entrySet().forEach { (key, value) ->
 			if (!value.isJsonArray) { // TODO: Listas!
@@ -321,10 +321,10 @@ class Loritta {
 		// E agora preencher valores nulos e salvar as traduções
 		for ((id, locale) in locales) {
 			if (id != "default") {
-				val jsonObject = JsonParser().parse(Loritta.gson.toJson(locale))
+				val jsonObject = jsonParser.parse(Loritta.gson.toJson(locale))
 
 				val localeFile = File(Loritta.LOCALES, "$id.json")
-				val asJson = JsonParser().parse(localeFile.readText()).obj
+				val asJson = jsonParser.parse(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
 					if (obj.isJsonPrimitive && obj.asJsonPrimitive.isString) {

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.save
@@ -147,10 +148,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}
 
-					val toLearn = event.message.strippedContent.toLowerCase()
-							.replace("@everyone", "")
-							.replace("@here", "")
-							.replace("@", "")
+					val toLearn = event.message.strippedContent.toLowerCase().escapeMentions()
 					loritta.hal.add(toLearn) // TODO: Filtrar links
 				} catch (e: Exception) {
 					e.printStackTrace()
