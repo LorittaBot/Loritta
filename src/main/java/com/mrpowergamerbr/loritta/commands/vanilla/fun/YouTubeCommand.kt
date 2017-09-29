@@ -103,7 +103,8 @@ class YouTubeCommand : CommandBase() {
 					}
 				}
 
-				if (e.reactionEmote.name == "\uD83D\uDCE5") {
+				if (!context.metadata.containsKey("downloading") && e.reactionEmote.name == "\uD83D\uDCE5") {
+					context.metadata["downloading"] = true
 					MiscUtils.sendYouTubeVideoMp3(context, "https://youtu.be/${item.id.videoId}")
 				}
 				return

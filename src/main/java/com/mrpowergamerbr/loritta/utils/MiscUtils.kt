@@ -10,6 +10,9 @@ import kotlin.concurrent.fixedRateTimer
 
 object MiscUtils {
 	fun sendYouTubeVideoMp3(context: CommandContext, videoUrl: String) {
+		if (context.guild.id != "268353819409252352") {
+			return
+		}
 		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
 
 		var link = videoUrl
