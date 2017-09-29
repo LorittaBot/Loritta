@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import java.util.*
 
 class SayCommand : CommandBase() {
@@ -32,7 +33,7 @@ class SayCommand : CommandBase() {
 
     override fun run(context: CommandContext) {
         if (context.args.size > 0) {
-            var message = context.rawArgs.joinToString(" ").replace("@everyone", "").replace("@here", "");
+            var message = context.rawArgs.joinToString(" ").escapeMentions()
             context.sendMessage(context.getAsMention(true) + message);
         } else {
             this.explain(context);
