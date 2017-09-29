@@ -45,7 +45,7 @@ public class LorittaUtils {
 	public static final String ERROR = "<:erro:326509900115083266>";
 
 	public static boolean canUploadFiles(CommandContext context) {
-		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
+		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().getPermissions().contains(Permission.MESSAGE_ATTACH_FILES)) {
 			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.IMAGE_UPLOAD_NO_PERM) + " \uD83D\uDE22");
 			return false;
 		}

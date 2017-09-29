@@ -112,6 +112,10 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	return this.substring(0 until 1997) + suffix
 }
 
+fun String.removeMentions(): String {
+	return this.replace("@everyone", "").replace("@here", "")
+}
+
 fun String.fromMorse(): String {
 	// Criar uma string vazia para guardar a nossa mensagem em texto comum
 	var text = "";
