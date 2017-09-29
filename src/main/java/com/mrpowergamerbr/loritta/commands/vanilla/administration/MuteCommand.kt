@@ -53,7 +53,7 @@ class MuteCommand : CommandBase() {
 			try {
 				var id = context.args[0];
 
-				if (context.rawArgs[0].startsWith("<") && context.message.mentionedUsers.isNotEmpty()) {
+				if (context.rawArgs[0].startsWith("<") && context.message.mentionedUsers.isEmpty()) {
 					id = context.message.mentionedUsers[0].id
 				}
 
