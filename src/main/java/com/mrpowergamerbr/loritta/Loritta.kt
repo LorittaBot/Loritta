@@ -175,6 +175,8 @@ class Loritta {
 
 		val updateTimeListener = UpdateTimeListener(this);
 
+		loadCommandManager() // Inicie todos os comandos da Loritta
+
 		for (idx in 0..generateShards) {
 			println("Iniciando Shard $idx...")
 			val shard = JDABuilder(AccountType.BOT)
@@ -187,7 +189,6 @@ class Loritta {
 			lorittaShards.shards.add(shard)
 		}
 
-		loadCommandManager() // Inicie todos os comandos da Loritta
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
 		if (!isMusicOnly) {

@@ -306,7 +306,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			loritta save serverConfig
 
 			event.guild.members.forEach {
-				if (it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
+				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/3rXgN8x", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
 
 					try {

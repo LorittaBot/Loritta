@@ -50,7 +50,7 @@ public class YouTubeConfigView {
 					try {
 						Document jsoup = Jsoup.connect(def.getChannelUrl()).get(); // Hora de pegar a página do canal...
 
-						Pattern pattern = Pattern.compile("\"key\":\"browse_id\",\"value\":\"([A-z0-9_-]+)\"");
+						Pattern pattern = Pattern.compile("\"ucid\":\"([A-z0-9_-]+)\"");
 
 						Matcher matcher = pattern.matcher(jsoup.html());
 

@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
@@ -34,50 +34,51 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	}
 
 	fun checkNewVideos() {
-		try {
-			var servers = LorittaLauncher.loritta.mongo
-					.getDatabase("loritta")
-					.getCollection("servers")
-					.find(Filters.exists("youTubeConfig.channels", true))
+		var servers = LorittaLauncher.loritta.mongo
+				.getDatabase("loritta")
+				.getCollection("servers")
+				.find(Filters.exists("youTubeConfig.channels", true))
 
-			for (server in servers) {
-				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
+		for (server in servers) {
+			var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server["_id"]);
 
-				var youTubeConfig = config.youTubeConfig;
+			var youTubeConfig = config.youTubeConfig;
 
-				var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
+			var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
 
-				if (guild != null) {
-					for (youTubeInfo in youTubeConfig.channels) {
-						var textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId);
+			if (guild != null) {
+				for (youTubeInfo in youTubeConfig.channels) {
+					var textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId);
 
-						if (textChannel != null) { // Wow, diferente de null!
-							if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-								if (!youTubeInfo.channelUrl!!.startsWith("http")) {
-									youTubeInfo.channelUrl = "http://" + youTubeInfo.channelUrl;
+					if (textChannel != null) { // Wow, diferente de null!
+						if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
+							if (!youTubeInfo.channelUrl!!.startsWith("http")) {
+								youTubeInfo.channelUrl = "http://" + youTubeInfo.channelUrl;
 
-									LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
-								}
-								if (youTubeInfo.channelId == null) { // Omg é null
-									try {
-										val jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
+								LorittaLauncher.loritta.ds.save(config); // Vamos salvar a config
+							}
 
-										val pattern = Pattern.compile("\"key\":\"browse_id\",\"value\":\"([A-z0-9_-]+)\"");
+							if (youTubeInfo.channelId == null) { // Omg é null
+								try {
+									val jsoup = Jsoup.connect(youTubeInfo.channelUrl).get() // Hora de pegar a página do canal...
 
-										val matcher = pattern.matcher(jsoup.html())
+									val pattern = Pattern.compile("\"ucid\":\"([A-z0-9_-]+)\"");
 
-										if (matcher.find()) {
-											val id = matcher.group(1)
+									val matcher = pattern.matcher(jsoup.html())
 
-											youTubeInfo.channelId = id // E salvar o ID!
-										} else {
-											continue;
-										}
-									} catch (e: Exception) {
+									if (matcher.find()) {
+										val id = matcher.group(1)
+
+										youTubeInfo.channelId = id // E salvar o ID!
+									} else {
 										continue;
 									}
+								} catch (e: Exception) {
+									continue;
 								}
+							}
 
+							try {
 								// E agora sim iremos pegar os novos vídeos!
 								var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeInfo.channelId}&key=${Loritta.config.youtubeKey}")
 										.body();
@@ -155,6 +156,10 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									continue
 								}
 
+								if (searchJson["items"].array.size() == 0) {
+									continue
+								}
+
 								var jsonSearch = searchJson["items"].array[0]
 								var searchSnippet = jsonSearch["snippet"].obj
 
@@ -169,22 +174,25 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 								var rssFeed = HttpRequest.get("https://www.youtube.com/feeds/videos.xml?channel_id=${youTubeInfo.channelId}")
 										.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
 										.useCaches(false) // YouPobre(tm)
-										.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
+										.userAgent(Constants.USER_AGENT)
 										.body();
 
 								var jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
 
-								rssTitle = jsoup.select("feed entry title").first().text()
-								rssDescription = jsoup.select("feed entry media|group media|description").first().text()
-								rssChannelTitle = jsoup.select("feed entry author name").first().text()
-								rssVideoId = jsoup.select("feed entry yt|videoId").first().text()
-								rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(jsoup.select("feed entry published").first().text())
+								try {
+									rssTitle = jsoup.select("feed entry title").first().text()
+									rssDescription = jsoup.select("feed entry media|group media|description").first().text()
+									rssChannelTitle = jsoup.select("feed entry author name").first().text()
+									rssVideoId = jsoup.select("feed entry yt|videoId").first().text()
+									rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(jsoup.select("feed entry published").first().text())
 
-								val tz = TimeZone.getTimeZone("UTC")
-								val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
-								df.timeZone = tz
-								rssDate = df.format(rssCalendar.time)
-								rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(df.format(rssCalendar!!.time)) // Agora vamos guardar a data verdadeira!
+									val tz = TimeZone.getTimeZone("UTC")
+									val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+									df.timeZone = tz
+									rssDate = df.format(rssCalendar.time)
+									rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(df.format(rssCalendar!!.time)) // Agora vamos guardar a data verdadeira!
+								} catch (e: NullPointerException) {
+								}
 
 								currentCalendar = when {
 									playlistCalendar != null -> playlistCalendar
@@ -290,13 +298,14 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									lastItemTime[guild.id] = checkedVideos
 									println("Atualizado pela source: $source")
 								}
+							} catch (e: Exception) {
+								println("Erro ao verificar ${youTubeInfo.channelUrl}")
+								e.printStackTrace()
 							}
 						}
 					}
 				}
 			}
-		} catch (e: Exception) {
-			e.printStackTrace()
 		}
 	}
 
