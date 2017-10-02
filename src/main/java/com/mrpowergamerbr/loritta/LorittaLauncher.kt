@@ -21,7 +21,7 @@ object LorittaLauncher {
 	@JvmStatic
 	fun main(args: Array<String>) {
 		val gson = GsonBuilder().setPrettyPrinting().create()
-		val file = File("./config.json")
+		val file = File(System.getProperty("conf")?: "./config.json")
 		var config: LorittaConfig? = null
 
 		if (file.exists()) {
@@ -50,14 +50,11 @@ object LorittaLauncher {
 			return
 		}
 
-		var isMusicOnly = false
-
-		if (args.isNotEmpty() && args[0].equals("-music")) {
-			isMusicOnly = true
-		}
+		var isMusicOnly = args.isNotEmpty() && args[0].equals("-music")
+		var isWebsiteOnly = args.isNotEmpty() && args[0].equals("-website")
 
 		// Iniciar instância da Loritta
-		loritta = Loritta(config, isMusicOnly)
+		loritta = Loritta(config, isMusicOnly, isWebsiteOnly)
 		loritta.start()
 	}
 }

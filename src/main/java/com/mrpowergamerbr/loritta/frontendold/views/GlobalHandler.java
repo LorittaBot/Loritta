@@ -1,12 +1,12 @@
-package com.mrpowergamerbr.loritta.frontend.views;
+package com.mrpowergamerbr.loritta.frontendold.views;
 
 import com.google.common.collect.Lists;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.PaniniUtils;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.PaniniUtils;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlinKt;
 import com.mrpowergamerbr.loritta.utils.ServerMiscInfo;

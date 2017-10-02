@@ -1,8 +1,8 @@
-package com.mrpowergamerbr.loritta.frontend.views
+package com.mrpowergamerbr.loritta.frontendold.views
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext
 import java.io.File
 
 object OwoView {

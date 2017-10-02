@@ -1,11 +1,9 @@
-package com.mrpowergamerbr.loritta.frontend.views
+package com.mrpowergamerbr.loritta.frontendold.views
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.*
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext
 
 object NashornDocsView {
 	@JvmStatic

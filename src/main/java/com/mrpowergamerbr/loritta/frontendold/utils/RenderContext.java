@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.utils;
+package com.mrpowergamerbr.loritta.frontendold.utils;
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import lombok.Getter;

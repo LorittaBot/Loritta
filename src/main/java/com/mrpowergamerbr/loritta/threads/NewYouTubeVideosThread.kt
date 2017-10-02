@@ -120,7 +120,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									var json = jsonParser.parse(response)
 
 									// PLAYLIST
-									if (json["items"].array.size() > 0) {
+									if (json.obj.has("items") && json["items"].array.size() > 0) {
 										var playlistId = json["items"].array[0]["contentDetails"]["relatedPlaylists"]["uploads"].string
 
 										// Vamos verificar os novos vídeos de vários jeitos
@@ -308,6 +308,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 							}
 						}
 					}
+					Thread.sleep(5000)
 				}
 			}
 		}

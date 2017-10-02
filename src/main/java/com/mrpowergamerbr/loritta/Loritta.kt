@@ -14,7 +14,7 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.MusicMessageListener
@@ -64,6 +64,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 /**
  * Classe principal da Loritta
@@ -124,14 +125,16 @@ class Loritta {
 	var songThrottle = mutableMapOf<String, Long>()
 
 	var isMusicOnly: Boolean = false
+	var isWebsiteOnly: Boolean = false
 
 	// Constructor da Loritta
-	constructor(config: LorittaConfig, isMusicOnly: Boolean) {
+	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube(config.youtubeKey)
 		this.isMusicOnly = isMusicOnly
+		this.isWebsiteOnly = isWebsiteOnly
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -190,6 +193,14 @@ class Loritta {
 		}
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
+
+		if (isWebsiteOnly) {
+			val website = thread(true, name = "Website Thread") {
+				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
+			}
+			ShardReviverThread().start()
+			return
+		}
 
 		if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta

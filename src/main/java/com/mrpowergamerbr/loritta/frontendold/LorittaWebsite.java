@@ -1,9 +1,9 @@
-package com.mrpowergamerbr.loritta.frontend;
+package com.mrpowergamerbr.loritta.frontendold;
 
 import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.FileLoader;
-import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler;
+import com.mrpowergamerbr.loritta.frontendold.views.GlobalHandler;
 import com.mrpowergamerbr.temmiediscordauth.utils.TemmieGuild;
 import lombok.Getter;
 import org.jooby.Jooby;

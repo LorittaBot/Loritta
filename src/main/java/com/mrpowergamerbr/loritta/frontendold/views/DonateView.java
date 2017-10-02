@@ -1,12 +1,12 @@
-package com.mrpowergamerbr.loritta.frontend.views;
+package com.mrpowergamerbr.loritta.frontendold.views;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.Loritta;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import com.mrpowergamerbr.temmiemercadopago.mp.Payment;
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem;
 import com.mrpowergamerbr.temmiemercadopago.mp.request.PaymentRequest;

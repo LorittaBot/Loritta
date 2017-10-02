@@ -1,7 +1,7 @@
-package com.mrpowergamerbr.loritta.frontend.views
+package com.mrpowergamerbr.loritta.frontendold.views
 
 import com.google.common.html.HtmlEscapers
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.*
 import java.awt.Color

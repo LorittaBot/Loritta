@@ -1,10 +1,10 @@
-package com.mrpowergamerbr.loritta.frontend.views.configure;
+package com.mrpowergamerbr.loritta.frontendold.views.configure;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.AutoroleConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;

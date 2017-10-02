@@ -1,11 +1,10 @@
-package com.mrpowergamerbr.loritta.frontend.views.configure;
+package com.mrpowergamerbr.loritta.frontendold.views.configure;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
-import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.RssFeedConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.FeedEntry;
@@ -13,8 +12,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jsoup.nodes.Element;
-
-import java.util.ArrayList;
 
 public class RssFeedsConfigView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)

@@ -1,10 +1,10 @@
-package com.mrpowergamerbr.loritta.frontend.views;
+package com.mrpowergamerbr.loritta.frontendold.views;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.io.PrintWriter;

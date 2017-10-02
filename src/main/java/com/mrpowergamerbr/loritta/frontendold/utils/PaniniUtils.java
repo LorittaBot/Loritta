@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.utils;
+package com.mrpowergamerbr.loritta.frontendold.utils;
 
 /**
  * From PaniniCMS: https://github.com/PaniniCMS/Panini/blob/master/src/com/paninicms/utils/PaniniUtils.java

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.views;
+package com.mrpowergamerbr.loritta.frontendold.views;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -8,9 +8,9 @@ import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TristeRealidadeCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TristeRealidadeCommand.TristeRealidadeCommandOptions;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
-import com.mrpowergamerbr.loritta.frontend.views.configure.*;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
+import com.mrpowergamerbr.loritta.frontendold.views.configure.*;
 import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig;
 import com.mrpowergamerbr.loritta.userdata.MusicConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;

@@ -1,19 +1,18 @@
-package com.mrpowergamerbr.loritta.frontend.views.configure;
+package com.mrpowergamerbr.loritta.frontendold.views.configure;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite;
-import com.mrpowergamerbr.loritta.frontend.utils.RenderContext;
-import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler;
+import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
+import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 
-public class NashornEventsView {
+public class NashornCommandsView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
 			throws PebbleException {
 		context.contextVars().put("whereAmI", "nashornCommands");
@@ -22,31 +21,31 @@ public class NashornEventsView {
 			String editor = context.arguments[4];
 
 			if (editor.equalsIgnoreCase("editor")) {
-				NashornEventHandler def = new NashornEventHandler();
-				def.javaScript = "function onMessageReceived(event) {\n    reply(\"Loritta \uD83D\uDE18\");\n}";
+				NashornCommand def = new NashornCommand();
+				def.javaScript = "reply(\"Loritta \uD83D\uDE18\");";
 				context.contextVars().put("editingCommand", def);
 
 				if (context.request.param("commandResponse").isSet()) {
 					// Salvando!
-					NashornEventHandler toSave = new NashornEventHandler();
-					ArrayList<NashornEventHandler> toRemove = new ArrayList<>();
+					NashornCommand toSave = new NashornCommand();
+					ArrayList<NashornCommand> toRemove = new ArrayList<>();
 
-					for (NashornEventHandler nash : sc.nashornEventHandlers) {
+					for (NashornCommand nash : sc.nashornCommands) {
 						if (nash.getId().toString().equals(context.request.param("commandId").value())) {
 							toSave = nash;
 							toRemove.add(nash);
 						}
 					}
 
-					sc.nashornEventHandlers.removeAll(toRemove);
+					sc.nashornCommands.removeAll(toRemove);
 					toSave.javaScript = context.request.param("commandResponse").value();
-					// toSave.setJsLabel(context.request.param("commandName").value());
-					sc.nashornEventHandlers.add(toSave);
+					toSave.setJsLabel(context.request.param("commandName").value());
+					sc.nashornCommands.add(toSave);
 
 					LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
 
 					try {
-						context.response.redirect("https://loritta.website/config/servidor/" + sc.guildId + "/events");
+						context.response.redirect("https://loritta.website/config/servidor/" + sc.guildId + "/nashorn");
 					} catch (Throwable e) {
 
 					}
@@ -54,34 +53,34 @@ public class NashornEventsView {
 					if (context.arguments.length > 5) {
 						String id = context.arguments[5];
 
-						for (NashornEventHandler nash : sc.nashornEventHandlers) {
+						for (NashornCommand nash : sc.nashornCommands) {
 							if (nash.getId().toString().equals(id)) {
 								context.contextVars().put("editingCommand", nash);
 							}
 						}
 					}
 
-					PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("event_editor.html");
+					PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("command_editor.html");
 
 					return template;
 				}
 			}
 		}
 		if (context.request().param("deleteCommand").isSet()) {
-			ArrayList<NashornEventHandler> toRemove = new ArrayList<NashornEventHandler>();
+			ArrayList<NashornCommand> toRemove = new ArrayList<NashornCommand>();
 
-			for (NashornEventHandler customCommand : sc.nashornEventHandlers) {
+			for (NashornCommand customCommand : sc.nashornCommands()) {
 				if (customCommand.getId().equals(new ObjectId(context.request().param("deleteCommand").value()))) {
 					toRemove.add(customCommand);
 				}
 			}
 
-			sc.nashornEventHandlers.removeAll(toRemove);
+			sc.nashornCommands().removeAll(toRemove);
 
 			LorittaLauncher.getInstance().getDs().save(sc); // E agora salve! Yay, problema resolvido!
 		}
 
-		PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("events.html");
+		PebbleTemplate template = LorittaWebsite.getEngine().getTemplate("nashorn.html");
 		return template;
 	}
 }
