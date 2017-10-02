@@ -55,7 +55,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		val diff = System.currentTimeMillis() - lastUpdate
 
 		if (diff >= 25000) {
-			loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame(str, "https://www.twitch.tv/monstercat", Game.GameType.STREAMING))
+			loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.STREAMING))
 			currentIndex++
 			lastUpdate = System.currentTimeMillis()
 
