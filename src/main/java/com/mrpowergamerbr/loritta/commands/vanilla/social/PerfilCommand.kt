@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -161,7 +160,7 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		ImageUtils.drawTextWrap(context.locale["PERFIL_XP_GUILD", context.guild.name], 80, 55, 9999, 9999, graphics.fontMetrics, graphics)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) ";)" else userData.xp.toString(), 220, 55)
 		graphics.drawString(context.locale["PERFIL_ECONOMY"], 80, 71)
-		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else "0", 220, 71)
+		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else userProfile.dreams.toString(), 220, 71)
 		// Escrever nome do usuário
 		val oswaldRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
 				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "oswald_regular.ttf")))

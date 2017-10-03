@@ -83,7 +83,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 								try {
 									// E agora sim iremos pegar os novos vídeos!
-									var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeInfo.channelId}&key=${Loritta.config.youtubeKey}")
+									var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${youTubeInfo.channelId}&key=${loritta.youtubeKey}")
 											.body();
 
 									var source = "playlist";
@@ -124,7 +124,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 										var playlistId = json["items"].array[0]["contentDetails"]["relatedPlaylists"]["uploads"].string
 
 										// Vamos verificar os novos vídeos de vários jeitos
-										var newVideos = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&order=date&maxResults=1&playlistId=$playlistId&key=${Loritta.config.youtubeKey}")
+										var newVideos = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&order=date&maxResults=1&playlistId=$playlistId&key=${loritta.youtubeKey}")
 												.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
 												.useCaches(false) // YouPobre(tm)
 												.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")
@@ -146,7 +146,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									}
 
 									// SEARCH
-									var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeInfo.channelId}&key=${Loritta.config.youtubeKey}")
+									var newVideosSearch = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date&channelId=${youTubeInfo.channelId}&key=${loritta.youtubeKey}")
 											.header("Cache-Control", "max-age=0, no-cache") // YouPobre(tm)
 											.useCaches(false) // YouPobre(tm)
 											.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/" + Loritta.random.nextInt(50, 55) + ".0")

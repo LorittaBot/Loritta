@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.modules.InviteLinkUtils
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
@@ -73,6 +74,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
 							return@thread
 						}
+					}
+
+					// ===[ VERIFICAR INVITE LINKS ]===
+					if (serverConfig.inviteBlockerConfig.isEnabled) {
+						InviteLinkUtils.checkForInviteLinks(event, serverConfig.inviteBlockerConfig)
 					}
 
 					// ===[ CÁLCULO DE XP ]===

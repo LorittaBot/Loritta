@@ -2,12 +2,13 @@ package com.mrpowergamerbr.loritta.utils.temmieyoutube
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.lang3.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.*
 
-class TemmieYouTube(private val apiKey: String) {
+class TemmieYouTube() {
 	/**
 	 * Pesquisa algo no YouTube
 	 *
@@ -17,7 +18,7 @@ class TemmieYouTube(private val apiKey: String) {
 		val params = HashMap<String, Any>()
 		params.put("part", "snippet")
 		params.put("q", searchQuery)
-		params.put("key", apiKey)
+		params.put("key", loritta.youtubeKey)
 		val req = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?" + buildQuery(params))
 
 		val body = req.body()

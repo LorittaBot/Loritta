@@ -146,14 +146,14 @@ object LorittaUtilsKotlin {
 			try {
 				val playingTrack = track.track;
 				val videoId = playingTrack.info.uri.substring(playingTrack.info.uri.length - 11 until playingTrack.info.uri.length)
-				val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics&key=${Loritta.config.youtubeKey}").body();
+				val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
 				val parser = JsonParser();
 				val json = parser.parse(response).asJsonObject;
 				val item = json["items"][0]
 				val snippet = item["snippet"].obj
 				val statistics = item["statistics"].obj
 
-				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${Loritta.config.youtubeKey}").body();
+				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
 				var channelJson = parser.parse(channelResponse).obj;
 
 				track.metadata.put("viewCount", statistics["viewCount"].string)

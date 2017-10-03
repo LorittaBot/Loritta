@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -61,7 +60,7 @@ class YouTubeCommand : CommandBase() {
 
 			if (items.isNotEmpty()) {
 				var format = "";
-				var youtubeKey = Loritta.config.youtubeKey;
+				var youtubeKey = loritta.youtubeKey
 				for (i in 0 until Math.min(5, items.size)) {
 					var item = items[i];
 					var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
@@ -126,14 +125,14 @@ class YouTubeCommand : CommandBase() {
 			// Remover todos os reactions
 			msg.clearReactions().complete();
 
-			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${Loritta.config.youtubeKey}").body();
+			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
 			val parser = JsonParser();
 			val json = parser.parse(response).asJsonObject;
 			val jsonItem = json["items"][0]
 			val snippet = jsonItem["snippet"].obj
 			val statistics = jsonItem["statistics"].obj
 
-			var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${Loritta.config.youtubeKey}").body();
+			var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
 			var channelJson = parser.parse(channelResponse).obj;
 
 			val viewCount =  statistics["viewCount"].string

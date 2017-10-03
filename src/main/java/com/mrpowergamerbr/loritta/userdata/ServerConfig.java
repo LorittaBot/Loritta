@@ -56,6 +56,7 @@ public class ServerConfig {
     public RssFeedConfig rssFeedConfig = new RssFeedConfig();
     public EventLogConfig eventLogConfig = new EventLogConfig();
     public AutoroleConfig autoroleConfig = new AutoroleConfig();
+    public InviteBlockerConfig inviteBlockerConfig = new InviteBlockerConfig();
 
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 

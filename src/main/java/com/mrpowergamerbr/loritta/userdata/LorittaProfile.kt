@@ -29,6 +29,7 @@ class LorittaProfile {
     var lastMessageSent: Long = 0; // Última vez que o usuário enviou uma mensagem
 	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
+    var dreams: Int = 0
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;

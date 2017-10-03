@@ -126,15 +126,17 @@ class Loritta {
 
 	var isMusicOnly: Boolean = false
 	var isWebsiteOnly: Boolean = false
+	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
-		Loritta.youtube = TemmieYouTube(config.youtubeKey)
+		Loritta.youtube = TemmieYouTube()
 		this.isMusicOnly = isMusicOnly
 		this.isWebsiteOnly = isWebsiteOnly
+		youtubeKeys.addAll(config.youtubeKeys)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -146,6 +148,14 @@ class Loritta {
 
 		dummyServerConfig = dummy;
 	}
+
+	val youtubeKey: String
+		get() {
+			val key = youtubeKeys[0]
+			youtubeKeys.removeAt(0)
+			youtubeKeys.add(key)
+			return key
+		}
 
 	// Inicia a Loritta
 	fun start() {

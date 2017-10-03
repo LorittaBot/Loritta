@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.io.StringReader
+import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
 object MiscUtils {
@@ -116,6 +117,29 @@ object MiscUtils {
 				this.cancel()
 			}
 			lastProgress = progress;
+		}
+	}
+
+	fun isInvite(url: String): Boolean {
+		return getInviteId(url) != null
+	}
+
+	fun getInviteId(url: String): String? {
+		try {
+			val httpRequest = HttpRequest.get(url)
+					.followRedirects(true)
+					.connectTimeout(2500)
+					.readTimeout(2500)
+					.userAgent(Constants.USER_AGENT)
+			httpRequest.ok()
+			val url = httpRequest.url().toString()
+			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com)/(invite/)?([A-z0-9]+).*").matcher(url)
+			if (matcher.find()) {
+				return matcher.group(3)
+			}
+			return null
+		} catch (e: HttpRequest.HttpRequestException) {
+			return null
 		}
 	}
 }
