@@ -86,7 +86,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro iremos ver se a mensagem contém algo "interessante"
 					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
 						// Primeiro iremos verificar se a mensagem é "válida"
-						// 10 chars por millisegundo
+						// 7 chars por millisegundo
 						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 7
 
 						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
