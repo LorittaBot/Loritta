@@ -546,7 +546,7 @@ public class LorittaImage {
 	/**  Used to add an image "overlay" to the existing image at a given
 	 *   position. This method can also be used to create image mosiacs.
 	 */
-	public void addImage(javaxt.io.Image in, int x, int y, boolean expand){
+	public void addImage(LorittaImage in, int x, int y, boolean expand){
 		addImage(in.getBufferedImage(),x,y,expand);
 	}
 
@@ -1527,8 +1527,8 @@ public class LorittaImage {
 	 */
 	public boolean equals(Object obj){
 		if (obj!=null){
-			if (obj instanceof javaxt.io.Image){
-				javaxt.io.Image image = (javaxt.io.Image) obj;
+			if (obj instanceof LorittaImage){
+				LorittaImage image = (LorittaImage) obj;
 				if (image.getWidth()==this.getWidth() &&
 						image.getHeight()==this.getHeight())
 				{
@@ -1606,7 +1606,7 @@ public class LorittaImage {
 	 *  in the metadata. You can retrieve specific IPTC metadata values like
 	 *  this:
 	 <pre>
-	 javaxt.io.Image image = new javaxt.io.Image("/temp/image.jpg");
+	 LorittaImage image = new LorittaImage("/temp/image.jpg");
 	 java.util.HashMap&lt;Integer, String&gt; iptc = image.getIptcTags();
 	 System.out.println("Date: " + iptc.get(0x0237));
 	 System.out.println("Caption: " + iptc.get(0x0278));
@@ -1644,7 +1644,7 @@ public class LorittaImage {
 	 *  in the metadata. Values can be Strings, Integers, or raw Byte Arrays.
 	 *  You can retrieve specific EXIF metadata values like this:
 	 <pre>
-	 javaxt.io.Image image = new javaxt.io.Image("/temp/image.jpg");
+	 LorittaImage image = new LorittaImage("/temp/image.jpg");
 	 java.util.HashMap&lt;Integer, Object&gt; exif = image.getExifTags();
 	 System.out.println("Date: " + exif.get(0x0132));
 	 System.out.println("Camera: " + exif.get(0x0110));
@@ -2336,7 +2336,7 @@ public class LorittaImage {
 			this.dst = new BufferedImage(src.getWidth(), src.getHeight(), src.getType());
 		}
 
-		public Skew(javaxt.io.Image src) {
+		public Skew(LorittaImage src) {
 			this(src.getBufferedImage());
 		}
 

@@ -180,7 +180,7 @@ object LorittaUtilsKotlin {
 	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
 		val manager = loritta.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack;
-		val metaTrack = manager.scheduler.currentTrack;
+		val metaTrack = manager.scheduler.currentTrack!!
 		val embed = EmbedBuilder()
 		embed.setTitle("\uD83C\uDFB5 ${playingTrack.info.title}", playingTrack.info.uri)
 		embed.setColor(Color(93, 173, 236))

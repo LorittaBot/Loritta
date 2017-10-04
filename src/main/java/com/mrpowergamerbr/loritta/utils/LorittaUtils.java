@@ -543,6 +543,17 @@ public class LorittaUtils {
 
 		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
 
+		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.musicConfig.getMusicGuildId());
+
+		if (voiceChannel == null)
+			return;
+
+		if (!guild.getSelfMember().hasPermission(voiceChannel, Permission.VOICE_CONNECT))
+			return;
+
+		if (2 > voiceChannel.getMembers().size())
+			return;
+
 		if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
 			String trackUrl = conf.musicConfig().getUrls().get(
 					Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));

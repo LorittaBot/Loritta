@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
-import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
 import java.io.ByteArrayInputStream
@@ -287,7 +286,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-
 		LorittaLauncher.loritta.mongo
 				.getDatabase("loritta")
 				.getCollection("servers")
@@ -315,11 +313,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/3rXgN8x", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
 
-					try {
-						it.user.openPrivateChannel().complete().sendMessage(message).complete()
-					} catch (e: PermissionException) {
-
-					}
+					it.user.openPrivateChannel().queue({
+						it.sendMessage(message).queue()
+					})
 				}
 			}
 		}
@@ -329,6 +325,28 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
+
+				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+					val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
+
+					val roles = mutableListOf<Role>()
+
+					rolesId.forEach { // E pegar a role dependendo do ID!
+						val role = event.guild.getRoleById(it)
+
+						if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
+							roles.add(role)
+						}
+					}
+
+					if (roles.isNotEmpty()) {
+						if (roles.size == 1) {
+							event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
+						} else {
+							event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
+						}
+					}
+				}
 
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
 					if (conf.joinLeaveConfig.tellOnJoin && conf.joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
@@ -357,29 +375,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								}
 							}
 						}
-					}
-
-					if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-						val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
-
-						val roles = mutableListOf<Role>()
-
-						rolesId.forEach { // E pegar a role dependendo do ID!
-							val role = event.guild.getRoleById(it)
-
-							if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
-								roles.add(role)
-							}
-						}
-
-						if (roles.isNotEmpty()) {
-							if (roles.size == 1) {
-								event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
-							} else {
-								event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
-							}
-						}
-
 					}
 				}
 			} catch (e: Exception) {

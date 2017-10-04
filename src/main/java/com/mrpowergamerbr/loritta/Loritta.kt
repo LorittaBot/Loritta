@@ -127,6 +127,7 @@ class Loritta {
 	var isMusicOnly: Boolean = false
 	var isWebsiteOnly: Boolean = false
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
+	var lastKeyReset = 0
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
@@ -136,7 +137,7 @@ class Loritta {
 		Loritta.youtube = TemmieYouTube()
 		this.isMusicOnly = isMusicOnly
 		this.isWebsiteOnly = isWebsiteOnly
-		youtubeKeys.addAll(config.youtubeKeys)
+		resetYouTubeKeys()
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -149,12 +150,18 @@ class Loritta {
 		dummyServerConfig = dummy;
 	}
 
+	fun resetYouTubeKeys() {
+		youtubeKeys.clear()
+		youtubeKeys.addAll(config.youtubeKeys)
+		lastKeyReset = Calendar.getInstance()[Calendar.DAY_OF_MONTH]
+	}
+
 	val youtubeKey: String
 		get() {
-			val key = youtubeKeys[0]
-			youtubeKeys.removeAt(0)
-			youtubeKeys.add(key)
-			return key
+			if (Calendar.getInstance()[Calendar.DAY_OF_MONTH] != lastKeyReset) {
+				resetYouTubeKeys()
+			}
+			return youtubeKeys[random.nextInt(youtubeKeys.size)]
 		}
 
 	// Inicia a Loritta
@@ -430,6 +437,8 @@ class Loritta {
 		return true
 	}
 
+	val playlistCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
+
 	fun loadAndPlay(context: CommandContext, trackUrl: String) {
 		loadAndPlay(context, trackUrl, false);
 	}
@@ -442,6 +451,11 @@ class Loritta {
 
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
+
+		if (playlistCache.containsKey(trackUrl)) {
+			playPlaylist(context, musicManager, playlistCache[trackUrl]!!)
+			return
+		}
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
@@ -458,35 +472,8 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
-				if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
-					var track = playlist.selectedTrack
-
-					if (track == null) {
-						track = playlist.tracks[0]
-					}
-
-					channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
-
-					play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
-				} else { // Mas se ela aceita...
-					var ignored = 0;
-					for (track in playlist.tracks) {
-						if (musicConfig.hasMaxSecondRestriction) {
-							if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-								ignored++;
-								continue;
-							}
-						}
-
-						play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
-					}
-
-					if (ignored == 0) {
-						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(playlist.tracks.size)).queue()
-					} else {
-						channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(playlist.tracks.size, ignored)).queue()
-					}
-				}
+				playlistCache[trackUrl] = playlist
+				playPlaylist(context, musicManager, playlist)
 			}
 
 			override fun noMatches() {
@@ -509,9 +496,49 @@ class Loritta {
 		})
 	}
 
+	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist) {
+		val channel = context.event.channel
+		val musicConfig = context.config.musicConfig
+
+		if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
+			var track = playlist.selectedTrack
+
+			if (track == null) {
+				track = playlist.tracks[0]
+			}
+
+			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
+
+			play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
+		} else { // Mas se ela aceita...
+			var ignored = 0;
+			for (track in playlist.tracks) {
+				if (musicConfig.hasMaxSecondRestriction) {
+					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+						ignored++;
+						continue;
+					}
+				}
+
+				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+			}
+
+			if (ignored == 0) {
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(playlist.tracks.size)).queue()
+			} else {
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(playlist.tracks.size, ignored)).queue()
+			}
+		}
+	}
+
 	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
-		val musicConfig = config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild);
+
+		if (playlistCache.contains(trackUrl)) {
+			val playlist = playlistCache[trackUrl]!!
+			loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
+			return
+		}
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
 			override fun trackLoaded(track: AudioTrack) {
@@ -519,6 +546,7 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
+				playlistCache[trackUrl] = playlist
 				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
 			}
 
@@ -537,7 +565,7 @@ class Loritta {
 	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
-		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}! (State: ${guild.audioManager.isConnected}")
+		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}!")
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 

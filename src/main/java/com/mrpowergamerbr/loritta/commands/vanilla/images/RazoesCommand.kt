@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -46,7 +47,7 @@ class RazoesCommand : CommandBase() {
 		var image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
 		var graphics = image.graphics;
-		var skewed = javaxt.io.Image(contextImage);
+		var skewed = LorittaImage(contextImage);
 
 		skewed.resize(202, 202);
 
@@ -89,7 +90,7 @@ class RazoesCommand : CommandBase() {
 
 		// Agora nós vamos colar o avatar em cima do template
 		// Vamos usar o javaxt porque é bem mais fácil
-		var rotatedAvatar = javaxt.io.Image(avatar);
+		var rotatedAvatar = LorittaImage(avatar);
 		rotatedAvatar.resize(109, 109)
 		rotatedAvatar.rotate(5.0)
 		graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)

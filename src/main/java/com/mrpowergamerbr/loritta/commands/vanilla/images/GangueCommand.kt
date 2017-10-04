@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -79,7 +80,7 @@ class GangueCommand : CommandBase() {
 				.makeRoundedCorners(20)
 
 		// Porque nós precisamos rotacionar
-		val rotated = javaxt.io.Image(scaled5)
+		val rotated = LorittaImage(scaled5)
 		rotated.rotate(335.0);
 
 		template.graphics.drawImage(scaled, 216, 80, null);
