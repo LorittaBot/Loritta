@@ -94,7 +94,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (diff > calculatedMessageSpeed * 1000) {
 							var nonRepeatedCharsMessage = event.message.strippedContent.replace(Regex("(.)\\1{1,}"), "$1")
 
-							if (nonRepeatedCharsMessage.length >= 5) {
+							if (nonRepeatedCharsMessage.length >= 12) {
 								var gainedXp = Math.min(35, Loritta.random.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
