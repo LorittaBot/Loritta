@@ -34,7 +34,7 @@ class LimparCommand : CommandBase() {
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MESSAGE_MANAGE)
+		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
 	}
 
 	override fun run(context: CommandContext) {

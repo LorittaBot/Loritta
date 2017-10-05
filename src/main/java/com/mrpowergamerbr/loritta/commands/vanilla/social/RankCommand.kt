@@ -4,15 +4,19 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
+import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class RankCommand : CommandBase() {
@@ -49,11 +53,8 @@ class RankCommand : CommandBase() {
 			global = true
 			val map = mutableMapOf<String, Int>()
 
-			for (document in loritta.mongo.getDatabase("loritta").getCollection("servers").find()) {
-				var config = loritta.ds.get(ServerConfig::class.java, document["_id"])
-				config.userData.forEach {
-					map.put(it.key, it.value.xp + map.getOrDefault(it.key, 0))
-				}
+			for (lorittaProfile in loritta.ds.find(LorittaProfile::class.java)) {
+				map.put(lorittaProfile.userId!!, lorittaProfile.xp)
 			}
 
 			for ((id, xp) in map) {

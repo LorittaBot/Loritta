@@ -92,6 +92,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.DiscriminatorCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.social.EditarXPCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
@@ -206,6 +207,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(DiscriminatorCommand())
 			commandMap.add(RepCommand())
 			commandMap.add(RankCommand())
+			commandMap.add(EditarXPCommand())
 
 			// =======[ UTILS ]=======
 			commandMap.add(TranslateCommand())
