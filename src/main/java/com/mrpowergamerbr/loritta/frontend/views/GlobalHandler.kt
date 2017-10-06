@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
@@ -55,6 +56,7 @@ object GlobalHandler {
 	private fun getViews(): List<AbstractView> {
 		val views = mutableListOf<AbstractView>()
 		views.add(HomeView())
+		views.add(TranslationView())
 		return views
 	}
 }
