@@ -4,7 +4,7 @@ import org.jooby.Request
 import org.jooby.Response
 
 abstract class AbstractView {
-	abstract fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any>): Boolean
+	abstract fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean
 
-	abstract fun render(req: Request, res: Response, variables: MutableMap<String, Any>): String
+	abstract fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String
 }

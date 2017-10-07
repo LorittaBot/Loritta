@@ -509,7 +509,7 @@ class Loritta {
 
 			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
 
-			play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
+			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()))
 		} else { // Mas se ela aceita...
 			var ignored = 0;
 			for (track in playlist.tracks) {
@@ -520,7 +520,7 @@ class Loritta {
 					}
 				}
 
-				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()));
+				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()));
 			}
 
 			if (ignored == 0) {

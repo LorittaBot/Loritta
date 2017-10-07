@@ -7,11 +7,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class TranslationView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any>): Boolean {
+	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
 		return req.path().startsWith("/translation")
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any>): String {
+	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
 		val split = req.path().split("/")
 		var localeId = "default"
 		val defaultLocale = loritta.getLocaleById("default")
