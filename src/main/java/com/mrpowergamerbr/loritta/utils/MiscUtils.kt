@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.io.StringReader
@@ -10,6 +12,13 @@ import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
 object MiscUtils {
+	fun getResponseError(json: JsonObject): String? {
+		if (!json.has("error"))
+			return null
+
+		return json["error"]["errors"][0]["reason"].string
+	}
+
 	fun sendYouTubeVideoMp3(context: CommandContext, videoUrl: String) {
 		if (context.guild.id != "268353819409252352") {
 			return

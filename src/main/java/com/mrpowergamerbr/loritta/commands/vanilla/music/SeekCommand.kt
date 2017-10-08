@@ -42,9 +42,9 @@ class SeekCommand : CommandBase() {
 
 			var timeSplit = arg.split(":")
 
-			if (timeSplit.isNotEmpty()) {
+			if (timeSplit.size == 2) {
 				var min = timeSplit[0].toIntOrNull()
-				var sec = timeSplit[0].toIntOrNull()
+				var sec = timeSplit[1].toIntOrNull()
 
 				if (min != null && sec != null) {
 					val time = (min * 60000L) + (sec * 1000L)

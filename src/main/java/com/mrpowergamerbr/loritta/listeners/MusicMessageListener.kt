@@ -3,19 +3,14 @@ package com.mrpowergamerbr.loritta.listeners
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.f
-import com.mrpowergamerbr.loritta.utils.save
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import javax.imageio.ImageIO
+import kotlin.concurrent.thread
 
 class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -69,6 +64,29 @@ class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 				exception.printStackTrace()
 				LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
 			}
+		}
+	}
+
+	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		thread {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+
+			if (!config.musicConfig.isEnabled)
+				return@thread
+
+			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+				return@thread
+
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId)
+
+			if (2 > voiceChannel.members.size)
+				return@thread
+
+			val mm = loritta.getGuildAudioPlayer(event.guild)
+			if (mm.player.playingTrack != null)
+				return@thread
+			
+			LorittaUtils.startRandomSong(event.guild)
 		}
 	}
 }

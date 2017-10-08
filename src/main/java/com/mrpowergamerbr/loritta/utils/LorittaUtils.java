@@ -527,7 +527,11 @@ public class LorittaUtils {
 		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
 			if (mm.player.getPlayingTrack() == null) {
 				Thread x = new Thread(() -> {
-					startRandomSong(mm.scheduler.getGuild());
+					try {
+						startRandomSong(mm.scheduler.getGuild());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				});
 				x.start();
 			}
@@ -542,6 +546,9 @@ public class LorittaUtils {
 		}
 
 		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
+
+		if (conf.musicConfig.getMusicGuildId().isEmpty())
+			return;
 
 		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.musicConfig.getMusicGuildId());
 

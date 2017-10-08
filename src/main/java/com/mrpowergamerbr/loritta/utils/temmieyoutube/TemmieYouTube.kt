@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.temmieyoutube
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.lang3.StringUtils
 import java.io.UnsupportedEncodingException
@@ -15,13 +18,27 @@ class TemmieYouTube() {
 	 * @return O resultado da pesquisa
 	 */
 	fun searchOnYouTube(searchQuery: String): SearchResponse {
+		val key = loritta.youtubeKey
 		val params = HashMap<String, Any>()
 		params.put("part", "snippet")
 		params.put("q", searchQuery)
-		params.put("key", loritta.youtubeKey)
+		params.put("key", key)
 		val req = HttpRequest.get("https://www.googleapis.com/youtube/v3/search?" + buildQuery(params))
 
 		val body = req.body()
+
+		var searchJson = jsonParser.parse(body).obj
+		val responseError = MiscUtils.getResponseError(searchJson)
+		val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
+
+		if (error) {
+			loritta.youtubeKeys.remove(key)
+			if (loritta.youtubeKeys.isNotEmpty()) {
+				return searchOnYouTube(searchQuery)
+			} else {
+				return null!!
+			}
+		}
 
 		return Loritta.gson.fromJson(body, SearchResponse::class.java)
 	}
