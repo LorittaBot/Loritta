@@ -8,10 +8,15 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
+import java.lang.management.ManagementFactory
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object GlobalHandler {
 	fun render(req: Request, res: Response): String {
@@ -50,6 +55,34 @@ object GlobalHandler {
 		for (locale in lorittaLocale.strings) {
 			variables[locale.key] = locale.value
 		}
+
+		val guilds = lorittaShards.getGuilds()
+		variables["guilds"] = guilds
+		variables["userCount"] = lorittaShards.getUsers().size
+		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
+		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
+		variables["serversFanClub"] = loritta.serversFanClub.sortedByDescending { it.guild.members.size }
+
+		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
+
+		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
+		jvmUpTime -= TimeUnit.DAYS.toMillis(days)
+		val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
+		jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
+		val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
+		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
+		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
+
+		variables["uptimeDays"] = days
+		variables["uptimeHours"] = hours
+		variables["uptimeMinutes"] = minutes
+		variables["uptimeSeconds"] = seconds
+
+		val famousGuilds = guilds.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }.subList(0, 36)
+
+		variables["famousGuilds"] = famousGuilds
+		Collections.shuffle(famousGuilds)
+		variables["randomFamousGuilds"] = famousGuilds
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.gson.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())

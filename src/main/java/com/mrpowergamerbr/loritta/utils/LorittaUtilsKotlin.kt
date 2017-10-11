@@ -502,9 +502,11 @@ object LorittaUtilsKotlin {
 
 	val commandQueue = mutableListOf<String>()
 	var lastUpdate = System.currentTimeMillis()
+	var executedCommands = 0;
 
 	@JvmStatic
 	fun trackCommands(message: Message) {
+		executedCommands++
 		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336932935838203904")
 

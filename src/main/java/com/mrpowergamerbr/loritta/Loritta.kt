@@ -211,18 +211,15 @@ class Loritta {
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
-		if (isWebsiteOnly) {
-			val website = thread(true, name = "Website Thread") {
-				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
-			}
-			ShardReviverThread().start()
-			return
-		}
-
 		if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
 			val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
 			Thread(website, "Website Thread").start()
+
+			val betaWebsite = thread(true, name = "Website Thread") {
+				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite("https://beta.loritta.website/", "/home/servers/loritta/frontend_v2/") })
+			}
+
 			println("Sucesso! Iniciando threads da Loritta...")
 
 			AminoRepostThread().start() // Iniciar Amino Repost Thread

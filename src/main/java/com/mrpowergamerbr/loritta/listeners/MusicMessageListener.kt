@@ -77,7 +77,7 @@ class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
 				return@thread
 
-			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId)
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
 
 			if (2 > voiceChannel.members.size)
 				return@thread
@@ -85,7 +85,7 @@ class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val mm = loritta.getGuildAudioPlayer(event.guild)
 			if (mm.player.playingTrack != null)
 				return@thread
-			
+
 			LorittaUtils.startRandomSong(event.guild)
 		}
 	}

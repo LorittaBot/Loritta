@@ -1,12 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -15,7 +13,6 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
-import java.io.File
 import java.util.stream.Collectors
 
 class AjudaCommand : CommandBase() {
@@ -74,9 +71,9 @@ class AjudaCommand : CommandBase() {
 			additionalInfoEmbed.setTitle("Informações Adicionais", null)
 					.setColor(Color(0, 193, 223))
 			additionalInfoEmbed.setDescription("[Todos os comandos da Loritta](https://loritta.website/comandos)\n"
-					+ "[Discord da nossa querida Loritta](https://discord.gg/3rXgN8x)\n"
+					+ "[Discord da nossa querida Loritta](https://discord.gg/V7Kbh4z)\n"
 					+ "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
-					+ "[Amou o Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/doar)\n"
+					+ "[Amou a Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/doar)\n"
 					+ "[Website do MrPowerGamerBR](https://mrpowergamerbr.com/)")
 
 			if (adminCmds != null) {

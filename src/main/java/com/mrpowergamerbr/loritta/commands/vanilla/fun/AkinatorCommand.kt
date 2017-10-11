@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
@@ -31,6 +32,10 @@ class AkinatorCommand : CommandBase() {
 
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN
+	}
+
+	override fun getBotPermissions(): List<Permission> {
+		return listOf(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_MANAGE)
 	}
 
 	override fun run(context: CommandContext) {

@@ -10,13 +10,12 @@ import org.jooby.mongodb.Mongodb
 import java.io.File
 import java.io.StringWriter
 
-class LorittaWebsite(val websiteUrl: String, val frontendFolder: String) : Kooby({
+class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(4860) // Porta do website
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
 	assets("/**", File(frontendFolder, "static/").toPath())
 	get("/**", { req, res ->
-		println(req.path())
 		res.send(GlobalHandler.render(req, res))
 	})
 	post("/**", { req, res ->

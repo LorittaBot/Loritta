@@ -25,6 +25,8 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.awt.Color
@@ -44,6 +46,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 			thread {
 				try {
+					if (event.guild.id == "297732013006389252") {
+						if (event.textChannel.id == "367359479877992449") {
+							event.message.delete().complete()
+							return@thread
+						}
+					}
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
@@ -185,24 +193,44 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} // Ignorar reactions de bots
 
 		if (loritta.messageContextCache.containsKey(e.messageId)) {
-			try {
-				val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
-				val t = object : Thread() {
-					override fun run() {
+			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
+			val t = object : Thread() {
+				override fun run() {
+					try {
 						val msg = e.channel.getMessageById(e.messageId).complete()
 						if (msg != null) {
 							context.cmd.onCommandReactionFeedback(context, e, msg)
 						}
+					} catch (exception: Exception) {
+						exception.printStackTrace()
+						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
 					}
 				}
-				t.start()
-			} catch (exception: Exception) {
-				exception.printStackTrace()
-				LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
 			}
+			t.start()
 		}
 
 		thread {
+			// TODO: Isto deveria ser feito usando a API da Loritta
+			if (e.guild.id == "297732013006389252") {
+				if (e.textChannel.id == "367359479877992449") {
+					var role: Role? = null
+					if (e.reactionEmote.name == "\uD83C\uDDE7\uD83C\uDDF7") {
+						role = e.guild.getRoleById("367359104320012288")
+					} else if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
+						role = e.guild.getRoleById("367359247891038209")
+					}
+
+					if (role != null) {
+						if (e is MessageReactionAddEvent) {
+							e.guild.controller.addSingleRoleToMember(e.member, role).complete()
+						} else if (e is MessageReactionRemoveEvent) {
+							e.guild.controller.removeSingleRoleFromMember(e.member, role).complete()
+						}
+					}
+				}
+			}
+
 			try {
 				val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
 				val guild = e.guild
@@ -311,7 +339,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			event.guild.members.forEach {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
-					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/3rXgN8x", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
+					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
 
 					it.user.openPrivateChannel().queue({
 						it.sendMessage(message).queue()
