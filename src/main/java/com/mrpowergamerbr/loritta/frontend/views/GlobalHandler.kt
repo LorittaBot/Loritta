@@ -5,8 +5,14 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAutoroleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureEventLogView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureInviteBlockerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigurePermissionsView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureServerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -23,6 +29,8 @@ object GlobalHandler {
 		val views = getViews()
 
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
+
+		variables["epochMillis"] = System.currentTimeMillis()
 
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
 
@@ -62,6 +70,7 @@ object GlobalHandler {
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
 		variables["serversFanClub"] = loritta.serversFanClub.sortedByDescending { it.guild.members.size }
+		variables["clientId"] = Loritta.config.clientId
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
@@ -97,6 +106,7 @@ object GlobalHandler {
 		views.filter { it.handleRender(req, res, variables) }
 			.forEach { return it.render(req, res, variables) }
 
+		res.status(404)
 		return "404"
 	}
 
@@ -105,6 +115,12 @@ object GlobalHandler {
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
+		views.add(ConfigureServerView())
+		views.add(ConfigureEventLogView())
+		views.add(ConfigureInviteBlockerView())
+		views.add(ConfigureAutoroleView())
+		views.add(ConfigurePermissionsView())
+		views.add(PatreonCallbackView())
 		return views
 	}
 }

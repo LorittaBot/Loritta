@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite.Companion.WEBSITE_URL
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
+import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Kooby
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
@@ -26,6 +27,24 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var engine: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
+
+		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
+			val isAdministrator = g.permissions shr 3 and 1 == 1
+			val isManager = g.permissions shr 5 and 1 == 1
+			return g.owner || isAdministrator || isManager
+		}
+
+		fun getUserPermissionLevel(g: TemmieDiscordAuth.DiscordGuild): UserPermissionLevel {
+			val isAdministrator = g.permissions shr 3 and 1 == 1
+			val isManager = g.permissions shr 5 and 1 == 1
+
+			return when {
+				g.owner -> UserPermissionLevel.OWNER
+				isAdministrator -> UserPermissionLevel.ADMINISTRATOR
+				isManager -> UserPermissionLevel.MANAGER
+				else -> UserPermissionLevel.MEMBER
+			}
+		}
 	}
 
 	init {
@@ -35,6 +54,10 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val fl = FileLoader()
 		fl.prefix = frontendFolder
 		LorittaWebsite.engine = PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build()
+	}
+
+	enum class UserPermissionLevel {
+		OWNER, ADMINISTRATOR, MANAGER, MEMBER
 	}
 }
 

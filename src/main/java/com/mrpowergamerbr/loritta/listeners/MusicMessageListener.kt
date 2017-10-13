@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.listeners
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import net.dv8tion.jda.core.entities.ChannelType
@@ -26,11 +27,12 @@ class MusicMessageListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val locale = loritta.getLocaleById(serverConfig.localeId)
+					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
-							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
+							if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
 								return@execute
 							}
 						}

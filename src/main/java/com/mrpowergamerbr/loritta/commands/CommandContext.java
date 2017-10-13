@@ -35,14 +35,8 @@ public class CommandContext {
 	public HashMap<String, Object> metadata = new HashMap<>();
 	public BaseLocale locale = LorittaLauncher.loritta.getLocales().get("default");
 
-	public CommandContext(ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
-		if (conf == LorittaLauncher.getInstance().dummyServerConfig) { // Se é um dummy server config, então crie um LorittaUser
-			this.lorittaUser = new LorittaUser(event.getAuthor(), conf,
-					LorittaLauncher.getInstance().getLorittaProfileForUser(event.getAuthor().getId()));
-		} else { // Mas caso NÃO seja, então crie um GuildLorittaUser
-			this.lorittaUser = new GuildLorittaUser(event.getMember(), conf,
-					LorittaLauncher.getInstance().getLorittaProfileForUser(event.getAuthor().getId()));
-		}
+	public CommandContext(ServerConfig conf, LorittaUser profile, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
+		this.lorittaUser = profile;
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;

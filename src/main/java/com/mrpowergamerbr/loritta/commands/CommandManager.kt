@@ -78,6 +78,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.LanguageCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PatreonCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand
@@ -199,6 +200,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(SayCommand())
 			commandMap.add(EscolherCommand())
 			commandMap.add(LanguageCommand())
+			commandMap.add(PatreonCommand())
 
 			// =======[ SOCIAL ]======
 			commandMap.add(PerfilCommand())

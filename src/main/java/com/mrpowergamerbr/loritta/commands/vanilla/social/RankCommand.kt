@@ -130,7 +130,7 @@ class RankCommand : CommandBase() {
 			if (member != null) {
 				val userProfile = loritta.getLorittaProfileForUser(id)
 				val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
-				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
+				val imageUrl = if (file.exists()) "https://loritta.website/assets/img/backgrounds/" + userProfile.userId + ".png?time=" + System.currentTimeMillis() else "https://loritta.website/assets/img/backgrounds/default_background.png";
 
 				val rankBackground = LorittaUtils.downloadImage(imageUrl)
 				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)

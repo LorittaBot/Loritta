@@ -2,9 +2,9 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.f
@@ -127,7 +127,7 @@ open abstract class CommandBase {
 		return false
 	}
 
-	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, profile: LorittaProfile): Boolean {
+	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		if (conf.blacklistedChannels.contains(ev.channel.id))
 			return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 		val message = ev.message.content
@@ -226,12 +226,12 @@ open abstract class CommandBase {
 					rawArgs = rawArgs.remove(0)
 					strippedArgs = strippedArgs.remove(0)
 				}
-				val context = CommandContext(conf, ev, this, args, rawArgs, strippedArgs)
+				val context = CommandContext(conf, lorittaUser, ev, this, args, rawArgs, strippedArgs)
 				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					explain(context)
 					return true
 				}
-				if (LorittaUtils.handleIfBanned(context, profile)) {
+				if (LorittaUtils.handleIfBanned(context, lorittaUser.profile)) {
 					return true
 				}
 				if (!context.canUseCommand()) {

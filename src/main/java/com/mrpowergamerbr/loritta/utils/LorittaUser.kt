@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
@@ -19,6 +20,10 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Lo
         return if (config.mentionOnCommandOutput) user.asMention + (if (addSpace) " " else "") else ""
     }
 
+    open fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
+        return false
+    }
+
     /**
      * Verifica se o usuário tem permissão para utilizar um comando
      */
@@ -31,6 +36,19 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Lo
  * Um usuário que está comunicando com a Loritta em canais de texto
  */
 class GuildLorittaUser(val member: Member, config: ServerConfig, profile: LorittaProfile) : LorittaUser(member.user, config, profile) {
+
+    override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
+        val roles = member.roles.toMutableList()
+
+        val everyone = member.guild.roles.firstOrNull { it.isPublicRole }
+        if (everyone != null) {
+            roles.add(everyone)
+        }
+
+		return roles
+				.map { config.permissionsConfig.roles.getOrDefault(it.id, PermissionsConfig.PermissionRole()) }
+				.any { it.permissions.contains(lorittaPermission) }
+    }
 
     /**
      * Verifica se o usuário tem permissão para utilizar um comando

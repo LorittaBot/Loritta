@@ -32,4 +32,8 @@ class TemmieBitly(internal var apiKey: String, internal var login: String) {
 
 		return body
 	}
+
+	fun expand(shortUrl: String): String? {
+		return HttpRequest.get(String.format("https://api-ssl.bitly.com/v3/expand?format=txt&apiKey=%s&login=%s&shortUrl=%s", apiKey, login, URLEncoder.encode(shortUrl, "UTF-8"))).body()
+	}
 }

@@ -21,6 +21,10 @@ data class LorittaConfig(
 	val facebookToken: String,
 	val googleVisionKey: String,
 	val simsimiKey: String,
+	val patreonClientId: String,
+	val patreonClientSecret: String,
+	val patreonAccessToken: String,
+	val patreonRefreshToken: String,
 	val currentlyPlaying: List<String>) {
 	constructor() : this(2,
 			"Token do Bot",
@@ -42,5 +46,9 @@ data class LorittaConfig(
 			"Token da API do Facebook",
 			"Key do Google Vision",
 			"Key do Simsimi",
+			"Client ID do Patreon",
+			"Client Secret do Patreon",
+			"Access Token do Patreon",
+			"Refresh Token do Patreon",
 			listOf("Shantae: Half-Genie Hero"))
 }

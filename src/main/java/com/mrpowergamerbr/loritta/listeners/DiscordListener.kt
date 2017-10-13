@@ -5,6 +5,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
@@ -46,12 +49,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 			thread {
 				try {
-					if (event.guild.id == "297732013006389252") {
-						if (event.textChannel.id == "367359479877992449") {
-							event.message.delete().complete()
-							return@thread
-						}
-					}
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
@@ -77,15 +74,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						event.textChannel.sendMessage(locale.MENTION_RESPONSE.f(event.message.author.asMention, serverConfig.commandPrefix)).complete()
 					}
 
-					event.member.roles.forEach {
-						if (it.name.equals("Inimigo da Loritta", ignoreCase = true)) {
-							return@thread
-						}
-					}
+					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {
-						InviteLinkUtils.checkForInviteLinks(event, serverConfig.inviteBlockerConfig)
+						InviteLinkUtils.checkForInviteLinks(event, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
 					}
 
 					// ===[ CÁLCULO DE XP ]===
@@ -138,10 +131,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						eventHandler.handleMessageReceived(event)
 					}
 
+					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
+						return@thread
+
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.forEach { cmd ->
 						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
-							if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
+							if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
 								return@thread
 							}
 						}
@@ -149,7 +145,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
-						if (cmd.handle(event, serverConfig, locale, lorittaProfile)) {
+						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
 							return@thread
 						}
 					}
@@ -172,6 +168,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			thread {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
+				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 				if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
 					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
 					return@thread
@@ -179,7 +176,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
-					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), profile)) {
+					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
 						return@thread
 					}
 				}
@@ -323,11 +320,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildJoin(event: GuildJoinEvent) {
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
 		val region = event.guild.region
-		val regionName = region.name
+		val regionName = region.getName()
 		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 
 		// Portuguese
-		if (regionName.equals("Brazil")) {
+		if (regionName.startsWith("Brazil")) {
 			serverConfig.localeId = "default"
 		} else {
 			serverConfig.localeId = "en-us"

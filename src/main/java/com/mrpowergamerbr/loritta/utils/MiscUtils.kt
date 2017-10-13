@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import java.io.StringReader
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
@@ -20,9 +21,6 @@ object MiscUtils {
 	}
 
 	fun sendYouTubeVideoMp3(context: CommandContext, videoUrl: String) {
-		if (context.guild.id != "268353819409252352") {
-			return
-		}
 		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
 
 		var link = videoUrl
@@ -47,6 +45,7 @@ object MiscUtils {
 				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
 				.body()
 				.replace(callbackId, "")
+
 		checkResponse = checkResponse.removePrefix("(").removeSuffix(")");
 
 		val reader = StringReader(checkResponse)
@@ -135,11 +134,17 @@ object MiscUtils {
 
 	fun getInviteId(url: String): String? {
 		try {
-			val httpRequest = HttpRequest.get(url)
+			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
+			var newUrl = url
+			val bitlyUrl = temmie.expand(url)
+			if (!bitlyUrl!!.contains("NOT_FOUND")) {
+				newUrl = bitlyUrl!!
+			}
+			val httpRequest = HttpRequest.get(newUrl)
 					.followRedirects(true)
 					.connectTimeout(2500)
 					.readTimeout(2500)
-					.userAgent(Constants.USER_AGENT)
+					.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
 			httpRequest.ok()
 			val url = httpRequest.url().toString()
 			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com)/(invite/)?([A-z0-9]+).*").matcher(url)
