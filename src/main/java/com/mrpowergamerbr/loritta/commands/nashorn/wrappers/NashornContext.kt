@@ -4,12 +4,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-
-import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import javax.imageio.ImageIO
 
 /**
  * Contexto do comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que
@@ -190,6 +189,6 @@ reply("Você está na guild " + guild.getName() + "! 😎");
 """
 	)
 	fun getGuild(): NashornGuild {
-		return NashornGuild(context, context.message.guild)
+		return NashornGuild(context.message.guild)
 	}
 }

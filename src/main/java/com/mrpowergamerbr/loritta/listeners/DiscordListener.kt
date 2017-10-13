@@ -12,27 +12,25 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
-import com.mrpowergamerbr.loritta.utils.humanize
-import com.mrpowergamerbr.loritta.utils.modules.InviteLinkUtils
+import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
+import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
+import com.mrpowergamerbr.loritta.utils.modules.StarboardModule
+import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.utils.save
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import java.awt.Color
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
@@ -78,7 +76,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {
-						InviteLinkUtils.checkForInviteLinks(event, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
+						InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
 					}
 
 					// ===[ CÁLCULO DE XP ]===
@@ -184,6 +182,28 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
+	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+		if (event.author.isBot) {
+			return
+		}
+
+		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
+			if (event.message.textChannel.isNSFW) { // lol nope, I'm outta here
+				return
+			}
+			thread {
+				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
+				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
+
+				// ===[ VERIFICAR INVITE LINKS ]===
+				if (serverConfig.inviteBlockerConfig.isEnabled) {
+					InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
+				}
+			}
+		}
+	}
+
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		if (e.user.isBot) {
 			return
@@ -229,78 +249,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			try {
-				val conf = LorittaLauncher.getInstance().getServerConfigForGuild(e.guild.id)
-				val guild = e.guild
+				val conf = loritta.getServerConfigForGuild(e.guild.id)
+
 				// Sistema de Starboard
 				if (conf.starboardConfig.isEnabled) {
-					if (e.reactionEmote.name == "⭐") {
-						val msg = e.textChannel.getMessageById(e.messageId).complete()
-						if (msg != null) {
-							val textChannel = guild.getTextChannelById(conf.starboardConfig.starboardId)
-
-							if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
-								var starboardMessageId = conf.starboardEmbeds[e.messageId]
-								var starboardMessage: Message? = null
-								if (starboardMessageId != null) {
-									starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
-								}
-
-								val embed = EmbedBuilder()
-								val count = e.reaction.users.complete().size
-								var content = msg.rawContent
-								embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
-								embed.setFooter(msg.creationTime.humanize(), null)
-								embed.setColor(Color(255, 255, 200 - (count * 20)))
-
-								var emoji = "⭐"
-
-								if (count >= 5) {
-									emoji = "\uD83C\uDF1F"
-								}
-								if (count >= 10) {
-									emoji = "\uD83C\uDF20"
-								}
-								if (count >= 15) {
-									emoji = "\uD83D\uDCAB"
-								}
-								if (count >= 20) {
-									emoji = "\uD83C\uDF0C"
-								}
-
-								var hasImage = false
-								if (msg.attachments.isNotEmpty()) { // Se tem attachments...
-									content += "\n**Arquivos:**\n"
-									for (attach in msg.attachments) {
-										if (attach.isImage && !hasImage) { // Se é uma imagem...
-											embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
-											hasImage = true
-										}
-										content += attach.url + "\n"
-									}
-								}
-
-								embed.setDescription(content)
-
-								val starCountMessage = MessageBuilder()
-								starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
-								starCountMessage.setEmbed(embed.build())
-
-								if (starboardMessage != null) {
-									if (1 > count) { // Remover embed já que o número de stars é menos que 0
-										starboardMessage.delete().complete()
-										conf.starboardEmbeds.remove(msg.id)
-										LorittaLauncher.loritta.ds.save(conf)
-										return@thread
-									}
-									starboardMessage.editMessage(starCountMessage.build()).complete()
-								} else {
-									starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
-								}
-								conf.starboardEmbeds.put(msg.id, starboardMessage?.id)
-								LorittaLauncher.loritta.ds.save(conf)
-							}
-						}
-					}
+					StarboardModule.handleStarboardReaction(e, conf)
 				}
 			} catch (exception: Exception) {
 				exception.printStackTrace()
@@ -351,56 +304,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
+				for (eventHandler in conf.nashornEventHandlers) {
+					eventHandler.handleMemberJoin(event)
+				}
+
 				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					val rolesId = conf.autoroleConfig.roles // Então vamos pegar todos os IDs...
-
-					val roles = mutableListOf<Role>()
-
-					rolesId.forEach { // E pegar a role dependendo do ID!
-						val role = event.guild.getRoleById(it)
-
-						if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
-							roles.add(role)
-						}
-					}
-
-					if (roles.isNotEmpty()) {
-						if (roles.size == 1) {
-							event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
-						} else {
-							event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
-						}
-					}
+					AutoroleModule.giveRoles(event, conf.autoroleConfig)
 				}
 
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
-					if (conf.joinLeaveConfig.tellOnJoin && conf.joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
-						val guild = event.guild
-
-						val textChannel = guild.getTextChannelById(conf.joinLeaveConfig.canalJoinId)
-
-						if (textChannel != null) {
-							if (textChannel.canTalk()) {
-								val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinMessage, event)
-								textChannel.sendMessage(msg.substringIfNeeded()).complete()
-							} else {
-								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)
-							}
-						}
-					}
-
-					if (conf.joinLeaveConfig.tellOnPrivate && conf.joinLeaveConfig.joinPrivateMessage.isNotEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
-						if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
-							val msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.joinPrivateMessage, event)
-							try {
-								event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
-							} catch (e: ErrorResponseException) {
-								if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
-									throw e
-								}
-							}
-						}
-					}
+					WelcomeModule.handleJoin(event, conf)
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()
@@ -418,34 +331,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
+				for (eventHandler in conf.nashornEventHandlers) {
+					eventHandler.handleMemberLeave(event)
+				}
+
 				if (conf.joinLeaveConfig.isEnabled) {
-					if (conf.joinLeaveConfig.tellOnLeave && conf.joinLeaveConfig.leaveMessage.isNotEmpty()) {
-						val guild = event.guild
-
-						val textChannel = guild.getTextChannelById(conf.joinLeaveConfig.canalLeaveId)
-
-						if (textChannel != null) {
-							if (textChannel.canTalk()) {
-								var msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.leaveMessage, event)
-
-								// Para a mensagem de ban nós precisamos ter a permissão de banir membros
-								if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-									val banList = guild.bans.complete()
-									if (banList.contains(event.user)) {
-										if (!conf.joinLeaveConfig.tellOnBan)
-											return@execute
-
-										if (conf.joinLeaveConfig.banMessage.isNotEmpty()) {
-											msg = LorittaUtils.replaceTokens(conf.joinLeaveConfig.banMessage, event)
-										}
-									}
-								}
-								textChannel.sendMessage(msg.substringIfNeeded()).complete()
-							} else {
-								LorittaUtils.warnOwnerNoPermission(guild, textChannel, conf)
-							}
-						}
-					}
+					WelcomeModule.handleLeave(event, conf)
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()

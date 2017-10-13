@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
@@ -500,7 +501,7 @@ object LorittaUtilsKotlin {
 		textChannel.sendMessage(messageBuilder.build()).queue()
 	}
 
-	val commandQueue = mutableListOf<String>()
+	val commandQueue = ConcurrentLinkedQueue<String>()
 	var lastUpdate = System.currentTimeMillis()
 	var executedCommands = 0;
 

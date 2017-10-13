@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.Guild
@@ -10,7 +10,13 @@ import net.dv8tion.jda.core.entities.Guild
 /**
  * Wrapper para a Guild, usado para imagens de comandos Nashorn
  */
-class NashornGuild(private val context: CommandContext, private val guild: Guild) {
+class NashornGuild(private val guild: Guild) {
+	private val serverConfig: ServerConfig
+
+	init {
+		serverConfig = loritta.getServerConfigForGuild(guild.id)
+	}
+
 	@NashornCommand.NashornDocs()
 	fun getName(): String {
 		return guild.name
@@ -32,7 +38,7 @@ class NashornGuild(private val context: CommandContext, private val guild: Guild
 		val members = mutableListOf<NashornLorittaUser>()
 
 		guild.members.forEach {
-			members.add(NashornLorittaUser(it, context.config.userData.getOrDefault(it.user.id, LorittaServerUserData())))
+			members.add(NashornLorittaUser(it, serverConfig.userData.getOrDefault(it.user.id, LorittaServerUserData())))
 		}
 
 		return members
@@ -56,13 +62,13 @@ class NashornGuild(private val context: CommandContext, private val guild: Guild
 
 	@NashornCommand.NashornDocs()
 	fun getMemberById(id: String): NashornLorittaUser {
-		return NashornLorittaUser(guild.getMemberById(id), context.config.userData.getOrDefault(id, LorittaServerUserData()));
+		return NashornLorittaUser(guild.getMemberById(id), serverConfig.userData.getOrDefault(id, LorittaServerUserData()));
 	}
 
 	@NashornCommand.NashornDocs()
 	fun play(url: String) {
-		if (context.config.musicConfig.isEnabled) {
-			loritta.loadAndPlay(context, url)
+		if (serverConfig.musicConfig.isEnabled) {
+			loritta.loadAndPlayNoFeedback(guild, serverConfig, url)
 		}
 	}
 

@@ -2,14 +2,17 @@ package com.mrpowergamerbr.loritta.listeners.nashorn
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornGuild
+import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMember
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMessage
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornTextChannel
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornUser
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import org.bson.types.ObjectId
 import java.time.LocalDateTime
-import java.util.ArrayList
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +38,20 @@ class NashornEventHandler {
 		run("onMessageReceived", NashornMessageReceivedEvent(event))
 	}
 
+	fun handleMemberJoin(event: GuildMemberJoinEvent) {
+		if (!javaScript.contains("onMemberJoin"))
+			return
+
+		run("onMemberJoin", NashornMemberJoinEvent(event))
+	}
+
+	fun handleMemberLeave(event: GuildMemberLeaveEvent) {
+		if (!javaScript.contains("onMemberLeave"))
+			return
+
+		run("onMemberLeave", NashornMemberLeaveEvent(event))
+	}
+
 	fun run(call: String, vararg objects: Any) {
 		val factory = NashornScriptEngineFactory()
 
@@ -51,6 +68,14 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 	}
 
 	class NashornMessageReceivedEvent(private val event: MessageReceivedEvent) {
+		fun getGuild(): NashornGuild {
+			return NashornGuild(event.guild)
+		}
+
+		fun getMember(): NashornMember {
+			return NashornMember(event.member)
+		}
+
 		fun getMessage(): NashornMessage {
 			return NashornMessage(event.message)
 		}
@@ -65,6 +90,26 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 
 		fun getMessageId(): String {
 			return event.messageId
+		}
+	}
+
+	class NashornMemberJoinEvent(private val event: GuildMemberJoinEvent) {
+		fun getMember(): NashornMember {
+			return NashornMember(event.member)
+		}
+
+		fun getGuild(): NashornGuild {
+			return NashornGuild(event.guild)
+		}
+	}
+
+	class NashornMemberLeaveEvent(private val event: GuildMemberLeaveEvent) {
+		fun getMember(): NashornMember {
+			return NashornMember(event.member)
+		}
+
+		fun getGuild(): NashornGuild {
+			return NashornGuild(event.guild)
 		}
 	}
 }
