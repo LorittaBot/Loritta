@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.MessageBuilder
@@ -16,8 +17,6 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -80,14 +79,7 @@ class TristeRealidadeCommand : CommandBase() {
 		while (6 > aux) {
 			val member = users[0]
 
-			val imageUrl = URL(member.effectiveAvatarUrl)
-			val connection = imageUrl.openConnection() as HttpURLConnection
-			connection.setRequestProperty(
-					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-			val avatar = ImageIO.read(connection.inputStream)
-
-			val avatarImg = avatar.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl).getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 			baseGraph.drawImage(avatarImg, x, y, null)
 
 			if (!cmdOpti.hideDiscordTags) {

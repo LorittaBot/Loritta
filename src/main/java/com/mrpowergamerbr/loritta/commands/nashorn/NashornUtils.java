@@ -2,13 +2,12 @@ package com.mrpowergamerbr.loritta.commands.nashorn;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornImage;
+import com.mrpowergamerbr.loritta.utils.Constants;
+import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Classe de utilidades para comandos usando o Nashorn
@@ -19,16 +18,11 @@ public class NashornUtils {
 	}
 
 	public static String getURL(String url) {
-		return HttpRequest.get(url).userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0").body();
+		return HttpRequest.get(url).userAgent(Constants.USER_AGENT).body();
 	}
 
 	public static NashornImage downloadImage(String url) throws IOException {
-		URL imageUrl = new URL(url);
-		HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-		connection.setRequestProperty(
-				"User-Agent",
-				"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
-		BufferedImage image = ImageIO.read(connection.getInputStream());
+		BufferedImage image = LorittaUtils.downloadImage(url);
 		NashornImage nashornImage = new NashornImage(image);
 		return nashornImage;
 	}

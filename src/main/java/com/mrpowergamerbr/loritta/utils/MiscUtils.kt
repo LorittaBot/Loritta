@@ -42,7 +42,7 @@ object MiscUtils {
 
 		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1506530165795")
 				.referer("https://ytmp3.cc/")
-				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+				.userAgent(Constants.USER_AGENT)
 				.body()
 				.replace(callbackId, "")
 
@@ -66,7 +66,7 @@ object MiscUtils {
 		val fixedRateTimer = fixedRateTimer(name = "YTMP3 Progress Check Thread",
 				initialDelay = 0, period = 1000) {
 			var progressResponse = HttpRequest.get("https://d.ymcdn.cc/progress.php?callback=$callbackId&id=$hash&_=1498315402819")
-					.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+					.userAgent(Constants.USER_AGENT)
 					.body()
 					.replace(callbackId, "")
 			progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
@@ -144,7 +144,7 @@ object MiscUtils {
 					.followRedirects(true)
 					.connectTimeout(2500)
 					.readTimeout(2500)
-					.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+					.userAgent(Constants.USER_AGENT)
 			httpRequest.ok()
 			val url = httpRequest.url().toString()
 			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com)/(invite/)?([A-z0-9]+).*").matcher(url)

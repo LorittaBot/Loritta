@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
@@ -217,7 +218,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				for (attachmentUrl in attachments) {
 					val url = URL(attachmentUrl)
 					val conn = url.openConnection()
-					conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
+					conn.setRequestProperty("User-Agent", Constants.USER_AGENT)
 					val content = conn.getInputStream().use { it.readBytes() }
 					val split = attachmentUrl.split("/")
 					val pomfUrl = PomfUtils.uploadFile(content, split.last())

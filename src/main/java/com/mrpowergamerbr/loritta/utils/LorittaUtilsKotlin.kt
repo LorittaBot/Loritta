@@ -362,7 +362,7 @@ object LorittaUtilsKotlin {
 				val rssFeed = HttpRequest.get(feedUrl)
 						.header("Cache-Control", "max-age=0, no-cache") // Nunca pegar o cache
 						.useCaches(false) // Também não usar cache
-						.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
+						.userAgent(Constants.USER_AGENT)
 						.body();
 
 				// Parsear a nossa RSS feed

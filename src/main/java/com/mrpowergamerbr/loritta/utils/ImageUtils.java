@@ -38,9 +38,7 @@ public class ImageUtils {
 			        // Talvez seja um emoji!
                     URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
                     HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-                    connection.setRequestProperty(
-                            "User-Agent",
-                            "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+                    connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
                     BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
                     graphics.drawImage(emoteImage.getScaledInstance(graphics.getFont().getSize(), graphics.getFont().getSize(), BufferedImage.SCALE_SMOOTH), currentX, currentY - graphics.getFont().getSize() + 1, null);
                     currentX = currentX + fontMetrics.getMaxAdvance();
@@ -74,12 +72,7 @@ public class ImageUtils {
             } else {
                     try {
                         // Talvez seja um emoji!
-                        URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
-                        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-                        connection.setRequestProperty(
-                                "User-Agent",
-                                "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
-                        BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
+                        BufferedImage emoteImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
                         graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
                         currentX = currentX + width;
                         continue;

@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.net.UnknownHostException
@@ -37,7 +38,7 @@ class IsUpCommand : CommandBase() {
 
 			try {
 				var response = HttpRequest.get(url)
-						.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
+						.userAgent(Constants.USER_AGENT)
 						.connectTimeout(5000)
 						.readTimeout(5000)
 						.code();

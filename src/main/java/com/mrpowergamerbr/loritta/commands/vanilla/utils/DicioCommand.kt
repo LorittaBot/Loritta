@@ -40,7 +40,7 @@ class DicioCommand : CommandBase() {
 		if (context.args.size == 1) {
 			val palavra = URLEncoder.encode(context.args[0], "UTF-8");
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
-					.userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
+					.userAgent(Constants.USER_AGENT)
 			val response = httpRequest.body();
 			if (httpRequest.code() == 404) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
