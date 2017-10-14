@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AkinatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ClapifyCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CleverbotCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FraseToscaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
@@ -185,6 +186,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(SimsimiCommand())
 			commandMap.add(AkinatorCommand())
 			commandMap.add(GameJoltCommand())
+			commandMap.add(CleverbotCommand())
 
 			// =======[ IMAGENS ]======
 			commandMap.add(GetOverHereCommand())
