@@ -2,10 +2,13 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.bool
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.frontend.evaluate
+import com.mrpowergamerbr.loritta.userdata.AminoConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
@@ -39,6 +42,9 @@ class ConfigureServerView : ConfigureView() {
 					"invite_blocker" -> serverConfig.inviteBlockerConfig
 					"autorole" -> serverConfig.autoroleConfig
 					"permissions" -> serverConfig.permissionsConfig
+					"welcomer" -> serverConfig.joinLeaveConfig
+					"starboard" -> serverConfig.starboardConfig
+					"amino" -> serverConfig.aminoConfig
 					else -> null
 				}
 
@@ -49,6 +55,8 @@ class ConfigureServerView : ConfigureView() {
 
 				if (target is PermissionsConfig) {
 					response = handlePermissions(serverConfig, receivedPayload)
+				} else if (target is AminoConfig) {
+					response = handleCommunities(serverConfig, receivedPayload)
 				} else {
 					for (element in receivedPayload.entrySet()) {
 						if (element.key == "guildId") {
@@ -68,6 +76,13 @@ class ConfigureServerView : ConfigureView() {
 								field.setBoolean(target, element.value.bool)
 								response += element.key + " -> " + element.value + " ✓\n"
 								continue
+							}
+							if (element.value.asJsonPrimitive.isNumber) {
+								if (field.genericType == Integer.TYPE) {
+									field.setInt(target, element.value.int)
+									response += element.key + " -> " + element.value + " ✓\n"
+									continue
+								}
 							}
 						}
 						if (element.value.isJsonArray) {
@@ -124,5 +139,30 @@ class ConfigureServerView : ConfigureView() {
 			config.permissionsConfig.roles[element.key] = roleConfig
 		}
 		return response
+	}
+
+	fun handleCommunities(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.aminoConfig.aminos.clear()
+		val communities = receivedPayload["communities"].array
+
+		config.aminoConfig.isEnabled = receivedPayload["isEnabled"].bool
+		config.aminoConfig.fixAminoImages = receivedPayload["fixAminoImages"].bool
+		config.aminoConfig.syncAmino = receivedPayload["syncAmino"].bool
+
+		for (community in communities) {
+			val repostToChannelId = community["repostToChannelId"].string
+			val inviteUrl = community["inviteUrl"].string
+			val communityId = community["communityId"].string
+
+			val amino = AminoConfig.AminoInfo().apply {
+				this.repostToChannelId = repostToChannelId
+				this.inviteUrl = inviteUrl
+				this.communityId = communityId
+			}
+
+			config.aminoConfig.aminos.add(amino)
+		}
+
+		return "nice"
 	}
 }

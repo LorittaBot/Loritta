@@ -46,34 +46,41 @@ class LimparCommand : CommandBase() {
 				return
 			}
 
-			if (toClear !in 2..100) {
+			if (2 >= toClear) {
 				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
 				return
 			}
 
-			val toDelete = mutableListOf<String>()
+			var aux = toClear
 			var ignoredMessages = 0
-			for (msg in context.event.textChannel.history.retrievePast(toClear).complete()) {
-				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
-				if (context.message.mentionedUsers.isNotEmpty()) {
-					if (!context.message.mentionedUsers.contains(msg.author)) {
-						continue;
-					}
-				} else {
-					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
-						toDelete.add(msg.id)
+
+			while (aux > 0) {
+				val cleanUp = Math.min(aux, 100)
+				aux -= cleanUp
+				val toDelete = mutableListOf<String>()
+
+				for (msg in context.event.textChannel.history.retrievePast(cleanUp).complete()) {
+					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
+					if (context.message.mentionedUsers.isNotEmpty()) {
+						if (!context.message.mentionedUsers.contains(msg.author)) {
+							continue;
+						}
 					} else {
-						ignoredMessages++
+						if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
+							toDelete.add(msg.id)
+						} else {
+							ignoredMessages++
+						}
 					}
 				}
-			}
 
-			if (toDelete.size !in 2..100) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
-				return
-			}
+				if (toDelete.size !in 2..100) {
+					context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+					return
+				}
 
-			context.event.textChannel.deleteMessagesByIds(toDelete).complete()
+				context.event.textChannel.deleteMessagesByIds(toDelete).complete()
+			}
 
 			if (ignoredMessages == 0) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.asMention])

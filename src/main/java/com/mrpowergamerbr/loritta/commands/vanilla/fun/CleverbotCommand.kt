@@ -172,7 +172,7 @@ class CleverbotCommand : CommandBase() {
 			conversations.removeAt(conversations.size - 1)
 			conversations.add(stimulus)
 			conversations.add(response)
-			
+
 			return CleverbotResponse(response, emotion)
 		}
 

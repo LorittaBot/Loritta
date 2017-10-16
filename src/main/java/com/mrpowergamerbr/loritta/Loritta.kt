@@ -17,7 +17,6 @@ import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.MusicMessageListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
@@ -124,7 +123,7 @@ class Loritta {
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
 	var songThrottle = mutableMapOf<String, Long>()
 
-	var isMusicOnly: Boolean = false
+	// var isMusicOnly: Boolean = false
 	var isWebsiteOnly: Boolean = false
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -135,7 +134,7 @@ class Loritta {
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube()
-		this.isMusicOnly = isMusicOnly
+		// this.isMusicOnly = isMusicOnly
 		this.isWebsiteOnly = isWebsiteOnly
 		resetYouTubeKeys()
 	}
@@ -211,7 +210,7 @@ class Loritta {
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
-		if (!isMusicOnly) {
+		// if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
 			val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
 			Thread(website, "Website Thread").start()
@@ -244,7 +243,7 @@ class Loritta {
 				jda.addEventListener(discordListener) // Hora de registrar o nosso listener
 				jda.addEventListener(eventLogListener) // E o nosso outro listener também!
 			}
-		} else {
+		// } else {
 			// Iniciar coisas musicais
 			musicManagers = HashMap()
 			playerManager = DefaultAudioPlayerManager()
@@ -260,12 +259,12 @@ class Loritta {
 
 			LorittaUtils.startAutoPlaylist()
 
-			val messageListener = MusicMessageListener(this)
+			// val messageListener = MusicMessageListener(this)
 
-			for (jda in lorittaShards.shards) {
-				jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
-			}
-		}
+			// for (jda in lorittaShards.shards) {
+			// 	jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
+			// }
+		// }
 		ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
@@ -298,7 +297,7 @@ class Loritta {
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
-		commandManager = CommandManager(isMusicOnly)
+		commandManager = CommandManager(false)
 	}
 
 	/**

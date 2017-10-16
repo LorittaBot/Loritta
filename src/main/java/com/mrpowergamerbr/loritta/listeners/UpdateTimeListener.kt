@@ -7,7 +7,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 
 class UpdateTimeListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGenericEvent(event: Event) {
-		super.onGenericEvent(event)
 		lorittaShards.lastJdaEventTime[event.jda] = System.currentTimeMillis()
 	}
 }

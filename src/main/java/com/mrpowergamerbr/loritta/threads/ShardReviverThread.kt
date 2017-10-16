@@ -32,15 +32,15 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 			val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 
-			if (seconds >= 3) {
-				println("[!] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 3s! ~  ${seconds}s")
+			if (seconds >= 25) {
+				println("[!] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 25s! ~  ${seconds}s")
 			}
 		}
 
 		val deadShards = lorittaShards.shards.filter {
 			val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
 
-			System.currentTimeMillis() - lastUpdate > 10000
+			System.currentTimeMillis() - lastUpdate > 30000
 		}
 
 		if (deadShards.isNotEmpty()) {
@@ -49,17 +49,17 @@ class ShardReviverThread : Thread("Shard Reviver") {
 					.readTimeout(60, TimeUnit.SECONDS)
 					.writeTimeout(60, TimeUnit.SECONDS)
 
-			val discordListener = DiscordListener(loritta); // Vamos usar a mesma instância para todas as shards
-			val eventLogListener = EventLogListener(loritta); // Vamos usar a mesma instância para todas as shards
-			val updateTimeListener = UpdateTimeListener(loritta);
+			val discordListener = DiscordListener(loritta) // Vamos usar a mesma instância para todas as shards
+			val eventLogListener = EventLogListener(loritta) // Vamos usar a mesma instância para todas as shards
+			val updateTimeListener = UpdateTimeListener(loritta)
 			val messageListener = MusicMessageListener(loritta)
 
 			for (deadShard in deadShards) {
-				println("Reiniciando shard ${deadShard.shardInfo.shardId}")
+				println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
 				var guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId}${if (loritta.isMusicOnly) " (\uD83C\uDFB6)" else ""} demorou mais de 10 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
+					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} demorou mais de 30 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
 				}
 				val shardId = deadShard.shardInfo.shardId
 
@@ -75,7 +75,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 						.setCorePoolSize(8)
 						.buildBlocking()
 
-				if (!loritta.isMusicOnly) {
+				if (true) {
 					shard.addEventListener(updateTimeListener)
 					shard.addEventListener(discordListener)
 					shard.addEventListener(eventLogListener)
@@ -89,7 +89,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				guild = loritta.lorittaShards.getGuildById("297732013006389252")
 				if (guild != null) {
 					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${shard.shardInfo.shardId}${if (loritta.isMusicOnly) " (\uD83C\uDFB6)" else ""} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
+					textChannel.sendMessage("Shard ${shard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
 				}
 			}
 		}

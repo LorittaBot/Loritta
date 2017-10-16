@@ -137,7 +137,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		// Todos os comandos devem ser registrados em uma instância global, mas em uma instância de
 		// somente música apenas os comandos de música deverão ser registrados
 
-		if (!isMusicOnly) {
+		// if (!isMusicOnly) {
 			// =======[ DIVERSÃO ]======
 			commandMap.add(RollCommand())
 			commandMap.add(FaustaoCommand())
@@ -278,7 +278,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(ServerInvitesCommand())
 			commandMap.add(LorittaBanCommand())
 			commandMap.add(LorittaUnbanCommand())
-		}
+		// }
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
 		commandMap.add(MusicInfoCommand())

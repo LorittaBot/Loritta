@@ -8,18 +8,18 @@ import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.modules.StarboardModule
 import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.utils.save
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
@@ -31,9 +31,8 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import javax.imageio.ImageIO
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
@@ -110,20 +109,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					lorittaProfile.lastMessageSent = System.currentTimeMillis()
 					loritta save lorittaProfile
 
-					if (serverConfig.aminoConfig.fixAminoImages) {
-						for (attachments in event.message.attachments) {
-							if (attachments.fileName.endsWith(".Amino") || attachments.fileName == "Amino") {
-								val bufferedImage = LorittaUtils.downloadImage(attachments.url)
-
-								val os = ByteArrayOutputStream()
-								ImageIO.write(bufferedImage!!, "png", os)
-								val inputStream = ByteArrayInputStream(os.toByteArray())
-
-								event.textChannel.sendFile(inputStream, "amino.png", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
-								event.message.delete().complete()
-							}
-						}
-					}
+					// ===[ CONVERTER IMAGENS DO AMINO ]===
+					if (serverConfig.aminoConfig.isEnabled && serverConfig.aminoConfig.fixAminoImages)
+						AminoConverterModule.convertToImage(event)
 
 					for (eventHandler in serverConfig.nashornEventHandlers) {
 						eventHandler.handleMessageReceived(event)
@@ -247,7 +235,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 			}
+		}
 
+		val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
+
+		executor.execute {
 			try {
 				val conf = loritta.getServerConfigForGuild(e.guild.id)
 
@@ -261,6 +253,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 	}
+
+	val executors = mutableMapOf<Guild, ExecutorService>()
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor

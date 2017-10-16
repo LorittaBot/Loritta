@@ -4,12 +4,14 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
@@ -128,7 +130,7 @@ open abstract class CommandBase {
 	}
 
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
-		if (conf.blacklistedChannels.contains(ev.channel.id))
+		if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST))
 			return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 		val message = ev.message.content
 		var rawMessage = ev.message.rawContent
@@ -154,12 +156,12 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
-				if (requiresMusicEnabled() || onlyInMusicInstance()) {
+				// if (requiresMusicEnabled() || onlyInMusicInstance()) {
 					// Ignorar comandos de música em uma instância não somente para música
-					if (!loritta.isMusicOnly) {
-						return true
-					}
-				}
+				// 	if (!loritta.isMusicOnly) {
+				// 		return true
+				// 	}
+				// }
 
 				// Carregar as opções de comandos
 				val cmdOptions = conf.getCommandOptionsFor(this)
@@ -183,6 +185,8 @@ open abstract class CommandBase {
 				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
 					ev.channel.sendTyping().complete()
 				}
+
+				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
 					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.member.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()

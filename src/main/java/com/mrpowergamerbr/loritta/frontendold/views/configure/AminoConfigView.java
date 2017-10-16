@@ -2,21 +2,16 @@ package com.mrpowergamerbr.loritta.frontendold.views.configure;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite;
 import com.mrpowergamerbr.loritta.frontendold.utils.RenderContext;
-import com.mrpowergamerbr.loritta.userdata.AminoConfig;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.temmiediscordauth.TemmieDiscordAuth;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 public class AminoConfigView {
 	public static PebbleTemplate render(RenderContext context, TemmieDiscordAuth temmie, ServerConfig sc)
 			throws PebbleException {
 		if (context.request().param("repostToChannelId").isSet()) { // O usuário está salvando as configurações?
-			AminoConfig aminoConfig = sc.aminoConfig;
+			/* AminoConfig aminoConfig = sc.aminoConfig;
 			aminoConfig.setEnabled(context.request().param("enableModule").isSet());
 			aminoConfig.setInviteUrl(context.request().param("inviteUrl").value());
 			aminoConfig.setRepostToChannelId(context.request().param("repostToChannelId").value());
@@ -36,7 +31,7 @@ public class AminoConfigView {
 				e.printStackTrace();
 			}
 			sc.aminoConfig(aminoConfig);
-			LorittaLauncher.getInstance().getDs().save(sc);
+			LorittaLauncher.getInstance().getDs().save(sc); */
 		}
 		context.contextVars().put("whereAmI", "aminoConfig");
 

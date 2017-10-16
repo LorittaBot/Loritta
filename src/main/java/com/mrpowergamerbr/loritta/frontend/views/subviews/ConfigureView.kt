@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -23,7 +24,7 @@ abstract class ConfigureView : ProtectedView() {
 
 		val temmieGuild = discordAuth.getUserGuilds().firstOrNull { it.id == guildId }
 
-		if (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild)) {
+		if (discordAuth.getUserIdentification().id != Loritta.config.ownerId && (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild))) {
 			return "Você não tem permissão!"
 		}
 

@@ -5,15 +5,19 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAutoroleView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureEventLogView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureInviteBlockerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigurePermissionsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureServerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureStarboardView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityIconView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -21,6 +25,7 @@ import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
 import java.lang.management.ManagementFactory
+import java.text.MessageFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -61,7 +66,7 @@ object GlobalHandler {
 		}
 
 		for (locale in lorittaLocale.strings) {
-			variables[locale.key] = locale.value
+			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
 		val guilds = lorittaShards.getGuilds()
@@ -112,6 +117,9 @@ object GlobalHandler {
 
 	private fun getViews(): List<AbstractView> {
 		val views = mutableListOf<AbstractView>()
+		// ===[ APIS ]===
+		views.add(APIGetCommunityIconView())
+
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
@@ -120,6 +128,9 @@ object GlobalHandler {
 		views.add(ConfigureInviteBlockerView())
 		views.add(ConfigureAutoroleView())
 		views.add(ConfigurePermissionsView())
+		views.add(ConfigureWelcomerView())
+		views.add(ConfigureStarboardView())
+		views.add(ConfigureAminoView())
 		views.add(PatreonCallbackView())
 		return views
 	}

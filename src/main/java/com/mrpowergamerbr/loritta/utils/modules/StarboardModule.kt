@@ -14,7 +14,7 @@ object StarboardModule {
 	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
-		
+
 		if (e.reactionEmote.name == "⭐") {
 			val msg = e.textChannel.getMessageById(e.messageId).complete()
 			if (msg != null) {
@@ -68,14 +68,14 @@ object StarboardModule {
 					starCountMessage.setEmbed(embed.build())
 
 					if (starboardMessage != null) {
-						if (1 > count) { // Remover embed já que o número de stars é menos que 0
+						if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que 0
 							starboardMessage.delete().complete()
 							serverConfig.starboardEmbeds.remove(msg.id)
 							loritta save serverConfig
 							return
 						}
 						starboardMessage.editMessage(starCountMessage.build()).complete()
-					} else {
+					} else if (count >= starboardConfig.requiredStars) {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}
 					serverConfig.starboardEmbeds.put(msg.id, starboardMessage?.id)
