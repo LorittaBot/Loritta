@@ -30,7 +30,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 		while (true) {
 			checkNewVideos();
-			Thread.sleep(30000); // Só 30s de delay!
+			Thread.sleep(7500); // Só 7.5s de delay!
 		}
 	}
 
@@ -63,7 +63,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		for (channelId in channelIds) {
 			try {
 				if (doNotReverify.containsKey(channelId)) {
-					if (1.8e+6 > System.currentTimeMillis() - doNotReverify[channelId]!!) {
+					if (System.currentTimeMillis() - doNotReverify[channelId]!! > 1.8e+6) {
 						doNotReverify.remove(channelId)
 					} else {
 						continue

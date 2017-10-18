@@ -7,10 +7,13 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.userdata.AminoConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
+import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.YouTubeConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -44,7 +47,11 @@ class ConfigureServerView : ConfigureView() {
 					"permissions" -> serverConfig.permissionsConfig
 					"welcomer" -> serverConfig.joinLeaveConfig
 					"starboard" -> serverConfig.starboardConfig
+					"music" -> serverConfig.musicConfig
 					"amino" -> serverConfig.aminoConfig
+					"youtube" -> serverConfig.youTubeConfig
+					"feeds" -> serverConfig.rssFeedConfig
+					"nashorn_commands" -> serverConfig.nashornCommands
 					else -> null
 				}
 
@@ -57,6 +64,12 @@ class ConfigureServerView : ConfigureView() {
 					response = handlePermissions(serverConfig, receivedPayload)
 				} else if (target is AminoConfig) {
 					response = handleCommunities(serverConfig, receivedPayload)
+				} else if (target is YouTubeConfig) {
+					response = handleYouTubeChannels(serverConfig, receivedPayload)
+				} else if (target is RssFeedConfig) {
+					response = handleRssFeeds(serverConfig, receivedPayload)
+				} else if (type == "nashorn_commands") {
+					response = handleNashornCommands(serverConfig, receivedPayload)
 				} else {
 					for (element in receivedPayload.entrySet()) {
 						if (element.key == "guildId") {
@@ -161,6 +174,69 @@ class ConfigureServerView : ConfigureView() {
 			}
 
 			config.aminoConfig.aminos.add(amino)
+		}
+
+		return "nice"
+	}
+
+	fun handleYouTubeChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.youTubeConfig.channels.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val repostToChannelId = entry["repostToChannelId"].string
+			val channelUrl = entry["channelUrl"].string
+			val channelId = entry["channelId"].string
+			val videoSentMessage = entry["videoSentMessage"].string
+
+			val channel = YouTubeConfig.YouTubeInfo().apply {
+				this.repostToChannelId = repostToChannelId
+				this.channelUrl = channelUrl
+				this.channelId = channelId
+				this.videoSentMessage = videoSentMessage
+			}
+
+			config.youTubeConfig.channels.add(channel)
+		}
+
+		return "nice"
+	}
+
+	fun handleRssFeeds(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.rssFeedConfig.feeds.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val repostToChannelId = entry["repostToChannelId"].string
+			val feedUrl = entry["feedUrl"].string
+			val newMessage = entry["newMessage"].string
+
+			val feed = RssFeedConfig.FeedInfo().apply {
+				this.repostToChannelId = repostToChannelId
+				this.feedUrl = feedUrl
+				this.newMessage = newMessage
+			}
+
+			config.rssFeedConfig.feeds.add(feed)
+		}
+
+		return "nice"
+	}
+
+	fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.nashornCommands.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val label = entry["jsLabel"].string
+			val code = entry["javaScript"].string
+
+			val command = NashornCommand().apply {
+				this.jsLabel = label
+				this.javaScript = code
+			}
+
+			config.nashornCommands.add(command)
 		}
 
 		return "nice"

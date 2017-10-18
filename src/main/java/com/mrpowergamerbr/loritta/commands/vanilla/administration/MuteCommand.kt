@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
@@ -50,14 +51,9 @@ class MuteCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			try {
-				var id = context.args[0];
+				var user = LorittaUtils.getUserFromContext(context, 0)
 
-				if (context.rawArgs[0].startsWith("<") && context.message.mentionedUsers.isEmpty()) {
-					id = context.message.mentionedUsers[0].id
-				}
-
-				if (id == Loritta.config.clientId) {
+				if (user.id == Loritta.config.clientId) {
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUTE_CANT_MUTE_ME"))
 					return
 				}
@@ -93,20 +89,17 @@ class MuteCommand : CommandBase() {
 				}
 
 				// E... finalmente... iremos dar (ou remover) a role para o carinha
-				var member = context.guild.getMemberById(id)
+				var member = context.guild.getMemberById(user.id)
 
 				if (member.roles.contains(mutedRole)) {
 					context.guild.controller.removeRolesFromMember(member, mutedRole).complete()
 
-					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_OFF.msgFormat(id));
+					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_OFF.msgFormat(user.id));
 				} else {
 					context.guild.controller.addRolesToMember(member, mutedRole).complete()
 
-					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_ON.msgFormat(id));
+					context.sendMessage(context.getAsMention(true) + context.locale.MUTE_SUCCESS_ON.msgFormat(user.id));
 				}
-			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUTE_NO_PERM.msgFormat());
-			}
 		} else {
 			this.explain(context);
 		}

@@ -5,19 +5,26 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.AuthPathRedirectView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAutoroleView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureEventLogView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureInviteBlockerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureMusicView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureNashornCommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigurePermissionsView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureRSSFeedsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureServerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureStarboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureWelcomerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityIconView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -119,6 +126,8 @@ object GlobalHandler {
 		val views = mutableListOf<AbstractView>()
 		// ===[ APIS ]===
 		views.add(APIGetCommunityIconView())
+		views.add(APIGetChannelInfoView())
+		views.add(APIGetRssFeedTitleView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
@@ -131,7 +140,12 @@ object GlobalHandler {
 		views.add(ConfigureWelcomerView())
 		views.add(ConfigureStarboardView())
 		views.add(ConfigureAminoView())
+		views.add(ConfigureYouTubeView())
+		views.add(ConfigureRSSFeedsView())
+		views.add(ConfigureNashornCommandsView())
+		views.add(ConfigureMusicView())
 		views.add(PatreonCallbackView())
+		views.add(AuthPathRedirectView())
 		return views
 	}
 }

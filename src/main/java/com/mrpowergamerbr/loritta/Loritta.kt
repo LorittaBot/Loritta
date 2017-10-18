@@ -14,7 +14,6 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.frontendold.LorittaWebsite
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
@@ -212,11 +211,11 @@ class Loritta {
 
 		// if (!isMusicOnly) {
 			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
-			val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
-			Thread(website, "Website Thread").start()
+			/* val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
+			Thread(website, "Website Thread").start() */
 
-			val betaWebsite = thread(true, name = "Website Thread") {
-				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite("https://beta.loritta.website/", "/home/servers/loritta/frontend_v2/") })
+			val website = thread(true, name = "Website Thread") {
+				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
 			}
 
 			println("Sucesso! Iniciando threads da Loritta...")

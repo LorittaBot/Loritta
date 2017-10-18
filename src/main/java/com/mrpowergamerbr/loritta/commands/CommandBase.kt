@@ -189,7 +189,7 @@ open abstract class CommandBase {
 				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
-					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.member.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
+					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.author.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
 					return true
 				}
 
@@ -204,6 +204,7 @@ open abstract class CommandBase {
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
 					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
 					botPermissions.add(Permission.MESSAGE_ADD_REACTION)
+					botPermissions.add(Permission.MESSAGE_HISTORY)
 					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.selfMember.hasPermission(ev.textChannel, it) })
 
 					if (missingPermissions.isNotEmpty()) {

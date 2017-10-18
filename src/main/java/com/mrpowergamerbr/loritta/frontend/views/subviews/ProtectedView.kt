@@ -12,17 +12,17 @@ abstract class ProtectedView : AbstractView() {
 		if (req.path().startsWith("/dashboard")) {
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
-					res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://beta.loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
+					res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
 					return false
 				}
 			} else {
 				val code = req.param("code").value()
-				val auth = TemmieDiscordAuth(code, "https://beta.loritta.website/dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
+				val auth = TemmieDiscordAuth(code, "https://loritta.website/dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
 					debug = true
 				}
 				auth.doTokenExchange()
 				req.session()["discordAuth"] = gson.toJson(auth)
-				res.redirect("https://beta.loritta.website/dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+				res.redirect("https://loritta.website/dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true
 		}
@@ -35,7 +35,7 @@ abstract class ProtectedView : AbstractView() {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {
 			req.session().unset("discordAuth")
-			res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://beta.loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
+			res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth
