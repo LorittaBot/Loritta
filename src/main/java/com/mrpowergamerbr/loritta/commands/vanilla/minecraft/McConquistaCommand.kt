@@ -48,6 +48,11 @@ class McConquistaCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.size > 1) {
 			val image = LorittaUtils.getImageFromContext(context, 0)
+
+			if (LorittaUtils.isValidImage(context, image)) {
+				return
+			}
+
 			val advancementText = context.rawArgs.remove(0).joinToString(" ");
 
 			val template = ImageIO.read(File(Loritta.FOLDER + "mcconquista.png")) // Template
