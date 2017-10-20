@@ -34,6 +34,10 @@ class SeekCommand : CommandBase() {
 		return listOf(Permission.VOICE_MUTE_OTHERS)
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 

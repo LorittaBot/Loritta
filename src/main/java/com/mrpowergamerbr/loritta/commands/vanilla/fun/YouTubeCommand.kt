@@ -53,6 +53,10 @@ class YouTubeCommand : CommandBase() {
 		return true
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");

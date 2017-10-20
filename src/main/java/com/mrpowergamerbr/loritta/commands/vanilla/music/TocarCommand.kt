@@ -34,6 +34,10 @@ class TocarCommand : CommandBase() {
 		return true
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;

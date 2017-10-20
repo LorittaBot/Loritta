@@ -29,6 +29,10 @@ class PularCommand : CommandBase() {
 		return listOf(Permission.VOICE_MUTE_OTHERS)
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		LorittaLauncher.loritta.skipTrack(context)
 	}

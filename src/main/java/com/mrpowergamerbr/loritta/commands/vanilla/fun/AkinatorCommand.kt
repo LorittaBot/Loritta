@@ -38,6 +38,10 @@ class AkinatorCommand : CommandBase() {
 		return listOf(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_MANAGE)
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+	
 	override fun run(context: CommandContext) {
 		val response = HttpRequest.get("http://api-pt3.akinator.com/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
 				.body()

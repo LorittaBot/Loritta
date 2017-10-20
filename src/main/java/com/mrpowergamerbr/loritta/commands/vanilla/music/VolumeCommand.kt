@@ -35,6 +35,10 @@ class VolumeCommand : CommandBase() {
 		return true
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (context.args.size >= 1) {

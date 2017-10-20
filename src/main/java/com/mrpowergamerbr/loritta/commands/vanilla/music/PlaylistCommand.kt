@@ -30,6 +30,10 @@ class PlaylistCommand : CommandBase() {
 		return true
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)

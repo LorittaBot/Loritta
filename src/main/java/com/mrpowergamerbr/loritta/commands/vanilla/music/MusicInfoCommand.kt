@@ -27,6 +27,10 @@ class MusicInfoCommand : CommandBase() {
 		return true
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext) {
 		context.guild.selfMember.voiceState.channel
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
