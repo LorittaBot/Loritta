@@ -23,6 +23,8 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.DonateView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.FanArtsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityIconView
@@ -83,9 +85,58 @@ object GlobalHandler {
 		variables["userCount"] = lorittaShards.getUsers().size
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
-		variables["serversFanClub"] = loritta.serversFanClub.sortedByDescending { it.guild.members.size }
-		variables["clientId"] = Loritta.config.clientId
+		var serversFanClub = loritta.serversFanClub.sortedByDescending {
+			it.guild.members.size
+		}.toMutableList()
+		var donatorsFanClub = serversFanClub.filter {
+			val owner = it.guild.owner.user
 
+			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+			val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+			(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
+		}
+
+		serversFanClub.onEach {
+			val owner = it.guild.owner.user
+
+			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+			val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+			if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
+				it.isSuper = true
+			}
+		}
+
+		serversFanClub.removeAll(donatorsFanClub)
+		serversFanClub.addAll(0, donatorsFanClub)
+
+		val isPatreon = mutableMapOf<String, Boolean>()
+		val isDonator = mutableMapOf<String, Boolean>()
+
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+		val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+		val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+		val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+		val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+
+		patreons.forEach {
+			isPatreon[it.user.id] = true
+		}
+		donators.forEach {
+			isDonator[it.user.id] = true
+		}
+		variables["serversFanClub"] = serversFanClub
+		variables["clientId"] = Loritta.config.clientId
+		variables["isPatreon"] = isPatreon
+		variables["isDonator"] = isDonator
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
 		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
@@ -148,6 +199,8 @@ object GlobalHandler {
 		views.add(ConfigureMusicView())
 		views.add(FanArtsView())
 		views.add(DonateView())
+		views.add(ServersView())
+		views.add(ServersFanClubView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 		return views

@@ -548,6 +548,7 @@ class ServerFanClubEntry {
 	val description: String
 	val guildIcon: String
 	val fancyJoinDate: String
+	var isSuper: Boolean = false
 
 	constructor(id: String, guild: Guild, inviteUrl: String, description: String) {
 		this.id = id;

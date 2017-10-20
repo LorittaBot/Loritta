@@ -32,7 +32,7 @@ object StarboardModule {
 					var content = msg.rawContent
 					embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
 					embed.setFooter(msg.creationTime.humanize(), null)
-					embed.setColor(Color(255, 255, 200 - (count * 20)))
+					embed.setColor(Color(255, 255, Math.max(200 - (count * 20), 0)))
 
 					var emoji = "⭐"
 
