@@ -59,7 +59,7 @@ public class ServerConfig {
     public AutoroleConfig autoroleConfig = new AutoroleConfig();
     public InviteBlockerConfig inviteBlockerConfig = new InviteBlockerConfig();
     public PermissionsConfig permissionsConfig = new PermissionsConfig();
-
+    public HashMap<String, Integer> slowModeChannels = new HashMap<>(); // Canais com SlowMode ativado
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();

@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
+import com.mrpowergamerbr.loritta.utils.modules.SlowModeModule
 import com.mrpowergamerbr.loritta.utils.modules.StarboardModule
 import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.utils.save
@@ -72,6 +73,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
+
+					// ===[ SLOW MODE ]===
+					if (SlowModeModule.checkForSlowMode(event, serverConfig)) {
+						return@thread
+					}
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {

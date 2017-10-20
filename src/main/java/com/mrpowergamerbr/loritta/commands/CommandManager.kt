@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.HackBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.SlowModeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SoftBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
@@ -274,6 +275,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(HackBanCommand())
 			commandMap.add(SoftBanCommand())
 			commandMap.add(MuteCommand())
+			commandMap.add(SlowModeCommand())
 
 			// =======[ MAGIC ]========
 			commandMap.add(ReloadCommand())
