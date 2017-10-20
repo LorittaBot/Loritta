@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils.modules
 
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import java.util.concurrent.TimeUnit
 
@@ -10,6 +11,9 @@ object SlowModeModule {
 
 	fun checkForSlowMode(event: MessageReceivedEvent, config: ServerConfig): Boolean {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
+			return false
+
+		if (!event.member.hasPermission(Permission.MESSAGE_MANAGE))
 			return false
 
 		val delay = config.slowModeChannels[event.textChannel.id]!!

@@ -49,7 +49,7 @@ class McConquistaCommand : CommandBase() {
 		if (context.args.size > 1) {
 			val image = LorittaUtils.getImageFromContext(context, 0)
 
-			if (LorittaUtils.isValidImage(context, image)) {
+			if (!LorittaUtils.isValidImage(context, image)) {
 				return
 			}
 
