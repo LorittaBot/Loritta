@@ -13,7 +13,7 @@ object SlowModeModule {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
 			return false
 
-		if (!event.member.hasPermission(Permission.MESSAGE_MANAGE))
+		if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE))
 			return false
 
 		val delay = config.slowModeChannels[event.textChannel.id]!!
