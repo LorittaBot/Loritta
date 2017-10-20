@@ -123,6 +123,15 @@ class ConfigureServerView : ConfigureView() {
 		variables["serverConfig"] = serverConfig
 		variables["blacklistedChannels"] = serverConfig.blacklistedChannels.joinToString(separator = ";")
 		variables["saveType"] = "default"
+
+		serverConfig.blacklistedChannels = ArrayList(serverConfig.blacklistedChannels.filter {
+			try {
+				guild.getTextChannelById(it) != null
+			} catch (e: Exception) {
+				false
+			}
+		})
+
 		return evaluate("configure_server.html", variables)
 	}
 

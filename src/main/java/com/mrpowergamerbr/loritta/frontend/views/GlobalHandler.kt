@@ -19,6 +19,8 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureStarboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.DonateView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.FanArtsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
@@ -144,6 +146,8 @@ object GlobalHandler {
 		views.add(ConfigureRSSFeedsView())
 		views.add(ConfigureNashornCommandsView())
 		views.add(ConfigureMusicView())
+		views.add(FanArtsView())
+		views.add(DonateView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 		return views

@@ -73,7 +73,7 @@ class AjudaCommand : CommandBase() {
 			additionalInfoEmbed.setDescription("[Todos os comandos da Loritta](https://loritta.website/comandos)\n"
 					+ "[Discord da nossa querida Loritta](https://discord.gg/V7Kbh4z)\n"
 					+ "[Adicione a Loritta no seu servidor!](https://loritta.website/auth)\n"
-					+ "[Amou a Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/doar)\n"
+					+ "[Amou a Loritta? Tem dinheirinho de sobra? Então doe!](https://loritta.website/donate)\n"
 					+ "[Website do MrPowerGamerBR](https://mrpowergamerbr.com/)")
 
 			if (adminCmds != null) {

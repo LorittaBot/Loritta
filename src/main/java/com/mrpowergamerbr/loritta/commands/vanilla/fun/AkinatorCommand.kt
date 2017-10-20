@@ -114,13 +114,13 @@ class AkinatorCommand : CommandBase() {
 					0
 				} else if (e.reactionEmote.name == "2⃣") {
 					1
-				}  else if (e.reactionEmote.name == "3⃣") {
+				} else if (e.reactionEmote.name == "3⃣") {
 					2
-				}  else if (e.reactionEmote.name == "4⃣") {
+				} else if (e.reactionEmote.name == "4⃣") {
 					3
-				}  else if (e.reactionEmote.name == "5⃣") {
+				} else if (e.reactionEmote.name == "5⃣") {
 					4
-				}  else {
+				} else {
 					0
 				}
 
@@ -152,9 +152,26 @@ class AkinatorCommand : CommandBase() {
 
 					msg.clearReactions().complete()
 					msg.editMessage(builder.build()).complete()
-
 					return
 				}
+
+				if (jsonResult["COMPLETION"].string == "WARN - NO QUESTION") {
+					val builder = EmbedBuilder().apply {
+						setTitle("<:akinator:348903800540758017> Akinator")
+						setDescription(context.locale.get("AKINATOR_NoQuestion"))
+						setColor(Color(20, 158, 255))
+					}
+
+					context.metadata.remove("channel")
+					context.metadata.remove("signature")
+					context.metadata.remove("session")
+					context.metadata.remove("step")
+
+					msg.clearReactions().complete()
+					msg.editMessage(builder.build()).complete()
+					return
+				}
+
 				val jsonAnswer = jsonResult["PARAMETERS"]
 
 				var question = jsonAnswer["QUESTION"].string
@@ -199,7 +216,7 @@ class AkinatorCommand : CommandBase() {
 
 					msg.editMessage(builder.build()).complete()
 
-					if (msg.reactions.filter { it.emote.name == "⏪"}.count() == 0) {
+					if (msg.reactions.filter { it.emote.name == "⏪" }.count() == 0) {
 						if (step > 0) {
 							msg.addReaction("⏪").complete()
 						}

@@ -33,9 +33,13 @@ class RoleIdCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		if (context.message.mentionedRoles.isNotEmpty()) {
-			for (r in context.message.mentionedRoles) {
-				context.sendMessage(context.getAsMention(true) + r.asMention + " - " + r.id)
+		if (context.rawArgs.isNotEmpty()) {
+			val argument = context.rawArgs[0]
+
+			val roles = context.guild.roles.filter { it.name.contains(argument, true) }
+
+			for (role in roles) {
+				context.sendMessage(context.getAsMention(true) + role.name + " - " + role.id)
 			}
 		} else {
 			context.explain()

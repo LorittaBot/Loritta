@@ -15,6 +15,13 @@ class ConfigureAutoroleView : ConfigureView() {
 
 	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
 		variables["saveType"] = "autorole"
+		serverConfig.autoroleConfig.roles = serverConfig.autoroleConfig.roles.filter {
+			try {
+				guild.getRoleById(it) != null
+			} catch (e: Exception) {
+				false
+			}
+		}.toMutableList()
 		variables["currentAutoroles"] = serverConfig.autoroleConfig.roles.joinToString(separator = ";")
 		return evaluate("autorole.html", variables)
 	}

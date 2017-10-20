@@ -40,8 +40,21 @@ object YouTubeUtils {
 	 * @return uma lista com os resultados
 	 */
 	@JvmStatic
-	fun searchVideosOnYouTube(query:String):List<YouTubeItem> {
+	fun searchVideosOnYouTube(query: String):List<YouTubeItem> {
 		val response = searchAnythingOnYouTube(query)
 		return response.stream().filter{ it.id.kind == "youtube#video"}.toList()
+	}
+
+	/**
+	 * Procura vídeos no YouTube e retorna uma lista com os resultados
+	 *
+	 * @param query  O que você deseja pesquisar no YouTube
+	 *
+	 * @return uma lista com os resultados
+	 */
+	@JvmStatic
+	fun searchOnYouTube(query: String, vararg kinds: String): List<YouTubeItem> {
+		val response = searchAnythingOnYouTube(query)
+		return response.stream().filter{ kinds.contains(it.id.kind)}.toList()
 	}
 }

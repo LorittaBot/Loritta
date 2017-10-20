@@ -42,6 +42,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.GangueCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.GetOverHereCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.InverterCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.JoojCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.LaranjoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaReversoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.ManiaTitleCardCommand
@@ -68,6 +69,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McBodyCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McConquistaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McHeadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McSignCommand
@@ -193,6 +195,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(RomeroBrittoCommand())
 			commandMap.add(StudiopolisTvCommand())
 			commandMap.add(ManiaTitleCardCommand())
+			commandMap.add(LaranjoCommand())
 
 			// =======[ MISC ]======
 			commandMap.add(AjudaCommand())
@@ -253,6 +256,7 @@ class CommandManager(isMusicOnly: Boolean) {
 			commandMap.add(McBodyCommand())
 			commandMap.add(McSignCommand())
 			commandMap.add(SpigotMcCommand())
+			commandMap.add(McConquistaCommand())
 
 			// =======[ ROBLOX ]========
 			commandMap.add(RbUserCommand())

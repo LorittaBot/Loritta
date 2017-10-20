@@ -228,6 +228,7 @@ open abstract class CommandBase {
 				var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
 				if (byMention) {
 					args = args.remove(0)
+					args = args.remove(0)
 					rawArgs = rawArgs.remove(0)
 					strippedArgs = strippedArgs.remove(0)
 				}

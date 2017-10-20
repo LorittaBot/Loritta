@@ -33,7 +33,6 @@ abstract class ConfigureView : ProtectedView() {
 		val jdaGuild = lorittaShards.getGuildById(guildId)!!
 		variables["guild"] = jdaGuild
 		variables["serverConfig"] = serverConfig
-
 		return renderConfiguration(req, res, variables, discordAuth, jdaGuild, serverConfig)
 	}
 

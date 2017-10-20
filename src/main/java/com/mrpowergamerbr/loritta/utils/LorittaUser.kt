@@ -40,7 +40,7 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Loritt
     override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
         val roles = member.roles.toMutableList()
 
-        val everyone = member.guild.roles.firstOrNull { it.isPublicRole }
+        val everyone = member.guild.publicRole
         if (everyone != null) {
             roles.add(everyone)
         }
