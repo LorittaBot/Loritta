@@ -65,17 +65,16 @@ class LimparCommand : CommandBase() {
 						if (!context.message.mentionedUsers.contains(msg.author)) {
 							continue;
 						}
+					}
+					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
+						toDelete.add(msg.id)
 					} else {
-						if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
-							toDelete.add(msg.id)
-						} else {
-							ignoredMessages++
-						}
+						ignoredMessages++
 					}
 				}
 
 				if (toDelete.size !in 2..100) {
-					context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention}${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+					context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 					return
 				}
 
