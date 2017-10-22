@@ -528,9 +528,8 @@ public class LorittaUtils {
 	public static void startRandomSong(Guild guild) {
 		long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
 
-		if (5000 > diff) {
+		if (5000 > diff)
 			return; // bye
-		}
 
 		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
 
@@ -545,7 +544,7 @@ public class LorittaUtils {
 		if (!guild.getSelfMember().hasPermission(voiceChannel, Permission.VOICE_CONNECT))
 			return;
 
-		if (2 > voiceChannel.getMembers().size())
+		if (voiceChannel.getMembers().isEmpty())
 			return;
 
 		if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {

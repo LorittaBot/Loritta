@@ -394,7 +394,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (mm.player.playingTrack != null) {
 				mm.player.isPaused = true // Pausar música caso todos os usuários saiam
 			}
-			
+
 			event.guild.audioManager.closeAudioConnection() // E desconectar do canal de voz
 		}
 	}
