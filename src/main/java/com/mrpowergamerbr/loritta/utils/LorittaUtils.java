@@ -511,23 +511,6 @@ public class LorittaUtils {
 	}
 
 	public static void manageAutoPlaylists() {
-		for (Document document :  LorittaLauncher.loritta.mongo.getDatabase("loritta").getCollection("servers").find(Filters.eq("musicConfig.isEnabled", true))) {
-			ServerConfig conf =  LorittaLauncher.loritta.ds.get(ServerConfig.class, document.get("_id"));
-
-			Guild guild = LorittaLauncher.loritta.getLorittaShards().getGuildById(conf.guildId);
-
-			try {
-				if (guild != null && conf.musicConfig().isEnabled() && conf.musicConfig().getMusicGuildId() != null) {
-					LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
-					VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
-					if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-						LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
 			if (mm.player.getPlayingTrack() == null) {
 				Thread x = new Thread(() -> {

@@ -364,7 +364,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				return@thread
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)
+
 			if (mm.player.playingTrack != null && mm.player.isPaused) {
+				event.guild.audioManager.openAudioConnection(voiceChannel)
 				mm.player.isPaused = false
 			} else {
 				LorittaUtils.startRandomSong(event.guild)
@@ -384,14 +386,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
 
-			if (!voiceChannel.members.filter { it.user.isBot }.isEmpty())
+			if (voiceChannel.members.filter { !it.user.isBot }.isNotEmpty())
 				return@thread
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)
 
 			if (mm.player.playingTrack != null) {
-				mm.player.stopTrack() // Parar música caso todos os usuários saiam
+				mm.player.isPaused = true // Pausar música caso todos os usuários saiam
 			}
+			
 			event.guild.audioManager.closeAudioConnection() // E desconectar do canal de voz
 		}
 	}
