@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AuthPathRedirectView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAminoView
@@ -70,6 +71,14 @@ object GlobalHandler {
 			if (bypassCheck || defaultLocale !== parsedLocale) {
 				lorittaLocale = parsedLocale
 			}
+		}
+
+		if (req.param("force_locale").isSet()) {
+			req.session()["forceLocale"] = req.param("force_locale").value()
+		}
+
+		if (req.session().isSet("forceLocale")) {
+			lorittaLocale  = LorittaLauncher.loritta.getLocaleById(req.session()["forceLocale"].value())
 		}
 
 		if (req.param("locale").isSet) {
@@ -151,6 +160,7 @@ object GlobalHandler {
 		variables["uptimeHours"] = hours
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
+		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
 
 		val famousGuilds = guilds.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }.subList(0, 36)
 

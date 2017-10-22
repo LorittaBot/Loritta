@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
@@ -26,6 +27,8 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -342,6 +345,54 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				e.printStackTrace()
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
+		}
+	}
+
+	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		thread {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+
+			if (!config.musicConfig.isEnabled)
+				return@thread
+
+			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+				return@thread
+
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
+
+			if (voiceChannel.members.isEmpty())
+				return@thread
+
+			val mm = loritta.getGuildAudioPlayer(event.guild)
+			if (mm.player.playingTrack != null && mm.player.isPaused) {
+				mm.player.isPaused = false
+			} else {
+				LorittaUtils.startRandomSong(event.guild)
+			}
+		}
+	}
+
+	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+		thread {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+
+			if (!config.musicConfig.isEnabled)
+				return@thread
+
+			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+				return@thread
+
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
+
+			if (!voiceChannel.members.filter { it.user.isBot }.isEmpty())
+				return@thread
+
+			val mm = loritta.getGuildAudioPlayer(event.guild)
+
+			if (mm.player.playingTrack != null) {
+				mm.player.stopTrack() // Parar música caso todos os usuários saiam
+			}
+			event.guild.audioManager.closeAudioConnection() // E desconectar do canal de voz
 		}
 	}
 }

@@ -516,12 +516,16 @@ public class LorittaUtils {
 
 			Guild guild = LorittaLauncher.loritta.getLorittaShards().getGuildById(conf.guildId);
 
-			if (guild != null && conf.musicConfig().isEnabled()) {
-				LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
-				VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
-				if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-					LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
+			try {
+				if (guild != null && conf.musicConfig().isEnabled() && conf.musicConfig().getMusicGuildId() != null) {
+					LorittaLauncher.loritta.getGuildAudioPlayer(guild); // Criar Audio Player para a guild
+					VoiceChannel channel = guild.getVoiceChannelById(conf.musicConfig().getMusicGuildId());
+					if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+						LorittaLauncher.loritta.connectToVoiceChannel(channel.getId(), guild.getAudioManager());
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
