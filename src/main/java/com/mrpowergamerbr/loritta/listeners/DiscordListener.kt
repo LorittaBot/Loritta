@@ -363,6 +363,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (voiceChannel.members.isEmpty())
 				return@thread
 
+			if (voiceChannel.members.contains(event.guild.selfMember))
+				return@thread
+
 			val mm = loritta.getGuildAudioPlayer(event.guild)
 
 			if (mm.player.playingTrack != null && mm.player.isPaused) {
