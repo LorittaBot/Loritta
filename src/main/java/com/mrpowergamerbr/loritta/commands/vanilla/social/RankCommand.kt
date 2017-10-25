@@ -48,23 +48,30 @@ class RankCommand : CommandBase() {
 		val list = mutableListOf<RankWrapper>()
 
 		var global = false
+		var page = 0
 
-		if (context.args.isNotEmpty() && context.args[0] == "global") {
-			global = true
-			val map = mutableMapOf<String, Int>()
+		if (context.args.isNotEmpty()) {
+			if (context.args[0] == "global") {
+				global = true
+				val map = mutableMapOf<String, Int>()
 
-			for (lorittaProfile in loritta.ds.find(LorittaProfile::class.java)) {
-				map.put(lorittaProfile.userId!!, lorittaProfile.xp)
+				for (lorittaProfile in loritta.ds.find(LorittaProfile::class.java)) {
+					map.put(lorittaProfile.userId!!, lorittaProfile.xp)
+				}
+
+				for ((id, xp) in map) {
+					val dummy = LorittaServerUserData()
+					dummy.xp = xp
+					list.add(RankWrapper(id, dummy))
+				}
+			} else {
+				var aux = context.args[0].toIntOrNull()
+				if (aux != null)
+					page = aux - 1
 			}
+		}
 
-			for ((id, xp) in map) {
-				val dummy = LorittaServerUserData()
-				dummy.xp = xp
-				list.add(RankWrapper(id, dummy))
-			}
-
-			println(list.size)
-		} else {
+		if (!global) {
 			context.config.userData
 					.forEach { list.add(RankWrapper(it.key, it.value)) }
 		}
@@ -72,15 +79,9 @@ class RankCommand : CommandBase() {
 		list.sortBy { it.userData.xp }
 		list.reverse()
 
-		var currentIndex = 0;
-		var currentUserData: LorittaServerUserData? = null;
-
-		for (entry in list) {
-			if (entry.id == context.userHandle.id) {
-				currentUserData = entry.userData;
-				break;
-			}
-			currentIndex++;
+		for (idx in 0 until (page * 5)) {
+			if (list.size >= 5)
+				list.removeAt(0)
 		}
 
 		val rankHeader = ImageIO.read(File(Loritta.FOLDER, "rank_header.png"))
