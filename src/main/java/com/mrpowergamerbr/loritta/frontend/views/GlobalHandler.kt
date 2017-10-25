@@ -30,6 +30,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityIconView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.CommandsView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -93,6 +94,7 @@ object GlobalHandler {
 		variables["guilds"] = guilds
 		variables["userCount"] = lorittaShards.getUsers().size
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
+		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
 		var serversFanClub = loritta.serversFanClub.sortedByDescending {
 			it.guild.members.size
@@ -209,6 +211,7 @@ object GlobalHandler {
 		views.add(ConfigureMusicView())
 		views.add(FanArtsView())
 		views.add(DonateView())
+		views.add(CommandsView())
 		views.add(ServersView())
 		views.add(ServersFanClubView())
 		views.add(PatreonCallbackView())

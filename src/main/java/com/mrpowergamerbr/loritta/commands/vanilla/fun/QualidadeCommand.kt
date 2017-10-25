@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class QualidadeCommand : CommandBase() {
@@ -12,7 +12,7 @@ class QualidadeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.QUALIDADE_DESCRIPTION.f()
+		return locale["QUALIDADE_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -33,19 +33,10 @@ class QualidadeCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val qualidade = context.args.joinToString(" ")
-
-			val sb = StringBuilder()
-			for (ch in qualidade.toCharArray()) {
-				if (Character.isLetterOrDigit(ch)) {
-					sb.append(Character.toUpperCase(ch))
-					sb.append(" ")
-				} else {
-					sb.append(ch)
-				}
-			}
-
-			context.sendMessage(context.getAsMention(true) + sb.toString())
+			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").toUpperCase()
+			context.reply(
+					LoriReply(message = qualidade, prefix = "✍")
+			)
 		} else {
 			this.explain(context)
 		}

@@ -20,7 +20,7 @@ class PackageInfoCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PACKAGEINFO_DESCRIPTION
+		return locale["PACKAGEINFO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
@@ -29,6 +29,10 @@ class PackageInfoCommand : CommandBase() {
 
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.UTILS
+	}
+
+	override fun getAliases(): List<String> {
+		return listOf("packageinfo", "ctt")
 	}
 
 	override fun run(context: CommandContext) {

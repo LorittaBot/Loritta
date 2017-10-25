@@ -21,7 +21,7 @@ class AminoCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.AMINO_DESCRIPTION
+		return locale["AMINO_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -36,7 +36,7 @@ class AminoCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		if (context.args.size > 0) {
 			if (context.args.size > 1) {
-				if (context.args[0] == context.locale.SEARCH) {
+				if (context.args[0] == context.locale["SEARCH"]) {
 					// Pesquisar uma comunidade no Amino
 					var aminoClient = AminoClient(Loritta.config.aminoEmail, Loritta.config.aminoPassword, Loritta.config.aminoDeviceId);
 					aminoClient.login();

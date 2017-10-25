@@ -51,7 +51,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.NyanCatCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.OjjoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.PerdaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.PerfeitoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.PretoEBrancoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.PrimeirasPalavrasCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.QuadroCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.RazoesCommand
@@ -108,7 +107,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.AminoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.AnagramaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.BIRLCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.DicioCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.EncurtarCommand
@@ -122,7 +120,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.MoneyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.MorseCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.OCRCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.ReceitasCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.RgbCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TempoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TranslateCommand
@@ -137,154 +134,146 @@ class CommandManager(isMusicOnly: Boolean) {
 	var defaultCmdOptions: MutableMap<String, Class<*>> = HashMap()
 
 	init {
-		// Todos os comandos devem ser registrados em uma instância global, mas em uma instância de
-		// somente música apenas os comandos de música deverão ser registrados
+		commandMap.add(RollCommand())
+		commandMap.add(FaustaoCommand())
+		commandMap.add(CaraCoroaCommand())
+		commandMap.add(PedraPapelTesouraCommand())
+		commandMap.add(VaporondaCommand())
+		commandMap.add(QualidadeCommand())
+		commandMap.add(VaporQualidadeCommand())
+		commandMap.add(TristeRealidadeCommand())
+		commandMap.add(TretaNewsCommand())
+		commandMap.add(MagicBallCommand())
+		commandMap.add(FraseToscaCommand())
+		commandMap.add(SAMCommand())
+		commandMap.add(NyanCatCommand())
+		commandMap.add(WikiaCommand())
+		commandMap.add(PrimeirasPalavrasCommand())
+		commandMap.add(DrakeCommand())
+		commandMap.add(InverterCommand())
+		commandMap.add(ClapifyCommand())
+		commandMap.add(SpinnerCommand())
+		commandMap.add(LavaCommand())
+		commandMap.add(LavaReversoCommand())
+		commandMap.add(ShipCommand())
+		commandMap.add(AvaliarWaifuCommand())
+		commandMap.add(RazoesCommand())
+		commandMap.add(QuadroCommand())
+		commandMap.add(DeusCommand())
+		commandMap.add(PerfeitoCommand())
+		commandMap.add(TrumpCommand())
+		commandMap.add(CepoCommand())
+		commandMap.add(DeusesCommand())
+		commandMap.add(GangueCommand())
+		commandMap.add(RandomSAMCommand())
+		commandMap.add(RandomMemeguy1997())
+		commandMap.add(AmigosCommand())
+		commandMap.add(DiscordiaCommand())
+		commandMap.add(AmizadeCommand())
+		commandMap.add(PerdaoCommand())
+		commandMap.add(RipVidaCommand())
+		commandMap.add(AtaCommand())
+		commandMap.add(JoojCommand())
+		commandMap.add(OjjoCommand())
+		commandMap.add(HojeCommand())
+		commandMap.add(SimsimiCommand())
+		commandMap.add(AkinatorCommand())
+		commandMap.add(GameJoltCommand())
+		commandMap.add(CleverbotCommand())
 
-		// if (!isMusicOnly) {
-			// =======[ DIVERSÃO ]======
-			commandMap.add(RollCommand())
-			commandMap.add(FaustaoCommand())
-			commandMap.add(CaraCoroaCommand())
-			commandMap.add(PedraPapelTesouraCommand())
-			commandMap.add(VaporondaCommand())
-			commandMap.add(QualidadeCommand())
-			commandMap.add(VaporQualidadeCommand())
-			commandMap.add(TristeRealidadeCommand())
-			commandMap.add(TretaNewsCommand())
-			commandMap.add(MagicBallCommand())
-			commandMap.add(FraseToscaCommand())
-			commandMap.add(SAMCommand())
-			commandMap.add(NyanCatCommand())
-			commandMap.add(WikiaCommand())
-			commandMap.add(PrimeirasPalavrasCommand())
-			commandMap.add(DrakeCommand())
-			commandMap.add(InverterCommand())
-			commandMap.add(ReceitasCommand())
-			commandMap.add(ClapifyCommand())
-			commandMap.add(SpinnerCommand())
-			commandMap.add(LavaCommand())
-			commandMap.add(LavaReversoCommand())
-			commandMap.add(ShipCommand())
-			commandMap.add(AvaliarWaifuCommand())
-			commandMap.add(RazoesCommand())
-			commandMap.add(QuadroCommand())
-			commandMap.add(DeusCommand())
-			commandMap.add(PerfeitoCommand())
-			commandMap.add(TrumpCommand())
-			commandMap.add(CepoCommand())
-			commandMap.add(DeusesCommand())
-			commandMap.add(GangueCommand())
-			commandMap.add(RandomSAMCommand())
-			commandMap.add(RandomMemeguy1997())
-			commandMap.add(AmigosCommand())
-			commandMap.add(DiscordiaCommand())
-			commandMap.add(AmizadeCommand())
-			commandMap.add(PretoEBrancoCommand())
-			commandMap.add(PerdaoCommand())
-			commandMap.add(RipVidaCommand())
-			commandMap.add(AtaCommand())
-			commandMap.add(JoojCommand())
-			commandMap.add(OjjoCommand())
-			commandMap.add(HojeCommand())
-			commandMap.add(SimsimiCommand())
-			commandMap.add(AkinatorCommand())
-			commandMap.add(GameJoltCommand())
-			commandMap.add(CleverbotCommand())
+		// =======[ IMAGENS ]======
+		commandMap.add(GetOverHereCommand())
+		commandMap.add(RomeroBrittoCommand())
+		commandMap.add(StudiopolisTvCommand())
+		commandMap.add(ManiaTitleCardCommand())
+		commandMap.add(LaranjoCommand())
 
-			// =======[ IMAGENS ]======
-			commandMap.add(GetOverHereCommand())
-			commandMap.add(RomeroBrittoCommand())
-			commandMap.add(StudiopolisTvCommand())
-			commandMap.add(ManiaTitleCardCommand())
-			commandMap.add(LaranjoCommand())
+		// =======[ MISC ]======
+		commandMap.add(AjudaCommand())
+		commandMap.add(PingCommand())
+		commandMap.add(AngelCommand())
+		commandMap.add(QuoteCommand())
+		commandMap.add(SayCommand())
+		commandMap.add(EscolherCommand())
+		commandMap.add(LanguageCommand())
+		commandMap.add(PatreonCommand())
 
-			// =======[ MISC ]======
-			commandMap.add(AjudaCommand())
-			commandMap.add(PingCommand())
-			commandMap.add(AngelCommand())
-			commandMap.add(QuoteCommand())
-			commandMap.add(SayCommand())
-			commandMap.add(EscolherCommand())
-			commandMap.add(LanguageCommand())
-			commandMap.add(PatreonCommand())
+		// =======[ SOCIAL ]======
+		commandMap.add(PerfilCommand())
+		commandMap.add(BackgroundCommand())
+		commandMap.add(SobreMimCommand())
+		commandMap.add(DiscriminatorCommand())
+		commandMap.add(RepCommand())
+		commandMap.add(RankCommand())
+		commandMap.add(EditarXPCommand())
 
-			// =======[ SOCIAL ]======
-			commandMap.add(PerfilCommand())
-			commandMap.add(BackgroundCommand())
-			commandMap.add(SobreMimCommand())
-			commandMap.add(DiscriminatorCommand())
-			commandMap.add(RepCommand())
-			commandMap.add(RankCommand())
-			commandMap.add(EditarXPCommand())
+		// =======[ UTILS ]=======
+		commandMap.add(TranslateCommand())
+		commandMap.add(EncurtarCommand())
+		commandMap.add(WikipediaCommand())
+		commandMap.add(MoneyCommand())
+		commandMap.add(HexCommand())
+		commandMap.add(LembrarCommand())
+		commandMap.add(RgbCommand())
+		commandMap.add(YoutubeMp3Command())
+		commandMap.add(DicioCommand())
+		commandMap.add(TempoCommand())
+		commandMap.add(AminoCommand())
+		commandMap.add(PackageInfoCommand())
+		commandMap.add(IsUpCommand())
+		commandMap.add(KnowYourMemeCommand())
+		commandMap.add(Md5Command())
+		commandMap.add(AnagramaCommand())
+		commandMap.add(CalculadoraCommand())
+		commandMap.add(MorseCommand())
+		commandMap.add(OCRCommand())
 
-			// =======[ UTILS ]=======
-			commandMap.add(TranslateCommand())
-			commandMap.add(EncurtarCommand())
-			commandMap.add(WikipediaCommand())
-			commandMap.add(MoneyCommand())
-			commandMap.add(HexCommand())
-			commandMap.add(LembrarCommand())
-			commandMap.add(RgbCommand())
-			commandMap.add(YoutubeMp3Command())
-			commandMap.add(DicioCommand())
-			commandMap.add(TempoCommand())
-			commandMap.add(AminoCommand())
-			commandMap.add(PackageInfoCommand())
-			commandMap.add(IsUpCommand())
-			commandMap.add(KnowYourMemeCommand())
-			commandMap.add(BIRLCommand())
-			commandMap.add(Md5Command())
-			commandMap.add(AnagramaCommand())
-			commandMap.add(CalculadoraCommand())
-			commandMap.add(MorseCommand())
-			commandMap.add(OCRCommand())
+		// =======[ DISCORD ]=======
+		commandMap.add(BotInfoCommand())
+		commandMap.add(AvatarCommand())
+		commandMap.add(EmojiCommand())
+		commandMap.add(ServerInfoCommand())
+		commandMap.add(InviteCommand())
+		commandMap.add(UserInfoCommand())
 
-			// =======[ DISCORD ]=======
-			commandMap.add(BotInfoCommand())
-			commandMap.add(AvatarCommand())
-			commandMap.add(EmojiCommand())
-			commandMap.add(ServerInfoCommand())
-			commandMap.add(InviteCommand())
-			commandMap.add(UserInfoCommand())
+		// =======[ MINECRAFT ]========
+		commandMap.add(OfflineUUIDCommand())
+		commandMap.add(McAvatarCommand())
+		commandMap.add(McQueryCommand())
+		commandMap.add(McUUIDCommand())
+		commandMap.add(McStatusCommand())
+		commandMap.add(McHeadCommand())
+		commandMap.add(McBodyCommand())
+		commandMap.add(McSignCommand())
+		commandMap.add(SpigotMcCommand())
+		commandMap.add(McConquistaCommand())
 
-			// =======[ MINECRAFT ]========
-			commandMap.add(OfflineUUIDCommand())
-			commandMap.add(McAvatarCommand())
-			commandMap.add(McQueryCommand())
-			commandMap.add(McUUIDCommand())
-			commandMap.add(McStatusCommand())
-			commandMap.add(McHeadCommand())
-			commandMap.add(McBodyCommand())
-			commandMap.add(McSignCommand())
-			commandMap.add(SpigotMcCommand())
-			commandMap.add(McConquistaCommand())
+		// =======[ ROBLOX ]========
+		commandMap.add(RbUserCommand())
 
-			// =======[ ROBLOX ]========
-			commandMap.add(RbUserCommand())
+		// =======[ UNDERTALE ]========
+		commandMap.add(UndertaleBoxCommand())
+		commandMap.add(UndertaleBattleCommand())
 
-			// =======[ UNDERTALE ]========
-			commandMap.add(UndertaleBoxCommand())
-			commandMap.add(UndertaleBattleCommand())
+		// =======[ POKÉMON ]========
+		commandMap.add(PokedexCommand())
 
-			// =======[ POKÉMON ]========
-			commandMap.add(PokedexCommand())
+		// =======[ ADMIN ]========
+		commandMap.add(LimparCommand())
+		commandMap.add(RoleIdCommand())
+		commandMap.add(HackBanCommand())
+		commandMap.add(SoftBanCommand())
+		commandMap.add(MuteCommand())
+		commandMap.add(SlowModeCommand())
 
-			// =======[ ADMIN ]========
-			commandMap.add(LimparCommand())
-			commandMap.add(RoleIdCommand())
-			commandMap.add(HackBanCommand())
-			commandMap.add(SoftBanCommand())
-			commandMap.add(MuteCommand())
-			commandMap.add(SlowModeCommand())
+		// =======[ MAGIC ]========
+		commandMap.add(ReloadCommand())
+		commandMap.add(EvalCommand())
+		commandMap.add(NashornTestCommand())
+		commandMap.add(ServerInvitesCommand())
+		commandMap.add(LorittaBanCommand())
+		commandMap.add(LorittaUnbanCommand())
 
-			// =======[ MAGIC ]========
-			commandMap.add(ReloadCommand())
-			commandMap.add(EvalCommand())
-			commandMap.add(NashornTestCommand())
-			commandMap.add(ServerInvitesCommand())
-			commandMap.add(LorittaBanCommand())
-			commandMap.add(LorittaUnbanCommand())
-		// }
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
 		commandMap.add(MusicInfoCommand())

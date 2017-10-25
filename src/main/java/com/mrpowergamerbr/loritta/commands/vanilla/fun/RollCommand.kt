@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -36,12 +37,11 @@ class RollCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-
 		var quantity = 1L
 		var value: Long = 6
 		var expression = ""
 
-		if (context.args.size >= 1) {
+		if (context.args.isNotEmpty()) {
 			try {
 				if (context.args[0].contains("d")) {
 					val values = context.args[0].split("d")
@@ -100,11 +100,20 @@ class RollCommand : CommandBase() {
 		}
 
 		if (rolledSides.size == 1 && expression.isEmpty()) {
-			response = "**${finalResult.toInt()}**"
+			response = ""
 		} else {
-			response = "**${finalResult.toInt()}** ($response)"
+			response = "`${finalResult.toInt()}` **»** $response"
 		}
 
-		context.sendMessage(context.getAsMention(true) + "\uD83C\uDFB2 **${context.locale.ROLL_RESULT.f()}:** ${response}")
+		var message = context.locale["ROLL_RESULT", value, finalResult.toInt()]
+
+		val list = mutableListOf<LoriReply>()
+		list.add(LoriReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))
+
+		if (response.isNotEmpty()) {
+			list.add(LoriReply(message = response, prefix = "\uD83E\uDD13", mentionUser = false))
+		}
+
+		context.reply(*list.toTypedArray())
 	}
 }

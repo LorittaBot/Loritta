@@ -3,9 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
-import com.mrpowergamerbr.loritta.utils.msgFormat
 
 class VaporQualidadeCommand : CommandBase() {
 	override fun getLabel(): String {
@@ -13,7 +13,7 @@ class VaporQualidadeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.VAPORQUALIDADE_DESCRIPTION.msgFormat()
+		return locale["VAPORQUALIDADE_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -34,19 +34,10 @@ class VaporQualidadeCommand : CommandBase() {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
-
-			val sb = StringBuilder()
-			for (ch in qualidade.toCharArray()) {
-				if (Character.isLetterOrDigit(ch)) {
-					sb.append(Character.toUpperCase(ch))
-					sb.append(" ")
-				} else {
-					sb.append(ch)
-				}
-			}
-
-			context.sendMessage(context.getAsMention(true) + sb.toString())
+			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" ").toCharArray().joinToString(" ")).toUpperCase()
+			context.reply(
+					LoriReply(message = qualidade, prefix = "✍")
+			)
 		} else {
 			this.explain(context)
 		}

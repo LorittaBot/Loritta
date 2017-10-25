@@ -3,10 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.util.*
@@ -42,16 +43,8 @@ class TretaNewsCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		var user1: User? = null
-		var user2: User? = null
-
-		if (context.message.mentionedUsers.size >= 1) {
-			user1 = context.message.mentionedUsers[0]
-		}
-
-		if (context.message.mentionedUsers.size >= 2) {
-			user2 = context.message.mentionedUsers[1]
-		}
+		var user1: User? = LorittaUtils.getUserFromContext(context, 0)
+		var user2: User? =  LorittaUtils.getUserFromContext(context, 1)
 
 		if (user1 == null) {
 			var member1 = context.guild.members[SplittableRandom().nextInt(context.guild.members.size)]
@@ -75,18 +68,20 @@ class TretaNewsCommand : CommandBase() {
 
 		val base = TretaNewsGenerator.generate(context.guild, context.guild.getMember(user1), context.guild.getMember(user2))
 
-		val builder = MessageBuilder()
-		builder.append(context.getAsMention(true) + "VOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÍCIAAAAAAAAS!")
-
-		if (false) {
-			builder.append(" ")
-			builder.append(user1!!)
-			builder.append(" ")
-			builder.append(user2!!)
-		} else {
-
-		}
-
-		context.sendFile(base, "tretanews.png", builder.build())
+		context.reply(base.image, "tretanews.png",
+				LoriReply(
+						message = "VOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÍCIAAAAAAAAS!",
+						prefix = "<:fluffy:372454445721845761>"
+				),
+				LoriReply(
+						message = "`${base.title}`",
+						mentionUser = false
+				),
+				LoriReply(
+						message = "\uD83D\uDCFA `${base.views}` **${context.locale["MUSICINFO_VIEWS"]}**, \uD83D\uDE0D `${base.likes}` **${context.locale["MUSICINFO_LIKES"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.locale["MUSICINFO_DISLIKES"]}**",
+						prefix = "\uD83D\uDCC8",
+						mentionUser = false
+				)
+		)
 	}
 }

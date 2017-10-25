@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Jankenpon
 import com.mrpowergamerbr.loritta.utils.Jankenpon.JankenponStatus
-import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.io.File
 import java.io.IOException
@@ -17,7 +17,7 @@ class PedraPapelTesouraCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PPT_DESCRIPTION.f()
+		return locale["PPT_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -49,20 +49,34 @@ class PedraPapelTesouraCommand : CommandBase() {
 
 				var fancy: String? = null
 				if (status == JankenponStatus.WIN) {
-					fancy = "**${context.locale.PPT_WIN.f()} \uD83D\uDE0A**"
+					fancy = "**${context.locale["PPT_WIN"]} \uD83D\uDE0A**"
 				}
 				if (status == JankenponStatus.LOSE) {
-					fancy = "**${context.locale.PPT_LOSE.f()} \uD83D\uDE42**"
+					fancy = "**${context.locale["PPT_LOSE"]} \uD83D\uDE42**"
 				}
 				if (status == JankenponStatus.DRAW) {
-					fancy = "**${context.locale.PPT_DRAW.f()} \uD83D\uDE0A**"
+					fancy = "**${context.locale["PPT_DRAW"]} \uD83D\uDE0A**"
 				}
-				context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f(janken.emoji, opponent.emoji) + "\n" + fancy)
+				if (fancy == null) {
+					return
+				}
+				val prefix = when (status) {
+					JankenponStatus.WIN -> "\uD83C\uDF89"
+					JankenponStatus.DRAW -> "\uD83C\uDFF3"
+					JankenponStatus.LOSE -> "\uD83C\uDFF4"
+				}
+				context.reply(
+						LoriReply(message = context.locale["PPT_CHOSEN", janken.emoji, opponent.emoji], prefix = prefix),
+						LoriReply(message = fancy, mentionUser = false)
+				)
 			} else {
 				if (playerValue.equals("jesus", ignoreCase = true)) {
-					val fancy = "**${context.locale.PPT_MAYBE_DRAW.f()} 🤔 🤷**"
-					val jesus = "🙇 *${context.locale.PPT_JESUS_CHRIST.f()}* 🙇"
-					context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f(jesus, jesus) + "\n" + fancy)
+					val fancy = "**${context.locale["PPT_MAYBE_DRAW"]} 🤔 🤷**"
+					val jesus = "🙇 *${context.locale["PPT_JESUS_CHRIST"]}* 🙇"
+					context.reply(
+							LoriReply(message = context.locale["PPT_CHOSEN", jesus, jesus], prefix = "\uD83C\uDFF3"),
+							LoriReply(message = fancy, mentionUser = false)
+					)
 				} else if (playerValue.equals("velberan", ignoreCase = true)) {
 					val opponent = Jankenpon.values()[Loritta.random.nextInt(Jankenpon.values().size)]
 
@@ -74,9 +88,12 @@ class PedraPapelTesouraCommand : CommandBase() {
 						e.printStackTrace()
 					}
 				} else {
-					val fancy = "**${context.locale.PPT_INVALID.f()} \uD83D\uDE09**"
-					val jesus = "🙇 *${context.locale.PPT_JESUS_CHRIST.f()}* 🙇"
-					context.sendMessage(context.getAsMention(true) + context.locale.PPT_CHOSEN.f("💩", jesus) + "\n" + fancy)
+					val fancy = "**${context.locale["PPT_INVALID"]} \uD83D\uDE09**"
+					val jesus = "🙇 *${context.locale["PPT_JESUS_CHRIST"]}* 🙇"
+					context.reply(
+							LoriReply(message = context.locale["PPT_CHOSEN", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
+							LoriReply(message = fancy, mentionUser = false)
+					)
 				}
 			}
 		} else {

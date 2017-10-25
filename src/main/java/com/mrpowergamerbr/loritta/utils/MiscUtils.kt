@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
+import com.mrpowergamerbr.loritta.Loritta.Companion.gson
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import java.io.StringReader
@@ -155,5 +156,15 @@ object MiscUtils {
 		} catch (e: HttpRequest.HttpRequestException) {
 			return null
 		}
+	}
+
+	fun isJSONValid(jsonInString: String): Boolean {
+		try {
+			gson.fromJson(jsonInString, Any::class.java)
+			return true
+		} catch (ex: com.google.gson.JsonSyntaxException) {
+			return false
+		}
+
 	}
 }

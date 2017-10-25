@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import java.util.regex.Pattern
@@ -22,7 +23,7 @@ object InviteLinkModule {
 		val whitelisted = mutableListOf<String>()
 		inviteBlockerConfig.whitelistedIds.clear()
 		whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
-		if (inviteBlockerConfig.whitelistServerInvites) {
+		if (inviteBlockerConfig.whitelistServerInvites && guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
 			guild.invites.complete().forEach {
 				whitelisted.add(it.code)
 			}

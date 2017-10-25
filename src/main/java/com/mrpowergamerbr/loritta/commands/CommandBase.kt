@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
@@ -156,13 +157,6 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
-				// if (requiresMusicEnabled() || onlyInMusicInstance()) {
-					// Ignorar comandos de música em uma instância não somente para música
-				// 	if (!loritta.isMusicOnly) {
-				// 		return true
-				// 	}
-				// }
-
 				// Carregar as opções de comandos
 				val cmdOptions = conf.getCommandOptionsFor(this)
 
@@ -228,7 +222,6 @@ open abstract class CommandBase {
 				var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
 				if (byMention) {
 					args = args.remove(0)
-					args = args.remove(0)
 					rawArgs = rawArgs.remove(0)
 					strippedArgs = strippedArgs.remove(0)
 				}
@@ -278,6 +271,7 @@ open abstract class CommandBase {
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
 
 				ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale.get("ERROR_WHILE_EXECUTING_COMMAND")).complete()
+				return true
 			}
 		}
 		return false
@@ -325,11 +319,15 @@ open abstract class CommandBase {
 			embed.setDescription(cmdInfo)
 			embed.setFooter(ev.author.name + "#" + ev.author.discriminator, ev.author.effectiveAvatarUrl) // Adicionar quem executou o comando
 			embed.setTimestamp(Instant.now())
-
 			if (conf.explainInPrivate) {
 				ev.author.openPrivateChannel().complete().sendMessage(embed.build()).complete()
 			} else {
-				ev.channel.sendMessage(embed.build()).complete()
+				val builder = MessageBuilder().apply {
+					setEmbed(embed.build()).build()
+					append(context.getAsMention(true))
+				}
+
+				ev.channel.sendMessage(builder.build()).complete()
 			}
 		}
 	}

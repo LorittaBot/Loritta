@@ -22,7 +22,7 @@ class LanguageCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.LANGUAGE_DESCRIPTION.f()
+		return locale["LANGUAGE_DESCRIPTION"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -61,7 +61,7 @@ class LanguageCommand : CommandBase() {
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
-			context.sendMessage("\uD83C\uDFA4 **|** ${newLocale.get("LANGUAGE_USING_LOCALE", localeId)}")
+			context.reply(newLocale["LANGUAGE_USING_LOCALE", localeId], "\uD83C\uDFA4")
 			msg.delete().complete()
 		}
 	}

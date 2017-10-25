@@ -116,7 +116,7 @@ class AjudaCommand : CommandBase() {
 			context.sendMessage(additionalInfoEmbed.build())
 		} catch (e: ErrorResponseException) {
 			if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
-				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"])
+				context.event.textChannel.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).complete()
 				return
 			}
 			throw e

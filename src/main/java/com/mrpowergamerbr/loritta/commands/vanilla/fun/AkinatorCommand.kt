@@ -43,8 +43,25 @@ class AkinatorCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val response = HttpRequest.get("http://api-pt3.akinator.com/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
-				.body()
+		val apiEndpoint = when (context.config.localeId) {
+			"default", "pt-pt", "pt-funk" -> "http://api-pt3.akinator.com"
+			"tr_tr" -> "http://api-tr3.akinator.com"
+			"pl_pl" -> "http://api-pl3.akinator.com"
+			"ru_ru" -> "http://api-ru3.akinator.com"
+			"nl_nl" -> "http://api-nl2.akinator.com"
+			"kr_kr" -> "http://api-kr1.akinator.com"
+			"ja_jp" -> "http://api-jp3.akinator.com"
+			"it_it" -> "http://api-it3.akinator.com"
+			"he_il" -> "http://api-il1.akinator.com"
+			"fr_fr" -> "http://api-fr3.akinator.com"
+			"es_es" -> "http://api-es1.akinator.com"
+			"ar_sa" -> "http://api-ar2.akinator.com"
+			"ch_ch" -> "http://api-cn1.akinator.com"
+			else -> "http://api-us3.akinator.com"
+		}
+
+		val response = HttpRequest.get("$apiEndpoint/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
+			.body()
 
 		val xmlJSONObj = XML.toJSONObject(response);
 

@@ -29,7 +29,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		super.run()
 
 		while (true) {
-			checkNewVideos();
+			try {
+				checkNewVideos()
+			} catch (e: Exception) {
+				e.printStackTrace()
+			}
 			Thread.sleep(7500); // Só 7.5s de delay!
 		}
 	}
@@ -42,6 +46,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	}
 
 	fun checkNewVideos() {
+		println("Verificando novos vídeos...")
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("youTubeConfig.channels").exists()
 		// IDs dos canais a serem verificados

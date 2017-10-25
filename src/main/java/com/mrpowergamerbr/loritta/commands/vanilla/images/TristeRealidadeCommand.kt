@@ -6,9 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.awt.Color
@@ -27,7 +25,7 @@ class TristeRealidadeCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TRISTEREALIDADE_DESCRIPTION.f()
+		return locale["TRISTEREALIDADE_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -41,7 +39,7 @@ class TristeRealidadeCommand : CommandBase() {
 	override fun run(context: CommandContext) {
 		val cmdOpti = context.config.getCommandOptionsFor(this) as TristeRealidadeCommandOptions
 
-		val bi = ImageIO.read(File(Loritta.FOLDER + context.locale.TRISTEREALIDADE_FILE.f())) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.FOLDER + context.locale["TRISTEREALIDADE_FILE"])) // Primeiro iremos carregar o nosso template
 		var x = 0
 		var y = 0
 
@@ -92,7 +90,7 @@ class TristeRealidadeCommand : CommandBase() {
 				baseGraph.drawString(member.name + "#" + member.discriminator, x + 1, y + 13)
 			}
 
-			x = x + 128
+			x += 128
 			if (x > 256) {
 				x = 0
 				y = 128
@@ -103,18 +101,7 @@ class TristeRealidadeCommand : CommandBase() {
 
 		baseGraph.drawImage(bi, 0, 0, null)
 
-		val builder = MessageBuilder()
-
-		if (cmdOpti.mentionEveryone) {
-			for (usr in clonedUserList) {
-				builder.append(usr)
-				builder.append(" ")
-			}
-		} else {
-			builder.append(" ")
-		}
-
-		context.sendFile(base, "triste_realidade.png", builder.build())
+		context.sendFile(base, "triste_realidade.png", context.getAsMention(true))
 	}
 
 	class TristeRealidadeCommandOptions : CommandOptions() {

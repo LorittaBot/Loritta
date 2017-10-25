@@ -12,7 +12,7 @@ class CaraCoroaCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.CARACOROA_DESCRIPTION
+		return locale["CARACOROA_DESCRIPTION"]
 	}
 
 	override fun run(context: CommandContext) {

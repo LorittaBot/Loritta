@@ -8,20 +8,24 @@ object VaporwaveUtils {
 	 */
 	fun vaporwave(str: String): String {
 		var str = str
-		str = str.toLowerCase() // Como a gente abusa dos códigos unicode, é necessário dar lowercase antes de aplicar o efeito
+		str = str // Como a gente abusa dos códigos unicode, é necessário dar lowercase antes de aplicar o efeito
 		val sb = StringBuilder()
-		for (c in str.toCharArray()) {
+		for (_c in str.toCharArray()) {
+			val isUpperCase = _c.isUpperCase();
+			val c = _c.toLowerCase()
 			if (Character.isSpaceChar(c)) {
 				sb.append(" ")
 				continue
 			}
-			val vaporC = (c.toInt() + 0xFEE0).toChar()
+			var vaporC = (c.toInt() + 0xFEE0).toChar()
 
 			if (Character.getType(vaporC) != 2) {
 				sb.append(c)
 				continue
 			}
 
+			if (isUpperCase)
+				vaporC = vaporC.toUpperCase()
 			sb.append(vaporC)
 		}
 		return sb.toString()

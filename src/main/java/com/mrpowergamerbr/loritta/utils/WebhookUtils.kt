@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.MessageChannel
 import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.entities.Webhook
 import net.dv8tion.jda.core.exceptions.PermissionException
@@ -14,10 +16,15 @@ object WebhookUtils {
 	 * @param name        Nome do Webhook
 	 * @return TemmieWebhook pronto para ser usado
 	 */
-	fun getOrCreateWebhook(textChannel: TextChannel, name: String): TemmieWebhook? {
-		if (textChannel == null || !textChannel.guild.selfMember.hasPermission(Permission.MANAGE_WEBHOOKS)) { // Se a Loritta não pode acessar as webhooks do servidor, retorne null
-			return null;
-		}
+	fun getOrCreateWebhook(channel: MessageChannel, name: String): TemmieWebhook? {
+		if (channel == null || channel.type == ChannelType.PRIVATE) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
+			return null
+
+		val textChannel = channel as TextChannel
+
+		if (!textChannel.guild.selfMember.hasPermission(Permission.MANAGE_WEBHOOKS))
+			return null
+
 		val webhookList = textChannel.guild.webhooks.complete();
 
 		val webhooks = webhookList.filter{ it.channel == textChannel }
@@ -39,6 +46,6 @@ object WebhookUtils {
 	}
 }
 
-fun getOrCreateWebhook(textChannel: TextChannel, name: String): TemmieWebhook? {
-	return WebhookUtils.getOrCreateWebhook(textChannel, name)
+fun getOrCreateWebhook(channel: MessageChannel, name: String): TemmieWebhook? {
+	return WebhookUtils.getOrCreateWebhook(channel, name)
 }

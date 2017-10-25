@@ -19,7 +19,7 @@ class MagicBallCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.VIEIRINHA_DESCRIPTION
+		return locale["VIEIRINHA_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {

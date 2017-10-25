@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser;
+import com.mrpowergamerbr.loritta.utils.LoriReply;
 import com.mrpowergamerbr.loritta.utils.LorittaUser;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
@@ -13,12 +14,21 @@ import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -103,6 +113,39 @@ public class CommandContext {
 
 	public Guild getGuild() {
 		return event.getGuild();
+	}
+
+	public Message reply(String message) {
+		return reply(message, null);
+	}
+
+	public Message reply(String message, String prefix) {
+		return reply(message, prefix, false);
+	}
+
+	public Message reply(String message, String prefix, boolean forceMention) {
+		String send = "";
+		if (prefix != null) {
+			send = prefix + " **|** ";
+		}
+		send = send + (forceMention ? getUserHandle().getAsMention() + " " : getAsMention(true)) + message;
+		return sendMessage(send);
+	}
+
+	public Message reply(LoriReply... loriReplies) {
+		StringBuilder message = new StringBuilder();
+		for (LoriReply loriReply : loriReplies) {
+			message.append(loriReply.build(this) + "\n");
+		}
+		return sendMessage(message.toString());
+	}
+
+	public Message reply(BufferedImage image, String fileName, LoriReply... loriReplies) {
+		StringBuilder message = new StringBuilder();
+		for (LoriReply loriReply : loriReplies) {
+			message.append(loriReply.build(this) + "\n");
+		}
+		return sendFile(image, fileName, message.toString());
 	}
 
 	public Message sendMessage(String message) {

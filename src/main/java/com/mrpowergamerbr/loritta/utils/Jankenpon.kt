@@ -5,7 +5,7 @@ import lombok.Getter
 @Getter
 enum class Jankenpon
 	private constructor(var lang: String, var emoji: String, var wins: String, var loses: String) {
-	ROCK("pedra", ":black_circle:", "SCISSORS", "PAPER"),
+	ROCK("pedra", "\uD83C\uDF11", "SCISSORS", "PAPER"),
 	PAPER("papel", ":newspaper:", "ROCK", "SCISSORS"),
 	SCISSORS("tesoura", ":scissors:", "PAPER", "ROCK");
 

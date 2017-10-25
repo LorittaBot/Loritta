@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -15,8 +14,15 @@ private val frases = listOf(
 	"Vamos ver as vídeos cassetadas",
 	"Voltamos já com vídeos cassetadas",
 	"ERRRROOOOOOOOOUUUUUUUU!!!!",
-	"E agora, pra desligar essa merda aí, meu. Porra ligou, agora desliga! Tá pegando fogo bixo!",
-	"Está fera ai bixo",
+	"E agora, pra desligar essa merda aí, meu. Porra ligou, agora desliga! Tá pegando fogo bicho!",
+	"TÁ PEGANDO FOGO BICHO!",
+	"OLOCO!",
+	"Essa fera ai bicho!",
+	"Essa fera ai meu!",
+	"Você destruiu o meu ovo! \uD83C\uDF73",
+	"Ih Serjão Sujou! \uD83C\uDFC3\uD83D\uDCA8",
+	"ERROU! ⚠",
+	"Você vai morrer ⚰",
 	"Olha o tamanho da criança",
 	"Oito e sete",
 	"Ô loco meu!",
@@ -26,7 +32,8 @@ private val frases = listOf(
 	"A TV é chata no domingo, é para quem não tem dinheiro nem o que fazer. Eu trabalho no domingo por isso. O domingo é chato. Para quem pode viajar e passear, o domingo é maravilhoso.",
 	"Logo após os reclames do plim-plim!",
 	"Olha só o que faz a maldita manguaça bicho!",
-	"{user} é bom tanto no pessoal como no profissional.")
+	"{user} é bom tanto no pessoal como no profissional.",
+	"Essa fera {user} aqui no domingão!")
 
 private val avatars = listOf(
 	"http://i.imgur.com/PS61w6I.png",
@@ -48,7 +55,7 @@ class FaustaoCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.FAUSTAO_DESCRIPTION.f()
+		return locale["FAUSTAO_DESCRIPTION"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {
@@ -60,9 +67,9 @@ class FaustaoCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		val temmie = getOrCreateWebhook(context.event.textChannel, "Faustão")
+		val temmie = getOrCreateWebhook(context.event.channel, "Faustão")
 
-		val mensagem = frases[Loritta.random.nextInt(frases.size)].replace("{user}", context.getAsMention(false));
+		val mensagem = frases[Loritta.random.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);
 
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Faustão")

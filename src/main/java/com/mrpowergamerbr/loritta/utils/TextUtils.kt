@@ -109,7 +109,7 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	if (this.length - 1 in range)
 		return this
 
-	return this.substring(0 until 1997) + suffix
+	return this.substring(range.start .. range.last - 3) + suffix
 }
 
 fun String.escapeMentions(): String {

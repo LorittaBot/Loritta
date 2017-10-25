@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Image
 import java.io.File
@@ -21,7 +20,7 @@ class SAMCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.SAM_DESCRIPTION.f()
+		return locale["SAM_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {

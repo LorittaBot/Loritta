@@ -1,19 +1,22 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.stream.JsonReader
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
-import org.jsoup.Jsoup
 import java.awt.Color
-import java.io.StringReader
 import java.net.URLEncoder
 
 class WikiaCommand : CommandBase() {
@@ -46,34 +49,84 @@ class WikiaCommand : CommandBase() {
 		if (context.args.size >= 2) {
 			val websiteId = context.args[0]
 
+			val wikiaUrl = "http://$websiteId.wikia.com"
+			val metadataResponse = HttpRequest.get("$wikiaUrl/api/v1/Mercury/WikiVariables")
+			val metadataBody = metadataResponse.body()
+
+			if (!MiscUtils.isJSONValid(metadataBody)) {
+				context.reply(
+						LoriReply("Wikia `$websiteId` não existe!", Constants.ERROR)
+				)
+				return
+			}
+
+			val metadata = jsonParser.parse(metadataBody)["data"].obj
+			val wikiaImage = if (metadata.has("image") && !metadata["image"].isJsonNull) {
+				metadata["image"].string.split("/revision")[0]
+			} else {
+				"https://slot1-images.wikia.nocookie.net/__cb1508839704/common/skins/common/images/wiki.png"
+			}
+			val wikiaName = metadata["siteName"].string
+
 			val query = StringUtils.join(context.args, " ", 1, context.args.size)
-			val body = HttpRequest.get("http://" + websiteId + ".wikia.com/api/v1/Search/List/?query=" + URLEncoder.encode(query, "UTF-8") + "&limit=1&namespaces=0%2C14").body()
+			val body = HttpRequest.get("$wikiaUrl/api/v1/Search/List/?query=" + URLEncoder.encode(query, "UTF-8") + "&limit=1&namespaces=0%2C14").body()
 
 			// Resolvi usar JsonParser em vez de criar um objeto para o Gson desparsear..
-			val reader = StringReader(body)
-			val jsonReader = JsonReader(reader)
-			jsonReader.isLenient = true
 			try {
-				val wikiaResponse = jsonParser.parse(jsonReader).asJsonObject // Base
+				val wikiaResponse = jsonParser.parse(body).obj // Base
 
 				if (wikiaResponse.has("exception")) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
 				} else {
-					val item = wikiaResponse.get("items").asJsonArray.get(0).asJsonObject // Nós iremos pegar o 0, já que é o primeiro resultado
+					val item = wikiaResponse.get("items").array[0].obj // Nós iremos pegar o 0, já que é o primeiro resultado
+
+					val response = HttpRequest.get("$wikiaUrl/api/v1/Articles/AsSimpleJson?id=${item["id"].string}")
+							.body()
+
+					val json = jsonParser.parse(response).obj
+
+					val sections = json["sections"].array
+					var image: String? = null
+
+					for (_section in sections) {
+						val section = _section.obj
+						if (image == null && section.has("images")) {
+							val images = section["images"].array
+							if (images.size() > 0) {
+								image = images[0]["src"].string
+							}
+						}
+					}
 
 					val pageTitle = item.get("title").asString
-					val pageExtract = Jsoup.parse(item.get("snippet").asString).text()
 					val pageUrl = item.get("url").asString
 
-					val embed = EmbedBuilder()
-							.setTitle(pageTitle, pageUrl)
-							.setColor(Color.BLUE)
-							.setDescription(if (pageExtract.length > 2048) pageExtract.substring(0, 2044) + "..." else pageExtract)
+					val embed = EmbedBuilder().apply {
+						setTitle("<:fandom:372531714502819852> $pageTitle", pageUrl)
+						setAuthor(wikiaName, wikiaUrl, wikiaImage)
+						setColor(Color(57, 233, 0))
+						setThumbnail(image)
 
-					context.sendMessage(embed.build()) // Envie a mensagem!
+						for (_section in sections) {
+							val section = _section.obj
+							var sectionText = ""
+							val contents = section["content"].array
+							for (content in contents) {
+								if (content.obj.has("text")) {
+									val contentText = content["text"].string
+									sectionText += "$contentText\n"
+								}
+							}
+							setDescription(sectionText.substringIfNeeded(0 until 2048))
+							break
+						}
+					}
+
+					context.sendMessage(context.getAsMention(true), embed.build()) // Envie a mensagem!
 				}
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIA_COULDNT_FIND.msgFormat(query, websiteId))
+				e.printStackTrace()
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
 			}
 		} else {
 			this.explain(context);

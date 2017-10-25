@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
@@ -26,7 +27,7 @@ class EncurtarCommand : CommandBase() {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.BITLY_DESCRIPTION
+		return locale["BITLY_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -42,7 +43,12 @@ class EncurtarCommand : CommandBase() {
 			}
 			var short = temmie.shorten(url);
 			if (short != null && short != "INVALID_URI") {
-				context.sendMessage(context.getAsMention(true) + short)
+				context.reply(
+						LoriReply(
+								message = short,
+								prefix = "\uD83D\uDDDC"
+						)
+				)
 			} else {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BITLY_INVALID.msgFormat(context.args[0]))
 			}
