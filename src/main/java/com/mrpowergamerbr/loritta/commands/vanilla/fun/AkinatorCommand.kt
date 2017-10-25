@@ -42,24 +42,27 @@ class AkinatorCommand : CommandBase() {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
-		val apiEndpoint = when (context.config.localeId) {
+	fun getApiEndpoint(localeId: String): String {
+		return when (localeId) {
 			"default", "pt-pt", "pt-funk" -> "http://api-pt3.akinator.com"
-			"tr_tr" -> "http://api-tr3.akinator.com"
-			"pl_pl" -> "http://api-pl3.akinator.com"
-			"ru_ru" -> "http://api-ru3.akinator.com"
-			"nl_nl" -> "http://api-nl2.akinator.com"
-			"kr_kr" -> "http://api-kr1.akinator.com"
-			"ja_jp" -> "http://api-jp3.akinator.com"
-			"it_it" -> "http://api-it3.akinator.com"
-			"he_il" -> "http://api-il1.akinator.com"
-			"fr_fr" -> "http://api-fr3.akinator.com"
-			"es_es" -> "http://api-es1.akinator.com"
-			"ar_sa" -> "http://api-ar2.akinator.com"
-			"ch_ch" -> "http://api-cn1.akinator.com"
+			"tr-tr" -> "http://api-tr3.akinator.com"
+			"pl-pl" -> "http://api-pl3.akinator.com"
+			"ru-ru" -> "http://api-ru3.akinator.com"
+			"nl-nl" -> "http://api-nl2.akinator.com"
+			"kr-kr" -> "http://api-kr1.akinator.com"
+			"ja-jp" -> "http://api-jp3.akinator.com"
+			"it-it" -> "http://api-it3.akinator.com"
+			"he-il" -> "http://api-il1.akinator.com"
+			"fr-fr" -> "http://api-fr3.akinator.com"
+			"es-es" -> "http://api-es1.akinator.com"
+			"ar-sa" -> "http://api-ar2.akinator.com"
+			"ch-ch" -> "http://api-cn1.akinator.com"
 			else -> "http://api-us3.akinator.com"
 		}
+	}
 
+	override fun run(context: CommandContext) {
+		val apiEndpoint = getApiEndpoint(context.config.localeId)
 		val response = HttpRequest.get("$apiEndpoint/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
 			.body()
 
@@ -124,6 +127,7 @@ class AkinatorCommand : CommandBase() {
 	}
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
+		val apiEndpoint = getApiEndpoint(context.config.localeId)
 		if (e.user == context.userHandle && e is MessageReactionAddEvent) {
 			e.reaction.removeReaction(context.userHandle).complete()
 			if (context.metadata.contains("channel")) {
@@ -146,10 +150,10 @@ class AkinatorCommand : CommandBase() {
 				}
 
 				val response = if (e.reactionEmote.name == "⏪") {
-					HttpRequest.get("http://api-pt3.akinator.com/ws/cancel_answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step")
+					HttpRequest.get("$apiEndpoint/ws/cancel_answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step")
 							.body()
 				} else {
-					HttpRequest.get("http://api-pt3.akinator.com/ws/answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&answer=$answer")
+					HttpRequest.get("$apiEndpoint/ws/answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&answer=$answer")
 							.body()
 				}
 
@@ -251,7 +255,7 @@ class AkinatorCommand : CommandBase() {
 						}
 					}
 				} else {
-					val response = HttpRequest.get("http://api-pt3.akinator.com/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
+					val response = HttpRequest.get("$apiEndpoint/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
 							.body()
 
 					val xmlJSONObj = XML.toJSONObject(response);
