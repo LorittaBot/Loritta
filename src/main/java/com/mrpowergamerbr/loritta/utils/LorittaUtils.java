@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.mrpowergamerbr.loritta.utils.TextUtilsKt.f;
@@ -273,9 +274,31 @@ public class LorittaUtils {
 				}
 			}
 
+			// Vamos tentar procurar pelo username + discriminator
+			if (!context.isPrivateChannel() && realUser == null && !link.isEmpty()) {
+				String[] split = link.split("#");
+
+				if (split.length == 2) {
+					Optional<Member> matchedMember = context.getGuild().getMembersByName(split[1], false).stream().filter(it -> it.getUser().getDiscriminator().equals(split[1])).findFirst();
+
+					if (matchedMember.isPresent()) {
+						realUser = matchedMember.get().getUser();
+					}
+				}
+			}
+
 			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
 			if (!context.isPrivateChannel() && realUser == null && !link.isEmpty()) {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
+
+				if (!matchedMembers.isEmpty()) {
+					realUser = matchedMembers.get(0).getUser();
+				}
+			}
+
+			// Se não, vamos procurar só pelo username mesmo
+			if (!context.isPrivateChannel() && realUser == null && !link.isEmpty()) {
+				List<Member> matchedMembers = context.getGuild().getMembersByName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
 					realUser = matchedMembers.get(0).getUser();
