@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AkinatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ClapifyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CleverbotCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FraseToscaCommand
@@ -151,7 +150,6 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(PrimeirasPalavrasCommand())
 		commandMap.add(DrakeCommand())
 		commandMap.add(InverterCommand())
-		commandMap.add(ClapifyCommand())
 		commandMap.add(SpinnerCommand())
 		commandMap.add(LavaCommand())
 		commandMap.add(LavaReversoCommand())
