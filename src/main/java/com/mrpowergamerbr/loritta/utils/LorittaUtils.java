@@ -279,7 +279,7 @@ public class LorittaUtils {
 				String[] split = link.split("#");
 
 				if (split.length == 2) {
-					Optional<Member> matchedMember = context.getGuild().getMembersByName(split[1], false).stream().filter(it -> it.getUser().getDiscriminator().equals(split[1])).findFirst();
+					Optional<Member> matchedMember = context.getGuild().getMembersByName(split[0], false).stream().filter(it -> it.getUser().getDiscriminator().equals(split[1])).findFirst();
 
 					if (matchedMember.isPresent()) {
 						realUser = matchedMember.get().getUser();
