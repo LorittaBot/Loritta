@@ -499,9 +499,11 @@ public class LorittaUtils {
 	public static void startAutoPlaylist() {
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {
-				manageAutoPlaylists();
 				try {
-					Thread.sleep(12500);
+					manageAutoPlaylists();
+				} catch (Exception e) {}
+				try {
+					Thread.sleep(2500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -511,6 +513,7 @@ public class LorittaUtils {
 	}
 
 	public static void manageAutoPlaylists() {
+		System.out.println("Wow, checking stuff...");
 		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
 			if (mm.player.getPlayingTrack() == null) {
 				Thread x = new Thread(() -> {
@@ -533,7 +536,7 @@ public class LorittaUtils {
 
 		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
 
-		if (conf.musicConfig.getMusicGuildId().isEmpty())
+		if (conf.musicConfig.getMusicGuildId() == null || conf.musicConfig.getMusicGuildId().isEmpty())
 			return;
 
 		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.musicConfig.getMusicGuildId());
