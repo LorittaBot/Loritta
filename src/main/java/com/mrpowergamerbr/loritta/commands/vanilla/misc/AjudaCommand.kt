@@ -61,7 +61,7 @@ class AjudaCommand : CommandBase() {
 			val undertaleCmds = getCommandsFor(context, disabledCommands, CommandCategory.UNDERTALE, "http://vignette2.wikia.nocookie.net/animal-jam-clans-1/images/0/08/Annoying_dog_101.gif/revision/latest?cb=20151231033006")
 			val pokemonCmds = getCommandsFor(context, disabledCommands, CommandCategory.POKEMON, "http://i.imgur.com/2l5kKCp.png")
 			val robloxCmds = getCommandsFor(context, disabledCommands, CommandCategory.ROBLOX, "https://media.discordapp.net/attachments/297732013006389252/352269723385462787/download.png")
-			val musicCmds = getCommandsFor(context, disabledCommands, CommandCategory.MUSIC, "http://i.imgur.com/C9idIUF.png")
+			val musicCmds = getCommandsFor(context, disabledCommands, CommandCategory.MUSIC, "https://loritta.website/assets/img/loritta_headset.png")
 			val funCmds = getCommandsFor(context, disabledCommands, CommandCategory.FUN, "http://i.imgur.com/ssNe7dx.png")
 			val imagesCmds = getCommandsFor(context, disabledCommands, CommandCategory.IMAGES, "http://i.imgur.com/ssNe7dx.png")
 			val miscCmds = getCommandsFor(context, disabledCommands, CommandCategory.MISC, "http://i.imgur.com/Qs8MyFy.png")
