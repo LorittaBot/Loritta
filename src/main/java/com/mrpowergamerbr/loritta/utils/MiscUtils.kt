@@ -136,7 +136,7 @@ object MiscUtils {
 	fun getInviteId(url: String): String? {
 		try {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
-			var newUrl = url
+			var newUrl = url.removePrefix(".").removeSuffix(".")
 			val bitlyUrl = temmie.expand(url)
 			if (!bitlyUrl!!.contains("NOT_FOUND")) {
 				newUrl = bitlyUrl!!

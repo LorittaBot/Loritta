@@ -85,7 +85,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {
-						InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
+						if (InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
+							return@thread
+						}
 					}
 
 					// ===[ CÁLCULO DE XP ]===

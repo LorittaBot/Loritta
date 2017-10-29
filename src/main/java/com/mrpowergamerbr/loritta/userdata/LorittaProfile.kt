@@ -29,6 +29,7 @@ class LorittaProfile {
     var lastMessageSent: Long = 0; // Última vez que o usuário enviou uma mensagem
 	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
+    var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Int = 0
 
     fun getCurrentLevel(): XpWrapper {
@@ -55,4 +56,6 @@ class LorittaProfile {
 
     data class UsernameChange(val changedAt: Long = 0L, val username: String = "???", val discriminator: String = "0000") {
 	}
+
+    class SpinnerScore(val emoji: String = "???", val forTime: Long = 0)
 }

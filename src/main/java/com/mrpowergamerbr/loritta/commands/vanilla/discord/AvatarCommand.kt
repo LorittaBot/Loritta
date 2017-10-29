@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -32,10 +33,10 @@ class AvatarCommand : CommandBase() {
 	}
 
 	override fun run(context: CommandContext) {
-		var getAvatar = context.userHandle
+		var getAvatar = LorittaUtils.getUserFromContext(context, 0)
 
-		if (context.message.mentionedUsers.isNotEmpty()) {
-			getAvatar = context.message.mentionedUsers[0]
+		if (getAvatar == null) {
+			getAvatar = context.userHandle
 		}
 		var embed = EmbedBuilder();
 		embed.setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)

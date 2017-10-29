@@ -183,4 +183,8 @@ class RankCommand : CommandBase() {
 	data class RankWrapper(
 			val id: String,
 			val userData: LorittaServerUserData)
+
+	fun createRank() {
+
+	}
 }

@@ -11,12 +11,12 @@ import net.dv8tion.jda.core.entities.Message
 import java.util.regex.Pattern
 
 object InviteLinkModule {
-	fun checkForInviteLinks(message: Message, guild: Guild, lorittaProfile: GuildLorittaUser, permissionsConfig: PermissionsConfig, inviteBlockerConfig: InviteBlockerConfig) {
+	fun checkForInviteLinks(message: Message, guild: Guild, lorittaProfile: GuildLorittaUser, permissionsConfig: PermissionsConfig, inviteBlockerConfig: InviteBlockerConfig): Boolean {
 		if (inviteBlockerConfig.whitelistedChannels.contains(message.channel.id))
-			return
+			return false
 
 		if (lorittaProfile.hasPermission(LorittaPermission.ALLOW_INVITES))
-			return
+			return false
 
 		val content = message.content
 
@@ -53,7 +53,8 @@ object InviteLinkModule {
 						.replace("{@user}", asMention)
 						.replace("{user}", name)
 						.replace("{nickname}", effectiveName)).queue()
-			return
+			return true
 		}
+		return false
 	}
 }

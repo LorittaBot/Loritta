@@ -131,7 +131,7 @@ class TemmiePatreonAuth {
 				val metadata = included[element["relationships"]["patron"]["data"]["id"].int]!!["attributes"].obj
 
 				val fullName = metadata["full_name"].string
-				val discordId = if (metadata["social_connections"].obj.has("discord")) {
+				val discordId = if (metadata["social_connections"]["discord"].obj.has("user_id")) {
 					metadata["social_connections"]["discord"]["user_id"].string
 				} else {
 					null

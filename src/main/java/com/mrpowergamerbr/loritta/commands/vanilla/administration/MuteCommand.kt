@@ -42,7 +42,7 @@ class MuteCommand : CommandBase() {
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES)
+		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

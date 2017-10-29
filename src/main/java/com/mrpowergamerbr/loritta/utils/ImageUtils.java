@@ -168,6 +168,45 @@ public class ImageUtils {
 	 * @param text The String to draw.
 	 * @param rect The Rectangle to center the text in.
 	 */
+	public static void drawCenteredStringEmoji(Graphics graphics, String text, Rectangle rect, Font font) {
+		graphics.getFont();
+		// Get the FontMetrics
+		FontMetrics metrics = graphics.getFontMetrics(font);
+		// Determine the X coordinate for the text
+		int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
+		// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
+		int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
+
+		int idx = 0;
+		for (char c : text.toCharArray()) {
+			idx++;
+			int width = graphics.getFontMetrics().charWidth(c); // Width do char (normalmente é 16)
+			if (!graphics.getFont().canDisplay(c)) {
+				try {
+					// Talvez seja um emoji!
+					URL imageUrl = new URL("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
+					HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+					connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
+					BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
+					graphics.drawImage(emoteImage.getScaledInstance(graphics.getFont().getSize(), graphics.getFont().getSize(), BufferedImage.SCALE_SMOOTH), x, y - graphics.getFont().getSize() + 1, null);
+					x = x + graphics.getFontMetrics().getMaxAdvance();
+				} catch (Exception e) {}
+				continue;
+			}
+			graphics.drawString(String.valueOf(c), x, y); // Escreva o char na imagem
+			x = x + width; // E adicione o width no nosso currentX
+		}
+		// Draw the String
+		graphics.drawString(text, x, y);
+	}
+
+	/**
+	 * Draw a String centered in the middle of a Rectangle.
+	 *
+	 * @param graphics The Graphics instance.
+	 * @param text The String to draw.
+	 * @param rect The Rectangle to center the text in.
+	 */
 	public static void drawCenteredStringOutlined(Graphics graphics, String text, Rectangle rect, Font font) {
 		Color color = graphics.getColor();
 		Graphics2D g2d = null;

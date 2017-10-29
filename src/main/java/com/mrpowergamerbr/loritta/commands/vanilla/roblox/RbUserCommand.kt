@@ -8,7 +8,6 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -105,7 +104,7 @@ class RbUserCommand : CommandBase() {
 
 					val totalFriends = friendsResponse["TotalFriends"].int
 
-					var bufferedImage = BufferedImage(333, 250, BufferedImage.SCALE_SMOOTH)
+					var bufferedImage = BufferedImage(333, 250, BufferedImage.TYPE_INT_ARGB)
 
 					var x = 0
 					var y = 0

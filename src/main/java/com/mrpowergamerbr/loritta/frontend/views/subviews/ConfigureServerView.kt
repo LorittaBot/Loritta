@@ -141,6 +141,7 @@ class ConfigureServerView : ConfigureView() {
 
 		for (element in receivedPayload.entrySet()) {
 			val roleConfig = permissions.roles.getOrDefault(element.key, PermissionsConfig.PermissionRole())
+			roleConfig.permissions.clear()
 
 			response += "ROLE ${element.key}...\n"
 
