@@ -44,7 +44,7 @@ class OCRCommand : CommandBase() {
 				.contentType("application/json")
 				.header("Content-Length", json.toByteArray().size)
 				.header("Content-Type", "application/json")
-				.userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.22.0 (gzip)")
+				.userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.21.0 (gzip)")
 				.send(json)
 		val body = response.body()
 
