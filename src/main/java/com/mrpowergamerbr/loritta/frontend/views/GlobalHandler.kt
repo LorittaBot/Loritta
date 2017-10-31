@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AuthPathRedirectView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureAutoroleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureEventHandlersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureEventLogView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureInviteBlockerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ConfigureMusicView
@@ -209,6 +210,7 @@ object GlobalHandler {
 		views.add(ConfigureRSSFeedsView())
 		views.add(ConfigureNashornCommandsView())
 		views.add(ConfigureMusicView())
+		views.add(ConfigureEventHandlersView())
 		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())

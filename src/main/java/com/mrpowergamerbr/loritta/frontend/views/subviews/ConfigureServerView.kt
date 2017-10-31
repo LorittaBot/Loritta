@@ -9,6 +9,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.frontend.evaluate
+import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.userdata.AminoConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
@@ -52,6 +53,7 @@ class ConfigureServerView : ConfigureView() {
 					"youtube" -> serverConfig.youTubeConfig
 					"feeds" -> serverConfig.rssFeedConfig
 					"nashorn_commands" -> serverConfig.nashornCommands
+					"event_handlers" -> serverConfig.nashornEventHandlers
 					else -> null
 				}
 
@@ -70,6 +72,8 @@ class ConfigureServerView : ConfigureView() {
 					response = handleRssFeeds(serverConfig, receivedPayload)
 				} else if (type == "nashorn_commands") {
 					response = handleNashornCommands(serverConfig, receivedPayload)
+				} else if (type == "event_handlers") {
+					response = handleEventHandlers(serverConfig, receivedPayload)
 				} else {
 					for (element in receivedPayload.entrySet()) {
 						if (element.key == "guildId") {
@@ -247,6 +251,23 @@ class ConfigureServerView : ConfigureView() {
 			}
 
 			config.nashornCommands.add(command)
+		}
+
+		return "nice"
+	}
+
+	fun handleEventHandlers(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.nashornEventHandlers.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val code = entry["javaScript"].string
+
+			val command = NashornEventHandler().apply {
+				this.javaScript = code
+			}
+
+			config.nashornEventHandlers.add(command)
 		}
 
 		return "nice"

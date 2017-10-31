@@ -44,7 +44,8 @@ public class ServerConfig {
     public boolean mentionOnCommandOutput = true; // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
     public boolean warnOnUnknownCommand = false;
     public ArrayList<String> blacklistedChannels = new ArrayList<String>(); // Canais em que os comandos são bloqueados
-
+    public boolean warnIfBlacklisted = false;
+    public String blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)! <:blobBlush:357977010771066890>";
     public ArrayList<NashornCommand> nashornCommands = new ArrayList<NashornCommand>(); // Comandos customizados
 
     public ArrayList<NashornEventHandler> nashornEventHandlers = new ArrayList<>();

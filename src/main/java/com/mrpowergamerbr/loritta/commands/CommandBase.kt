@@ -131,8 +131,6 @@ open abstract class CommandBase {
 	}
 
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
-		if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST))
-			return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 		val message = ev.message.content
 		var rawMessage = ev.message.rawContent
 		var run = false
@@ -157,6 +155,25 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
+				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+					if (conf.warnIfBlacklisted) {
+						if (conf.blacklistWarning.isNotEmpty()) {
+							var message = conf.blacklistWarning
+							message = message.replace("{@user}", ev.member.asMention)
+							message = message.replace("{user}", ev.member.user.name)
+							message = message.replace("{nickname}", ev.member.effectiveName)
+							message = message.replace("{guild}", ev.guild.name)
+							message = message.replace("{guildsize}", ev.guild.members.size.toString())
+							message = message.replace("{@owner}", ev.guild.owner.asMention)
+							message = message.replace("{owner}", ev.guild.owner.effectiveName)
+							message = message.replace("{@channel}", ev.textChannel.asMention)
+							message = message.replace("{channel}", ev.textChannel.name)
+							ev.textChannel.sendMessage(message).complete()
+						}
+					}
+					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
+				}
+
 				// Carregar as opções de comandos
 				val cmdOptions = conf.getCommandOptionsFor(this)
 
