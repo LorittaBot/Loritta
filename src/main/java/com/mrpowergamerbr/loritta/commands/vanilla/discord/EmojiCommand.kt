@@ -55,8 +55,13 @@ class EmojiCommand : CommandBase() {
 				}
 			} else {
 				// Na verdade é um emoji padrão...
-				var value = LorittaUtils.toUnicode(emoji.codePointAt(0)) // Vamos usar codepoints porque emojis
-				value = value.substring(2) // Remover coisas desnecessárias
+				val codePoints = mutableListOf<String>()
+				for (idx in 0 until emoji.length step 2) {
+					var codePoint = LorittaUtils.toUnicode(emoji.codePointAt(idx)).substring(2)
+					codePoints += codePoint
+				}
+				// Vamos usar codepoints porque emojis
+				val value = codePoints.joinToString(separator = "-")
 				try {
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
 						context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}${context.locale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")

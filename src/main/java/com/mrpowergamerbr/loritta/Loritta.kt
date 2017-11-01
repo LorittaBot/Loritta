@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
+import com.mrpowergamerbr.loritta.threads.MutedUsersThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.ShardReviverThread
@@ -231,6 +232,8 @@ class Loritta {
 			DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
 
 			FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
+
+			MutedUsersThread().start() // Iniciar thread para pegar posts do Facebook
 
 			LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 

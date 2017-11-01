@@ -328,6 +328,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
 					WelcomeModule.handleJoin(event, conf)
 				}
+
+				val userData = conf.userData.getOrDefault(event.user.id, LorittaServerUserData())
+
+				if (userData.isMuted) {
+					var mutedRoles = event.guild.getRolesByName(loritta.getLocaleById(conf.localeId).MUTE_ROLE_NAME, false)
+					if (mutedRoles.isEmpty())
+						return@execute
+
+					event.guild.controller.addSingleRoleToMember(event.member, mutedRoles.first()).complete()
+				}
 			} catch (e: Exception) {
 				e.printStackTrace()
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)

@@ -5,6 +5,9 @@ package com.mrpowergamerbr.loritta.userdata
  */
 class LorittaServerUserData {
 	var xp: Int = 0; // XP do usuário no servidor
+	var isMuted: Boolean = false
+	var temporaryMute: Boolean = false
+	var expiresIn: Long = 0L
 
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
 		var lvl = 1;
