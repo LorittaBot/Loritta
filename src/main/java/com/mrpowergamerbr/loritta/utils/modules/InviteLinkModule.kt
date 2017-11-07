@@ -45,7 +45,7 @@ object InviteLinkModule {
 			val name = message.author.name
 			val effectiveName = message.member.effectiveName
 
-			if (inviteBlockerConfig.deleteMessage)
+			if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE))
 				message.delete().queue()
 
 			if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty())

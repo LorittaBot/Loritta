@@ -174,7 +174,7 @@ class RbUserCommand : CommandBase() {
 
 					bufferedImage = bufferedImage.getSubimage(0, 0, 333, y + 55)
 					val embed = EmbedBuilder().apply {
-						setTitle("<:roblox:352208393571663873>${if (isOnline) "<:online:313956277808005120>" else "<:offline:313956277237710868>"}$name")
+						setTitle("<:roblox:375313891925688331>${if (isOnline) "<:online:313956277808005120>" else "<:offline:313956277237710868>"}$name")
 						if (blurb.isNotEmpty()) {
 							setDescription(blurb)
 						}

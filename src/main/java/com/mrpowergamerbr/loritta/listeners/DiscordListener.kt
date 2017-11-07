@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.modules.SlowModeModule
 import com.mrpowergamerbr.loritta.utils.modules.StarboardModule
 import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
+import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.Permission
@@ -106,6 +107,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 							if (nonRepeatedCharsMessage.length >= 12) {
 								var gainedXp = Math.min(35, Loritta.random.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
+
+								if (event.author.patreon) {
+									var _gainedXp = gainedXp
+									_gainedXp = (_gainedXp * 1.25).toInt()
+									gainedXp = _gainedXp
+								}
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
 								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
@@ -221,10 +228,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val t = object : Thread() {
 				override fun run() {
 					try {
-						val msg = e.channel.getMessageById(e.messageId).complete()
-						if (msg != null) {
-							context.cmd.onCommandReactionFeedback(context, e, msg)
-						}
+						e.channel.getMessageById(e.messageId).queue({
+							context.cmd.onCommandReactionFeedback(context, e, it)
+						}, {
+							loritta.messageContextCache.remove(e.messageId)
+						})
 					} catch (exception: Exception) {
 						exception.printStackTrace()
 						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
@@ -235,40 +243,42 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		thread {
-			// TODO: Isto deveria ser feito usando a API da Loritta
-			if (e.guild.id == "297732013006389252") {
-				if (e.textChannel.id == "367359479877992449") {
-					var role: Role? = null
-					if (e.reactionEmote.name == "\uD83C\uDDE7\uD83C\uDDF7") {
-						role = e.guild.getRoleById("367359104320012288")
-					} else if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
-						role = e.guild.getRoleById("367359247891038209")
-					}
+			if (e.isFromType(ChannelType.TEXT)) {
+				// TODO: Isto deveria ser feito usando a API da Loritta
+				if (e.guild.id == "297732013006389252") {
+					if (e.textChannel.id == "367359479877992449") {
+						var role: Role? = null
+						if (e.reactionEmote.name == "\uD83C\uDDE7\uD83C\uDDF7") {
+							role = e.guild.getRoleById("367359104320012288")
+						} else if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
+							role = e.guild.getRoleById("367359247891038209")
+						}
 
-					if (role != null) {
-						if (e is MessageReactionAddEvent) {
-							e.guild.controller.addSingleRoleToMember(e.member, role).complete()
-						} else if (e is MessageReactionRemoveEvent) {
-							e.guild.controller.removeSingleRoleFromMember(e.member, role).complete()
+						if (role != null) {
+							if (e is MessageReactionAddEvent) {
+								e.guild.controller.addSingleRoleToMember(e.member, role).complete()
+							} else if (e is MessageReactionRemoveEvent) {
+								e.guild.controller.removeSingleRoleFromMember(e.member, role).complete()
+							}
 						}
 					}
 				}
-			}
-		}
 
-		val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
+				val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
 
-		executor.execute {
-			try {
-				val conf = loritta.getServerConfigForGuild(e.guild.id)
+				executor.execute {
+					try {
+						val conf = loritta.getServerConfigForGuild(e.guild.id)
 
-				// Sistema de Starboard
-				if (conf.starboardConfig.isEnabled) {
-					StarboardModule.handleStarboardReaction(e, conf)
+						// Sistema de Starboard
+						if (conf.starboardConfig.isEnabled) {
+							StarboardModule.handleStarboardReaction(e, conf)
+						}
+					} catch (exception: Exception) {
+						exception.printStackTrace()
+						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
+					}
 				}
-			} catch (exception: Exception) {
-				exception.printStackTrace()
-				LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 			}
 		}
 	}

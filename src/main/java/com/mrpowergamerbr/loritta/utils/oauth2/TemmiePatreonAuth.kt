@@ -131,13 +131,17 @@ class TemmiePatreonAuth {
 				val metadata = included[element["relationships"]["patron"]["data"]["id"].int]!!["attributes"].obj
 
 				val fullName = metadata["full_name"].string
-				val discordId = if (metadata["social_connections"]["discord"].obj.has("user_id")) {
-					metadata["social_connections"]["discord"]["user_id"].string
-				} else {
-					null
+				var discordId: String? = null;
+
+				if (metadata.has("social_connections")) {
+					if (metadata["social_connections"].obj.has("discord")) {
+						if (!metadata["social_connections"]["discord"].isJsonNull) {
+							discordId = metadata["social_connections"]["discord"]["user_id"].string
+						}
+					}
 				}
 
-				patrons.add(PatreonPledge(fullName, element["attributes"].obj["amount_cents"].int, discordId))
+				patrons.add(PatreonPledge(fullName, element["attributes"].obj["amount_cents"].int, discordId, !element["attributes"]["declined_since"].isJsonNull))
 			}
 		}
 
@@ -183,5 +187,5 @@ class TemmiePatreonAuth {
 	class UnauthorizedException : RuntimeException()
 	class MethodNotAllowedException : RuntimeException()
 
-	class PatreonPledge(val fullName: String, val pledge: Int, val discordId: String?)
+	class PatreonPledge(val fullName: String, val pledge: Int, val discordId: String?, val isDeclined: Boolean)
 }

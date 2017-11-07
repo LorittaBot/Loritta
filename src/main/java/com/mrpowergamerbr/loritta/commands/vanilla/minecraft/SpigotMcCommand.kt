@@ -60,7 +60,7 @@ class SpigotMcCommand : CommandBase() {
 			val query = context.args.joinToString(" ")
 
 			val embed = EmbedBuilder()
-			embed.setTitle("<:spigotmc:340147970362179594> Spigot")
+			embed.setTitle("<:spigotmc:375314413357629440> Spigot")
 			embed.setColor(Color(227, 156, 17))
 
 			val response = HttpRequest.get("https://api.spiget.org/v2/search/resources/${URLEncoder.encode(query, "UTF-8")}")
@@ -90,7 +90,7 @@ class SpigotMcCommand : CommandBase() {
 						context.metadata.put(i.toString(), item["id"].string);
 					}
 					embed.setDescription(format);
-					embed.setTitle("<:spigotmc:340147970362179594> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
+					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
 					var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
@@ -128,14 +128,14 @@ class SpigotMcCommand : CommandBase() {
 
 	fun createResourceEmbed(context: CommandContext, resourceId: String) : EmbedBuilder {
 		val embed = EmbedBuilder()
-		embed.setTitle("<:spigotmc:340147970362179594> Spigot")
+		embed.setTitle("<:spigotmc:375314413357629440> Spigot")
 		embed.setColor(Color(227, 156, 17))
 
 		val resource = getResourceInfo(resourceId)
 		val author = jsonParser.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
 
 		embed.setAuthor(author["name"].string, null, "https://www.spigotmc.org/${author["icon"]["url"].string}")
-		embed.setTitle("<:spigotmc:340147970362179594> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
+		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
 		embed.setDescription(resource.tag.replace("*", "\\*").replace("_", "\\_").replace("~", "\\~"))
 		embed.setThumbnail("https://www.spigotmc.org/${resource.icon}")
 		if (resource.contributors.isNotEmpty()) embed.addField(context.locale.get("SPIGOTMC_CONTRIBUTORS"), resource.contributors, true)

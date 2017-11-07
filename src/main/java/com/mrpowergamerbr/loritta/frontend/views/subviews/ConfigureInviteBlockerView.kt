@@ -15,7 +15,7 @@ class ConfigureInviteBlockerView : ConfigureView() {
 
 	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
 		variables["saveType"] = "invite_blocker"
-		variables["whitelistedChannels"] = serverConfig.inviteBlockerConfig.whitelistedChannels.joinToString(separator = ";")
+		variables["whitelistedChannels"] = serverConfig.inviteBlockerConfig.whitelistedChannels.filter{ guild.getTextChannelById(it) != null }.joinToString(separator = ";")
 		return evaluate("invite_blocker.html", variables)
 	}
 }

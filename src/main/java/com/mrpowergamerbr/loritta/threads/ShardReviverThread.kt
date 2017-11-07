@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 class ShardReviverThread : Thread("Shard Reviver") {
 	override fun run() {
@@ -27,71 +28,70 @@ class ShardReviverThread : Thread("Shard Reviver") {
 	}
 
 	fun checkAndReviveDeadShards() {
-		for (shard in lorittaShards.shards) {
-			val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
+		try {
+			for (shard in lorittaShards.shards) {
+				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
 
-			val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
+				val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 
-			if (seconds >= 25) {
-				println("[!] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 25s! ~  ${seconds}s")
-			}
-		}
-
-		val deadShards = lorittaShards.shards.filter {
-			val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
-
-			System.currentTimeMillis() - lastUpdate > 30000
-		}
-
-		if (deadShards.isNotEmpty()) {
-			val okHttpBuilder = OkHttpClient.Builder()
-					.connectTimeout(60, TimeUnit.SECONDS)
-					.readTimeout(60, TimeUnit.SECONDS)
-					.writeTimeout(60, TimeUnit.SECONDS)
-
-			val discordListener = DiscordListener(loritta) // Vamos usar a mesma instância para todas as shards
-			val eventLogListener = EventLogListener(loritta) // Vamos usar a mesma instância para todas as shards
-			val updateTimeListener = UpdateTimeListener(loritta)
-			val messageListener = MusicMessageListener(loritta)
-
-			for (deadShard in deadShards) {
-				println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
-				var guild = loritta.lorittaShards.getGuildById("297732013006389252")
-				if (guild != null) {
-					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} demorou mais de 30 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
+				if (seconds >= 10) {
+					println("[!] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 10s! ~  ${seconds}s")
 				}
-				val shardId = deadShard.shardInfo.shardId
+			}
 
-				lorittaShards.shards.remove(deadShard)
-				lorittaShards.lastJdaEventTime.remove(deadShard)
+			val deadShards = lorittaShards.shards.filter {
+				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
 
-				deadShard.shutdownNow()
+				System.currentTimeMillis() - lastUpdate > 12500
+			}
 
-				val shard = JDABuilder(AccountType.BOT)
-						.useSharding(shardId, Loritta.config.shards)
-						.setToken(Loritta.config.clientToken)
-						.setHttpClientBuilder(okHttpBuilder)
-						.setCorePoolSize(8)
-						.buildBlocking()
+			if (deadShards.isNotEmpty()) {
+				val okHttpBuilder = OkHttpClient.Builder()
+						.connectTimeout(60, TimeUnit.SECONDS)
+						.readTimeout(60, TimeUnit.SECONDS)
+						.writeTimeout(60, TimeUnit.SECONDS)
 
-				if (true) {
+				val discordListener = DiscordListener(loritta) // Vamos usar a mesma instância para todas as shards
+				val eventLogListener = EventLogListener(loritta) // Vamos usar a mesma instância para todas as shards
+				val updateTimeListener = UpdateTimeListener(loritta)
+				val messageListener = MusicMessageListener(loritta)
+
+				for (deadShard in deadShards) {
+					println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
+					var guild = loritta.lorittaShards.getGuildById("297732013006389252")
+					if (guild != null) {
+						val textChannel = guild.getTextChannelById("297732013006389252")
+						textChannel.sendMessage("Shard ${deadShard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} demorou mais de 30 segundos para responder... \uD83D\uDE22 ~ Irei reiniciar esta shard (e torcer para que não dê problema novamente! \uD83D\uDE47)").complete()
+					}
+					val shardId = deadShard.shardInfo.shardId
+
+					lorittaShards.shards.remove(deadShard)
+					lorittaShards.lastJdaEventTime.remove(deadShard)
+
+					thread(block = deadShard::shutdownNow)
+
+					val shard = JDABuilder(AccountType.BOT)
+							.useSharding(shardId, Loritta.config.shards)
+							.setToken(Loritta.config.clientToken)
+							.setHttpClientBuilder(okHttpBuilder)
+							.setCorePoolSize(8)
+							.buildBlocking()
+
 					shard.addEventListener(updateTimeListener)
 					shard.addEventListener(discordListener)
 					shard.addEventListener(eventLogListener)
-				} else {
-					shard.addEventListener(updateTimeListener)
-					shard.addEventListener(messageListener)
-				}
 
-				lorittaShards.shards.add(shard)
+					lorittaShards.shards.add(shard)
 
-				guild = loritta.lorittaShards.getGuildById("297732013006389252")
-				if (guild != null) {
-					val textChannel = guild.getTextChannelById("297732013006389252")
-					textChannel.sendMessage("Shard ${shard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
+					guild = loritta.lorittaShards.getGuildById("297732013006389252")
+					if (guild != null) {
+						val textChannel = guild.getTextChannelById("297732013006389252")
+						textChannel.sendMessage("Shard ${shard.shardInfo.shardId}${if (false) " (\uD83C\uDFB6)" else ""} foi reiniciada com sucesso! \uD83D\uDC4F").complete()
+					}
 				}
 			}
+		} catch (e: Exception) {
+			e.printStackTrace()
 		}
 	}
 }

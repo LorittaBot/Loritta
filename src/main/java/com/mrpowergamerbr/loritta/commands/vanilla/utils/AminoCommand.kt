@@ -52,7 +52,7 @@ class AminoCommand : CommandBase() {
 						var community = communities[0];
 
 						var embed = EmbedBuilder();
-						embed.setTitle("<:amino:329308203684724737> " + community.name)
+						embed.setTitle("<:amino:375313236234469386> " + community.name)
 						embed.setDescription(community.tagline);
 						embed.addField("\uD83D\uDD17 Link", community.link, true);
 						embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);

@@ -73,7 +73,7 @@ class PackageInfoCommand : CommandBase() {
 					}
 
 					var embed = EmbedBuilder();
-					embed.setTitle("<:correios:329622124140429313> " + objeto.categoria) // A categoria é o tipo da encomenda
+					embed.setTitle("<:correios:375314171644084234> " + objeto.categoria) // A categoria é o tipo da encomenda
 
 					var str = "";
 					for (evento in objeto.evento) {

@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.utils.MiscUtil
 import org.apache.commons.lang3.ArrayUtils
@@ -65,6 +66,38 @@ fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY
 fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
 }
+
+val User.patreon: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("364201981016801281")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
+
+val User.donator: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("334711262262853642")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
 
 /**
  * Retorna a instância atual da Loritta

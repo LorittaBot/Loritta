@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta.Companion.jsonParser
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -68,7 +67,7 @@ class KnowYourMemeCommand : CommandBase() {
 
 				val embed = EmbedBuilder()
 
-				embed.setTitle("<:kym:331052564357578754> $name", "http://knowyourmeme.com$url")
+				embed.setTitle("<:kym:375313574085787648> $name", "http://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
 				embed.addField("\uD83C\uDF1F ${context.locale.KYM_ORIGIN}", if (origin.isNotBlank()) origin else context.locale.KYM_UNKNOWN, true)

@@ -21,7 +21,7 @@ class PatreonCommand : CommandBase() {
     override fun run(context: CommandContext) {
 		val temmiePatreonAuth = TemmiePatreonAuth(Loritta.config.patreonClientId, Loritta.config.patreonClientSecret, Loritta.config.patreonAccessToken, Loritta.config.patreonRefreshToken, 2678400)
 
-		val pledges = temmiePatreonAuth.getProjectPledges("1159176")
+		val pledges = temmiePatreonAuth.getProjectPledges("1159176").filter { !it.isDeclined }
 
 		var patrons = ""
 

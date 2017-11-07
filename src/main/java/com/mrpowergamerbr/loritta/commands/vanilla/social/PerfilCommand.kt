@@ -6,10 +6,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.donator
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
+import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.Color
 import java.awt.Graphics
@@ -74,12 +76,27 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(72, 72, BufferedImage.SCALE_SMOOTH)
 		val fullBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_full.png"))
 		val emptyBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_empty.png"))
+		val fullGlobalBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_globalfull.png"))
+		val emptyGlobalBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_globalempty.png"))
 
 		graphics.drawImage(background, 0, 0, null); // Background fica atrás de tudo
 
 		graphics.drawImage(profileWrapper, 0, 0, null)
 
-		graphics.drawImage(avatar, 4, 4, null);
+		// Draw Avatar
+		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(72), 4, 4, null)
+
+		val badge = when {
+			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.FOLDER + "blob_blush.png"))
+			user.donator -> ImageIO.read(File(Loritta.FOLDER + "blob_blush2.png"))
+			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.FOLDER + "loritta_badge.png"))
+			user.isBot -> ImageIO.read(File(Loritta.FOLDER + "robot_badge.png"))
+			else -> null
+		}
+
+		if (badge != null) {
+			graphics.drawImage(badge.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 52, 52, null)
+		}
 
 		val guildImages = ArrayList<java.awt.Image>();
 
@@ -126,13 +143,13 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 
 			graphics.color = Color(0, 0, 0)
 			val textSize = graphics.fontMetrics.stringWidth(textToBeDrawn)
-			graphics.drawString(textToBeDrawn, 398 - textSize, 227)
-			graphics.drawString(textToBeDrawn, 396 - textSize, 227)
-			graphics.drawString(textToBeDrawn, 397 - textSize, 228)
-			graphics.drawString(textToBeDrawn, 397 - textSize, 226)
+			graphics.drawString(textToBeDrawn, 398 - textSize, 227 + 5)
+			graphics.drawString(textToBeDrawn, 396 - textSize, 227 + 5)
+			graphics.drawString(textToBeDrawn, 397 - textSize, 228 + 5)
+			graphics.drawString(textToBeDrawn, 397 - textSize, 226 + 5)
 
 			graphics.color = Color(255, 255, 255)
-			graphics.drawString(textToBeDrawn, 397 - graphics.fontMetrics.stringWidth(textToBeDrawn), 227)
+			graphics.drawString(textToBeDrawn, 397 - graphics.fontMetrics.stringWidth(textToBeDrawn), 227 + 5)
 		}
 
 		// Escrever o "Sobre Mim"
@@ -188,22 +205,45 @@ class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
 		ImageUtils.drawCenteredString(graphics, context.locale["PERFIL_SOBRE_MIM"], Rectangle(0, 232, 61, 19), oswaldRegular11)
 
 		// Barrinha de XP
-		graphics.drawImage(emptyBar, 0, 0, null)
+		run {
+			graphics.drawImage(emptyBar, 0, 0, null)
 
-		val xpWrapper = userData.getCurrentLevel()
-		val nextLevel = userData.getExpToAdvanceFrom(userData.getCurrentLevel().currentLevel + 1)
-		val currentLevel = xpWrapper.expLeft
-		val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
+			val xpWrapper = userData.getCurrentLevel()
+			val nextLevel = userData.getExpToAdvanceFrom(xpWrapper.currentLevel + 1)
+			val currentLevel = xpWrapper.expLeft
+			val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
 
-		if ((400 * percentage).toInt() >= 1) {
-			graphics.drawImage(fullBar.getSubimage(0, 0, (400 * percentage).toInt(), 300), 0, 0, null)
+			if ((400 * percentage).toInt() >= 1) {
+				graphics.drawImage(fullBar.getSubimage(0, 0, (400 * percentage).toInt(), 300), 0, 0, null)
+			}
+
+			graphics.color = Color(0, 111, 84, 190)
+			val bariol11 = bariolRegular.deriveFont(11F)
+			graphics.font = bariol11
+			ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 83, 66, 13), bariol11)
+			ImageUtils.drawCenteredString(graphics, "lvl ${xpWrapper.currentLevel}", Rectangle(67, 83, 47, 13), bariol11)
 		}
 
-		graphics.color = Color(0, 111, 84, 190)
-		val bariol11 = bariolRegular.deriveFont(11F)
-		graphics.font = bariol11
-		ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 83, 66, 13), bariol11)
-		ImageUtils.drawCenteredString(graphics, "lvl ${xpWrapper.currentLevel}", Rectangle(67, 83, 47, 13), bariol11)
+		// Barrinha de XP Global
+		run {
+			graphics.drawImage(emptyGlobalBar, 0, 0, null)
+
+			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
+			val xpWrapper = lorittaProfile.getCurrentLevel()
+			val nextLevel = lorittaProfile.getExpToAdvanceFrom(xpWrapper.currentLevel + 1)
+			val currentLevel = xpWrapper.expLeft
+			val percentage = (currentLevel.toDouble() / nextLevel.toDouble());
+
+			if ((400 * percentage).toInt() >= 1) {
+				graphics.drawImage(fullGlobalBar.getSubimage(0, 0, (400 * percentage).toInt(), 300), 0, 0, null)
+			}
+
+			graphics.color = Color(131, 23, 183, 190)
+			val bariol11 = bariolRegular.deriveFont(11F)
+			graphics.font = bariol11
+			ImageUtils.drawCenteredString(graphics, "$currentLevel/$nextLevel XP", Rectangle(0, 216, 66, 13), bariol11)
+			ImageUtils.drawCenteredString(graphics, "lvl ${xpWrapper.currentLevel}", Rectangle(67, 216, 47, 13), bariol11)
+		}
 
 		context.sendFile(base.makeRoundedCorners(15), "profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"]); // E agora envie o arquivo
 	}

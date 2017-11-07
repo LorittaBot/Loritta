@@ -14,6 +14,10 @@ class TocarCommand : CommandBase() {
 		return "tocar"
 	}
 
+	override fun getAliases(): List<String> {
+		return listOf("play")
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TOCAR_DESCRIPTION")
 	}
