@@ -74,7 +74,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 							.useSharding(shardId, Loritta.config.shards)
 							.setToken(Loritta.config.clientToken)
 							.setHttpClientBuilder(okHttpBuilder)
-							.setCorePoolSize(8)
+							.setCorePoolSize(16)
 							.buildBlocking()
 
 					shard.addEventListener(updateTimeListener)

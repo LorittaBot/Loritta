@@ -287,7 +287,8 @@ open abstract class CommandBase {
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
 
-				ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale.get("ERROR_WHILE_EXECUTING_COMMAND")).complete()
+				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel.canTalk())
+					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale.get("ERROR_WHILE_EXECUTING_COMMAND")).complete()
 				return true
 			}
 		}
