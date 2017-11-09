@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DonateView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.FanArtsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.NashornDocsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersView
@@ -216,6 +217,7 @@ object GlobalHandler {
 		views.add(CommandsView())
 		views.add(ServersView())
 		views.add(ServersFanClubView())
+		views.add(NashornDocsView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 		return views

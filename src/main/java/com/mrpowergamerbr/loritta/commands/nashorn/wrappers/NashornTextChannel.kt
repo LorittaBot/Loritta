@@ -19,6 +19,11 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 	}
 
 	@NashornCommand.NashornDocs()
+	fun setTopic(name: String) {
+		textChannel.manager.setTopic(name).complete()
+	}
+
+	@NashornCommand.NashornDocs()
 	fun getAsMention(): String {
 		return textChannel.asMention
 	}

@@ -89,7 +89,7 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 
 	@NashornCommand.NashornDocs()
 	fun isStreaming(): Boolean {
-		return member.game.type == Game.GameType.TWITCH
+		return member.game.type == Game.GameType.STREAMING
 	}
 
 	@NashornCommand.NashornDocs()
