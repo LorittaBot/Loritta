@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import net.dv8tion.jda.core.entities.Game
+
 data class LorittaConfig(
 	val shards: Int,
 	val clientToken: String,
@@ -25,7 +27,7 @@ data class LorittaConfig(
 	val patreonClientSecret: String,
 	val patreonAccessToken: String,
 	val patreonRefreshToken: String,
-	val currentlyPlaying: List<String>) {
+	val currentlyPlaying: List<LorittaGameStatus>) {
 	constructor() : this(2,
 			"Token do Bot",
 			"Client ID do Bot",
@@ -50,5 +52,7 @@ data class LorittaConfig(
 			"Client Secret do Patreon",
 			"Access Token do Patreon",
 			"Refresh Token do Patreon",
-			listOf("Shantae: Half-Genie Hero"))
+			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
+
+	class LorittaGameStatus(val name: String, val type: String)
 }

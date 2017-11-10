@@ -7,7 +7,7 @@
 
     <properties>
         <kotlin.version>1.1.51</kotlin.version>
-        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <!-- <kotlin.compiler.incremental>true</kotlin.compiler.incremental> -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -52,9 +52,9 @@
             <version>23.0</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.3.1_286</version>
+            <version>e11c97c6c5</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

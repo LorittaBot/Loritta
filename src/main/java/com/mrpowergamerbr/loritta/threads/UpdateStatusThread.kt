@@ -47,7 +47,9 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		sb.append(seconds)
 		sb.append("s")
 
-		var str = Loritta.config.currentlyPlaying[currentIndex]
+		val game = Loritta.config.currentlyPlaying[currentIndex]
+
+		var str = game.name
 		str = str.replace("{guilds}", loritta.lorittaShards.getGuilds().size.toString())
 		str = str.replace("{users}", loritta.lorittaShards.getUsers().size.toString())
 		str = str.replace("{uptime}", sb.toString())
@@ -55,7 +57,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		val diff = System.currentTimeMillis() - lastUpdate
 
 		if (diff >= 25000) {
-			loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.STREAMING))
+			loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
 			currentIndex++
 			lastUpdate = System.currentTimeMillis()
 
