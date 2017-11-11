@@ -28,6 +28,9 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	}
 
 	fun updateStatus() {
+		if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
+			currentIndex = 0
+		}
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
 		jvmUpTime -= TimeUnit.DAYS.toMillis(days)

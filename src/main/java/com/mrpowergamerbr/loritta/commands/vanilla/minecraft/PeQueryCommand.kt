@@ -6,15 +6,17 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.minecraft.MCServerPinger
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
+import net.marfgamer.jraknet.identifier.MinecraftIdentifier
+import net.marfgamer.jraknet.util.RakNetUtils
 import java.awt.Color
+import java.net.UnknownHostException
 import java.util.*
 
-class McQueryCommand : CommandBase() {
+class PeQueryCommand : CommandBase() {
 	override fun getLabel(): String {
-		return "mcquery"
+		return "pequery"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
@@ -30,14 +32,14 @@ class McQueryCommand : CommandBase() {
 	}
 
 	override fun getExample(): List<String> {
-		return Arrays.asList("jogar.sparklypower.net")
+		return Arrays.asList("PvP.PigRaid.com")
 	}
 
 	override fun run(context: CommandContext) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip
-			var port = 25565
+			var port = 19132
 			if (ip.contains(":")) {
 				// IP + Porta
 				hostname = ip.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
@@ -49,30 +51,42 @@ class McQueryCommand : CommandBase() {
 			}
 
 			try {
-				val response = MCServerPinger.ping(hostname, port)
+				val identifier = RakNetUtils.getServerIdentifier(ip, port)
 
-				if (response == null) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCQUERY_OFFLINE.msgFormat(ip, port))
+				if (identifier == null) {
+					// Servidor offline
+					context.reply(
+							"Servidor não existe ou está offline!",
+							Constants.ERROR
+					)
 					return
 				}
+				val bedrockIdentifier = MinecraftIdentifier(identifier)
 
-				val builder = EmbedBuilder()
+				val embed = EmbedBuilder().apply {
+					setTitle("<:grass:330435576392318978> $hostname:$port", null)
+					setColor(Color(87, 132, 74))
+					addField("MOTD", bedrockIdentifier.serverName.replace("§[0-9a-fk-or]".toRegex(), ""), false)
+					addField("Versão", bedrockIdentifier.versionTag + " (${bedrockIdentifier.serverProtocol})", true)
+					addField("Players", "${bedrockIdentifier.onlinePlayerCount}/${bedrockIdentifier.maxPlayerCount}", true)
+					if (bedrockIdentifier.gamemode != null) {
+						addField("Gamemode", bedrockIdentifier.gamemode, true)
+					}
+					if (bedrockIdentifier.worldName != null) {
+						addField("Nome do Mundo", bedrockIdentifier.worldName, true)
+					}
+				}
 
-				builder.setColor(Color.GREEN)
-
-				builder.setTitle("<:grass:330435576392318978> $hostname:$port", null)
-
-				builder.addField("MOTD", response.motd, false)
-				builder.addField("Players", response.playersOnline.toString() + "/" + response.playersMax, true)
-				builder.addField("Versão", response.versionName + " (${response.versionProtocol})", true)
-
-				builder.setThumbnail("https://mcapi.ca/query/$hostname:$port/icon") // E agora o server-icon do servidor
-
-				context.sendMessage(context.getAsMention(true), builder.build())
-			} catch (e: Exception) {
-				e.printStackTrace()
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCQUERY_OFFLINE.msgFormat(ip, port))
+				context.sendMessage(embed.build())
+			} catch (e: UnknownHostException) {
+				context.reply(
+						"Servidor não existe ou está offline!",
+						Constants.ERROR
+				)
+				// Quando o servidor não existe
 			}
+
+			// context.sendMessage(context.getAsMention(true), builder.build())
 		} else {
 			context.explain()
 		}

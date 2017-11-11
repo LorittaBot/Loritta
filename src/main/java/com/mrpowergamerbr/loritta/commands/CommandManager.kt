@@ -75,6 +75,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McSignCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McStatusCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.PeQueryCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand
@@ -247,6 +248,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(McSignCommand())
 		commandMap.add(SpigotMcCommand())
 		commandMap.add(McConquistaCommand())
+		commandMap.add(PeQueryCommand())
 
 		// =======[ ROBLOX ]========
 		commandMap.add(RbUserCommand())
