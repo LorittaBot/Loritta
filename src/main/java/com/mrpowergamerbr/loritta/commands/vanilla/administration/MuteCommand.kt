@@ -63,6 +63,16 @@ class MuteCommand : CommandBase() {
 		if (context.args.isNotEmpty()) {
 			var user = LorittaUtils.getUserFromContext(context, 0)
 
+			if (user == null) {
+				context.reply(
+						LoriReply(
+								message = "Hmmmm, como será que eu posso mutar um usuário que nem está neste servidor?",
+								prefix = "<:erro:326509900115083266>"
+						)
+				)
+				return
+			}
+
 			if (user.id == Loritta.config.clientId) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUTE_CANT_MUTE_ME"))
 				return
@@ -248,7 +258,7 @@ class MuteCommand : CommandBase() {
 					)
 			)
 
-			loritta save userData
+			loritta save serverConfig
 		} catch (e: HierarchyException) {
 			context.metadata["cancelled"] = true
 			context.reply(

@@ -155,6 +155,11 @@ open abstract class CommandBase {
 		}
 		if (run) {
 			try {
+				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
+					return true
+				}
+
 				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (conf.warnIfBlacklisted) {
 						if (conf.blacklistWarning.isNotEmpty()) {
@@ -185,11 +190,6 @@ open abstract class CommandBase {
 
 				if (1250 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
 					loritta.userCooldown.put(ev.author.id, System.currentTimeMillis()) // E vamos guardar o tempo atual
-					return true
-				}
-
-				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true
 				}
 

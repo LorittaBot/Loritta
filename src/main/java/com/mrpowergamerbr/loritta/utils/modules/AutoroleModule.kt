@@ -11,11 +11,13 @@ object AutoroleModule {
 		val roles = mutableListOf<Role>()
 
 		rolesId.forEach { // E pegar a role dependendo do ID!
-			val role = event.guild.getRoleById(it)
+			try {
+				val role = event.guild.getRoleById(it)
 
-			if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
-				roles.add(role)
-			}
+				if (role != null && !role.isPublicRole && !role.isManaged && event.guild.selfMember.canInteract(role)) {
+					roles.add(role)
+				}
+			} catch (e: NumberFormatException) {} // The specified ID is not a valid snowflake (null).
 		}
 
 		if (roles.isNotEmpty()) {

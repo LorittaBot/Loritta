@@ -18,12 +18,17 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 	}
 
 	fun checkMuteStatus() {
+		println("Verificando muted status...")
 		val guilds = loritta.ds.find(ServerConfig::class.java).field("userData").exists()
 
 		for (guild in guilds) {
 			val toBeUnmuted = guild.userData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
 
-			if (toBeUnmuted.isNotEmpty())
+			if (guild.guildId == "268353819409252352") {
+				println("Pessoas para serem desmutadas: " + toBeUnmuted.size)
+			}
+
+			if (toBeUnmuted.isEmpty())
 				continue
 
 			val _guild = lorittaShards.getGuildById(guild.guildId)
@@ -46,8 +51,10 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 					if (mutedRoles.isEmpty())
 						continue
 
-					_guild.controller.addSingleRoleToMember(member, mutedRoles.first()).complete()
-				} catch (e: Exception) {}
+					_guild.controller.removeRolesFromMember(member, mutedRoles.first()).complete()
+				} catch (e: Exception) {
+					e.printStackTrace()
+				}
 			}
 			loritta save guild
 		}
