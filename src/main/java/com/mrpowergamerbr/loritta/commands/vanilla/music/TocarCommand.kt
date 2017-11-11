@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class TocarCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "tocar"
-	}
-
+class TocarCommand : CommandBase("tocar") {
 	override fun getAliases(): List<String> {
 		return listOf("play")
 	}

@@ -10,11 +10,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
-class FraseToscaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "frasetosca"
-	}
-
+class FraseToscaCommand : CommandBase("frasetosca") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.FRASETOSCA_DESCRIPTION.f()
 	}

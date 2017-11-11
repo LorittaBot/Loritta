@@ -22,11 +22,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.HierarchyException
 import java.awt.Color
 
-class MuteCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mute"
-	}
-
+class MuteCommand : CommandBase("mute") {
 	override fun getAliases(): List<String> {
 		return listOf("mutar", "silenciar")
 	}

@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.oauth2.TemmiePatreonAuth
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class PatreonCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "patreon"
-    }
-
+class PatreonCommand : CommandBase("patreon") {
     override fun getDescription(locale: BaseLocale): String {
         return locale["PATREON_DESCRIPTION"]
     }

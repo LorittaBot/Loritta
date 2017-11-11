@@ -8,12 +8,13 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.bson.types.ObjectId
-
-import javax.script.Invocable
-import java.awt.*
+import java.awt.Color
 import java.time.LocalDateTime
-import java.util.ArrayList
-import java.util.concurrent.*
+import java.util.*
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import javax.script.Invocable
 
 /**
  * Comandos usando a Nashorn Engine
@@ -31,15 +32,11 @@ class NashornCommand : CommandBase {
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
-	constructor() {}
+	constructor() : super("javascript-command-label")
 
-	constructor(label: String, javaScript: String) {
+	constructor(label: String, javaScript: String) : super(label) {
 		this.jsLabel = label
 		this.javaScript = javaScript
-	}
-
-	override fun getLabel(): String {
-		return jsLabel
 	}
 
 	override fun getAliases(): List<String> {

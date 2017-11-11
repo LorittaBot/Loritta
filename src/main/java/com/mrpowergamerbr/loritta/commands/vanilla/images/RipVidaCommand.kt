@@ -10,11 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RipVidaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "ripvida"
-	}
-
+class RipVidaCommand : CommandBase("ripvida") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("RIPVIDA_DESCRIPTION")
 	}

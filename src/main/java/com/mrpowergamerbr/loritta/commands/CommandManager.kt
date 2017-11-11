@@ -251,7 +251,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(McConquistaCommand())
 		commandMap.add(PeQueryCommand())
 		commandMap.add(McSkinCommand())
-		
+
 		// =======[ ROBLOX ]========
 		commandMap.add(RbUserCommand())
 

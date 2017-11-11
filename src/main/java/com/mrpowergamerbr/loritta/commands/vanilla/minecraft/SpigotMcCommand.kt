@@ -28,16 +28,12 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
 
-class SpigotMcCommand : CommandBase() {
+class SpigotMcCommand : CommandBase("spigotmc") {
 	val indexes = listOf("1⃣",
 			"2⃣",
 			"3⃣",
 			"4⃣",
 			"5⃣")
-
-	override fun getLabel(): String {
-		return "spigotmc";
-	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SPIGOTMC_DESCRIPTION")

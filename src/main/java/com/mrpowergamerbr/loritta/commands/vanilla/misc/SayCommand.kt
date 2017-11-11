@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import java.util.*
 
-class SayCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "falar";
-    }
-
+class SayCommand : CommandBase("falar") {
     override fun getAliases(): MutableList<String> {
         return Arrays.asList("say");
     }

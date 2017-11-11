@@ -14,11 +14,7 @@ import java.awt.RenderingHints
 import java.io.File
 import javax.imageio.ImageIO
 
-class PrimeirasPalavrasCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "primeiraspalavras"
-	}
-
+class PrimeirasPalavrasCommand : CommandBase("primeiraspalavras") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PRIMEIRAS_DESCRIPTION.f()
 	}

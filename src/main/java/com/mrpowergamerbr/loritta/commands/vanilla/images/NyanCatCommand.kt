@@ -13,11 +13,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class NyanCatCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "nyan"
-	}
-
+class NyanCatCommand : CommandBase("nyan") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("NYANCAT_DESCRIPTION")
 	}

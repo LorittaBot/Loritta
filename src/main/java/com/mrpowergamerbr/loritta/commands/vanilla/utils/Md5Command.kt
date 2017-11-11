@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.digest.DigestUtils
 
 
-class Md5Command : CommandBase() {
-	override fun getLabel(): String {
-		return "md5"
-	}
-
+class Md5Command : CommandBase("md5") {
 	override fun getUsage(): String {
 		return "mensagem"
 	}

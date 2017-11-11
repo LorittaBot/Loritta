@@ -11,11 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RomeroBrittoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "romerobritto"
-	}
-
+class RomeroBrittoCommand : CommandBase("romerobritto") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("ROMEROBRITTO_DESCRIPTION");
 	}

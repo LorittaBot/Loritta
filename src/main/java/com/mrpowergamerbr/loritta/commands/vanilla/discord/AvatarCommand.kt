@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class AvatarCommand : CommandBase() {
+class AvatarCommand : CommandBase("avatar") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.AVATAR_DESCRIPTION.msgFormat()
 	}
@@ -26,10 +26,6 @@ class AvatarCommand : CommandBase() {
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("@Loritta")
-	}
-
-	override fun getLabel(): String {
-		return "avatar"
 	}
 
 	override fun run(context: CommandContext) {

@@ -25,9 +25,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class CommandBase {
-	open abstract fun getLabel(): String
-
+open abstract class CommandBase(val label: String) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
@@ -135,12 +133,12 @@ open abstract class CommandBase {
 		var rawMessage = ev.message.rawContent
 		var run = false
 		var byMention = false
-		var label = conf.commandPrefix + getLabel()
+		var label = conf.commandPrefix + label
 		if (rawMessage.startsWith("<@" + Loritta.config.clientId + "> ") || rawMessage.startsWith("<@!" + Loritta.config.clientId + "> ")) {
 			byMention = true
 			rawMessage = rawMessage.replaceFirst("<@" + Loritta.config.clientId + "> ", "")
 			rawMessage = rawMessage.replaceFirst("<@!" + Loritta.config.clientId + "> ", "")
-			label = getLabel()
+			label = this.label
 		}
 		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
 		val rawArguments = rawMessage.split(" ")
@@ -301,13 +299,13 @@ open abstract class CommandBase {
 		if (conf.explainOnCommandRun) {
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + conf.commandPrefix + this.getLabel() + "`")
+			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + conf.commandPrefix + this.label + "`")
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
 			var cmdInfo = getDescription(context) + "\n\n"
 
-			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + conf.commandPrefix + this.getLabel() + usage + "\n"
+			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + conf.commandPrefix + this.label + usage + "\n"
 
 			if (!this.getDetailedUsage().isEmpty()) {
 				for ((key, value) in this.getDetailedUsage()) {
@@ -320,14 +318,14 @@ open abstract class CommandBase {
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
 			for (example in this.getExample()) { // Adicionar todos os exemplos simples
-				examples.add(conf.commandPrefix + this.getLabel() + if (example.isEmpty()) "" else " `$example`")
+				examples.add(conf.commandPrefix + this.label + if (example.isEmpty()) "" else " `$example`")
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-				examples.add(conf.commandPrefix + this.getLabel() + if (key.isEmpty()) "" else " `$key` - **$value**")
+				examples.add(conf.commandPrefix + this.label + if (key.isEmpty()) "" else " `$key` - **$value**")
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + conf.commandPrefix + this.getLabel()
+				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + conf.commandPrefix + this.label
 			} else {
 				cmdInfo += "**" + context.locale.EXAMPLE + (if (this.getExample().size == 1) "" else "s") + ":**\n"
 				for (example in examples) {

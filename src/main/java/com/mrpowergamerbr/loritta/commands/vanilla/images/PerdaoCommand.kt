@@ -11,11 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerdaoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "perdao"
-	}
-
+class PerdaoCommand : CommandBase("perdao") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PERDAO_DESCRIPTION.f();
 	}

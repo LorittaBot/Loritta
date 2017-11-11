@@ -5,15 +5,10 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McHeadCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mchead"
-	}
-
+class McHeadCommand : CommandBase("mchead") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCHEAD_DESCRIPTION")
 	}

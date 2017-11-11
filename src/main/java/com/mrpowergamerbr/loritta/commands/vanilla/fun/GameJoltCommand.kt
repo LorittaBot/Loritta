@@ -18,16 +18,12 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
-class GameJoltCommand : CommandBase() {
+class GameJoltCommand : CommandBase("gamejolt") {
 	val indexes = listOf("1⃣",
 			"2⃣",
 			"3⃣",
 			"4⃣",
 			"5⃣")
-
-	override fun getLabel(): String {
-		return "gamejolt"
-	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GAMEJOLT_DESCRIPTION"]

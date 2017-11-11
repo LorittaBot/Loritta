@@ -23,15 +23,12 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
-class YouTubeCommand : CommandBase() {
+class YouTubeCommand : CommandBase("youtube") {
 	val indexes = listOf("1⃣",
 			"2⃣",
 			"3⃣",
 			"4⃣",
 			"5⃣")
-	override fun getLabel(): String {
-		return "youtube"
-	}
 
 	override fun getAliases() : List<String> {
 		return listOf("yt")

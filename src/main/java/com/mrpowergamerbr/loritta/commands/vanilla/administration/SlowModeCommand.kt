@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class SlowModeCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "slowmode"
-	}
-
+class SlowModeCommand : CommandBase("slowmode") {
 	override fun getAliases(): List<String> {
 		return listOf("modolento", "silenciar")
 	}

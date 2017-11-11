@@ -19,11 +19,7 @@ import java.io.FileInputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class UndertaleBattleCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "undertalebattle";
-    }
-
+class UndertaleBattleCommand : CommandBase("undertalebattle") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.UTBATTLE_DESCRIPTION.msgFormat()
     }

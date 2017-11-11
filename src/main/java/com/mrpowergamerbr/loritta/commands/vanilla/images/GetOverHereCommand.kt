@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.gifs.GetOverHereGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class GetOverHereCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "getoverhere"
-	}
-
+class GetOverHereCommand : CommandBase("getoverhere") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("GETOVERHERE_DESCRIPTION")
 	}

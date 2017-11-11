@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class SoftBanCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "softban"
-	}
-
+class SoftBanCommand : CommandBase("softban") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.SOFTBAN_DESCRIPTION.msgFormat()
 	}

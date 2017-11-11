@@ -15,11 +15,7 @@ import java.awt.Color
 import java.time.ZoneOffset
 
 
-class AminoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "amino"
-	}
-
+class AminoCommand : CommandBase("amino") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AMINO_DESCRIPTION"]
 	}

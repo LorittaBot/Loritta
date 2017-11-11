@@ -12,11 +12,7 @@ import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.util.*
 
-class TretaNewsCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "tretanews"
-	}
-
+class TretaNewsCommand : CommandBase("tretanews") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.TRETANEWS_DESCRIPTION.f()
 	}

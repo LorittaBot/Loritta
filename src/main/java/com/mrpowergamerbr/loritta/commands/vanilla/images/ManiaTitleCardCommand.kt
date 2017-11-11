@@ -11,11 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class ManiaTitleCardCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "maniatitlecard"
-	}
-
+class ManiaTitleCardCommand : CommandBase("maniatitlecard") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MANIATITLECARD_DESCRIPTION")
 	}

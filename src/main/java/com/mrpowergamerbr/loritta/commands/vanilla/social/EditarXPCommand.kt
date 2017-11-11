@@ -11,11 +11,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class EditarXPCommand : CommandBase() {
-	override fun getLabel():String {
-		return "editarxp";
-	}
-
+class EditarXPCommand : CommandBase("editarxp") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["EDITARXP_DESCRIPTION"]
 	}

@@ -5,11 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 
-class ServerInvitesCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "serverinvites"
-	}
-
+class ServerInvitesCommand : CommandBase("serverinvites") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

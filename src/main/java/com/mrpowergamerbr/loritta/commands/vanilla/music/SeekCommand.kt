@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 
-class SeekCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "seek"
-	}
-
+class SeekCommand : CommandBase("seek") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SEEK_DESCRIPTION")
 	}

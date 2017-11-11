@@ -14,11 +14,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.nodes.Document
 import java.util.*
 
-class PackageInfoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "correios"
-	}
-
+class PackageInfoCommand : CommandBase("correios") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}

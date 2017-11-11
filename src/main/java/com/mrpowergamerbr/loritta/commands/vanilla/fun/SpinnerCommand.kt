@@ -30,14 +30,10 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
-class SpinnerCommand : CommandBase() {
+class SpinnerCommand : CommandBase("spinner") {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
 
 	data class FidgetSpinner(var emoji: String, var threadId: Long, var forTime: Int, var spinnedAt: Long, var lastRerotation: Long)
-
-	override fun getLabel(): String {
-		return "spinner"
-	}
 
 	override fun getAliases(): List<String> {
 		return listOf("fidget", "fidgetspinner");

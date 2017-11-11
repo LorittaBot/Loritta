@@ -11,11 +11,7 @@ import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
-class BotInfoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "botinfo"
-	}
-
+class BotInfoCommand : CommandBase("botinfo") {
 	override fun getAliases(): List<String> {
 		return listOf("info")
 	}

@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.gifs.CepoDeMadeiraGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class CepoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "cepo"
-	}
-
+class CepoCommand : CommandBase("cepo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.CEPO_DESCRIPTION.f();
 	}

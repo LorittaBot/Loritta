@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.Charsets
 import java.util.*
 
-class OfflineUUIDCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "offlineuuid"
-	}
-
+class OfflineUUIDCommand : CommandBase("offlineuuid") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.OFFLINEUUID_DESCRIPTION.msgFormat()
 	}

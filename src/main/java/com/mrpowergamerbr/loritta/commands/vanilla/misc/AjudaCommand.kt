@@ -18,12 +18,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 import java.util.stream.Collectors
 
-class AjudaCommand : CommandBase() {
-
-	override fun getLabel(): String {
-		return "ajuda"
-	}
-
+class AjudaCommand : CommandBase("ajuda") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
 	}
@@ -197,7 +192,7 @@ class AjudaCommand : CommandBase() {
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					var toBeAdded = "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
 					if ((description + toBeAdded).length > 2048) {
 						embed.setDescription(description);
 						embeds.add(embed.build());
@@ -205,7 +200,7 @@ class AjudaCommand : CommandBase() {
 						embed.setColor(color)
 						description = "";
 					}
-					description += "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
 				}
 			}
 			embed.setDescription(description)
@@ -258,7 +253,7 @@ class AjudaCommand : CommandBase() {
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					var toBeAdded = "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
 					if ((description + toBeAdded).length > 2048) {
 						embed.setDescription(description);
 						embeds.add(embed.build());
@@ -266,7 +261,7 @@ class AjudaCommand : CommandBase() {
 						embed.setColor(color)
 						description = "";
 					}
-					description += "[" + conf.commandPrefix + cmd.getLabel() + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
 				}
 			}
 			embed.setDescription(description)

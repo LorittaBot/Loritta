@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 
-class EncurtarCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "encurtar"
-	}
-
+class EncurtarCommand : CommandBase("encurtar") {
 	override fun getUsage(): String {
 		return "link"
 	}

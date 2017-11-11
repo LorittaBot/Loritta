@@ -17,11 +17,7 @@ import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 
-class HojeCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "hoje"
-	}
-
+class HojeCommand : CommandBase("hoje") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TODAY_DESCRIPTION")
 	}

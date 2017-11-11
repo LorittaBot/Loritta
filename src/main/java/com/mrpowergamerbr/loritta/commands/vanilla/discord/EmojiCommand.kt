@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.MessageBuilder
 
-class EmojiCommand : CommandBase() {
+class EmojiCommand : CommandBase("emoji") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.EMOJI_DESCRIPTION.msgFormat()
 	}
@@ -25,10 +25,6 @@ class EmojiCommand : CommandBase() {
 
 	override fun getExample(): List<String> {
 		return listOf("😏")
-	}
-
-	override fun getLabel(): String {
-		return "emoji"
 	}
 
 	override fun needsToUploadFiles(): Boolean {

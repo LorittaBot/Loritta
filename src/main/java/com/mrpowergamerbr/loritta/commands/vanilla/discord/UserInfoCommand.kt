@@ -14,17 +14,13 @@ import java.awt.Color
 import java.time.Instant
 import java.time.ZoneId
 
-class UserInfoCommand : CommandBase() {
+class UserInfoCommand : CommandBase("userinfo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("USERINFO_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.DISCORD
-	}
-
-	override fun getLabel(): String {
-		return "userinfo"
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

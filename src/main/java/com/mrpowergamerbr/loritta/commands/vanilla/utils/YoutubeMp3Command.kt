@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 
-class YoutubeMp3Command : CommandBase() {
-	override fun getLabel(): String {
-		return "ytmp3"
-	}
-
+class YoutubeMp3Command : CommandBase("ytmp3") {
 	override fun getUsage(): String {
 		return "link"
 	}

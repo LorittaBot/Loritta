@@ -10,17 +10,13 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import java.awt.Color
 
-class ServerInfoCommand : CommandBase() {
+class ServerInfoCommand : CommandBase("serverinfo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SERVERINFO_DESCRIPTION")
 	}
 
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.DISCORD
-	}
-
-	override fun getLabel(): String {
-		return "serverinfo"
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

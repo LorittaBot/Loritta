@@ -10,11 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class StudiopolisTvCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "studiopolistv"
-	}
-
+class StudiopolisTvCommand : CommandBase("studiopolistv") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("STUDIOPOLISTV_DESCRIPTION")
 	}

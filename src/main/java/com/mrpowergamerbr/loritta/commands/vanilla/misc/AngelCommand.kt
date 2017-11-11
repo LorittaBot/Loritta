@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.io.File
 
-class AngelCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "angel"
-	}
-
+class AngelCommand : CommandBase("angel") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ANGEL_DESCRIPTION.msgFormat()
 	}

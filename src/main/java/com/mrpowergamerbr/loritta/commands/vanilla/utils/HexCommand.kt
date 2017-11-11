@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
-class HexCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "hex"
-	}
-
+class HexCommand : CommandBase("hex") {
 	override fun getUsage(): String {
 		return "vermelho verde azul"
 	}

@@ -7,15 +7,10 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
-import java.util.*
 
-class InviteCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "convidar";
-    }
-
-    override fun getAliases(): MutableList<String> {
-        return Arrays.asList("invite");
+class InviteCommand : CommandBase("convidar") {
+    override fun getAliases(): List<String> {
+        return listOf("invite");
     }
 
     override fun getDescription(locale: BaseLocale): String {

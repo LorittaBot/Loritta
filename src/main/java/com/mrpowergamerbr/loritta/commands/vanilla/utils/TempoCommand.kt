@@ -18,11 +18,7 @@ import java.io.StringReader
 import java.net.URLEncoder
 
 
-class TempoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "tempo"
-	}
-
+class TempoCommand : CommandBase("tempo") {
 	override fun getUsage(): String {
 		return "cidade"
 	}

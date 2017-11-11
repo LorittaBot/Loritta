@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -21,11 +22,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class PerfilCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
-	override fun getLabel(): String {
-		return "perfil";
-	}
-
+class PerfilCommand : CommandBase("perfil") {
 	override fun getAliases(): MutableList<String> {
 		return Arrays.asList("profile");
 	}

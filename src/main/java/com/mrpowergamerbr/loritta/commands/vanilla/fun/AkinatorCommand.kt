@@ -21,11 +21,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import org.json.XML
 import java.awt.Color
 
-class AkinatorCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "akinator"
-	}
-
+class AkinatorCommand : CommandBase("akinator") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("AKINATOR_DESCRIPTION")
 	}

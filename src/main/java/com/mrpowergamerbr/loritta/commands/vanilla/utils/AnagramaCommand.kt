@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
-class AnagramaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "anagrama"
-	}
-
+class AnagramaCommand : CommandBase("anagrama") {
 	override fun getUsage(): String {
 		return "palavra"
 	}

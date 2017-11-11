@@ -5,11 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 
-class LorittaUnbanCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "lorittaunban";
-	}
-
+class LorittaUnbanCommand : CommandBase("lorittaunban") {
 	override fun getDescription(): String {
 		return "Desbanir usuários de usar a Loritta"
 	}

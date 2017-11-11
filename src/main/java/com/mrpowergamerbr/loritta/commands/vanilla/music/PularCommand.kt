@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class PularCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "pular"
-	}
-
+class PularCommand : CommandBase("pular") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PULAR_DESCRIPTION.msgFormat()
 	}

@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class McSkinCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mcskin"
-	}
-
+class McSkinCommand : CommandBase("mcskin") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCAVATAR_DESCRIPTION")
 	}

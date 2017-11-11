@@ -11,11 +11,7 @@ import java.util.concurrent.ExecutionException
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
-class EvalCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "eval"
-	}
-
+class EvalCommand : CommandBase("eval") {
 	override fun getAliases(): List<String> {
 		return Arrays.asList("executar")
 	}

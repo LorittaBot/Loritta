@@ -11,11 +11,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class DicioCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "dicio"
-	}
-
+class DicioCommand : CommandBase("dicio") {
 	override fun getUsage(): String {
 		return "palavra"
 	}

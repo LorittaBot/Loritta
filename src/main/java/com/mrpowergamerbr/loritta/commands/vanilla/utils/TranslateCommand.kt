@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 
-class TranslateCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "traduzir"
-	}
-
+class TranslateCommand : CommandBase("traduzir") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.TRANSLATE_DESCRIPTION
 	}

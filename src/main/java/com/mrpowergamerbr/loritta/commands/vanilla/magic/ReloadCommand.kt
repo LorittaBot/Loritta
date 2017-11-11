@@ -14,11 +14,7 @@ import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
 import java.io.File
 
-class ReloadCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "reload"
-	}
-
+class ReloadCommand : CommandBase("reload") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

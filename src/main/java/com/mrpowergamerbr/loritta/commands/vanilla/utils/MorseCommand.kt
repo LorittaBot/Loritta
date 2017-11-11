@@ -11,11 +11,7 @@ import com.mrpowergamerbr.loritta.utils.toMorse
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class MorseCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "morse"
-	}
-
+class MorseCommand : CommandBase("morse") {
 	override fun getUsage(): String {
 		return "código morse ou texto"
 	}

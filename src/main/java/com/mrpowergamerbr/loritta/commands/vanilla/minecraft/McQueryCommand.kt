@@ -12,11 +12,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class McQueryCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mcquery"
-	}
-
+class McQueryCommand : CommandBase("mcquery") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.MCQUERY_DESCRIPTION.msgFormat()
 	}

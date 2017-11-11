@@ -14,11 +14,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class GangueCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "gangue"
-	}
-
+class GangueCommand : CommandBase("gangue") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.GANGUE_DESCRIPTION.f()
 	}

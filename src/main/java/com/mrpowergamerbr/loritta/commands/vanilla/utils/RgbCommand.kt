@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.awt.Color
 
 
-class RgbCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "rgb"
-	}
-
+class RgbCommand : CommandBase("rgb") {
 	override fun getUsage(): String {
 		return "hexadecimal"
 	}

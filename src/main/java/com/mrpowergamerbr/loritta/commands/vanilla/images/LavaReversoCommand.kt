@@ -17,11 +17,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class LavaReversoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "lavareverso"
-	}
-
+class LavaReversoCommand : CommandBase("lavareverso") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.LAVAREVERSO_DESCRIPTION.f();
 	}

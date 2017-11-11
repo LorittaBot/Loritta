@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -17,18 +14,10 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.StringReader
-import java.net.URLDecoder
-import java.net.URLEncoder
 
-class BackgroundCommand : com.mrpowergamerbr.loritta.commands.CommandBase() {
-	override fun getLabel(): String {
-		return "background";
-	}
-
+class BackgroundCommand : CommandBase("background") {
 	override fun getUsage(): String {
 		return "<novo background>"
 	}

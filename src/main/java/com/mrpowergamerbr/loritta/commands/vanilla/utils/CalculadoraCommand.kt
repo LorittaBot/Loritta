@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
-class CalculadoraCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "calc"
-	}
-
+class CalculadoraCommand : CommandBase("calc") {
 	override fun getAliases(): List<String> {
 		return listOf("calculadora")
 	}

@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
-class DiscriminatorCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "discriminator"
-    }
-
+class DiscriminatorCommand : CommandBase("discriminator") {
 	override fun getUsage(): String {
 		return "<usuário>"
 	}

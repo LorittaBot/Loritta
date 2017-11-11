@@ -10,11 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McStatusCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "mcstatus";
-    }
-
+class McStatusCommand : CommandBase("mcstatus") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.MCSTATUS_DESCRIPTION.msgFormat();
     }

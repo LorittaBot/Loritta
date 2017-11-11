@@ -12,11 +12,7 @@ import org.jsoup.Jsoup
 import java.awt.Color
 import java.util.*
 
-class PokedexCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "pokedex";
-    }
-
+class PokedexCommand : CommandBase("pokedex") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.POKEDEX_DESCRIPTION.msgFormat()
     }

@@ -12,11 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmigosCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "amigos"
-	}
-
+class AmigosCommand : CommandBase("amigos") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.AMIGOS_DESCRIPTION.f();
 	}

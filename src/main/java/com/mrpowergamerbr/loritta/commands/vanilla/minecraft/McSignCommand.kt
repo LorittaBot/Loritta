@@ -14,11 +14,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McSignCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mcsign"
-	}
-
+class McSignCommand : CommandBase("mcsign") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.MCSIGN_DESCRIPTION.msgFormat();
 	}

@@ -14,11 +14,7 @@ import java.awt.Color
 import java.net.UnknownHostException
 import java.util.*
 
-class PeQueryCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "pequery"
-	}
-
+class PeQueryCommand : CommandBase("pequery") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.MCQUERY_DESCRIPTION.msgFormat()
 	}

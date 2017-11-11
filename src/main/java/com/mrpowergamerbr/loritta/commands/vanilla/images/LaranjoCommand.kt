@@ -11,11 +11,7 @@ import java.awt.Font
 import java.io.File
 import javax.imageio.ImageIO
 
-class LaranjoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "laranjo"
-	}
-
+class LaranjoCommand : CommandBase("laranjo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LARANJO_DESCRIPTION"]
 	}

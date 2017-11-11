@@ -12,16 +12,12 @@ import java.io.File
 import java.net.URLEncoder
 
 
-class GoogleCommand : CommandBase() {
+class GoogleCommand : CommandBase("google") {
 	val indexes = listOf("1⃣",
 			"2⃣",
 			"3⃣",
 			"4⃣",
 			"5⃣")
-
-	override fun getLabel(): String {
-		return "google"
-	}
 
 	override fun getAliases(): List<String> {
 		return listOf("g", "search", "procurar", "pesquisar")

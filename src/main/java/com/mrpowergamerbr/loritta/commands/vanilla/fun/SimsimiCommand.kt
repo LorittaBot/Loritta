@@ -16,11 +16,7 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.net.URLEncoder
 import java.util.*
 
-class SimsimiCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "simsimi"
-	}
-
+class SimsimiCommand : CommandBase("simsimi") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SIMSIMI_DESCRIPTION")
 	}

@@ -10,11 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.net.UnknownHostException
 import java.util.*
 
-class IsUpCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "isup"
-	}
-
+class IsUpCommand : CommandBase("isup") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ISUP_DESCRIPTION
 	}

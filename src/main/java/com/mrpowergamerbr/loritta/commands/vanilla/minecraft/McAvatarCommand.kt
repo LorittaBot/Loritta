@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McAvatarCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mcavatar"
-	}
-
+class McAvatarCommand : CommandBase("mcavatar") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCAVATAR_DESCRIPTION")
 	}

@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
 import java.util.*
 
-class SobreMimCommand : CommandBase() {
-    override fun getLabel():String {
-        return "sobremim";
-    }
-
+class SobreMimCommand : CommandBase("sobremim") {
     override fun getUsage(): String {
         return "<nova mensagem>"
     }

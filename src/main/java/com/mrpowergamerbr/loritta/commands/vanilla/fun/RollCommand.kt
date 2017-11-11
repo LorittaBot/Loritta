@@ -11,11 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 import java.util.*
 
-class RollCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "rolar"
-	}
-
+class RollCommand : CommandBase("rolar") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ROLL_DESCRIPTION.f()
 	}

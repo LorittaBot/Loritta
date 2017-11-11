@@ -11,11 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DeusCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "deus"
-	}
-
+class DeusCommand : CommandBase("deus") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.DEUS_DESCRIPTION.f()
 	}

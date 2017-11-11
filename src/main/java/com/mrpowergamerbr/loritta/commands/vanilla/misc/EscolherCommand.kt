@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
-class EscolherCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "escolher"
-	}
-
+class EscolherCommand : CommandBase("escolher") {
 	override fun getAliases(): List<String> {
 		return listOf("choose");
 	}

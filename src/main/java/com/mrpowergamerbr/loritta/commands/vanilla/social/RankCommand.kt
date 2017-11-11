@@ -19,11 +19,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RankCommand : CommandBase() {
-	override fun getLabel():String {
-		return "rank";
-	}
-
+class RankCommand : CommandBase("rank") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RANK_DESCRIPTION"]
 	}

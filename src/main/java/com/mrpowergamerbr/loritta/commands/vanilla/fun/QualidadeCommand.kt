@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class QualidadeCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "qualidade"
-	}
-
+class QualidadeCommand : CommandBase("qualidade") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["QUALIDADE_DESCRIPTION"]
 	}

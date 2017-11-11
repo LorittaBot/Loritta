@@ -16,11 +16,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class ShipCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "ship"
-    }
-
+class ShipCommand : CommandBase("ship") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.SHIP_DESCRIPTION.f()
     }

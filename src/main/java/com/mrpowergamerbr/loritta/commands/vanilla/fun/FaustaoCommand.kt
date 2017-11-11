@@ -45,11 +45,7 @@ private val avatars = listOf(
 	"http://i.imgur.com/rVmgwZC.png",
 	"http://i.imgur.com/z7Ec5I3.png")
 
-class FaustaoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "faustão"
-	}
-
+class FaustaoCommand : CommandBase("faustão") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN
 	}

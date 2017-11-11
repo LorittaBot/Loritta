@@ -19,11 +19,7 @@ import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 
-class WikiaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "wikia"
-	}
-
+class WikiaCommand : CommandBase("wikia") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("WIKIA_DESCRIPTION")
 	}

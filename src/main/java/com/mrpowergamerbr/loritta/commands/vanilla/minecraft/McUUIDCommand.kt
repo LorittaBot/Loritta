@@ -12,11 +12,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.*
 
-class McUUIDCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "mcuuid";
-    }
-
+class McUUIDCommand : CommandBase("mcuuid") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.MCUUID_DESCRIPTION.msgFormat();
     }

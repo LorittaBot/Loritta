@@ -16,11 +16,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McConquistaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "mcconquista"
-	}
-
+class McConquistaCommand : CommandBase("mcconquista") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MCCONQUISTA_Description"]
 	}

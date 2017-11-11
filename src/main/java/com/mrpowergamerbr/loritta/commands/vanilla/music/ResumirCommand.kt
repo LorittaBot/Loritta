@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class ResumirCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "unpause"
-	}
-
+class ResumirCommand : CommandBase("unpause") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("UNPAUSE_DESCRIPTION")
 	}

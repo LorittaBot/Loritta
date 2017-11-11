@@ -10,11 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import java.util.*
 
-class VolumeCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "volume"
-	}
-
+class VolumeCommand : CommandBase("volume") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("VOLUME_DESCRIPTION")
 	}

@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 
-class RandomSAMCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "randomsam"
-	}
-
+class RandomSAMCommand : CommandBase("randomsam") {
 	override fun getAliases(): List<String> {
 		return listOf("randomsouthamericamemes")
 	}

@@ -21,11 +21,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
-class RbUserCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "rbuser"
-	}
-
+class RbUserCommand : CommandBase("rbuser") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("RBUSER_DESCRIPTION")
 	}

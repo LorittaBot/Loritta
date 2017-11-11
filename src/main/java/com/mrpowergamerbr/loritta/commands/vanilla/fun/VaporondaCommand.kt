@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 
-class VaporondaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "vaporonda"
-	}
-
+class VaporondaCommand : CommandBase("vaporonda") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VAPORONDA_DESCRIPTION"]
 	}

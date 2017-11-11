@@ -13,11 +13,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class DrakeCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "drake"
-	}
-
+class DrakeCommand : CommandBase("drake") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.DRAKE_DESCRIPTION.f()
 	}

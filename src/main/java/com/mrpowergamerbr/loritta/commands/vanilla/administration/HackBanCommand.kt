@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class HackBanCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "hackban"
-	}
-
+class HackBanCommand : CommandBase("hackban") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["HACKBAN_DESCRIPTION"]
 	}

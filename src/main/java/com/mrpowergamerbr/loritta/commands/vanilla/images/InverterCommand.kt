@@ -10,11 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.util.*
 
-class InverterCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "inverter"
-	}
-
+class InverterCommand : CommandBase("inverter") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.INVERTER_DESCRIPTION.f()
 	}

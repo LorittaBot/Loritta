@@ -15,11 +15,7 @@ import java.time.ZoneId
 import java.util.regex.Pattern
 
 
-class LembrarCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "lembrar"
-	}
-
+class LembrarCommand : CommandBase("lembrar") {
 	override fun getAliases(): List<String> {
 		return listOf("lembre", "remind", "remindme");
 	}

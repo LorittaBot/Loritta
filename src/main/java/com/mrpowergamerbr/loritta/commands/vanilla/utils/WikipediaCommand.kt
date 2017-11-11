@@ -14,11 +14,7 @@ import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
-class WikipediaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "wikipedia"
-	}
-
+class WikipediaCommand : CommandBase("wikipedia") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.WIKIPEDIA_DESCRIPTION
 	}

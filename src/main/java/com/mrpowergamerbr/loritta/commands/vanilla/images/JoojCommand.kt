@@ -12,11 +12,7 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.util.*
 
-class JoojCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "jooj"
-	}
-
+class JoojCommand : CommandBase("jooj") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("JOOJ_DESCRIPTION")
 	}

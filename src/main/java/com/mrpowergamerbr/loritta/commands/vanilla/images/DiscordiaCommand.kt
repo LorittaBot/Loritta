@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.gifs.MentionGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class DiscordiaCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "discordia"
-	}
-
+class DiscordiaCommand : CommandBase("discordia") {
 	override fun getAliases(): List<String> {
 		return listOf("discórdia")
 	}

@@ -5,11 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 
-class NashornTestCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "nashorn"
-	}
-
+class NashornTestCommand : CommandBase("nashorn") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

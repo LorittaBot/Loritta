@@ -16,11 +16,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class UndertaleBoxCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "undertalebox"
-	}
-
+class UndertaleBoxCommand : CommandBase("undertalebox") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.UTBOX_DESCRIPTION
 	}

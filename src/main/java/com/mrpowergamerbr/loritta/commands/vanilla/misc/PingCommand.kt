@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class PingCommand : CommandBase() {
-    override fun getLabel(): String {
-        return "ping"
-    }
-
+class PingCommand : CommandBase("ping") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.PING_DESCRIPTION.msgFormat()
     }

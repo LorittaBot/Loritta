@@ -11,9 +11,9 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class MusicInfoCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "tocando"
+class MusicInfoCommand : CommandBase("tocando") {
+	override fun getAliases(): List<String> {
+		return listOf("playing", "musicinfo")
 	}
 
 	override fun getDescription(locale: BaseLocale): String {

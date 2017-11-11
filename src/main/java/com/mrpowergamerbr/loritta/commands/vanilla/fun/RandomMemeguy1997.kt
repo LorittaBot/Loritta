@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 
-class RandomMemeguy1997 : CommandBase() {
-	override fun getLabel(): String {
-		return "randommemeguy1997"
-	}
-
+class RandomMemeguy1997 : CommandBase("randomemeguy1997") {
 	override fun getAliases(): List<String> {
 		return listOf("randommemeguy", "randomeme", "randomemeguy", "randomemeguy1997")
 	}

@@ -12,11 +12,7 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
-class LanguageCommand : CommandBase() {
-	override fun getLabel(): String {
-		return "language"
-	}
-
+class LanguageCommand : CommandBase("language") {
 	override fun getAliases(): List<String> {
 		return listOf("linguagem", "speak")
 	}
