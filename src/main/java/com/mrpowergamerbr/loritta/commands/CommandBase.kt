@@ -25,7 +25,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class CommandBase(val label: String) {
+open abstract class CommandBase(open val label: String) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
@@ -245,7 +245,7 @@ open abstract class CommandBase(val label: String) {
 					explain(context)
 					return true
 				}
-				if (LorittaUtils.handleIfBanned(context, lorittaUser.profile)) {
+				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
 					return true
 				}
 				if (!context.canUseCommand()) {

@@ -24,12 +24,6 @@ import java.awt.Color
 import java.util.*
 
 class YouTubeCommand : CommandBase("youtube") {
-	val indexes = listOf("1⃣",
-			"2⃣",
-			"3⃣",
-			"4⃣",
-			"5⃣")
-
 	override fun getAliases() : List<String> {
 		return listOf("yt")
 	}
@@ -72,9 +66,9 @@ class YouTubeCommand : CommandBase("youtube") {
 						var duration = java.time.Duration.parse(strDuration)
 						var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS); // Nós não podemos pegar o tempo diretamente porque é "unsupported"
 						var final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60));
-						format += "${indexes[i]}\uD83C\uDFA5 `[${final}]` **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
+						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
 					} else {
-						format += "${indexes[i]}\uD83D\uDCFA **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
+						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
 					}
 					context.metadata.put(i.toString(), item);
 				}
@@ -85,7 +79,7 @@ class YouTubeCommand : CommandBase("youtube") {
 				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
 				for (i in 0 until Math.min(5, items.size)) {
-					mensagem.addReaction(indexes[i]).complete();
+					mensagem.addReaction(Constants.INDEXES[i]).complete();
 				}
 				return;
 			} else {

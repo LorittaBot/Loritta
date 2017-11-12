@@ -57,6 +57,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.RipVidaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.RomeroBrittoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.SAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.StudiopolisTvCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.SustoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TretaNewsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TristeRealidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TrumpCommand
@@ -188,6 +189,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(StudiopolisTvCommand())
 		commandMap.add(ManiaTitleCardCommand())
 		commandMap.add(LaranjoCommand())
+		commandMap.add(SustoCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())

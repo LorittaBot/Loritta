@@ -9,7 +9,11 @@ import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 
 class TranslateCommand : CommandBase("traduzir") {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TRANSLATE_DESCRIPTION
+		return locale["TRANSLATE_DESCRIPTION"]
+	}
+
+	override fun getAliases(): List<String> {
+		return listOf("translate")
 	}
 
 	override fun getUsage(): String {

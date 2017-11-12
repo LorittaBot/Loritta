@@ -29,12 +29,6 @@ import java.time.ZonedDateTime
 import java.util.*
 
 class SpigotMcCommand : CommandBase("spigotmc") {
-	val indexes = listOf("1⃣",
-			"2⃣",
-			"3⃣",
-			"4⃣",
-			"5⃣")
-
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SPIGOTMC_DESCRIPTION")
 	}
@@ -81,7 +75,7 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 					var format = "";
 					for (i in 0..Math.min(5, array.size()) - 1) {
 						var item = json[i]
-						format += "${indexes[i]} **[${item["name"].string}](https://www.spigotmc.org/${item["id"].string})**\n";
+						format += "${Constants.INDEXES[i]} **[${item["name"].string}](https://www.spigotmc.org/${item["id"].string})**\n";
 
 						context.metadata.put(i.toString(), item["id"].string);
 					}
@@ -90,7 +84,7 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 					var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
-						mensagem.addReaction(indexes[i]).complete();
+						mensagem.addReaction(Constants.INDEXES[i]).complete();
 					}
 				}
 			}

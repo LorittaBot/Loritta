@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
@@ -13,12 +14,6 @@ import java.net.URLEncoder
 
 
 class GoogleCommand : CommandBase("google") {
-	val indexes = listOf("1⃣",
-			"2⃣",
-			"3⃣",
-			"4⃣",
-			"5⃣")
-
 	override fun getAliases(): List<String> {
 		return listOf("g", "search", "procurar", "pesquisar")
 	}
@@ -70,7 +65,7 @@ class GoogleCommand : CommandBase("google") {
 				val url = el.getElementsByTag("h3")[0].child(0).attr("href")
 				val description = el.getElementsByClass("st").text()
 
-				embed.appendDescription("${indexes[idx]} [$title]($url)\n◾ $description\n")
+				embed.appendDescription("${Constants.INDEXES[idx]} [$title]($url)\n◾ $description\n")
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build())

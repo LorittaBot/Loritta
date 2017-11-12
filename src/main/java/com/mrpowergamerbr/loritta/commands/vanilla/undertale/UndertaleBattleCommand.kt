@@ -21,7 +21,7 @@ import javax.imageio.ImageIO
 
 class UndertaleBattleCommand : CommandBase("undertalebattle") {
     override fun getDescription(locale: BaseLocale): String {
-        return locale.UTBATTLE_DESCRIPTION.msgFormat()
+        return locale["UTBATTLE_DESCRIPTION"]
     }
 
     override fun getCategory(): CommandCategory {

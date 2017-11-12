@@ -27,6 +27,8 @@ data class LorittaConfig(
 	val patreonClientSecret: String,
 	val patreonAccessToken: String,
 	val patreonRefreshToken: String,
+	val fanArtExtravaganza: Boolean,
+	val fanArts: List<LorittaFanArts>,
 	val currentlyPlaying: List<LorittaGameStatus>) {
 	constructor() : this(2,
 			"Token do Bot",
@@ -52,7 +54,11 @@ data class LorittaConfig(
 			"Client Secret do Patreon",
 			"Access Token do Patreon",
 			"Refresh Token do Patreon",
+			true,
+			listOf<LorittaFanArts>(),
 			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
 
 	class LorittaGameStatus(val name: String, val type: String)
+
+	class LorittaFanArts(val fileName: String, val artist: String)
 }

@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
@@ -99,6 +100,22 @@ val User.donator: Boolean
 		return false
 	}
 
+val User.artist: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("341343754336337921")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
+
 /**
  * Retorna a instância atual da Loritta
  */
@@ -135,6 +152,20 @@ enum class NSFWResponse {
 }
 
 object LorittaUtilsKotlin {
+	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
+		if (profile.isBanned) {
+			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.id)
+
+			// Se um usuário está banido...
+			context.userHandle
+					.openPrivateChannel()
+					.complete()
+					.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
+			return true
+		}
+		return false
+	}
+
 	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
 		val rg : Random = Random()
 		for (i in 0..items.size - 1) {

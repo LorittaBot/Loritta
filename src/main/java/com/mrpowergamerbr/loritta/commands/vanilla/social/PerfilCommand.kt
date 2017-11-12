@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.artist
 import com.mrpowergamerbr.loritta.utils.donator
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -86,6 +87,7 @@ class PerfilCommand : CommandBase("perfil") {
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.FOLDER + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.FOLDER + "blob_blush2.png"))
+			user.artist -> ImageIO.read(File(Loritta.FOLDER + "artist_badge.png"))
 			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.FOLDER + "loritta_badge.png"))
 			user.isBot -> ImageIO.read(File(Loritta.FOLDER + "robot_badge.png"))
 			else -> null

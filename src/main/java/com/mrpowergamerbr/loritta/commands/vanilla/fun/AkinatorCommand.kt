@@ -11,6 +11,7 @@ import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -91,16 +92,10 @@ class AkinatorCommand : CommandBase("akinator") {
 		}
 		text += "`]"
 
-		val indexes = listOf("1⃣",
-				"2⃣",
-				"3⃣",
-				"4⃣",
-				"5⃣")
-
 		var reactionInfo = ""
 
 		for ((idx, answer) in answers.withIndex()) {
-			reactionInfo += indexes[idx] + " ${answer.string}\n"
+			reactionInfo += Constants.INDEXES[idx] + " ${answer.string}\n"
 		}
 
 		val builder = EmbedBuilder().apply {
@@ -117,7 +112,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 		val message = context.sendMessage(context.getAsMention(true), builder.build())
 
-		for (emote in indexes) {
+		for (emote in Constants.INDEXES) {
 			message.addReaction(emote).complete();
 		}
 	}
@@ -211,16 +206,10 @@ class AkinatorCommand : CommandBase("akinator") {
 					}
 					text += "`]"
 
-					val indexes = listOf("1⃣",
-							"2⃣",
-							"3⃣",
-							"4⃣",
-							"5⃣")
-
 					var reactionInfo = ""
 
 					for ((idx, answer) in answers.withIndex()) {
-						reactionInfo += indexes[idx] + " ${answer.string}\n"
+						reactionInfo += Constants.INDEXES[idx] + " ${answer.string}\n"
 					}
 
 					val builder = EmbedBuilder().apply {

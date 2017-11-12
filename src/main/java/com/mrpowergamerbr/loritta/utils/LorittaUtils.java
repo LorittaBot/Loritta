@@ -53,19 +53,6 @@ public class LorittaUtils {
 		return true;
 	}
 
-	public static boolean handleIfBanned(CommandContext context, LorittaProfile profile) {
-		if (profile.isBanned()) {
-			// Se um usuário está banido...
-			context.getUserHandle()
-					.openPrivateChannel()
-					.complete()
-					.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + f(context.locale.USER_IS_LORITTABANNED, profile.getBanReason())).complete();
-			LorittaLauncher.loritta.getIgnoreIds().add(context.getUserHandle().getId());
-			return true;
-		}
-		return false;
-	}
-
 	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
 		// TODO: Localization
 		if (serverConf.warnOnMissingPermission()) {

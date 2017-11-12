@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
@@ -19,12 +20,6 @@ import java.awt.Color
 import java.util.*
 
 class GameJoltCommand : CommandBase("gamejolt") {
-	val indexes = listOf("1⃣",
-			"2⃣",
-			"3⃣",
-			"4⃣",
-			"5⃣")
-
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GAMEJOLT_DESCRIPTION"]
 	}
@@ -59,7 +54,7 @@ class GameJoltCommand : CommandBase("gamejolt") {
 				val path = game["slug"].string
 				val url = "https://gamejolt.com/games/$path/$id"
 
-				format += "${indexes[i]} **[${title}]($url)**\n"
+				format += "${Constants.INDEXES[i]} **[${title}]($url)**\n"
 
 				context.metadata.put(i.toString(), game)
 			}
@@ -69,7 +64,7 @@ class GameJoltCommand : CommandBase("gamejolt") {
 			var mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 			// Adicionar os reactions
 			for (i in 0 until Math.min(5, games.size())) {
-				mensagem.addReaction(indexes[i]).complete();
+				mensagem.addReaction(Constants.INDEXES[i]).complete();
 			}
 		} else {
 			context.explain()
