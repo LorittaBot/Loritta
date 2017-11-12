@@ -184,6 +184,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(GameJoltCommand())
 		commandMap.add(CleverbotCommand())
 		commandMap.add(TwitchCommand())
+		
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
 		commandMap.add(RomeroBrittoCommand())
