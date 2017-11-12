@@ -79,19 +79,33 @@ class AjudaCommand : CommandBase("ajuda") {
 			else -> Color(186, 0, 239)
 		}
 
-		var image = when (cat) {
-		// CommandCategory.DISCORD -> "http://loritta.website/assets/img/loritta_guild_v4.png"
-			CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
-		// CommandCategory.UNDERTALE -> "http://loritta.website/assets/img/loritta_guild_v4.png"
-			CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
-			CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
-			CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
-		// CommandCategory.ROBLOX -> "http://loritta.website/assets/img/loritta_guild_v4.png"
-		// CommandCategory.MISC -> "http://loritta.website/assets/img/loritta_guild_v4.png"
-			CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
-			CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
-			else -> "http://loritta.website/assets/img/loritta_guild_v4.png"
+		var image = "http://loritta.website/assets/img/loritta_guild_v4.png"
+
+		if (cat == CommandCategory.SOCIAL) {
+			image = "https://loritta.website/assets/img/social.png"
 		}
+
+		if (cat == CommandCategory.POKEMON) {
+			image = "https://loritta.website/assets/img/pokemon.png"
+		}
+
+		if (cat == CommandCategory.MINECRAFT) {
+			image = "https://loritta.website/assets/img/loritta_pudim.png"
+		}
+
+		if (cat == CommandCategory.FUN) {
+			image = "https://loritta.website/assets/img/vieirinha.png"
+		}
+
+		if (cat == CommandCategory.UTILS) {
+			image = "https://loritta.website/assets/img/utils.png"
+		}
+
+		if (cat == CommandCategory.MUSIC) {
+			image = "https://loritta.website/assets/img/loritta_headset.png"
+		}
+
+		println("Category: $cat ~ $image")
 
 		embed.setColor(color)
 		embed.setThumbnail(image)
@@ -125,7 +139,12 @@ class AjudaCommand : CommandBase("ajuda") {
 		val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
 		var description = "Escolha uma categoria...\n\n"
 
-		val categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
+		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
+
+		if (!context.config.musicConfig.isEnabled) {
+			categories = categories.filter { it != CommandCategory.MUSIC }
+		}
+		
 		val reactionEmotes = mapOf<CommandCategory, String>(
 				CommandCategory.DISCORD to "discord:375448103517552642",
 				CommandCategory.ROBLOX to "roblox:375313891925688331",
