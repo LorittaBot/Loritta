@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SimsimiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SpinnerCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.YouTubeCommand
@@ -182,7 +183,8 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(CleverbotCommand())
-
+		commandMap.add(TwitchCommand())
+		
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
 		commandMap.add(RomeroBrittoCommand())
