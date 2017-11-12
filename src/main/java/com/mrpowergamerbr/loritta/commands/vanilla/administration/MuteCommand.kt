@@ -240,7 +240,7 @@ class MuteCommand : CommandBase("mute") {
 			userData.isMuted = true
 			if (time != null) {
 				userData.temporaryMute = true
-				userData.expiresIn = System.currentTimeMillis() + time
+				userData.expiresIn = System.currentTimeMillis() + (time * 1000)
 			} else {
 				userData.temporaryMute = false
 			}
