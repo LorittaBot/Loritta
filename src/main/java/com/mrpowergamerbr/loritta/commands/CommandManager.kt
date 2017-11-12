@@ -81,6 +81,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.HesayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.LanguageCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PatreonCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
@@ -198,6 +199,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(EscolherCommand())
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
+		commandMap.add(HesayCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
