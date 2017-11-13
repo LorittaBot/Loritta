@@ -22,8 +22,11 @@ class ConfigureYouTubeView : ConfigureView() {
 		val channels = JsonArray()
 		serverConfig.youTubeConfig.channels.forEach {
 			val json = Loritta.gson.toJsonTree(it)
-			json["textChannelName"] = guild.getTextChannelById(it.repostToChannelId).name
-			channels.add(json)
+			val textChannel = guild.getTextChannelById(it.repostToChannelId)
+			if (textChannel != null) {
+				json["textChannelName"] = textChannel.name
+				channels.add(json)
+			}
 		}
 
 		variables["channels"] = channels.toString()
