@@ -144,7 +144,7 @@ class AjudaCommand : CommandBase("ajuda") {
 		if (!context.config.musicConfig.isEnabled) {
 			categories = categories.filter { it != CommandCategory.MUSIC }
 		}
-		
+
 		val reactionEmotes = mapOf<CommandCategory, String>(
 				CommandCategory.DISCORD to "discord:375448103517552642",
 				CommandCategory.ROBLOX to "roblox:375313891925688331",
