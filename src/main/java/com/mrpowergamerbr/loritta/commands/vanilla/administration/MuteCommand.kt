@@ -169,7 +169,7 @@ class MuteCommand : CommandBase("mute") {
 
 		if (!context.metadata.containsKey("started"))
 			return
-		
+
 		var time = e.message.content.convertToSpan()
 
 		if (time == 0L) {

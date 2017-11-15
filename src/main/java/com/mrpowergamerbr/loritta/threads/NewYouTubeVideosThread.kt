@@ -46,7 +46,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	}
 
 	fun checkNewVideos() {
-		println("Verificando novos vídeos...")
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("youTubeConfig.channels").exists()
 		// IDs dos canais a serem verificados

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
@@ -28,6 +29,12 @@ class ReloadCommand : CommandBase("reload") {
 	}
 
 	override fun run(context: CommandContext) {
+		if (context.args.isNotEmpty() && context.args[0] == "info") {
+			context.reply(LoriReply(
+					"**Plugins:** ${loritta.pluginManager.plugins.joinToString{ it.name }}"
+			))
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
@@ -37,6 +44,8 @@ class ReloadCommand : CommandBase("reload") {
 		loritta.morphia = Morphia()
 		loritta.ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
 		loritta.generateDummyServerConfig()
+		loritta.pluginManager.clearPlugins()
+		loritta.pluginManager.loadPlugins()
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()

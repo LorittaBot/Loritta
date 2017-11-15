@@ -132,6 +132,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikipediaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
 import java.util.*
 
 class CommandManager(isMusicOnly: Boolean) {
@@ -295,6 +296,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(SeekCommand())
 		commandMap.add(YouTubeCommand())
 
+		commandMap.addAll(loritta.pluginManager.getExternalCommands())
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.getSimpleName(), CommandOptions::class.java)
 		}

@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
+import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
@@ -117,6 +118,7 @@ class Loritta {
 
 	// ===[ UTILS ]===
 	var hal = JMegaHal() // JMegaHal, usado nos comandos de frase tosca
+	var pluginManager = PluginManager()
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
@@ -194,6 +196,9 @@ class Loritta {
 
 		val updateTimeListener = UpdateTimeListener(this);
 
+		println("Carregando plugins...")
+		pluginManager.loadPlugins()
+
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		for (idx in 0..generateShards) {
@@ -211,61 +216,61 @@ class Loritta {
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
 		// if (!isMusicOnly) {
-			println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
-			/* val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
-			Thread(website, "Website Thread").start() */
+		println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
+		/* val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
+		Thread(website, "Website Thread").start() */
 
-			val website = thread(true, name = "Website Thread") {
-				org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
-			}
+		val website = thread(true, name = "Website Thread") {
+			org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
+		}
 
-			println("Sucesso! Iniciando threads da Loritta...")
+		println("Sucesso! Iniciando threads da Loritta...")
 
-			AminoRepostThread().start() // Iniciar Amino Repost Thread
+		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
-			NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
+		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
 
-			NewRssFeedThread().start() // Iniciar Feed Rss
+		NewRssFeedThread().start() // Iniciar Feed Rss
 
-			UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
+		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-			DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
+		DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
 
-			FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
+		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
-			MutedUsersThread().start() // Iniciar thread para pegar posts do Facebook
+		MutedUsersThread().start() // Iniciar thread para pegar posts do Facebook
 
-			LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
+		LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 
-			val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
-			val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
+		val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
+		val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
 
-			// Vamos registrar o nosso event listener em todas as shards!
-			for (jda in lorittaShards.shards) {
-				jda.addEventListener(discordListener) // Hora de registrar o nosso listener
-				jda.addEventListener(eventLogListener) // E o nosso outro listener também!
-			}
+		// Vamos registrar o nosso event listener em todas as shards!
+		for (jda in lorittaShards.shards) {
+			jda.addEventListener(discordListener) // Hora de registrar o nosso listener
+			jda.addEventListener(eventLogListener) // E o nosso outro listener também!
+		}
 		// } else {
-			// Iniciar coisas musicais
-			musicManagers = HashMap()
-			playerManager = DefaultAudioPlayerManager()
+		// Iniciar coisas musicais
+		musicManagers = HashMap()
+		playerManager = DefaultAudioPlayerManager()
 
-			val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
+		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
 
-			trackInfoExecutorServiceField.isAccessible = true
-			val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
-			trackInfoExecutorService.maximumPoolSize = 100
+		trackInfoExecutorServiceField.isAccessible = true
+		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
+		trackInfoExecutorService.maximumPoolSize = 100
 
-			AudioSourceManagers.registerRemoteSources(playerManager)
-			AudioSourceManagers.registerLocalSource(playerManager)
+		AudioSourceManagers.registerRemoteSources(playerManager)
+		AudioSourceManagers.registerLocalSource(playerManager)
 
-			LorittaUtils.startAutoPlaylist()
+		LorittaUtils.startAutoPlaylist()
 
-			// val messageListener = MusicMessageListener(this)
+		// val messageListener = MusicMessageListener(this)
 
-			// for (jda in lorittaShards.shards) {
-			// 	jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
-			// }
+		// for (jda in lorittaShards.shards) {
+		// 	jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
+		// }
 		// }
 		ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
