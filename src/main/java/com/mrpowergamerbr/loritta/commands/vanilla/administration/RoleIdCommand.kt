@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -26,6 +27,10 @@ class RoleIdCommand : CommandBase("roleid") {
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
+	}
+
+	override fun getCategory(): CommandCategory {
+		return CommandCategory.ADMIN
 	}
 
 	override fun run(context: CommandContext) {

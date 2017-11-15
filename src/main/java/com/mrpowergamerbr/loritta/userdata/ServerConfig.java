@@ -64,6 +64,7 @@ public class ServerConfig {
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
+    public HashMap<String, Long> temporaryBans = new HashMap<String, Long>();
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {
         if (cmd instanceof NashornCommand) { // Se é um comando feito em Nashorn...

@@ -26,6 +26,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SlowModeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SoftBanCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.TempBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
@@ -273,6 +274,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(SoftBanCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(SlowModeCommand())
+		commandMap.add(TempBanCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())

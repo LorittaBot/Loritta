@@ -115,6 +115,8 @@ class MuteCommand : CommandBase("mute") {
 				context.metadata["reason"] = reason
 			}
 
+			context.metadata["started"] = true
+
 			val message = context.reply(
 					LoriReply(
 							message = "Por quanto tempo você deseja silenciar o usuário? (`1 hora`, `5 minutos`, etc) Caso queira que o usuário fique silenciado permanente, reaja com \uD83D\uDD04",
@@ -135,6 +137,9 @@ class MuteCommand : CommandBase("mute") {
 			return
 
 		if (e.member.user.id != context.userHandle.id)
+			return
+
+		if (!context.metadata.containsKey("started"))
 			return
 
 		if (e.reactionEmote.name == "\uD83D\uDD04") {
@@ -162,6 +167,9 @@ class MuteCommand : CommandBase("mute") {
 		if (e.member.user.id != context.userHandle.id)
 			return
 
+		if (!context.metadata.containsKey("started"))
+			return
+		
 		var time = e.message.content.convertToSpan()
 
 		if (time == 0L) {

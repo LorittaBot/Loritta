@@ -18,40 +18,66 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 	}
 
 	fun checkMuteStatus() {
-		val guilds = loritta.ds.find(ServerConfig::class.java).field("userData").exists()
+		run {
+			// MUTE
+			val guilds = loritta.ds.find(ServerConfig::class.java).field("userData").exists()
 
-		for (guild in guilds) {
-			val toBeUnmuted = guild.userData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
+			for (guild in guilds) {
+				val toBeUnmuted = guild.userData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
 
-			if (toBeUnmuted.isEmpty())
-				continue
+				if (toBeUnmuted.isEmpty())
+					continue
 
-			val _guild = lorittaShards.getGuildById(guild.guildId)
+				val _guild = lorittaShards.getGuildById(guild.guildId)
 
-			if (_guild == null)
-				continue
+				if (_guild == null)
+					continue
 
-			for ((key, userData) in toBeUnmuted) {
-				try {
-					userData.isMuted = false
-					userData.temporaryMute = false
+				for ((key, userData) in toBeUnmuted) {
+					try {
+						userData.isMuted = false
+						userData.temporaryMute = false
 
-					val member = _guild.getMemberById(key)
+						val member = _guild.getMemberById(key)
 
-					if (member == null)
-						continue
+						if (member == null)
+							continue
 
-					var mutedRoles = _guild.getRolesByName(loritta.getLocaleById(guild.localeId).MUTE_ROLE_NAME, false)
+						var mutedRoles = _guild.getRolesByName(loritta.getLocaleById(guild.localeId).MUTE_ROLE_NAME, false)
 
-					if (mutedRoles.isEmpty())
-						continue
+						if (mutedRoles.isEmpty())
+							continue
 
-					_guild.controller.removeRolesFromMember(member, mutedRoles.first()).complete()
-				} catch (e: Exception) {
-					e.printStackTrace()
+						_guild.controller.removeRolesFromMember(member, mutedRoles.first()).complete()
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
 				}
+				loritta save guild
 			}
-			loritta save guild
+		}
+
+		run {
+			// TEMP BANS
+			val guilds = loritta.ds.find(ServerConfig::class.java).field("temporaryBans").exists()
+
+			for (guild in guilds) {
+				val _guild = lorittaShards.getGuildById(guild.guildId) ?: continue
+
+				val temporaryBans = guild.temporaryBans
+
+				for ((id, time) in temporaryBans) {
+					try {
+						if (System.currentTimeMillis() > time) {
+							_guild.controller.unban(id).complete()
+						}
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
+
+				loritta save guild
+			}
 		}
 	}
 }
