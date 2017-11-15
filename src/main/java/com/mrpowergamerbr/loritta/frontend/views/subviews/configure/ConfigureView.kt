@@ -1,7 +1,8 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews
+package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
+import com.mrpowergamerbr.loritta.frontend.views.subviews.ProtectedView
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards

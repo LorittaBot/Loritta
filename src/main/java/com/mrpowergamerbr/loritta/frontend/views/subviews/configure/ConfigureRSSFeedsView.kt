@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews
+package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray

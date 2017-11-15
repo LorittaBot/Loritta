@@ -1,5 +1,6 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews
+package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
+import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.evaluate
@@ -9,23 +10,27 @@ import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 
-class ConfigureNashornCommandsView : ConfigureView() {
+class ConfigureYouTubeView : ConfigureView() {
 	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
 		super.handleRender(req, res, variables)
-		return req.path().matches(Regex("^/dashboard/configure/[0-9]+/nashorn"))
+		return req.path().matches(Regex("^/dashboard/configure/[0-9]+/youtube"))
 	}
 
 	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
-		variables["saveType"] = "nashorn_commands"
+		variables["saveType"] = "youtube"
 
-		val feeds = JsonArray()
-		serverConfig.nashornCommands.forEach {
+		val channels = JsonArray()
+		serverConfig.youTubeConfig.channels.filter { it.repostToChannelId != null }.forEach {
 			val json = Loritta.gson.toJsonTree(it)
-			feeds.add(json)
+			val textChannel = guild.getTextChannelById(it.repostToChannelId)
+			if (textChannel != null) {
+				json["textChannelName"] = textChannel.name
+				channels.add(json)
+			}
 		}
 
-		variables["commands"] = feeds.toString()
+		variables["channels"] = channels.toString()
 
-		return evaluate("configure_nashorn.html", variables)
+		return evaluate("configure_youtube.html", variables)
 	}
 }

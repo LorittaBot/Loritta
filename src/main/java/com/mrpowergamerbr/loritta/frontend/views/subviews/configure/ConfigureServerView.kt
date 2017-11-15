@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews
+package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.bool

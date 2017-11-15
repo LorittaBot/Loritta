@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews
+package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
