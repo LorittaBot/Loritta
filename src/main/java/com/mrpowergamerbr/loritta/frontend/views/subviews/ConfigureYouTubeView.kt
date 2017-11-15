@@ -20,7 +20,7 @@ class ConfigureYouTubeView : ConfigureView() {
 		variables["saveType"] = "youtube"
 
 		val channels = JsonArray()
-		serverConfig.youTubeConfig.channels.forEach {
+		serverConfig.youTubeConfig.channels.filter { it.repostToChannelId != null }.forEach {
 			val json = Loritta.gson.toJsonTree(it)
 			val textChannel = guild.getTextChannelById(it.repostToChannelId)
 			if (textChannel != null) {

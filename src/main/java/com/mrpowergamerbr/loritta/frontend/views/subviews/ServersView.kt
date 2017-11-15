@@ -11,7 +11,7 @@ class ServersView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
-		val guilds = lorittaShards.getGuilds()
+		var guilds = lorittaShards.getGuilds()
 		variables["serversSortedByMembers"] = guilds.sortedByDescending { it.members.size - it.members.count { it.user.isBot } }
 		var members = 0
 		var realUsers = 0
