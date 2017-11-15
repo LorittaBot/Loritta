@@ -72,7 +72,15 @@ class ReloadCommand : CommandBase("reload") {
 				it.addEventListener(updateTimeListener)
 			}
 		}
-		
-		context.sendMessage(context.getAsMention(true) + "Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**")
+
+		context.reply(
+				LoriReply(
+						"Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+				),
+				LoriReply(
+						"**Plugins:** ${loritta.pluginManager.plugins.joinToString{ it.name }}",
+						mentionUser = false
+				)
+		)
 	}
 }

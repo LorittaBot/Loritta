@@ -17,6 +17,10 @@ import java.util.stream.Collectors
 class PluginManager {
 	val plugins = mutableListOf<LorittaPlugin>()
 
+	fun getPlugin(name: String): LorittaPlugin? {
+		return plugins.firstOrNull { it.name == name }
+	}
+
 	fun clearPlugins() {
 		plugins.forEach { this.unloadPlugin(it) }
 		plugins.clear()
@@ -30,7 +34,9 @@ class PluginManager {
 		val folder = File(Loritta.config.pluginFolder)
 
 		for (file in folder.listFiles()) {
-			loadPlugin(file)
+			if (file.extension == "jar") {
+				loadPlugin(file)
+			}
 		}
 	}
 

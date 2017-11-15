@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomMemeguy1997
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomSAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SimsimiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SpinnerCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
@@ -181,7 +180,6 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
 		commandMap.add(HojeCommand())
-		commandMap.add(SimsimiCommand())
 		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(CleverbotCommand())
