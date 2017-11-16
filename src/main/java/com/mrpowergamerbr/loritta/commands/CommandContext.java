@@ -103,8 +103,8 @@ public class CommandContext {
 
 	public String getAsMention(boolean addSpace) {
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override()) {
-			return (cmdOptions.mentionOnCommandOutput() ?
+		if (cmdOptions.getOverride()) {
+			return (cmdOptions.getMentionOnCommandOutput() ?
 					lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
 					"");
 		}
@@ -155,8 +155,8 @@ public class CommandContext {
 	public Message sendMessage(Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
+			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(message).complete();
@@ -179,8 +179,8 @@ public class CommandContext {
 	public Message sendMessage(MessageEmbed embed) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
+			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
@@ -268,8 +268,8 @@ public class CommandContext {
 	public Message sendFile(InputStream data, String name, Message message) {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
+			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
@@ -295,8 +295,8 @@ public class CommandContext {
 	public Message sendFile(File file, String name, Message message) throws IOException {
 		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
-		if (cmdOptions.override() && cmdOptions.commandOutputInPrivate()) {
-			privateReply = cmdOptions.commandOutputInPrivate();
+		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
+			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
 			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
