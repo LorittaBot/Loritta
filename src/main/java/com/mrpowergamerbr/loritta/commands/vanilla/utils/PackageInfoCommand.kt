@@ -40,7 +40,7 @@ class PackageInfoCommand : CommandBase("correios") {
 				if (packageId.endsWith("PT")) { // Portugal
 					val packageHtml = HttpRequest.get("http://pesquisarencomendas.com/ws/?ref=" + packageId).body()
 
-					val encRes = Loritta.gson.fromJson(packageHtml, EncomendaResponse::class.java)
+					val encRes = Loritta.GSON.fromJson(packageHtml, EncomendaResponse::class.java)
 
 					var base = ""
 
@@ -59,7 +59,7 @@ class PackageInfoCommand : CommandBase("correios") {
 							// E sim, não importa qual é o usuário/senha/token, ele sempre retorna algo válido
 							.send("<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado><objetos>$packageId</objetos><lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>")
 
-					var correios = Loritta.gson.fromJson(response.body(), CorreiosResponse::class.java);
+					var correios = Loritta.GSON.fromJson(response.body(), CorreiosResponse::class.java);
 
 					var objeto = correios.objeto[0];
 

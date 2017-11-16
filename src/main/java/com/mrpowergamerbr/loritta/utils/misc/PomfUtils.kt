@@ -4,8 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -34,7 +33,7 @@ object PomfUtils {
 				.post(formBody).build()
 		val response = client.newCall(request).execute()
 
-		val json = jsonParser.parse(response.body()!!.string()).obj
+		val json = JSON_PARSER.parse(response.body()!!.string()).obj
 
 		if (json.has("files")) {
 			return "http://a.pomf.cat/${json["files"].array[0]["url"].string}"

@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
-import com.mrpowergamerbr.loritta.Loritta.Companion.gson
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import java.io.StringReader
@@ -51,7 +51,7 @@ object MiscUtils {
 
 		val reader = StringReader(checkResponse)
 		val jsonReader = JsonReader(reader)
-		val checkJsonResponse = jsonParser.parse(jsonReader).obj // Base
+		val checkJsonResponse = JSON_PARSER.parse(jsonReader).obj // Base
 
 		var hash = checkJsonResponse["hash"].string
 		var title = checkJsonResponse["title"].asString
@@ -73,7 +73,7 @@ object MiscUtils {
 			progressResponse = progressResponse.removePrefix("(").removeSuffix(")");
 
 			val readerProgress = StringReader(progressResponse)
-			val progressJsonResponse = jsonParser.parse(readerProgress).obj // Base
+			val progressJsonResponse = JSON_PARSER.parse(readerProgress).obj // Base
 
 			val progress = progressJsonResponse.get("progress").string
 			if (progressJsonResponse.has("error") && progressJsonResponse["error"].string.isNotEmpty()) {
@@ -160,7 +160,7 @@ object MiscUtils {
 
 	fun isJSONValid(jsonInString: String): Boolean {
 		try {
-			gson.fromJson(jsonInString, Any::class.java)
+			GSON.fromJson(jsonInString, Any::class.java)
 			return true
 		} catch (ex: com.google.gson.JsonSyntaxException) {
 			return false

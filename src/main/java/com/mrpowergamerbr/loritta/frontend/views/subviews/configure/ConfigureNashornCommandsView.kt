@@ -20,7 +20,7 @@ class ConfigureNashornCommandsView : ConfigureView() {
 
 		val feeds = JsonArray()
 		serverConfig.nashornCommands.forEach {
-			val json = Loritta.gson.toJsonTree(it)
+			val json = Loritta.GSON.toJsonTree(it)
 			feeds.add(json)
 		}
 

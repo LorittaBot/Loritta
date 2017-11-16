@@ -38,7 +38,7 @@ class ReloadCommand : CommandBase("reload") {
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
-		val config = Loritta.gson.fromJson(json, LorittaConfig::class.java)
+		val config = Loritta.GSON.fromJson(json, LorittaConfig::class.java)
 		Loritta.config = config
 
 		loritta.morphia = Morphia()

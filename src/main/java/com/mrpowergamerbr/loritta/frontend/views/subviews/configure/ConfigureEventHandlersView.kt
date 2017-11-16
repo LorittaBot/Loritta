@@ -20,7 +20,7 @@ class ConfigureEventHandlersView : ConfigureView() {
 
 		val feeds = JsonArray()
 		serverConfig.nashornEventHandlers.forEach {
-			val json = Loritta.gson.toJsonTree(it)
+			val json = Loritta.GSON.toJsonTree(it)
 			feeds.add(json)
 		}
 

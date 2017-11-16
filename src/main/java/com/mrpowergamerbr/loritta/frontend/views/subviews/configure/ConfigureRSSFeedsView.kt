@@ -22,7 +22,7 @@ class ConfigureRSSFeedsView : ConfigureView() {
 
 		val feeds = JsonArray()
 		serverConfig.rssFeedConfig.feeds.filter { it.repostToChannelId != null }.forEach {
-			val json = Loritta.gson.toJsonTree(it)
+			val json = Loritta.GSON.toJsonTree(it)
 			val textChannel = guild.getTextChannelById(it.repostToChannelId)
 			if (textChannel != null) {
 				json["textChannelName"] = textChannel.name

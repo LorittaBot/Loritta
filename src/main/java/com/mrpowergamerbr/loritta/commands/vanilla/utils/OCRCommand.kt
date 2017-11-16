@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.io.ByteArrayOutputStream
@@ -44,7 +44,7 @@ class OCRCommand : CommandBase("ocr") {
 				.send(json)
 		val body = response.body()
 
-		val parsedResponse = jsonParser.parse(body)
+		val parsedResponse = JSON_PARSER.parse(body)
 
 		val builder = EmbedBuilder()
 		builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")

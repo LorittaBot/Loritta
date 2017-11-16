@@ -8,7 +8,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
@@ -116,7 +116,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 							.userAgent(Constants.USER_AGENT)
 							.body();
 
-					var searchJson = jsonParser.parse(newVideosSearchResponse).obj
+					var searchJson = JSON_PARSER.parse(newVideosSearchResponse).obj
 					val responseError = getResponseError(searchJson)
 					val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 

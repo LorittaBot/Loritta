@@ -31,6 +31,7 @@ class LorittaProfile {
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Int = 0
+    var metadata = mutableMapOf<String, Object>() // Metadata
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;

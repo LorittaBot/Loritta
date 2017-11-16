@@ -173,7 +173,7 @@ object GlobalHandler {
 		variables["randomFamousGuilds"] = famousGuilds
 
 		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.gson.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
 				discordAuth.isReady(true)
 				variables["discordAuth"] = discordAuth

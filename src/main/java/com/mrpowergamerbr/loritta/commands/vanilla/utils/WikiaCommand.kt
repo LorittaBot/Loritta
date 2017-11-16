@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
@@ -56,7 +56,7 @@ class WikiaCommand : CommandBase("wikia") {
 				return
 			}
 
-			val metadata = jsonParser.parse(metadataBody)["data"].obj
+			val metadata = JSON_PARSER.parse(metadataBody)["data"].obj
 			val wikiaImage = if (metadata.has("image") && !metadata["image"].isJsonNull) {
 				metadata["image"].string.split("/revision")[0]
 			} else {
@@ -69,7 +69,7 @@ class WikiaCommand : CommandBase("wikia") {
 
 			// Resolvi usar JsonParser em vez de criar um objeto para o Gson desparsear..
 			try {
-				val wikiaResponse = jsonParser.parse(body).obj // Base
+				val wikiaResponse = JSON_PARSER.parse(body).obj // Base
 
 				if (wikiaResponse.has("exception")) {
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
@@ -79,7 +79,7 @@ class WikiaCommand : CommandBase("wikia") {
 					val response = HttpRequest.get("$wikiaUrl/api/v1/Articles/AsSimpleJson?id=${item["id"].string}")
 							.body()
 
-					val json = jsonParser.parse(response).obj
+					val json = JSON_PARSER.parse(response).obj
 
 					val sections = json["sections"].array
 					var image: String? = null

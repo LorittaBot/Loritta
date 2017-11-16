@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.gson
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
@@ -21,7 +21,7 @@ abstract class ProtectedView : AbstractView() {
 					debug = true
 				}
 				auth.doTokenExchange()
-				req.session()["discordAuth"] = gson.toJson(auth)
+				req.session()["discordAuth"] = GSON.toJson(auth)
 				res.redirect("https://loritta.website/dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true
@@ -30,7 +30,7 @@ abstract class ProtectedView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
-		val discordAuth = gson.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+		val discordAuth = GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 		try {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {

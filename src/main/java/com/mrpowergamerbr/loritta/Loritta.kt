@@ -88,9 +88,9 @@ class Loritta {
 		@JvmStatic
 		val random = SplittableRandom() // Um splittable random global, para não precisar ficar criando vários (menos GC)
 		@JvmStatic
-		val gson = Gson() // Gson
+		val GSON = Gson() // Gson
 		@JvmStatic
-		val jsonParser = JsonParser() // Json Parser
+		val JSON_PARSER = JsonParser() // Json Parser
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 	}
@@ -311,7 +311,7 @@ class Loritta {
 	 * Carrega todos os servidores do Fã Clube da Loritta
 	 */
 	fun loadServersFromFanClub() {
-		rawServersFanClub = gson.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
+		rawServersFanClub = GSON.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
 		LorittaUtilsKotlin.generateServersInFanClub()
 	}
 
@@ -324,8 +324,8 @@ class Loritta {
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
-		val defaultLocale = gson.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
-		val defaultJsonLocale = jsonParser.parse(localeAsText).obj // Mas também parsear como JSON
+		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
+		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
 
 		defaultJsonLocale.entrySet().forEach { (key, value) ->
 			if (!value.isJsonArray) { // TODO: Listas!
@@ -353,10 +353,10 @@ class Loritta {
 		// E agora preencher valores nulos e salvar as traduções
 		for ((id, locale) in locales) {
 			if (id != "default") {
-				val jsonObject = jsonParser.parse(Loritta.gson.toJson(locale))
+				val jsonObject = JSON_PARSER.parse(Loritta.GSON.toJson(locale))
 
 				val localeFile = File(Loritta.LOCALES, "$id.json")
-				val asJson = jsonParser.parse(localeFile.readText()).obj
+				val asJson = JSON_PARSER.parse(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
 					if (obj.isJsonPrimitive && obj.asJsonPrimitive.isString) {

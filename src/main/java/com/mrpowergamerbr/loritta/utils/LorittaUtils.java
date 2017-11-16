@@ -43,6 +43,7 @@ import java.util.UUID;
 import static com.mrpowergamerbr.loritta.utils.TextUtilsKt.f;
 
 public class LorittaUtils {
+	@Deprecated
 	public static final String ERROR = "<:erro:326509900115083266>";
 
 	public static boolean canUploadFiles(CommandContext context) {

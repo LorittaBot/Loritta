@@ -8,7 +8,7 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -109,7 +109,7 @@ object MCServerPinger {
 		fromServer.close()
 		socket.close()
 
-		val json = jsonParser.parse(_json).obj
+		val json = JSON_PARSER.parse(_json).obj
 
 		val versionName = json["version"]["name"].string
 		val versionProtocol = json["version"]["protocol"].int

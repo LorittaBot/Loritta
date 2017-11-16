@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.plugin
 
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.gson
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import java.io.BufferedReader
 import java.io.File
@@ -75,7 +75,7 @@ class PluginManager {
 		stream.close()
 		jar.close()
 
-		return gson.fromJson(result)
+		return GSON.fromJson(result)
 	}
 
 	fun getExternalCommands(): Collection<CommandBase> {

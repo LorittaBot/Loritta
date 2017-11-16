@@ -16,7 +16,7 @@ import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.userdata.YouTubeConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.save
@@ -36,7 +36,7 @@ class ConfigureServerView : ConfigureView() {
 			val argument = split[4];
 
 			if (argument == "save") {
-				val receivedPayload = jsonParser.parse(req.body().value()).obj
+				val receivedPayload = JSON_PARSER.parse(req.body().value()).obj
 				val type = receivedPayload["type"].string
 				receivedPayload.remove("type")
 

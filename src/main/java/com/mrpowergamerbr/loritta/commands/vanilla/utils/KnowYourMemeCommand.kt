@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.Loritta.Companion.jsonParser
+import com.mrpowergamerbr.loritta.Loritta.Companion.JSON_PARSER
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -41,7 +41,7 @@ class KnowYourMemeCommand : CommandBase("knowyourmeme") {
 					.body() // Vamos pegar a response...
 
 			// E vamos parsear!
-			val json = jsonParser.parse(response).obj
+			val json = JSON_PARSER.parse(response).obj
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...

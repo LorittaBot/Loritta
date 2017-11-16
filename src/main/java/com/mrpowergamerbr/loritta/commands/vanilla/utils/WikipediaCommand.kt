@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -48,7 +48,7 @@ class WikipediaCommand : CommandBase("wikipedia") {
 			try {
 				val query = StringUtils.join(context.args, " ", if (hasValidLanguageId) 1 else 0, context.args.size)
 				val wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body()
-				val wikipedia = jsonParser.parse(wikipediaResponse).asJsonObject // Base
+				val wikipedia = JSON_PARSER.parse(wikipediaResponse).asJsonObject // Base
 				val wikiQuery = wikipedia.getAsJsonObject("query") // Query
 				val wikiPages = wikiQuery.getAsJsonObject("pages") // Páginas
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo

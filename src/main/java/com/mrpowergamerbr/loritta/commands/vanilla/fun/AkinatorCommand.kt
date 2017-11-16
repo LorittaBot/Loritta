@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -67,7 +67,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 		val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-		val jsonSession = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
+		val jsonSession = JSON_PARSER.parse(jsonPrettyPrintString).obj["RESULT"]
 
 		val identification = jsonSession["PARAMETERS"]["IDENTIFICATION"].obj
 
@@ -152,7 +152,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 				val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-				val jsonResult = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
+				val jsonResult = JSON_PARSER.parse(jsonPrettyPrintString).obj["RESULT"]
 
 				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
 					val builder = EmbedBuilder().apply {
@@ -247,7 +247,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 					val jsonPrettyPrintString = xmlJSONObj.toString(4);
 
-					val jsonAnswer = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
+					val jsonAnswer = JSON_PARSER.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
 
 					val builder = EmbedBuilder().apply {
 						setTitle("<:akinator:348903800540758017> ${jsonAnswer["NAME"].string}")

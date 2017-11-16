@@ -8,14 +8,13 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.humanize
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
@@ -57,7 +56,7 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 					.userAgent("LorittaBot")
 					.body()
 
-			val json = jsonParser.parse(response)
+			val json = JSON_PARSER.parse(response)
 
 			if (json.isJsonObject) {
 				// Erro!
@@ -122,7 +121,7 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 		embed.setColor(Color(227, 156, 17))
 
 		val resource = getResourceInfo(resourceId)
-		val author = jsonParser.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
+		val author = JSON_PARSER.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
 
 		embed.setAuthor(author["name"].string, null, "https://www.spigotmc.org/${author["icon"]["url"].string}")
 		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
@@ -153,14 +152,14 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 				.userAgent("LorittaBot")
 				.body()
 
-		val json = jsonParser.parse(response).obj
+		val json = JSON_PARSER.parse(response).obj
 
 		return SpigotResource(
 				json["name"].string,
 				json["tag"].string,
 				json["icon"]["url"].string,
 				if (json.has("contributors")) json["contributors"].string else "",
-				Loritta.gson.fromJson<List<String>>(json["testedVersions"]),
+				Loritta.GSON.fromJson<List<String>>(json["testedVersions"]),
 				json["downloads"].int,
 				json["file"]["url"].string,
 				json["releaseDate"].int,

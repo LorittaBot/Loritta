@@ -137,14 +137,24 @@ class TempBanCommand : CommandBase("tempban") {
 
 		config.temporaryBans[user.id] = System.currentTimeMillis() + time
 
-		context.guild.controller.ban(user, 0).complete()
+		try {
+			context.guild.controller.ban(user, 0).complete()
 
-		context.reply(
-				LoriReply(
-						"Usuário temporariamente banido!",
-						"<:banhammer:380424348382658561>"
-				)
-		)
-		loritta save config
+			context.reply(
+					LoriReply(
+							"Usuário temporariamente banido!",
+							"<:banhammer:380424348382658561>"
+					)
+			)
+			loritta save config
+		} catch (e: Exception) {
+			context.metadata["cancelled"] = true
+			context.reply(
+					LoriReply(
+							message = "Eu não consigo banir o usuário pois ele possui um cargo que é acima do meu! Mova ele para baixo do meu e tente novamente!",
+							prefix = "<:erro:326509900115083266>"
+					)
+			)
+		}
 	}
 }

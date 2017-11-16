@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
@@ -39,8 +39,8 @@ class MoneyCommand : CommandBase("money") {
 
 			val response = HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body()
 			val validCurrenciesResponse = HttpRequest.get("http://api.fixer.io/latest").acceptJson().body()
-			val fixerResponse = jsonParser.parse(response).asJsonObject // Base
-			val validCurrResponse = jsonParser.parse(validCurrenciesResponse).asJsonObject // Valid Currencies
+			val fixerResponse = JSON_PARSER.parse(response).asJsonObject // Base
+			val validCurrResponse = JSON_PARSER.parse(validCurrenciesResponse).asJsonObject // Valid Currencies
 
 			val validCurrencies = validCurrResponse.get("rates").asJsonObject.entrySet().joinToString(transform = { "`${it.key}`" })
 

@@ -39,7 +39,7 @@ class GameJoltCommand : CommandBase("gamejolt") {
 			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=$query")
 					.body()
 
-			val json = Loritta.jsonParser.parse(response).obj
+			val json = Loritta.JSON_PARSER.parse(response).obj
 			val games = json["payload"]["games"].array
 
 			var format = "";
@@ -114,7 +114,7 @@ class GameJoltCommand : CommandBase("gamejolt") {
 		val descriptionJson = HttpRequest.get("https://gamejolt.com/site-api/web/discover/games/overview/$id")
 				.body()
 
-		val gameDescription = Loritta.jsonParser.parse(descriptionJson)["payload"]["metaDescription"].string
+		val gameDescription = Loritta.JSON_PARSER.parse(descriptionJson)["payload"]["metaDescription"].string
 		embed.setAuthor(developerDisplayName, "https://gamejolt.com/@$developerUsername", developerAvatar)
 		embed.setTitle("<:gamejolt:362325764181590017> $title", url)
 		embed.setDescription(gameDescription.substringIfNeeded())

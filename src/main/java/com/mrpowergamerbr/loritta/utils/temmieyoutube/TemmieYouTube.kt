@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.lang3.StringUtils
 import java.io.UnsupportedEncodingException
@@ -27,7 +27,7 @@ class TemmieYouTube() {
 
 		val body = req.body()
 
-		var searchJson = jsonParser.parse(body).obj
+		var searchJson = JSON_PARSER.parse(body).obj
 		val responseError = MiscUtils.getResponseError(searchJson)
 		val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
@@ -40,7 +40,7 @@ class TemmieYouTube() {
 			}
 		}
 
-		return Loritta.gson.fromJson(body, SearchResponse::class.java)
+		return Loritta.GSON.fromJson(body, SearchResponse::class.java)
 	}
 
 	private fun buildQuery(params: Map<String, Any>): String {

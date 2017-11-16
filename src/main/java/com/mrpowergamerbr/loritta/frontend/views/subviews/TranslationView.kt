@@ -5,9 +5,9 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.gson
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -33,7 +33,7 @@ class TranslationView : AbstractView() {
 		if (req.param("uploaded-json").isSet) {
 			val upload = req.file("uploaded-json")
 			val file = upload.file()
-			val json = jsonParser.parse(file.readText()).obj
+			val json = JSON_PARSER.parse(file.readText()).obj
 			locale = BaseLocale()
 			json.entrySet()
 					.filter { it.value.isJsonPrimitive && it.value.asJsonPrimitive.isString }
@@ -45,13 +45,13 @@ class TranslationView : AbstractView() {
 			if (variables.containsKey("discordAuth")) {
 				val temmie = variables["discordAuth"] as TemmieDiscordAuth
 				if (temmie.getUserIdentification().id == Loritta.config.ownerId) {
-					val receivedLocale = jsonParser.parse(req.body().value()).obj
+					val receivedLocale = JSON_PARSER.parse(req.body().value()).obj
 					var inputFile = File(Loritta.LOCALES, "$localeId.json")
 					if (!inputFile.exists()) {
 						inputFile = File(Loritta.LOCALES, "default.json")
 					}
 
-					val originalLocale = jsonParser.parse(inputFile.readText()).obj
+					val originalLocale = JSON_PARSER.parse(inputFile.readText()).obj
 
 					receivedLocale.entrySet()
 							.filter { it.value.asJsonPrimitive.isString }
@@ -73,7 +73,7 @@ class TranslationView : AbstractView() {
 		}
 		variables["locale_strings"] = localeStrings
 		variables["original_strings"] = defaultLocale.strings
-		variables["original_strings_as_json"] = gson.toJson(defaultLocale.strings)
+		variables["original_strings_as_json"] = GSON.toJson(defaultLocale.strings)
 		variables["localeId"] = localeId
 		return evaluate("translate_tool.html", variables)
 	}
