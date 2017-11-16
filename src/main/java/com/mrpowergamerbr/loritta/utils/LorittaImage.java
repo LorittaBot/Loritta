@@ -1293,9 +1293,9 @@ public class LorittaImage {
 			//Write buffered image to disk
 			String FileExtension = getExtension(OutputFile.getName()).toLowerCase();
 			if (isJPEG(FileExtension)){
-				FileOutputStream output = new FileOutputStream(OutputFile);
-				output.write(getJPEGByteArray(outputQuality));
-				output.close();
+				try (FileOutputStream output = new FileOutputStream(OutputFile)) {
+					output.write(getJPEGByteArray(outputQuality));
+				}
 			}
 			else{
 				RenderedImage rendImage = bufferedImage;

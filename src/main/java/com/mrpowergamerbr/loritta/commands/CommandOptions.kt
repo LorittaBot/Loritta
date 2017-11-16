@@ -2,6 +2,11 @@ package com.mrpowergamerbr.loritta.commands
 
 open class CommandOptions {
 	// Todas as próximas opções são "command overrides", isto permite fazer overrides nas opções globais da Loritta
+	var enableCustomAliases: Boolean = false
+	var aliases = mutableListOf<String>()
+	var enableCustomPrefix: Boolean = false
+	var customPrefix: String = "+"
+
 	var override: Boolean = false // Os comandos a seguir só serão ativados CASO override esteja ativo!
 	var explainOnCommandRun = true // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
 	var explainInPrivate = false // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?

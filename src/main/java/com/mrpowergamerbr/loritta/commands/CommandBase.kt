@@ -129,11 +129,18 @@ open abstract class CommandBase(open val label: String) {
 	}
 
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+		// Carregar as opções de comandos
+		val cmdOptions = conf.getCommandOptionsFor(this)
+		var prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
+		val aliases = ArrayList<String>(this.getAliases())
+		if (cmdOptions.enableCustomAliases)
+			aliases.addAll(cmdOptions.aliases)
+
 		val message = ev.message.content
 		var rawMessage = ev.message.rawContent
 		var run = false
 		var byMention = false
-		var label = conf.commandPrefix + label
+		var label = prefix + label
 		if (rawMessage.startsWith("<@" + Loritta.config.clientId + "> ") || rawMessage.startsWith("<@!" + Loritta.config.clientId + "> ")) {
 			byMention = true
 			rawMessage = rawMessage.replaceFirst("<@" + Loritta.config.clientId + "> ", "")
@@ -143,8 +150,8 @@ open abstract class CommandBase(open val label: String) {
 		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
 		val rawArguments = rawMessage.split(" ")
 		if (!run) {
-			for (alias in this.getAliases()) {
-				label = if (byMention) alias else conf.commandPrefix + alias
+			for (alias in aliases) {
+				label = if (byMention) alias else prefix + alias
 				if (rawArguments[0].equals(label, true)) {
 					run = true
 					break
@@ -176,9 +183,6 @@ open abstract class CommandBase(open val label: String) {
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 				}
-
-				// Carregar as opções de comandos
-				val cmdOptions = conf.getCommandOptionsFor(this)
 
 				if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))
 					return true // Ignorar canais bloqueados

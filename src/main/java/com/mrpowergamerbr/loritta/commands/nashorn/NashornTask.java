@@ -34,7 +34,7 @@ class NashornTask implements Callable<Void> {
 		long id = Thread.currentThread().getId();
 		Thread currentThread = Thread.currentThread();
 		try {
-			Thread t = new Thread() {
+			Runnable t = new Runnable() {
 				public void run() {
 					while (running) {
 						System.out.println("bytes: " + sunBean.getThreadAllocatedBytes(id));
@@ -52,7 +52,7 @@ class NashornTask implements Callable<Void> {
 					return;
 				}
 			};
-			t.start();
+			t.run();
 			Invocable invocable = (Invocable) engine;
 			engine.eval(javaScript);
 			invocable.invokeFunction("nashornCommand", context);

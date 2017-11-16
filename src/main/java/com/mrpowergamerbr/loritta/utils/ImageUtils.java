@@ -7,7 +7,10 @@ import java.awt.image.BufferedImage;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ImageUtils {
+public final class ImageUtils {
+	private ImageUtils() {
+	}
+
 	/**
 	 * Escreve um texto em um Graphics, fazendo wrap caso necessário
 	 * @param text Texto
@@ -31,7 +34,7 @@ public class ImageUtils {
 			int width = fontMetrics.charWidth(c); // Width do char (normalmente é 16)
 			if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
 				currentX = startX; // Nós iremos fazer wrapping do texto
-				currentY = currentY + lineHeight;
+				currentY += lineHeight;
 			}
 			if (!graphics.getFont().canDisplay(c)) {
 			    try {
@@ -41,12 +44,12 @@ public class ImageUtils {
                     connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
                     BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
                     graphics.drawImage(emoteImage.getScaledInstance(graphics.getFont().getSize(), graphics.getFont().getSize(), BufferedImage.SCALE_SMOOTH), currentX, currentY - graphics.getFont().getSize() + 1, null);
-                    currentX = currentX + fontMetrics.getMaxAdvance();
+				    currentX += fontMetrics.getMaxAdvance();
 			    } catch (Exception e) {}
                 continue;
             }
 			graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
-			currentX = currentX + width; // E adicione o width no nosso currentX
+			currentX += width; // E adicione o width no nosso currentX
 		}
 		return currentY;
 	}
@@ -65,7 +68,7 @@ public class ImageUtils {
             int width = fontMetrics.charWidth(c); // Width do char (normalmente é 16)
             if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
                 currentX = startX; // Nós iremos fazer wrapping do texto
-                currentY = currentY + lineHeight;
+	            currentY += lineHeight;
             }
             if (font.canDisplay(c)) {
                 graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
@@ -74,7 +77,7 @@ public class ImageUtils {
                         // Talvez seja um emoji!
                         BufferedImage emoteImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png");
                         graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
-                        currentX = currentX + width;
+	                    currentX += width;
                         continue;
                     } catch (Exception e) {}
                 if (temp.getGraphics().getFont().canDisplay(c)) {
@@ -86,7 +89,7 @@ public class ImageUtils {
                         continue;
                 }
             }
-            currentX = currentX + width; // E adicione o width no nosso currentX
+	        currentX += width; // E adicione o width no nosso currentX
         }
         return currentY;
     }
@@ -189,12 +192,12 @@ public class ImageUtils {
 					connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
 					BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
 					graphics.drawImage(emoteImage.getScaledInstance(graphics.getFont().getSize(), graphics.getFont().getSize(), BufferedImage.SCALE_SMOOTH), x, y - graphics.getFont().getSize() + 1, null);
-					x = x + graphics.getFontMetrics().getMaxAdvance();
+					x += graphics.getFontMetrics().getMaxAdvance();
 				} catch (Exception e) {}
 				continue;
 			}
 			graphics.drawString(String.valueOf(c), x, y); // Escreva o char na imagem
-			x = x + width; // E adicione o width no nosso currentX
+			x += width; // E adicione o width no nosso currentX
 		}
 		// Draw the String
 		graphics.drawString(text, x, y);
@@ -260,7 +263,7 @@ public class ImageUtils {
             int width = fontMetrics.stringWidth(str); // Width do texto que nós queremos colocar
             if ((currentX + width) > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
                 currentX = startX; // Nós iremos fazer wrapping do texto
-                currentY = currentY + lineHeight;
+	            currentY += lineHeight;
             }
             int idx = 0;
             for (char c : str.toCharArray()) { // E agora nós iremos printar todos os chars
@@ -276,12 +279,12 @@ public class ImageUtils {
                                 "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
                         BufferedImage emoteImage = ImageIO.read(connection.getInputStream());
                         graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null);
-                        currentX = currentX + width;
+	                    currentX += width;
                     } catch (Exception e) {}
                     continue;
                 }
                 graphics.drawString(String.valueOf(c), currentX, currentY); // Escreva o char na imagem
-                currentX = currentX + width; // E adicione o width no nosso currentX
+	            currentX += width; // E adicione o width no nosso currentX
             }
         }
         return currentY;

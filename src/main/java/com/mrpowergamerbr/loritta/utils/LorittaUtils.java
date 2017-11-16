@@ -42,9 +42,12 @@ import java.util.UUID;
 
 import static com.mrpowergamerbr.loritta.utils.TextUtilsKt.f;
 
-public class LorittaUtils {
+public final class LorittaUtils {
 	@Deprecated
 	public static final String ERROR = "<:erro:326509900115083266>";
+
+	private LorittaUtils() {
+	}
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().getPermissions().contains(Permission.MESSAGE_ATTACH_FILES)) {
@@ -524,7 +527,6 @@ public class LorittaUtils {
 	}
 
 	public static void manageAutoPlaylists() {
-		System.out.println("Wow, checking stuff...");
 		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
 			if (mm.player.getPlayingTrack() == null) {
 				Thread x = new Thread(() -> {
@@ -651,7 +653,7 @@ public class LorittaUtils {
 				}
 
 				if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
-				if (eat('%')) x = x % parseFactor(); // mod
+				if (eat('%')) x %= parseFactor(); // mod
 
 				return x;
 			}

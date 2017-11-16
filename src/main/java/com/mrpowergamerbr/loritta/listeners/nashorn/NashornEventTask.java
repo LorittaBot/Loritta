@@ -1,14 +1,9 @@
 package com.mrpowergamerbr.loritta.listeners.nashorn;
 
-import com.mrpowergamerbr.loritta.commands.CommandContext;
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornContext;
 import com.sun.management.ThreadMXBean;
-import net.dv8tion.jda.core.EmbedBuilder;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.awt.*;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.Callable;
 
@@ -34,7 +29,7 @@ class NashornEventTask implements Callable<Void> {
 		long id = Thread.currentThread().getId();
 		Thread currentThread = Thread.currentThread();
 		try {
-			Thread t = new Thread() {
+			Runnable t = new Runnable() {
 				public void run() {
 					while (running) {
 						autoKill++;
@@ -50,7 +45,7 @@ class NashornEventTask implements Callable<Void> {
 					return;
 				}
 			};
-			t.start();
+			t.run();
 			Invocable invocable = (Invocable) engine;
 			engine.eval(javaScript);
 			invocable.invokeFunction(call, objects);

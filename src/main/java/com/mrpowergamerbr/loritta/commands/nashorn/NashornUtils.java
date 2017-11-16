@@ -12,7 +12,10 @@ import java.io.IOException;
 /**
  * Classe de utilidades para comandos usando o Nashorn
  */
-public class NashornUtils {
+public final class NashornUtils {
+	private NashornUtils() {
+	}
+
 	public static String loritta() { // Método teste
 		return "Loritta!";
 	}
