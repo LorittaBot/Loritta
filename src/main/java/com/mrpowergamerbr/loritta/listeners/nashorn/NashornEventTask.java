@@ -29,7 +29,7 @@ class NashornEventTask implements Callable<Void> {
 		long id = Thread.currentThread().getId();
 		Thread currentThread = Thread.currentThread();
 		try {
-			Runnable t = new Runnable() {
+			Thread t = new Thread() {
 				public void run() {
 					while (running) {
 						autoKill++;
@@ -45,7 +45,7 @@ class NashornEventTask implements Callable<Void> {
 					return;
 				}
 			};
-			t.run();
+			t.start();
 			Invocable invocable = (Invocable) engine;
 			engine.eval(javaScript);
 			invocable.invokeFunction(call, objects);

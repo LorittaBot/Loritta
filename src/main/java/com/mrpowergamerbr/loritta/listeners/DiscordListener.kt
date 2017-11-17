@@ -140,11 +140,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						return@thread
 
 					// Primeiro os comandos vanilla da Loritta(tm)
-					loritta.commandManager.commandMap.forEach { cmd ->
-						if (serverConfig.debugOptions.enableAllModules || !serverConfig.disabledCommands.contains(cmd.javaClass.simpleName)) {
-							if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
-								return@thread
-							}
+					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
+						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
+							return@thread
 						}
 					}
 

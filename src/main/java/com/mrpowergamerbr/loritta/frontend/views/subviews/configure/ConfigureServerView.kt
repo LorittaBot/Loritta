@@ -15,8 +15,8 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.userdata.YouTubeConfig
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.save
@@ -54,6 +54,7 @@ class ConfigureServerView : ConfigureView() {
 					"feeds" -> serverConfig.rssFeedConfig
 					"nashorn_commands" -> serverConfig.nashornCommands
 					"event_handlers" -> serverConfig.nashornEventHandlers
+					"vanilla_commands" -> serverConfig.disabledCommands
 					else -> null
 				}
 
@@ -74,6 +75,8 @@ class ConfigureServerView : ConfigureView() {
 					response = handleNashornCommands(serverConfig, receivedPayload)
 				} else if (type == "event_handlers") {
 					response = handleEventHandlers(serverConfig, receivedPayload)
+				} else if (type == "vanilla_commands") {
+					response = handleVanillaCommands(serverConfig, receivedPayload)
 				} else {
 					for (element in receivedPayload.entrySet()) {
 						if (element.key == "guildId") {
@@ -137,6 +140,16 @@ class ConfigureServerView : ConfigureView() {
 		})
 
 		return evaluate("configure_server.html", variables)
+	}
+
+	fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
+		val list = arrayListOf<String>()
+		receivedPayload["disabledCommands"].array.forEach {
+			list.add(it.string)
+		}
+		serverConfig.disabledCommands = list
+
+		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}
 
 	fun handlePermissions(config: ServerConfig, receivedPayload: JsonObject): String {

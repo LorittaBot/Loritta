@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitle
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.CommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAutoroleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureCommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventHandlersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventLogView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureInviteBlockerView
@@ -212,6 +213,7 @@ object GlobalHandler {
 		views.add(ConfigureNashornCommandsView())
 		views.add(ConfigureMusicView())
 		views.add(ConfigureEventHandlersView())
+		views.add(ConfigureCommandsView())
 		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())
