@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
 import com.mrpowergamerbr.loritta.utils.donator
@@ -60,6 +61,20 @@ class PerfilCommand : CommandBase("perfil") {
 		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
 			userData = context.config.userData.getOrDefault(contextUser.id, LorittaServerUserData());
+		}
+
+		if (userProfile.isBanned) {
+			context.reply(
+					LoriReply(
+							"${contextUser.asMention} está **banido**",
+							"\uD83D\uDE45"
+					),
+					LoriReply(
+							"**Motivo:** `${userProfile.banReason}`",
+							"✍"
+					)
+			)
+			return
 		}
 
 		val profileWrapper = ImageIO.read(File(Loritta.FOLDER, "profile_wrapper_v2.png"))
