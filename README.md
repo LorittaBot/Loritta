@@ -9,6 +9,11 @@ Loritta
 <a href="https://discord.gg/3rXgN8x"><img src="https://img.shields.io/badge/discord-loritta-yellow.svg"></a>
 <a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 </p>
+<p align="center">
+<a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
+  <img src="https://discordbots.org/api/widget/297153970613387264.png?test=123" alt="Discord Bots" />
+</a>
+  </p>
 
 A Loritta (ou para amigos próximos, "Lori") é um bot com várias funções, simples, modular, fácil e extremamente customizável para você usar para o seu servidor no Discord!
 
