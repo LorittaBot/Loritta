@@ -105,8 +105,6 @@ class AjudaCommand : CommandBase("ajuda") {
 			image = "https://loritta.website/assets/img/loritta_headset.png"
 		}
 
-		println("Category: $cat ~ $image")
-
 		embed.setColor(color)
 		embed.setThumbnail(image)
 
@@ -144,6 +142,9 @@ class AjudaCommand : CommandBase("ajuda") {
 		if (!context.config.musicConfig.isEnabled) {
 			categories = categories.filter { it != CommandCategory.MUSIC }
 		}
+
+		// Não mostrar categorias vazias
+		categories = categories.filter { category -> loritta.commandManager.commandMap.filter { it.getCategory() == category }.isNotEmpty() }
 
 		val reactionEmotes = mapOf<CommandCategory, String>(
 				CommandCategory.DISCORD to "discord:375448103517552642",

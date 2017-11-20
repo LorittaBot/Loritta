@@ -36,13 +36,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	}
 
 	fun updateStatus() {
+		currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+
 		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
 			revertedAvatar = true
 			loritta.lorittaShards.shards[0].selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/original.png"))).complete()
-		}
-
-		if (currentDay == -1) {
-			currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
 		}
 
 		if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {

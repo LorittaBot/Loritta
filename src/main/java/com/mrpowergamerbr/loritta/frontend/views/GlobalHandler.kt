@@ -34,6 +34,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureSer
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureStarboardView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -62,7 +63,7 @@ object GlobalHandler {
 		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
 
 		for (range in ranges) {
-			var localeId = range.getRange().toLowerCase()
+			var localeId = range.range.toLowerCase()
 			var bypassCheck = false
 			if (localeId == "pt-br" || localeId == "pt") {
 				localeId = "default"
@@ -177,6 +178,7 @@ object GlobalHandler {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
 				discordAuth.isReady(true)
+				discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 				variables["discordAuth"] = discordAuth
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
@@ -214,6 +216,7 @@ object GlobalHandler {
 		views.add(ConfigureMusicView())
 		views.add(ConfigureEventHandlersView())
 		views.add(ConfigureCommandsView())
+		views.add(TestMessageView())
 		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())

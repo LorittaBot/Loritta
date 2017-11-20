@@ -33,7 +33,11 @@ object PomfUtils {
 				.post(formBody).build()
 		val response = client.newCall(request).execute()
 
-		val json = JSON_PARSER.parse(response.body()!!.string()).obj
+		val _response = response.body()!!.string()
+
+		println(_response)
+
+		val json = JSON_PARSER.parse(_response).obj
 
 		if (json.has("files")) {
 			return "http://a.pomf.cat/${json["files"].array[0]["url"].string}"

@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.audit.ActionType
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
@@ -51,18 +52,37 @@ object WelcomeModule {
 				if (textChannel.canTalk()) {
 					var msg = LorittaUtils.replaceTokens(joinLeaveConfig.leaveMessage, event)
 
-					// Para a mensagem de ban nós precisamos ter a permissão de banir membros
-					if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-						val banList = guild.bans.complete()
-						if (banList.contains(event.user)) {
-							if (!joinLeaveConfig.tellOnBan)
-								return
+					if (joinLeaveConfig.tellOnBan) {
+						// Para a mensagem de ban nós precisamos ter a permissão de banir membros
+						if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
+							val banList = guild.bans.complete()
+							if (banList.contains(event.user)) {
 
-							if (joinLeaveConfig.banMessage.isNotEmpty()) {
-								msg = LorittaUtils.replaceTokens(joinLeaveConfig.banMessage, event)
+								if (joinLeaveConfig.banMessage.isNotEmpty()) {
+									msg = LorittaUtils.replaceTokens(joinLeaveConfig.banMessage, event)
+								}
 							}
 						}
 					}
+
+					if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+						val entry = guild.auditLogs.complete().first()
+
+						if (entry.targetId == event.user.id) {
+							if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
+								msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
+								msg = msg.replace("{reason}", entry.reason)
+								msg = msg.replace("{@staff}", entry.user.asMention)
+								msg = msg.replace("{staff}", entry.user.name)
+							}
+							if (entry.type == ActionType.BAN) {
+								msg = msg.replace("{reason}", entry.reason)
+								msg = msg.replace("{@staff}", entry.user.asMention)
+								msg = msg.replace("{staff}", entry.user.name)
+							}
+						}
+					}
+
 					textChannel.sendMessage(msg.substringIfNeeded()).complete()
 				} else {
 					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
