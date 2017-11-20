@@ -48,10 +48,14 @@ class LorittaShards {
         for (shard in shards) {
             var user = shard.getUserById(id);
             if (user != null) {
-                return user;
+                return user
             }
         }
         return null;
+    }
+
+    fun retriveUserById(id: String?): User? {
+        return getUserById(id) ?: shards[0].retrieveUserById(id).complete()
     }
 
     fun getMutualGuilds(user: User): List<Guild> {
