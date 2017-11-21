@@ -207,7 +207,7 @@ class Loritta {
 					.useSharding(idx, Loritta.config.shards)
 					.setToken(Loritta.config.clientToken)
 					.setHttpClientBuilder(okHttpBuilder)
-					.setCorePoolSize(16)
+					.setCorePoolSize(24)
 					.buildBlocking()
 			shard.addEventListener(updateTimeListener)
 			lorittaShards.shards.add(shard)

@@ -168,7 +168,12 @@ object GlobalHandler {
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
 
-		val famousGuilds = guilds.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }.subList(0, 36)
+		val famousGuilds = guilds
+				.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }
+				.filter { // Filtros para remover alguns servidores "famosos" do website, para evitar o AdSense suspendendo a minha conta devido a conteúdo inapropriado para menores
+					it.id != "365885658386137098" // Ícone NSFW
+				}
+				.subList(0, 36)
 
 		variables["famousGuilds"] = famousGuilds
 		Collections.shuffle(famousGuilds)
