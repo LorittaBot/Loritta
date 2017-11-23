@@ -8,7 +8,7 @@ import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
 
-class APIGetCommunityIconView : AbstractView() {
+class APIGetCommunityInfoView : AbstractView() {
 	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
 		return req.path().matches(Regex("^/api/v1/get_community_info"))
 	}

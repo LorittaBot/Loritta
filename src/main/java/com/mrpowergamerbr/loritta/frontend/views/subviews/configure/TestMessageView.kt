@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -26,7 +27,7 @@ class TestMessageView : ConfigureView() {
 		val response = JsonObject()
 		var textChannelId: String? = null
 
-		if (type == "joinMessage" || type == "leaveMessage" || type == "banMessage" || type == "kickMessage")
+		if (type == "joinMessage" || type == "leaveMessage" || type == "banMessage" || type == "kickMessage" || type == "livestreamMessage")
 			textChannelId = receivedPayload["textChannelId"].string
 
 		var message = content
@@ -43,6 +44,23 @@ class TestMessageView : ConfigureView() {
 		message = message.replace("{@staff}", "<@${Loritta.config.clientId}>")
 		message = message.replace("{staff}", "Loritta")
 		message = message.replace("{reason}", "You gonna have a bad time.")
+
+		if (type == "livestreamMessage") {
+			message = content
+			val channelUrl = receivedPayload["channelUrl"].string
+			val channelUserLogin = channelUrl.split("/").last()
+
+			val displayName = NewLivestreamThread.getUserDisplayName(channelUserLogin)
+
+			if (displayName == null) {
+				response["error"] = "Canal inválido"
+				return response.toString()
+			}
+
+			message = message.replace("{game}", "Loritta and the Discord's Curse")
+			message = message.replace("{streamer}", displayName)
+			message = message.replace("{link}", "https://www.twitch.tv/$channelUserLogin")
+		}
 
 		if (textChannelId != null) {
 			val textChannel = guild.getTextChannelById(textChannelId)

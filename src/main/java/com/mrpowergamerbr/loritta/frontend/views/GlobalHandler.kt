@@ -17,8 +17,9 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityIconView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetTwitchInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.CommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAutoroleView
@@ -26,6 +27,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureCom
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventHandlersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventLogView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureInviteBlockerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureLivestreamView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureMusicView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureNashornCommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigurePermissionsView
@@ -204,9 +206,10 @@ object GlobalHandler {
 	private fun getViews(): List<AbstractView> {
 		val views = mutableListOf<AbstractView>()
 		// ===[ APIS ]===
-		views.add(APIGetCommunityIconView())
+		views.add(APIGetCommunityInfoView())
 		views.add(APIGetChannelInfoView())
 		views.add(APIGetRssFeedTitleView())
+		views.add(APIGetTwitchInfoView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
@@ -220,6 +223,7 @@ object GlobalHandler {
 		views.add(ConfigureStarboardView())
 		views.add(ConfigureAminoView())
 		views.add(ConfigureYouTubeView())
+		views.add(ConfigureLivestreamView())
 		views.add(ConfigureRSSFeedsView())
 		views.add(ConfigureNashornCommandsView())
 		views.add(ConfigureMusicView())

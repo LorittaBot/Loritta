@@ -54,6 +54,7 @@ public class ServerConfig {
     public MusicConfig musicConfig = new MusicConfig();
     public AminoConfig aminoConfig = new AminoConfig();
     public YouTubeConfig youTubeConfig = new YouTubeConfig();
+    public LivestreamConfig livestreamConfig = new LivestreamConfig();
     public StarboardConfig starboardConfig = new StarboardConfig();
     public RssFeedConfig rssFeedConfig = new RssFeedConfig();
     public EventLogConfig eventLogConfig = new EventLogConfig();

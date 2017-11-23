@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.userdata.AminoConfig
+import com.mrpowergamerbr.loritta.userdata.LivestreamConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -51,6 +52,7 @@ class ConfigureServerView : ConfigureView() {
 					"music" -> serverConfig.musicConfig
 					"amino" -> serverConfig.aminoConfig
 					"youtube" -> serverConfig.youTubeConfig
+					"livestream" -> serverConfig.livestreamConfig
 					"feeds" -> serverConfig.rssFeedConfig
 					"nashorn_commands" -> serverConfig.nashornCommands
 					"event_handlers" -> serverConfig.nashornEventHandlers
@@ -69,6 +71,8 @@ class ConfigureServerView : ConfigureView() {
 					response = handleCommunities(serverConfig, receivedPayload)
 				} else if (target is YouTubeConfig) {
 					response = handleYouTubeChannels(serverConfig, receivedPayload)
+				}  else if (target is LivestreamConfig) {
+					response = handleLivestreamChannels(serverConfig, receivedPayload)
 				} else if (target is RssFeedConfig) {
 					response = handleRssFeeds(serverConfig, receivedPayload)
 				} else if (type == "nashorn_commands") {
@@ -224,6 +228,27 @@ class ConfigureServerView : ConfigureView() {
 			}
 
 			config.youTubeConfig.channels.add(channel)
+		}
+
+		return "nice"
+	}
+
+	fun handleLivestreamChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.livestreamConfig.channels.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val repostToChannelId = entry["repostToChannelId"].string
+			val channelUrl = entry["channelUrl"].string
+			val videoSentMessage = entry["videoSentMessage"].string
+
+			val channel = LivestreamConfig.LivestreamInfo().apply {
+				this.repostToChannelId = repostToChannelId
+				this.channelUrl = channelUrl
+				this.videoSentMessage = videoSentMessage
+			}
+
+			config.livestreamConfig.channels.add(channel)
 		}
 
 		return "nice"

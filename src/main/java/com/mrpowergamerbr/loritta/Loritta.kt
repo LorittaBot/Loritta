@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.MutedUsersThread
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.ShardReviverThread
@@ -125,7 +126,6 @@ class Loritta {
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
 	var songThrottle = mutableMapOf<String, Long>()
 
-	// var isMusicOnly: Boolean = false
 	var isWebsiteOnly: Boolean = false
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -136,7 +136,6 @@ class Loritta {
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube()
-		// this.isMusicOnly = isMusicOnly
 		this.isWebsiteOnly = isWebsiteOnly
 		resetYouTubeKeys()
 	}
@@ -231,6 +230,8 @@ class Loritta {
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
 		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
+
+		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		NewRssFeedThread().start() // Iniciar Feed Rss
 
