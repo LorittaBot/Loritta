@@ -37,9 +37,9 @@ class AvatarCommand : CommandBase("avatar") {
 
 		var embed = EmbedBuilder();
 		embed.setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
-		embed.setDescription("**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + if (!getAvatar.effectiveAvatarUrl.endsWith(".gif")) "?size=2048" else ""]}**" + if (getAvatar.id == Loritta.config.clientId) "\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A" else "");
+		embed.setDescription("**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**" + if (getAvatar.id == Loritta.config.clientId) "\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A" else "");
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")
-		embed.setImage(getAvatar.effectiveAvatarUrl + "?size=2048")
+		embed.setImage(getAvatar.effectiveAvatarUrl + if (!getAvatar.effectiveAvatarUrl.endsWith(".gif")) "?size=2048" else "")
 		context.sendMessage(embed.build());
 	}
 }
