@@ -160,7 +160,9 @@ class Loritta {
 	val youtubeKey: String
 		get() {
 			if (Calendar.getInstance()[Calendar.DAY_OF_MONTH] != lastKeyReset) {
-				resetYouTubeKeys()
+				if (Calendar.getInstance()[Calendar.HOUR_OF_DAY] == 4) {
+					resetYouTubeKeys()
+				}
 			}
 			return youtubeKeys[random.nextInt(youtubeKeys.size)]
 		}

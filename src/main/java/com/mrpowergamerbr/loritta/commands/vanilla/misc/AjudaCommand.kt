@@ -35,12 +35,11 @@ class AjudaCommand : CommandBase("ajuda") {
 				context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
 			}
 
-			var description = context.locale.get(
+			var description = context.locale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
 					"https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975",
-					context?.guild?.name ?: "\uD83E\uDD37"
-			)
+					context?.guild?.name ?: "\uD83E\uDD37"]
 
 			var builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))

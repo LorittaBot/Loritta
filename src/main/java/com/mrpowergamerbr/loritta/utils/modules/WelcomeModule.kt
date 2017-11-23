@@ -71,12 +71,12 @@ object WelcomeModule {
 						if (entry.targetId == event.user.id) {
 							if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
 								msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
-								msg = msg.replace("{reason}", entry.reason)
+								msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
 								msg = msg.replace("{@staff}", entry.user.asMention)
 								msg = msg.replace("{staff}", entry.user.name)
 							}
 							if (entry.type == ActionType.BAN) {
-								msg = msg.replace("{reason}", entry.reason)
+								msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
 								msg = msg.replace("{@staff}", entry.user.asMention)
 								msg = msg.replace("{staff}", entry.user.name)
 							}

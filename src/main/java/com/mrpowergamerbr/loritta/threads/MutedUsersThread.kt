@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.Permission
 
 class MutedUsersThread : Thread("Muted Users Thread") {
 	override fun run() {
@@ -33,6 +34,9 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				if (_guild == null)
 					continue
 
+				if (!_guild.selfMember.hasPermission(Permission.MANAGE_ROLES))
+					continue
+
 				for ((key, userData) in toBeUnmuted) {
 					try {
 						userData.isMuted = false
@@ -48,7 +52,12 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 						if (mutedRoles.isEmpty())
 							continue
 
-						_guild.controller.removeRolesFromMember(member, mutedRoles.first()).complete()
+						val role = mutedRoles.first()
+
+						if (!_guild.selfMember.canInteract(role))
+							continue
+
+						_guild.controller.removeRolesFromMember(member, role).complete()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -63,6 +72,9 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 
 			for (guild in guilds) {
 				val _guild = lorittaShards.getGuildById(guild.guildId) ?: continue
+
+				if (!_guild.selfMember.hasPermission(Permission.BAN_MEMBERS))
+					continue
 
 				val temporaryBans = guild.temporaryBans
 

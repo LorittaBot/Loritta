@@ -35,8 +35,6 @@ object PomfUtils {
 
 		val _response = response.body()!!.string()
 
-		println(_response)
-
 		val json = JSON_PARSER.parse(_response).obj
 
 		if (json.has("files")) {
