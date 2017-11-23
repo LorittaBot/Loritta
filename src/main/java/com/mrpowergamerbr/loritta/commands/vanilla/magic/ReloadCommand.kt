@@ -35,6 +35,7 @@ class ReloadCommand : CommandBase("reload") {
 			))
 			return
 		}
+
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

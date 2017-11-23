@@ -78,8 +78,12 @@ object GlobalHandler {
 			}
 		}
 
-		if (req.param("force_locale").isSet()) {
+		if (req.param("force_locale").isSet) {
 			req.session()["forceLocale"] = req.param("force_locale").value()
+		}
+
+		if (req.param("logout").isSet) {
+			req.session().unset("discordAuth")
 		}
 
 		if (req.session().isSet("forceLocale")) {

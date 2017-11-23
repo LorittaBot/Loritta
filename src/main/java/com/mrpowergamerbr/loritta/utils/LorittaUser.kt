@@ -45,6 +45,8 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Loritt
             roles.add(everyone)
         }
 
+        roles.sortedByDescending { it.position }
+
 		return roles
 				.map { config.permissionsConfig.roles.getOrDefault(it.id, PermissionsConfig.PermissionRole()) }
 				.any { it.permissions.contains(lorittaPermission) }
