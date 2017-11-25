@@ -247,10 +247,18 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent && functions.onReactionAdd != null) {
 				functions.onReactionAdd!!.invoke(e)
+
+				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
+					functions.onReactionAddByAuthor!!.invoke(e)
+				}
 			}
 
 			if (e is MessageReactionRemoveEvent && functions.onReactionRemove != null) {
 				functions.onReactionRemove!!.invoke(e)
+
+				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
+					functions.onReactionRemoveByAuthor!!.invoke(e)
+				}
 			}
 		}
 
@@ -341,7 +349,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		thread {
 			loritta save serverConfig
 
-			event.guild.members.forEach {
+			/* event.guild.members.forEach {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
 
@@ -349,7 +357,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						it.sendMessage(message).queue()
 					})
 				}
-			}
+			} */
 		}
 	}
 

@@ -352,7 +352,9 @@ open abstract class CommandBase(open val label: String) {
 		}
 	}
 
+	@Deprecated(message = "message.onReactionAdd")
 	open fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {} // Quando alguém usa uma reaction na mensagem
 
+	@Deprecated(message = "message.onResponse")
 	open fun onCommandMessageReceivedFeedback(context: CommandContext, e: MessageReceivedEvent, msg: Message) {} // Quando uma mensagem é recebida
 }

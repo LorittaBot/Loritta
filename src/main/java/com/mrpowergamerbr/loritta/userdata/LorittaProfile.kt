@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
+import com.mrpowergamerbr.loritta.utils.tamagotchi.TamagotchiPet
 import org.mongodb.morphia.annotations.Entity
 import org.mongodb.morphia.annotations.Id
 import org.mongodb.morphia.annotations.Indexed
@@ -60,25 +61,4 @@ class LorittaProfile {
 	}
 
     class SpinnerScore(val emoji: String = "???", val forTime: Long = 0)
-
-    class TamagotchiPet(
-            val petName: String,
-            val gender: PetGender,
-			val petType: String
-    ) {
-		var lastUpdate: Long = System.currentTimeMillis()
-		var hunger: Float = 1f
-		var happiness: Float  = 1f
-		var upgrades = mutableSetOf<PetUpgrades>()
-
-        constructor() : this("???", PetGender.MALE, "???")
-
-        enum class PetGender {
-            MALE, FEMALE
-        }
-
-		enum class PetUpgrades {
-			FAN_ART, TELEVISION, ANTENNA
-		}
-    }
 }

@@ -10,15 +10,19 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
-import com.mrpowergamerbr.loritta.utils.onReactionAdd
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.onResponseByAuthor
 import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.utils.tamagotchi.TamagotchiPet
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.awt.Font
+import java.awt.Graphics
+import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
+import java.lang.Thread.sleep
 import javax.imageio.ImageIO
 
 class TamagotchiCommand : CommandBase("tamagotchi") {
@@ -43,87 +47,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		}
 	}
 
-	fun handlePetCreation(context: CommandContext) {
-		// Usuário quer um Tamagotchi
-		val message = context.reply(
-				LoriReply(
-						message = "Olá! Você quer um bichinho virtual?",
-						prefix = "<:fluffy:372454445721845761>"
-				)
-		)
-
-		message.addReaction("vieirinha:339905091425271820").complete()
-
-		message.onReactionAdd(context, {
-			if (it.user.id != context.userHandle.id) {
-				return@onReactionAdd
-			}
-
-			if (it.reactionEmote.name == "vieirinha") {
-				message.delete().complete()
-
-				val newName = context.reply(
-						LoriReply(
-								message = "Qual será o nome do seu novo bichinho virtual!",
-								prefix = "\uD83E\uDD5A"
-						)
-				)
-
-				newName.onResponseByAuthor(context, {
-					val name = it.message.content
-
-					val petGender = context.reply(
-							LoriReply(
-									message = "Qual será o gênero de `${name}`?"
-							)
-					)
-
-					petGender.onReactionAdd(context, {
-						val gender = LorittaProfile.TamagotchiPet.PetGender.MALE
-
-						petGender.delete().complete()
-
-						val petType = context.reply(
-								LoriReply(
-										message = "Como será o `${name}`?"
-								)
-						)
-
-						petType.onResponseByAuthor(context, {
-							if (it.message.emotes.isEmpty()) {
-								context.reply(
-										LoriReply(
-												message = "Por favor, envie um emoji!",
-												prefix = Constants.ERROR
-										)
-								)
-								return@onResponseByAuthor
-							}
-
-							val emoji = it.message.emotes[0]
-							val emoteId = emoji.imageUrl.split("/").last()
-
-							val image = LorittaUtils.downloadImage(emoji.imageUrl)
-
-							ImageIO.write(image, "png", File(Loritta.FOLDER, "pets/$emoteId"))
-
-							petType.delete().complete()
-
-							val pet = LorittaProfile.TamagotchiPet(name, gender, emoteId)
-							val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-							profile.tamagotchi = pet
-							loritta save profile
-							handleGameplay(context)
-						})
-					})
-
-					newName.delete().complete()
-				})
-			}
-		})
-	}
-
-	fun getPet(context: CommandContext): LorittaProfile.TamagotchiPet {
+	fun getPet(context: CommandContext): TamagotchiPet {
 		val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
 
 		val pet = profile.tamagotchi!!
@@ -137,23 +61,43 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		// + ou - 2 horas para o pet morrer sem interação do usuário
 		var hungerDown = 9f // 0.00013f
 		var happinessDown = 9f
+		var hygieneDown = 9f
 
-		if (pet.upgrades.contains(LorittaProfile.TamagotchiPet.PetUpgrades.FAN_ART)) {
+		if (pet.upgrades.contains(TamagotchiPet.PetUpgrades.FAN_ART)) {
 			happinessDown -= 1f
 		}
 
 		pet.hunger -= (diff / 1000) * (hungerDown * 0.001f)
 		pet.happiness -= (diff / 1000) * (happinessDown * 0.001f)
+		pet.hygiene -= (diff / 1000) * (hygieneDown * 0.001f)
 
 		return pet
 	}
 
-	fun applyPetChanges(context: CommandContext, tamagotchi: LorittaProfile.TamagotchiPet): Boolean {
+	fun applyPetChanges(context: CommandContext, pet: TamagotchiPet): Boolean {
 		val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
 
-		tamagotchi.lastUpdate = System.currentTimeMillis()
+		if (0 >= pet.hunger || 0 >= pet.happiness || 0 >= pet.hygiene) { // Pet morreu... :(
+			profile.tamagotchi = null
 
-		profile.tamagotchi = tamagotchi
+			val artigo = when (pet.gender) {
+				TamagotchiPet.PetGender.MALE -> "o"
+				TamagotchiPet.PetGender.FEMALE -> "a"
+			}
+
+			context.reply(
+					LoriReply(
+							message = "Sinto muito, mas $artigo `${pet.petName}` fugiu para um lugar melhor devido a sua negligência...",
+							prefix = "\uD83D\uDC7C"
+					)
+			)
+			loritta save profile
+			return true
+		} else {
+			pet.lastUpdate = System.currentTimeMillis()
+
+			profile.tamagotchi = pet
+		}
 
 		loritta save profile
 		return false
@@ -161,25 +105,81 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 
 	fun handleGameplay(context: CommandContext) {
 		val pet = getPet(context)
-		applyPetChanges(context, pet)
+
+		if (applyPetChanges(context, pet)) {
+			return
+		}
+
+		val message = context.sendFile(drawGame(pet).makeRoundedCorners(14), "tamagotchi.png", "Tamagotchi Test\nHunger: ${pet.hunger}\nFun: ${pet.happiness}\nUpgrades: ${pet.upgrades.joinToString(", ")}")
+
+		message.onReactionAddByAuthor(context, {
+			message.delete().complete()
+
+			if (it.reactionEmote.name == "\uD83C\uDF57") {
+				// Comida
+				handleFood(context)
+			}
+
+			if (it.reactionEmote.name == "⏫") {
+				// Upgrades
+				handleUpgrades(context)
+			}
+
+			if (it.reactionEmote.name == "\uD83D\uDDE3") {
+				// Talk
+				handleTalking(context)
+			}
+
+			if (it.reactionEmote.name == "\uD83D\uDEBF") {
+				// Hygiene
+				handleHygiene(context)
+			}
+
+			if (it.reactionEmote.name == "\uD83C\uDF1F") {
+				pet.hunger = 1f
+				pet.happiness = 1f
+				if (applyPetChanges(context, pet))
+					return@onReactionAddByAuthor
+				handleGameplay(context)
+			}
+		})
+
+		message.addReaction("\uD83C\uDF57").complete() // comida
+		message.addReaction("\uD83D\uDEBF").complete() // higiene
+		message.addReaction("\uD83D\uDDE3").complete() // conversar
+		message.addReaction("⏫").complete()
+		message.addReaction("\uD83C\uDF1F").complete()
+	}
+
+	fun drawGame(pet: TamagotchiPet): BufferedImage {
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB)
-		val playfield = ImageIO.read(File(Loritta.FOLDER, "playfield.png"))
-		val playfieldGraphics = playfield.graphics
 		val graphics = base.graphics
 		val wrapper = ImageIO.read(File(Loritta.FOLDER, "tamagotchi.png"))
 
-		if (pet.upgrades.contains(LorittaProfile.TamagotchiPet.PetUpgrades.FAN_ART)) {
+		val playfield = drawPlayfield(pet)
+		val playfieldGraphics = playfield.graphics
+
+		playfieldGraphics.drawImage(getPetImage(pet), 163, 109, null)
+		graphics.drawImage(playfield, 5, 5, null)
+		graphics.drawImage(wrapper, 0, 0, null)
+
+		drawNeeds(pet, graphics)
+		return base
+	}
+
+	fun drawPlayfield(pet: TamagotchiPet): BufferedImage {
+		val playfield = ImageIO.read(File(Loritta.FOLDER, "playfield.png"))
+		val playfieldGraphics = playfield.graphics
+
+		if (pet.upgrades.contains(TamagotchiPet.PetUpgrades.FAN_ART)) {
 			val upgrade = ImageIO.read(File(Loritta.FOLDER, "upgrade_fanart.png"))
 			playfieldGraphics.drawImage(upgrade, 0, 0, null)
 		}
 
-		val petImage = ImageIO.read(File(Loritta.FOLDER, "pets/${pet.petType}"))
-		val petImage32 = petImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH)
+		return playfield
+	}
 
-		playfieldGraphics.drawImage(petImage32, 163, 109, null)
-		graphics.drawImage(playfield, 5, 5, null)
-		graphics.drawImage(wrapper, 0, 0, null)
-
+	fun drawNeeds(pet: TamagotchiPet, graphics: Graphics) {
 		val minecraftia = Font.createFont(Font.TRUETYPE_FONT,
 				FileInputStream(File(Loritta.FOLDER + "Volter__28Goldfish_29.ttf"))) // A fonte para colocar os discriminators
 
@@ -209,35 +209,19 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		graphics.color = Color.GREEN
 		graphics.fillRect(160, 235, (64 * pet.happiness).toInt(), 6)
 
-		val message = context.sendFile(base.makeRoundedCorners(14), "tamagotchi.png", "Tamagotchi Test\nHunger: ${pet.hunger}\nFun: ${pet.happiness}\nUpgrades: ${pet.upgrades.joinToString(", ")}")
+		graphics.drawString("Higiene", 160, 250)
 
-		message.onReactionAdd(context, {
-			if (it.user.id != context.userHandle.id) {
-				return@onReactionAdd
-			}
+		graphics.color = Color.BLACK
+		graphics.fillRect(160, 237, 64, 6)
+		graphics.color = Color.GREEN
+		graphics.fillRect(160, 237, (64 * pet.happiness).toInt(), 6)
+	}
 
-			message.delete().complete()
+	fun getPetImage(pet: TamagotchiPet): Image {
+		val petImage = ImageIO.read(File(Loritta.FOLDER, "pets/${pet.petType}"))
+		val petImage32 = petImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH)
 
-			if (it.reactionEmote.name == "\uD83C\uDF57") {
-				// Comida
-				handleFood(context)
-			}
-
-			if (it.reactionEmote.name == "⏫") {
-				// Upgrades
-				handleUpgrades(context)
-			}
-
-			if (it.reactionEmote.name == "\uD83C\uDF1F") {
-				pet.hunger = 1f
-				pet.happiness = 1f
-				applyPetChanges(context, pet)
-				handleGameplay(context)
-			}
-		})
-		message.addReaction("\uD83C\uDF57").complete()
-		message.addReaction("⏫").complete()
-		message.addReaction("\uD83C\uDF1F").complete()
+		return petImage32
 	}
 
 	fun handleFood(context: CommandContext) {
@@ -256,11 +240,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 			appendDescription("\uD83C\uDF5C - Miojo, para quando você quer uma comida rápida ~ 14 sonhos\n")
 		}.build())
 
-		message.onReactionAdd(context, {
-			if (it.user.id != context.userHandle.id) {
-				return@onReactionAdd
-			}
-
+		message.onReactionAddByAuthor(context, {
 			message.delete().complete()
 
 			if (foodMap.containsKey(it.reactionEmote.name)) {
@@ -268,7 +248,9 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 
 				pet.hunger += pair.first
 
-				applyPetChanges(context, pet)
+				if (applyPetChanges(context, pet))
+					return@onReactionAddByAuthor
+
 				handleGameplay(context)
 			}
 		})
@@ -281,11 +263,10 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 	fun handleUpgrades(context: CommandContext) {
 		val pet = getPet(context)
 
-
 		val upgradeMap = mutableMapOf(
-				"\uD83D\uDDBC" to Pair(5, LorittaProfile.TamagotchiPet.PetUpgrades.FAN_ART),
-				"\uD83D\uDCFA" to Pair(25, LorittaProfile.TamagotchiPet.PetUpgrades.TELEVISION),
-				"\uD83D\uDCE1" to Pair(25, LorittaProfile.TamagotchiPet.PetUpgrades.ANTENNA)
+				"\uD83D\uDDBC" to Pair(TamagotchiPet.PetUpgrades.FAN_ART, 5),
+				"\uD83D\uDCFA" to Pair(TamagotchiPet.PetUpgrades.TELEVISION, 25),
+				"\uD83D\uDCE1" to Pair(TamagotchiPet.PetUpgrades.ANTENNA, 25)
 		)
 
 		val message = context.sendMessage(context.getAsMention(true), EmbedBuilder().apply {
@@ -295,19 +276,17 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 			appendDescription("\uD83D\uDCE1 - TV aberta é do passado, o negócio é TV fechada!\n")
 		}.build())
 
-		message.onReactionAdd(context, {
-			if (it.user.id != context.userHandle.id) {
-				return@onReactionAdd
-			}
-
+		message.onReactionAddByAuthor(context, {
 			message.delete().complete()
 
 			if (upgradeMap.containsKey(it.reactionEmote.name)) {
 				val pair = upgradeMap[it.reactionEmote.name]!!
 
-				pet.upgrades.add(pair.second)
+				pet.upgrades.add(pair.first)
 
-				applyPetChanges(context, pet)
+				if (applyPetChanges(context, pet))
+					return@onReactionAddByAuthor
+
 				handleGameplay(context)
 			}
 		})
@@ -315,6 +294,154 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		upgradeMap.keys.forEach {
 			message.addReaction(it).complete()
 		}
+	}
+
+	fun handleTalking(context: CommandContext) {
+		val pet = getPet(context)
+
+		val userList = context.guild.members.map { it.user.id }
+
+		val profiles = loritta.ds.find(LorittaProfile::class.java)
+				.field("tamagotchi")
+				.exists()
+				.field("_id")
+				.`in`(userList)
+				.shuffled()
+
+		val message = context.sendMessage(context.getAsMention(true), EmbedBuilder().apply {
+			setTitle("Pets pelas suas redondezas...")
+			for ((index, profile) in profiles.withIndex()) {
+				if (index > 4)
+					break
+
+				val member = context.guild.getMemberById(profile.userId) ?: continue
+
+				appendDescription("**${profile.tamagotchi!!.petName}** de ${member.user.asMention}")
+			}
+		}.build())
+
+		message.onReactionAddByAuthor(context, {
+
+		})
+
+		for (idx in 0 until 5) {
+			message.addReaction(Constants.INDEXES[idx])
+		}
+	}
+
+	fun handleHygiene(context: CommandContext) {
+		val pet = getPet(context)
+
+		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB)
+		val graphics = base.graphics
+		val wrapper = ImageIO.read(File(Loritta.FOLDER, "tamagotchi.png"))
+
+		val playfield = drawPlayfield(pet)
+		val playfieldGraphics = playfield.graphics
+
+		val baciaBack = ImageIO.read(File(Loritta.FOLDER, "tamagotchi/bacia_back.png"))
+		val baciaFront = ImageIO.read(File(Loritta.FOLDER, "tamagotchi/bacia_front.png"))
+		playfieldGraphics.drawImage(baciaBack, 0, 0, null)
+		playfieldGraphics.drawImage(getPetImage(pet), 163, 109, null)
+		playfieldGraphics.drawImage(baciaFront, 0, 0, null)
+		graphics.drawImage(playfield, 5, 5, null)
+		graphics.drawImage(wrapper, 0, 0, null)
+
+		drawNeeds(pet, graphics)
+
+		context.sendFile(base, "tamagotchi.png", context.getAsMention(true))
+
+		sleep(4000)
+
+		pet.hygiene += 0.15f
+
+		if (applyPetChanges(context, pet))
+			return
+
+		handleGameplay(context)
+	}
+
+	fun handlePetCreation(context: CommandContext) {
+		// Usuário quer um Tamagotchi
+		val message = context.reply(
+				LoriReply(
+						message = "Olá! Você quer um bichinho virtual?",
+						prefix = "<:fluffy:372454445721845761>"
+				)
+		)
+
+		message.addReaction("vieirinha:339905091425271820").complete()
+
+		message.onReactionAddByAuthor(context, {
+			if (it.reactionEmote.name == "vieirinha") {
+				message.delete().complete()
+
+				val newName = context.reply(
+						LoriReply(
+								message = "Qual será o nome do seu novo bichinho virtual!",
+								prefix = "\uD83E\uDD5A"
+						)
+				)
+
+				newName.onResponseByAuthor(context, {
+					val name = it.message.content
+
+					val petGender = context.reply(
+							LoriReply(
+									message = "Qual será o gênero de `${name}`?"
+							)
+					)
+
+					petGender.onReactionAddByAuthor(context, {
+						val gender = when (it.reactionEmote.name) {
+							"male" -> TamagotchiPet.PetGender.MALE
+							"female" -> TamagotchiPet.PetGender.FEMALE
+							else -> return@onReactionAddByAuthor
+						}
+
+						petGender.delete().complete()
+
+						val petType = context.reply(
+								LoriReply(
+										message = "Como será o `$name`?"
+								)
+						)
+
+						petType.onResponseByAuthor(context, {
+							if (it.message.emotes.isEmpty()) {
+								context.reply(
+										LoriReply(
+												message = "Por favor, envie um emoji!",
+												prefix = Constants.ERROR
+										)
+								)
+								return@onResponseByAuthor
+							}
+
+							val emoji = it.message.emotes[0]
+							val emoteId = emoji.imageUrl.split("/").last()
+
+							val image = LorittaUtils.downloadImage(emoji.imageUrl)
+
+							ImageIO.write(image, "png", File(Loritta.FOLDER, "pets/$emoteId"))
+
+							petType.delete().complete()
+
+							val pet = TamagotchiPet(name, gender, emoteId)
+							val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
+							profile.tamagotchi = pet
+							loritta save profile
+							handleGameplay(context)
+						})
+					})
+
+					newName.delete().complete()
+
+					petGender.addReaction("male:384048518853296128").complete()
+					petGender.addReaction("female:384048518337265665").complete()
+				})
+			}
+		})
 	}
 }
 

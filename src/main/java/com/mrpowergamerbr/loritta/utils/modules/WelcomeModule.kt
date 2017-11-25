@@ -15,14 +15,16 @@ object WelcomeModule {
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 			val guild = event.guild
 
-			val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
+			if (joinLeaveConfig.canalJoinId != null) {
+				val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
 
-			if (textChannel != null) {
-				if (textChannel.canTalk()) {
-					val msg = LorittaUtils.replaceTokens(joinLeaveConfig.joinMessage, event)
-					textChannel.sendMessage(msg.substringIfNeeded()).complete()
-				} else {
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
+				if (textChannel != null) {
+					if (textChannel.canTalk()) {
+						val msg = LorittaUtils.replaceTokens(joinLeaveConfig.joinMessage, event)
+						textChannel.sendMessage(msg.substringIfNeeded()).complete()
+					} else {
+						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
+					}
 				}
 			}
 		}
@@ -42,50 +44,53 @@ object WelcomeModule {
 	}
 
 	fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig) {
+		Thread.sleep(500) // esperar 0.5ms antes de avisar
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 		if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
 			val guild = event.guild
 
-			val textChannel = guild.getTextChannelById(joinLeaveConfig.canalLeaveId)
+			if (joinLeaveConfig.canalLeaveId != null) {
+				val textChannel = guild.getTextChannelById(joinLeaveConfig.canalLeaveId)
 
-			if (textChannel != null) {
-				if (textChannel.canTalk()) {
-					var msg = LorittaUtils.replaceTokens(joinLeaveConfig.leaveMessage, event)
+				if (textChannel != null) {
+					if (textChannel.canTalk()) {
+						var msg = LorittaUtils.replaceTokens(joinLeaveConfig.leaveMessage, event)
 
-					if (joinLeaveConfig.tellOnBan) {
-						// Para a mensagem de ban nós precisamos ter a permissão de banir membros
-						if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-							val banList = guild.bans.complete()
-							if (banList.contains(event.user)) {
+						if (joinLeaveConfig.tellOnBan) {
+							// Para a mensagem de ban nós precisamos ter a permissão de banir membros
+							if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
+								val banList = guild.bans.complete()
+								if (banList.contains(event.user)) {
 
-								if (joinLeaveConfig.banMessage.isNotEmpty()) {
-									msg = LorittaUtils.replaceTokens(joinLeaveConfig.banMessage, event)
+									if (joinLeaveConfig.banMessage.isNotEmpty()) {
+										msg = LorittaUtils.replaceTokens(joinLeaveConfig.banMessage, event)
+									}
 								}
 							}
 						}
-					}
 
-					if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-						val entry = guild.auditLogs.complete().first()
+						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+							val entry = guild.auditLogs.complete().first()
 
-						if (entry.targetId == event.user.id) {
-							if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-								msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
-								msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-								msg = msg.replace("{@staff}", entry.user.asMention)
-								msg = msg.replace("{staff}", entry.user.name)
-							}
-							if (entry.type == ActionType.BAN) {
-								msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-								msg = msg.replace("{@staff}", entry.user.asMention)
-								msg = msg.replace("{staff}", entry.user.name)
+							if (entry.targetId == event.user.id) {
+								if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
+									msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
+									msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
+									msg = msg.replace("{@staff}", entry.user.asMention)
+									msg = msg.replace("{staff}", entry.user.name)
+								}
+								if (entry.type == ActionType.BAN) {
+									msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
+									msg = msg.replace("{@staff}", entry.user.asMention)
+									msg = msg.replace("{staff}", entry.user.name)
+								}
 							}
 						}
-					}
 
-					textChannel.sendMessage(msg.substringIfNeeded()).complete()
-				} else {
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
+						textChannel.sendMessage(msg.substringIfNeeded()).complete()
+					} else {
+						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
+					}
 				}
 			}
 		}
