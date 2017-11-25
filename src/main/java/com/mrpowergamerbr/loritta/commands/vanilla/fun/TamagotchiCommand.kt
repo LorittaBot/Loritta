@@ -176,7 +176,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		val petImage = ImageIO.read(File(Loritta.FOLDER, "pets/${pet.petType}"))
 		val petImage32 = petImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH)
 
-		playfieldGraphics.drawImage(petImage32, 188 - 64, 163 - 64, null)
+		playfieldGraphics.drawImage(petImage32, 163, 109, null)
 		graphics.drawImage(playfield, 5, 5, null)
 		graphics.drawImage(wrapper, 0, 0, null)
 

@@ -44,8 +44,6 @@ class TwitchCommand : CommandBase("twitch") {
 
 			val response = JSON_PARSER.parse(payload).obj
 
-			println(response)
-
 			val data = response["data"].array
 
 			if (data.size() == 0) {
