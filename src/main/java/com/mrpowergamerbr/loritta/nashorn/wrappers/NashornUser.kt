@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.nashorn.wrappers
+package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.LorittaUtils

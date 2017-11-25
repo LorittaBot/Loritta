@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.nashorn
 
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornContext
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import jdk.nashorn.api.scripting.ClassFilter
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.EmbedBuilder

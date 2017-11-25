@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.nashorn;
 
 import com.github.kevinsawicki.http.HttpRequest;
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornImage;
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornImage;
 import com.mrpowergamerbr.loritta.utils.Constants;
 import com.mrpowergamerbr.loritta.utils.LorittaUtils;
 

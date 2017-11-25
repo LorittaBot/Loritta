@@ -1,9 +1,7 @@
-package com.mrpowergamerbr.loritta.commands.nashorn.wrappers
+package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.utils.LorittaUser
 import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Message
 
 /**

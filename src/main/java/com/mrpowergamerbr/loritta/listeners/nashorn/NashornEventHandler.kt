@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.listeners.nashorn
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornGuild
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMember
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMessage
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornTextChannel
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornUser
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornGuild
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMember
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMessage
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornTextChannel
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornUser
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent

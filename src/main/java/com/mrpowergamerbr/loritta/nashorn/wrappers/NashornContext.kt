@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.nashorn.wrappers
+package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException

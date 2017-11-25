@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornContext
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornGuild
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornImage
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornLorittaUser
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMember
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornMessage
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornRole
-import com.mrpowergamerbr.loritta.commands.nashorn.wrappers.NashornUser
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornGuild
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornImage
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornLorittaUser
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMember
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMessage
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornRole
+import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornUser
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import org.jooby.Request
 import org.jooby.Response
