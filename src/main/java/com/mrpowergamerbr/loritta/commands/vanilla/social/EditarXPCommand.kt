@@ -31,7 +31,7 @@ class EditarXPCommand : CommandBase("editarxp") {
 	override fun run(context: CommandContext) {
 		val user = LorittaUtils.getUserFromContext(context, 0)
 		if (user != null && context.rawArgs.size == 2) {
-			val newXp = context.rawArgs[1].toIntOrNull()
+			val newXp = context.rawArgs[1].toLongOrNull()
 
 			if (newXp == null) {
 				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["INVALID_NUMBER", context.rawArgs[1]]}")

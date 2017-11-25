@@ -19,7 +19,7 @@ class LorittaProfile {
     @Id
     @Indexed
     var userId: String? = null;
-    var xp: Int = 0 // XP do usuário
+    var xp: Long = 0 // XP do usuário
     var aboutMe: String = "A Loritta é minha amiga!";
     var isBanned = false;
     var banReason: String? = null;
@@ -30,7 +30,7 @@ class LorittaProfile {
 	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
-    var dreams: Int = 0
+    var dreams: Long = 0
     var metadata = mutableMapOf<String, Object>() // Metadata
     var tamagotchi: TamagotchiPet? = null
 
@@ -54,7 +54,7 @@ class LorittaProfile {
         return receivedReputations.size;
     }
 
-    data class XpWrapper(val currentLevel: Int, val expLeft: Int)
+    data class XpWrapper(val currentLevel: Int, val expLeft: Long)
 
     data class UsernameChange(val changedAt: Long = 0L, val username: String = "???", val discriminator: String = "0000") {
 	}

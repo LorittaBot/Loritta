@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.Member
 
 class NashornLorittaUser(private val backedMember: Member, private val userData: LorittaServerUserData) : NashornMember(backedMember) {
 	@NashornCommand.NashornDocs()
-	fun getXp(): Int {
+	fun getXp(): Long {
 		return userData.xp
 	}
 

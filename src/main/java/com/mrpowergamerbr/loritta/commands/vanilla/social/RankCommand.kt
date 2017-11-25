@@ -49,7 +49,7 @@ class RankCommand : CommandBase("rank") {
 		if (context.args.isNotEmpty()) {
 			if (context.args[0] == "global") {
 				global = true
-				val map = mutableMapOf<String, Int>()
+				val map = mutableMapOf<String, Long>()
 
 				for (lorittaProfile in loritta.ds.find(LorittaProfile::class.java)) {
 					map.put(lorittaProfile.userId!!, lorittaProfile.xp)
