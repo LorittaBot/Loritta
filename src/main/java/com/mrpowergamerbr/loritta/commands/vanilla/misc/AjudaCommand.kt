@@ -150,7 +150,7 @@ class AjudaCommand : CommandBase("ajuda") {
 				CommandCategory.ROBLOX to "roblox:375313891925688331",
 				CommandCategory.UNDERTALE to "undertale_heart:343839169719697408",
 				CommandCategory.POKEMON to "pokeball:343837491905691648",
-				CommandCategory.MINECRAFT to "grass:330435576392318978",
+				CommandCategory.MINECRAFT to "grass:383612358318227457",
 				CommandCategory.SOCIAL to "blobBlush2:375602225940267018",
 				CommandCategory.FUN to "vieirinha:339905091425271820",
 				CommandCategory.ADMIN to "\uD83D\uDC6E",

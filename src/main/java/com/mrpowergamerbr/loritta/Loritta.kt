@@ -17,7 +17,6 @@ import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
-import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
@@ -34,6 +33,7 @@ import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
@@ -101,6 +101,8 @@ class Loritta {
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
+	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
+
 	var rawServersFanClub = listOf<ServerFanClub>()
 	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
@@ -119,7 +121,6 @@ class Loritta {
 
 	// ===[ UTILS ]===
 	var hal = JMegaHal() // JMegaHal, usado nos comandos de frase tosca
-	var pluginManager = PluginManager()
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
@@ -196,9 +197,6 @@ class Loritta {
 				.writeTimeout(60, TimeUnit.SECONDS)
 
 		val updateTimeListener = UpdateTimeListener(this);
-
-		println("Carregando plugins...")
-		pluginManager.loadPlugins()
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 

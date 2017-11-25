@@ -34,7 +34,7 @@ class RandomMemeguy1997 : CommandBase("randomemeguy1997") {
 		}
 
 		if (post != null) {
-			context.sendMessage("<:memeguy1997:331617335909548042> **|** " + context.getAsMention(true) + "(Fonte: *$source do Memeguy1997*) ${post.url} `${post.description}`")
+			context.sendMessage("<:memeguy1997:383612878147682317> **|** " + context.getAsMention(true) + "(Fonte: *$source do Memeguy1997*) ${post.url} `${post.description}`")
 		} else {
 			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do Memeguy1997...")
 		}

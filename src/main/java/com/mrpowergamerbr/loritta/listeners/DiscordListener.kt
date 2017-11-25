@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -153,6 +154,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
+					loritta.messageInteractionCache.values.forEach {
+						if (it.onMessageReceived != null)
+							it.onMessageReceived!!.invoke(event)
+
+						if (it.guild == event.guild.id) {
+							if (it.onResponse != null)
+								it.onResponse!!.invoke(event)
+
+							if (it.onResponseByAuthor != null) {
+								if (it.originalAuthor == event.author.id)
+									it.onResponseByAuthor!!.invoke(event)
+							}
+						}
+					}
+
 					// Executar todos os onCommandMessageReceivedFeedback
 					loritta.messageContextCache.values.filter {
 						it.guild == event.guild
@@ -216,10 +232,27 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
+	override fun onMessageDelete(event: MessageDeleteEvent) {
+		loritta.messageContextCache.remove(event.messageId)
+		loritta.messageInteractionCache.remove(event.messageId)
+	}
+
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		if (e.user.isBot) {
 			return
 		} // Ignorar reactions de bots
+
+		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
+			val functions = loritta.messageInteractionCache[e.messageId]!!
+
+			if (e is MessageReactionAddEvent && functions.onReactionAdd != null) {
+				functions.onReactionAdd!!.invoke(e)
+			}
+
+			if (e is MessageReactionRemoveEvent && functions.onReactionRemove != null) {
+				functions.onReactionRemove!!.invoke(e)
+			}
+		}
 
 		if (loritta.messageContextCache.containsKey(e.messageId)) {
 			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext

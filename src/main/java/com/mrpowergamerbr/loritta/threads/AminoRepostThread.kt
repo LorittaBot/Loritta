@@ -1,15 +1,17 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.aminoreapi.AminoClient
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
 class AminoRepostThread : Thread("Amino Repost Thread") {
-	var storedLastIds = HashMap<String, String>();
+	var storedLastIds = HashMap<String, MutableSet<String>>();
 
 	override fun run() {
 		super.run()
@@ -19,95 +21,105 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		aminoClient.login();
 
 		while (true) {
-			checkRepost(aminoClient);
+			try {
+				checkRepost(aminoClient);
+			} catch (e: Exception) {
+				e.printStackTrace()
+			}
 			Thread.sleep(10000);
 		}
 	}
 
 	fun checkRepost(aminoClient: AminoClient) {
-		try {
-			// Carregar todos os server configs que tem o Amino Repost ativado
-			var servers = LorittaLauncher.loritta.mongo
-					.getDatabase("loritta")
-					.getCollection("servers")
-					.find(Filters.and(Filters.eq("aminoConfig.isEnabled", true), Filters.eq("aminoConfig.syncAmino", true)))
+		// Carregar todos os server configs que tem o Amino Repost ativado
+		var servers = loritta.ds
+				.find(ServerConfig::class.java)
+				.field("aminoConfig.aminos")
+				.exists()
 
-			for (server in servers) {
-				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server.get("_id"));
+		// IDs das comunidades a serem verificados
+		var communityIds = mutableSetOf<String>()
 
-				var aminoConfig = config.aminoConfig;
+		for (server in servers) {
+			val aminoConfig = server.aminoConfig
 
-				if (aminoConfig.isEnabled && aminoConfig.syncAmino) { // Está ativado? (Nem sei para que verificar de novo mas vai que né)
-					var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
+			for (community in aminoConfig.aminos) {
+				if (community.communityId == null)
+					continue
 
-					if (guild != null) {
-						for (amino in aminoConfig.aminos) {
-							var textChannel = guild.getTextChannelById(amino.repostToChannelId)
+				communityIds.add(community.communityId!!)
+			}
+		}
 
-							if (textChannel != null) { // Wow, diferente de null!
-								if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-									// Vamos fazer polling dos posts então!
-									var communityId = amino.communityId
+		// Agora iremos verificar os canais
+		val deferred = communityIds.map { communityId ->
+			launch {
+				var community = aminoClient.getCommunityById(communityId) ?: return@launch
 
-									if (communityId == null)
-										continue
+				try {
+					community.join(communityId)
+				} catch (e: Exception) {
+					try {
+						community.join();
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
 
-									// E agora nós iremos fazer o polling de verdade
-									var community = aminoClient.getCommunityById(communityId);
+				var posts = community.getBlogFeed(0, 5)
 
-									try {
-										community.join(communityId)
-									} catch (e: Exception) {
-										try {
-											community.join();
-										} catch (e: Exception) {
-											e.printStackTrace()
+				val postsIds = storedLastIds.getOrPut(communityId, { mutableSetOf() })
+
+				for (post in posts) {
+					if (postsIds.contains(post.blogId))
+						continue
+
+					for (server in servers) {
+						for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
+							val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
+
+							val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId) ?: return@launch
+
+							if (!textChannel.canTalk())
+								return@launch
+
+							// Enviar mensagem
+							var embed = EmbedBuilder().apply {
+								setAuthor(post.author.nickname, null, post.author.icon)
+								setTitle(post.title)
+								setDescription(post.content)
+								setColor(Color(255, 112, 125))
+
+								/* if (post.mediaList != null) {
+									var obj = post.mediaList ?: ;
+									var inside = obj[0];
+
+									if (inside is List<*>) {
+										var link = inside.get(1) as String;
+
+										if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
+											setImage(link);
 										}
 									}
-
-									var posts = community.getBlogFeed(0, 5);
-
-									var lastIdSent = storedLastIds.getOrDefault(config.guildId, null);
-
-									for (post in posts) {
-										if (post.blogId == lastIdSent) {
-											break;
-										}
-										// Enviar mensagem
-										var embed = EmbedBuilder().apply {
-											setAuthor(post.author.nickname, null, post.author.icon)
-											setTitle(post.title)
-											setDescription(post.content)
-											setColor(Color(255, 112, 125))
-
-											if (post.mediaList != null) {
-												var obj = post.mediaList;
-												var inside = obj[0];
-
-												if (inside is List<*>) {
-													var link = inside.get(1) as String;
-
-													if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
-														setImage(link);
-													}
-												}
-											}
-											setFooter("Enviado as " + post.modifiedTime, null);
-										}
-										textChannel.sendMessage(embed.build()).complete()
-									}
-
-									if (posts.isNotEmpty()) {
-										storedLastIds.put(config.guildId, posts[0].blogId)
-									}
-								}
+								} */
+								setFooter("Enviado as " + post.modifiedTime, null);
 							}
+							textChannel.sendMessage(embed.build()).complete()
 						}
 					}
 				}
+				postsIds.clear()
+
+				posts.forEach {
+					postsIds.add(it.blogId)
+				}
 			}
-		} catch (e: Exception) {
-			e.printStackTrace();
+		}
+
+		runBlocking {
+			deferred.onEach {
+				it.join()
+			}
 		}
 	}
 }

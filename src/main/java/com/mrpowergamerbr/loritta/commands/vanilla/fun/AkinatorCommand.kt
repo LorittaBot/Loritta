@@ -99,7 +99,7 @@ class AkinatorCommand : CommandBase("akinator") {
 		}
 
 		val builder = EmbedBuilder().apply {
-			setTitle("<:akinator:348903800540758017> Akinator (${context.handle.effectiveName})")
+			setTitle("<:akinator:383613256939470849> Akinator (${context.handle.effectiveName})")
 			setThumbnail("https://loritta.website/assets/img/akinator_embed.png")
 			setDescription(question + "\n\n$progression% $text\n\n$reactionInfo")
 			setColor(Color(20, 158, 255))
@@ -156,7 +156,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
 					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:348903800540758017> Akinator")
+						setTitle("<:akinator:383613256939470849> Akinator")
 						setDescription(context.locale.get("AKINATOR_TIMEOUT"))
 						setColor(Color(20, 158, 255))
 					}
@@ -173,7 +173,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 				if (jsonResult["COMPLETION"].string == "WARN - NO QUESTION") {
 					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:348903800540758017> Akinator")
+						setTitle("<:akinator:383613256939470849> Akinator")
 						setDescription(context.locale.get("AKINATOR_NoQuestion"))
 						setColor(Color(20, 158, 255))
 					}
@@ -213,7 +213,7 @@ class AkinatorCommand : CommandBase("akinator") {
 					}
 
 					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:348903800540758017> Akinator (${context.handle.effectiveName})")
+						setTitle("<:akinator:383613256939470849> Akinator (${context.handle.effectiveName})")
 						setThumbnail("https://loritta.website/assets/img/akinator_embed.png")
 						setDescription(question + "\n\n$progression% $text\n\n$reactionInfo")
 						setColor(Color(20, 158, 255))
@@ -250,7 +250,7 @@ class AkinatorCommand : CommandBase("akinator") {
 					val jsonAnswer = JSON_PARSER.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
 
 					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:348903800540758017> ${jsonAnswer["NAME"].string}")
+						setTitle("<:akinator:383613256939470849> ${jsonAnswer["NAME"].string}")
 						setImage(jsonAnswer["ABSOLUTE_PICTURE_PATH"].string)
 						setDescription(jsonAnswer["DESCRIPTION"].string)
 						addField("Ranking", "#${jsonAnswer["RANKING"].string}", false)

@@ -13,12 +13,10 @@ import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
-	val isLivestreaming = mutableSetOf<String>()
+	var isLivestreaming = mutableSetOf<String>()
 
 	override fun run() {
 		super.run()
@@ -34,6 +32,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	}
 
 	fun checkNewVideos() {
+		println("Checking twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("livestreamConfig.channels").exists()
 		// IDs dos canais a serem verificados
@@ -51,19 +50,35 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			}
 		}
 
-		// Agora iremos verificar os canais
-		val deferred = userLogins.map { userLogin ->
-			launch {
-				try {
-					val livestreamInfo = getLivestreamInfo(userLogin)
+		// Vamos criar uma "lista" de IDs para serem procurados (batching)
+		val batchs = mutableListOf<ArrayList<String>>()
 
-					if (livestreamInfo == null) {
-						isLivestreaming.remove(userLogin)
-						return@launch
-					}
+		var currentBatch = arrayListOf<String>()
+
+		for (userLogin in userLogins) {
+			if (currentBatch.size == 100) {
+				batchs.add(currentBatch)
+				currentBatch = arrayListOf<String>()
+			}
+			currentBatch.add(userLogin)
+		}
+
+		batchs.add(currentBatch)
+
+		val nowStreaming = mutableSetOf<String>()
+
+		// Agora iremos verificar os canais
+		batchs.forEach { userLogins ->
+			println("Verifying batch ${currentBatch.joinToString(separator = ", ")}")
+			try {
+				val livestreamsInfo = getLivestreamsInfo(userLogins)
+
+				for (livestreamInfo in livestreamsInfo) {
+					val userLogin = livestreamInfo.thumbnailUrl.substring(52 until livestreamInfo.thumbnailUrl.lastIndexOf('-')) // ouc
+					nowStreaming.add(userLogin)
 
 					if (isLivestreaming.contains(userLogin)) // Se o usuário já está fazendo livestream, não vamos querer saber a mesma coisa novamente, né?
-						return@launch
+						continue
 
 					if (!gameInfoCache.containsKey(livestreamInfo.gameId)) {
 						val gameInfo = getGameInfo(livestreamInfo.gameId)
@@ -78,12 +93,10 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					val displayName = if (displayNameCache.containsKey(userLogin)) {
 						displayNameCache[userLogin]!!
 					} else {
-						val channelName = getUserDisplayName(userLogin) ?: return@launch
+						val channelName = getUserDisplayName(userLogin) ?: return
 						displayNameCache[userLogin] = channelName
 						channelName
 					}
-
-					isLivestreaming.add(userLogin)
 
 					for (server in servers) {
 						val livestreamConfig = server.livestreamConfig
@@ -116,16 +129,17 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 							textChannel.sendMessage(message.substringIfNeeded()).complete();
 						}
 					}
-				} catch (e: Exception) {
-					e.printStackTrace()
 				}
+			} catch (e: Exception) {
+				e.printStackTrace()
 			}
+			sleep(1500)
 		}
 
-		runBlocking {
-			deferred.onEach {
-				it.join()
-			}
+		isLivestreaming.clear()
+
+		nowStreaming.forEach {
+			isLivestreaming.add(it)
 		}
 	}
 
@@ -150,8 +164,16 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			return channel["display_name"].string
 		}
 
-		fun getLivestreamInfo(userLogin: String): LivestreamInfo? {
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/streams?user_login=$userLogin")
+		fun getLivestreamsInfo(userLogins: List<String>): List<LivestreamInfo> {
+			var query = ""
+			userLogins.forEach {
+				if (query.isEmpty()) {
+					query += "?user_login=$it"
+				} else {
+					query += "&user_login=$it"
+				}
+			}
+			val payload = HttpRequest.get("https://api.twitch.tv/helix/streams$query")
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
@@ -159,13 +181,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 			val data = response["data"].array
 
-			if (data.size() == 0) {
-				return null
-			}
-
-			val channel = data[0].obj
-
-			return GSON.fromJson(channel)
+			return GSON.fromJson(data)
 		}
 
 		fun getGameInfo(gameId: String): GameInfo? {

@@ -60,7 +60,7 @@ class PeQueryCommand : CommandBase("pequery") {
 				val bedrockIdentifier = MinecraftIdentifier(identifier)
 
 				val embed = EmbedBuilder().apply {
-					setTitle("<:grass:330435576392318978> $hostname:$port", null)
+					setTitle("<:grass:383612358318227457> $hostname:$port", null)
 					setColor(Color(87, 132, 74))
 					addField("MOTD", bedrockIdentifier.serverName.replace("§[0-9a-fk-or]".toRegex(), ""), false)
 					addField("Versão", bedrockIdentifier.versionTag + " (${bedrockIdentifier.serverProtocol})", true)

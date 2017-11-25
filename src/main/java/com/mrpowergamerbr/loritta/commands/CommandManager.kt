@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomSAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SpinnerCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TamagotchiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
@@ -130,7 +131,8 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikipediaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.loritta
+import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
+import net.pocketdreams.loriplugins.simsimi.commands.SimsimiCommand
 import java.util.*
 
 class CommandManager(isMusicOnly: Boolean) {
@@ -182,6 +184,11 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
+
+		// =======[ DIVERSÃO ]======
+		commandMap.add(SimsimiCommand())
+		commandMap.add(CleverbotCommand())
+		commandMap.add(TamagotchiCommand())
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
@@ -292,9 +299,8 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(SeekCommand())
 		commandMap.add(YouTubeCommand())
 
-		commandMap.addAll(loritta.pluginManager.getExternalCommands())
 		for (cmdBase in this.commandMap) {
-			defaultCmdOptions.put(cmdBase.javaClass.getSimpleName(), CommandOptions::class.java)
+			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)
 		}
 
 		// Custom Options

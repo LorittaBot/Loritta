@@ -29,13 +29,6 @@ class ReloadCommand : CommandBase("reload") {
 	}
 
 	override fun run(context: CommandContext) {
-		if (context.args.isNotEmpty() && context.args[0] == "info") {
-			context.reply(LoriReply(
-					"**Plugins:** ${loritta.pluginManager.plugins.joinToString{ it.name }}"
-			))
-			return
-		}
-
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
@@ -45,8 +38,6 @@ class ReloadCommand : CommandBase("reload") {
 		loritta.morphia = Morphia()
 		loritta.ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
 		loritta.generateDummyServerConfig()
-		loritta.pluginManager.clearPlugins()
-		loritta.pluginManager.loadPlugins()
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
@@ -77,10 +68,6 @@ class ReloadCommand : CommandBase("reload") {
 		context.reply(
 				LoriReply(
 						"Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
-				),
-				LoriReply(
-						"**Plugins:** ${loritta.pluginManager.plugins.joinToString{ it.name }}",
-						mentionUser = false
 				)
 		)
 	}

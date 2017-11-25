@@ -56,7 +56,7 @@ class McQueryCommand : CommandBase("mcquery") {
 
 				builder.setColor(Color.GREEN)
 
-				builder.setTitle("<:grass:330435576392318978> $hostname:$port", null)
+				builder.setTitle("<:grass:383612358318227457> $hostname:$port", null)
 
 				builder.addField("MOTD", response.motd, false)
 				builder.addField("Players", response.playersOnline.toString() + "/" + response.playersMax, true)

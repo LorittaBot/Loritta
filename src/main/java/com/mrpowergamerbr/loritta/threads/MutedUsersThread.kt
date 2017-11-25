@@ -57,6 +57,7 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 						if (!_guild.selfMember.canInteract(role))
 							continue
 
+						println("Removing roles from member...")
 						_guild.controller.removeRolesFromMember(member, role).complete()
 					} catch (e: Exception) {
 						e.printStackTrace()
@@ -77,15 +78,24 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 					continue
 
 				val temporaryBans = guild.temporaryBans
+				val toRemove = mutableListOf<String>()
 
 				for ((id, time) in temporaryBans) {
 					try {
 						if (System.currentTimeMillis() > time) {
+							toRemove.add(id)
+
+							_guild.getMemberById(id) ?: continue
+
 							_guild.controller.unban(id).complete()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
+				}
+
+				toRemove.forEach {
+					temporaryBans.remove(it)
 				}
 
 				loritta save guild

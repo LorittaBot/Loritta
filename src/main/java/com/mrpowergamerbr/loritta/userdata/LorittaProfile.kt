@@ -32,6 +32,7 @@ class LorittaProfile {
     var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Int = 0
     var metadata = mutableMapOf<String, Object>() // Metadata
+    var tamagotchi: TamagotchiPet? = null
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
@@ -59,4 +60,25 @@ class LorittaProfile {
 	}
 
     class SpinnerScore(val emoji: String = "???", val forTime: Long = 0)
+
+    class TamagotchiPet(
+            val petName: String,
+            val gender: PetGender,
+			val petType: String
+    ) {
+		var lastUpdate: Long = System.currentTimeMillis()
+		var hunger: Float = 1f
+		var happiness: Float  = 1f
+		var upgrades = mutableSetOf<PetUpgrades>()
+
+        constructor() : this("???", PetGender.MALE, "???")
+
+        enum class PetGender {
+            MALE, FEMALE
+        }
+
+		enum class PetUpgrades {
+			FAN_ART, TELEVISION, ANTENNA
+		}
+    }
 }

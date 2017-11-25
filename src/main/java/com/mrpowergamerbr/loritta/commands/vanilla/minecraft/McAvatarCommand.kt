@@ -36,7 +36,7 @@ class McAvatarCommand : CommandBase("mcavatar") {
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:330435576392318978> ${context.locale.get("MCAVATAR_AVATAR_DE", nickname)}")
+			builder.setTitle("<:grass:383612358318227457> ${context.locale.get("MCAVATAR_AVATAR_DE", nickname)}")
 
 			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {
