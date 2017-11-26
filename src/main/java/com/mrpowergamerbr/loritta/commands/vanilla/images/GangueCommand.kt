@@ -56,8 +56,8 @@ class GangueCommand : CommandBase("gangue") {
 		if (!LorittaUtils.isValidImage(context, contextImage5)) {
 			return;
 		}
-		val template = ImageIO.read(File(Loritta.FOLDER + "cocielo/cocielo.png")); // Template
-		val overlay = ImageIO.read(File(Loritta.FOLDER + "cocielo/overlay.png")); // Overlay
+		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png")); // Template
+		val overlay = ImageIO.read(File(Loritta.ASSETS + "cocielo/overlay.png")); // Overlay
 
 		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()

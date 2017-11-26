@@ -31,6 +31,8 @@ class NashornCommand : CommandBase {
 	var isPublic = false // Se o comando é público no repositório de comandos
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
+	var useNewAPI: Boolean = false
+
 	override val label: String
 		get() = jsLabel
 
@@ -119,5 +121,5 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			val description: String = "",
 			val arguments: String = "",
 			val example: String = ""
-			)
+	)
 }

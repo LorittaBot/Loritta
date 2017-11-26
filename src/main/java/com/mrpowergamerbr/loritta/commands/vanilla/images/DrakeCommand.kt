@@ -38,7 +38,7 @@ class DrakeCommand : CommandBase("drake") {
 	}
 
 	override fun run(context: CommandContext) {
-		val bi = ImageIO.read(File(Loritta.FOLDER + "drake.png")) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.ASSETS + "drake.png")) // Primeiro iremos carregar o nosso template
 		val graph = bi.graphics
 
 		run {

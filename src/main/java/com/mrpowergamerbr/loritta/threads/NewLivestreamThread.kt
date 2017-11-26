@@ -13,11 +13,10 @@ import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
-	var isLivestreaming = mutableSetOf<String>()
-
 	override fun run() {
 		super.run()
 
@@ -141,9 +140,12 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		nowStreaming.forEach {
 			isLivestreaming.add(it)
 		}
+
+		File(Loritta.FOLDER, "livestreaming.json").writeText(GSON.toJson(isLivestreaming))
 	}
 
 	companion object {
+		var isLivestreaming = mutableSetOf<String>()
 		val gameInfoCache = ConcurrentHashMap<String, GameInfo>()
 		val displayNameCache = ConcurrentHashMap<String, String>()
 

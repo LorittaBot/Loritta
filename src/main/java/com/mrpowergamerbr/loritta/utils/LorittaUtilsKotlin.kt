@@ -84,6 +84,22 @@ val User.patreon: Boolean
 		return false
 	}
 
+val User.lorittaSupervisor: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("351473717194522647")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
+
 val User.donator: Boolean
 	get() {
 		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")

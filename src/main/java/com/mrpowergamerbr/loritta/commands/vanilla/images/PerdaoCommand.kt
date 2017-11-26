@@ -41,7 +41,7 @@ class PerdaoCommand : CommandBase("perdao") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "perdao.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "perdao.png")); // Template
 
 		// RULE OF THREE!!11!
 		// larguraOriginal - larguraDoContextImage

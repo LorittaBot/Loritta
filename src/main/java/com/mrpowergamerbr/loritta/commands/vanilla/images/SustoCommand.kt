@@ -40,7 +40,7 @@ class SustoCommand : CommandBase("susto") {
 		val base = BufferedImage(191, 300, BufferedImage.TYPE_INT_ARGB)
 		var scaled = contextImage.getScaledInstance(84, 63, BufferedImage.SCALE_SMOOTH)
 		base.graphics.drawImage(scaled, 61, 138, null);
-		var template = ImageIO.read(File(Loritta.FOLDER + "loritta_susto.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "loritta_susto.png")); // Template
 		base.graphics.drawImage(template, 0, 0, null)
 
 		context.sendFile(base, "loritta_susto.png", context.getAsMention(true));

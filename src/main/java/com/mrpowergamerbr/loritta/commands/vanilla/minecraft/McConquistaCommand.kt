@@ -51,11 +51,11 @@ class McConquistaCommand : CommandBase("mcconquista") {
 
 			val advancementText = context.rawArgs.remove(0).joinToString(" ");
 
-			val template = ImageIO.read(File(Loritta.FOLDER + "mcconquista.png")) // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "mcconquista.png")) // Template
 
 			val graphics = template.graphics
 
-			val minecraftia = Font.createFont(Font.TRUETYPE_FONT, FileInputStream(File(Loritta.FOLDER + "minecraftia.ttf")))
+			val minecraftia = Font.createFont(Font.TRUETYPE_FONT, FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")))
 					.deriveFont(24.toFloat()) // A fonte para colocar no progresso
 
 			graphics.font = minecraftia;

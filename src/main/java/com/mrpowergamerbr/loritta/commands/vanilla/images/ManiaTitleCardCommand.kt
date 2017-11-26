@@ -48,9 +48,9 @@ class ManiaTitleCardCommand : CommandBase("maniatitlecard") {
 	}
 
 	fun generateTitleCard(text1: String = "", text2: String = ""): BufferedImage {
-		val image = ImageIO.read(File(Loritta.FOLDER, "sonic_mania_title_card.png"))
-		val left = ImageIO.read(File(Loritta.FOLDER, "mania_font/cut_left.png"))
-		val right = ImageIO.read(File(Loritta.FOLDER, "mania_font/cut_right.png"))
+		val image = ImageIO.read(File(Loritta.ASSETS, "sonic_mania_title_card.png"))
+		val left = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_left.png"))
+		val right = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_right.png"))
 
 		val graphics = image.graphics
 		graphics.color = Color.BLACK
@@ -81,7 +81,7 @@ class ManiaTitleCardCommand : CommandBase("maniatitlecard") {
 					x -= 26
 					continue
 				}
-				val charFile = File(Loritta.FOLDER, "mania_font/${c.toLowerCase()}.png")
+				val charFile = File(Loritta.ASSETS, "mania_font/${c.toLowerCase()}.png")
 
 				if (charFile.exists()) {
 					val charImg = ImageIO.read(charFile)
@@ -109,7 +109,7 @@ class ManiaTitleCardCommand : CommandBase("maniatitlecard") {
 					x -= 26
 					continue
 				}
-				val charFile = File(Loritta.FOLDER, "mania_font/${c.toLowerCase()}.png")
+				val charFile = File(Loritta.ASSETS, "mania_font/${c.toLowerCase()}.png")
 
 				if (charFile.exists()) {
 					val charImg = ImageIO.read(charFile)

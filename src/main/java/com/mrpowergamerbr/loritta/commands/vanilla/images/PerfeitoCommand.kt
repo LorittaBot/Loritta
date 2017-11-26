@@ -33,7 +33,7 @@ class PerfeitoCommand : CommandBase("perfeito") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "perfeito.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")); // Template
 
 		var scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 225, 85, null);

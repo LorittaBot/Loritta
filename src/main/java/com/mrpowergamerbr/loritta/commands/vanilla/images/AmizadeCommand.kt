@@ -47,7 +47,7 @@ class AmizadeCommand : CommandBase("amizade") {
 			val avatar2 = LorittaUtils.downloadImage(user.effectiveAvatarUrl)
 			val avatar3 = LorittaUtils.downloadImage(user2.effectiveAvatarUrl)
 
-			val template = ImageIO.read(File(Loritta.FOLDER + "amizade.png")); // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")); // Template
 
 			val graphics = template.graphics as Graphics2D // É necessário usar Graphics2D para usar gradients
 
@@ -58,7 +58,7 @@ class AmizadeCommand : CommandBase("amizade") {
 			graphics.drawImage(avatar2.getScaledInstance(111, 120, BufferedImage.SCALE_SMOOTH), 289, 180, null)
 
 			// E colocar o overlay da imagem
-			val overlay = ImageIO.read(File(Loritta.FOLDER + "amizade_overlay.png")); // Template
+			val overlay = ImageIO.read(File(Loritta.ASSETS + "amizade_overlay.png")); // Template
 			graphics.drawImage(overlay, 0, 0, null)
 
 			var font = graphics.font.deriveFont(21F)

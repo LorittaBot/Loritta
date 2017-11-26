@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.gifs
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -16,9 +14,9 @@ object GetOverHereGIF {
 
 		val scaled = toUse.getScaledInstance(50, 50, BufferedImage.SCALE_SMOOTH)
 		for (i in 0..52) {
-			val file = File(Loritta.FOLDER + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png");
+			val file = File(Loritta.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png");
 			if (file.exists()) {
-				var ogImage = ImageIO.read(File(Loritta.FOLDER + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png"));
+				var ogImage = ImageIO.read(File(Loritta.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png"));
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
 				image.graphics.drawImage(ogImage, 0, 0, null);
 				if (i in 0..4) {

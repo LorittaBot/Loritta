@@ -49,13 +49,13 @@ class UndertaleBoxCommand : CommandBase("undertalebox") {
 				// Sabe o que a gente faz com ele? Gambiarra!
 				// TODO: Menos gambiarra
 				str = str.replace("@" + member.effectiveName + " ", "")
-				val bi = ImageIO.read(File(Loritta.FOLDER + "undertale_dialogbox.png"))
+				val bi = ImageIO.read(File(Loritta.ASSETS + "undertale_dialogbox.png"))
 				val graph = bi.graphics
 
 				var determinationMono: Font? = null
 				try {
 					determinationMono = Font.createFont(Font.TRUETYPE_FONT,
-							FileInputStream(File(Loritta.FOLDER + "DTM-Mono.otf")))
+							FileInputStream(File(Loritta.ASSETS + "DTM-Mono.otf")))
 				} catch (e: Exception) {
 					println(e)
 				}
@@ -78,7 +78,7 @@ class UndertaleBoxCommand : CommandBase("undertalebox") {
 					var minecraftia: Font? = null
 					try {
 						minecraftia = Font.createFont(Font.TRUETYPE_FONT,
-								FileInputStream(File(Loritta.FOLDER + "minecraftia.ttf")))
+								FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")))
 					} catch (e: Exception) {
 						println(e)
 					}

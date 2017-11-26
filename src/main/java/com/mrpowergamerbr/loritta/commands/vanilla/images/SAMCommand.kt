@@ -48,7 +48,7 @@ class SAMCommand : CommandBase("sam") {
 			return
 		}
 
-		var seloSouthAmericaMemes: Image = ImageIO.read(File(Loritta.FOLDER + "selo_sam.png"))
+		var seloSouthAmericaMemes: Image = ImageIO.read(File(Loritta.ASSETS + "selo_sam.png"))
 
 		val height = (image.height / div).toInt() // Baseando na altura
 		seloSouthAmericaMemes = seloSouthAmericaMemes.getScaledInstance(height, height, Image.SCALE_SMOOTH)

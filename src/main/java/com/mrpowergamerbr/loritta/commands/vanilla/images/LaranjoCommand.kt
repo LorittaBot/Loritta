@@ -34,7 +34,7 @@ class LaranjoCommand : CommandBase("laranjo") {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val template = ImageIO.read(File(Loritta.FOLDER + "laranjo.png")); // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")); // Template
 			val texto = context.args.joinToString(" ");
 
 			var graphics = template.graphics as java.awt.Graphics2D;
@@ -42,7 +42,7 @@ class LaranjoCommand : CommandBase("laranjo") {
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.FOLDER + "mavenpro-bold.ttf")).deriveFont(24F);
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F);
 			graphics.font = font;
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics);
 

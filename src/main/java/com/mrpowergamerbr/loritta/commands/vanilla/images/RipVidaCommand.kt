@@ -36,7 +36,7 @@ class RipVidaCommand : CommandBase("ripvida") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + context.locale.get("RIPVIDA_FILE"))) // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + context.locale.get("RIPVIDA_FILE"))) // Template
 
 		var scaled = contextImage.getScaledInstance(133, 133, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 133, 0, null)

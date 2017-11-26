@@ -39,7 +39,7 @@ class RazoesCommand : CommandBase("razoes") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "reasons.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")); // Template
 		var image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
 		var graphics = image.graphics;

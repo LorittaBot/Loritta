@@ -79,7 +79,7 @@ class PedraPapelTesouraCommand : CommandBase("ppt") {
 					val fancy = "🕹🕹🕹"
 					context.sendMessage(context.getAsMention(true) + "Você escolheu 🕹 *VELBERAN*🕹, eu escolhi " + opponent.emoji + "\n" + fancy)
 					try {
-						context.sendFile(File(Loritta.FOLDER + "velberan.gif"), "velberan.gif", " ")
+						context.sendFile(File(Loritta.ASSETS + "velberan.gif"), "velberan.gif", " ")
 					} catch (e: IOException) {
 						e.printStackTrace()
 					}

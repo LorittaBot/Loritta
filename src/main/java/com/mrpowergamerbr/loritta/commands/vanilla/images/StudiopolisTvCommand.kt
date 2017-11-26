@@ -36,7 +36,7 @@ class StudiopolisTvCommand : CommandBase("studiopolistv") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "studiopolis.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "studiopolis.png")); // Template
 
 		var scaled = contextImage.getScaledInstance(190, 115, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 154, 61, null);

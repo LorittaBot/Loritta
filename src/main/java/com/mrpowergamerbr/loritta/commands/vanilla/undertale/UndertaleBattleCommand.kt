@@ -46,7 +46,7 @@ class UndertaleBattleCommand : CommandBase("undertalebattle") {
             list = list.takeLast(list.size - 1);
             var text = list.joinToString(" ");
             // Será que é um monstro válido?
-            val dir = File(Loritta.FOLDER + "utmonsters")
+            val dir = File(Loritta.ASSETS + "utmonsters")
             val directoryListing = dir.listFiles()
             var valid = false;
             val validMonsterList = ArrayList<String>();
@@ -68,7 +68,7 @@ class UndertaleBattleCommand : CommandBase("undertalebattle") {
                 if (!LorittaUtils.canUploadFiles(context)) { return }
                 // Sim, é válido!
                 var undertaleMonster = ImageIO.read(file); // Monstro
-                var undertaleSpeechBox = ImageIO.read(File(Loritta.FOLDER, "speech_box.png")); // Speech Box
+                var undertaleSpeechBox = ImageIO.read(File(Loritta.ASSETS, "speech_box.png")); // Speech Box
 
                 val blackWhite = BufferedImage(undertaleMonster.width + undertaleSpeechBox.width + 2, undertaleMonster.height, BufferedImage.TYPE_INT_ARGB) // Criar nosso template
                 val graphics = blackWhite.graphics as Graphics2D
@@ -88,7 +88,7 @@ class UndertaleBattleCommand : CommandBase("undertalebattle") {
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
                 val dotumChe = Font.createFont(Font.TRUETYPE_FONT,
-                        FileInputStream(File(Loritta.FOLDER + "dotumche.ttf")))
+                        FileInputStream(File(Loritta.ASSETS + "dotumche.ttf")))
                 graphics.font = dotumChe.deriveFont(12F)
                 ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
 

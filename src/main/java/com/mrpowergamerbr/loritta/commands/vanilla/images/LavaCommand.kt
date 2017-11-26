@@ -39,7 +39,7 @@ class LavaCommand : CommandBase("lava") {
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);
-			var template = ImageIO.read(File(Loritta.FOLDER + "lava.png")); // Template
+			var template = ImageIO.read(File(Loritta.ASSETS + "lava.png")); // Template
 
 			if (contextImage == null) {
 				contextImage = LorittaUtils.getImageFromContext(context, 0);
@@ -74,7 +74,7 @@ class LavaCommand : CommandBase("lava") {
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.FOLDER + "mavenpro-bold.ttf")).deriveFont(24F);
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F);
 			graphics.font = font;
 			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 700, 100), font);
 

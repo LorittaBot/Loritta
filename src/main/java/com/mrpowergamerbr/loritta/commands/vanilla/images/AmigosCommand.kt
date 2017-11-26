@@ -69,7 +69,7 @@ class AmigosCommand : CommandBase("amigos") {
 		graphics.drawImage(contextImage8, 128, 256, null)
 		graphics.drawImage(contextImage9, 256, 256, null)
 
-		val template = ImageIO.read(File(Loritta.FOLDER + "thx.png"))
+		val template = ImageIO.read(File(Loritta.ASSETS + "thx.png"))
 		graphics.drawImage(template, 0, 0, null)
 
 		context.sendFile(finalImage, "thx.png", context.getAsMention(true));

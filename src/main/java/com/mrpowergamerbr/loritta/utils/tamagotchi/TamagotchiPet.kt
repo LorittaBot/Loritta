@@ -9,6 +9,8 @@ class TamagotchiPet(
 	var hunger: Float = 1f
 	var happiness: Float  = 1f
 	var hygiene: Float = 1f
+	var bladder: Float = 1f
+	var social: Float = 1f
 	var upgrades = mutableSetOf<PetUpgrades>()
 
 	constructor() : this("???", PetGender.MALE, "???")
@@ -18,6 +20,13 @@ class TamagotchiPet(
 	}
 
 	enum class PetUpgrades {
-		FAN_ART, TELEVISION, ANTENNA
+		FAN_ART,
+		TELEVISION,
+		ANTENNA,
+		COUCH,
+		MINIBAR,
+		LOURO,
+		CELLPHONE,
+		COMPUTER
 	}
 }

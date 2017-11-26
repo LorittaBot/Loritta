@@ -112,7 +112,7 @@ class AkinatorCommand : CommandBase("akinator") {
 
 		val message = context.sendMessage(context.getAsMention(true), builder.build())
 
-		for (emote in Constants.INDEXES) {
+		for (emote in Constants.INDEXES.subList(0, 5)) {
 			message.addReaction(emote).complete();
 		}
 	}

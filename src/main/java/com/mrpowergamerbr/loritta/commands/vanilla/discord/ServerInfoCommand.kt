@@ -3,12 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
-import java.awt.Color
 
 class ServerInfoCommand : CommandBase("serverinfo") {
 	override fun getDescription(locale: BaseLocale): String {
@@ -29,7 +29,7 @@ class ServerInfoCommand : CommandBase("serverinfo") {
 		// Baseado no comando ?serverinfo do Dyno
 
 		embed.setThumbnail(context.guild.iconUrl) // Ícone da Guild
-		embed.setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
+		embed.setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> ${context.guild.name}", null) // Nome da Guild
 		embed.addField("💻 ID", context.guild.id, true) // ID da Guild
 		embed.addField("👑 ${context.locale.get("SERVERINFO_OWNER")}", context.guild.owner.asMention, true) // Dono da Guild

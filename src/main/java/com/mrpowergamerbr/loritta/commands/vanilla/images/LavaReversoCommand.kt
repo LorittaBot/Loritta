@@ -41,7 +41,7 @@ class LavaReversoCommand : CommandBase("lavareverso") {
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);
-			var template = ImageIO.read(File(Loritta.FOLDER + "lavareverso.png")); // Template
+			var template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template
 
 			if (contextImage == null) {
 				contextImage = LorittaUtils.getImageFromContext(context, 0);
@@ -88,7 +88,7 @@ class LavaReversoCommand : CommandBase("lavareverso") {
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.FOLDER + "mavenpro-bold.ttf")).deriveFont(32F);
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F);
 			graphics.font = font;
 			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 693, 100), font);
 

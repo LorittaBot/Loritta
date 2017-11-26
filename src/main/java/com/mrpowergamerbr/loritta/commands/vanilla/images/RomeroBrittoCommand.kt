@@ -37,7 +37,7 @@ class RomeroBrittoCommand : CommandBase("romerobritto") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "romero_britto.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "romero_britto.png")); // Template
 		var image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 
 		var graphics = image.graphics;

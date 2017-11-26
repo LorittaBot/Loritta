@@ -66,7 +66,7 @@ class SpinnerCommand : CommandBase("spinner") {
 							)
 						)
 
-				val rankHeader = ImageIO.read(File(Loritta.FOLDER, "rank_header.png"))
+				val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 				val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 				val graphics = base.graphics as Graphics2D
 
@@ -82,7 +82,7 @@ class SpinnerCommand : CommandBase("spinner") {
 				graphics.drawImage(rankHeader, 0, 0, null)
 
 				val oswaldRegular10 = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-						java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "oswald_regular.ttf")))
+						java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "oswald_regular.ttf")))
 						.deriveFont(10F)
 
 				val oswaldRegular12 = oswaldRegular10

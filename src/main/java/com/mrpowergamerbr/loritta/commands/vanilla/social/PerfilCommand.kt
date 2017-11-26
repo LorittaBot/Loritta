@@ -77,20 +77,20 @@ class PerfilCommand : CommandBase("perfil") {
 			return
 		}
 
-		val profileWrapper = ImageIO.read(File(Loritta.FOLDER, "profile_wrapper_v2.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v2.png"))
 
 		var file = File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
 
 		val background = when {
 			file.exists() -> ImageIO.read(File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
-			else -> ImageIO.read(File(Loritta.FOLDER + "default_background.png")) // Background padrão
+			else -> ImageIO.read(File(Loritta.ASSETS + "default_background.png")) // Background padrão
 		}
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(72, 72, BufferedImage.SCALE_SMOOTH)
-		val fullBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_full.png"))
-		val emptyBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_empty.png"))
-		val fullGlobalBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_globalfull.png"))
-		val emptyGlobalBar = ImageIO.read(File(Loritta.FOLDER + "profile_wrapper_v2_globalempty.png"))
+		val fullBar = ImageIO.read(File(Loritta.ASSETS + "profile_wrapper_v2_full.png"))
+		val emptyBar = ImageIO.read(File(Loritta.ASSETS + "profile_wrapper_v2_empty.png"))
+		val fullGlobalBar = ImageIO.read(File(Loritta.ASSETS + "profile_wrapper_v2_globalfull.png"))
+		val emptyGlobalBar = ImageIO.read(File(Loritta.ASSETS + "profile_wrapper_v2_globalempty.png"))
 
 		graphics.drawImage(background, 0, 0, null); // Background fica atrás de tudo
 
@@ -100,11 +100,11 @@ class PerfilCommand : CommandBase("perfil") {
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(72), 4, 4, null)
 
 		val badge = when {
-			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.FOLDER + "blob_blush.png"))
-			user.donator -> ImageIO.read(File(Loritta.FOLDER + "blob_blush2.png"))
-			user.artist -> ImageIO.read(File(Loritta.FOLDER + "artist_badge.png"))
-			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.FOLDER + "loritta_badge.png"))
-			user.isBot -> ImageIO.read(File(Loritta.FOLDER + "robot_badge.png"))
+			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
+			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
+			user.artist -> ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
+			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
+			user.isBot -> ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
 			else -> null
 		}
 
@@ -149,7 +149,7 @@ class PerfilCommand : CommandBase("perfil") {
 
 		if (idx > 16) {
 			val minecraftia = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-					java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "minecraftia.ttf")))
+					java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "minecraftia.ttf")))
 
 			graphics.font = minecraftia.deriveFont(8F);
 
@@ -168,7 +168,7 @@ class PerfilCommand : CommandBase("perfil") {
 
 		// Escrever o "Sobre Mim"
 		val bariolRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "bariol_regular.otf")))
+				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "bariol_regular.otf")))
 
 		graphics.font = bariolRegular.deriveFont(13F)
 
@@ -194,7 +194,7 @@ class PerfilCommand : CommandBase("perfil") {
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else userProfile.dreams.toString(), 220, 71)
 		// Escrever nome do usuário
 		val oswaldRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.FOLDER + "oswald_regular.ttf")))
+				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "oswald_regular.ttf")))
 				.deriveFont(23F)
 
 		graphics.font = oswaldRegular

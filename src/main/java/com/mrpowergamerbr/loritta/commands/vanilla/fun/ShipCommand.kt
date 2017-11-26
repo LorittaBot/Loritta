@@ -110,11 +110,11 @@ class ShipCommand : CommandBase("ship") {
 
 			var emoji: BufferedImage
 			if (percentage >= 50) {
-				emoji = ImageIO.read(File(Loritta.FOLDER + "heart.png"))
+				emoji = ImageIO.read(File(Loritta.ASSETS + "heart.png"))
 			} else if (percentage >= 30) {
-				emoji = ImageIO.read(File(Loritta.FOLDER + "shrug.png"))
+				emoji = ImageIO.read(File(Loritta.ASSETS + "shrug.png"))
 			} else {
-				emoji = ImageIO.read(File(Loritta.FOLDER + "crying.png"))
+				emoji = ImageIO.read(File(Loritta.ASSETS + "crying.png"))
 			}
 
 			var resizedEmoji = emoji.getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)

@@ -34,7 +34,7 @@ class TristeRealidadeCommand : CommandBase("tristerealidade") {
 	override fun run(context: CommandContext) {
 		val cmdOpti = context.config.getCommandOptionsFor(this) as TristeRealidadeCommandOptions
 
-		val bi = ImageIO.read(File(Loritta.FOLDER + context.locale["TRISTEREALIDADE_FILE"])) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.ASSETS + context.locale["TRISTEREALIDADE_FILE"])) // Primeiro iremos carregar o nosso template
 		var x = 0
 		var y = 0
 
@@ -45,7 +45,7 @@ class TristeRealidadeCommand : CommandBase("tristerealidade") {
 
 		try {
 			minecraftia = Font.createFont(Font.TRUETYPE_FONT,
-					FileInputStream(File(Loritta.FOLDER + "minecraftia.ttf"))) // A fonte para colocar os discriminators
+					FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf"))) // A fonte para colocar os discriminators
 		} catch (e: Exception) {
 			println(e)
 		}

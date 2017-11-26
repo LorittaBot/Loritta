@@ -37,7 +37,7 @@ class DeusCommand : CommandBase("deus") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "deus.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "deus.png")); // Template
 
 		var scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 1, 1, null);

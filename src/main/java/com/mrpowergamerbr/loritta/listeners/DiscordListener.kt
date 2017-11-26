@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
@@ -245,16 +246,20 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
 			val functions = loritta.messageInteractionCache[e.messageId]!!
 
-			if (e is MessageReactionAddEvent && functions.onReactionAdd != null) {
-				functions.onReactionAdd!!.invoke(e)
+			if (e is MessageReactionAddEvent) {
+				if (functions.onReactionAdd != null) {
+					functions.onReactionAdd!!.invoke(e)
+				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
 					functions.onReactionAddByAuthor!!.invoke(e)
 				}
 			}
 
-			if (e is MessageReactionRemoveEvent && functions.onReactionRemove != null) {
-				functions.onReactionRemove!!.invoke(e)
+			if (e is MessageReactionRemoveEvent) {
+				if (functions.onReactionRemove != null) {
+					functions.onReactionRemove!!.invoke(e)
+				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
 					functions.onReactionRemoveByAuthor!!.invoke(e)
@@ -349,15 +354,23 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		thread {
 			loritta save serverConfig
 
-			/* event.guild.members.forEach {
-				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
-					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/doar"]
+			event.guild.members.forEach {
+				if (!it.user.isBot && (/* it.hasPermission(Permission.MANAGE_SERVER) || */ it.hasPermission(Permission.ADMINISTRATOR))) {
+					val guilds = lorittaShards.getMutualGuilds(it.user)
+
+					if (guilds.any { guild -> // Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
+						guild.getMember(it.user).hasPermission(Permission.ADMINISTRATOR) || guild.getMember(it.user).hasPermission(Permission.MANAGE_SERVER)
+					}) {
+						return@thread
+					}
+
+					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
 
 					it.user.openPrivateChannel().queue({
 						it.sendMessage(message).queue()
 					})
 				}
-			} */
+			}
 		}
 	}
 

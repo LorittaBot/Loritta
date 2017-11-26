@@ -31,7 +31,7 @@ class PrimeirasPalavrasCommand : CommandBase("primeiraspalavras") {
 		if (context.args.isNotEmpty()) {
 			val str = context.args.joinToString(" ")
 
-			val bi = ImageIO.read(File(Loritta.FOLDER + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
+			val bi = ImageIO.read(File(Loritta.ASSETS + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
 
 			val baseGraph = bi.graphics
 

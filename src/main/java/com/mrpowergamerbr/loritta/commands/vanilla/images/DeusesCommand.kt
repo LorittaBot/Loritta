@@ -36,7 +36,7 @@ class DeusesCommand : CommandBase("deuses") {
 
 	override fun run(context: CommandContext) {
 		if (context.args.isNotEmpty()) {
-			val template = ImageIO.read(File(Loritta.FOLDER + "deuses.png")); // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "deuses.png")); // Template
 			val texto = context.args.joinToString(" ");
 
 			// Vamos criar o nosso tempalte
@@ -49,7 +49,7 @@ class DeusesCommand : CommandBase("deuses") {
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.FOLDER + "mavenpro-bold.ttf")).deriveFont(42F);
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(42F);
 			graphics.font = font;
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 630, 9999, graphics.fontMetrics, graphics);
 

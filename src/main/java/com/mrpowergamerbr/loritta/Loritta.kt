@@ -77,7 +77,9 @@ class Loritta {
 		@JvmStatic
 		lateinit var config: LorittaConfig // Configuração da Loritta
 		@JvmField
-		val FOLDER = "/home/servers/loritta/assets/" // Pasta usada na Loritta
+		val FOLDER = "/home/servers/loritta/" // Pasta usada na Loritta
+		@JvmField
+		val ASSETS = "/home/servers/loritta/assets/" // Pasta usada na Loritta
 		@JvmField
 		val TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
 		@JvmField
@@ -224,6 +226,8 @@ class Loritta {
 		}
 
 		println("Sucesso! Iniciando threads da Loritta...")
+
+		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 

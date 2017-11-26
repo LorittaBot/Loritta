@@ -17,6 +17,6 @@ class AngelCommand : CommandBase("angel") {
 	}
 
 	override fun run(context: CommandContext) {
-		context.sendFile(File(Loritta.FOLDER + "angel.png"), "angel.png", context.getAsMention(true))
+		context.sendFile(File(Loritta.ASSETS + "angel.png"), "angel.png", context.getAsMention(true))
 	}
 }

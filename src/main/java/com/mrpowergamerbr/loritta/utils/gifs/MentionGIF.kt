@@ -15,9 +15,9 @@ object MentionGIF {
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 1, true)
 
 		for (i in 0..83) {
-			val file = File(Loritta.FOLDER + "mention/mention_${i.toString().padStart(6, '0')}.png");
+			val file = File(Loritta.ASSETS + "mention/mention_${i.toString().padStart(6, '0')}.png");
 			if (file.exists()) {
-				var ogImage = ImageIO.read(File(Loritta.FOLDER + "mention/mention_${i.toString().padStart(6, '0')}.png"));
+				var ogImage = ImageIO.read(File(Loritta.ASSETS + "mention/mention_${i.toString().padStart(6, '0')}.png"));
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
 				image.graphics.drawImage(ogImage, 0, 0, null);
 				if (i in 51..58) {
@@ -28,7 +28,7 @@ object MentionGIF {
 							308F, 186F,
 							190F, 223F)
 
-					var overlay = ImageIO.read(File(Loritta.FOLDER + "mention_overlay1.png"));
+					var overlay = ImageIO.read(File(Loritta.ASSETS + "mention_overlay1.png"));
 
 					image.graphics.drawImage(transform.bufferedImage, 0, 0, null);
 					image.graphics.drawImage(overlay, 0, 0, null)
@@ -42,7 +42,7 @@ object MentionGIF {
 							154F, 348F)
 					transform.crop(0, 20, 400, 224);
 
-					var overlay = ImageIO.read(File(Loritta.FOLDER + "mention_overlay2.png"));
+					var overlay = ImageIO.read(File(Loritta.ASSETS + "mention_overlay2.png"));
 
 					image.graphics.drawImage(transform.bufferedImage, 0, 0, null);
 					image.graphics.drawImage(overlay, 0, 0, null)

@@ -18,7 +18,7 @@ object TrumpGIF {
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 1, true)
 
 		for (i in 0..70) {
-			var ogImage = ImageIO.read(File(Loritta.FOLDER + "trump/frame_${i}_delay-0.1s.gif"));
+			var ogImage = ImageIO.read(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"));
 			var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
 			image.graphics.drawImage(ogImage, 0, 0, null);
 			if (frames.size > i) {

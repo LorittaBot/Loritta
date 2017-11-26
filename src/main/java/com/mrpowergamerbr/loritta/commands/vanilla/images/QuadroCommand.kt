@@ -42,7 +42,7 @@ class QuadroCommand : CommandBase("quadro") {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		var template = ImageIO.read(File(Loritta.FOLDER + "wolverine.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "wolverine.png")); // Template
 		var image = BufferedImage(206, 300, BufferedImage.TYPE_INT_ARGB)
 
 		var graphics = image.graphics;

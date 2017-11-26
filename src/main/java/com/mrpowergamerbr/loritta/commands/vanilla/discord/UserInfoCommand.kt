@@ -4,13 +4,13 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
-import java.awt.Color
 import java.time.Instant
 import java.time.ZoneId
 
@@ -51,7 +51,7 @@ class UserInfoCommand : CommandBase("userinfo") {
 			}
 
 			setTitle("<:discord:314003252830011395> $nickname", null)
-			setColor(Color(114, 137, 218)) // Cor do embed (Cor padrão do Discord)
+			setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
 			val usernameChanges = lorittaProfile.usernameChanges

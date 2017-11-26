@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
+import java.awt.Color
+
 /**
  * Constantes
  */
@@ -16,4 +18,7 @@ object Constants {
 			"7⃣",
 			"8⃣",
 			"9⃣")
+
+	// ===[ COLORS ]===
+	val DISCORD_BURPLE = Color(114, 137, 218)
 }

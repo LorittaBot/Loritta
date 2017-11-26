@@ -467,7 +467,7 @@ object TretaNewsGenerator {
 
 		var tretaCheck: BufferedImage? = null
 		try {
-			tretaCheck = ImageIO.read(File(Loritta.FOLDER + "tretacheck.png"))
+			tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
 		} catch (e1: IOException) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace()
@@ -477,7 +477,7 @@ object TretaNewsGenerator {
 
 		var treta: BufferedImage? = null
 		try {
-			treta = ImageIO.read(File(Loritta.FOLDER + "tretasmall.png"))
+			treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
 		} catch (e: IOException) {
 			// TODO Auto-generated catch block
 			e.printStackTrace()
@@ -485,7 +485,7 @@ object TretaNewsGenerator {
 
 		var novo: BufferedImage? = null
 		try {
-			novo = ImageIO.read(File(Loritta.FOLDER + "tretanovo.png"))
+			novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
 		} catch (e: IOException) {
 			// TODO Auto-generated catch block
 			e.printStackTrace()

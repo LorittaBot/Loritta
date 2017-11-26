@@ -56,7 +56,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Color(114, 137, 218))
+			embed.setColor(Constants.DISCORD_BURPLE)
 			embed.setImage("attachment://avatar.png")
 
 			// Atualizar avatar

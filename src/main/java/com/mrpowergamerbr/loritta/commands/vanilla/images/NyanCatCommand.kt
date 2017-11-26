@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
@@ -44,19 +43,19 @@ class NyanCatCommand : CommandBase("nyan") {
 		}
 
 		val catLeft = if (!isDog) {
-			ImageIO.read(File(Loritta.FOLDER + "cat_left_v2.png"))
+			ImageIO.read(File(Loritta.ASSETS + "cat_left_v2.png"))
 		} else {
-			ImageIO.read(File(Loritta.FOLDER + "dog_left.png"))
+			ImageIO.read(File(Loritta.ASSETS + "dog_left.png"))
 		}
 		val catRight = if (!isDog) {
-			ImageIO.read(File(Loritta.FOLDER + "cat_right_v2.png"))
+			ImageIO.read(File(Loritta.ASSETS + "cat_right_v2.png"))
 		} else {
-			ImageIO.read(File(Loritta.FOLDER + "dog_right.png"))
+			ImageIO.read(File(Loritta.ASSETS + "dog_right.png"))
 		}
 		val catMiddle = if (!isDog) {
-			ImageIO.read(File(Loritta.FOLDER + "cat_middle_v2.png"))
+			ImageIO.read(File(Loritta.ASSETS + "cat_middle_v2.png"))
 		} else {
-			ImageIO.read(File(Loritta.FOLDER + "dog_middle.png"))
+			ImageIO.read(File(Loritta.ASSETS + "dog_middle.png"))
 		}
 
 		val bi = BufferedImage(catLeft.getWidth(null) + catRight.getWidth(null) + catMiddle.getWidth(null) * times, catLeft.getHeight(null), BufferedImage.TYPE_INT_ARGB)
@@ -113,7 +112,7 @@ class NyanCatCommand : CommandBase("nyan") {
 		bi.graphics.drawImage(catRight, x, 0, null)
 
 		if (isDog) { // Desenhar as orelhas do dog
-			val dogEars = ImageIO.read(File(Loritta.FOLDER + "dog_ears.png"))
+			val dogEars = ImageIO.read(File(Loritta.ASSETS + "dog_ears.png"))
 
 			bi.graphics.drawImage(dogEars, bi.width - 21, 5, null)
 		}
