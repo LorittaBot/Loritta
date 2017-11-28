@@ -5,6 +5,7 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
+import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AuthPathRedirectView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
@@ -37,9 +38,9 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureSta
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
@@ -49,9 +50,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object GlobalHandler {
-	fun render(req: Request, res: Response): String {
-		val views = getViews()
+	val views = generateViews()
 
+	fun render(req: Request, res: Response): String {
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 
 		variables["epochMillis"] = System.currentTimeMillis()
@@ -100,9 +101,9 @@ object GlobalHandler {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
-		val guilds = lorittaShards.getGuilds()
+		val guilds = LORITTA_SHARDS.getGuilds()
 		variables["guilds"] = guilds
-		variables["userCount"] = lorittaShards.getUsers().size
+		variables["userCount"] = LORITTA_SHARDS.getUsers().size
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
@@ -112,7 +113,7 @@ object GlobalHandler {
 		var donatorsFanClub = serversFanClub.filter {
 			val owner = it.guild.owner.user
 
-			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+			val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
 			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -124,7 +125,7 @@ object GlobalHandler {
 		serversFanClub.onEach {
 			val owner = it.guild.owner.user
 
-			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+			val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
 			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -141,7 +142,7 @@ object GlobalHandler {
 		val isPatreon = mutableMapOf<String, Boolean>()
 		val isDonator = mutableMapOf<String, Boolean>()
 
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
 		val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 		val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -200,10 +201,10 @@ object GlobalHandler {
 			.forEach { return it.render(req, res, variables) }
 
 		res.status(404)
-		return "404"
+		return evaluate("404.html", variables)
 	}
 
-	private fun getViews(): List<AbstractView> {
+	fun generateViews(): MutableList<AbstractView> {
 		val views = mutableListOf<AbstractView>()
 		// ===[ APIS ]===
 		views.add(APIGetCommunityInfoView())
@@ -238,6 +239,7 @@ object GlobalHandler {
 		views.add(NashornDocsView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
+
 		return views
 	}
 }

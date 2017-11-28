@@ -6,13 +6,14 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
 import com.mrpowergamerbr.loritta.utils.donator
+import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -114,7 +115,7 @@ class PerfilCommand : CommandBase("perfil") {
 
 		val guildImages = ArrayList<java.awt.Image>();
 
-		val guilds = lorittaShards.getGuilds()
+		val guilds = LORITTA_SHARDS.getGuilds()
 				.filter { guild -> guild.isMember(user) }
 				.sortedByDescending { it.members.size }
 
@@ -188,7 +189,7 @@ class PerfilCommand : CommandBase("perfil") {
 
 		graphics.drawString(context.locale["PERFIL_TOTAL_XP"], 80, 39)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) ":)" else userProfile.xp.toString(), 220, 39)
-		ImageUtils.drawTextWrap(context.locale["PERFIL_XP_GUILD", context.guild.name], 80, 55, 9999, 9999, graphics.fontMetrics, graphics)
+		graphics.drawText(context.locale["PERFIL_XP_GUILD", context.guild.name], 80, 55, 216)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) ";)" else userData.xp.toString(), 220, 55)
 		graphics.drawString(context.locale["PERFIL_ECONOMY"], 80, 71)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else userProfile.dreams.toString(), 220, 71)

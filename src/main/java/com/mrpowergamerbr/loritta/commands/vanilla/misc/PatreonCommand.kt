@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmiePatreonAuth
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -27,7 +27,7 @@ class PatreonCommand : CommandBase("patreon") {
 			}
 			patrons += "${patron.fullName}"
 			if (patron.discordId != null) {
-				val user = lorittaShards.getUserById(patron.discordId)
+				val user = LORITTA_SHARDS.getUserById(patron.discordId)
 
 				if (user != null) {
 					patrons += " `${user.name}#${user.discriminator}`"

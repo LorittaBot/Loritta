@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem
 import com.mrpowergamerbr.temmiemercadopago.mp.request.PaymentRequest
 import org.jooby.Request
@@ -33,7 +33,7 @@ class DonateView : AbstractView() {
 				return "Redirecionando..."
 			}
 		}
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
+		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
 		val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 		val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 

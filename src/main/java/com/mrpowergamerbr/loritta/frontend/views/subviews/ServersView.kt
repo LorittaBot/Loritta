@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import org.jooby.Request
 import org.jooby.Response
 
@@ -11,7 +11,7 @@ class ServersView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
-		var guilds = lorittaShards.getGuilds()
+		var guilds = LORITTA_SHARDS.getGuilds()
 		variables["serversSortedByMembers"] = guilds.sortedByDescending { it.members.size - it.members.count { it.user.isBot } }
 		var members = 0
 		var realUsers = 0

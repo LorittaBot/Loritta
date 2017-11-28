@@ -7,9 +7,9 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -142,7 +142,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 							val youTubeConfig = server.youTubeConfig
 							for (youTubeInfo in youTubeConfig.channels) {
 								if (youTubeInfo.channelId == channelId) {
-									val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+									val guild = LORITTA_SHARDS.getGuildById(server.guildId) ?: continue
 
 									val textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId) ?: continue
 

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
@@ -41,6 +42,8 @@ class ReloadCommand : CommandBase("reload") {
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
+
+		GlobalHandler.generateViews()
 
 		if (context.args.isNotEmpty() && context.args[0] == "listeners") {
 			context.sendMessage(context.getAsMention(true) + "Recarregando listeners...")

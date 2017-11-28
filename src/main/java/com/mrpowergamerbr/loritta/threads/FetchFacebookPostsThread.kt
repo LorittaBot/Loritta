@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 
 class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 	override fun run() {

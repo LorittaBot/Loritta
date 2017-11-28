@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -107,7 +107,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 						}
 
 						for (channel in channels) {
-							val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+							val guild = LORITTA_SHARDS.getGuildById(server.guildId) ?: continue
 
 							val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
 

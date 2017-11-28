@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import net.dv8tion.jda.core.entities.EntityBuilder
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Icon

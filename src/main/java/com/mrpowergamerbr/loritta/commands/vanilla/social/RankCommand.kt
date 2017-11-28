@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.*
@@ -122,7 +122,7 @@ class RankCommand : CommandBase("rank") {
 				break
 			}
 
-			var member = lorittaShards.getUserById(id)
+			var member = LORITTA_SHARDS.getUserById(id)
 
 			if (member != null) {
 				val userProfile = loritta.getLorittaProfileForUser(id)

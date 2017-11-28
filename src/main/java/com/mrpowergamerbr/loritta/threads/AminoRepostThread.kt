@@ -4,7 +4,7 @@ import com.mrpowergamerbr.aminoreapi.AminoClient
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
@@ -76,7 +76,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 					for (server in servers) {
 						for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
-							val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
+							val guild = LORITTA_SHARDS.getGuildById(server.guildId) ?: return@launch
 
 							val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId) ?: return@launch
 

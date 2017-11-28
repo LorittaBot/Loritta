@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ProtectedView
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
@@ -31,7 +31,7 @@ abstract class ConfigureView : ProtectedView() {
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId)
 
-		val jdaGuild = lorittaShards.getGuildById(guildId)!!
+		val jdaGuild = LORITTA_SHARDS.getGuildById(guildId)!!
 		variables["guild"] = jdaGuild
 		variables["serverConfig"] = serverConfig
 		return renderConfiguration(req, res, variables, discordAuth, jdaGuild, serverConfig)

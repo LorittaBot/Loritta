@@ -13,7 +13,7 @@ import javax.imageio.ImageIO
 
 class RomeroBrittoCommand : CommandBase("romerobritto") {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("ROMEROBRITTO_DESCRIPTION");
+		return locale["ROMEROBRITTO_DESCRIPTION"];
 	}
 
 	override fun getExample(): List<String> {
