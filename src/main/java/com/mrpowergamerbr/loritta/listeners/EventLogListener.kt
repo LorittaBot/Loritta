@@ -136,7 +136,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
 							if (textChannel != null && textChannel.canTalk()) {
-								embed.setDescription("\uD83D\uDCDD **${locale.EVENTLOG_NAME_CHANGED.msgFormat(event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}")}**")
+								embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
 								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
 
 								textChannel.sendMessage(embed.build()).complete()

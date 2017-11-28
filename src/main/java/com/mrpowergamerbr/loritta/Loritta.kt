@@ -216,10 +216,7 @@ class Loritta {
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
-		// if (!isMusicOnly) {
 		println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
-		/* val website = { LorittaWebsite.init(config.websiteUrl, config.frontendFolder) }
-		Thread(website, "Website Thread").start() */
 
 		val website = thread(true, name = "Website Thread") {
 			org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
@@ -255,8 +252,7 @@ class Loritta {
 			jda.addEventListener(discordListener) // Hora de registrar o nosso listener
 			jda.addEventListener(eventLogListener) // E o nosso outro listener também!
 		}
-		// } else {
-		// Iniciar coisas musicais
+
 		musicManagers = HashMap()
 		playerManager = DefaultAudioPlayerManager()
 
@@ -271,12 +267,6 @@ class Loritta {
 
 		LorittaUtils.startAutoPlaylist()
 
-		// val messageListener = MusicMessageListener(this)
-
-		// for (jda in lorittaShards.shards) {
-		// 	jda.addEventListener(messageListener) // Hora de registrar o nosso listener de somente receber comandos de música
-		// }
-		// }
 		ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}

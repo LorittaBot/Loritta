@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
-import java.io.File
 import java.net.URLEncoder
 
 
@@ -45,7 +44,7 @@ class GoogleCommand : CommandBase("google") {
 
 			val body = httpRequest.body()
 
-			File("teste.txt").writeText(body)
+			// File("teste.txt").writeText(body)
 			val document = Jsoup.parse(body)
 			val resultStats = document.getElementById("resultStats").text()
 			val elements = document.getElementsByClass("rc")
