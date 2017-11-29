@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.LembrarCommand
 import java.net.URLEncoder
 import java.text.MessageFormat
+import java.util.*
 
 val morseValues = mapOf(
 		// ALFABETO
@@ -112,6 +114,97 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	return this.substring(range.start .. range.last - 3) + suffix
 }
 
+fun String.convertToEpochMillis(): Long {
+	val calendar = Calendar.getInstance()
+
+	if (this.contains(":")) { // horário
+		val matcher = LembrarCommand.TIME_PATTERN.matcher(this)
+
+		if (matcher.find()) { // Se encontrar...
+			val hour = matcher.group(2).toIntOrNull() ?: 0
+			val minute = matcher.group(3).toIntOrNull() ?: 0
+			var seconds = try {
+				matcher.group(5).toIntOrNull() ?: 0
+			} catch (e: IllegalStateException) {
+				0
+			}
+
+			var meridiem = try {
+				matcher.group(6)
+			} catch (e: IllegalStateException) {
+				null
+			}
+
+			// Horários que usam o meridiem
+			if (meridiem != null) {
+				meridiem = meridiem.replace(".", "").replace(" ", "")
+				if (meridiem.equals("pm", true)) { // Se for PM, aumente +12
+					calendar[Calendar.HOUR_OF_DAY] = (hour % 12) + 12
+				} else { // Se for AM, mantenha do jeito atual
+					calendar[Calendar.HOUR_OF_DAY] = (hour % 12)
+				}
+			} else {
+				calendar[Calendar.HOUR_OF_DAY] = hour
+			}
+			calendar[Calendar.MINUTE] = minute
+			calendar[Calendar.SECOND] = seconds
+		}
+	}
+
+	if (this.contains("/")) { // data
+		val matcher = LembrarCommand.DATE_PATTERN.matcher(this)
+
+		if (matcher.find()) { // Se encontrar...
+			val day = matcher.group(1).toIntOrNull() ?: 1
+			val month = matcher.group(2).toIntOrNull() ?: 1
+			val year = matcher.group(3).toIntOrNull() ?: 1999
+
+			calendar[Calendar.DAY_OF_MONTH] = day
+			calendar[Calendar.MONTH] = month - 1
+			calendar[Calendar.YEAR] = year
+		}
+	}
+
+	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(this)
+	if (yearsMatcher.find()) {
+		var addYears = yearsMatcher.group(1).toInt()
+		calendar[Calendar.YEAR] += addYears
+	}
+	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(this)
+	if (monthMatcher.find()) {
+		var addMonths = monthMatcher.group(1).toInt()
+		calendar[Calendar.MONTH] += addMonths
+	}
+	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(this)
+	if (weekMatcher.find()) {
+		var addWeeks = weekMatcher.group(1).toInt()
+		calendar[Calendar.WEEK_OF_YEAR] += addWeeks
+	}
+	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(this)
+	if (dayMatcher.find()) {
+		var addDays = dayMatcher.group(1).toInt()
+		calendar[Calendar.DAY_OF_YEAR] += addDays
+	}
+	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(this)
+	if (hourMatcher.find()) {
+		var addHours = hourMatcher.group(1).toInt()
+		calendar[Calendar.HOUR_OF_DAY] += addHours
+	}
+	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(this)
+	if (minuteMatcher.find()) {
+		var addMinutes = minuteMatcher.group(1).toInt()
+		calendar[Calendar.MINUTE] += addMinutes
+	}
+	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(this)
+	if (secondsMatcher.find()) {
+		var addSeconds = secondsMatcher.group(1).toInt()
+		calendar[Calendar.SECOND] += addSeconds
+	}
+
+	return calendar.timeInMillis
+}
+
+@Deprecated(message = "convertToEpochMillis()")
 fun String.convertToSpan(): Long {
 	var time = this
 	var diff = 0L
