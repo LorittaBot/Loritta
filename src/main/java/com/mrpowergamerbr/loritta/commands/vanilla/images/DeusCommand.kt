@@ -32,7 +32,7 @@ class DeusCommand : CommandBase("deus") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;

@@ -34,7 +34,7 @@ class TwitchCommand : CommandBase("twitch") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");
 

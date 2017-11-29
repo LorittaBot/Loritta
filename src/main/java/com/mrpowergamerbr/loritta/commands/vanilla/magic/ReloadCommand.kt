@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
@@ -29,7 +30,7 @@ class ReloadCommand : CommandBase("reload") {
 		return "Recarrega a Loritta"
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

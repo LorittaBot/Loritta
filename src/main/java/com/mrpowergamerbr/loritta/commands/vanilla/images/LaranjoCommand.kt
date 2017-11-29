@@ -32,7 +32,7 @@ class LaranjoCommand : CommandBase("laranjo") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")); // Template
 			val texto = context.args.joinToString(" ");

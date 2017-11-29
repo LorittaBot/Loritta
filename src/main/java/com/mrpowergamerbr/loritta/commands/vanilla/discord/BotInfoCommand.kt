@@ -20,7 +20,7 @@ class BotInfoCommand : CommandBase("botinfo") {
 		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime

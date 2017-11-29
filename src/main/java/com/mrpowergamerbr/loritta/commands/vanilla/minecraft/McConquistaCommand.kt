@@ -41,7 +41,7 @@ class McConquistaCommand : CommandBase("mcconquista") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size > 1) {
 			val image = LorittaUtils.getImageFromContext(context, 0)
 

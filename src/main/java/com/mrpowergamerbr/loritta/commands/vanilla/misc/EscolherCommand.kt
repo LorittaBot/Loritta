@@ -24,7 +24,7 @@ class EscolherCommand : CommandBase("escolher") {
 		return CommandCategory.MISC;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
 			var split = joined.split(","); // E vamos separar!

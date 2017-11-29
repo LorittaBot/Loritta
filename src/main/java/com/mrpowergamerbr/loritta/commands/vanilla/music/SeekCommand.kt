@@ -34,7 +34,7 @@ class SeekCommand : CommandBase("seek") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 
 		if (context.args.isNotEmpty()) {

@@ -48,7 +48,7 @@ class YouTubeCommand : CommandBase("youtube") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");
 			val items = YouTubeUtils.searchOnYouTube(query, "youtube#video", "youtube#channel")

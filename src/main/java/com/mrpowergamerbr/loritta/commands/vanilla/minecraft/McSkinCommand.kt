@@ -27,7 +27,7 @@ class McSkinCommand : CommandBase("mcskin") {
 		return listOf("Monerk")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]
 

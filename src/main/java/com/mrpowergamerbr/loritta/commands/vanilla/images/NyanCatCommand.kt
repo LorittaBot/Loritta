@@ -33,7 +33,7 @@ class NyanCatCommand : CommandBase("nyan") {
 		return CommandCategory.IMAGES
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var times = 0
 		var isDog = false
 		if (context.args.size == 1) {

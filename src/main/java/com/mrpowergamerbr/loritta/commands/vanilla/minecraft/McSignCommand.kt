@@ -35,7 +35,7 @@ class McSignCommand : CommandBase("mcsign") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val lines = context.args.joinToString(" ").split("|");
 			lines.forEach { it.trim() }

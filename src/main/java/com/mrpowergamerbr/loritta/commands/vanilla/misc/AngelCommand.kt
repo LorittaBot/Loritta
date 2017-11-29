@@ -16,7 +16,7 @@ class AngelCommand : CommandBase("angel") {
 		return true;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		context.sendFile(File(Loritta.ASSETS + "angel.png"), "angel.png", context.getAsMention(true))
 	}
 }

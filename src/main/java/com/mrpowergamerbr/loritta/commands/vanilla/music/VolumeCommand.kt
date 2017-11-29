@@ -35,7 +35,7 @@ class VolumeCommand : CommandBase("volume") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (context.args.size >= 1) {
 			try {

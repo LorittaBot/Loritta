@@ -29,7 +29,7 @@ class DiscordiaCommand : CommandBase("discordia") {
 		return "<imagem>";
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;

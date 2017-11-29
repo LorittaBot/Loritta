@@ -28,7 +28,7 @@ class MorseCommand : CommandBase("morse") {
 		return CommandCategory.UTILS
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val message = context.args.joinToString(" ");
 

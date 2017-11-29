@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class LorittaBanCommand : CommandBase("lorittaban") {
 	override fun getDescription(): String {
@@ -18,7 +19,7 @@ class LorittaBanCommand : CommandBase("lorittaban") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			var monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";

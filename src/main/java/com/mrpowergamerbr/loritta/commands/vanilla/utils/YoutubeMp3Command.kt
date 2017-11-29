@@ -28,7 +28,7 @@ class YoutubeMp3Command : CommandBase("ytmp3") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			MiscUtils.sendYouTubeVideoMp3(context, context.args[0])
 		} else {

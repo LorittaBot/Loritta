@@ -32,7 +32,7 @@ class GameJoltCommand : CommandBase("gamejolt") {
 		return CommandCategory.FUN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val embed = EmbedBuilder()
 			val query = context.args.joinToString(" ")

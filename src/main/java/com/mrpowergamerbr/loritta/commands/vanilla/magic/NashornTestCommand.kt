@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class NashornTestCommand : CommandBase("nashorn") {
 	override fun getCategory(): CommandCategory {
@@ -18,11 +19,11 @@ class NashornTestCommand : CommandBase("nashorn") {
 		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val javaScript = context.args.joinToString(" ")
 
 		val nashornCmd = NashornCommand("teste", javaScript)
 
-		nashornCmd.run(context)
+		nashornCmd.run(context, locale)
 	}
 }

@@ -29,7 +29,7 @@ class McQueryCommand : CommandBase("mcquery") {
 		return Arrays.asList("jogar.sparklypower.net")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

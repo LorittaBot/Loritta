@@ -38,7 +38,7 @@ class QuoteCommand : CommandBase("mencionar") {
 		return CommandCategory.DISCORD
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
 

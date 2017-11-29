@@ -37,7 +37,7 @@ class UndertaleBoxCommand : CommandBase("undertalebox") {
 		return true;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		try {
 			if (context.args.size >= 1) {
 				var member = context.handle

@@ -33,7 +33,7 @@ class PokedexCommand : CommandBase("pokedex") {
         return "pokémon"
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         if (context.args.size == 1) {
             // Argumento 1: Pokémon (ID ou Nome)
 			var http = HttpRequest.get("https://veekun.com/dex/pokemon/${context.args[0].toLowerCase().encodeToUrl()}").userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0");

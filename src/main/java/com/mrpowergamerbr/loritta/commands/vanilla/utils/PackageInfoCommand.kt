@@ -31,7 +31,7 @@ class PackageInfoCommand : CommandBase("correios") {
 		return listOf("packageinfo", "ctt")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val packageId = context.args[0]
 			// DU892822537BR

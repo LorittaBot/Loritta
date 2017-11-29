@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
 class RandomSAMCommand : CommandBase("randomsam") {
@@ -24,7 +25,7 @@ class RandomSAMCommand : CommandBase("randomsam") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val source = if (Loritta.random.nextBoolean()) "página" else "grupo";
 
 		val post = if (source == "página") {

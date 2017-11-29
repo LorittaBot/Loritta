@@ -28,7 +28,7 @@ class EditarXPCommand : CommandBase("editarxp") {
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val user = LorittaUtils.getUserFromContext(context, 0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()

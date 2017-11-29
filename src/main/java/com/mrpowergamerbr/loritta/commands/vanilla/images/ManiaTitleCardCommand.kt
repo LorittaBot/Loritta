@@ -32,7 +32,7 @@ class ManiaTitleCardCommand : CommandBase("maniatitlecard") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val split = context.args.joinToString(" ").split("|").onEach { it.trim() }
 			val text1 = split[0]

@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
 import com.mrpowergamerbr.loritta.utils.donator
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
@@ -35,7 +36,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		return CommandCategory.MAGIC
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if ((context.args.isNotEmpty() && context.args[0] == "reset") || (context.userHandle.id != Loritta.config.ownerId && !context.userHandle.patreon && !context.userHandle.lorittaSupervisor && !context.userHandle.artist && !context.userHandle.donator && context.guild.id != "297732013006389252")) {
 			context.lorittaUser.profile.tamagotchi = null
 			loritta save context.lorittaUser.profile

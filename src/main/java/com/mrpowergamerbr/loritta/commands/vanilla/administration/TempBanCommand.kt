@@ -47,7 +47,7 @@ class TempBanCommand : CommandBase("tempban") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var user = LorittaUtils.getUserFromContext(context, 0)
 

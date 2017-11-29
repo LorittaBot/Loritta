@@ -30,7 +30,7 @@ class MagicBallCommand : CommandBase("vieirinha") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = getOrCreateWebhook(context.event.textChannel, "Vieirinha")
 

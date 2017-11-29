@@ -28,7 +28,7 @@ class AvatarCommand : CommandBase("avatar") {
 		return Arrays.asList("@Loritta")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var getAvatar = LorittaUtils.getUserFromContext(context, 0)
 
 		if (getAvatar == null) {

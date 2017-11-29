@@ -33,7 +33,7 @@ class RoleIdCommand : CommandBase("roleid") {
 		return CommandCategory.ADMIN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			val argument = context.rawArgs.joinToString(" ")
 

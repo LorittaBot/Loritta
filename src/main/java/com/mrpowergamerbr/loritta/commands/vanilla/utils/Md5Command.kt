@@ -25,7 +25,7 @@ class Md5Command : CommandBase("md5") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val mensagem = context.strippedArgs.joinToString(" ");
 

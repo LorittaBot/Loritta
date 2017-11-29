@@ -30,7 +30,7 @@ class AnagramaCommand : CommandBase("anagrama") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val palavra = context.args.joinToString(separator = " ");
 

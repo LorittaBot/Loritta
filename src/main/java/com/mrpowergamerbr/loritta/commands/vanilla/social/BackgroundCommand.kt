@@ -38,7 +38,7 @@ class BackgroundCommand : CommandBase("background") {
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)
 	}
 
-	override fun run(context: com.mrpowergamerbr.loritta.commands.CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val link = LorittaUtils.getURLFromContext(context, 0, 1, 2048);

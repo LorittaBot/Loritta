@@ -11,7 +11,7 @@ class CaraCoroaCommand : CommandBase("girarmoeda") {
 		return locale["CARACOROA_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		context.sendMessage(context.getAsMention(true) + if (Loritta.random.nextBoolean()) "<:cara:345994349969932291> **${context.locale.CARACOROA_HEADS.f()}!**" else "<:coroa:345994350498545674> **${context.locale.CARACOROA_TAILS.f()}!**")
 	}
 }

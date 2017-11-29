@@ -29,7 +29,7 @@ class McBodyCommand : CommandBase("mcbody") {
 		return listOf("mcstatue")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		context.handle
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]

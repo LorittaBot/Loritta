@@ -41,7 +41,7 @@ class WikiaCommand : CommandBase("wikia") {
 		return CommandCategory.UTILS
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			val websiteId = context.args[0]
 

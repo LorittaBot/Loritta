@@ -27,7 +27,7 @@ class PrimeirasPalavrasCommand : CommandBase("primeiraspalavras") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val str = context.args.joinToString(" ")
 

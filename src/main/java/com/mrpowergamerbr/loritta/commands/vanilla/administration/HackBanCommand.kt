@@ -32,7 +32,7 @@ class HackBanCommand : CommandBase("hackban") {
 		return listOf(Permission.BAN_MEMBERS)
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
 				var id = context.args[0];

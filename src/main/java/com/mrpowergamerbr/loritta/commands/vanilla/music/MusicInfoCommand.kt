@@ -36,7 +36,7 @@ class MusicInfoCommand : CommandBase("tocando") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		context.guild.selfMember.voiceState.channel
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (manager.player.playingTrack == null) {

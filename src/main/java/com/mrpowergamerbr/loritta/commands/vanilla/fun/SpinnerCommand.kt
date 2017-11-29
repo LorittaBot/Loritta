@@ -47,7 +47,7 @@ class SpinnerCommand : CommandBase("spinner") {
 		return CommandCategory.FUN;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val arg = context.args[0]
 			val page = if (context.args.size == 2) { context.args[1].toIntOrNull() ?: 1 } else { 1 }

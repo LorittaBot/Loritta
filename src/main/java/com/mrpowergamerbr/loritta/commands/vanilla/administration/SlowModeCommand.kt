@@ -38,7 +38,7 @@ class SlowModeCommand : CommandBase("slowmode") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val seconds = context.args[0].toIntOrNull()
 

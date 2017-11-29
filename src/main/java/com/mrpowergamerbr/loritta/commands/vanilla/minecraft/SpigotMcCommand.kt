@@ -44,7 +44,7 @@ class SpigotMcCommand : CommandBase("spigotmc") {
 		return CommandCategory.MINECRAFT;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size > 0) {
 			val query = context.args.joinToString(" ")
 

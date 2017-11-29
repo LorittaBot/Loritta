@@ -30,7 +30,7 @@ class PlaylistCommand : CommandBase("playlist") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)
 		val message = context.sendMessage(embed)

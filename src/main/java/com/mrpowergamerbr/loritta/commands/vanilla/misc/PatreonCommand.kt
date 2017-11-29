@@ -14,7 +14,7 @@ class PatreonCommand : CommandBase("patreon") {
         return locale["PATREON_DESCRIPTION"]
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
 		val temmiePatreonAuth = TemmiePatreonAuth(Loritta.config.patreonClientId, Loritta.config.patreonClientSecret, Loritta.config.patreonAccessToken, Loritta.config.patreonRefreshToken, 2678400)
 
 		val pledges = temmiePatreonAuth.getProjectPledges("1159176").filter { !it.isDeclined }

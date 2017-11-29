@@ -27,7 +27,7 @@ class UserInfoCommand : CommandBase("userinfo") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var user = LorittaUtils.getUserFromContext(context, 0)
 
 		if (user == null) {

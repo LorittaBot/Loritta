@@ -46,7 +46,7 @@ class PerfilCommand : CommandBase("perfil") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var userData = context.config.userData.getOrDefault(context.userHandle.id, LorittaServerUserData());
 		var base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
 		val graphics = base.graphics as java.awt.Graphics2D;

@@ -26,7 +26,7 @@ class SobreMimCommand : CommandBase("sobremim") {
          return CommandCategory.SOCIAL;
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         var profile = context.lorittaUser.profile;
         if (context.args.size > 0) {
             profile.aboutMe = context.args.joinToString(" ");

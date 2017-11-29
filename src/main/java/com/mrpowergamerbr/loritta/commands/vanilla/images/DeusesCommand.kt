@@ -34,7 +34,7 @@ class DeusesCommand : CommandBase("deuses") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val template = ImageIO.read(File(Loritta.ASSETS + "deuses.png")); // Template
 			val texto = context.args.joinToString(" ");

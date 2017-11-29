@@ -19,7 +19,7 @@ class McStatusCommand : CommandBase("mcstatus") {
         return CommandCategory.MINECRAFT;
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         var body = HttpRequest.get("https://mcapi.ca/mcstatus").body();
 
         var builder = EmbedBuilder()

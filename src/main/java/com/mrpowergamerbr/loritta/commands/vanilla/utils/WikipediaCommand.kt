@@ -36,7 +36,7 @@ class WikipediaCommand : CommandBase("wikipedia") {
 		return CommandCategory.UTILS
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			var languageId = "pt"
 			val inputLanguageId = context.args[0]

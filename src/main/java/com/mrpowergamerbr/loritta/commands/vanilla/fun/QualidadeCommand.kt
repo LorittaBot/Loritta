@@ -27,7 +27,7 @@ class QualidadeCommand : CommandBase("qualidade") {
 		return CommandCategory.FUN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").toUpperCase()
 			context.reply(

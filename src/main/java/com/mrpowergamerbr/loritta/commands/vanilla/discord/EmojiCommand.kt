@@ -31,7 +31,7 @@ class EmojiCommand : CommandBase("emoji") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			var emoji = context.args[0]
 

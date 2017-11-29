@@ -26,7 +26,7 @@ class RgbCommand : CommandBase("rgb") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			var hex = context.args[0]
 

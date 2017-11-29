@@ -39,7 +39,7 @@ class SoftBanCommand : CommandBase("softban") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
 				var id = context.args[0];

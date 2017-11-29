@@ -31,7 +31,7 @@ class PeQueryCommand : CommandBase("pequery") {
 		return Arrays.asList("PvP.PigRaid.com")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

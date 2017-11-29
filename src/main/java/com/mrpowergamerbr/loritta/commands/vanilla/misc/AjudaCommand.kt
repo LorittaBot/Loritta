@@ -27,7 +27,7 @@ class AjudaCommand : CommandBase("ajuda") {
 		return listOf("help", "comandos")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		try {
 			val privateChannel = context.userHandle.openPrivateChannel().complete()
 

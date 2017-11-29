@@ -28,7 +28,7 @@ class VaporQualidadeCommand : CommandBase("vaporqualidade") {
 		return CommandCategory.FUN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" ").toCharArray().joinToString(" ")).toUpperCase()
 			context.reply(

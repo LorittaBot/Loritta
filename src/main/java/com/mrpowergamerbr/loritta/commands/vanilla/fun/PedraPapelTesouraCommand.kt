@@ -32,7 +32,7 @@ class PedraPapelTesouraCommand : CommandBase("ppt") {
 		return CommandCategory.FUN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val playerValue = context.args[0]
 

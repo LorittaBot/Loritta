@@ -31,7 +31,7 @@ class SAMCommand : CommandBase("sam") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var div: Double? = 1.5
 
 		if (context.args.size >= 2) {

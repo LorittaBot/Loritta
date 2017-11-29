@@ -29,7 +29,7 @@ class AminoCommand : CommandBase("amino") {
 				"converter" to "Converte uma imagem \".Amino\" para uma imagem normal")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size > 0) {
 			if (context.args.size > 1) {
 				if (context.args[0] == context.locale["SEARCH"]) {

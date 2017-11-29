@@ -33,7 +33,7 @@ class PausarCommand : CommandBase("pause") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.isPaused) {

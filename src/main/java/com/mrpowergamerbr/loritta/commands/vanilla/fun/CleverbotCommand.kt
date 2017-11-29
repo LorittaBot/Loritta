@@ -37,7 +37,7 @@ class CleverbotCommand : CommandBase("cleverbot") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val cleverbot = cleverbots.getOrDefault(context.guild.id, Cleverbot())
 			cleverbots[context.guild.id] = cleverbot

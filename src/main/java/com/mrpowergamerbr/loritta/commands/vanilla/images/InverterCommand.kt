@@ -33,7 +33,7 @@ class InverterCommand : CommandBase("inverter") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val image = LorittaUtils.getImageFromContext(context, 0)
 
 		if (!LorittaUtils.isValidImage(context, image)) { return }

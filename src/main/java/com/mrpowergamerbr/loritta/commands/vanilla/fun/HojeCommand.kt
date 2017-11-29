@@ -29,7 +29,7 @@ class HojeCommand : CommandBase("hoje") {
 		return CommandCategory.FUN
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var languageId = "pt"
 		if (context.config.localeId == "en-us") {
 			languageId = "en"

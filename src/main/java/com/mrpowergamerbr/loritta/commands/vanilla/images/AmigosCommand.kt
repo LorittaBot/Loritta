@@ -25,7 +25,7 @@ class AmigosCommand : CommandBase("amigos") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128);
 		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128);
 		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128);

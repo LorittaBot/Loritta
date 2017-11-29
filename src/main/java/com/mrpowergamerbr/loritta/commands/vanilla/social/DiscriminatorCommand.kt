@@ -28,7 +28,7 @@ class DiscriminatorCommand : CommandBase("discriminator") {
 		return CommandCategory.SOCIAL;
 	}
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
 		var user = context.userHandle;
 		var discriminator = user.discriminator;
 		if (context.message.mentionedUsers.isNotEmpty()) {

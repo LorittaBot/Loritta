@@ -28,7 +28,7 @@ class AvaliarWaifuCommand : CommandBase("avaliarwaifu") {
 		return "<usuário 1>"
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
 			if (context.message.mentionedUsers.isNotEmpty()) {

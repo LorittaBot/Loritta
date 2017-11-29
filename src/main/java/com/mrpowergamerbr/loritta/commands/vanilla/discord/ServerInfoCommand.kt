@@ -26,7 +26,7 @@ class ServerInfoCommand : CommandBase("serverinfo") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()
 
 		var guild = context.guild

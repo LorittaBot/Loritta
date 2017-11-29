@@ -29,7 +29,7 @@ class PularCommand : CommandBase("pular") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		LorittaLauncher.loritta.skipTrack(context)
 	}
 }

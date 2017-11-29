@@ -25,7 +25,7 @@ class HexCommand : CommandBase("hex") {
 		return CommandCategory.UTILS
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 3) {
 			try {
 				val r = Integer.parseInt(context.args[0].replace(",", ""))

@@ -29,7 +29,7 @@ class McUUIDCommand : CommandBase("mcuuid") {
         return CommandCategory.MINECRAFT;
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         if (context.args.size > 0) {
             var player = context.args[0];
 

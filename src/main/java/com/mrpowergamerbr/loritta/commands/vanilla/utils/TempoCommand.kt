@@ -38,7 +38,7 @@ class TempoCommand : CommandBase("tempo") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var cidade = context.args.joinToString(separator = " ");
 

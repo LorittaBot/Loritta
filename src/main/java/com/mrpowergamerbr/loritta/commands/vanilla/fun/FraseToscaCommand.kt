@@ -27,7 +27,7 @@ class FraseToscaCommand : CommandBase("frasetosca") {
 		return false
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var text: String
 		if (context.args.isNotEmpty()) {
 			text = loritta.hal.getSentence(context.args.joinToString(" ").toLowerCase())

@@ -40,7 +40,7 @@ class RankCommand : CommandBase("rank") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val list = mutableListOf<RankWrapper>()
 
 		var global = false

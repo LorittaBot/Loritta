@@ -29,7 +29,7 @@ class OfflineUUIDCommand : CommandBase("offlineuuid") {
 		return listOf("mcofflineuuid")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + context.args[0]).toByteArray(Charsets.UTF_8))
 

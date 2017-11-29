@@ -37,7 +37,7 @@ class AmizadeCommand : CommandBase("amizade") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.message.mentionedUsers.size == 2) {
 			// Não podemos usar context...
 			val user = context.message.mentionedUsers[0]

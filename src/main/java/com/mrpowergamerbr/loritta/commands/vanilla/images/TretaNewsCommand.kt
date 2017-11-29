@@ -38,7 +38,7 @@ class TretaNewsCommand : CommandBase("tretanews") {
 		return CommandCategory.IMAGES
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		var user1: User? = LorittaUtils.getUserFromContext(context, 0)
 		var user2: User? =  LorittaUtils.getUserFromContext(context, 1)
 

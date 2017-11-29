@@ -38,7 +38,7 @@ class ShipCommand : CommandBase("ship") {
 		return true
 	}
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
 		val user1 = LorittaUtils.getUserFromContext(context, 0)
 		val user2 = LorittaUtils.getUserFromContext(context, 1)
 		

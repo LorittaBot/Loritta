@@ -36,7 +36,7 @@ class LembrarCommand : CommandBase("lembrar") {
 		return CommandCategory.UTILS;
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var message = context.strippedArgs.joinToString(separator = " ");
 			var years: Long? = 0L;

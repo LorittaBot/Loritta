@@ -30,7 +30,7 @@ class RepCommand : CommandBase("rep") {
         return false
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         var profile = context.lorittaUser.profile;
 
         if (context.message.mentionedUsers.isNotEmpty()) {

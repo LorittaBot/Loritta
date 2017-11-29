@@ -25,7 +25,7 @@ class LanguageCommand : CommandBase("language") {
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 

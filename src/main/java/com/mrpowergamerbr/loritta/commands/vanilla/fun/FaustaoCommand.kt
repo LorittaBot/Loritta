@@ -62,7 +62,7 @@ class FaustaoCommand : CommandBase("faustão") {
 		return Arrays.asList("faustao")
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.channel, "Faustão")
 
 		val mensagem = frases[Loritta.random.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);

@@ -21,7 +21,7 @@ class InviteCommand : CommandBase("convidar") {
         return CommandCategory.SOCIAL;
     }
 
-    override fun run(context: CommandContext) {
+    override fun run(context: CommandContext, locale: BaseLocale) {
         var embed = EmbedBuilder()
                 .setDescription(context.locale.INVITE_INFO.msgFormat("https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975", "http://loritta.website/auth", "https://discord.gg/V7Kbh4z"))
                 .setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")

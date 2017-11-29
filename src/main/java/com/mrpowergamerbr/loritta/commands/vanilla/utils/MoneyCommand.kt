@@ -22,7 +22,7 @@ class MoneyCommand : CommandBase("money") {
 		return CommandCategory.UTILS
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			var multiply: Double? = 1.0;
 			if (context.args.size > 2) {

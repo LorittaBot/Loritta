@@ -38,7 +38,7 @@ class LavaReversoCommand : CommandBase("lavareverso") {
 		return true
 	}
 
-	override fun run(context: CommandContext) {
+	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);
 			var template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template
