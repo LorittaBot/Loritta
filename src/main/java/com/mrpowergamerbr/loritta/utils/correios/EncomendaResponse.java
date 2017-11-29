@@ -9,6 +9,7 @@ public class EncomendaResponse {
 	public String date;
 	public String time;
 	public String state;
+	public String error;
 	public List<PackageUpdate> locations;
 	
 	@Getter
