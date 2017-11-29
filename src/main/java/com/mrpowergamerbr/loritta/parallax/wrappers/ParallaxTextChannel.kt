@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 
@@ -47,6 +48,10 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 
 	fun send(embed: ParallaxEmbed) {
 		textChannel.sendMessage(embed.toDiscordEmbed()).complete()
+	}
+
+	fun send(mirror: ScriptObjectMirror) {
+		send(ParallaxUtils.toParallaxEmbed(mirror))
 	}
 
 	fun setName(name: String, reason: String? = null) {

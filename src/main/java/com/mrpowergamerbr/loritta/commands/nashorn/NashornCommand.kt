@@ -53,14 +53,17 @@ class NashornCommand : CommandBase {
 	}
 
 	fun nashornRun(ogContext: CommandContext, context: NashornContext) {
-		val factory = NashornScriptEngineFactory()
-
-		val engine = factory.getScriptEngine(NashornClassFilter())
-		val invocable = engine as Invocable
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
-		// Funções inline para facilitar a programação de comandos
-		val inlineMethods = """var nashornUtils = Java.type("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils");
+
+		if (!useNewAPI) {
+			val factory = NashornScriptEngineFactory()
+
+			val engine = factory.getScriptEngine(NashornClassFilter())
+			val invocable = engine as Invocable
+
+			// Funções inline para facilitar a programação de comandos
+			val inlineMethods = """var nashornUtils = Java.type("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils");
 var loritta=function(){ return nashornUtils.loritta(); };
 var message=function(){ return contexto.getMessage(); };
 var author=function(){ return contexto.getSender(); };
@@ -81,31 +84,69 @@ var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
 var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
-		try {
-			val executor = Executors.newSingleThreadExecutor()
-			val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
-			future.get(15, TimeUnit.SECONDS)
-		} catch (e: Exception) {
-			e.printStackTrace()
-			val builder = EmbedBuilder()
-			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-			var description = "Irineu, você não sabe e nem eu!"
-			if (e is ExecutionException) {
-				description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-			} else {
-				if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
-					description =  (e.cause as Throwable).message!!.trim { it <= ' ' }
-				} else if (e != null) {
-					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
+			try {
+				val executor = Executors.newSingleThreadExecutor()
+				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
+				future.get(15, TimeUnit.SECONDS)
+			} catch (e: Exception) {
+				e.printStackTrace()
+				val builder = EmbedBuilder()
+				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
+				var description = "Irineu, você não sabe e nem eu!"
+				if (e is ExecutionException) {
+					description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
+				} else {
+					if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
+						description = (e.cause as Throwable).message!!.trim { it <= ' ' }
+					} else if (e != null) {
+						description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
+					}
 				}
+				builder.setDescription("```$description```")
+				builder.setFooter(
+						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
+				builder.setColor(Color.RED)
+				ogContext.sendMessage(builder.build())
 			}
-			builder.setDescription("```$description```")
-			builder.setFooter(
-					"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-			builder.setColor(Color.RED)
-			ogContext.sendMessage(builder.build())
-		}
+		} else {
+			// TODO: API v2
+			val factory = NashornScriptEngineFactory()
 
+			val engine = factory.getScriptEngine(NashornClassFilter())
+			val invocable = engine as Invocable
+
+			// Funções inline para facilitar a programação de comandos
+			val inlineMethods = """
+				var guild = context.guild
+				var member = context.member
+				var user = context.member
+				var author = context.member
+			""".trimIndent()
+			try {
+				val executor = Executors.newSingleThreadExecutor()
+				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
+				future.get(15, TimeUnit.SECONDS)
+			} catch (e: Exception) {
+				e.printStackTrace()
+				val builder = EmbedBuilder()
+				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
+				var description = "Irineu, você não sabe e nem eu!"
+				if (e is ExecutionException) {
+					description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
+				} else {
+					if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
+						description = (e.cause as Throwable).message!!.trim { it <= ' ' }
+					} else if (e != null) {
+						description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
+					}
+				}
+				builder.setDescription("```$description```")
+				builder.setFooter(
+						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
+				builder.setColor(Color.RED)
+				ogContext.sendMessage(builder.build())
+			}
+		}
 	}
 
 	internal class NashornClassFilter : ClassFilter {

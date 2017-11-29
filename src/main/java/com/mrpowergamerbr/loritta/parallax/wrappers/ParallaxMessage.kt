@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
+import jdk.nashorn.api.scripting.ScriptObjectMirror
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 
@@ -55,6 +56,10 @@ class ParallaxMessage(private val message: Message) {
 		message.editMessage(embed.toDiscordEmbed()).complete()
 	}
 
+	fun edit(mirror: ScriptObjectMirror) {
+		edit(ParallaxUtils.toParallaxEmbed(mirror))
+	}
+
 	// TODO: isMemberMentioned
 	// TODO: isMentioned
 
@@ -76,6 +81,10 @@ class ParallaxMessage(private val message: Message) {
 
 	fun reply(embed: ParallaxEmbed) {
 		channel.send(embed)
+	}
+
+	fun reply(mirror: ScriptObjectMirror) {
+		reply(ParallaxUtils.toParallaxEmbed(mirror))
 	}
 
 	override fun toString(): String = content
