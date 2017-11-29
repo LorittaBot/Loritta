@@ -114,11 +114,14 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	return this.substring(range.start .. range.last - 3) + suffix
 }
 
+val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
+val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
+
 fun String.convertToEpochMillis(): Long {
 	val calendar = Calendar.getInstance()
 
 	if (this.contains(":")) { // horário
-		val matcher = LembrarCommand.TIME_PATTERN.matcher(this)
+		val matcher = TIME_PATTERN.matcher(this)
 
 		if (matcher.find()) { // Se encontrar...
 			val hour = matcher.group(2).toIntOrNull() ?: 0
@@ -152,7 +155,7 @@ fun String.convertToEpochMillis(): Long {
 	}
 
 	if (this.contains("/")) { // data
-		val matcher = LembrarCommand.DATE_PATTERN.matcher(this)
+		val matcher = DATE_PATTERN.matcher(this)
 
 		if (matcher.find()) { // Se encontrar...
 			val day = matcher.group(1).toIntOrNull() ?: 1

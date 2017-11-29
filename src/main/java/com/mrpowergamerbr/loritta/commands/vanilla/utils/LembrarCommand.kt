@@ -15,11 +15,6 @@ import java.util.*
 
 
 class LembrarCommand : CommandBase("lembrar") {
-	companion object {
-		val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
-		val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
-	}
-
 	override fun getAliases(): List<String> {
 		return listOf("lembre", "remind", "remindme");
 	}
@@ -43,7 +38,6 @@ class LembrarCommand : CommandBase("lembrar") {
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var message = context.strippedArgs.joinToString(separator = " ")
-			val metadata = context.metadata
 
 			val reply = context.reply(
 					LoriReply(
@@ -54,6 +48,7 @@ class LembrarCommand : CommandBase("lembrar") {
 
 			reply.onResponseByAuthor(context, {
 				loritta.messageInteractionCache.remove(reply.id)
+				reply.delete().queue()
 				val inMillis = it.message.content.convertToEpochMillis()
 				val calendar = Calendar.getInstance()
 				calendar.timeInMillis = inMillis
@@ -71,6 +66,7 @@ class LembrarCommand : CommandBase("lembrar") {
 
 			reply.onReactionAddByAuthor(context, {
 				loritta.messageInteractionCache.remove(reply.id)
+				reply.delete().queue()
 				context.reply(
 						LoriReply(
 								message = locale["LEMBRAR_Cancelado"],
