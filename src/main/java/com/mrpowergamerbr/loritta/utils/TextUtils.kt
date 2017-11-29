@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.LembrarCommand
 import java.net.URLEncoder
 import java.text.MessageFormat
 import java.util.*

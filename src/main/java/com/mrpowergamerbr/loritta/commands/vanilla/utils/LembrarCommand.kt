@@ -16,7 +16,7 @@ import java.util.*
 
 class LembrarCommand : CommandBase("lembrar") {
 	override fun getAliases(): List<String> {
-		return listOf("lembre", "remind", "remindme");
+		return listOf("lembre", "remind", "remindme", "lembrete", "reminder");
 	}
 
 	override fun getUsage(): String {
@@ -24,7 +24,7 @@ class LembrarCommand : CommandBase("lembrar") {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.LEMBRAR_DESCRIPTION
+		return locale["LEMBRAR_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
