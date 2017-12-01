@@ -51,7 +51,7 @@ public final class LorittaUtils {
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().getPermissions().contains(Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.IMAGE_UPLOAD_NO_PERM) + " \uD83D\uDE22");
+			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
 			return false;
 		}
 		return true;
@@ -104,7 +104,7 @@ public final class LorittaUtils {
 	 */
 	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.NO_VALID_IMAGE));
+			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("NO_VALID_IMAGE")));
 			return false;
 		}
 		return true;
