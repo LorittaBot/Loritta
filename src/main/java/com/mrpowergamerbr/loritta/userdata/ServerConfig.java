@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.GiveawayCommand;
+import com.mrpowergamerbr.loritta.commands.vanilla.fun.GiveawayCommand.Giveaway;
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,6 +68,8 @@ public class ServerConfig {
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
     public HashMap<String, Long> temporaryBans = new HashMap<String, Long>();
+
+    public ArrayList<Giveaway> giveaways = new ArrayList<>();
 
     public CommandOptions getCommandOptionsFor(CommandBase cmd) {
         if (cmd instanceof NashornCommand) { // Se é um comando feito em Nashorn...

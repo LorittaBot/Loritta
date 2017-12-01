@@ -26,12 +26,12 @@ class RandomMemeguy1997 : CommandBase("randomemeguy1997") {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val source = if (Loritta.random.nextBoolean()) "página" else "grupo";
+		val source = if (Loritta.RANDOM.nextBoolean()) "página" else "grupo";
 
 		val post = if (source == "página") {
-			loritta.memeguy1997PageCache.get(Loritta.random.nextInt(loritta.memeguy1997PageCache.size))
+			loritta.memeguy1997PageCache.get(Loritta.RANDOM.nextInt(loritta.memeguy1997PageCache.size))
 		} else {
-			loritta.memeguy1997GroupCache.get(Loritta.random.nextInt(loritta.memeguy1997GroupCache.size))
+			loritta.memeguy1997GroupCache.get(Loritta.RANDOM.nextInt(loritta.memeguy1997GroupCache.size))
 		}
 
 		if (post != null) {

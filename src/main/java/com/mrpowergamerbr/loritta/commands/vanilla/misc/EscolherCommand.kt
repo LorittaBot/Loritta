@@ -30,7 +30,7 @@ class EscolherCommand : CommandBase("escolher") {
 			var split = joined.split(","); // E vamos separar!
 
 			// Hora de escolher algo aleatório!
-			var chosen = split[Loritta.random.nextInt(split.size)];
+			var chosen = split[Loritta.RANDOM.nextInt(split.size)];
 			context.reply(
 					LoriReply(
 							message = "${context.locale["ESCOLHER_RESULT", chosen]}",

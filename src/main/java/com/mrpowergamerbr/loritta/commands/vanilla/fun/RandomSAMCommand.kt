@@ -26,12 +26,12 @@ class RandomSAMCommand : CommandBase("randomsam") {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val source = if (Loritta.random.nextBoolean()) "página" else "grupo";
+		val source = if (Loritta.RANDOM.nextBoolean()) "página" else "grupo";
 
 		val post = if (source == "página") {
-			loritta.southAmericaMemesPageCache.get(Loritta.random.nextInt(loritta.southAmericaMemesPageCache.size))
+			loritta.southAmericaMemesPageCache.get(Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size))
 		} else {
-			loritta.southAmericaMemesGroupCache.get(Loritta.random.nextInt(loritta.southAmericaMemesGroupCache.size))
+			loritta.southAmericaMemesGroupCache.get(Loritta.RANDOM.nextInt(loritta.southAmericaMemesGroupCache.size))
 		}
 
 		if (post != null) {

@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.io.ByteArrayOutputStream
@@ -21,7 +21,7 @@ class OCRCommand : CommandBase("ocr") {
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.OCR_DESCRIPTION
+		return locale["OCR_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {

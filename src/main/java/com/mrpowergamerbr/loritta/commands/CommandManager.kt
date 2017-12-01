@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FraseToscaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.PedraPapelTesouraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.QualidadeCommand
@@ -111,10 +112,10 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.AminoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.AnagramaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.ColorInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.DicioCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.EncurtarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.GoogleCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.HexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HojeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.IsUpCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.KnowYourMemeCommand
@@ -124,7 +125,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.MoneyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.MorseCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.OCRCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.RgbCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TempoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TranslateCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
@@ -189,6 +189,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(SimsimiCommand())
 		commandMap.add(CleverbotCommand())
 		commandMap.add(TamagotchiCommand())
+		commandMap.add(GiveawayCommand())
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
@@ -222,9 +223,8 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(EncurtarCommand())
 		commandMap.add(WikipediaCommand())
 		commandMap.add(MoneyCommand())
-		commandMap.add(HexCommand())
+		commandMap.add(ColorInfoCommand())
 		commandMap.add(LembrarCommand())
-		commandMap.add(RgbCommand())
 		commandMap.add(YoutubeMp3Command())
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())

@@ -57,10 +57,10 @@ class TristeRealidadeCommand : CommandBase("tristerealidade") {
 		users.addAll(context.message.mentionedUsers)
 
 		while (6 > users.size) {
-			var member = context.guild.members[Loritta.random.nextInt(context.guild.members.size)]
+			var member = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
 
 			while (member.onlineStatus == OnlineStatus.OFFLINE || member.user.avatarUrl == null) {
-				member = context.guild.members[Loritta.random.nextInt(context.guild.members.size)]
+				member = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
 			}
 
 			users.add(member.user)

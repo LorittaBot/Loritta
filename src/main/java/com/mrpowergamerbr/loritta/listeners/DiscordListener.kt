@@ -6,13 +6,13 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
@@ -52,7 +52,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
-			thread {
+			loritta.messageExecutors.execute {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
@@ -62,13 +62,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (ownerProfile.isBanned) { // Se o dono está banido...
 						if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 							event.guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-							return@thread
+							return@execute
 						}
 					}
 
 					if (loritta.ignoreIds.contains(event.author.id)) { // Se o usuário está sendo ignorado...
 						if (lorittaProfile.isBanned) { // E ele ainda está banido...
-							return@thread // Então flw galerinha
+							return@execute // Então flw galerinha
 						} else {
 							// Se não, vamos remover ele da lista do ignoreIds
 							loritta.ignoreIds.remove(event.author.id)
@@ -83,13 +83,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// ===[ SLOW MODE ]===
 					if (SlowModeModule.checkForSlowMode(event, serverConfig)) {
-						return@thread
+						return@execute
 					}
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {
 						if (InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
-							return@thread
+							return@execute
 						}
 					}
 
@@ -108,7 +108,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							var nonRepeatedCharsMessage = event.message.strippedContent.replace(Regex("(.)\\1{1,}"), "$1")
 
 							if (nonRepeatedCharsMessage.length >= 12) {
-								var gainedXp = Math.min(35, Loritta.random.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
+								var gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 								if (event.author.patreon) {
 									var _gainedXp = gainedXp
@@ -139,19 +139,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
-						return@thread
+						return@execute
 
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
 						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
-							return@thread
+							return@execute
 						}
 					}
 
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
 						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
-							return@thread
+							return@execute
 						}
 					}
 
@@ -192,7 +192,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			thread {
+			thread(name = "Message Received Thread (Private) (${event.guild.id} ~ ${event.member.user.id})") {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
@@ -220,7 +220,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (event.message.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
-			thread {
+			thread(name = "Message Updated Thread (${event.guild.id} ~ ${event.member.user.id})") {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
@@ -286,7 +286,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			t.start()
 		}
 
-		thread {
+		thread(name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})") {
 			if (e.isFromType(ChannelType.TEXT)) {
 				// TODO: Isto deveria ser feito usando a API da Loritta
 				if (e.guild.id == "297732013006389252") {
@@ -330,11 +330,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val executors = mutableMapOf<Guild, ExecutorService>()
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
-		// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-		LorittaLauncher.loritta.mongo
-				.getDatabase("loritta")
-				.getCollection("servers")
-				.deleteMany(Filters.eq("_id", e.guild.id)) // Tchau! :(
+		thread {
+			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
+			LorittaLauncher.loritta.mongo
+					.getDatabase("loritta")
+					.getCollection("servers")
+					.deleteMany(Filters.eq("_id", e.guild.id)) // Tchau! :(
+		}
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
@@ -351,11 +353,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		// E depois iremos salvar a configuração do servidor
-		thread {
+		thread(name = "Guild Join Thread (Loritta) (${event.guild.id})") {
 			loritta save serverConfig
 
 			event.guild.members.forEach {
-				if (!it.user.isBot && (/* it.hasPermission(Permission.MANAGE_SERVER) || */ it.hasPermission(Permission.ADMINISTRATOR))) {
+				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val guilds = LORITTA_SHARDS.getMutualGuilds(it.user)
 
 					if (guilds.any { guild -> // Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
@@ -431,7 +433,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-		thread {
+		thread(name = "Guild Voice Join Thread (${event.guild.id} ~ ${event.member.user.id})") {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			if (!config.musicConfig.isEnabled)
@@ -461,7 +463,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-		thread {
+		thread(name = "Guild Voice Leave Thread (${event.guild.id} ~ ${event.member.user.id})") {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			if (!config.musicConfig.isEnabled)

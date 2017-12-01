@@ -105,7 +105,7 @@ class TrackScheduler
 		// Okay então, vamos pegar nossas próprias coisas
 		if (audioTrackWrapper == null) {
 			// Ok, Audio Track é null!
-			thread {
+			thread(name = "Random Song Thread (${guild.id})") {
 				LorittaUtils.startRandomSong(guild)
 			}
 		}

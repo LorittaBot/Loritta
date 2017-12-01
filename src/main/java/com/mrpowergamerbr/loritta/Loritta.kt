@@ -79,7 +79,7 @@ class Loritta {
 		@JvmField
 		val FOLDER = "/home/servers/loritta/" // Pasta usada na Loritta
 		@JvmField
-		val ASSETS = "/home/servers/loritta/assets/" // Pasta usada na Loritta
+		val ASSETS = "/home/servers/loritta/assets/" // Pasta de assets da Loritta
 		@JvmField
 		val TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
 		@JvmField
@@ -89,7 +89,7 @@ class Loritta {
 
 		// ===[ UTILS ]===
 		@JvmStatic
-		val random = SplittableRandom() // Um splittable random global, para não precisar ficar criando vários (menos GC)
+		val RANDOM = SplittableRandom() // Um splittable RANDOM global, para não precisar ficar criando vários (menos GC)
 		@JvmStatic
 		val GSON = Gson() // Gson
 		@JvmStatic
@@ -99,6 +99,7 @@ class Loritta {
 	}
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
+	val messageExecutors = Executors.newScheduledThreadPool(64) // Threads
 	val executor = Executors.newScheduledThreadPool(64) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
@@ -166,7 +167,7 @@ class Loritta {
 					resetYouTubeKeys()
 				}
 			}
-			return youtubeKeys[random.nextInt(youtubeKeys.size)]
+			return youtubeKeys[RANDOM.nextInt(youtubeKeys.size)]
 		}
 
 	// Inicia a Loritta
@@ -534,7 +535,7 @@ class Loritta {
 
 		if (playlistCache.contains(trackUrl)) {
 			val playlist = playlistCache[trackUrl]!!
-			loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
+			loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
 			return
 		}
 
@@ -545,7 +546,7 @@ class Loritta {
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
 				playlistCache[trackUrl] = playlist
-				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.random.nextInt(0, playlist.tracks.size)].info.uri)
+				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
 			}
 
 			override fun noMatches() {

@@ -51,7 +51,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	// ===[ EVENT LOG ]===
 	// Users
 	override fun onGenericUser(event: GenericUserEvent) {
-		thread {
+		thread(name = "Generic User Update Thread (${event.user.id})") {
 			// Atualizar coisas como user é mais difícil
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -150,7 +150,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// TEXT CHANNEL
 	override fun onGenericTextChannel(event: GenericTextChannelEvent) {
-		thread {
+		thread(name = "Generic Text Channel Update Thread (${event.channel.id})") {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setColor(Color(35, 209, 96))
@@ -200,7 +200,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Mensagens
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		thread {
+		thread(name = "Guild Message Received Event Update Thread (${event.channel.id})") {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled) {
@@ -235,7 +235,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
-		thread {
+		thread(name = "Guild Message Update Update Thread (${event.channel.id})") {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -268,7 +268,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
-		thread {
+		thread(name = "Generic Text Channel Update Thread (${event.channel.id})") {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -309,7 +309,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Guilds
 	override fun onGenericGuild(event: GenericGuildEvent) {
-		thread {
+		thread(name = "Generic Guild Update Thread (${event.guild.id})") {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 			if (eventLogConfig.isEnabled) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);

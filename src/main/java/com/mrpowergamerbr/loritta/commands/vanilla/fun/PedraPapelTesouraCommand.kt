@@ -39,7 +39,7 @@ class PedraPapelTesouraCommand : CommandBase("ppt") {
 			val janken = Jankenpon.getFromLangString(playerValue.toLowerCase())
 
 			if (janken != null) {
-				val opponent = Jankenpon.values()[Loritta.random.nextInt(Jankenpon.values().size)]
+				val opponent = Jankenpon.values()[Loritta.RANDOM.nextInt(Jankenpon.values().size)]
 
 				val status = janken.getStatus(opponent)
 
@@ -74,7 +74,7 @@ class PedraPapelTesouraCommand : CommandBase("ppt") {
 							LoriReply(message = fancy, mentionUser = false)
 					)
 				} else if (playerValue.equals("velberan", ignoreCase = true)) {
-					val opponent = Jankenpon.values()[Loritta.random.nextInt(Jankenpon.values().size)]
+					val opponent = Jankenpon.values()[Loritta.RANDOM.nextInt(Jankenpon.values().size)]
 
 					val fancy = "🕹🕹🕹"
 					context.sendMessage(context.getAsMention(true) + "Você escolheu 🕹 *VELBERAN*🕹, eu escolhi " + opponent.emoji + "\n" + fancy)

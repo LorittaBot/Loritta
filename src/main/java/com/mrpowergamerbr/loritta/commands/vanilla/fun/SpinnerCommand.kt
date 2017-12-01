@@ -204,10 +204,10 @@ class SpinnerCommand : CommandBase("spinner") {
 			val diff = (System.currentTimeMillis() - spinner.lastRerotation) / 1000
 
 			if (diff in spinner.forTime-10..spinner.forTime) {
-				var time = Loritta.random.nextInt(10, 61);
+				var time = Loritta.RANDOM.nextInt(10, 61);
 
-				var lowerBound = Math.max(0, time - Loritta.random.nextInt(-5, 6))
-				var upperBound = Math.max(0, time - Loritta.random.nextInt(-5, 6))
+				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
+				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
 
 				if (lowerBound > upperBound) {
 					val temp = upperBound;
@@ -226,7 +226,7 @@ class SpinnerCommand : CommandBase("spinner") {
 						)
 				)
 
-				val waitThread = thread {
+				val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
 					Thread.sleep((time * 1000).toLong());
 
 					if (spinningSpinners.contains(context.userHandle.id)) {
@@ -281,13 +281,13 @@ class SpinnerCommand : CommandBase("spinner") {
 			}
 			return
 		}
-		var time = Loritta.random.nextInt(10, 61); // Tempo que o Fidget Spinner irá ficar rodando
+		var time = Loritta.RANDOM.nextInt(10, 61); // Tempo que o Fidget Spinner irá ficar rodando
 
 		var random = listOf("<:spinner1:327243530244325376>", "<:spinner2:327245670052397066>", "<:spinner3:327246151591919627>", "<:spinner4:344292269764902912>", "<:spinner5:344292269160923147>", "<:spinner6:344292270125613056>", "<:spinner7:344292270268350464>", "<:spinner8:344292269836206082>") // Pegar um spinner aleatório
-		var spinnerEmoji = random[Loritta.random.nextInt(random.size)]
+		var spinnerEmoji = random[Loritta.RANDOM.nextInt(random.size)]
 
-		var lowerBound = Math.max(0, time - Loritta.random.nextInt(-5, 6))
-		var upperBound = Math.max(0, time - Loritta.random.nextInt(-5, 6))
+		var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
+		var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
 
 		if (lowerBound > upperBound) {
 			val temp = upperBound;
@@ -306,7 +306,7 @@ class SpinnerCommand : CommandBase("spinner") {
 				)
 		)
 
-		val waitThread = thread {
+		val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
 			Thread.sleep((time * 1000).toLong());
 
 			if (spinningSpinners.contains(context.userHandle.id)) {

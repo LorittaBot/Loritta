@@ -53,8 +53,8 @@ class SAMCommand : CommandBase("sam") {
 		val height = (image.height / div).toInt() // Baseando na altura
 		seloSouthAmericaMemes = seloSouthAmericaMemes.getScaledInstance(height, height, Image.SCALE_SMOOTH)
 
-		val x = Loritta.random.nextInt(0, Math.max(1, image.width - seloSouthAmericaMemes.getWidth(null)))
-		val y = Loritta.random.nextInt(0, Math.max(1, image.height - seloSouthAmericaMemes.getHeight(null)))
+		val x = Loritta.RANDOM.nextInt(0, Math.max(1, image.width - seloSouthAmericaMemes.getWidth(null)))
+		val y = Loritta.RANDOM.nextInt(0, Math.max(1, image.height - seloSouthAmericaMemes.getHeight(null)))
 
 		image.graphics.drawImage(seloSouthAmericaMemes, x, y, null)
 

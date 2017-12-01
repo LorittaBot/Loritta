@@ -7,11 +7,14 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class CaraCoroaCommand : CommandBase("girarmoeda") {
+	override fun getAliases(): List<String> {
+		return listOf("flip", "toss", "moeda", "coin", "flipcoin")
+	}
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["CARACOROA_DESCRIPTION"]
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		context.sendMessage(context.getAsMention(true) + if (Loritta.random.nextBoolean()) "<:cara:345994349969932291> **${context.locale.CARACOROA_HEADS.f()}!**" else "<:coroa:345994350498545674> **${context.locale.CARACOROA_TAILS.f()}!**")
+		context.sendMessage(context.getAsMention(true) + if (Loritta.RANDOM.nextBoolean()) "<:cara:345994349969932291> **${context.locale.CARACOROA_HEADS.f()}!**" else "<:coroa:345994350498545674> **${context.locale.CARACOROA_TAILS.f()}!**")
 	}
 }

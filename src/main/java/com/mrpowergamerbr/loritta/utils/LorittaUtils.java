@@ -565,7 +565,7 @@ public final class LorittaUtils {
 
 		if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
 			String trackUrl = conf.musicConfig().getUrls().get(
-					Loritta.getRandom().nextInt(0, conf.musicConfig().getUrls().size()));
+					Loritta.getRANDOM().nextInt(0, conf.musicConfig().getUrls().size()));
 
 			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
 			LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());

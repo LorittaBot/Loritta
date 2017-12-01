@@ -31,6 +31,22 @@ class ReloadCommand : CommandBase("reload") {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
+		if (context.args.isNotEmpty() && context.args[0] == "dump_threads") {
+			var threadCount = 0
+			val threadSet = Thread.getAllStackTraces().keys
+			for (t in threadSet) {
+				if (t.threadGroup === Thread.currentThread().threadGroup) {
+					File(Loritta.FOLDER, "thread_dump.txt").appendText("Thread :" + t + ":" + "state:" + t.state + "\n")
+					++threadCount
+				}
+			}
+			context.reply(
+					LoriReply(
+							message = "Threads dumpadas com sucesso! Número de threads: " + threadCount
+					)
+			)
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

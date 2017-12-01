@@ -10,8 +10,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -68,7 +68,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 		// Agora iremos verificar os canais
 		batchs.forEach { userLogins ->
-			println("Verifying batch ${currentBatch.joinToString(separator = ", ")}")
+			println("Verifying batch ${userLogins.joinToString(separator = ", ")}")
 			try {
 				val livestreamsInfo = getLivestreamsInfo(userLogins)
 
@@ -134,6 +134,9 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			}
 			sleep(1500)
 		}
+
+		println("LIVESTREAMING BEFORE: ${isLivestreaming.joinToString(separator = ", ")}")
+		println("LIVESTREAMING NOW: ${nowStreaming.joinToString(separator = ", ")}")
 
 		isLivestreaming.clear()
 

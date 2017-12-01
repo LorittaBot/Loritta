@@ -13,7 +13,7 @@ import java.util.*
 
 class RollCommand : CommandBase("rolar") {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.ROLL_DESCRIPTION.f()
+		return locale["ROLL_DESCRIPTION"]
 	}
 
 	override fun getAliases(): List<String> {
@@ -46,11 +46,11 @@ class RollCommand : CommandBase("rolar") {
 				} else {
 					value = context.args[0].toLong()
 				}
-				Loritta.random.nextLong(1, value + 1)
+				Loritta.RANDOM.nextLong(1, value + 1)
 				if (context.args.size >= 2) {
 					expression = context.args.remove(0).joinToString(" ")
 					try {
-						LorittaUtils.evalMath(Loritta.random.nextLong(1, value + 1).toString() + expression).toInt().toString()
+						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(1, value + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
 						return
@@ -75,7 +75,7 @@ class RollCommand : CommandBase("rolar") {
 
 		var response = ""
 		for (i in 1..quantity) {
-			val rolledSide = Loritta.random.nextLong(1, value + 1)
+			val rolledSide = Loritta.RANDOM.nextLong(1, value + 1)
 			rolledSides.add(rolledSide)
 		}
 

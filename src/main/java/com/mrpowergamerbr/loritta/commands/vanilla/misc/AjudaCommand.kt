@@ -32,7 +32,7 @@ class AjudaCommand : CommandBase("ajuda") {
 			val privateChannel = context.userHandle.openPrivateChannel().complete()
 
 			if (!context.isPrivateChannel) {
-				context.event.textChannel.sendMessage(context.getAsMention(true) + "${context.locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
+				context.event.textChannel.sendMessage(context.getAsMention(true) + "${locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
 			}
 
 			var description = context.locale[

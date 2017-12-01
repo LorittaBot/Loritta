@@ -160,7 +160,7 @@ public class JMegaHal implements Serializable {
 	}
 
 	/**
-	 * Generate a Loritta.getRandom()om sentence from the brain.
+	 * Generate a Loritta.getRANDOM()om sentence from the brain.
 	 */
 	public String getSentence() {
 		return getSentence(null);
@@ -184,7 +184,7 @@ public class JMegaHal implements Serializable {
 			return "";
 		}
 
-		Quad middleQuad = quads[Loritta.getRandom().nextInt(quads.length)];
+		Quad middleQuad = quads[Loritta.getRANDOM().nextInt(quads.length)];
 		Quad quad = middleQuad;
 
 		for (int i = 0; i < 4; i++) {
@@ -193,7 +193,7 @@ public class JMegaHal implements Serializable {
 
 		while (quad.canEnd() == false) {
 			String[] nextTokens = (String[]) ((HashSet<?>) next.get(quad)).toArray(new String[0]);
-			String nextToken = nextTokens[Loritta.getRandom().nextInt(nextTokens.length)];
+			String nextToken = nextTokens[Loritta.getRANDOM().nextInt(nextTokens.length)];
 			quad = (Quad) this.quads.get(new Quad(quad.getToken(1), quad.getToken(2), quad.getToken(3), nextToken));
 			parts.add(nextToken);
 		}
@@ -201,7 +201,7 @@ public class JMegaHal implements Serializable {
 		quad = middleQuad;
 		while (quad.canStart() == false) {
 			String[] previousTokens = (String[]) ((HashSet<?>) previous.get(quad)).toArray(new String[0]);
-			String previousToken = previousTokens[Loritta.getRandom().nextInt(previousTokens.length)];
+			String previousToken = previousTokens[Loritta.getRANDOM().nextInt(previousTokens.length)];
 			quad = (Quad) this.quads.get(new Quad(previousToken, quad.getToken(0), quad.getToken(1), quad.getToken(2)));
 			parts.addFirst(previousToken);
 		}

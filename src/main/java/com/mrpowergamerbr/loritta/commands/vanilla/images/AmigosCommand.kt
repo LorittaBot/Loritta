@@ -80,7 +80,7 @@ class AmigosCommand : CommandBase("amigos") {
 		if (image == null) {
 			var userAvatar: String? = null;
 			while (userAvatar == null) {
-				userAvatar = context.guild.members[Loritta.random.nextInt(context.guild.members.size)].user.avatarUrl
+				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.avatarUrl
 			}
 			newImage = LorittaUtils.downloadImage(userAvatar);
 		}

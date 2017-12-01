@@ -65,12 +65,12 @@ class FaustaoCommand : CommandBase("faustão") {
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.channel, "Faustão")
 
-		val mensagem = frases[Loritta.random.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);
+		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);
 
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Faustão")
 				.content(mensagem)
-				.avatarUrl(avatars[Loritta.random.nextInt(avatars.size)])
+				.avatarUrl(avatars[Loritta.RANDOM.nextInt(avatars.size)])
 				.build())
 	}
 }

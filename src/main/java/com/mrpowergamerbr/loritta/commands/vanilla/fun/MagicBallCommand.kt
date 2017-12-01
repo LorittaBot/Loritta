@@ -36,7 +36,7 @@ class MagicBallCommand : CommandBase("vieirinha") {
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + context.locale.VIEIRINHA_responses[Loritta.random.nextInt(context.locale.VIEIRINHA_responses.size)])
+					.content(context.getAsMention(true) + context.locale.VIEIRINHA_responses[Loritta.RANDOM.nextInt(context.locale.VIEIRINHA_responses.size)])
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {

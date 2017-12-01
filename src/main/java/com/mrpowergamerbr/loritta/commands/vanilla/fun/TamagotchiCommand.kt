@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.random
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -221,7 +221,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 		}
 
 		if (pet.upgrades.contains(TamagotchiPet.PetUpgrades.TELEVISION)) {
-			val upgrade = ImageIO.read(File(Loritta.ASSETS, "tamagotchi/upgrade_tv${random.nextInt(0, 5)}.png"))
+			val upgrade = ImageIO.read(File(Loritta.ASSETS, "tamagotchi/upgrade_tv${RANDOM.nextInt(0, 5)}.png"))
 			playfieldGraphics.drawImage(upgrade, 0, 0, null)
 		}
 

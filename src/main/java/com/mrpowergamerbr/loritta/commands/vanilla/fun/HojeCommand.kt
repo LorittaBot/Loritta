@@ -71,7 +71,7 @@ class HojeCommand : CommandBase("hoje") {
 				}
 			}
 
-			val random = randomMessages.get(Loritta.random.nextInt(0, randomMessages.size))
+			val random = randomMessages.get(Loritta.RANDOM.nextInt(0, randomMessages.size))
 
 			val embed = EmbedBuilder()
 					.setTitle(pageTitle, url)

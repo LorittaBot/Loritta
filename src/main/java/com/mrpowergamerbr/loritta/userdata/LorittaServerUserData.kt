@@ -10,15 +10,15 @@ class LorittaServerUserData {
 	var expiresIn: Long = 0L
 
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
-		var lvl = 1;
-		var currentXp = xp;
-		var expToAdvance = getExpToAdvanceFrom(lvl);
+		var lvl = 1
+		var currentXp = xp
+		var expToAdvance = getExpToAdvanceFrom(lvl)
 		while (currentXp > expToAdvance) {
-			currentXp -= expToAdvance;
-			lvl++;
-			expToAdvance = getExpToAdvanceFrom(lvl);
+			currentXp -= expToAdvance
+			lvl++
+			expToAdvance = getExpToAdvanceFrom(lvl)
 		}
-		return LorittaProfile.XpWrapper(lvl, currentXp);
+		return LorittaProfile.XpWrapper(lvl, currentXp)
 	}
 
 	fun getExpToAdvanceFrom(lvl: Int): Int {
