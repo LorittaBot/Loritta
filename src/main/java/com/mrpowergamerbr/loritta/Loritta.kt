@@ -56,7 +56,6 @@ import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import okhttp3.OkHttpClient
-import org.jibble.jmegahal.JMegaHal
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
 import org.slf4j.LoggerFactory
@@ -121,9 +120,6 @@ class Loritta {
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var ds: Datastore // MongoDB²
 	lateinit var morphia: Morphia// MongoDB³
-
-	// ===[ UTILS ]===
-	var hal = JMegaHal() // JMegaHal, usado nos comandos de frase tosca
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager

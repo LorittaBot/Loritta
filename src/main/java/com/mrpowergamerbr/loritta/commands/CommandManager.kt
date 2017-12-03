@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AkinatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FraseToscaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
@@ -150,7 +149,6 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(TristeRealidadeCommand())
 		commandMap.add(TretaNewsCommand())
 		commandMap.add(MagicBallCommand())
-		commandMap.add(FraseToscaCommand())
 		commandMap.add(SAMCommand())
 		commandMap.add(NyanCatCommand())
 		commandMap.add(WikiaCommand())

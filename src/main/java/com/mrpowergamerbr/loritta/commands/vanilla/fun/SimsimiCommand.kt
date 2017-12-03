@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.net.URLEncoder
 
@@ -52,13 +51,11 @@ class SimsimiCommand : CommandBase("simsimi") {
 					return
 				}
 			}
-			var text = loritta.hal.sentence
 
-			text = if (text.length > 400) text.substring(0, 400) + "..." else text
 			val webhook = getOrCreateWebhook(context.event.textChannel, "Frase Tosca")
 			context.sendMessage(webhook, DiscordMessage.builder()
 					.username(context.locale.get("FRASETOSCA_GABRIELA"))
-					.content(context.getAsMention(true) + context.locale.get("SIMSIMI_FAIL") + text)
+					.content(context.getAsMention(true) + context.locale["SIMSIMI_FAIL"])
 					.avatarUrl("http://i.imgur.com/aATogAg.png")
 					.build())
 		} else {

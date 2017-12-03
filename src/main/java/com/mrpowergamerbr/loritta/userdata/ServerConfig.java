@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandBase;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
-import com.mrpowergamerbr.loritta.commands.vanilla.fun.GiveawayCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.GiveawayCommand.Giveaway;
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler;
 import lombok.Getter;
@@ -67,6 +66,7 @@ public class ServerConfig {
     public HashMap<String, String> starboardEmbeds = new HashMap<String, String>(); // Quais mensagens correspondem a mensagens no starboard
 
     public HashMap<String, LorittaServerUserData> userData = new HashMap<String, LorittaServerUserData>();
+
     public HashMap<String, Long> temporaryBans = new HashMap<String, Long>();
 
     public ArrayList<Giveaway> giveaways = new ArrayList<>();

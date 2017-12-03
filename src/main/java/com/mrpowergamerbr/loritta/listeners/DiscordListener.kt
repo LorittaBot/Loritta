@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
@@ -176,9 +175,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}.forEach {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}
-
-					val toLearn = event.message.strippedContent.toLowerCase().escapeMentions()
-					loritta.hal.add(toLearn) // TODO: Filtrar links
 
 					if (event.message.content.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
 						val command = event.message.content.split(" ")[0].stripCodeMarks()
