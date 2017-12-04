@@ -38,6 +38,7 @@ import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
@@ -462,7 +463,7 @@ class Loritta {
 						return;
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks())).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks().escapeMentions())).queue()
 
 				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 			}
@@ -503,7 +504,7 @@ class Loritta {
 				track = playlist.tracks[0]
 			}
 
-			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
+			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks().escapeMentions())).queue()
 
 			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()))
 		} else { // Mas se ela aceita...
