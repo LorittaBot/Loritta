@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
 import com.mrpowergamerbr.loritta.utils.donator
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
@@ -19,6 +20,7 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.onResponseByAuthor
 import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.tamagotchi.TamagotchiPet
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -535,7 +537,7 @@ class TamagotchiCommand : CommandBase("tamagotchi") {
 				)
 
 				newName.onResponseByAuthor(context, {
-					val name = it.message.content
+					val name = it.message.content.stripCodeMarks().escapeMentions()
 
 					val petGender = context.reply(
 							LoriReply(
