@@ -7,9 +7,9 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -47,6 +47,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	}
 
 	fun checkNewVideos() {
+		if (true) { return }
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("youTubeConfig.channels").exists()
 		// IDs dos canais a serem verificados

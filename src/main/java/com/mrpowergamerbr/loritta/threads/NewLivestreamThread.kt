@@ -31,6 +31,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	}
 
 	fun checkNewVideos() {
+		if (true) { return }
 		println("Checking twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("livestreamConfig.channels").exists()

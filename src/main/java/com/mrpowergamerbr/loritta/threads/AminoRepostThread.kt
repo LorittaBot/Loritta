@@ -3,8 +3,8 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.aminoreapi.AminoClient
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
@@ -31,6 +31,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 	}
 
 	fun checkRepost(aminoClient: AminoClient) {
+		if (true) { return }
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		var servers = loritta.ds
 				.find(ServerConfig::class.java)

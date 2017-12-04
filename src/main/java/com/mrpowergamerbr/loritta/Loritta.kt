@@ -42,6 +42,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
@@ -461,7 +462,7 @@ class Loritta {
 						return;
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title)).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks())).queue()
 
 				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 			}
