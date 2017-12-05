@@ -11,7 +11,9 @@ import java.util.*
 
 
 class NewRssFeedThread : Thread("RSS Feed Query Thread") {
-	val lastItemTime = HashMap<String, RssFeedCheck>(); // HashMap usada para guardar a data do útimo item na RSS
+	companion object {
+		val lastItemTime = HashMap<String, RssFeedCheck>(); // HashMap usada para guardar a data do útimo item na RSS
+	}
 
 	override fun run() {
 		super.run()

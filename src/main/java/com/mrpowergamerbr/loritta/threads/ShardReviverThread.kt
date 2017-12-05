@@ -3,10 +3,9 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.MusicMessageListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import okhttp3.OkHttpClient
@@ -54,7 +53,6 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				val discordListener = DiscordListener(loritta) // Vamos usar a mesma instância para todas as shards
 				val eventLogListener = EventLogListener(loritta) // Vamos usar a mesma instância para todas as shards
 				val updateTimeListener = UpdateTimeListener(loritta)
-				val messageListener = MusicMessageListener(loritta)
 
 				for (deadShard in deadShards) {
 					println("Reiniciando shard ${deadShard.shardInfo.shardId}...")

@@ -11,7 +11,9 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
 class AminoRepostThread : Thread("Amino Repost Thread") {
-	var storedLastIds = HashMap<String, MutableSet<String>>();
+	companion object {
+		var storedLastIds = HashMap<String, MutableSet<String>>();
+	}
 
 	override fun run() {
 		super.run()
@@ -31,7 +33,6 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 	}
 
 	fun checkRepost(aminoClient: AminoClient) {
-		if (true) { return }
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		var servers = loritta.ds
 				.find(ServerConfig::class.java)

@@ -19,10 +19,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
-	val doNotReverify = ConcurrentHashMap<String, Long>()
-	val youTubeVideoCache = ConcurrentHashMap<String, YouTubeVideo>()
-	var apiCheckTime = 0L
-	var channelPlaylistIdCache = ConcurrentHashMap<String, String>()
+	companion object {
+		val doNotReverify = ConcurrentHashMap<String, Long>()
+		val youTubeVideoCache = ConcurrentHashMap<String, YouTubeVideo>()
+		var apiCheckTime = 0L
+		var channelPlaylistIdCache = ConcurrentHashMap<String, String>()
+	}
 
 	class YouTubeVideo(val id: String)
 
@@ -47,7 +49,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	}
 
 	fun checkNewVideos() {
-		if (true) { return }
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("youTubeConfig.channels").exists()
 		// IDs dos canais a serem verificados

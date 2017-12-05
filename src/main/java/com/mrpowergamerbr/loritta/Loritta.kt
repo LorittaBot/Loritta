@@ -40,6 +40,7 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
@@ -100,6 +101,7 @@ class Loritta {
 	}
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
+	val eventLogExecutors = Executors.newScheduledThreadPool(64) // Threads
 	val messageExecutors = Executors.newScheduledThreadPool(64) // Threads
 	val executor = Executors.newScheduledThreadPool(64) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
@@ -242,6 +244,34 @@ class Loritta {
 		MutedUsersThread().start() // Iniciar thread para pegar posts do Facebook
 
 		LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
+
+		thread {
+			while (true) {
+				Thread.sleep(1000)
+				println("----------")
+				println("doNotReverify: ${NewYouTubeVideosThread.doNotReverify.size}")
+				println("youTubeVideoCache: ${NewYouTubeVideosThread.youTubeVideoCache.size}")
+				println("channelPlaylistIdCache: ${NewYouTubeVideosThread.channelPlaylistIdCache.size}")
+				println("messageInteractionCache: ${loritta.messageInteractionCache.size}")
+				println("messageContextCache: ${loritta.messageContextCache.size}")
+				println("lastItemTime (RSS): ${NewRssFeedThread.lastItemTime.size}")
+				println("isLivestreaming (Twitch): ${NewLivestreamThread.isLivestreaming.size}")
+				println("gameInfoCache (Twitch): ${NewLivestreamThread.gameInfoCache.size}")
+				println("storedLastIds (Amino): ${AminoRepostThread.storedLastIds.size}")
+				println("southAmericaMemesPageCache: ${loritta.southAmericaMemesPageCache.size}")
+				println("southAmericaMemesGroupCache: ${loritta.southAmericaMemesGroupCache.size}")
+				println("memeguy1997PageCache: ${loritta.memeguy1997PageCache.size}")
+				println("memeguy1997GroupCache: ${loritta.memeguy1997GroupCache.size}")
+				println("musicManagers: ${musicManagers.size}")
+
+				var trackCount = 0
+				musicManagers.forEach {
+					trackCount += it.value.scheduler?.queue?.size ?: 0
+				}
+
+				println("trackCount: ${trackCount}")
+			}
+		}
 
 		val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
 		val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
@@ -517,6 +547,7 @@ class Loritta {
 					}
 				}
 
+
 				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()));
 			}
 
@@ -560,6 +591,9 @@ class Loritta {
 	}
 
 	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
+		if (musicManager.scheduler.queue.size >= 100)
+			return
+
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}!")

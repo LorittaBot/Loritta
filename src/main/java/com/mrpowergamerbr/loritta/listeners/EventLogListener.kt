@@ -51,7 +51,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	// ===[ EVENT LOG ]===
 	// Users
 	override fun onGenericUser(event: GenericUserEvent) {
-		thread(name = "Generic User Update Thread (${event.user.id})") {
+		loritta.eventLogExecutors.submit {
 			// Atualizar coisas como user é mais difícil
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -66,7 +66,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
 				if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
-					return@thread
+					return@submit
 
 				val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 				val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
@@ -101,7 +101,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-				return@thread
+				return@submit
 			}
 			// Atualizar nome
 			if (event is UserNameUpdateEvent) {
@@ -150,7 +150,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// TEXT CHANNEL
 	override fun onGenericTextChannel(event: GenericTextChannelEvent) {
-		thread(name = "Generic Text Channel Update Thread (${event.channel.id})") {
+		loritta.eventLogExecutors.submit {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setColor(Color(35, 209, 96))
@@ -167,31 +167,31 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setDescription("\uD83C\uDF1F ${locale.EVENTLOG_CHANNEL_CREATED.msgFormat(event.channel.asMention)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread
+						return@submit
 					}
 					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_NAME_UPDATED.msgFormat(event.channel.asMention, event.oldName, event.channel.name)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread
+						return@submit
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_TOPIC_UPDATED.msgFormat(event.channel.asMention, event.oldTopic, event.channel.topic)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread
+						return@submit
 					}
 					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_POSITION_UPDATED.msgFormat(event.channel.asMention, event.oldPosition, event.channel.position)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread
+						return@submit
 					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
 						embed.setDescription("\uD83D\uDEAE ${locale.EVENTLOG_CHANNEL_DELETED.msgFormat(event.channel.name)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread
+						return@submit
 					}
 				}
 			}
@@ -200,7 +200,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Mensagens
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		thread(name = "Guild Message Received Event Update Thread (${event.channel.id})") {
+		loritta.eventLogExecutors.submit {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled) {
@@ -268,7 +268,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
-		thread(name = "Generic Text Channel Update Thread (${event.channel.id})") {
+		loritta.eventLogExecutors.submit {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -300,7 +300,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						textChannel.sendMessage(embed.build()).complete()
 
 						loritta.mongo.getDatabase("loritta").getCollection("storedmessages").deleteOne(Filters.eq("_id", event.messageId))
-						return@thread
+						return@submit
 					}
 				}
 			}
@@ -309,7 +309,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Guilds
 	override fun onGenericGuild(event: GenericGuildEvent) {
-		thread(name = "Generic Guild Update Thread (${event.guild.id})") {
+		loritta.eventLogExecutors.submit {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 			if (eventLogConfig.isEnabled) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
@@ -327,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread;
+						return@submit;
 					}
 					// ===[ VOICE LEAVE ]===
 					if (event is GuildVoiceLeaveEvent && eventLogConfig.voiceChannelLeaves) {
@@ -338,7 +338,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread;
+						return@submit;
 					}
 					// ===[ USER BANNED ]===
 					if (event is GuildBanEvent && eventLogConfig.memberBanned) {
@@ -360,7 +360,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setFooter("ID do usuário: ${event.user.id}", null)
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread;
+						return@submit;
 					}
 					// ===[ USER UNBANNED ]===
 					if (event is GuildUnbanEvent && eventLogConfig.memberUnbanned) {
@@ -381,7 +381,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setFooter("ID do usuário: ${event.user.id}", null)
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@thread;
+						return@submit;
 					}
 					// ===[ GENERIC MEMBER EVENT ]===
 					if (event is GenericGuildMemberEvent) {
@@ -395,7 +395,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 
 							textChannel.sendMessage(embed.build()).complete()
-							return@thread;
+							return@submit;
 						}
 					}
 				}
