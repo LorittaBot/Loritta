@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
+import com.mrpowergamerbr.loritta.threads.GiveawayThread
 import com.mrpowergamerbr.loritta.threads.MutedUsersThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
@@ -242,6 +243,8 @@ class Loritta {
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
 		MutedUsersThread().start() // Iniciar thread para pegar posts do Facebook
+
+		GiveawayThread().start() // Iniciar thread para processar giveaways
 
 		LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 

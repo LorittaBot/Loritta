@@ -116,7 +116,7 @@ class GiveawayCommand : CommandBase("giveaway") {
 
 							message.addReaction(reaction).complete()
 
-							val giveaway = Giveaway(reason, epoch, reaction, channel.id, messageId)
+							val giveaway = Giveaway(reason, description, 1, epoch, reaction, channel.id, messageId)
 
 							thread {
 								val config = loritta.getServerConfigForGuild(context.guild.id)
@@ -135,10 +135,15 @@ class GiveawayCommand : CommandBase("giveaway") {
 	companion object {
 		fun createEmbed(reason: String, description: String, reaction: String, epoch: Long): MessageEmbed {
 			val secondsRemaining = (epoch - System.currentTimeMillis()) / 1000
+			var messageReaction = if (reaction.contains(":")) {
+				"<:$reaction>"
+			} else {
+				reaction
+			}
 
 			val embed = EmbedBuilder().apply {
 				setTitle("\uD83C\uDF81 $reason")
-				setDescription("$description\n\nUse $reaction para entrar!\nTempo restante: **$secondsRemaining** segundos")
+				setDescription("$description\n\nUse $messageReaction para entrar!\nTempo restante: **$secondsRemaining** segundos")
 				setColor(Constants.DISCORD_BURPLE)
 				setFooter("Acabará em", null)
 				setTimestamp(Instant.ofEpochMilli(epoch))
@@ -150,11 +155,13 @@ class GiveawayCommand : CommandBase("giveaway") {
 
 	class Giveaway(
 			val reason: String,
+			val description: String,
+			val userCount: Int,
 			val finishAt: Long,
 			val reaction: String,
 			val channelId: String,
 			val messageId: String
 	) {
-		constructor() : this("???", 0L, "???", "???", "???")
+		constructor() : this("???", "???", 1, 0L, "???", "???", "???")
 	}
 }
