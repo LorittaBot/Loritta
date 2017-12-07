@@ -260,34 +260,6 @@ class Loritta {
 
 		thread {
 			while (true) {
-				Thread.sleep(1000)
-				println("----------")
-				println("doNotReverify: ${NewYouTubeVideosThread.doNotReverify.size}")
-				println("youTubeVideoCache: ${NewYouTubeVideosThread.youTubeVideoCache.size}")
-				println("channelPlaylistIdCache: ${NewYouTubeVideosThread.channelPlaylistIdCache.size}")
-				println("messageInteractionCache: ${loritta.messageInteractionCache.size}")
-				println("messageContextCache: ${loritta.messageContextCache.size}")
-				println("lastItemTime (RSS): ${NewRssFeedThread.lastItemTime.size}")
-				println("isLivestreaming (Twitch): ${NewLivestreamThread.isLivestreaming.size}")
-				println("gameInfoCache (Twitch): ${NewLivestreamThread.gameInfoCache.size}")
-				println("storedLastIds (Amino): ${AminoRepostThread.storedLastIds.size}")
-				println("southAmericaMemesPageCache: ${loritta.southAmericaMemesPageCache.size}")
-				println("southAmericaMemesGroupCache: ${loritta.southAmericaMemesGroupCache.size}")
-				println("memeguy1997PageCache: ${loritta.memeguy1997PageCache.size}")
-				println("memeguy1997GroupCache: ${loritta.memeguy1997GroupCache.size}")
-				println("musicManagers: ${musicManagers.size}")
-
-				var trackCount = 0
-				musicManagers.forEach {
-					trackCount += it.value.scheduler?.queue?.size ?: 0
-				}
-
-				println("trackCount: ${trackCount}")
-			}
-		}
-
-		thread {
-			while (true) {
 				try {
 					cachedGuilds = LORITTA_SHARDS.getGuilds()
 					cachedUsers = LORITTA_SHARDS.getUsers()
