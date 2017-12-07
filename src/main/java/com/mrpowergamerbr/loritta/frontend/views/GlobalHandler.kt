@@ -38,7 +38,6 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureSta
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -53,7 +52,7 @@ object GlobalHandler {
 	val views = generateViews()
 
 	fun render(req: Request, res: Response): String {
-		println("${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 
 		variables["epochMillis"] = System.currentTimeMillis()
@@ -102,8 +101,8 @@ object GlobalHandler {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
-		variables["guilds"] = LORITTA_SHARDS.getGuilds()
-		variables["userCount"] = LORITTA_SHARDS.getUsers().size
+		variables["guilds"] = loritta.cachedGuilds
+		variables["userCount"] = loritta.cachedUsers
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands

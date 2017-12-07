@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.MiscUtil
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -173,10 +174,15 @@ object LorittaUtilsKotlin {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.id)
 
 			// Se um usuário está banido...
+			try {
 			context.userHandle
 					.openPrivateChannel()
 					.complete()
 					.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
+			} catch (e: ErrorResponseException) {
+				// Usuário tem as DMs desativadas
+				context.event.textChannel.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
+			}
 			return true
 		}
 		return false

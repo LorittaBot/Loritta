@@ -59,6 +59,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
 import okhttp3.OkHttpClient
 import org.mongodb.morphia.Datastore
@@ -141,6 +142,8 @@ class Loritta {
 	var randomFamousGuilds = mutableListOf<Guild>()
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
+	var cachedGuilds = listOf<Guild>()
+	var cachedUsers = listOf<User>()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
@@ -286,6 +289,9 @@ class Loritta {
 		thread {
 			while (true) {
 				try {
+					cachedGuilds = LORITTA_SHARDS.getGuilds()
+					cachedUsers = LORITTA_SHARDS.getUsers()
+
 					var serversFanClub = loritta.serversFanClub.sortedByDescending {
 						it.guild.members.size
 					}.toMutableList()

@@ -113,6 +113,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.AnagramaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.ColorInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.DicioCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.EmojiSearchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.EncurtarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.GoogleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HojeCommand
@@ -236,6 +237,7 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
 		commandMap.add(GoogleCommand())
+		commandMap.add(EmojiSearchCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
