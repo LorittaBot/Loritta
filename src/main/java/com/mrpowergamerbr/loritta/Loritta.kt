@@ -31,6 +31,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
@@ -100,6 +101,7 @@ class Loritta {
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 	}
+
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	val eventLogExecutors = Executors.newScheduledThreadPool(64) // Threads
@@ -134,6 +136,11 @@ class Loritta {
 	var isWebsiteOnly: Boolean = false
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
+
+	var famousGuilds = mutableListOf<Guild>()
+	var randomFamousGuilds = mutableListOf<Guild>()
+	var isPatreon = mutableMapOf<String, Boolean>()
+	var isDonator = mutableMapOf<String, Boolean>()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
@@ -276,6 +283,82 @@ class Loritta {
 			}
 		}
 
+		thread {
+			while (true) {
+				try {
+					var serversFanClub = loritta.serversFanClub.sortedByDescending {
+						it.guild.members.size
+					}.toMutableList()
+					var donatorsFanClub = serversFanClub.filter {
+						val owner = it.guild.owner.user
+
+						val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+						val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+						(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
+					}
+
+					serversFanClub.onEach {
+						val owner = it.guild.owner.user
+
+						val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+						val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+						if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
+							it.isSuper = true
+						}
+					}
+
+					serversFanClub.removeAll(donatorsFanClub)
+					serversFanClub.addAll(0, donatorsFanClub)
+
+					val isPatreon = mutableMapOf<String, Boolean>()
+					val isDonator = mutableMapOf<String, Boolean>()
+
+					val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+					val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+					val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+					val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+					val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+
+					patreons.forEach {
+						isPatreon[it.user.id] = true
+					}
+					donators.forEach {
+						isDonator[it.user.id] = true
+					}
+
+					this.isPatreon = isPatreon
+					this.isDonator = isDonator
+
+					val guilds = LORITTA_SHARDS.getGuilds()
+
+					val famousGuilds = guilds
+							.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }
+							.filter {
+								// Filtros para remover alguns servidores "famosos" do website, para evitar o AdSense suspendendo a minha conta devido a conteúdo inapropriado para menores
+								it.id != "365885658386137098" // Ícone NSFW
+							}
+							.subList(0, 36)
+							.toMutableList()
+
+					this@Loritta.famousGuilds = famousGuilds
+					Collections.shuffle(famousGuilds)
+					this@Loritta.randomFamousGuilds = famousGuilds
+				} catch (e: Exception) {
+					e.printStackTrace()
+				}
+
+				Thread.sleep(15000)
+			}
+		}
 		val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
 		val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
 

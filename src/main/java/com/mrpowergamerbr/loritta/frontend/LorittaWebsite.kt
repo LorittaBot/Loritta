@@ -45,6 +45,8 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 				else -> UserPermissionLevel.MEMBER
 			}
 		}
+
+		var loaded = false
 	}
 
 	init {

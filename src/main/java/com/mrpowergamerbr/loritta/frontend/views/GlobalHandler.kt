@@ -38,9 +38,9 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureSta
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
@@ -53,6 +53,7 @@ object GlobalHandler {
 	val views = generateViews()
 
 	fun render(req: Request, res: Response): String {
+		println("${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 
 		variables["epochMillis"] = System.currentTimeMillis()
@@ -101,64 +102,16 @@ object GlobalHandler {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
-		val guilds = LORITTA_SHARDS.getGuilds()
-		variables["guilds"] = guilds
+		variables["guilds"] = LORITTA_SHARDS.getGuilds()
 		variables["userCount"] = LORITTA_SHARDS.getUsers().size
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
-		var serversFanClub = loritta.serversFanClub.sortedByDescending {
-			it.guild.members.size
-		}.toMutableList()
-		var donatorsFanClub = serversFanClub.filter {
-			val owner = it.guild.owner.user
 
-			val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
-			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-			val ownerInLorittaServer = lorittaGuild.getMember(owner)
-
-			(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
-		}
-
-		serversFanClub.onEach {
-			val owner = it.guild.owner.user
-
-			val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
-			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-			val ownerInLorittaServer = lorittaGuild.getMember(owner)
-
-			if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
-				it.isSuper = true
-			}
-		}
-
-		serversFanClub.removeAll(donatorsFanClub)
-		serversFanClub.addAll(0, donatorsFanClub)
-
-		val isPatreon = mutableMapOf<String, Boolean>()
-		val isDonator = mutableMapOf<String, Boolean>()
-
-		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
-		val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-		val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-		val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-		val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-
-		patreons.forEach {
-			isPatreon[it.user.id] = true
-		}
-		donators.forEach {
-			isDonator[it.user.id] = true
-		}
-		variables["serversFanClub"] = serversFanClub
+		variables["serversFanClub"] = loritta.serversFanClub
 		variables["clientId"] = Loritta.config.clientId
-		variables["isPatreon"] = isPatreon
-		variables["isDonator"] = isDonator
+		variables["isPatreon"] = loritta.isPatreon
+		variables["isDonator"] = loritta.isDonator
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
 		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
@@ -175,16 +128,8 @@ object GlobalHandler {
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
 
-		val famousGuilds = guilds
-				.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }
-				.filter { // Filtros para remover alguns servidores "famosos" do website, para evitar o AdSense suspendendo a minha conta devido a conteúdo inapropriado para menores
-					it.id != "365885658386137098" // Ícone NSFW
-				}
-				.subList(0, 36)
-
-		variables["famousGuilds"] = famousGuilds
-		Collections.shuffle(famousGuilds)
-		variables["randomFamousGuilds"] = famousGuilds
+		variables["famousGuilds"] = loritta.famousGuilds
+		variables["randomFamousGuilds"] = loritta.randomFamousGuilds
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())

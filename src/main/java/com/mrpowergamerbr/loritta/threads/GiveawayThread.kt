@@ -11,7 +11,11 @@ class GiveawayThread : Thread() {
 	override fun run() {
 		super.run()
 		while (true) {
-			processGiveaways()
+			try {
+				processGiveaways()
+			} catch (e: Exception) {
+				e.printStackTrace()
+			}
 			Thread.sleep(5000)
 		}
 	}
@@ -20,9 +24,8 @@ class GiveawayThread : Thread() {
 		val configs = loritta.ds.find(ServerConfig::class.java)
 				.field("giveaways")
 				.exists()
-				.field("giveaways")
-				.greaterThan(0)
 
+		println("GIVEAWAYS WOW: " + configs.count())
 		for (config in configs) {
 			val guild = LORITTA_SHARDS.getGuildById(config.guildId) ?: continue
 			val toRemove = mutableListOf<GiveawayCommand.Giveaway>()
@@ -56,7 +59,7 @@ class GiveawayThread : Thread() {
 						textChannel.sendMessage("Parabéns ${winner.name} por ganhar o giveaway!").queue()
 					}
 				} else {
-					val embed = GiveawayCommand.createEmbed(giveaway.reason, giveaway.reason, giveaway.reaction, giveaway.finishAt)
+					val embed = GiveawayCommand.createEmbed(giveaway.reason, giveaway.description, giveaway.reaction, giveaway.finishAt)
 
 					message.editMessage(embed).queue()
 				}

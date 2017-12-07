@@ -56,43 +56,44 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
 			launch {
-				var community = aminoClient.getCommunityById(communityId) ?: return@launch
-
 				try {
-					community.join(communityId)
-				} catch (e: Exception) {
+					var community = aminoClient.getCommunityById(communityId) ?: return@launch
+
 					try {
-						community.join();
+						community.join(communityId)
 					} catch (e: Exception) {
-						e.printStackTrace()
+						try {
+							community.join();
+						} catch (e: Exception) {
+							e.printStackTrace()
+						}
 					}
-				}
 
-				var posts = community.getBlogFeed(0, 5)
+					var posts = community.getBlogFeed(0, 5)
 
-				val postsIds = storedLastIds.getOrPut(communityId, { mutableSetOf() })
+					val postsIds = storedLastIds.getOrPut(communityId, { mutableSetOf() })
 
-				for (post in posts) {
-					if (postsIds.contains(post.blogId))
-						continue
+					for (post in posts) {
+						if (postsIds.contains(post.blogId))
+							continue
 
-					for (server in servers) {
-						for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
-							val guild = LORITTA_SHARDS.getGuildById(server.guildId) ?: return@launch
+						for (server in servers) {
+							for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
+								val guild = LORITTA_SHARDS.getGuildById(server.guildId) ?: return@launch
 
-							val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId) ?: return@launch
+								val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId) ?: return@launch
 
-							if (!textChannel.canTalk())
-								return@launch
+								if (!textChannel.canTalk())
+									return@launch
 
-							// Enviar mensagem
-							var embed = EmbedBuilder().apply {
-								setAuthor(post.author.nickname, null, post.author.icon)
-								setTitle(post.title)
-								setDescription(post.content)
-								setColor(Color(255, 112, 125))
+								// Enviar mensagem
+								var embed = EmbedBuilder().apply {
+									setAuthor(post.author.nickname, null, post.author.icon)
+									setTitle(post.title)
+									setDescription(post.content)
+									setColor(Color(255, 112, 125))
 
-								/* if (post.mediaList != null) {
+									/* if (post.mediaList != null) {
 									var obj = post.mediaList ?: ;
 									var inside = obj[0];
 
@@ -104,16 +105,19 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 										}
 									}
 								} */
-								setFooter("Enviado as " + post.modifiedTime, null);
+									setFooter("Enviado as " + post.modifiedTime, null);
+								}
+								textChannel.sendMessage(embed.build()).complete()
 							}
-							textChannel.sendMessage(embed.build()).complete()
 						}
 					}
-				}
-				postsIds.clear()
+					postsIds.clear()
 
-				posts.forEach {
-					postsIds.add(it.blogId)
+					posts.forEach {
+						postsIds.add(it.blogId)
+					}
+				} catch (e: Exception) {
+
 				}
 			}
 		}
