@@ -10,9 +10,14 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Emote
+import net.dv8tion.jda.core.entities.Icon
 import net.dv8tion.jda.core.entities.Message
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 class EmojiSearchCommand : CommandBase("emojisearch") {
 	override fun getUsage(): String {
@@ -112,7 +117,42 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 					setColor(Constants.DISCORD_BURPLE)
 				}
 
-				context.sendMessage(embed.build())
+				val emoteInfo = context.sendMessage(embed.build())
+
+				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
+					emoteInfo.addReaction("wumplus:388417805126467594").complete()
+
+					emoteInfo.onReactionAddByAuthor(context) {
+						if (it.reactionEmote.name == "wumplus") {
+							emoteInfo.delete().queue()
+							try {
+								val os = ByteArrayOutputStream()
+								try {
+									ImageIO.write(LorittaUtils.downloadImage(emote.imageUrl), "png", os)
+								} catch (e: Exception) {
+								}
+
+								val inputStream = ByteArrayInputStream(os.toByteArray())
+
+								val emote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).complete()
+
+								context.reply(
+										LoriReply(
+												"Emoji adicionado com sucesso!",
+												emote.asMention
+										)
+								)
+							} catch (e: Exception) {
+								context.reply(
+										LoriReply(
+												"Não consegui enviar o emoji...",
+												Constants.ERROR
+										)
+								)
+							}
+						}
+					}
+				}
 			} else {
 				if (it.reactionEmote.name == "⏩") {
 					sendQueriedEmbed(context, _queriedEmotes, query, 1 + page)
