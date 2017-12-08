@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
+import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
@@ -153,7 +154,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		val displayNameCache = ConcurrentHashMap<String, String>()
 
 		fun getUserDisplayName(userLogin: String): String? {
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=$userLogin")
+			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=$${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
@@ -173,12 +174,13 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			var query = ""
 			userLogins.forEach {
 				if (query.isEmpty()) {
-					query += "?user_login=$it"
+					query += "?user_login=${URLEncoder.encode(it.trim(), "UTF-8")}"
 				} else {
-					query += "&user_login=$it"
+					query += "&user_login=${URLEncoder.encode(it.trim(), "UTF-8")}"
 				}
 			}
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/streams$query")
+			val url = "https://api.twitch.tv/helix/streams$query"
+			val payload = HttpRequest.get(url)
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
