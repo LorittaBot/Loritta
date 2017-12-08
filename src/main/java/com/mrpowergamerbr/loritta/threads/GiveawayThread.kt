@@ -25,7 +25,6 @@ class GiveawayThread : Thread() {
 				.field("giveaways")
 				.exists()
 
-		println("GIVEAWAYS WOW: " + configs.count())
 		for (config in configs) {
 			val guild = LORITTA_SHARDS.getGuildById(config.guildId) ?: continue
 			val toRemove = mutableListOf<GiveawayCommand.Giveaway>()

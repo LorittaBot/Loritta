@@ -36,7 +36,6 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 		return CommandCategory.UTILS
 	}
 
-
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ").toLowerCase()
@@ -44,7 +43,7 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 			if (3 > query.length) {
 				context.reply(
 						LoriReply(
-								"Query pequena demais",
+								locale["EMOJISEARCH_SmallQuery"],
 								Constants.ERROR
 						)
 				)
@@ -87,8 +86,8 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 		}
 
 		val embed = EmbedBuilder().apply {
-			setTitle("<:osama:325332212255948802> Pesquisa de Emojos")
-			setDescription("${_queriedEmotes.size} emojos relacionados a `${query}` encontrados.")
+			setTitle("<:osama:325332212255948802> ${context.locale["EMOJISEARCH_Title"]}")
+			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
 			setColor(Constants.DISCORD_BURPLE)
 			setImage("attachment://emotes.png")
 		}
@@ -113,7 +112,7 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 				val embed = EmbedBuilder().apply {
 					setTitle("${emote.asMention} ${emote.name}")
 					setThumbnail(emote.imageUrl)
-					setDescription("Emojo avisado em `${emote.guild.name}`\n\n[Download](${emote.imageUrl})")
+					setDescription(context.locale["EMOJISEARCH_FoundAt", emote.guild.name] + "\n\n[Download](${emote.imageUrl})")
 					setColor(Constants.DISCORD_BURPLE)
 				}
 
@@ -138,14 +137,14 @@ class EmojiSearchCommand : CommandBase("emojisearch") {
 
 								context.reply(
 										LoriReply(
-												"Emoji adicionado com sucesso!",
+												context.locale["EMOJISEARCH_AddSuccess"],
 												emote.asMention
 										)
 								)
 							} catch (e: Exception) {
 								context.reply(
 										LoriReply(
-												"Não consegui enviar o emoji...",
+												context.locale["EMOJISEARCH_AddError"],
 												Constants.ERROR
 										)
 								)
