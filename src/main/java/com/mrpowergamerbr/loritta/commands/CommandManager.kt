@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.PedraPapelTesouraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.QualidadeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomMemeguy1997
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomSAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
@@ -170,7 +169,6 @@ class CommandManager(isMusicOnly: Boolean) {
 		commandMap.add(DeusesCommand())
 		commandMap.add(GangueCommand())
 		commandMap.add(RandomSAMCommand())
-		commandMap.add(RandomMemeguy1997())
 		commandMap.add(AmigosCommand())
 		commandMap.add(DiscordiaCommand())
 		commandMap.add(AmizadeCommand())

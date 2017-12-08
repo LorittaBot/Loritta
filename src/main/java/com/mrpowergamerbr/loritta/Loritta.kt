@@ -121,8 +121,6 @@ class Loritta {
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
-	var memeguy1997PageCache = mutableListOf<FacebookPostWrapper>()
-	var memeguy1997GroupCache = mutableListOf<FacebookPostWrapper>()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
