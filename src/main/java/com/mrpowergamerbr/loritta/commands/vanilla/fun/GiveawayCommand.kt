@@ -29,10 +29,6 @@ class GiveawayCommand : CommandBase("giveaway") {
 		return CommandCategory.FUN;
 	}
 
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MESSAGE_MANAGE)
 	}
@@ -96,8 +92,6 @@ class GiveawayCommand : CommandBase("giveaway") {
 						giveawayWhere.onResponseByAuthor(context, {
 							val where = it.message.rawContent
 							val epoch = time.convertToEpochMillis()
-
-							context.sendMessage("$reason, $time, $reaction, $where")
 
 							try {
 								giveawayWhere.addReaction(reaction).complete()

@@ -52,6 +52,11 @@ class GiveawayThread : Thread() {
 
 					users.remove(guild.selfMember.user) // Não reagir com a Loritta
 
+					if (users.isEmpty()) {
+						textChannel.sendMessage("Ninguém venceu o giveaway... \uD83D\uDE22").queue()
+						continue
+					}
+
 					if (users.size >= giveaway.userCount) {
 						val winner = users[RANDOM.nextInt(users.size)]
 
