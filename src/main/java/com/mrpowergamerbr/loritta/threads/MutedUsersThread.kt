@@ -1,5 +1,11 @@
 package com.mrpowergamerbr.loritta.threads
 
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.Permission
+
 class MutedUsersThread : Thread("Muted Users Thread") {
 	override fun run() {
 		while (true) {
@@ -13,23 +19,10 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 	}
 
 	fun checkMuteStatus() {
-		/* run {
+		run {
 			// MUTE
-			val guilds = loritta.mongo.getDatabase("loritta")
-					.getCollection("servers")
-					.aggregate(listOf(
-							Aggregates.match(Filters.exists("userData")),
-							Aggregates.project(
-									Projections.include("_id", "userData")
-							),
-							Document("\$unwind", "\$userData")
-							// Aggregates.sort(Document("spinnerScores.forTime", -1))
-							// limit(5)
-					)
-					)
+			val guilds = loritta.ds.find(ServerConfig::class.java).field("userData").exists()
 
-			println("SIZE: ${guilds.count()}")
-			println(guilds.first())
 			for (guild in guilds) {
 				val toBeUnmuted = guild.userData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
 
@@ -78,7 +71,6 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 			// TEMP BANS
 			val guilds = loritta.ds.find(ServerConfig::class.java).field("temporaryBans").exists()
 
-			println("TEMP BAN SIZE: " + guilds.count())
 			for (guild in guilds) {
 				val _guild = LORITTA_SHARDS.getGuildById(guild.guildId) ?: continue
 
@@ -108,6 +100,6 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 
 				loritta save guild
 			}
-		} */
+		}
 	}
 }
