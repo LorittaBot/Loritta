@@ -9,13 +9,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 
-class EncurtarCommand : CommandBase("encurtar") {
+class EncurtarCommand : CommandBase("encurtar", listOf("bitly", "shorten")) {
 	override fun getUsage(): String {
 		return "link"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("bitly")
 	}
 
 	override fun getExample(): List<String> {

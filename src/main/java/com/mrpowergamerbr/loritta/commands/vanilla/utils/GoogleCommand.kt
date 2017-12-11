@@ -12,11 +12,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class GoogleCommand : CommandBase("google") {
-	override fun getAliases(): List<String> {
-		return listOf("g", "search", "procurar", "pesquisar")
-	}
-
+class GoogleCommand : CommandBase("google", listOf("g", "search", "procurar", "pesquisar")) {
 	override fun getUsage(): String {
 		return "pesquisa"
 	}

@@ -6,10 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class CaraCoroaCommand : CommandBase("girarmoeda") {
-	override fun getAliases(): List<String> {
-		return listOf("flip", "toss", "moeda", "coin", "flipcoin")
-	}
+class CaraCoroaCommand : CommandBase("girarmoeda", listOf("flip", "toss", "moeda", "coin", "flipcoin")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["CARACOROA_DESCRIPTION"]
 	}

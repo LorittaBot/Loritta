@@ -7,13 +7,9 @@ import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 
-class YoutubeMp3Command : CommandBase("ytmp3") {
+class YoutubeMp3Command : CommandBase("ytmp3", listOf("youtube2mp3", "youtubemp3", "yt2mp3")) {
 	override fun getUsage(): String {
 		return "link"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("youtube2mp3", "youtubemp3")
 	}
 
 	override fun getDescription(locale: BaseLocale): String {

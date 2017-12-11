@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
-class EmojiSearchCommand : CommandBase("emojisearch") {
+class EmojiSearchCommand : CommandBase("emojisearch", listOf("procuraremoji")) {
 	override fun getUsage(): String {
 		return "query"
 	}

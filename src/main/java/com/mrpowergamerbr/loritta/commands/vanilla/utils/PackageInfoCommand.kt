@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : CommandBase("correios") {
+class PackageInfoCommand : CommandBase("correios", listOf("packageinfo", "ctt")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}
@@ -28,10 +28,6 @@ class PackageInfoCommand : CommandBase("correios") {
 
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.UTILS
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("packageinfo", "ctt")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

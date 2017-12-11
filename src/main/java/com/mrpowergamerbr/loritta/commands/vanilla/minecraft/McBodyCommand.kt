@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McBodyCommand : CommandBase("mcbody") {
+class McBodyCommand : CommandBase("mcbody", listOf("mcstatue")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCBODY_DESCRIPTION")
 	}
@@ -23,10 +23,6 @@ class McBodyCommand : CommandBase("mcbody") {
 
 	override fun getExample(): List<String> {
 		return listOf("Monerk")
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("mcstatue")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

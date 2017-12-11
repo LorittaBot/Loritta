@@ -14,7 +14,7 @@ import java.awt.RenderingHints
 import java.io.File
 import javax.imageio.ImageIO
 
-class PrimeirasPalavrasCommand : CommandBase("primeiraspalavras") {
+class PrimeirasPalavrasCommand : CommandBase("primeiraspalavras", listOf("firstwords")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PRIMEIRAS_DESCRIPTION.f()
 	}

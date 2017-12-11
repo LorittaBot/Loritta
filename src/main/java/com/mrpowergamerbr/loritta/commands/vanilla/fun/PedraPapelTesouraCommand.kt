@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.io.File
 import java.io.IOException
 
-class PedraPapelTesouraCommand : CommandBase("ppt") {
+class PedraPapelTesouraCommand : CommandBase("ppt", listOf("pedrapapeltesoura", "jankenpon")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PPT_DESCRIPTION"]
 	}

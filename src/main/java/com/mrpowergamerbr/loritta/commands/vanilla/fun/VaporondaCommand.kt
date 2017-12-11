@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 
-class VaporondaCommand : CommandBase("vaporonda") {
+class VaporondaCommand : CommandBase("vaporonda", listOf("vaporwave")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VAPORONDA_DESCRIPTION"]
 	}
@@ -18,10 +18,6 @@ class VaporondaCommand : CommandBase("vaporonda") {
 
 	override fun getExample(): List<String> {
 		return listOf("Windows 95")
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("vaporwave")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

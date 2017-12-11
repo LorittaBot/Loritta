@@ -11,13 +11,9 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerdaoCommand : CommandBase("perdao") {
+class PerdaoCommand : CommandBase("perdao", listOf("perdão")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PERDAO_DESCRIPTION.f();
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("perdão")
 	}
 
 	override fun getExample(): List<String> {

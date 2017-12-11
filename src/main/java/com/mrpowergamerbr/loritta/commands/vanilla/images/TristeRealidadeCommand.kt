@@ -18,7 +18,7 @@ import java.io.FileInputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class TristeRealidadeCommand : CommandBase("tristerealidade") {
+class TristeRealidadeCommand : CommandBase("tristerealidade", listOf("sadreality")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRISTEREALIDADE_DESCRIPTION"]
 	}

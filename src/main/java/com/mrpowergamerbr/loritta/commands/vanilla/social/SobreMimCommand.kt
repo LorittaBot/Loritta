@@ -7,15 +7,10 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
-import java.util.*
 
-class SobreMimCommand : CommandBase("sobremim") {
+class SobreMimCommand : CommandBase("sobremim", listOf("aboutme")) {
     override fun getUsage(): String {
         return "<nova mensagem>"
-    }
-
-    override fun getAliases(): MutableList<String> {
-         return Arrays.asList("aboutme");
     }
 
     override fun getDescription(locale: BaseLocale): String {

@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.Charsets
 import java.util.*
 
-class OfflineUUIDCommand : CommandBase("offlineuuid") {
+class OfflineUUIDCommand : CommandBase("mcofflineuuid", listOf("offlineuuid")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.OFFLINEUUID_DESCRIPTION.msgFormat()
 	}
@@ -23,10 +23,6 @@ class OfflineUUIDCommand : CommandBase("offlineuuid") {
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("Monerk")
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("mcofflineuuid")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

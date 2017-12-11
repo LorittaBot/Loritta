@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
-class RandomSAMCommand : CommandBase("randomsam") {
-	override fun getAliases(): List<String> {
-		return listOf("randomsouthamericamemes")
-	}
-
+class RandomSAMCommand : CommandBase("randomsam", listOf("randomsouthamericamemes")) {
 	override fun getDescription(): String {
 		return "Pega uma postagem aleatória do South America Memes"
 	}

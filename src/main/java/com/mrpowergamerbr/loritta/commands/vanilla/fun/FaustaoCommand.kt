@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import java.util.*
 
 private val frases = listOf(
 	"Que isso bixo, ó u cara lá ó",
@@ -45,7 +44,7 @@ private val avatars = listOf(
 	"http://i.imgur.com/rVmgwZC.png",
 	"http://i.imgur.com/z7Ec5I3.png")
 
-class FaustaoCommand : CommandBase("faustão") {
+class FaustaoCommand : CommandBase("faustão", listOf("faustao")) {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN
 	}
@@ -56,10 +55,6 @@ class FaustaoCommand : CommandBase("faustão") {
 
 	override fun hasCommandFeedback(): Boolean {
 		return false
-	}
-
-	override fun getAliases(): List<String> {
-		return Arrays.asList("faustao")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

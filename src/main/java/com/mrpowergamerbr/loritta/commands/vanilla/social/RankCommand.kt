@@ -7,10 +7,10 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.*
@@ -19,13 +19,9 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RankCommand : CommandBase("rank") {
+class RankCommand : CommandBase("rank", listOf("top", "leaderboard", "ranking")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RANK_DESCRIPTION"]
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("top", "leaderboard", "ranking")
 	}
 
 	override fun getCategory(): CommandCategory {

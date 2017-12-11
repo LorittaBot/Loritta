@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerfeitoCommand : CommandBase("perfeito") {
+class PerfeitoCommand : CommandBase("perfeito", listOf("perfect")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.PERFEITO_DESCRIPTION.f();
 	}

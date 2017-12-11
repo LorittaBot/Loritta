@@ -17,11 +17,7 @@ import java.awt.image.RGBImageFilter
 import java.io.File
 import javax.imageio.ImageIO
 
-class RazoesCommand : CommandBase("razoes") {
-	override fun getAliases(): List<String> {
-		return listOf("razões", "reasons")
-	}
-
+class RazoesCommand : CommandBase("razoes", listOf("razões", "reasons")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.RAZOES_DESCRIPTION.f()
 	}

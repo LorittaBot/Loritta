@@ -10,9 +10,9 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -23,11 +23,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
-class YouTubeCommand : CommandBase("youtube") {
-	override fun getAliases() : List<String> {
-		return listOf("yt")
-	}
-
+class YouTubeCommand : CommandBase("youtube", listOf("yt")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["YOUTUBE_DESCRIPTION"]
 	}

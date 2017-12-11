@@ -12,13 +12,9 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class DicioCommand : CommandBase("dicio") {
+class DicioCommand : CommandBase("dicio", listOf("dicionário", "definir")) {
 	override fun getUsage(): String {
 		return "palavra"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("dicionário", "definir")
 	}
 
 	override fun getDescription(): String {

@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class AvaliarWaifuCommand : CommandBase("avaliarwaifu") {
-	override fun getAliases(): List<String> {
-		return listOf("ratemywaifu", "avaliarminhawaifu", "notawaifu");
-	}
-
+class AvaliarWaifuCommand : CommandBase("avaliarwaifu", listOf("ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.RATEWAIFU_DESCRIPTION
 	}

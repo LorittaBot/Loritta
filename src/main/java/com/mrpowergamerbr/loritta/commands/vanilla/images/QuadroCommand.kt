@@ -12,11 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class QuadroCommand : CommandBase("quadro") {
-	override fun getAliases(): List<String> {
-		return listOf("frame", "wolverine")
-	}
-
+class QuadroCommand : CommandBase("quadro", listOf("frame", "wolverine")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.QUADRO_DESCRIPTION.f();
 	}

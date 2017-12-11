@@ -16,11 +16,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.net.URLEncoder
 
-class KnowYourMemeCommand : CommandBase("knowyourmeme") {
-	override fun getAliases(): List<String> {
-		return listOf("kym")
-	}
-
+class KnowYourMemeCommand : CommandBase("knowyourmeme", listOf("kym")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.KYM_DESCRIPTION
 	}

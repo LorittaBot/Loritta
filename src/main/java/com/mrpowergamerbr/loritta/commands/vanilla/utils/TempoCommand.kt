@@ -17,13 +17,9 @@ import java.io.StringReader
 import java.net.URLEncoder
 
 
-class TempoCommand : CommandBase("tempo") {
+class TempoCommand : CommandBase("tempo", listOf("previsão", "previsao")) {
 	override fun getUsage(): String {
 		return "cidade"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("previsão", "previsao")
 	}
 
 	override fun getDescription(locale: BaseLocale): String {

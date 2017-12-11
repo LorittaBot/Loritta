@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
-class EscolherCommand : CommandBase("escolher") {
-	override fun getAliases(): List<String> {
-		return listOf("choose");
-	}
-
+class EscolherCommand : CommandBase("escolher", listOf("choose")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ESCOLHER_DESCRIPTION.msgFormat()
 	}

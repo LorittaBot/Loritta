@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
-class MagicBallCommand : CommandBase("vieirinha") {
-	override fun getAliases(): List<String> {
-		return listOf("8ball", "magicball", "eightball")
-	}
-
+class MagicBallCommand : CommandBase("vieirinha", listOf("8ball", "magicball", "eightball")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VIEIRINHA_DESCRIPTION"]
 	}

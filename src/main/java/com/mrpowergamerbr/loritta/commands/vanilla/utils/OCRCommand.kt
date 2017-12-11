@@ -15,11 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class OCRCommand : CommandBase("ocr") {
-	override fun getAliases(): List<String> {
-		return listOf("ler", "read")
-	}
-
+class OCRCommand : CommandBase("ocr", listOf("ler", "read")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["OCR_DESCRIPTION"]
 	}

@@ -25,7 +25,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class CommandBase(open val label: String) {
+open abstract class CommandBase(open val label: String, var aliases: List<String> = listOf()) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
@@ -61,10 +61,6 @@ open abstract class CommandBase(open val label: String) {
 
 	open fun getExtendedExamples(): Map<String, String> {
 		return mapOf()
-	}
-
-	open fun getAliases(): List<String> {
-		return listOf()
 	}
 
 	open fun hasCommandFeedback(): Boolean {
@@ -132,7 +128,7 @@ open abstract class CommandBase(open val label: String) {
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(this)
 		var prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
-		val aliases = ArrayList<String>(this.getAliases())
+		val aliases = ArrayList<String>(this.aliases)
 		if (cmdOptions.enableCustomAliases)
 			aliases.addAll(cmdOptions.aliases)
 

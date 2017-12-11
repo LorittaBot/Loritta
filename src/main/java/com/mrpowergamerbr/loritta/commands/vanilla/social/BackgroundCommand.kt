@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class BackgroundCommand : CommandBase("background") {
+class BackgroundCommand : CommandBase("background", listOf("papeldeparede")) {
 	override fun getUsage(): String {
 		return "<novo background>"
 	}

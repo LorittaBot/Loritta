@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
-class AnagramaCommand : CommandBase("anagrama") {
+class AnagramaCommand : CommandBase("anagrama", listOf("shuffle", "anagram")) {
 	override fun getUsage(): String {
 		return "palavra"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("shuffle")
 	}
 
 	override fun getDescription(locale: BaseLocale): String {

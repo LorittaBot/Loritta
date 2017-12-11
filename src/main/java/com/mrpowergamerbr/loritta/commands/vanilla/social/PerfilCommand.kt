@@ -25,11 +25,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class PerfilCommand : CommandBase("perfil") {
-	override fun getAliases(): MutableList<String> {
-		return Arrays.asList("profile");
-	}
-
+class PerfilCommand : CommandBase("perfil", listOf("profile")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PERFIL_DESCRIPTION"]
 	}

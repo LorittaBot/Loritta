@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class PlaylistCommand : CommandBase("playlist") {
-	override fun getAliases(): List<String> {
-		return listOf("list")
-	}
-
+class PlaylistCommand : CommandBase("playlist", listOf("list")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("PLAYLIST_DESCRIPTION")
 	}

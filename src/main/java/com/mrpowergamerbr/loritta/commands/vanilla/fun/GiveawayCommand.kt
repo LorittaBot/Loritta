@@ -16,11 +16,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import java.time.Instant
 import kotlin.concurrent.thread
 
-class GiveawayCommand : CommandBase("giveaway") {
-	override fun getAliases(): List<String> {
-		return listOf("jogalonge");
-	}
-
+class GiveawayCommand : CommandBase("giveaway", listOf("jogalonge")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GIVEAWAY_Description"]
 	}

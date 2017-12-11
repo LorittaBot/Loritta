@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class McSkinCommand : CommandBase("mcskin") {
+class McSkinCommand : CommandBase("mcskin", listOf("skinsteal", "skinstealer")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCAVATAR_DESCRIPTION")
 	}
@@ -17,10 +17,6 @@ class McSkinCommand : CommandBase("mcskin") {
 
 	override fun getUsage(): String {
 		return "nickname"
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("skinsteal", "skinstealer")
 	}
 
 	override fun getExample(): List<String> {

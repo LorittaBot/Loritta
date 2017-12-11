@@ -10,11 +10,7 @@ import java.awt.Image
 import java.io.File
 import javax.imageio.ImageIO
 
-class SAMCommand : CommandBase("sam") {
-	override fun getAliases(): List<String> {
-		return listOf("southamericamemes")
-	}
-
+class SAMCommand : CommandBase("sam", listOf("southamericamemes")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SAM_DESCRIPTION"]
 	}

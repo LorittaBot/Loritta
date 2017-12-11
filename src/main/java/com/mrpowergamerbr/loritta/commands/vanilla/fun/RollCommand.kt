@@ -9,15 +9,10 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
-import java.util.*
 
-class RollCommand : CommandBase("rolar") {
+class RollCommand : CommandBase("rolar", listOf("roll")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROLL_DESCRIPTION"]
-	}
-
-	override fun getAliases(): List<String> {
-		return Arrays.asList("roll")
 	}
 
 	override fun getUsage(): String {

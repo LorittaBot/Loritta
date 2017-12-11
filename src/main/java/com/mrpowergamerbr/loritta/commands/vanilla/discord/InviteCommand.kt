@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class InviteCommand : CommandBase("convidar") {
-    override fun getAliases(): List<String> {
-        return listOf("invite");
-    }
-
+class InviteCommand : CommandBase("convidar", listOf("invite", "convidarbot", "invitebot")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.INVITE_DESCRIPTION.msgFormat()
     }

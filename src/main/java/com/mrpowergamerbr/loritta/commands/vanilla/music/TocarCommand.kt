@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class TocarCommand : CommandBase("tocar") {
-	override fun getAliases(): List<String> {
-		return listOf("play")
-	}
-
+class TocarCommand : CommandBase("tocar", listOf("play", "adicionar")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TOCAR_DESCRIPTION")
 	}

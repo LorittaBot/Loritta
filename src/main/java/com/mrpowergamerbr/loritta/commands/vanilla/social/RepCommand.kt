@@ -9,11 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.concurrent.TimeUnit
 
-class RepCommand : CommandBase("rep") {
-    override fun getAliases(): List<String> {
-        return listOf("reputation", "reputação", "reputacao");
-    }
-
+class RepCommand : CommandBase("rep", listOf("reputation", "reputação", "reputacao")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.REP_DESCRIPTON;
     }

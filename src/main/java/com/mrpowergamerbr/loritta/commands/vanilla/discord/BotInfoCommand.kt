@@ -12,10 +12,6 @@ import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
 class BotInfoCommand : CommandBase("botinfo") {
-	override fun getAliases(): List<String> {
-		return listOf("info")
-	}
-
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("BOTINFO_DESCRIPTION")
 	}

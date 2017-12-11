@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class SustoCommand : CommandBase("susto") {
+class SustoCommand : CommandBase("susto", listOf("fright")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SUSTO_Description"]
 	}

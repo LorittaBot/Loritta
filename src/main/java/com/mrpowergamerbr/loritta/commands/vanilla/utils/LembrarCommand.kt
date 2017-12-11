@@ -14,11 +14,7 @@ import com.mrpowergamerbr.loritta.utils.save
 import java.util.*
 
 
-class LembrarCommand : CommandBase("lembrar") {
-	override fun getAliases(): List<String> {
-		return listOf("lembre", "remind", "remindme", "lembrete", "reminder");
-	}
-
+class LembrarCommand : CommandBase("lembrar", listOf("lembre", "remind", "remindme", "lembrete", "reminder")) {
 	override fun getUsage(): String {
 		return "tempo mensagem"
 	}

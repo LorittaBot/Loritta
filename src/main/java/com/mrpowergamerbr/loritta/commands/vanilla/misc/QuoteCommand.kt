@@ -17,11 +17,7 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.util.*
 
-class QuoteCommand : CommandBase("mencionar") {
-	override fun getAliases(): List<String> {
-		return listOf("quote")
-	}
-
+class QuoteCommand : CommandBase("mencionar", listOf("quote")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MENCIONAR_DESCRIPTION")
 	}

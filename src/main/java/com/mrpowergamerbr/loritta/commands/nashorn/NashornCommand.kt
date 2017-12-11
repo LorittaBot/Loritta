@@ -37,15 +37,12 @@ class NashornCommand : CommandBase {
 	override val label: String
 		get() = jsLabel
 
-	constructor() : super("javascript-command-label")
+	constructor() : super("javascript-command-label", listOf())
 
-	constructor(label: String, javaScript: String) : super(label) {
+	constructor(label: String, javaScript: String) : super(label, listOf()) {
 		this.jsLabel = label
 		this.javaScript = javaScript
-	}
-
-	override fun getAliases(): List<String> {
-		return jsAliases
+		this.aliases = jsAliases
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

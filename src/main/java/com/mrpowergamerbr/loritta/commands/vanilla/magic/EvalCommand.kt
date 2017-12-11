@@ -13,10 +13,6 @@ import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
 class EvalCommand : CommandBase("eval") {
-	override fun getAliases(): List<String> {
-		return Arrays.asList("executar")
-	}
-
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

@@ -17,7 +17,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class ShipCommand : CommandBase("ship") {
+class ShipCommand : CommandBase("ship", listOf("shippar")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.SHIP_DESCRIPTION.f()
     }

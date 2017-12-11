@@ -12,7 +12,7 @@ import org.jsoup.Jsoup
 import java.awt.Color
 import java.util.*
 
-class PokedexCommand : CommandBase("pokedex") {
+class PokedexCommand : CommandBase("pokedex", listOf("pokédex")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.POKEDEX_DESCRIPTION.msgFormat()
     }
@@ -24,10 +24,6 @@ class PokedexCommand : CommandBase("pokedex") {
     override fun getExample(): List<String> {
         return Arrays.asList("Pikachu")
     }
-
-	override fun getAliases(): List<String> {
-		return listOf("pokédex");
-	}
 
     override fun getUsage(): String {
         return "pokémon"

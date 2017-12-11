@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class SayCommand : CommandBase("falar") {
-    override fun getAliases(): MutableList<String> {
-        return Arrays.asList("say");
-    }
-
+class SayCommand : CommandBase("falar", listOf("say")) {
     override fun getDescription(): String {
         return "Faça eu falar uma mensagem!";
     }

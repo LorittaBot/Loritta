@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class ColorInfoCommand : CommandBase("colorinfo") {
+class ColorInfoCommand : CommandBase("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker")) {
 	companion object {
 		val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toPattern()
 		val RGB_PATTERN = "(\\d{1,3})(?:,| |, )(\\d{1,3})(?:,| |, )(\\d{1,3})(?:(?:,| |, )(\\d{1,3}))?".toPattern()
@@ -29,8 +29,6 @@ class ColorInfoCommand : CommandBase("colorinfo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["COLOR_Description"]
 	}
-
-	override fun getAliases(): List<String> = listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker")
 
 	override fun getCategory(): CommandCategory = CommandCategory.UTILS
 

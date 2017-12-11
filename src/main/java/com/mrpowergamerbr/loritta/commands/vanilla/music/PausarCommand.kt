@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class PausarCommand : CommandBase("pause") {
+class PausarCommand : CommandBase("pause", listOf("pausar", "parar")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("PAUSAR_DESCRIPTION")
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("pausar", "parar")
 	}
 
 	override fun getCategory(): CommandCategory {

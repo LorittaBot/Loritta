@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmizadeCommand : CommandBase("amizade") {
+class AmizadeCommand : CommandBase("amizade", listOf("friendship")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("AMIZADE_DESCRIPTION")
 	}

@@ -16,17 +16,13 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McConquistaCommand : CommandBase("mcconquista") {
+class McConquistaCommand : CommandBase("mcconquista", listOf("mcprogresso", "mcadvancement", "mcacheviment")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MCCONQUISTA_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta Ser muito fofa!");
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("mcprogresso", "mcadvancement")
 	}
 
 	override fun getCategory(): CommandCategory {

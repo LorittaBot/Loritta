@@ -18,13 +18,9 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 import java.util.stream.Collectors
 
-class AjudaCommand : CommandBase("ajuda") {
+class AjudaCommand : CommandBase("ajuda", listOf("help", "comandos")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
-	}
-
-	override fun getAliases(): List<String> {
-		return listOf("help", "comandos")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
