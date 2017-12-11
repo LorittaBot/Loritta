@@ -18,7 +18,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	var lastUpdate: Long = System.currentTimeMillis()
 	var currentIndex = 0 // Index atual
 	var fanArtMinutes = -1
-	var currentFanArt: LorittaConfig.LorittaFanArts = Loritta.config.fanArts[0]
+	var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
 	var currentDay = -1
 	var revertedAvatar = false
 

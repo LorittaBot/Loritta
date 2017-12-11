@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.PedraPapelTesouraCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.QualidadeCommand

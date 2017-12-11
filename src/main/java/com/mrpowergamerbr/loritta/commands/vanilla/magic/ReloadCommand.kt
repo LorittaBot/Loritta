@@ -59,6 +59,7 @@ class ReloadCommand : CommandBase("reload") {
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
+		loritta.loadFanArts()
 
 		GlobalHandler.generateViews()
 

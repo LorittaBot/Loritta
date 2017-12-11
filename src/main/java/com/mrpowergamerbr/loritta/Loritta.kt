@@ -30,6 +30,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
@@ -139,6 +140,7 @@ class Loritta {
 	var isDonator = mutableMapOf<String, Boolean>()
 	var cachedGuilds = listOf<Guild>()
 	var cachedUsers = listOf<User>()
+	var fanArts = mutableListOf<LorittaFanArt>()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
@@ -147,6 +149,7 @@ class Loritta {
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube()
 		resetYouTubeKeys()
+		loadFanArts()
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -393,8 +396,12 @@ class Loritta {
 	 * Carrega todos os servidores do Fã Clube da Loritta
 	 */
 	fun loadServersFromFanClub() {
-		rawServersFanClub = GSON.fromJson<List<ServerFanClub>>(File("./fanclub.json").readText())
+		rawServersFanClub = GSON.fromJson(File("./fanclub.json").readText())
 		LorittaUtilsKotlin.generateServersInFanClub()
+	}
+
+	fun loadFanArts() {
+		fanArts = GSON.fromJson(File("./fanarts.json").readText())
 	}
 
 	/**
