@@ -134,7 +134,7 @@ import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import net.pocketdreams.loriplugins.simsimi.commands.SimsimiCommand
 import java.util.*
 
-class CommandManager(isMusicOnly: Boolean) {
+class CommandManager {
 	var commandMap: MutableList<CommandBase> = ArrayList()
 	var defaultCmdOptions: MutableMap<String, Class<*>> = HashMap()
 

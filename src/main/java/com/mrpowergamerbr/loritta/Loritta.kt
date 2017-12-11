@@ -132,7 +132,6 @@ class Loritta {
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
 	var songThrottle = mutableMapOf<String, Long>()
 
-	var isWebsiteOnly: Boolean = false
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
 
@@ -144,12 +143,11 @@ class Loritta {
 	var cachedUsers = listOf<User>()
 
 	// Constructor da Loritta
-	constructor(config: LorittaConfig, isMusicOnly: Boolean, isWebsiteOnly: Boolean) {
+	constructor(config: LorittaConfig) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
 		Loritta.youtube = TemmieYouTube()
-		this.isWebsiteOnly = isWebsiteOnly
 		resetYouTubeKeys()
 	}
 
@@ -390,7 +388,7 @@ class Loritta {
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
-		commandManager = CommandManager(false)
+		commandManager = CommandManager()
 	}
 
 	/**
