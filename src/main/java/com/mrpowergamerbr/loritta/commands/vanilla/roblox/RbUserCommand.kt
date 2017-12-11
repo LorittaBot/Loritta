@@ -74,7 +74,6 @@ class RbUserCommand : CommandBase("rbuser", listOf("rbplayer")) {
 
 					val joinDate = stats[0].getElementsByClass("text-lead")[0].text()
 					val placeVisits = stats[1].getElementsByClass("text-lead")[0].text()
-					val forumPosts = stats[2].getElementsByClass("text-lead")[0].text()
 
 					// SEGUINDO
 					val followingBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
@@ -178,7 +177,6 @@ class RbUserCommand : CommandBase("rbuser", listOf("rbplayer")) {
 						addField("\uD83D\uDCBB ${context.locale.get("RBUSER_ID_DO_ROBLOX")}", userId.toString(), true)
 						addField("\uD83D\uDCC5 ${context.locale.get("RBUSER_JOIN_DATE")}", joinDate, true)
 						addField("\uD83D\uDC40 ${context.locale.get("RBUSER_PLACE_VISITS")}", placeVisits, true)
-						addField("\uD83D\uDCDD ${context.locale.get("RBUSER_FORUM_POSTS")}", forumPosts, true)
 						addField("\uD83D\uDE4B ${context.locale.get("RBUSER_SOCIAL")}", "**\uD83D\uDC3E ${context.locale.get("RBUSER_FOLLOWING")}**: $totalFollowing\n**<:twitt_starstruck:352216844603752450> ${context.locale.get("RBUSER_FOLLOWERS")}**: $totalFollowers\n**\uD83D\uDE0E ${context.locale.get("RBUSER_FRIENDS")}**: $totalFriends\n", true)
 						setImage("attachment://roblox.png")
 						setThumbnail(avatar)

@@ -184,7 +184,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
-			println(payload)
+			// println(payload)
 			val response = JSON_PARSER.parse(payload).obj
 
 			val data = response["data"].array
