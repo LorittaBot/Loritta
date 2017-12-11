@@ -20,11 +20,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.YouTubeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.HackBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SlowModeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SoftBanCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.TempBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
@@ -186,7 +184,7 @@ class CommandManager {
 		commandMap.add(SimsimiCommand())
 		commandMap.add(CleverbotCommand())
 		commandMap.add(TamagotchiCommand())
-		commandMap.add(GiveawayCommand())
+		// commandMap.add(GiveawayCommand())
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
@@ -274,9 +272,9 @@ class CommandManager {
 		commandMap.add(RoleIdCommand())
 		commandMap.add(HackBanCommand())
 		commandMap.add(SoftBanCommand())
-		commandMap.add(MuteCommand())
+		// commandMap.add(MuteCommand())
 		commandMap.add(SlowModeCommand())
-		commandMap.add(TempBanCommand())
+		// commandMap.add(TempBanCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
