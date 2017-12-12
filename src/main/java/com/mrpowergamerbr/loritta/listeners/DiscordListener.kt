@@ -194,7 +194,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			thread(name = "Message Received Thread (Private) (${event.guild.id} ~ ${event.member.user.id})") {
+			thread(name = "Message Received Thread (Private) (${event.member.user.id})") {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
