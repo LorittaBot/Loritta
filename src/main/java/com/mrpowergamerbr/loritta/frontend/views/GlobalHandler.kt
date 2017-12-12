@@ -136,6 +136,7 @@ object GlobalHandler {
 				discordAuth.isReady(true)
 				discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 				variables["discordAuth"] = discordAuth
+				variables["userIdentification"] = discordAuth
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}

@@ -78,6 +78,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						event.textChannel.sendMessage(locale.MENTION_RESPONSE.f(event.message.author.asMention, serverConfig.commandPrefix)).complete()
 					}
 
+					if (event.member == null) {
+						println("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
+						println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
+						return@execute
+					}
+
 					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					// ===[ SLOW MODE ]===
