@@ -96,6 +96,10 @@ class BackgroundCommand : CommandBase("background", listOf("papeldeparede")) {
 					index += 1;
 				}
 
+				if (index !in 0 until templates.size) {
+					index = 0
+				}
+
 				var currentUrl = templates[index];
 
 				if (e.reactionEmote.name == "✅") {
