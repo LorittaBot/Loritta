@@ -72,19 +72,22 @@ object WelcomeModule {
 						}
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val entry = guild.auditLogs.complete().first()
+							val auditLogs = guild.auditLogs.complete()
+							if (auditLogs.isNotEmpty()) {
+								val entry = guild.auditLogs.complete().first()
 
-							if (entry.targetId == event.user.id) {
-								if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-									msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
-									msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-									msg = msg.replace("{@staff}", entry.user.asMention)
-									msg = msg.replace("{staff}", entry.user.name)
-								}
-								if (entry.type == ActionType.BAN) {
-									msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-									msg = msg.replace("{@staff}", entry.user.asMention)
-									msg = msg.replace("{staff}", entry.user.name)
+								if (entry.targetId == event.user.id) {
+									if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
+										msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
+										msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
+										msg = msg.replace("{@staff}", entry.user.asMention)
+										msg = msg.replace("{staff}", entry.user.name)
+									}
+									if (entry.type == ActionType.BAN) {
+										msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
+										msg = msg.replace("{@staff}", entry.user.asMention)
+										msg = msg.replace("{staff}", entry.user.name)
+									}
 								}
 							}
 						}
