@@ -182,7 +182,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}
 
-					if (event.message.content.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
+					if (event.textChannel.canTalk() && event.message.content.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
 						val command = event.message.content.split(" ")[0].stripCodeMarks()
 						val message = event.textChannel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
 						Thread.sleep(5000)
@@ -294,7 +294,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (e.guild != null) {
 			name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})"
 		}
-		
+
 		thread(name = name) {
 			if (e.isFromType(ChannelType.TEXT)) {
 				// TODO: Isto deveria ser feito usando a API da Loritta
