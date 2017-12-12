@@ -111,7 +111,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.ColorInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.DicioCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.EmojiSearchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.EncurtarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.GoogleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.HojeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.IsUpCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.KnowYourMemeCommand

@@ -18,7 +18,7 @@ abstract class ProtectedView : AbstractView() {
 			} else {
 				val code = req.param("code").value()
 				val auth = TemmieDiscordAuth(code, "https://loritta.website/dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
-					debug = true
+					debug = false
 				}
 				auth.doTokenExchange()
 				req.session()["discordAuth"] = GSON.toJson(auth)
