@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
@@ -25,9 +26,27 @@ class RandomSAMCommand : CommandBase("randomsam", listOf("randomsouthamericameme
 		val source = if (Loritta.RANDOM.nextBoolean()) "página" else "grupo";
 
 		val post = if (source == "página") {
-			loritta.southAmericaMemesPageCache.get(Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size))
+			if (loritta.southAmericaMemesPageCache.isEmpty()) {
+				context.reply(
+						LoriReply(
+								Constants.ERROR,
+								"Atualmente eu não tenho nenhum post da página da South America Memes para te mostrar... tente mais tarde!"
+						)
+				)
+				return
+			}
+			loritta.southAmericaMemesPageCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size)]
 		} else {
-			loritta.southAmericaMemesGroupCache.get(Loritta.RANDOM.nextInt(loritta.southAmericaMemesGroupCache.size))
+			if (loritta.southAmericaMemesGroupCache.isEmpty()) {
+				context.reply(
+						LoriReply(
+								Constants.ERROR,
+								"Atualmente eu não tenho nenhum post do grupo da South America Memes para te mostrar... tente mais tarde!"
+						)
+				)
+				return
+			}
+			loritta.southAmericaMemesGroupCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesGroupCache.size)]
 		}
 
 		if (post != null) {
