@@ -609,7 +609,8 @@ object LorittaUtilsKotlin {
 
 			commandQueue.clear()
 
-			textChannel.sendMessage(toBeSent).queue()
+			if (toBeSent.isNotEmpty())
+				textChannel.sendMessage(toBeSent).queue()
 		}
 	}
 }

@@ -10,12 +10,12 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -111,7 +111,7 @@ class SpinnerCommand : CommandBase("spinner", listOf("fidget", "fidgetspinner"))
 
 					if (user != null) {
 						// val userProfile = loritta.getLorittaProfileForUser(id)
-						val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")
+						val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + user.id + ".png")
 						val imageFile = if (file.exists()) file else java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/default_background.png")
 
 						val rankBackground = ImageIO.read(imageFile)
