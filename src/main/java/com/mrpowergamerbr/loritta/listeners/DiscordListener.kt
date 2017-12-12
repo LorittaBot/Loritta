@@ -186,7 +186,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val command = event.message.content.split(" ")[0].stripCodeMarks()
 						val message = event.textChannel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
 						Thread.sleep(5000)
-						message.delete().complete()
+						message.delete().queue()
 					}
 				} catch (e: Exception) {
 					e.printStackTrace()
