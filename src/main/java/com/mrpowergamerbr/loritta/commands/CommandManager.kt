@@ -231,7 +231,7 @@ class CommandManager {
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		commandMap.add(GoogleCommand())
+		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
 
 		// =======[ DISCORD ]=======
