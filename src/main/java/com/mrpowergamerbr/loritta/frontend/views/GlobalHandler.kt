@@ -134,9 +134,9 @@ object GlobalHandler {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
 				discordAuth.isReady(true)
-				discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 				variables["discordAuth"] = discordAuth
-				variables["userIdentification"] = discordAuth
+				variables["userIdentification"] = userIdentification
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}
