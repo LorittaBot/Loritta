@@ -195,6 +195,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
 			thread(name = "Message Received Thread (Private) (${event.author.id})") {
+				println("[DM] ${event.author.id}: " + event.message.content)
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
@@ -288,7 +289,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			t.start()
 		}
 
-		thread(name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})") {
+		var name = "Message Reaction Thread ${e.member.user.id}"
+
+		if (e.guild != null) {
+			name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})"
+		}
+		
+		thread(name = name) {
 			if (e.isFromType(ChannelType.TEXT)) {
 				// TODO: Isto deveria ser feito usando a API da Loritta
 				if (e.guild.id == "297732013006389252") {
