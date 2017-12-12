@@ -111,10 +111,10 @@ class SpinnerCommand : CommandBase("spinner", listOf("fidget", "fidgetspinner"))
 
 					if (user != null) {
 						// val userProfile = loritta.getLorittaProfileForUser(id)
-						val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/${userId}.png");
-						val imageUrl = if (file.exists()) "https://loritta.website/assets/img/backgrounds/${userId}.png?time=" + System.currentTimeMillis() else "https://loritta.website/assets/img/backgrounds/default_background.png";
+						val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")
+						val imageFile = if (file.exists()) file else java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/default_background.png")
 
-						val rankBackground = LorittaUtils.downloadImage(imageUrl)
+						val rankBackground = ImageIO.read(imageFile)
 						graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
 								.toBufferedImage()
 								.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
