@@ -19,7 +19,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class CleverbotCommand : CommandBase("cleverbot") {
-	val cleverbots = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<String, Cleverbot>().asMap()
+	companion object {
+		val cleverbots = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<String, Cleverbot>().asMap()
+	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["CLEVERBOT_DESCRIPTION"]

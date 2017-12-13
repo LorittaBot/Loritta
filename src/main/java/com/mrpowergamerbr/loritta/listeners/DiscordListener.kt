@@ -11,6 +11,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.debug.DebugType
+import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
@@ -48,6 +50,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 		}
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
+			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.content}")
 			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
@@ -194,8 +197,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
+			debug(DebugType.MESSAGE_RECEIVED, "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.content}")
 			thread(name = "Message Received Thread (Private) (${event.author.id})") {
-				println("[DM] ${event.author.id}: " + event.message.content)
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
@@ -289,7 +292,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			t.start()
 		}
 
-		var name = "Message Reaction Thread ${e.member.user.id}"
+		if (e.isFromType(ChannelType.TEXT)) {
+			debug(DebugType.REACTION_RECEIVED, "(${e.guild.name} -> Reaction Add) ${e.user.name}#${e.user.discriminator} (${e.user.id}): ${e.reactionEmote.name}")
+		} else {
+			debug(DebugType.REACTION_RECEIVED, "(Direct Message -> Reaction Add) ${e.user.name}#${e.user.discriminator} (${e.user.id}): ${e.reactionEmote.name}")
+		}
+
+		var name = "Message Reaction Thread ${e.user.id}"
 
 		if (e.guild != null) {
 			name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})"

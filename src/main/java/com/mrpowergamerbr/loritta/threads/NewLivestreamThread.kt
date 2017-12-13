@@ -11,6 +11,8 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.debug.DebugType
+import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
@@ -32,7 +34,8 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	}
 
 	fun checkNewVideos() {
-		println("Checking twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
+		debug(DebugType.TWITCH_THREAD, "Checking Twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
+
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.ds.find(ServerConfig::class.java).field("livestreamConfig.channels").exists()
 		// IDs dos canais a serem verificados
@@ -69,7 +72,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 		// Agora iremos verificar os canais
 		batchs.forEach { userLogins ->
-			println("Verifying batch ${userLogins.joinToString(separator = ", ")}")
+			debug(DebugType.TWITCH_THREAD, "Verifying batch ${userLogins.joinToString(separator = ", ")}")
 			try {
 				val livestreamsInfo = getLivestreamsInfo(userLogins)
 
@@ -133,11 +136,12 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
+			debug(DebugType.TWITCH_THREAD, "Finished updating batch! ")
 			sleep(1500)
 		}
 
-		println("LIVESTREAMING BEFORE: ${isLivestreaming.joinToString(separator = ", ")}")
-		println("LIVESTREAMING NOW: ${nowStreaming.joinToString(separator = ", ")}")
+		debug(DebugType.TWITCH_THREAD, "LIVESTREAMING BEFORE: ${isLivestreaming.joinToString(separator = ", ")}")
+		debug(DebugType.TWITCH_THREAD, "LIVESTREAMING NOW: ${nowStreaming.joinToString(separator = ", ")}")
 
 		isLivestreaming.clear()
 
@@ -162,6 +166,8 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 			val data = response["data"].array
 
+			debug(DebugType.TWITCH_THREAD, "getUserDisplayName payload response contains ${data.size()} objects!")
+
 			if (data.size() == 0) {
 				return null
 			}
@@ -184,10 +190,11 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
-			// println(payload)
 			val response = JSON_PARSER.parse(payload).obj
 
 			val data = response["data"].array
+
+			debug(DebugType.TWITCH_THREAD, "getLivestreamsInfo payload response contains ${data.size()} objects!")
 
 			return GSON.fromJson(data)
 		}

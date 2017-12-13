@@ -39,6 +39,7 @@ import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
+import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -104,9 +105,9 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newScheduledThreadPool(64) // Threads
-	val messageExecutors = Executors.newScheduledThreadPool(64) // Threads
-	val executor = Executors.newScheduledThreadPool(64) // Threads
+	val eventLogExecutors = Executors.newScheduledThreadPool(32) // Threads
+	val messageExecutors = Executors.newScheduledThreadPool(32) // Threads
+	val executor = Executors.newScheduledThreadPool(32) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -248,6 +249,8 @@ class Loritta {
 		DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
+
+		DebugLog.startCommandListenerThread()
 
 		// MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
 
