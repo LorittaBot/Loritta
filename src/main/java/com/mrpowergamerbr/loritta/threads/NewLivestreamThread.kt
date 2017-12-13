@@ -96,7 +96,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					val displayName = if (displayNameCache.containsKey(userLogin)) {
 						displayNameCache[userLogin]!!
 					} else {
-						val channelName = getUserDisplayName(userLogin) ?: return
+						val channelName = getUserDisplayName(userLogin) ?: continue
 						displayNameCache[userLogin] = channelName
 						channelName
 					}
@@ -137,7 +137,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				e.printStackTrace()
 			}
 			debug(DebugType.TWITCH_THREAD, "Finished updating batch! ")
-			sleep(1500)
+			sleep(3000)
 		}
 
 		debug(DebugType.TWITCH_THREAD, "LIVESTREAMING BEFORE: ${isLivestreaming.joinToString(separator = ", ")}")
@@ -164,16 +164,21 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 			val response = JSON_PARSER.parse(payload).obj
 
-			val data = response["data"].array
+			try {
+				val data = response["data"].array
 
-			debug(DebugType.TWITCH_THREAD, "getUserDisplayName payload response contains ${data.size()} objects!")
+				debug(DebugType.TWITCH_THREAD, "getUserDisplayName payload response contains ${data.size()} objects!")
 
-			if (data.size() == 0) {
-				return null
+				if (data.size() == 0) {
+					return null
+				}
+
+				val channel = data[0].obj
+				return channel["display_name"].string
+			} catch (e: IllegalStateException) {
+				debug(DebugType.TWITCH_THREAD, payload)
+				throw e
 			}
-
-			val channel = data[0].obj
-			return channel["display_name"].string
 		}
 
 		fun getLivestreamsInfo(userLogins: List<String>): List<LivestreamInfo> {
@@ -192,11 +197,16 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 			val response = JSON_PARSER.parse(payload).obj
 
-			val data = response["data"].array
+			try {
+				val data = response["data"].array
 
-			debug(DebugType.TWITCH_THREAD, "getLivestreamsInfo payload response contains ${data.size()} objects!")
+				debug(DebugType.TWITCH_THREAD, "getLivestreamsInfo payload response contains ${data.size()} objects!")
 
-			return GSON.fromJson(data)
+				return GSON.fromJson(data)
+			} catch (e: java.lang.IllegalStateException) {
+				debug(DebugType.TWITCH_THREAD, payload)
+				throw e
+			}
 		}
 
 		fun getGameInfo(gameId: String): GameInfo? {
