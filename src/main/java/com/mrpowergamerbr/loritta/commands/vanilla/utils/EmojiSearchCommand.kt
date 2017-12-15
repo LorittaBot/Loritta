@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -52,7 +52,7 @@ class EmojiSearchCommand : CommandBase("emojisearch", listOf("procuraremoji")) {
 
 			var queriedEmotes = mutableListOf<Emote>()
 
-			for (guild in LORITTA_SHARDS.getGuilds()) {
+			for (guild in lorittaShards.getGuilds()) {
 				val emotes = guild.emotes.filter { it.name.toLowerCase().contains(query) }
 
 				queriedEmotes.addAll(emotes)

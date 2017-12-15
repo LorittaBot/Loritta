@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -68,9 +68,9 @@ object DebugLog {
 				val mb = 1024 * 1024
 				val runtime = Runtime.getRuntime()
 				println("===[ INFO ]===")
-				println("Shards: ${LORITTA_SHARDS.shards.size}")
-				println("Total Servers: ${LORITTA_SHARDS.getGuilds().size}")
-				println("Users: ${LORITTA_SHARDS.getUsers().size}")
+				println("Shards: ${lorittaShards.shards.size}")
+				println("Total Servers: ${lorittaShards.getGuilds().size}")
+				println("Users: ${lorittaShards.getUsers().size}")
 				//Print used memory
 				println("Used Memory:"
 						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);

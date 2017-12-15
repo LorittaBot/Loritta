@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 
@@ -26,7 +26,7 @@ class GiveawayThread : Thread() {
 				.exists()
 
 		for (config in configs) {
-			val guild = LORITTA_SHARDS.getGuildById(config.guildId) ?: continue
+			val guild = lorittaShards.getGuildById(config.guildId) ?: continue
 			val toRemove = mutableListOf<GiveawayCommand.Giveaway>()
 			for (giveaway in config.giveaways) {
 				val textChannel = guild.getTextChannelById(giveaway.channelId)

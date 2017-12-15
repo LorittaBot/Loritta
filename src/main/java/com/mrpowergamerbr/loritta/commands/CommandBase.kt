@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -203,7 +203,7 @@ open abstract class CommandBase(open val label: String, var aliases: List<String
 					ev.channel.sendTyping().complete()
 				}
 
-				LORITTA_SHARDS.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
+				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
 					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.author.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()

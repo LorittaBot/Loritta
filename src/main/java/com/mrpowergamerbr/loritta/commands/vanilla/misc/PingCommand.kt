@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandBase
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -18,8 +18,8 @@ class PingCommand : CommandBase("ping") {
         context.sendMessage(context.getAsMention(true) + "🏓 **Pong!** " + context.event.jda.ping + "ms (\uD83C\uDF0D Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})")
         if (context.args.isNotEmpty() && context.args[0] == "shards") {
 			var shardsInfo = ""
-			for (shard in LORITTA_SHARDS.shards) {
-				val lastUpdate = LORITTA_SHARDS.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
+			for (shard in lorittaShards.shards) {
+				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
 
 				val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 

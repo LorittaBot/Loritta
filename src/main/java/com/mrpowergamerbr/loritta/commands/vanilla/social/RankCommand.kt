@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -118,7 +118,7 @@ class RankCommand : CommandBase("rank", listOf("top", "leaderboard", "ranking"))
 				break
 			}
 
-			var member = LORITTA_SHARDS.getUserById(id)
+			var member = lorittaShards.getUserById(id)
 
 			if (member != null) {
 				val userProfile = loritta.getLorittaProfileForUser(id)

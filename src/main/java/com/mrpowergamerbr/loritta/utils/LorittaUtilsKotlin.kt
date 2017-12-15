@@ -71,7 +71,7 @@ fun Array<String>.remove(index: Int): Array<String> {
 
 val User.patreon: Boolean
 	get() {
-		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("364201981016801281")
@@ -87,7 +87,7 @@ val User.patreon: Boolean
 
 val User.lorittaSupervisor: Boolean
 	get() {
-		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("351473717194522647")
@@ -103,7 +103,7 @@ val User.lorittaSupervisor: Boolean
 
 val User.donator: Boolean
 	get() {
-		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("334711262262853642")
@@ -119,7 +119,7 @@ val User.donator: Boolean
 
 val User.artist: Boolean
 	get() {
-		val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("341343754336337921")
@@ -142,7 +142,7 @@ val loritta: Loritta
 /**
  * Retorna a LorittaShards
  */
-val LORITTA_SHARDS: LorittaShards
+val lorittaShards: LorittaShards
 	get() = LorittaLauncher.loritta.lorittaShards
 
 val JSON_PARSER: JsonParser
@@ -539,7 +539,7 @@ object LorittaUtilsKotlin {
 	fun generateServersInFanClub() {
 		val entries = mutableListOf<ServerFanClubEntry>()
 		loritta.rawServersFanClub.forEach{
-			val guild = LORITTA_SHARDS.getGuildById(it.serverId)
+			val guild = lorittaShards.getGuildById(it.serverId)
 			if (guild != null) {
 				entries.add(ServerFanClubEntry(it.id,
 						guild,
@@ -559,7 +559,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun sendStackTrace(message: String, t: Throwable) {
-		val guild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+		val guild = lorittaShards.getGuildById("297732013006389252")!!
 		val textChannel = guild.getTextChannelById("336834673441243146")
 
 		val messageBuilder = MessageBuilder()
@@ -601,7 +601,7 @@ object LorittaUtilsKotlin {
 		}
 
 		if (lastUpdate > 5000) {
-			val guild = LORITTA_SHARDS.getGuildById("297732013006389252") ?: return
+			val guild = lorittaShards.getGuildById("297732013006389252") ?: return
 			val textChannel = guild.getTextChannelById("336932935838203904")
 
 			lastUpdate = System.currentTimeMillis()

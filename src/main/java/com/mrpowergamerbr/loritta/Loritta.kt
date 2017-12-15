@@ -29,7 +29,6 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
 import com.mrpowergamerbr.loritta.utils.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -261,8 +260,8 @@ class Loritta {
 		thread {
 			while (true) {
 				try {
-					cachedGuilds = LORITTA_SHARDS.getGuilds()
-					cachedUsers = LORITTA_SHARDS.getUsers()
+					cachedGuilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
+					cachedUsers = com.mrpowergamerbr.loritta.utils.lorittaShards.getUsers()
 
 					var serversFanClub = loritta.serversFanClub.sortedByDescending {
 						it.guild.members.size
@@ -270,7 +269,7 @@ class Loritta {
 					var donatorsFanClub = serversFanClub.filter {
 						val owner = it.guild.owner.user
 
-						val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
 						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -282,7 +281,7 @@ class Loritta {
 					serversFanClub.onEach {
 						val owner = it.guild.owner.user
 
-						val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
 						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -299,7 +298,7 @@ class Loritta {
 					val isPatreon = mutableMapOf<String, Boolean>()
 					val isDonator = mutableMapOf<String, Boolean>()
 
-					val lorittaGuild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
+					val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
 					val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 					val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
@@ -316,7 +315,7 @@ class Loritta {
 					this.isPatreon = isPatreon
 					this.isDonator = isDonator
 
-					val guilds = LORITTA_SHARDS.getGuilds()
+					val guilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
 
 					val famousGuilds = guilds
 							.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }

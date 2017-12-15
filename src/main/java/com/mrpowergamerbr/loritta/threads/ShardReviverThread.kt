@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
@@ -28,8 +28,8 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 	fun checkAndReviveDeadShards() {
 		try {
-			for (shard in LORITTA_SHARDS.shards) {
-				val lastUpdate = LORITTA_SHARDS.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
+			for (shard in lorittaShards.shards) {
+				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
 
 				val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 
@@ -38,8 +38,8 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				}
 			}
 
-			val deadShards = LORITTA_SHARDS.shards.filter {
-				val lastUpdate = LORITTA_SHARDS.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
+			val deadShards = lorittaShards.shards.filter {
+				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
 
 				System.currentTimeMillis() - lastUpdate > 12500
 			}
@@ -63,8 +63,8 @@ class ShardReviverThread : Thread("Shard Reviver") {
 					}
 					val shardId = deadShard.shardInfo.shardId
 
-					LORITTA_SHARDS.shards.remove(deadShard)
-					LORITTA_SHARDS.lastJdaEventTime.remove(deadShard)
+					lorittaShards.shards.remove(deadShard)
+					lorittaShards.lastJdaEventTime.remove(deadShard)
 
 					thread(block = deadShard::shutdownNow)
 
@@ -79,7 +79,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 					shard.addEventListener(discordListener)
 					shard.addEventListener(eventLogListener)
 
-					LORITTA_SHARDS.shards.add(shard)
+					lorittaShards.shards.add(shard)
 
 					guild = loritta.lorittaShards.getGuildById("297732013006389252")
 					if (guild != null) {

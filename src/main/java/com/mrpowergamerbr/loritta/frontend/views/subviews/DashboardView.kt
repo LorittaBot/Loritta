@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
@@ -21,7 +21,7 @@ class DashboardView : ProtectedView() {
 		val joinedServers = mutableMapOf<TemmieDiscordAuth.DiscordGuild, Boolean>()
 		for (guild in guilds) {
 			userPermissionLevels[guild] = LorittaWebsite.getUserPermissionLevel(guild)
-			joinedServers[guild] = LORITTA_SHARDS.getGuildById(guild.id) != null
+			joinedServers[guild] = lorittaShards.getGuildById(guild.id) != null
 		}
 		variables["userPermissionLevels"] = userPermissionLevels
 		variables["joinedServers"] = joinedServers

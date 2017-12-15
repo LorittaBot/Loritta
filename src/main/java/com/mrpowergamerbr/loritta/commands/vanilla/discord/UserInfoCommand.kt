@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
 import java.time.Instant
 import java.time.ZoneId
@@ -84,7 +84,7 @@ class UserInfoCommand : CommandBase("userinfo") {
 			if (member != null)
 				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(), true)
 
-			val sharedServers = LORITTA_SHARDS.getMutualGuilds(user)
+			val sharedServers = lorittaShards.getMutualGuilds(user)
 
 			var servers = sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
 

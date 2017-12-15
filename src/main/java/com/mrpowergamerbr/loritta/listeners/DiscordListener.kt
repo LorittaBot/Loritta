@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -376,7 +376,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			event.guild.members.forEach {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
-					val guilds = LORITTA_SHARDS.getMutualGuilds(it.user)
+					val guilds = lorittaShards.getMutualGuilds(it.user)
 
 					if (guilds.any { guild -> // Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
 						guild.getMember(it.user).hasPermission(Permission.ADMINISTRATOR) || guild.getMember(it.user).hasPermission(Permission.MANAGE_SERVER)

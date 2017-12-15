@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
@@ -33,7 +33,7 @@ class ServerInfoCommand : CommandBase("serverinfo") {
 		val id = if (context.args.isNotEmpty()) { context.args[0] } else { null }
 
 		if (id != null && id.isValidSnowflake()) {
-			guild = LORITTA_SHARDS.getGuildById(context.args[0])
+			guild = lorittaShards.getGuildById(context.args[0])
 		}
 
 		if (guild == null) {

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.LORITTA_SHARDS
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.User
 import org.jooby.Request
@@ -17,7 +17,7 @@ class FanArtsView : AbstractView() {
 
 		val users = mutableMapOf<String, User?>()
 		loritta.fanArts.forEach {
-			users.put(it.artistId, LORITTA_SHARDS.retriveUserById(it.artistId))
+			users.put(it.artistId, lorittaShards.retriveUserById(it.artistId))
 		}
 		variables["fanArtsUsers"] = users
 
