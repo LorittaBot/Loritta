@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.util.*
 
-class InverterCommand : CommandBase("inverter") {
+class InverterCommand : AbstractCommand("inverter") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.INVERTER_DESCRIPTION.f()
 	}

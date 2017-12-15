@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -14,7 +14,7 @@ import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
-class WikipediaCommand : CommandBase("wikipedia") {
+class WikipediaCommand : AbstractCommand("wikipedia") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.WIKIPEDIA_DESCRIPTION
 	}

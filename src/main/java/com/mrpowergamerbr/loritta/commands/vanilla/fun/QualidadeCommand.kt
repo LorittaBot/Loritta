@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class QualidadeCommand : CommandBase("qualidade") {
+class QualidadeCommand : AbstractCommand("qualidade") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["QUALIDADE_DESCRIPTION"]
 	}

@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class SlowModeCommand : CommandBase("slowmode", listOf("modolento")) {
+class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SLOWMODE_Description"]
 	}

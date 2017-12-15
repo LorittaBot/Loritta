@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class NashornTestCommand : CommandBase("nashorn") {
+class NashornTestCommand : AbstractCommand("nashorn") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

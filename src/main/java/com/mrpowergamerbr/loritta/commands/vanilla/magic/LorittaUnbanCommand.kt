@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class LorittaUnbanCommand : CommandBase("lorittaunban") {
+class LorittaUnbanCommand : AbstractCommand("lorittaunban") {
 	override fun getDescription(): String {
 		return "Desbanir usuários de usar a Loritta"
 	}

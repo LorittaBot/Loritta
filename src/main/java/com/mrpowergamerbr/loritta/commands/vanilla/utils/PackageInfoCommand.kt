@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : CommandBase("correios", listOf("packageinfo", "ctt")) {
+class PackageInfoCommand : AbstractCommand("correios", listOf("packageinfo", "ctt")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}

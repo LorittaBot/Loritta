@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.aminoreapi.AminoClient
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -15,7 +15,7 @@ import java.awt.Color
 import java.time.ZoneOffset
 
 
-class AminoCommand : CommandBase("amino") {
+class AminoCommand : AbstractCommand("amino") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AMINO_DESCRIPTION"]
 	}

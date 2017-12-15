@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 
-class TranslateCommand : CommandBase("traduzir", listOf("translate")) {
+class TranslateCommand : AbstractCommand("traduzir", listOf("translate")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRANSLATE_DESCRIPTION"]
 	}

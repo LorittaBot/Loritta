@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.digest.DigestUtils
 
 
-class Md5Command : CommandBase("md5") {
+class Md5Command : AbstractCommand("md5") {
 	override fun getUsage(): String {
 		return "mensagem"
 	}

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -14,7 +14,7 @@ import java.awt.Color
 import java.net.UnknownHostException
 import java.util.*
 
-class PeQueryCommand : CommandBase("pequery") {
+class PeQueryCommand : AbstractCommand("pequery") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.MCQUERY_DESCRIPTION.msgFormat()
 	}

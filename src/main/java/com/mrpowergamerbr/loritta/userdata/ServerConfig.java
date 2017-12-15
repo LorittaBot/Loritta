@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata;
 
 import com.mrpowergamerbr.loritta.LorittaLauncher;
-import com.mrpowergamerbr.loritta.commands.CommandBase;
+import com.mrpowergamerbr.loritta.commands.AbstractCommand;
 import com.mrpowergamerbr.loritta.commands.CommandOptions;
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand;
 import com.mrpowergamerbr.loritta.commands.vanilla.fun.GiveawayCommand.Giveaway;
@@ -35,7 +35,7 @@ public class ServerConfig {
 
     public HashMap<String, CommandOptions> commandOptions = new HashMap<String, CommandOptions>(); // Command Options
     // Os command options são salvos assim:
-    // CommandBase.getClass().getSimpleName() - CommandOptions
+    // AbstractCommand.getClass().getSimpleName() - CommandOptions
 
     // boolean warnOnFail; // Avisar ao usuário quando escrever o comando errado?
     public boolean explainOnCommandRun = true; // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
@@ -71,7 +71,7 @@ public class ServerConfig {
 
     public ArrayList<Giveaway> giveaways = new ArrayList<>();
 
-    public CommandOptions getCommandOptionsFor(CommandBase cmd) {
+    public CommandOptions getCommandOptionsFor(AbstractCommand cmd) {
         if (cmd instanceof NashornCommand) { // Se é um comando feito em Nashorn...
             // Vamos retornar uma configuração padrão!
             return new CommandOptions();

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McStatusCommand : CommandBase("mcstatus") {
+class McStatusCommand : AbstractCommand("mcstatus") {
     override fun getDescription(locale: BaseLocale): String {
         return locale.MCSTATUS_DESCRIPTION.msgFormat();
     }

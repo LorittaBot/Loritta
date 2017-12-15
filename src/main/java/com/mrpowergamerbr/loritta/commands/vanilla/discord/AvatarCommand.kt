@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.util.*
 
-class AvatarCommand : CommandBase("avatar") {
+class AvatarCommand : AbstractCommand("avatar") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.AVATAR_DESCRIPTION.msgFormat()
 	}

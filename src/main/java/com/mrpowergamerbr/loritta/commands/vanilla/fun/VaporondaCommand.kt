@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 
-class VaporondaCommand : CommandBase("vaporonda", listOf("vaporwave")) {
+class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VAPORONDA_DESCRIPTION"]
 	}

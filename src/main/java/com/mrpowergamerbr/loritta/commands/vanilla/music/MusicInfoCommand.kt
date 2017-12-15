@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class MusicInfoCommand : CommandBase("tocando", listOf("playing", "musicinfo")) {
+class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "musicinfo")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUSICINFO_DESCRIPTION"]
 	}

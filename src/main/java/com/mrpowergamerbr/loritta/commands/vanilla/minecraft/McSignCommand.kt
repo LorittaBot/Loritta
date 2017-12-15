@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -14,7 +14,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McSignCommand : CommandBase("mcsign") {
+class McSignCommand : AbstractCommand("mcsign") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.MCSIGN_DESCRIPTION.msgFormat();
 	}

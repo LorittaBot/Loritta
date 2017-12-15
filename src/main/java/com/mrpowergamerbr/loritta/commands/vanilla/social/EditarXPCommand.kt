@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class EditarXPCommand : CommandBase("editarxp") {
+class EditarXPCommand : AbstractCommand("editarxp") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["EDITARXP_DESCRIPTION"]
 	}

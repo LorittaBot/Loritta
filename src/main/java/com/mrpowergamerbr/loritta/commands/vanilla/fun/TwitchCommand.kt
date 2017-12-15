@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class TwitchCommand : CommandBase("twitch") {
+class TwitchCommand : AbstractCommand("twitch") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TWITCH_Description"]
 	}

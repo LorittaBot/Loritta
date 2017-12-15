@@ -1,18 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
-import java.util.*
 import java.util.concurrent.ExecutionException
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
-class EvalCommand : CommandBase("eval") {
+class EvalCommand : AbstractCommand("eval") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

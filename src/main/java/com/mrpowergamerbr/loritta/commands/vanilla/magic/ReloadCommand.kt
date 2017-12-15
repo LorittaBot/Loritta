@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
@@ -17,7 +17,7 @@ import org.apache.commons.io.FileUtils
 import org.mongodb.morphia.Morphia
 import java.io.File
 
-class ReloadCommand : CommandBase("reload") {
+class ReloadCommand : AbstractCommand("reload") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

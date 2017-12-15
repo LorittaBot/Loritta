@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
-class LanguageCommand : CommandBase("language", listOf("linguagem", "speak")) {
+class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LANGUAGE_DESCRIPTION"]
 	}

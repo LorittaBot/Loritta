@@ -38,14 +38,14 @@ import java.util.HashMap;
 public class CommandContext {
 	public LorittaUser lorittaUser;
 	public MessageReceivedEvent event;
-	public CommandBase cmd;
+	public AbstractCommand cmd;
 	public String[] args;
 	public String[] rawArgs;
 	public String[] strippedArgs;
 	public HashMap<String, Object> metadata = new HashMap<>();
 	public BaseLocale locale = LorittaLauncher.loritta.getLocales().get("default");
 
-	public CommandContext(ServerConfig conf, LorittaUser profile, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
+	public CommandContext(ServerConfig conf, LorittaUser profile, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		this.lorittaUser = profile;
 		this.event = event;
 		this.cmd = cmd;
@@ -55,7 +55,7 @@ public class CommandContext {
 		this.locale = LorittaLauncher.loritta.getLocaleById(conf.localeId);
 	}
 
-	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, CommandBase cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
+	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;

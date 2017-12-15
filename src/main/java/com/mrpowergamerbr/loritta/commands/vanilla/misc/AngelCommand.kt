@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.io.File
 
-class AngelCommand : CommandBase("angel") {
+class AngelCommand : AbstractCommand("angel") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ANGEL_DESCRIPTION.msgFormat()
 	}

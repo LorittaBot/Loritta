@@ -1,18 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
-import java.awt.image.BufferedImage
 import java.util.*
 
-class OjjoCommand : CommandBase("ojjo") {
+class OjjoCommand : AbstractCommand("ojjo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("OJJO_DESCRIPTION")
 	}

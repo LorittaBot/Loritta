@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.undertale
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -16,7 +16,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class UndertaleBoxCommand : CommandBase("utbox", listOf("undertalebox")) {
+class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["UTBOX_DESCRIPTION"]
 	}

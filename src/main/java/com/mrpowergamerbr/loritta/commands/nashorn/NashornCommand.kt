@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -20,7 +20,7 @@ import javax.script.Invocable
 /**
  * Comandos usando a Nashorn Engine
  */
-class NashornCommand : CommandBase {
+class NashornCommand : AbstractCommand {
 	var id = ObjectId() // Object ID único para cada comando
 	var jsLabel = "loritta" // label do comando
 	lateinit var javaScript: String // código em JS do comando

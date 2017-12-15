@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class HackBanCommand : CommandBase("hackban") {
+class HackBanCommand : AbstractCommand("hackban") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["HACKBAN_DESCRIPTION"]
 	}

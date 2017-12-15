@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.util.*
 
-class TretaNewsCommand : CommandBase("tretanews") {
+class TretaNewsCommand : AbstractCommand("tretanews") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.TRETANEWS_DESCRIPTION.f()
 	}

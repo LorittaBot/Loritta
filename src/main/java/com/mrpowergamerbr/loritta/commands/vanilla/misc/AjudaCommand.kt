@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -18,7 +18,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 import java.util.stream.Collectors
 
-class AjudaCommand : CommandBase("ajuda", listOf("help", "comandos")) {
+class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
 	}
@@ -104,7 +104,7 @@ class AjudaCommand : CommandBase("ajuda", listOf("help", "comandos")) {
 		embed.setThumbnail(image)
 
 		var description = "*" + cat.description + "*\n\n";
-		val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.getCategory() == cat }.collect(Collectors.toList<CommandBase>())
+		val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.getCategory() == cat }.collect(Collectors.toList<AbstractCommand>())
 
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {

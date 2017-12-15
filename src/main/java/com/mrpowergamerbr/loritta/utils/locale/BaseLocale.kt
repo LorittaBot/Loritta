@@ -33,7 +33,7 @@ open class BaseLocale {
 	lateinit var EVENTLOG_CHANNEL_POSITION_UPDATED: String
 	lateinit var EVENTLOG_CHANNEL_DELETED: String
 
-	// CommandBase.kt
+	// AbstractCommand.ktd.kt
 	lateinit var HOW_TO_USE: String
 	lateinit var EXAMPLE: String
 

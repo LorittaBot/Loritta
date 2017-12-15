@@ -131,7 +131,7 @@ import net.pocketdreams.loriplugins.simsimi.commands.SimsimiCommand
 import java.util.*
 
 class CommandManager {
-	var commandMap: MutableList<CommandBase> = ArrayList()
+	var commandMap: MutableList<AbstractCommand> = ArrayList()
 	var defaultCmdOptions: MutableMap<String, Class<*>> = HashMap()
 
 	init {
@@ -301,7 +301,7 @@ class CommandManager {
 		defaultCmdOptions.put(TristeRealidadeCommand::class.java.simpleName, TristeRealidadeCommand.TristeRealidadeCommandOptions::class.java)
 	}
 
-	fun getCommandsDisabledIn(conf: ServerConfig): List<CommandBase> {
+	fun getCommandsDisabledIn(conf: ServerConfig): List<AbstractCommand> {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 }

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -12,7 +12,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class DicioCommand : CommandBase("dicio", listOf("dicionário", "definir")) {
+class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "definir")) {
 	override fun getUsage(): String {
 		return "palavra"
 	}

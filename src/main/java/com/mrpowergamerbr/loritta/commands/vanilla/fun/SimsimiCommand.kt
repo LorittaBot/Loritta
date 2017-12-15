@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.net.URLEncoder
 
-class SimsimiCommand : CommandBase("simsimi") {
+class SimsimiCommand : AbstractCommand("simsimi") {
 	override fun getDescription(locale: BaseLocale): String = locale["SIMSIMI_DESCRIPTION"]
 
 	override fun getExample(): List<String> = listOf("Como vai você?")

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -17,7 +17,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class ShipCommand : CommandBase("ship", listOf("shippar")) {
+class ShipCommand : AbstractCommand("ship", listOf("shippar")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.SHIP_DESCRIPTION.f()
     }

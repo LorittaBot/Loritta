@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ColorUtils
@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class ColorInfoCommand : CommandBase("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker")) {
+class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker")) {
 	companion object {
 		val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toPattern()
 		val RGB_PATTERN = "(\\d{1,3})(?:,| |, )(\\d{1,3})(?:,| |, )(\\d{1,3})(?:(?:,| |, )(\\d{1,3}))?".toPattern()

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 
-class RollCommand : CommandBase("rolar", listOf("roll")) {
+class RollCommand : AbstractCommand("rolar", listOf("roll")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROLL_DESCRIPTION"]
 	}

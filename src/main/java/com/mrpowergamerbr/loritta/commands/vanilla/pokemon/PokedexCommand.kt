@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.pokemon
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
@@ -12,7 +12,7 @@ import org.jsoup.Jsoup
 import java.awt.Color
 import java.util.*
 
-class PokedexCommand : CommandBase("pokedex", listOf("pokédex")) {
+class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex")) {
     override fun getDescription(locale: BaseLocale): String {
         return locale.POKEDEX_DESCRIPTION.msgFormat()
     }

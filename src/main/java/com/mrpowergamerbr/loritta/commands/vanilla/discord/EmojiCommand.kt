@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.MessageBuilder
 
-class EmojiCommand : CommandBase("emoji") {
+class EmojiCommand : AbstractCommand("emoji") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.EMOJI_DESCRIPTION.msgFormat()
 	}

@@ -27,7 +27,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class CommandBase(open val label: String, var aliases: List<String> = listOf()) {
+open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf()) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}

@@ -6,7 +6,7 @@ import com.mongodb.client.model.Aggregates.sort
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
-class SpinnerCommand : CommandBase("spinner", listOf("fidget", "fidgetspinner")) {
+class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner")) {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
 
 	data class FidgetSpinner(var emoji: String, var threadId: Long, var forTime: Int, var spinnedAt: Long, var lastRerotation: Long)

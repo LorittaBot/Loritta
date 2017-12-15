@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
@@ -18,7 +18,7 @@ import java.io.FileInputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class TristeRealidadeCommand : CommandBase("tristerealidade", listOf("sadreality")) {
+class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadreality")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRISTEREALIDADE_DESCRIPTION"]
 	}

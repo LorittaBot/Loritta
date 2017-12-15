@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
@@ -17,7 +17,7 @@ import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 
-class HojeCommand : CommandBase("hoje", listOf("today")) {
+class HojeCommand : AbstractCommand("hoje", listOf("today")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TODAY_DESCRIPTION")
 	}

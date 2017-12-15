@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaImage
@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AtaCommand : CommandBase("ata") {
+class AtaCommand : AbstractCommand("ata") {
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("ATA_DESCRIPTION")

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -17,7 +17,7 @@ import java.awt.image.RGBImageFilter
 import java.io.File
 import javax.imageio.ImageIO
 
-class RazoesCommand : CommandBase("razoes", listOf("razões", "reasons")) {
+class RazoesCommand : AbstractCommand("razoes", listOf("razões", "reasons")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.RAZOES_DESCRIPTION.f()
 	}

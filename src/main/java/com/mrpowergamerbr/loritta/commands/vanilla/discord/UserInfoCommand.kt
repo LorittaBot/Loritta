@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.time.Instant
 import java.time.ZoneId
 
-class UserInfoCommand : CommandBase("userinfo") {
+class UserInfoCommand : AbstractCommand("userinfo") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("USERINFO_DESCRIPTION")
 	}

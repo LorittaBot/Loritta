@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class TocarCommand : CommandBase("tocar", listOf("play", "adicionar")) {
+class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TOCAR_DESCRIPTION")
 	}

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.HierarchyException
 import java.awt.Color
 
-class MuteCommand : CommandBase("mute", listOf("mutar", "silenciar")) {
+class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUTE_DESCRIPTION"]
 	}

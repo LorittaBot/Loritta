@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
@@ -44,7 +44,7 @@ private val avatars = listOf(
 	"http://i.imgur.com/rVmgwZC.png",
 	"http://i.imgur.com/z7Ec5I3.png")
 
-class FaustaoCommand : CommandBase("faustão", listOf("faustao")) {
+class FaustaoCommand : AbstractCommand("faustão", listOf("faustao")) {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.FUN
 	}

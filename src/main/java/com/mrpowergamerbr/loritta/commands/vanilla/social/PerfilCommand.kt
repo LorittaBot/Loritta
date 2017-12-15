@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
@@ -25,7 +25,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class PerfilCommand : CommandBase("perfil", listOf("profile")) {
+class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PERFIL_DESCRIPTION"]
 	}

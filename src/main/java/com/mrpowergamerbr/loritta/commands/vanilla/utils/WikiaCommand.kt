@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 
-class WikiaCommand : CommandBase("wikia") {
+class WikiaCommand : AbstractCommand("wikia") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("WIKIA_DESCRIPTION")
 	}

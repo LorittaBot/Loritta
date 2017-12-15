@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.net.UnknownHostException
 import java.util.*
 
-class IsUpCommand : CommandBase("isup") {
+class IsUpCommand : AbstractCommand("isup") {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.ISUP_DESCRIPTION
 	}

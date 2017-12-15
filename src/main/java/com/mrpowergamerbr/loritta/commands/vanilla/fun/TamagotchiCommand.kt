@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -33,7 +33,7 @@ import java.io.FileInputStream
 import java.lang.Thread.sleep
 import javax.imageio.ImageIO
 
-class TamagotchiCommand : CommandBase("tamagotchi") {
+class TamagotchiCommand : AbstractCommand("tamagotchi") {
 	override fun getCategory(): CommandCategory {
 		return CommandCategory.MAGIC
 	}

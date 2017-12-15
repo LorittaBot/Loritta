@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class CaraCoroaCommand : CommandBase("girarmoeda", listOf("flip", "toss", "moeda", "coin", "flipcoin")) {
+class CaraCoroaCommand : AbstractCommand("girarmoeda", listOf("flip", "toss", "moeda", "coin", "flipcoin")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["CARACOROA_DESCRIPTION"]
 	}

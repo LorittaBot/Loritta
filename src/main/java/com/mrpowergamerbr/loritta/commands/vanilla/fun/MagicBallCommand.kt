@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
-class MagicBallCommand : CommandBase("vieirinha", listOf("8ball", "magicball", "eightball")) {
+class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VIEIRINHA_DESCRIPTION"]
 	}

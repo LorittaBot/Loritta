@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
-import com.mrpowergamerbr.loritta.commands.CommandBase
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import org.apache.commons.codec.Charsets
 import java.util.*
 
-class OfflineUUIDCommand : CommandBase("mcofflineuuid", listOf("offlineuuid")) {
+class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid")) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.OFFLINEUUID_DESCRIPTION.msgFormat()
 	}
