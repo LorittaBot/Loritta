@@ -203,7 +203,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.eventLogExecutors.submit {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-			if (eventLogConfig.isEnabled) {
+			if (eventLogConfig.isEnabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdit)) {
 				val attachments = mutableListOf<String>()
 
 				event.message.attachments.forEach {
@@ -240,7 +240,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 
-			if (eventLogConfig.isEnabled && eventLogConfig.messageEdit) {
+			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
 				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
