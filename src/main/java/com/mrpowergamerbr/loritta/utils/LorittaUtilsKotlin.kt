@@ -593,8 +593,6 @@ object LorittaUtilsKotlin {
 	@JvmStatic
 	fun trackCommands(message: Message) {
 		executedCommands++
-		val guild = LORITTA_SHARDS.getGuildById("297732013006389252")!!
-		val textChannel = guild.getTextChannelById("336932935838203904")
 
 		if (message.isFromType(ChannelType.TEXT)) {
 			commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
@@ -603,6 +601,9 @@ object LorittaUtilsKotlin {
 		}
 
 		if (lastUpdate > 5000) {
+			val guild = LORITTA_SHARDS.getGuildById("297732013006389252") ?: return
+			val textChannel = guild.getTextChannelById("336932935838203904")
+
 			lastUpdate = System.currentTimeMillis()
 
 			val toBeSent = commandQueue.joinToString("\n")

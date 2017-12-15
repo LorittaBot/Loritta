@@ -105,9 +105,9 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newScheduledThreadPool(32) // Threads
-	val messageExecutors = Executors.newScheduledThreadPool(32) // Threads
-	val executor = Executors.newScheduledThreadPool(32) // Threads
+	val eventLogExecutors = Executors.newCachedThreadPool() // Threads
+	val messageExecutors = Executors.newCachedThreadPool() // Threads
+	val executor = Executors.newCachedThreadPool() // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -117,7 +117,7 @@ class Loritta {
 	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
-	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<String, Long>().asMap()
+	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
