@@ -24,6 +24,8 @@ class PingCommand : CommandBase("ping") {
 				setTitle("\uD83C\uDF0E ${locale["PING_ShardsInfo"]}")
 
 				for (shard in lorittaShards.shards) {
+					val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
+					val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 					addField("Shard ${shard.shardInfo.shardId}", "${shard.ping}ms - ${seconds}s", true)
 				}
 			}
