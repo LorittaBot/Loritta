@@ -21,4 +21,5 @@ object Constants {
 
 	// ===[ COLORS ]===
 	val DISCORD_BURPLE = Color(114, 137, 218)
+	val LORITTA_AQUA = Color(0, 193, 223)
 }
