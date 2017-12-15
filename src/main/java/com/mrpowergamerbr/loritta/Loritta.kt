@@ -566,6 +566,8 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
+				if (true)
+					return
 				playlistCache[trackUrl] = playlist
 				playPlaylist(context, musicManager, playlist)
 			}
@@ -641,6 +643,8 @@ class Loritta {
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
+				if (true)
+					return
 				playlistCache[trackUrl] = playlist
 				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
 			}
