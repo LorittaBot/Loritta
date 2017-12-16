@@ -34,7 +34,7 @@ class PingCommand : AbstractCommand("ping") {
 		} else {
 			val message = context.reply(
 					LoriReply(
-							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83C\uDF0D Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
+							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83C\uDF0E Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
 							prefix = "\uD83C\uDFD3"
 					)
 			)
