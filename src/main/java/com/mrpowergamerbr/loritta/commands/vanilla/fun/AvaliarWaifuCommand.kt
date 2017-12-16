@@ -3,13 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
 class AvaliarWaifuCommand : AbstractCommand("avaliarwaifu", listOf("ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu")) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.RATEWAIFU_DESCRIPTION
+		return locale["RATEWAIFU_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
@@ -26,67 +27,103 @@ class AvaliarWaifuCommand : AbstractCommand("avaliarwaifu", listOf("ratemywaifu"
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			if (context.message.mentionedUsers.isNotEmpty()) {
-				joined = context.message.mentionedUsers[0].name;
+			var waifu = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
+			val user = LorittaUtils.getUserFromContext(context, 0)
+			if (user != null) {
+				waifu = user.name
 			}
-			var random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + joined.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
-			var nota = random.nextInt(0, 11);
 
-			var reason = context.locale.RATEWAIFU_10.f()
+			val waifuLowerCase = waifu.toLowerCase()
+			var random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
+			var nota = random.nextInt(0, 11)
+
+			var reason = locale["RATEWAIFU_10"]
 
 			if (nota == 9) {
-				reason = "${context.locale.RATEWAIFU_9.f()} <:osama:325332212255948802>";
+				reason = "${locale["RATEWAIFU_9"]} <:osama:325332212255948802>"
 			}
 			if (nota == 8) {
-				reason = context.locale.RATEWAIFU_8.f();
+				reason = locale["RATEWAIFU_8"]
 			}
 			if (nota == 7) {
-				reason = "${context.locale.RATEWAIFU_7.f()} 😊";
+				reason = "${locale["RATEWAIFU_7"]} 😊"
 			}
 			if (nota == 6) {
-				reason = context.locale.RATEWAIFU_6.f();
+				reason = locale["RATEWAIFU_6"]
 			}
 			if (nota == 5) {
-				reason = context.locale.RATEWAIFU_5.f();
+				reason = locale["RATEWAIFU_5"]
 			}
 			if (nota == 4) {
-				reason = context.locale.RATEWAIFU_4.f();
+				reason = locale["RATEWAIFU_4"]
 			}
 			if (nota == 3) {
-				reason = context.locale.RATEWAIFU_3.f();
+				reason = locale["RATEWAIFU_3"]
 			}
 			if (nota == 2) {
-				reason = context.locale.RATEWAIFU_2.f();
+				reason = locale["RATEWAIFU_2"]
 			}
 			if (nota == 1) {
-				reason = context.locale.RATEWAIFU_1.f();
+				reason = locale["RATEWAIFU_1"]
 			}
 			if (nota == 0) {
-				reason = "🤦 ${context.locale.RATEWAIFU_0.f()}";
+				reason = "🤦 ${locale["RATEWAIFU_0"]}";
 			}
 			var strNota = nota.toString();
-			if (joined == "Loritta") {
+			if (waifuLowerCase == "loritta") {
 				strNota = "∞";
-				reason = "${context.locale.RATEWAIFU_IM_PERFECT.f()} <:loritta_quebrada:338679008210190336>!"
+				reason = "${locale["RATEWAIFU_IM_PERFECT"]} <:loritta_quebrada:338679008210190336>"
 			}
-			if (joined == "Tatsumaki") {
+			if (waifuLowerCase == "pollux") {
+				strNota = "10"
+				reason = "${locale["RATEWAIFU_Pollux"]} <:polluxthonk:391375859937837076>"
+			}
+			if (waifuLowerCase == "pantufa") {
+				strNota = "10"
+				reason = "${locale["RATEWAIFU_Pantufa"]} \uD83D\uDE0A"
+			}
+			if (waifuLowerCase == "tyrone") {
+				strNota = "10"
+				reason = locale["RATEWAIFU_Tyrone"]
+			}
+			if (waifuLowerCase == "tatsumaki") {
 				strNota = "10";
-				reason = "Minha amiga mais velha, sabia que eu fui inspirada nela! Não trocaria de Waifu (e nem de bot) se fosse você!"
+				reason = locale["RATEWAIFU_Tatsumaki"]
 			}
-			if (joined == "Mee6") {
-				strNota = "6";
-				reason = "Tem potencial para ser melhor... Mas atualmente é um bot muito usado mas que precisa de mais funções úteis."
+			if (waifuLowerCase == "mantaro") {
+				strNota = "8"
+				reason = locale["RATEWAIFU_Mantaro"]
 			}
-			if (joined == "Dyno") {
-				strNota = "7";
-				reason = "Eu acho que ele é bom para administração..."
+			if (waifuLowerCase == "kawaiibot") {
+				strNota = "8"
+				reason = "ʕ•ᴥ•ʔ"
 			}
-			if (joined == "NotSoBot") {
+			if (waifuLowerCase == "yggdrasil") {
+				strNota = "8"
+				reason = locale["RATEWAIFU_Yggdrasil"]
+			}
+			if (waifuLowerCase == "mee6") {
 				strNota = "8";
-				reason = "Uma boa Waifu, mas precisa ser alguém menos zueiro e, é claro, alguém que não fica travando toda hora."
+				reason = locale["RATEWAIFU_Mee6"]
 			}
-			context.sendMessage(context.getAsMention(true) + context.locale.RATEWAIFU_RESULT.f(strNota, joined, reason));
+			if (waifuLowerCase == "dyno") {
+				strNota = "8";
+				reason = locale["RATEWAIFU_Dyno"]
+			}
+			if (waifuLowerCase == "notsobot") {
+				strNota = "6";
+				reason = locale["RATEWAIFU_NotSoBot"]
+			}
+			if (waifuLowerCase == "lorita" || waifuLowerCase == "lorrita") {
+				strNota = "-∞";
+				reason = locale["RATEWAIFU_Lorrita"]
+			}
+			context.reply(
+					LoriReply(
+							message = locale["RATEWAIFU_RESULT", strNota, waifu, reason],
+							prefix = "\uD83E\uDD14"
+					)
+			)
 		} else {
 			this.explain(context);
 		}

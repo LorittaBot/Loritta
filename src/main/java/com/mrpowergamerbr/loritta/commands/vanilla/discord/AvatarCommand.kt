@@ -7,13 +7,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.util.*
 
 class AvatarCommand : AbstractCommand("avatar") {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.AVATAR_DESCRIPTION.msgFormat()
+		return locale["AVATAR_DESCRIPTION"]
 	}
 
 	override fun getCategory(): CommandCategory {
@@ -37,7 +36,14 @@ class AvatarCommand : AbstractCommand("avatar") {
 
 		var embed = EmbedBuilder();
 		embed.setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
-		embed.setDescription("**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**" + if (getAvatar.id == Loritta.config.clientId) "\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A" else "");
+		var description = "**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**"
+		
+		if (getAvatar.id == Loritta.config.clientId)
+			description += "*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A"
+		if (getAvatar.id == "390927821997998081")
+			description += "*${context.locale["AVATAR_PantufaCute"]}* \uD83D\uDE0A"
+
+		embed.setDescription(description);
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")
 		embed.setImage(getAvatar.effectiveAvatarUrl + if (!getAvatar.effectiveAvatarUrl.endsWith(".gif")) "?size=2048" else "")
 		context.sendMessage(embed.build());
