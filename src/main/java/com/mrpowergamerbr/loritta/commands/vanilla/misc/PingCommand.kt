@@ -40,7 +40,7 @@ class PingCommand : AbstractCommand("ping") {
 			)
 
 			message.onReactionAddByAuthor(context) {
-				message.editMessage("${context.userHandle.asMention} i luv u <:blobNom:357976954688897026>")
+				message.editMessage("${context.userHandle.asMention} i luv u <:blobNom:357976954688897026>").queue()
 			}
 		}
     }
