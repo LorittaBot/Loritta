@@ -37,11 +37,11 @@ class AvatarCommand : AbstractCommand("avatar") {
 		var embed = EmbedBuilder();
 		embed.setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
 		var description = "**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**"
-		
+
 		if (getAvatar.id == Loritta.config.clientId)
-			description += "*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A"
+			description += "\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A"
 		if (getAvatar.id == "390927821997998081")
-			description += "*${context.locale["AVATAR_PantufaCute"]}* \uD83D\uDE0A"
+			description += "\n*${context.locale["AVATAR_PantufaCute"]}* \uD83D\uDE0A"
 
 		embed.setDescription(description);
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")

@@ -10,10 +10,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
 import java.net.URLEncoder
@@ -96,7 +96,9 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					val displayName = if (displayNameCache.containsKey(userLogin)) {
 						displayNameCache[userLogin]!!
 					} else {
-						val channelName = getUserDisplayName(userLogin) ?: continue
+						val userDisplayName = getUserDisplayName(userLogin)
+						debug(DebugType.TWITCH_THREAD, "User Display Name for ${userLogin} is $userDisplayName")
+						val channelName = userDisplayName ?: continue
 						displayNameCache[userLogin] = channelName
 						channelName
 					}
@@ -158,7 +160,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		val displayNameCache = ConcurrentHashMap<String, String>()
 
 		fun getUserDisplayName(userLogin: String): String? {
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=$${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
+			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
@@ -177,7 +179,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				return channel["display_name"].string
 			} catch (e: IllegalStateException) {
 				debug(DebugType.TWITCH_THREAD, payload)
-				throw e
+				return null
 			}
 		}
 
