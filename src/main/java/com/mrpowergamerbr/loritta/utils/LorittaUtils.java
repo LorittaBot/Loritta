@@ -259,8 +259,7 @@ public final class LorittaUtils {
 				for (User user : context.getMessage().getMentionedUsers()) {
 					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 						// Diferente de null? Então vamos usar o avatar do usuário!
-						realUser = user;
-						break;
+						return user;
 					}
 				}
 			}
@@ -273,7 +272,7 @@ public final class LorittaUtils {
 					Optional<Member> matchedMember = context.getGuild().getMembersByName(split[0], false).stream().filter(it -> it.getUser().getDiscriminator().equals(split[1])).findFirst();
 
 					if (matchedMember.isPresent()) {
-						realUser = matchedMember.get().getUser();
+						return matchedMember.get().getUser();
 					}
 				}
 			}
@@ -283,7 +282,7 @@ public final class LorittaUtils {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
-					realUser = matchedMembers.get(0).getUser();
+					return matchedMembers.get(0).getUser();
 				}
 			}
 
@@ -292,7 +291,7 @@ public final class LorittaUtils {
 				List<Member> matchedMembers = context.getGuild().getMembersByName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
-					realUser = matchedMembers.get(0).getUser();
+					return matchedMembers.get(0).getUser();
 				}
 			}
 
@@ -336,8 +335,7 @@ public final class LorittaUtils {
 				for (User user : context.getMessage().getMentionedUsers()) {
 					if (user.getAsMention().equals(link.replace("!", ""))) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 						// Diferente de null? Então vamos usar o avatar do usuário!
-						toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
-						break;
+						return user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
 					}
 				}
 			}
@@ -347,7 +345,7 @@ public final class LorittaUtils {
 				List<Member> matchedMembers = context.getGuild().getMembersByEffectiveName(link, true);
 
 				if (!matchedMembers.isEmpty()) {
-					toBeDownloaded = matchedMembers.get(0).getUser().getEffectiveAvatarUrl() + "?size=" + avatarSize;
+					return matchedMembers.get(0).getUser().getEffectiveAvatarUrl() + "?size=" + avatarSize;
 				}
 			}
 
@@ -356,8 +354,7 @@ public final class LorittaUtils {
 				// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
 				for (Emote emote : context.getMessage().getEmotes()) {
 					if (link.equalsIgnoreCase(emote.getAsMention())) {
-						toBeDownloaded = emote.getImageUrl();
-						break;
+						return emote.getImageUrl();
 					}
 				}
 			}
@@ -371,6 +368,8 @@ public final class LorittaUtils {
 					toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/" + val + ".png";
 					if (HttpRequest.get(toBeDownloaded).code() != 200) {
 						toBeDownloaded = null;
+					} else {
+						return toBeDownloaded;
 					}
 				} catch (Exception e) {}
 			}
