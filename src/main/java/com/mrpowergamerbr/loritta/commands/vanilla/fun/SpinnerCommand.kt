@@ -43,6 +43,10 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		return CommandCategory.FUN;
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+	
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val arg = context.args[0]
