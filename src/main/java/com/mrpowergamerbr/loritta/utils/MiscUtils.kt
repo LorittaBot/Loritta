@@ -148,9 +148,9 @@ object MiscUtils {
 					.userAgent(Constants.USER_AGENT)
 			httpRequest.ok()
 			val url = httpRequest.url().toString()
-			val matcher = Pattern.compile(".*http(s)?://(discord\\.gg|discordapp.com)/(invite/)?([A-z0-9]+).*").matcher(url)
+			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*").matcher(url)
 			if (matcher.find()) {
-				return matcher.group(4)
+				return matcher.group(3)
 			}
 			return null
 		} catch (e: HttpRequest.HttpRequestException) {
