@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.dv8tion.jda.core.entities.Member
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -26,15 +27,17 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128) ?: getRandomAvatar(context)
-		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128) ?: getRandomAvatar(context)
-		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128) ?: getRandomAvatar(context)
-		var contextImage4 = LorittaUtils.getImageFromContext(context, 3, 0, 128) ?: getRandomAvatar(context)
-		var contextImage5 = LorittaUtils.getImageFromContext(context, 4, 0, 128) ?: getRandomAvatar(context)
-		var contextImage6 = LorittaUtils.getImageFromContext(context, 5, 0, 128) ?: getRandomAvatar(context)
-		var contextImage7 = LorittaUtils.getImageFromContext(context, 6, 0, 128) ?: getRandomAvatar(context)
-		var contextImage8 = LorittaUtils.getImageFromContext(context, 7, 0, 128) ?: getRandomAvatar(context)
-		var contextImage9 = LorittaUtils.getImageFromContext(context, 8, 0, 128) ?: getRandomAvatar(context)
+		val choosen = mutableListOf<Member>()
+
+		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage4 = LorittaUtils.getImageFromContext(context, 3, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage5 = LorittaUtils.getImageFromContext(context, 4, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage6 = LorittaUtils.getImageFromContext(context, 5, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage7 = LorittaUtils.getImageFromContext(context, 6, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage8 = LorittaUtils.getImageFromContext(context, 7, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage9 = LorittaUtils.getImageFromContext(context, 8, 0, 128) ?: getRandomAvatar(context, choosen)
 
 		contextImage = contextImage.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 		contextImage2 = contextImage2.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
@@ -65,8 +68,9 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 		context.sendFile(finalImage, "thx.png", context.getAsMention(true));
 	}
 
-	fun getRandomAvatar(context: CommandContext): BufferedImage {
+	fun getRandomAvatar(context: CommandContext, choosen: MutableList<Member>): BufferedImage {
 		var list = context.guild.members.toMutableList()
+		list.removeAll(choosen)
 
 		var userAvatar: String? = null;
 		while (userAvatar == null) {
@@ -79,6 +83,8 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 			userAvatar = member.user.avatarUrl
 			if (userAvatar == null)
 				list.remove(member)
+			else
+				choosen.add(member)
 		}
 
 		val newImage = LorittaUtils.downloadImage(userAvatar);
