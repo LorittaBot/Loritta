@@ -53,20 +53,21 @@ class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadrea
 		baseGraph.font = minecraftia!!.deriveFont(Font.PLAIN, 8f)
 
 		val users = ArrayList<User>()
+		var members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null }.toMutableList()
 
 		users.addAll(context.message.mentionedUsers)
 
 		while (6 > users.size) {
-			var member = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
-
-			while (member.onlineStatus == OnlineStatus.OFFLINE || member.user.avatarUrl == null) {
-				member = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
+			var member = if (members.isEmpty()) {
+				// omg
+				context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
+			} else {
+				members[Loritta.RANDOM.nextInt(members.size)]
 			}
 
 			users.add(member.user)
+			members.remove(member)
 		}
-
-		val clonedUserList = ArrayList(users) // É necessário clonar já que nós iremos mexer nela depois
 
 		var aux = 0
 		while (6 > aux) {
