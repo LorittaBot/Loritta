@@ -77,10 +77,19 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 
 	fun getRandomAvatarIfNull(context: CommandContext, image: BufferedImage?): BufferedImage {
 		var newImage = image;
+		var list = context.guild.members.toMutableList()
 		if (image == null) {
 			var userAvatar: String? = null;
 			while (userAvatar == null) {
-				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.avatarUrl
+				if (list.isEmpty()) { // omg, lista vazia!
+					// Vamos pegar um usuário aleatório e vamos cair fora daqui!
+					userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
+					break
+				}
+				val member = list[Loritta.RANDOM.nextInt(context.guild.members.size)]
+				userAvatar = member.user.avatarUrl
+				if (userAvatar == null)
+					list.remove(member)
 			}
 			newImage = LorittaUtils.downloadImage(userAvatar);
 		}
