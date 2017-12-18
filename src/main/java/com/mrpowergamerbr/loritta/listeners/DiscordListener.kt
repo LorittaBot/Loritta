@@ -142,8 +142,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (serverConfig.aminoConfig.isEnabled && serverConfig.aminoConfig.fixAminoImages)
 						AminoConverterModule.convertToImage(event)
 
-					for (eventHandler in serverConfig.nashornEventHandlers) {
-						eventHandler.handleMessageReceived(event)
+					if (event.guild.id == "297732013006389252") {
+						for (eventHandler in serverConfig.nashornEventHandlers) {
+							eventHandler.handleMessageReceived(event)
+						}
 					}
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
