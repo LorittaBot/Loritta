@@ -26,25 +26,15 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128);
-		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128);
-		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128);
-		var contextImage4 = LorittaUtils.getImageFromContext(context, 3, 0, 128);
-		var contextImage5 = LorittaUtils.getImageFromContext(context, 4, 0, 128);
-		var contextImage6 = LorittaUtils.getImageFromContext(context, 5, 0, 128);
-		var contextImage7 = LorittaUtils.getImageFromContext(context, 6, 0, 128);
-		var contextImage8 = LorittaUtils.getImageFromContext(context, 7, 0, 128);
-		var contextImage9 = LorittaUtils.getImageFromContext(context, 8, 0, 128);
-
-		contextImage = getRandomAvatarIfNull(context, contextImage);
-		contextImage2 = getRandomAvatarIfNull(context, contextImage2);
-		contextImage3 = getRandomAvatarIfNull(context, contextImage3);
-		contextImage4 = getRandomAvatarIfNull(context, contextImage4);
-		contextImage5 = getRandomAvatarIfNull(context, contextImage5);
-		contextImage6 = getRandomAvatarIfNull(context, contextImage6);
-		contextImage7 = getRandomAvatarIfNull(context, contextImage7);
-		contextImage8 = getRandomAvatarIfNull(context, contextImage8);
-		contextImage9 = getRandomAvatarIfNull(context, contextImage9);
+		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128) ?: getRandomAvatar(context)
+		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128) ?: getRandomAvatar(context)
+		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128) ?: getRandomAvatar(context)
+		var contextImage4 = LorittaUtils.getImageFromContext(context, 3, 0, 128) ?: getRandomAvatar(context)
+		var contextImage5 = LorittaUtils.getImageFromContext(context, 4, 0, 128) ?: getRandomAvatar(context)
+		var contextImage6 = LorittaUtils.getImageFromContext(context, 5, 0, 128) ?: getRandomAvatar(context)
+		var contextImage7 = LorittaUtils.getImageFromContext(context, 6, 0, 128) ?: getRandomAvatar(context)
+		var contextImage8 = LorittaUtils.getImageFromContext(context, 7, 0, 128) ?: getRandomAvatar(context)
+		var contextImage9 = LorittaUtils.getImageFromContext(context, 8, 0, 128) ?: getRandomAvatar(context)
 
 		contextImage = contextImage.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 		contextImage2 = contextImage2.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
@@ -75,24 +65,23 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 		context.sendFile(finalImage, "thx.png", context.getAsMention(true));
 	}
 
-	fun getRandomAvatarIfNull(context: CommandContext, image: BufferedImage?): BufferedImage {
-		var newImage = image;
+	fun getRandomAvatar(context: CommandContext): BufferedImage {
 		var list = context.guild.members.toMutableList()
-		if (image == null) {
-			var userAvatar: String? = null;
-			while (userAvatar == null) {
-				if (list.isEmpty()) { // omg, lista vazia!
-					// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-					userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
-					break
-				}
-				val member = list[Loritta.RANDOM.nextInt(context.guild.members.size)]
-				userAvatar = member.user.avatarUrl
-				if (userAvatar == null)
-					list.remove(member)
+
+		var userAvatar: String? = null;
+		while (userAvatar == null) {
+			if (list.isEmpty()) { // omg, lista vazia!
+				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
+				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
+				break
 			}
-			newImage = LorittaUtils.downloadImage(userAvatar);
+			val member = list[Loritta.RANDOM.nextInt(context.guild.members.size)]
+			userAvatar = member.user.avatarUrl
+			if (userAvatar == null)
+				list.remove(member)
 		}
+
+		val newImage = LorittaUtils.downloadImage(userAvatar);
 		if (newImage != null) {
 			return newImage;
 		} else {
