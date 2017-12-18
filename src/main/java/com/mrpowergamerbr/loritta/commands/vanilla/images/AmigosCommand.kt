@@ -76,10 +76,10 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 		while (userAvatar == null) {
 			if (list.isEmpty()) { // omg, lista vazia!
 				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
+				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(list.size)].user.effectiveAvatarUrl
 				break
 			}
-			val member = list[Loritta.RANDOM.nextInt(context.guild.members.size)]
+			val member = list[Loritta.RANDOM.nextInt(list.size)]
 			userAvatar = member.user.avatarUrl
 			if (userAvatar == null)
 				list.remove(member)
@@ -87,7 +87,7 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 				choosen.add(member)
 		}
 
-		val newImage = LorittaUtils.downloadImage(userAvatar);
+		val newImage = LorittaUtils.downloadImage(userAvatar)
 		if (newImage != null) {
 			return newImage;
 		} else {
