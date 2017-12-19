@@ -92,6 +92,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.music.SeekCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.DiscriminatorCommand
@@ -257,6 +258,7 @@ class CommandManager {
 
 		// =======[ ROBLOX ]========
 		commandMap.add(RbUserCommand())
+		commandMap.add(RbGameCommand())
 
 		// =======[ UNDERTALE ]========
 		commandMap.add(UndertaleBoxCommand())

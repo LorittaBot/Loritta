@@ -17,7 +17,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
@@ -173,7 +172,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer")) {
 						if (blurb.isNotEmpty()) {
 							setDescription(blurb)
 						}
-						setColor(Color(226, 35, 26))
+						setColor(Constants.ROBLOX_RED)
 						addField("\uD83D\uDCBB ${context.locale.get("RBUSER_ID_DO_ROBLOX")}", userId.toString(), true)
 						addField("\uD83D\uDCC5 ${context.locale.get("RBUSER_JOIN_DATE")}", joinDate, true)
 						addField("\uD83D\uDC40 ${context.locale.get("RBUSER_PLACE_VISITS")}", placeVisits, true)
