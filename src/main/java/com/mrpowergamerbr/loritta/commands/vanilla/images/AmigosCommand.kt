@@ -76,7 +76,7 @@ class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", 
 		while (userAvatar == null) {
 			if (list.isEmpty()) { // omg, lista vazia!
 				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(list.size)].user.effectiveAvatarUrl
+				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
 				break
 			}
 			val member = list[Loritta.RANDOM.nextInt(list.size)]
