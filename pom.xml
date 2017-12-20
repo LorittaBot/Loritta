@@ -71,7 +71,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.3.1_308</version>
+            <version>3.4.0_317</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

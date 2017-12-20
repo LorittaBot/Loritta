@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -14,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
@@ -127,36 +127,30 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+		val message = ev.message.contentDisplay
+		val rawMessage = ev.message.contentRaw
+		// É necessário remover o new line para comandos como "+eval", etc
+		val rawArguments = rawMessage.replace("\n", "").split(" ")
+
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(this)
-		var prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
-		val aliases = ArrayList<String>(this.aliases)
-		if (cmdOptions.enableCustomAliases)
-			aliases.addAll(cmdOptions.aliases)
+		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
 
-		val message = ev.message.content
-		var rawMessage = ev.message.rawContent
-		var run = false
+		val labels = mutableListOf(label)
+		labels.addAll(this.aliases)
+		if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
+			labels.addAll(cmdOptions.aliases)
+
+		var valid = labels.any { rawArguments[0] == prefix + it }
 		var byMention = false
-		var label = prefix + label
-		if (rawMessage.startsWith("<@" + Loritta.config.clientId + "> ") || rawMessage.startsWith("<@!" + Loritta.config.clientId + "> ")) {
+
+		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
+			// by mention
+			valid = labels.any { rawArguments[1] == it }
 			byMention = true
-			rawMessage = rawMessage.replaceFirst("<@" + Loritta.config.clientId + "> ", "")
-			rawMessage = rawMessage.replaceFirst("<@!" + Loritta.config.clientId + "> ", "")
-			label = this.label
 		}
-		run = rawMessage.replace("\n", " ").split(" ")[0].equals(label, ignoreCase = true)
-		val rawArguments = rawMessage.split(" ")
-		if (!run) {
-			for (alias in aliases) {
-				label = if (byMention) alias else prefix + alias
-				if (rawArguments[0].equals(label, true)) {
-					run = true
-					break
-				}
-			}
-		}
-		if (run) {
+
+		if (valid) {
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					debug(DebugType.COMMAND_EXECUTED, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.content}")
@@ -240,9 +234,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				var args = message.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var rawArgs = ev.message.rawContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var strippedArgs = ev.message.strippedContent.stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var args = message.replace("@${ev.guild.selfMember.effectiveName}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
 				if (byMention) {
 					args = args.remove(0)
 					rawArgs = rawArgs.remove(0)
@@ -302,18 +296,19 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	fun explain(context: CommandContext) {
+		val commandLabel = context.message.rawContent.split(" ")[0]
 		val conf = context.config
 		val ev = context.event
 		if (conf.explainOnCommandRun) {
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + conf.commandPrefix + this.label + "`")
+			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + commandLabel + "`")
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
 			var cmdInfo = getDescription(context) + "\n\n"
 
-			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + conf.commandPrefix + this.label + usage + "\n"
+			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + commandLabel + usage + "\n"
 
 			if (!this.getDetailedUsage().isEmpty()) {
 				for ((key, value) in this.getDetailedUsage()) {
@@ -326,14 +321,14 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
 			for (example in this.getExample()) { // Adicionar todos os exemplos simples
-				examples.add(conf.commandPrefix + this.label + if (example.isEmpty()) "" else " `$example`")
+				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-				examples.add(conf.commandPrefix + this.label + if (key.isEmpty()) "" else " `$key` - **$value**")
+				examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + conf.commandPrefix + this.label
+				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + commandLabel
 			} else {
 				cmdInfo += "**" + context.locale.EXAMPLE + (if (this.getExample().size == 1) "" else "s") + ":**\n"
 				for (example in examples) {
