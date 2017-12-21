@@ -6,7 +6,6 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 
 
-
 class ParallaxMessage(private val message: Message) {
 	// TODO: attachments
 	val author = ParallaxUser(message.author)
@@ -22,6 +21,7 @@ class ParallaxMessage(private val message: Message) {
 	// TODO: editedTimestamp
 	// TODO: edits
 	// TODO: embeds
+	val embed: ParallaxEmbed? = null
 	val guild = ParallaxGuild(message.guild)
 	// TODO: hit
 	val id get() = message.id

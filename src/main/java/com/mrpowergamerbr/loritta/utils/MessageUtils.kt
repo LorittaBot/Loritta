@@ -29,10 +29,9 @@ object MessageUtils {
 		if (jsonObject != null) {
 			// alterar tokens
 			handleJsonTokenReplacer(jsonObject, source, customTokens)
-			println(jsonObject)
-			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject)
+			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
 			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
-			messageBuilder.append(" ")
+			messageBuilder.append(jsonObject["content"].string)
 		} else {
 			messageBuilder.append(replaceTokens(message, source, customTokens).substringIfNeeded())
 		}
