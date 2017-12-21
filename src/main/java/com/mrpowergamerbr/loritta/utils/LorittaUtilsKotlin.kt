@@ -159,7 +159,7 @@ infix fun <T> Loritta.save(objs: List<T>) {
 	loritta.ds.save(objs)
 }
 
-fun <T> Loritta.save(vararg objs: T) {
+fun <T> Loritta.saveBulk(vararg objs: T) {
 	loritta.ds.save(objs.toList())
 }
 
