@@ -236,7 +236,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				var args = message.replace("@${ev.guild.selfMember.effectiveName}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
 				var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
 				var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
 				if (byMention) {
