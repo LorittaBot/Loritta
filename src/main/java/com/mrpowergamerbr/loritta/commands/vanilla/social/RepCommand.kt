@@ -5,9 +5,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
-import java.util.concurrent.TimeUnit
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao")) {
     override fun getDescription(locale: BaseLocale): String {
@@ -40,12 +40,8 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
             var diff = System.currentTimeMillis() - profile.lastReputationGiven;
 
             if (3.6e+6 > diff) {
-                var fancy = String.format(context.locale.MINUTES_AND_SECONDS,
-                        60 - (TimeUnit.MILLISECONDS.toMinutes(diff)),
-                        60 - (TimeUnit.MILLISECONDS.toSeconds(diff) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)))
-                );
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_WAIT.msgFormat(fancy));
+                var fancy = DateUtils.formatDateDiff(profile.lastReputationGiven + 3.6e+6.toLong(), locale)
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
                 return;
             }
 
