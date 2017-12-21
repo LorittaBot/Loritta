@@ -155,6 +155,14 @@ infix fun <T> Loritta.save(obj: T) {
 	loritta.ds.save(obj)
 }
 
+infix fun <T> Loritta.save(objs: List<T>) {
+	loritta.ds.save(objs)
+}
+
+fun <T> Loritta.save(vararg objs: T) {
+	loritta.ds.save(objs.toList())
+}
+
 fun String.isValidSnowflake(): Boolean {
 	try {
 		MiscUtil.parseSnowflake(this)

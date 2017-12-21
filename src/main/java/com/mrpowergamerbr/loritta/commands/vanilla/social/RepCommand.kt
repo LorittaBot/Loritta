@@ -6,60 +6,80 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao")) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale.REP_DESCRIPTON;
-    }
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["REP_DESCRIPTON"];
+	}
 
-    override fun getCategory(): CommandCategory {
-         return CommandCategory.SOCIAL;
-    }
+	override fun getCategory(): CommandCategory {
+		return CommandCategory.SOCIAL;
+	}
 
-    override fun getExample(): List<String> {
-        return listOf("@Loritta", "@MrPowerGamerBR")
-    }
+	override fun getExample(): List<String> {
+		return listOf("@Loritta", "@MrPowerGamerBR")
+	}
 
-    override fun canUseInPrivateChannel(): Boolean {
-        return false
-    }
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
-        var profile = context.lorittaUser.profile;
+	override fun run(context: CommandContext, locale: BaseLocale) {
+		var profile = context.lorittaUser.profile
+		val user = LorittaUtils.getUserFromContext(context, 0)
 
-        if (context.message.mentionedUsers.isNotEmpty()) {
-            var user = context.message.mentionedUsers[0];
+		if (user != null) {
+			if (user == context.userHandle) {
+				context.reply(
+						LoriReply(
+								message = context.getAsMention(true) + locale["REP_SELF"],
+								prefix = Constants.ERROR
+						)
+				)
+				return
+			}
 
-            if (user == context.userHandle) {
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.REP_SELF);
-                return;
-            }
+			var diff = System.currentTimeMillis() - profile.lastReputationGiven
 
-            var diff = System.currentTimeMillis() - profile.lastReputationGiven;
+			if (3.6e+6 > diff) {
+				var fancy = DateUtils.formatDateDiff(profile.lastReputationGiven + 3.6e+6.toLong(), locale)
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
+				return
+			}
 
-            if (3.6e+6 > diff) {
-                var fancy = DateUtils.formatDateDiff(profile.lastReputationGiven + 3.6e+6.toLong(), locale)
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
-                return;
-            }
+			var givenProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.id);
 
-            var givenProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.id);
+			// Agora nós iremos dar reputação para este usuário
+			givenProfile.receivedReputations.add(context.userHandle.id)
 
-            // Agora nós iremos dar reputação para este usuário
-            givenProfile.receivedReputations.add(context.userHandle.id);
+			// E vamos salvar a última vez que o usuário deu reputação para o usuário
+			profile.lastReputationGiven = System.currentTimeMillis()
 
-            // E vamos salvar a última vez que o usuário deu reputação para o usuário
-            profile.lastReputationGiven = System.currentTimeMillis();
-
-            context.sendMessage("☝ **|** " + context.getAsMention(true) + context.locale.REP_SUCCESS.msgFormat(user.asMention));
+			context.reply(
+					LoriReply(
+							message = context.locale["REP_SUCCESS", user.asMention],
+							prefix = "☝"
+					)
+			)
 
 			// E vamos salvar as configurações
-			LorittaLauncher.loritta.ds.save(givenProfile);
-			LorittaLauncher.loritta.ds.save(profile);
-        } else {
-			this.explain(context);
+			loritta.save(givenProfile, profile)
+		} else {
+			if (context.args.isEmpty()) {
+				this.explain(context)
+			} else {
+				context.reply(
+						LoriReply(
+								message = locale["REP_InvalidUser"],
+								prefix = Constants.ERROR
+						)
+				)
+			}
 		}
-    }
+	}
 }
