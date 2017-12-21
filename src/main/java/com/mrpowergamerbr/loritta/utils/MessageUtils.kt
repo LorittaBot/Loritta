@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
@@ -31,7 +32,7 @@ object MessageUtils {
 			handleJsonTokenReplacer(jsonObject, source, customTokens)
 			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
 			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
-			messageBuilder.append(jsonObject["content"].string)
+			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
 			messageBuilder.append(replaceTokens(message, source, customTokens).substringIfNeeded())
 		}
