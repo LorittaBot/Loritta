@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -200,7 +201,8 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
 				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
-					ev.channel.sendMessage("\uD83D\uDD25 **|** " + ev.author.asMention + " " + locale.get("PLEASE_WAIT_COOLDOWN")).complete()
+					val fancy = DateUtils.formatDateDiff(diff + System.currentTimeMillis(), locale)
+					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").complete()
 					return true
 				}
 
