@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
@@ -20,9 +21,9 @@ object WelcomeModule {
 
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
-						val msg = LorittaUtils.replaceTokens(joinLeaveConfig.joinMessage, event)
+						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(msg.substringIfNeeded()).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, event)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
@@ -56,7 +57,8 @@ object WelcomeModule {
 
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
-						var msg = LorittaUtils.replaceTokens(joinLeaveConfig.leaveMessage, event)
+						var msg = joinLeaveConfig.leaveMessage
+						val customTokens = mutableMapOf<String, String>()
 
 						if (joinLeaveConfig.tellOnBan) {
 							// Para a mensagem de ban nós precisamos ter a permissão de banir membros
@@ -65,7 +67,7 @@ object WelcomeModule {
 								if (banList.contains(event.user)) {
 
 									if (joinLeaveConfig.banMessage.isNotEmpty()) {
-										msg = LorittaUtils.replaceTokens(joinLeaveConfig.banMessage, event)
+										msg = joinLeaveConfig.banMessage
 									}
 								}
 							}
@@ -78,22 +80,22 @@ object WelcomeModule {
 
 								if (entry.targetId == event.user.id) {
 									if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-										msg = LorittaUtils.replaceTokens(joinLeaveConfig.kickMessage, event)
-										msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-										msg = msg.replace("{@staff}", entry.user.asMention)
-										msg = msg.replace("{staff}", entry.user.name)
+										msg = joinLeaveConfig.kickMessage
+										customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+										customTokens["@staff"] = entry.user.asMention
+										customTokens["staff"] = entry.user.name
 									}
 									if (entry.type == ActionType.BAN) {
-										msg = msg.replace("{reason}", entry.reason ?: "\uD83E\uDD37")
-										msg = msg.replace("{@staff}", entry.user.asMention)
-										msg = msg.replace("{staff}", entry.user.name)
+										customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+										customTokens["@staff"] = entry.user.asMention
+										customTokens["staff"] = entry.user.name
 									}
 								}
 							}
 						}
 
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(msg.substringIfNeeded()).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, customTokens)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
@@ -34,16 +35,20 @@ class TestMessageView : ConfigureView() {
 		val userIdentification = discordAuth.getUserIdentification()
 		val member = guild.getMemberById(userIdentification.id)
 		val nickname = member.effectiveName
-		message = message.replace("{@user}", "<@${userIdentification.id}>")
-		message = message.replace("{user}", userIdentification.username)
-		message = message.replace("{nickname}", nickname)
-		message = message.replace("{guild}", guild.name)
-		message = message.replace("{guildsize}", guild.members.size.toString())
-		message = message.replace("{@owner}", guild.owner.asMention)
-		message = message.replace("{owner}", guild.owner.effectiveName)
-		message = message.replace("{@staff}", "<@${Loritta.config.clientId}>")
-		message = message.replace("{staff}", "Loritta")
-		message = message.replace("{reason}", "You gonna have a bad time.")
+
+		val customTokens = mutableMapOf<String, String>()
+
+		customTokens.put("@user", "<@${userIdentification.id}>")
+		customTokens.put("user", userIdentification.username)
+		customTokens.put("userAvatarUrl", "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userIdentification.avatar}.png")
+		customTokens.put("nickname", nickname)
+		customTokens.put("guild", guild.name)
+		customTokens.put("guildsize", guild.members.size.toString())
+		customTokens.put("@owner", guild.owner.asMention)
+		customTokens.put("owner", guild.owner.effectiveName)
+		customTokens.put("@staff", "<@${Loritta.config.clientId}>")
+		customTokens.put("staff", "Loritta")
+		customTokens.put("reason", "You gonna have a bad time.")
 
 		if (type == "livestreamMessage") {
 			message = content
@@ -57,9 +62,9 @@ class TestMessageView : ConfigureView() {
 				return response.toString()
 			}
 
-			message = message.replace("{game}", "Loritta and the Discord's Curse")
-			message = message.replace("{streamer}", displayName)
-			message = message.replace("{link}", "https://www.twitch.tv/$channelUserLogin")
+			customTokens.put("game", "Loritta and the Discord's Curse")
+			customTokens.put("streamer", "displayName")
+			customTokens.put("link", "https://www.twitch.tv/$channelUserLogin")
 		}
 
 		if (textChannelId != null) {
@@ -75,11 +80,11 @@ class TestMessageView : ConfigureView() {
 				return response.toString()
 			}
 
-			textChannel.sendMessage(message).complete()
+			textChannel.sendMessage(MessageUtils.generateMessage(message, null, customTokens)).complete()
 			response["success"] = true
 		} else {
 			try {
-				member.user.openPrivateChannel().complete().sendMessage(message).complete()
+				member.user.openPrivateChannel().complete().sendMessage(MessageUtils.replaceTokens(message, null, customTokens)).complete()
 			} catch (e: Exception) {
 				response["error"] = "Sua DM está desativada"
 			}
