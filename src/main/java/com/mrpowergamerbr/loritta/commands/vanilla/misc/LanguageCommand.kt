@@ -32,7 +32,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		message.addReaction("loritta_quebrada:338679008210190336").complete()
 		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").complete()
 		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").complete()
-		message.addReaction("\uD83C\uDDF8\uD83C\uDDE6").complete()
+		// message.addReaction("\uD83C\uDDF8\uD83C\uDDE6").complete()
 	}
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
@@ -47,9 +47,9 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			if (e.reactionEmote.name == "\uD83C\uDDF5\uD83C\uDDF9") {
 				localeId = "pt-pt"
 			}
-			if (e.reactionEmote.name == "\uD83C\uDDF8\uD83C\uDDE6") {
+			/* if (e.reactionEmote.name == "\uD83C\uDDF8\uD83C\uDDE6") {
 				localeId = "ar-sa"
-			}
+			} */
 
 			context.config.localeId = localeId
 			loritta save context.config

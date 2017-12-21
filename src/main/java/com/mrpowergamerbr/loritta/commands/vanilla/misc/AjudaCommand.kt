@@ -43,7 +43,14 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 					.setDescription(description)
 					.setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
 
+			val pleaseDonate = EmbedBuilder()
+					.setColor(Color(0, 121, 183))
+					.setThumbnail("https://loritta.website/assets/img/loritta_pobre.png")
+					.setTitle("<:lori_triste:392408514154201091> ${locale["AJUDA_DonationTitle"]}")
+					.setDescription(locale["AJUDA_PleaseDonate"])
+
 			privateChannel.sendMessage(builder.build()).complete()
+			privateChannel.sendMessage(pleaseDonate.build()).complete()
 
 			sendInfoBox(context, privateChannel)
 		} catch (e: ErrorResponseException) {
@@ -166,6 +173,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 
 		val embed = EmbedBuilder().apply {
 			setDescription(description)
+			setColor(Color(0, 193, 223))
 		}
 
 		val message = privateChannel.sendMessage(embed.build()).complete()
