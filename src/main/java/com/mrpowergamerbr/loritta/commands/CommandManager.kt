@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AkinatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CongaParrotCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
@@ -184,6 +185,7 @@ class CommandManager {
 		commandMap.add(CleverbotCommand())
 		commandMap.add(TamagotchiCommand())
 		// commandMap.add(GiveawayCommand())
+		commandMap.add(CongaParrotCommand())
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
