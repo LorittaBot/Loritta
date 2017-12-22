@@ -198,7 +198,6 @@ class CommandManager {
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
 		commandMap.add(PingCommand())
-		commandMap.add(AngelCommand())
 		commandMap.add(QuoteCommand())
 		commandMap.add(SayCommand())
 		commandMap.add(EscolherCommand())
