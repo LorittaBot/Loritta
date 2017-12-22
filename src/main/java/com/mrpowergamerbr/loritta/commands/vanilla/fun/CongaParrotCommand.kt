@@ -48,12 +48,7 @@ class CongaParrotCommand : AbstractCommand("congaparrot") {
 				message += "<a:congaparrot:393804615067500544>"
 			}
 
-			context.reply(
-					LoriReply(
-							message = message,
-							prefix = "<a:congaparrot:393804615067500544>"
-					)
-			)
+			context.sendMessage(message)
 		} else {
 			context.reply(
 					LoriReply(
