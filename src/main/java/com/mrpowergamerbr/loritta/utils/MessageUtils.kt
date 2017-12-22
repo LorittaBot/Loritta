@@ -22,7 +22,7 @@ object MessageUtils {
 	fun generateMessage(message: String, source: Any?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message {
 		val jsonObject = try {
 			JSON_PARSER.parse(message).obj
-		} catch (ex: com.google.gson.JsonSyntaxException) {
+		} catch (ex: Exception) {
 			null
 		}
 
