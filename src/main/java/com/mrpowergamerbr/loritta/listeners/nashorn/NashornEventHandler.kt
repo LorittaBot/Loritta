@@ -32,10 +32,14 @@ class NashornEventHandler {
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
 	fun handleMessageReceived(event: MessageReceivedEvent) {
-		if (!javaScript.contains("onMessageReceived"))
-			return
+		try {
+			if (!javaScript.contains("onMessageReceived"))
+				return
 
-		run("onMessageReceived", NashornMessageReceivedEvent(event))
+			run("onMessageReceived", NashornMessageReceivedEvent(event))
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
 	}
 
 	fun handleMemberJoin(event: GuildMemberJoinEvent) {

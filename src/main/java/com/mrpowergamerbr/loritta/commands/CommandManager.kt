@@ -78,7 +78,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.PeQueryCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AngelCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.LanguageCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PatreonCommand
