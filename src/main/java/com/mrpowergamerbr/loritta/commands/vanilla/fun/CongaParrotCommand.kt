@@ -25,21 +25,24 @@ class CongaParrotCommand : AbstractCommand("congaparrot") {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var times = context.args[0].toIntOrNull()
+		var arg0 = context.args.getOrNull(0)
 
-		if (context.args.getOrNull(0) != null) {
-			if (times == null) {
-				context.reply(
-						LoriReply(
-								message = locale["INVALID_NUMBER", context.args[0]],
-								prefix = Constants.ERROR
-						)
-				)
-				return
-			}
+		if (arg0 == null) {
+			context.explain()
+			return
 		}
 
-		var upTo = times ?: 1
+		val upTo = arg0.toIntOrNull()
+
+		if (upTo == null) {
+			context.reply(
+					LoriReply(
+							message = locale["INVALID_NUMBER", context.args[0]],
+							prefix = Constants.ERROR
+					)
+			)
+			return
+		}
 
 		if (upTo in 1..50) {
 			var message = ""

@@ -68,6 +68,8 @@ object MessageUtils {
 	fun replaceTokens(text: String, source: Any?, customTokens: Map<String, String> = mutableMapOf<String, String>()): String {
 		var mentionUser = ""
 		var user = ""
+		var userDiscriminator = ""
+		var userId = ""
 		var nickname = ""
 		var avatarUrl = ""
 		var guild = ""
@@ -78,6 +80,8 @@ object MessageUtils {
 		if (source is GenericGuildMemberEvent) {
 			mentionUser = source.member.asMention
 			user = source.member.user.name
+			userDiscriminator = source.member.user.discriminator
+			userId = source.member.user.id
 			avatarUrl = source.member.user.effectiveAvatarUrl
 			nickname = source.member.effectiveName
 			guild = source.guild.name
@@ -94,7 +98,9 @@ object MessageUtils {
 
 		message = message.replace("{@user}", mentionUser)
 		message = message.replace("{user}", user)
+		message = message.replace("{user-id}", userId)
 		message = message.replace("{userAvatarUrl}", avatarUrl)
+		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname)
 		message = message.replace("{guild}", guild)
 		message = message.replace("{guildsize}", guildSize)
