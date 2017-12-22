@@ -39,10 +39,10 @@ class CongaParrotCommand : AbstractCommand("congaparrot") {
 			}
 		}
 
-		if (times in 1..50) {
-			var message = ""
+		var upTo = times ?: 1
 
-			var upTo = times ?: 1
+		if (upTo in 1..50) {
+			var message = ""
 
 			for (idx in 1..upTo) {
 				message += "<a:congaparrot:393804615067500544>"
