@@ -65,7 +65,7 @@ class TestMessageView : ConfigureView() {
 			}
 
 			customTokens.put("game", "Loritta and the Discord's Curse")
-			customTokens.put("streamer", "displayName")
+			customTokens.put("streamer", displayName)
 			customTokens.put("link", "https://www.twitch.tv/$channelUserLogin")
 		}
 

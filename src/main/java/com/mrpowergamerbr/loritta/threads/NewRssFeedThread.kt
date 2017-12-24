@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import java.text.SimpleDateFormat
@@ -79,20 +80,23 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										loritta save config
 									}
 
+									val customTokens = mutableMapOf<String, String>()
 									if (feedEntry.description != null) {
-										message = message.replace("{descrição}", feedEntry.description);
+										customTokens["descrição"] = feedEntry.description
+										customTokens["description"] = feedEntry.description
 									}
 
-									message = message.replace("{título}", feedEntry.title);
-									message = message.replace("{link}", feedEntry.link);
+									customTokens["título"] = feedEntry.title
+									customTokens["title"] = feedEntry.title
+									customTokens["link"] = feedEntry.link
 
 									// E só por diversão, vamos salvar todas as tags do entry!
 									for (element in feedEntry.entry.select("*")) {
-										message = message.replace("{rss_${element.tagName()}}", element.text());
+										customTokens["rss_${element.tagName()}"] = element.text()
 									}
 
-									textChannel.sendMessage(message).complete(); // Envie a mensagem
-									continue;
+									textChannel.sendMessage(MessageUtils.generateMessage(message, null, customTokens)).complete() // Envie a mensagem
+									continue
 								} else {
 									// Se nunca verificamos esta feed, vamos só salvar a data atual
 									val tz = TimeZone.getTimeZone("UTC")

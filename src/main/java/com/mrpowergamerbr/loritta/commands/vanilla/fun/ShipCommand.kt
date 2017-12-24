@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.User
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -39,27 +38,42 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar")) {
 	}
 
     override fun run(context: CommandContext, locale: BaseLocale) {
+		var user1Name: String? = context.args.getOrNull(0)
+		var user2Name: String? = context.args.getOrNull(1)
+		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl
+		var user2AvatarUrl: String? = context.userHandle.defaultAvatarUrl
+
 		val user1 = LorittaUtils.getUserFromContext(context, 0)
 		val user2 = LorittaUtils.getUserFromContext(context, 1)
-		
-		if (user1 != null && user2 != null) {
+
+		if (user1 != null) {
+			user1Name = user1.name
+			user1AvatarUrl = user1.effectiveAvatarUrl
+		}
+
+		if (user2 != null) {
+			user2Name = user2.name
+			user2AvatarUrl = user2.effectiveAvatarUrl
+		}
+
+		if (user1Name != null && user2Name != null && user1Name.isNotEmpty() && user2Name.isNotEmpty()) {
 			var texto = context.getAsMention(true) + "\n💖 **${context.locale["SHIP_NEW_COUPLE"]}** 💖\n"
 
-			texto += "`${user1.name}`\n`${user2.name}`\n"
+			texto += "`${user1Name}`\n`${user2Name}`\n"
 
-			var name1 = user1.name.substring(0..(user1.name.length / 2))
-			var name2 = user2.name.substring(user2.name.length / 2..user2.name.length - 1)
+			var name1 = user1Name.substring(0..(user1Name.length / 2))
+			var name2 = user2Name.substring(user2Name.length / 2..user2Name.length - 1)
 			var shipName = name1 + name2
 
 			// Para motivos de cálculos, nós iremos criar um "real ship name"
 			// Que é só o nome do ship... mas em ordem alfabética!
 			var realShipName = shipName
-			if (1 > user2.name.compareTo(user1.name)) {
-				var reversedMentionedUsers = mutableListOf<User>()
-				reversedMentionedUsers.add(user2)
-				reversedMentionedUsers.add(user1)
-				name1 = reversedMentionedUsers[0].name.substring(0..(reversedMentionedUsers[0].name.length / 2))
-				name2 = reversedMentionedUsers[1].name.substring(reversedMentionedUsers[1].name.length / 2..reversedMentionedUsers[1].name.length - 1)
+			if (1 > user2Name.compareTo(user1Name)) {
+				var reversedMentionedUsers = mutableListOf<String>()
+				reversedMentionedUsers.add(user2Name)
+				reversedMentionedUsers.add(user1Name)
+				name1 = reversedMentionedUsers[0].substring(0..(reversedMentionedUsers[0].length / 2))
+				name2 = reversedMentionedUsers[1].substring(reversedMentionedUsers[1].length / 2..reversedMentionedUsers[1].length - 1)
 				realShipName = name1 + name2
 			}
 
@@ -68,21 +82,20 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar")) {
 			var percentage = random.nextInt(0, 101)
 
 			// Loritta presa amanhã por manipulação de resultados
-			if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
-				if (user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) {
-					percentage = random.nextInt(0, 51)
-				}
-				if (user1.id == "273192139460968449" || user2.id == "273192139460968449") {
-					percentage = 0
+			if (user1 != null && user2 != null) {
+				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
+					if (user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) {
+						percentage = random.nextInt(0, 51)
+					}
 				}
 			}
 
 			var friendzone: String
 
 			friendzone = if (random.nextBoolean()) {
-				user1.name
+				user1Name
 			} else {
-				user2.name
+				user2Name
 			}
 
 			var messages = listOf("Isto nunca deverá aparecer!")
@@ -124,8 +137,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar")) {
 			message = message.replace("%ship%", "`$shipName`")
 			texto += "$message"
 
-			var avatar1Old = LorittaUtils.downloadImage(user1.effectiveAvatarUrl + "?size=128")
-			var avatar2Old = LorittaUtils.downloadImage(user2.effectiveAvatarUrl + "?size=128")
+			var avatar1Old = LorittaUtils.downloadImage(user1AvatarUrl + "?size=128")
+			var avatar2Old = LorittaUtils.downloadImage(user2AvatarUrl + "?size=128")
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old
