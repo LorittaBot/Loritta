@@ -97,15 +97,15 @@ object MessageUtils {
 		}
 
 		message = message.replace("{@user}", mentionUser)
-		message = message.replace("{user}", user)
+		message = message.replace("{user}", user.escapeMentions())
 		message = message.replace("{user-id}", userId)
 		message = message.replace("{userAvatarUrl}", avatarUrl)
 		message = message.replace("{user-discriminator}", userDiscriminator)
-		message = message.replace("{nickname}", nickname)
-		message = message.replace("{guild}", guild)
+		message = message.replace("{nickname}", nickname.escapeMentions())
+		message = message.replace("{guild}", guild.escapeMentions())
 		message = message.replace("{guildsize}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
-		message = message.replace("{owner}", owner)
+		message = message.replace("{owner}", owner.escapeMentions())
 		return message
 	}
 }
