@@ -78,8 +78,10 @@ object StarboardModule {
 					} else if (count >= starboardConfig.requiredStars) {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}
-					serverConfig.starboardEmbeds.put(msg.id, starboardMessage?.id)
-					loritta save serverConfig
+					if (starboardMessage != null) {
+						serverConfig.starboardEmbeds.put(msg.id, starboardMessage.id)
+						loritta save serverConfig
+					}
 				}
 			}
 		}

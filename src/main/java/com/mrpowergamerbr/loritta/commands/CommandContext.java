@@ -52,7 +52,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocaleById(conf.localeId);
+		this.locale = LorittaLauncher.loritta.getLocaleById(conf.getLocaleId());
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
@@ -62,7 +62,7 @@ public class CommandContext {
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocaleById(conf.localeId);
+		this.locale = LorittaLauncher.loritta.getLocaleById(conf.getLocaleId());
 	}
 
 	public boolean isPrivateChannel() {
@@ -153,7 +153,7 @@ public class CommandContext {
 	}
 
 	public Message sendMessage(Message message) {
-		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
+		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
@@ -177,7 +177,7 @@ public class CommandContext {
 	}
 
 	public Message sendMessage(MessageEmbed embed) {
-		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
+		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
@@ -266,7 +266,7 @@ public class CommandContext {
 	}
 
 	public Message sendFile(InputStream data, String name, Message message) {
-		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
+		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
@@ -293,7 +293,7 @@ public class CommandContext {
 	}
 
 	public Message sendFile(File file, String name, Message message) throws IOException {
-		boolean privateReply = getLorittaUser().getConfig().commandOutputInPrivate();
+		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
 		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();

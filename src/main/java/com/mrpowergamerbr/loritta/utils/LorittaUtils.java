@@ -59,7 +59,7 @@ public final class LorittaUtils {
 
 	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
 		// TODO: Localization
-		if (serverConf.warnOnMissingPermission()) {
+		if (serverConf.getWarnOnMissingPermission()) {
 			for (Member member : guild.getMembers()) {
 				if (!member.getUser().isBot() && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
 					try {
@@ -548,10 +548,10 @@ public final class LorittaUtils {
 
 		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
 
-		if (conf.musicConfig.getMusicGuildId() == null || conf.musicConfig.getMusicGuildId().isEmpty())
+		if (conf.getMusicConfig().getMusicGuildId() == null || conf.getMusicConfig().getMusicGuildId().isEmpty())
 			return;
 
-		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.musicConfig.getMusicGuildId());
+		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.getMusicConfig().getMusicGuildId());
 
 		if (voiceChannel == null)
 			return;
@@ -562,9 +562,9 @@ public final class LorittaUtils {
 		if (voiceChannel.getMembers().isEmpty())
 			return;
 
-		if (conf.musicConfig().getAutoPlayWhenEmpty() && !conf.musicConfig().getUrls().isEmpty()) {
-			String trackUrl = conf.musicConfig().getUrls().get(
-					Loritta.getRANDOM().nextInt(0, conf.musicConfig().getUrls().size()));
+		if (conf.getMusicConfig().getAutoPlayWhenEmpty() && !conf.getMusicConfig().getUrls().isEmpty()) {
+			String trackUrl = conf.getMusicConfig().getUrls().get(
+					Loritta.getRANDOM().nextInt(0, conf.getMusicConfig().getUrls().size()));
 
 			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
 			LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());
