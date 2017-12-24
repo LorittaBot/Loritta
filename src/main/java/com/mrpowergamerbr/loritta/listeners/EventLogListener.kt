@@ -241,7 +241,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = config.eventLogConfig
 
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
 					if (storedMessageDocument != null) {
@@ -287,15 +287,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setAuthor(oldMessage.authorName, null, null)
 
-						var deletedMessage = "\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_DELETED", oldMessage.content, "<#${oldMessage.channelId}>")}"
+						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", oldMessage.content, "<#${oldMessage.channelId}>"]}"
 
+						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+							val auditEntry = event.guild.auditLogs.complete().firstOrNull()
+
+							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
+								if (auditEntry.targetId == oldMessage.authorId) {
+									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user.asMention] + "\n"
+								}
+							}
+						}
 
 						if (oldMessage.attachments != null && oldMessage.attachments.isNotEmpty()) {
-							deletedMessage += "${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + oldMessage.attachments.joinToString(separator = "\n")
+							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + oldMessage.attachments.joinToString(separator = "\n")
 						}
 
 						embed.setDescription(deletedMessage)
-						// embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
 
 						textChannel.sendMessage(embed.build()).complete()
 
