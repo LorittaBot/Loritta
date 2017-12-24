@@ -147,7 +147,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
 			// by mention
-			valid = labels.any { rawArguments[1] == it }
+			valid = labels.any { rawArguments[1].equals(it, true) }
 			byMention = true
 		}
 
