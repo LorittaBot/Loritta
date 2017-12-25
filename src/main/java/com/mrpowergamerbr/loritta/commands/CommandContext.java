@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
-import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -34,7 +33,6 @@ import java.util.HashMap;
 /**
  * Contexto do comando executado
  */
-@Getter
 public class CommandContext {
 	public LorittaUser lorittaUser;
 	public MessageReceivedEvent event;
@@ -65,6 +63,10 @@ public class CommandContext {
 		this.locale = LorittaLauncher.loritta.getLocaleById(conf.getLocaleId());
 	}
 
+	public String[] getRawArgs() {
+		return rawArgs;
+	}
+	
 	public boolean isPrivateChannel() {
 		return event.isFromType(ChannelType.PRIVATE);
 	}
@@ -102,7 +104,7 @@ public class CommandContext {
 	public boolean canUseCommand() { return lorittaUser.canUseCommand(this); }
 
 	public String getAsMention(boolean addSpace) {
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		CommandOptions cmdOptions = lorittaUser.getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride()) {
 			return (cmdOptions.getMentionOnCommandOutput() ?
 					lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
@@ -153,13 +155,13 @@ public class CommandContext {
 	}
 
 	public Message sendMessage(Message message) {
-		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		boolean privateReply = lorittaUser.getConfig().getCommandOutputInPrivate();
+		CommandOptions cmdOptions = lorittaUser.getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(message).complete();
+			return lorittaUser.getUser().openPrivateChannel().complete().sendMessage(message).complete();
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendMessage(message).complete();
@@ -177,13 +179,13 @@ public class CommandContext {
 	}
 
 	public Message sendMessage(MessageEmbed embed) {
-		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		boolean privateReply = lorittaUser.getConfig().getCommandOutputInPrivate();
+		CommandOptions cmdOptions = lorittaUser.getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getUser().openPrivateChannel().complete().sendMessage(embed).complete();
+			return lorittaUser.getUser().openPrivateChannel().complete().sendMessage(embed).complete();
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendMessage(embed).complete();
@@ -266,13 +268,13 @@ public class CommandContext {
 	}
 
 	public Message sendFile(InputStream data, String name, Message message) {
-		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		boolean privateReply = lorittaUser.getConfig().getCommandOutputInPrivate();
+		CommandOptions cmdOptions = lorittaUser.getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
+			return lorittaUser.getUser().openPrivateChannel().complete().sendFile(data, name, message).complete();
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendFile(data, name, message).complete();
@@ -293,13 +295,13 @@ public class CommandContext {
 	}
 
 	public Message sendFile(File file, String name, Message message) throws IOException {
-		boolean privateReply = getLorittaUser().getConfig().getCommandOutputInPrivate();
-		CommandOptions cmdOptions = getLorittaUser().getConfig().getCommandOptionsFor(cmd);
+		boolean privateReply = lorittaUser.getConfig().getCommandOutputInPrivate();
+		CommandOptions cmdOptions = lorittaUser.getConfig().getCommandOptionsFor(cmd);
 		if (cmdOptions.getOverride() && cmdOptions.getCommandOutputInPrivate()) {
 			privateReply = cmdOptions.getCommandOutputInPrivate();
 		}
 		if (privateReply || cmd instanceof AjudaCommand) {
-			return getLorittaUser().getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
+			return lorittaUser.getUser().openPrivateChannel().complete().sendFile(file, name, message).complete();
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendFile(file, name, message).complete();;
