@@ -66,7 +66,7 @@ public class CommandContext {
 	public String[] getRawArgs() {
 		return rawArgs;
 	}
-	
+
 	public boolean isPrivateChannel() {
 		return event.isFromType(ChannelType.PRIVATE);
 	}
