@@ -2,11 +2,9 @@ package com.mrpowergamerbr.loritta
 
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import lombok.Getter
 import java.io.File
 import java.io.IOException
 
-@Getter
 object LorittaLauncher {
 	// STATIC MAGIC(tm)
 	lateinit var loritta: Loritta

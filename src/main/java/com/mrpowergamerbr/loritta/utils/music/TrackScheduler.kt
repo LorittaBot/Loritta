@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
-import lombok.Getter
 import net.dv8tion.jda.core.entities.Guild
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -16,15 +15,11 @@ import kotlin.concurrent.thread
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
-class TrackScheduler
 /**
  * @param player The audio player this scheduler uses
  */
-(@field:Getter
- val guild: Guild, val player: AudioPlayer) : AudioEventAdapter() {
-	@Getter
+class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
-	@Getter
 	var currentTrack: AudioTrackWrapper? = null
 
 	init {
