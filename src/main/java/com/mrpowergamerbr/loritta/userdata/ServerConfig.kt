@@ -6,21 +6,13 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand.Giveaway
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
-import lombok.Getter
-import lombok.Setter
-import lombok.ToString
-import lombok.experimental.Accessors
 import org.mongodb.morphia.annotations.Entity
 import org.mongodb.morphia.annotations.Id
 import org.mongodb.morphia.annotations.IndexOptions
 import org.mongodb.morphia.annotations.Indexed
 import java.util.*
 
-@Getter
-@Setter
-@Accessors(fluent = true)
 @Entity(value = "servers", noClassnameStored = true)
-@ToString
 class ServerConfig(
 	@Id
 	@Indexed(options = IndexOptions(unique = true))
@@ -90,8 +82,6 @@ class ServerConfig(
 		}
 	}
 
-	@Getter
-	@Setter
 	class DebugOptions : CommandOptions() {
 		var enableAllModules: Boolean = false // Caso ativado, TODAS as modules estarão ativadas
 	}
