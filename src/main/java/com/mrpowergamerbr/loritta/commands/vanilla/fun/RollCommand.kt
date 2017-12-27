@@ -36,7 +36,8 @@ class RollCommand : AbstractCommand("rolar", listOf("roll")) {
 			try {
 				if (context.args[0].contains("d")) {
 					val values = context.args[0].split("d")
-					quantity = values[0].toLong()
+
+					quantity = values[0].toLongOrNull() ?: 1
 					value = values[1].toLong()
 				} else {
 					value = context.args[0].toLong()

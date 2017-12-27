@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.lang.management.ManagementFactory
@@ -39,12 +38,12 @@ class BotInfoCommand : AbstractCommand("botinfo") {
 		sb.append(seconds)
 		sb.append("s")
 
-		embed.setAuthor("${context.locale.BOTINFO_TITLE.msgFormat()} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_guild_v4.png")
-		embed.setThumbnail("https://loritta.website/assets/img/loritta_guild_v4.png")
+		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_gabizinha_v1.png")
+		embed.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(context.locale.get("BOTINFO_EMBED_INFO", lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size))
+		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size])
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
-		embed.setFooter("${context.locale.get("BOTINFO_CREATEDBY")} - https://mrpowergamerbr.com/", "https://mrpowergamerbr.com/assets/img/avatar.png?timestamp=${System.currentTimeMillis()}")
+		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		context.sendMessage(embed.build())
 	}
 }

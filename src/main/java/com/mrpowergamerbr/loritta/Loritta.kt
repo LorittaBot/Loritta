@@ -129,7 +129,7 @@ class Loritta {
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
-	var songThrottle = mutableMapOf<String, Long>()
+	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
 
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -345,7 +345,7 @@ class Loritta {
 			jda.addEventListener(eventLogListener) // E o nosso outro listener também!
 		}
 
-		musicManagers = HashMap()
+		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 		playerManager = DefaultAudioPlayerManager()
 
 		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
@@ -676,7 +676,7 @@ class Loritta {
 		val musicManager = getGuildAudioPlayer(context.getGuild());
 		musicManager.scheduler.nextTrack();
 		val channel = context.event.channel
-		channel.sendMessage("🤹 ${context.locale.PULAR_MUSICSKIPPED.msgFormat()}").queue();
+		channel.sendMessage("🤹 ${context.locale["PULAR_MUSICSKIPPED"]}").queue();
 	}
 
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {

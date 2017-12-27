@@ -41,7 +41,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 					.setColor(Color(0, 193, 223))
 					.setTitle("💁 ${context.locale.get("AJUDA_MY_HELP")}")
 					.setDescription(description)
-					.setThumbnail("http://loritta.website/assets/img/loritta_guild_v4.png")
+					.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 
 			val pleaseDonate = EmbedBuilder()
 					.setColor(Color(0, 121, 183))
@@ -81,30 +81,15 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 			else -> Color(186, 0, 239)
 		}
 
-		var image = "http://loritta.website/assets/img/loritta_guild_v4.png"
-
-		if (cat == CommandCategory.SOCIAL) {
-			image = "https://loritta.website/assets/img/social.png"
-		}
-
-		if (cat == CommandCategory.POKEMON) {
-			image = "https://loritta.website/assets/img/pokemon.png"
-		}
-
-		if (cat == CommandCategory.MINECRAFT) {
-			image = "https://loritta.website/assets/img/loritta_pudim.png"
-		}
-
-		if (cat == CommandCategory.FUN) {
-			image = "https://loritta.website/assets/img/vieirinha.png"
-		}
-
-		if (cat == CommandCategory.UTILS) {
-			image = "https://loritta.website/assets/img/utils.png"
-		}
-
-		if (cat == CommandCategory.MUSIC) {
-			image = "https://loritta.website/assets/img/loritta_headset.png"
+		var image = when (cat) {
+			CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
+			CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
+			CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
+			CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
+			CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
+			CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
+			CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
+			else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
 		}
 
 		embed.setColor(color)
@@ -160,7 +145,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 				CommandCategory.IMAGES to "\uD83C\uDFA8",
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
 				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3"
+				CommandCategory.MISC to "\uD83D\uDDC3",
+				CommandCategory.ANIME to "\uD83D\uDCFA"
 		)
 
 		for (category in categories) {
@@ -214,7 +200,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 				CommandCategory.IMAGES to "\uD83C\uDFA8",
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
 				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3"
+				CommandCategory.MISC to "\uD83D\uDDC3",
+				CommandCategory.ANIME to "\uD83D\uDCFA"
 		)
 
 		val entry = reactionEmotes.entries.firstOrNull { it.value ==  e.reactionEmote.name }

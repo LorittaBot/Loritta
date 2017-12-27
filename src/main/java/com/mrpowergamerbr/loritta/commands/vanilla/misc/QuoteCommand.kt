@@ -36,8 +36,6 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote")) {
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 1) {
-			val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
-
 			if (context.args[0].isValidSnowflake()) {
 				var msg: Message? = null
 				try {
@@ -49,15 +47,16 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote")) {
 						context.message.delete().complete() // ok, vamos deletar a msg original
 					}
 
-					var content = msg.author.asMention + " " + context.event.message.rawContent.replace(context.config.commandPrefix + "mencionar " + context.args[0], "").trim { it <= ' ' }
-					content = content.escapeMentions()
+					val args = context.args.toMutableList()
+					args.removeAt(0)
+
+					var content = msg.author.asMention + " " + args.joinToString(" ").escapeMentions()
 
 					val embed = DiscordEmbed
 							.builder()
-							.author(AuthorEmbed(msg.author.name + " ${context.locale.get("MENCIONAR_SAID")}...", null, msg.author.effectiveAvatarUrl, null))
-							.color(123)
-							.description(msg.rawContent)
-							// .title("Wow!")
+							.author(AuthorEmbed(msg.author.name + " ${context.locale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
+							.color(-1769728)
+							.description(msg.contentRaw)
 							.footer(FooterEmbed("em #" + context.message.textChannel.name + if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) "" else " | Não tenho permissão para deletar mensagens!", null, null))
 							.build()
 
@@ -71,6 +70,8 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote")) {
 
 
 					dm.embeds = Arrays.asList(embed)
+
+					val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
 
 					temmie!!.sendMessage(dm)
 				} else {

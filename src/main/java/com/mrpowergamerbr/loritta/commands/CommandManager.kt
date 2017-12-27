@@ -23,6 +23,8 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SlowModeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.SoftBanCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.DiscriminatorCommand
@@ -98,7 +100,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.EditarXPCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.InviteCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RepCommand
@@ -268,6 +270,10 @@ class CommandManager {
 
 		// =======[ POKÉMON ]========
 		commandMap.add(PokedexCommand())
+
+		// =======[ ANIME ]========
+		commandMap.add(MALAnimeCommand())
+		commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())

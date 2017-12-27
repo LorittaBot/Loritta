@@ -58,7 +58,6 @@ class ServerConfig(
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
 	var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
 
-	// TODO: LorittaGuildUserData usando uma lista, já que o MongoDB não consgeue fazer queries dentro de objetos
 	var userData = HashMap<String, LorittaServerUserData>()
 
 	var temporaryBans = HashMap<String, Long>()

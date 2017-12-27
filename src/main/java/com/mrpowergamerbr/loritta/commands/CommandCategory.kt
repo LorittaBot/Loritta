@@ -7,6 +7,7 @@ enum class CommandCategory constructor(val fancyTitle: String, var description: 
 	POKEMON("Pokémon", "Comandos relacionados ao Pokémon"),
 	UNDERTALE("Undertale", "Comandos relacionados ao Undertale"),
 	ROBLOX("Roblox", "Comandos relacionados ao ROBLOX"),
+	ANIME("Anime", "Comandos relacionados a Anime"),
 	DISCORD("Discord", "Comandos relacionados ao Discord"),
 	MISC("Miscelânea", "Comandos que até hoje não encontraram uma categoria específica para viver... Aqui você irá encontrar vários comandos que não se encaixam nas outras categorias!"),
 	ADMIN("Administração", "Comandos para a administração de servidores/guilds"),

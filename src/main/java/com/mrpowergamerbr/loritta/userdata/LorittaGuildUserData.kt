@@ -3,8 +3,9 @@ package com.mrpowergamerbr.loritta.userdata
 /**
  * Usado para guardar informações especificas para um servidor, como XP, nicknames, etc.
  */
-@Deprecated(message = "LorittaGuildUserData")
-class LorittaServerUserData {
+class LorittaGuildUserData(val id: String) {
+	constructor() : this("???")
+
 	var xp: Long = 0; // XP do usuário no servidor
 	var isMuted: Boolean = false
 	var temporaryMute: Boolean = false
