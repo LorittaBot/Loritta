@@ -42,16 +42,16 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: overwritePermissions
 	// TODO: permissionsFor
 
-	fun send(content: String) {
-		textChannel.sendMessage(content).complete()
-	}
-
-	fun send(embed: ParallaxEmbed) {
-		textChannel.sendMessage(embed.toDiscordEmbed()).complete()
-	}
-
-	fun send(mirror: ScriptObjectMirror) {
-		send(ParallaxUtils.toParallaxEmbed(mirror))
+	fun send(content: Any) {
+		if (content is ScriptObjectMirror) {
+			send(ParallaxUtils.toParallaxEmbed(content))
+			return
+		}
+		if (content is ParallaxEmbed) {
+			textChannel.sendMessage(content.toDiscordEmbed()).complete()
+		} else {
+			textChannel.sendMessage(content.toString()).complete()
+		}
 	}
 
 	fun setName(name: String, reason: String? = null) {

@@ -5,12 +5,13 @@ import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.Presence
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Guarda todos os shards da Loritta
  */
 class LorittaShards {
-    var shards: MutableList<JDA> = ArrayList<JDA>();
+    var shards: MutableList<JDA> = CopyOnWriteArrayList<JDA>()
     val lastJdaEventTime = mutableMapOf<JDA, Long>()
 
     fun getGuildById(id: String): Guild? {

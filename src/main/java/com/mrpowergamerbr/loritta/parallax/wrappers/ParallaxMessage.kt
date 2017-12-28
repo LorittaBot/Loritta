@@ -10,9 +10,9 @@ class ParallaxMessage(private val message: Message) {
 	// TODO: attachments
 	val author = ParallaxUser(message.author)
 	val channel = ParallaxTextChannel(message.textChannel)
-	val cleanContent get() = message.strippedContent
-	val client = ParallaxClient()
-	val content get() = message.content
+	val cleanContent get() = message.contentStripped
+	val client = ParallaxClient(message.jda)
+	val content get() = message.contentDisplay
 	val createdAt get() = message.creationTime
 	// TODO: createdTimestamp
 	val deletable get() = message.author.id == Loritta.config.clientId || message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)
@@ -75,16 +75,12 @@ class ParallaxMessage(private val message: Message) {
 		message.addReaction(reaction).complete()
 	}
 
-	fun reply(content: String) {
-		channel.send(content)
-	}
-
-	fun reply(embed: ParallaxEmbed) {
-		channel.send(embed)
-	}
-
-	fun reply(mirror: ScriptObjectMirror) {
-		reply(ParallaxUtils.toParallaxEmbed(mirror))
+	fun reply(content: Any) {
+		if (content is ScriptObjectMirror || content is ParallaxEmbed) {
+			channel.send(content)
+		} else {
+			channel.send(author.toString() + " " + content)
+		}
 	}
 
 	override fun toString(): String = content

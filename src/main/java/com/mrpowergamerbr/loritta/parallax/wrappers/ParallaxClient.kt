@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import net.dv8tion.jda.core.JDA
 
-class ParallaxClient {
-	val user: ParallaxUser = ParallaxUser(lorittaShards.shards[0].selfUser)
+class ParallaxClient(private val jda: JDA) {
+	val user: ParallaxUser = ParallaxUser(jda.selfUser)
 }

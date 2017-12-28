@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullObj
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
@@ -10,16 +11,19 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror
 
 object ParallaxUtils {
 	fun toParallaxEmbed(obj: ScriptObjectMirror): ParallaxEmbed {
-		val json = Loritta.GSON.toJsonTree(obj)["embed"]
+		val json = Loritta.GSON.toJsonTree(obj)["embed"].obj
 
-		val fields = json["fields"].obj
-		val fixedFields = JsonArray()
+		val fields = json["fields"].nullObj
 
-		for ((_, value) in fields.entrySet()) {
-			fixedFields.add(value)
+		if (fields != null) {
+			val fixedFields = JsonArray()
+
+			for ((_, value) in fields.entrySet()) {
+				fixedFields.add(value)
+			}
+
+			json["fields"] = fixedFields
 		}
-
-		json["fields"] = fixedFields
 		return Loritta.GSON.fromJson(json)
 	}
 }

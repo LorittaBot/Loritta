@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.nashorn
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
+import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import jdk.nashorn.api.scripting.ClassFilter
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
@@ -16,6 +17,8 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.script.Invocable
+
+
 
 /**
  * Comandos usando a Nashorn Engine
@@ -106,7 +109,6 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				ogContext.sendMessage(builder.build())
 			}
 		} else {
-			// TODO: API v2
 			val factory = NashornScriptEngineFactory()
 
 			val engine = factory.getScriptEngine(NashornClassFilter())
@@ -118,10 +120,14 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var member = context.member
 				var user = context.member
 				var author = context.member
+				var message = context.message
+				var channel = context.message.channel
+				var client = context.client
 			""".trimIndent()
 			try {
+				val parallaxContext = ParallaxContext(ogContext)
 				val executor = Executors.newSingleThreadExecutor()
-				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
+				val future = executor.submit(ParallaxTask(engine, "$blacklisted function parallaxCommand(context) {\n$inlineMethods\n$javaScript\n}", ogContext, parallaxContext))
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Exception) {
 				e.printStackTrace()

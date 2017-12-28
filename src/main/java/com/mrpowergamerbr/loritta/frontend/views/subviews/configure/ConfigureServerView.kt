@@ -286,6 +286,7 @@ class ConfigureServerView : ConfigureView() {
 			val command = NashornCommand().apply {
 				this.jsLabel = label
 				this.javaScript = code
+				this.useNewAPI = code.contains("// USE NEW API")
 			}
 
 			config.nashornCommands.add(command)
