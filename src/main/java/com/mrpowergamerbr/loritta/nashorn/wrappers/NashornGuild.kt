@@ -38,7 +38,7 @@ class NashornGuild(private val guild: Guild) {
 		val members = mutableListOf<NashornLorittaUser>()
 
 		guild.members.forEach {
-			members.add(NashornLorittaUser(it, serverConfig.userData.getOrDefault(it.user.id, LorittaServerUserData())))
+			members.add(NashornLorittaUser(it, serverConfig.getUserData(it.user.id)))
 		}
 
 		return members
@@ -62,7 +62,7 @@ class NashornGuild(private val guild: Guild) {
 
 	@NashornCommand.NashornDocs()
 	fun getMemberById(id: String): NashornLorittaUser {
-		return NashornLorittaUser(guild.getMemberById(id), serverConfig.userData.getOrDefault(id, LorittaServerUserData()));
+		return NashornLorittaUser(guild.getMemberById(id), serverConfig.getUserData(id))
 	}
 
 	@NashornCommand.NashornDocs()

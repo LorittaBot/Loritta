@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -86,12 +85,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 
 			if (mutedRole != null && member.roles.contains(mutedRole)) {
 				val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
-				val userData = serverConfig.userData.getOrDefault(user.id, LorittaServerUserData())
+				val userData = serverConfig.getUserData(user.id)
 
 				userData.isMuted = false
 				userData.temporaryMute = false
-
-				serverConfig.userData[user.id] = userData
 
 				loritta save serverConfig
 
@@ -239,7 +236,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 			addRole.complete()
 
 			val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
-			val userData = serverConfig.userData.getOrDefault(user.id, LorittaServerUserData())
+			val userData = serverConfig.getUserData(user.id)
 
 			userData.isMuted = true
 			if (time != null) {
@@ -248,8 +245,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 			} else {
 				userData.temporaryMute = false
 			}
-
-			serverConfig.userData[user.id] = userData
 
 			context.reply(
 					LoriReply(

@@ -1,11 +1,5 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
-import net.dv8tion.jda.core.Permission
-
 class MutedUsersThread : Thread("Muted Users Thread") {
 	override fun run() {
 		while (true) {
@@ -19,12 +13,12 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 	}
 
 	fun checkMuteStatus() {
-		run {
+		/* run {
 			// MUTE
-			val guilds = loritta.ds.find(ServerConfig::class.java).field("userData").exists()
+			val guilds = loritta.ds.find(ServerConfig::class.java).field("guildUserData").exists()
 
 			for (guild in guilds) {
-				val toBeUnmuted = guild.userData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
+				val toBeUnmuted = guild.guildUserData.filter { it.value.isMuted && it.value.temporaryMute && System.currentTimeMillis() > it.value.expiresIn }
 
 				if (toBeUnmuted.isEmpty())
 					continue
@@ -37,10 +31,10 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				if (!_guild.selfMember.hasPermission(Permission.MANAGE_ROLES))
 					continue
 
-				for ((key, userData) in toBeUnmuted) {
+				for ((key, guildUserData) in toBeUnmuted) {
 					try {
-						userData.isMuted = false
-						userData.temporaryMute = false
+						guildUserData.isMuted = false
+						guildUserData.temporaryMute = false
 
 						val member = _guild.getMemberById(key)
 
@@ -100,6 +94,6 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 
 				loritta save guild
 			}
-		}
+		} */
 	}
 }

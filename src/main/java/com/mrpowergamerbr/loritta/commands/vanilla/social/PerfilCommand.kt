@@ -4,9 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
@@ -14,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.donator
 import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -43,7 +42,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var userData = context.config.userData.getOrDefault(context.userHandle.id, LorittaServerUserData());
+		var userData = context.config.getUserData(context.userHandle.id)
 		var base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB); // Base
 		val graphics = base.graphics as java.awt.Graphics2D;
 		graphics.setRenderingHint(
@@ -57,7 +56,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 
 		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
-			userData = context.config.userData.getOrDefault(contextUser.id, LorittaServerUserData());
+			userData = context.config.getUserData(contextUser.id);
 		}
 
 		if (userProfile.isBanned) {

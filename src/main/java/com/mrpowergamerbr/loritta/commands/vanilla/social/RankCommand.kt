@@ -4,13 +4,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.*
@@ -52,7 +52,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				}
 
 				for ((id, xp) in map) {
-					val dummy = LorittaServerUserData()
+					val dummy = LorittaGuildUserData()
 					dummy.xp = xp
 					list.add(RankWrapper(id, dummy))
 				}
@@ -64,8 +64,8 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		}
 
 		if (!global) {
-			context.config.userData
-					.forEach { list.add(RankWrapper(it.key, it.value)) }
+			context.config.guildUserData
+					.forEach { list.add(RankWrapper(it.id, it)) }
 		}
 
 		list.sortBy { it.userData.xp }
@@ -174,9 +174,5 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 	data class RankWrapper(
 			val id: String,
-			val userData: LorittaServerUserData)
-
-	fun createRank() {
-
-	}
+			val userData: LorittaGuildUserData)
 }

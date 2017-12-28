@@ -4,7 +4,6 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -127,9 +126,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
 								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
 
-								val userData = (serverConfig.userData as java.util.Map<String, LorittaServerUserData>).getOrDefault(event.member.user.id, LorittaServerUserData())
+								val userData = serverConfig.getUserData(event.member.user.id)
 								userData.xp = userData.xp + gainedXp
-								serverConfig.userData.put(event.member.user.id, userData)
 								loritta save serverConfig
 							}
 						}
@@ -411,7 +409,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					WelcomeModule.handleJoin(event, conf)
 				}
 
-				val userData = conf.userData.getOrDefault(event.user.id, LorittaServerUserData())
+				val userData = conf.getUserData(event.user.id)
 
 				if (userData.isMuted) {
 					var mutedRoles = event.guild.getRolesByName(loritta.getLocaleById(conf.localeId).MUTE_ROLE_NAME, false)

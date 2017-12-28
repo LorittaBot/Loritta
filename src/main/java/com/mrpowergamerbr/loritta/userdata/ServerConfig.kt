@@ -59,6 +59,20 @@ class ServerConfig(
 	var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
 
 	var userData = HashMap<String, LorittaServerUserData>()
+	var guildUserData = mutableListOf<LorittaGuildUserData>()
+	var migratedUserData = false
+
+	fun getUserData(id: String): LorittaGuildUserData {
+		var userData = guildUserData.firstOrNull { it.id == id }
+
+		if (userData == null) {
+			userData = LorittaGuildUserData(id)
+
+			this.guildUserData.add(userData)
+		}
+
+		return userData
+	}
 
 	var temporaryBans = HashMap<String, Long>()
 

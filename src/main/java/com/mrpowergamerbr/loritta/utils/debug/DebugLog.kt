@@ -89,7 +89,7 @@ object DebugLog {
 				println("===[ EXTENDED INFO ]===")
 				println("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
 				println("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
-				println("dummyServerConfig.userData.size: ${loritta.dummyServerConfig.userData.size}")
+				println("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
 				println("messageContextCache.size: ${loritta.messageContextCache.size}")
 				println("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 				println("rawServersFanClub.size: ${loritta.rawServersFanClub.size}")

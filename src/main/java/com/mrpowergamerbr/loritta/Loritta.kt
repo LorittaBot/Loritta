@@ -25,6 +25,7 @@ import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
+import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -371,6 +372,22 @@ class Loritta {
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = ds.createQuery(ServerConfig::class.java).field("_id").equal(guildId).get()
+
+		if (serverConfig != null && !serverConfig.migratedUserData) {
+			// Migrar legacy to user
+			for ((id, serverUserData) in serverConfig.userData) {
+				val memberData = LorittaGuildUserData(id)
+
+				memberData.xp = serverUserData.xp
+				memberData.temporaryMute = serverUserData.temporaryMute
+				memberData.isMuted = serverUserData.isMuted
+				memberData.expiresIn = serverUserData.expiresIn
+
+				serverConfig.guildUserData.add(memberData)
+			}
+			serverConfig.migratedUserData = true
+		}
+
 		return serverConfig ?: ServerConfig().apply { this.guildId = guildId }
 	}
 
