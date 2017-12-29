@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
@@ -15,6 +16,7 @@ import com.mrpowergamerbr.loritta.userdata.LivestreamConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.userdata.YouTubeConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
@@ -81,6 +83,8 @@ class ConfigureServerView : ConfigureView() {
 					response = handleEventHandlers(serverConfig, receivedPayload)
 				} else if (type == "vanilla_commands") {
 					response = handleVanillaCommands(serverConfig, receivedPayload)
+				} else if (type == "text_channels") {
+					response = handleTextChannels(serverConfig, receivedPayload)
 				} else {
 					for (element in receivedPayload.entrySet()) {
 						if (element.key == "guildId") {
@@ -307,6 +311,26 @@ class ConfigureServerView : ConfigureView() {
 			}
 
 			config.nashornEventHandlers.add(command)
+		}
+
+		return "nice"
+	}
+
+	fun handleTextChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+		config.textChannelConfigs.clear()
+		val entries = receivedPayload["entries"].array
+
+		for (entry in entries) {
+			val id = entry["id"].nullString ?: continue
+
+			if (id == "default") {
+				// Config default
+				val textChannelConfig = TextChannelConfig("default")
+				config.defaultTextChannelConfig = textChannelConfig
+			} else {
+				val textChannelConfig = TextChannelConfig(id)
+				config.textChannelConfigs.add(textChannelConfig)
+			}
 		}
 
 		return "nice"

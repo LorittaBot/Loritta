@@ -105,7 +105,9 @@ class UserInfoCommand : AbstractCommand("userinfo") {
 
 			val offset = Instant.ofEpochMilli(profile.lastMessageSent).atZone(ZoneId.systemDefault()).toOffsetDateTime();
 
-			addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(), true)
+			if (profile.lastMessageSent != 0L) {
+				addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(), true)
+			}
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!

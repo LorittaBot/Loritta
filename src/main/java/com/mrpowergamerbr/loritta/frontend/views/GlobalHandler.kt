@@ -35,6 +35,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigurePer
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureRSSFeedsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureServerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureStarboardView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureTextChannelsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
@@ -175,6 +176,7 @@ object GlobalHandler {
 		views.add(ConfigureMusicView())
 		views.add(ConfigureEventHandlersView())
 		views.add(ConfigureCommandsView())
+		views.add(ConfigureTextChannelsView())
 		views.add(TestMessageView())
 		views.add(FanArtsView())
 		views.add(DonateView())

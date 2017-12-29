@@ -6,15 +6,13 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite.Companion.WEBSITE_URL
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Kooby
-import org.jooby.mongodb.MongoSessionStore
-import org.jooby.mongodb.Mongodb
 import java.io.File
 import java.io.StringWriter
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(4568) // Porta do website
-	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
-	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
+	// use(Mongodb()) // Usar extensão do MongoDB para o Jooby
+	// session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
 	assets("/**", File(frontendFolder, "static/").toPath())
 	get("/**", { req, res ->
 		res.send(GlobalHandler.render(req, res))

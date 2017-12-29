@@ -30,7 +30,6 @@ class ServerConfig(
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions
 
-	// boolean warnOnFail; // Avisar ao usuário quando escrever o comando errado?
 	var explainOnCommandRun = true // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
 	var explainInPrivate = false // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?
 	var commandOutputInPrivate = false // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
@@ -57,6 +56,8 @@ class ServerConfig(
 	var permissionsConfig = PermissionsConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
 	var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
+	var defaultTextChannelConfig = TextChannelConfig("default")
+	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
 	var userData = HashMap<String, LorittaServerUserData>()
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
@@ -72,6 +73,14 @@ class ServerConfig(
 		}
 
 		return userData
+	}
+
+	fun getTextChannelConfig(id: String): TextChannelConfig {
+		return textChannelConfigs.firstOrNull { it.id == id } ?: defaultTextChannelConfig
+	}
+
+	fun hasTextChannelConfig(id: String): Boolean {
+		return textChannelConfigs.firstOrNull { it.id == id } != null
 	}
 
 	var temporaryBans = HashMap<String, Long>()

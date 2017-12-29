@@ -23,7 +23,6 @@ import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
-import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -61,7 +60,7 @@ import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
-import okhttp3.OkHttpClient
+import net.dv8tion.jda.core.requests.SessionReconnectQueue
 import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
 import org.slf4j.LoggerFactory
@@ -125,7 +124,7 @@ class Loritta {
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var ds: Datastore // MongoDB²
-	lateinit var morphia: Morphia// MongoDB³
+	lateinit var morphia: Morphia // MongoDB³
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
@@ -143,6 +142,11 @@ class Loritta {
 	var cachedUsers = listOf<User>()
 	var fanArts = mutableListOf<LorittaFanArt>()
 
+	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
+	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
+	var updateTimeListener = UpdateTimeListener(this)
+	var builder: JDABuilder
+
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
@@ -151,6 +155,11 @@ class Loritta {
 		Loritta.youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
+
+		builder = JDABuilder(AccountType.BOT)
+				.setToken(Loritta.config.clientToken)
+				.setCorePoolSize(24)
+				.setReconnectQueue(SessionReconnectQueue())
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -188,10 +197,10 @@ class Loritta {
 
 		println("Iniciando MongoDB...")
 
-		val builder = MongoClientOptions.Builder().apply {
-			connectionsPerHost(2000);
+		val mongoBuilder = MongoClientOptions.Builder().apply {
+			connectionsPerHost(1000)
 		}
-		val options = builder.build()
+		val options = mongoBuilder.build()
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 		morphia = Morphia() // E o Morphia
@@ -203,25 +212,26 @@ class Loritta {
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
 
-		val okHttpBuilder = OkHttpClient.Builder()
+		/* val okHttpBuilder = OkHttpClient.Builder()
 				.connectTimeout(60, TimeUnit.SECONDS)
 				.readTimeout(60, TimeUnit.SECONDS)
-				.writeTimeout(60, TimeUnit.SECONDS)
-
-		val updateTimeListener = UpdateTimeListener(this);
+				.writeTimeout(60, TimeUnit.SECONDS) */
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
-		for (idx in 0..generateShards) {
-			println("Iniciando Shard $idx...")
-			val shard = JDABuilder(AccountType.BOT)
-					.useSharding(idx, Loritta.config.shards)
-					.setToken(Loritta.config.clientToken)
-					.setHttpClientBuilder(okHttpBuilder)
-					.setCorePoolSize(24)
-					.buildBlocking()
-			shard.addEventListener(updateTimeListener)
-			lorittaShards.shards.add(shard)
+		thread {
+			for (idx in 0..generateShards) {
+				println("Iniciando Shard $idx...")
+				val shard = builder
+						.useSharding(idx, Loritta.config.shards)
+						.buildBlocking()
+
+				shard.addEventListener(updateTimeListener)
+				shard.addEventListener(discordListener)
+				shard.addEventListener(eventLogListener)
+				lorittaShards.shards.add(shard)
+				println("Shard $idx iniciada com sucesso!")
+			}
 		}
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
@@ -360,8 +370,12 @@ class Loritta {
 
 		LorittaUtils.startAutoPlaylist()
 
-		ShardReviverThread().start()
+		// ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
+	}
+
+	fun buildShard() {
+
 	}
 
 	/**

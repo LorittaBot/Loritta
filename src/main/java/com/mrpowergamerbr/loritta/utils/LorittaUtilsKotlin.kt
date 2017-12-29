@@ -567,8 +567,19 @@ object LorittaUtilsKotlin {
 	}
 
 	fun sendStackTrace(message: String, t: Throwable) {
-		val guild = lorittaShards.getGuildById("297732013006389252")!!
+		val guild = lorittaShards.getGuildById("297732013006389252")
+
+		if (guild == null) {
+			println("Não foi possível enviar stacktrace: Guild inexistente!")
+			return
+		}
+
 		val textChannel = guild.getTextChannelById("336834673441243146")
+
+		if (textChannel == null) {
+			println("Não foi possível enviar stacktrace: Canal de texto inexistente!")
+			return
+		}
 
 		val messageBuilder = MessageBuilder()
 		messageBuilder.append(message)

@@ -1,15 +1,17 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
+import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
@@ -124,6 +126,27 @@ object DebugLog {
 				println("eventLogExecutors: ${(loritta.eventLogExecutors as ThreadPoolExecutor).activeCount}")
 				println("messageExecutors: ${(loritta.messageExecutors as ThreadPoolExecutor).activeCount}")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
+			}
+			"mongo" -> {
+				println("===[ MONGODB ]===")
+				println("isLocked: " + loritta.mongo.isLocked)
+
+				val clusterField = Mongo::class.java.getDeclaredField("cluster")
+				clusterField.isAccessible = true
+				val cluster = clusterField.get(loritta.mongo)
+				println(cluster)
+				val serverField = cluster::class.java.getDeclaredField("server")
+				serverField.isAccessible = true
+				val defServer = serverField.get(cluster)
+				println(defServer)
+				val conPoolField = defServer::class.java.getDeclaredField("connectionPool")
+				conPoolField.isAccessible = true
+				val conPool = conPoolField.get(defServer)
+				println(conPool)
+				val waitQueueField = conPool::class.java.getDeclaredField("waitQueueSize")
+				waitQueueField.isAccessible = true
+				val waitQueueSize = waitQueueField.get(conPool) as AtomicInteger
+				println("Wait Queue Size: " + waitQueueSize.get())
 			}
 		}
 	}

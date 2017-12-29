@@ -22,7 +22,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.BACKGROUND_DESCRIPTION;
+		return locale["BACKGROUND_DESCRIPTION"]
 	}
 
 	override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
