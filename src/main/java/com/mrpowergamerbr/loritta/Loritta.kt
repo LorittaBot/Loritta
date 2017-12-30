@@ -40,6 +40,7 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.escapeMentions
+import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -209,6 +210,9 @@ class Loritta {
 		// can be called multiple times with different packages or classes
 		morphia.mapPackage("com.mrpowergamerbr.loritta.userdata")
 		morphia.mapPackage("com.mrpowergamerbr.loritta.utils.eventlog")
+		morphia.map(ServerConfig::class.java)
+		morphia.map(LorittaProfile::class.java)
+		morphia.map(StoredMessage::class.java)
 
 		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
 		ds.ensureIndexes()
@@ -709,7 +713,7 @@ class Loritta {
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
-		musicManager.scheduler.queue(trackWrapper);
+		musicManager.scheduler.queue(trackWrapper, conf)
 
 		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
 	}

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.music
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
@@ -31,7 +32,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 	 *
 	 * @param track The track to play or add to queue.
 	 */
-	fun queue(track: AudioTrackWrapper) {
+	fun queue(track: AudioTrackWrapper, config: ServerConfig) {
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
@@ -48,8 +49,6 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 			queue.offer(track)
 		} else {
 			currentTrack = track
-
-			val config = LorittaLauncher.loritta.getServerConfigForGuild(guild.id)
 
 			if (config.musicConfig.logToChannel) {
 				val textChannel = guild.getTextChannelById(config.musicConfig.channelId)
