@@ -3,19 +3,17 @@ package com.mrpowergamerbr.loritta.userdata
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GiveawayCommand.Giveaway
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.mongodb.morphia.annotations.Entity
 import org.mongodb.morphia.annotations.Id
-import org.mongodb.morphia.annotations.IndexOptions
 import org.mongodb.morphia.annotations.Indexed
 import java.util.*
 
 @Entity(value = "servers", noClassnameStored = true)
 class ServerConfig(
 	@Id
-	@Indexed(options = IndexOptions(unique = true))
+	@Indexed
 	var guildId: String // Guild ID
 ) {
 	constructor() : this("???")
@@ -83,9 +81,9 @@ class ServerConfig(
 		return textChannelConfigs.firstOrNull { it.id == id } != null
 	}
 
-	var temporaryBans = HashMap<String, Long>()
+	// var temporaryBans = HashMap<String, Long>()
 
-	var giveaways = ArrayList<Giveaway>()
+	// var giveaways = ArrayList<Giveaway>()
 
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
 		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...

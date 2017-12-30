@@ -204,7 +204,13 @@ class Loritta {
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 		morphia = Morphia() // E o Morphia
+
+		// tell Morphia where to find your classes
+		// can be called multiple times with different packages or classes
+		morphia.mapPackage("com.mrpowergamerbr.loritta.userdata")
+
 		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
+		ds.ensureIndexes()
 		generateDummyServerConfig()
 
 		println("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
@@ -400,6 +406,10 @@ class Loritta {
 				serverConfig.guildUserData.add(memberData)
 			}
 			serverConfig.migratedUserData = true
+		}
+
+		if (serverConfig != null && serverConfig.migratedUserData) {
+			serverConfig.userData.clear()
 		}
 
 		return serverConfig ?: ServerConfig().apply { this.guildId = guildId }

@@ -32,6 +32,22 @@ class LorittaShards {
         return guilds;
     }
 
+    fun getGuildCount(): Int {
+        var count = 0
+        for (shard in shards) {
+            count += shard.guilds.size
+        }
+        return count
+    }
+
+    fun getUserCount(): Int {
+        var count = 0
+        for (shard in shards) {
+            count += shard.users.size
+        }
+        return count
+    }
+
     fun getUsers(): List<User> {
         // Pegar todas os users em todos os shards
         var users = ArrayList<User>();

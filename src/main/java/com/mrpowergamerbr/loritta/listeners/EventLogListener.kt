@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent
@@ -20,17 +19,14 @@ import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent
 import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent
 import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePositionEvent
 import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateTopicEvent
-import net.dv8tion.jda.core.events.guild.GenericGuildEvent
 import net.dv8tion.jda.core.events.guild.GuildBanEvent
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
-import net.dv8tion.jda.core.events.user.GenericUserEvent
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
@@ -49,108 +45,108 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val handledUsernameChanges = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
 
 	// ===[ EVENT LOG ]===
-	// Users
-	override fun onGenericUser(event: GenericUserEvent) {
-		loritta.eventLogExecutors.submit {
-			// Atualizar coisas como user é mais difícil
+	// USERS
+	override fun onUserAvatarUpdate(event: UserAvatarUpdateEvent) {
+		loritta.eventLogExecutors.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 			embed.setColor(Constants.DISCORD_BURPLE)
 			embed.setImage("attachment://avatar.png")
 
-			// Atualizar avatar
-			if (event is UserAvatarUpdateEvent) {
-				// Primeiro iremos criar a imagem do update
-				val rawOldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png"))
-				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
+			val rawOldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png"))
+			val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
-				if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
-					return@submit
+			if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
+				return@execute
 
-				val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
-				val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+			val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+			val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 
-				val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
-				val graphics = base.graphics
-				graphics.drawImage(oldAvatar, 0, 0, null)
-				graphics.drawImage(newAvatar, 128, 0, null)
+			val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
+			val graphics = base.graphics
+			graphics.drawImage(oldAvatar, 0, 0, null)
+			graphics.drawImage(newAvatar, 128, 0, null)
 
-				val os = ByteArrayOutputStream()
-				ImageIO.write(base, "png", os)
+			val os = ByteArrayOutputStream()
+			ImageIO.write(base, "png", os)
 
-				val inputStream = ByteArrayInputStream(os.toByteArray())
+			val inputStream = ByteArrayInputStream(os.toByteArray())
 
-				// E agora nós iremos anunciar a troca para todos os servidores
-				for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
-					if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
-						val config = loritta.getServerConfigForGuild(guild.id)
-						val locale = loritta.getLocaleById(config.localeId)
+			// E agora nós iremos anunciar a troca para todos os servidores
+			/* for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
+				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
+					val config = loritta.getServerConfigForGuild(guild.id)
+					val locale = loritta.getLocaleById(config.localeId)
 
-						if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
-							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+					if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
+						val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
-							if (textChannel != null && textChannel.canTalk()) {
-								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
+						if (textChannel != null && textChannel.canTalk()) {
+							embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
+							embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
 
-								val message = MessageBuilder().append(" ").setEmbed(embed.build())
+							val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-								textChannel.sendFile(inputStream, "avatar.png", message.build()).complete()
-							}
+							textChannel.sendFile(inputStream, "avatar.png", message.build()).complete()
 						}
 					}
 				}
-				return@submit
-			}
-			// Atualizar nome
-			if (event is UserNameUpdateEvent) {
-				// Antes nós iremos salvar o nome velho do usuário no profile dele
-				if (!handledUsernameChanges.containsKey(event.user.id)) {
-					// É necessário fazer isto já que todas as shards irão receber a notificação de username change
-					handledUsernameChanges.put(event.user.id, System.currentTimeMillis())
-					val newName = event.user.name
-					val newDiscriminator = event.user.discriminator
-					val changedAt = System.currentTimeMillis()
+			} */
+		}
+	}
 
-					val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
+	override fun onUserNameUpdate(event: UserNameUpdateEvent) {
+		loritta.eventLogExecutors.execute {
+			val embed = EmbedBuilder()
+			embed.setTimestamp(Instant.now())
+			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+			embed.setColor(Constants.DISCORD_BURPLE)
+			embed.setImage("attachment://avatar.png")
+			if (!handledUsernameChanges.containsKey(event.user.id)) {
+				// É necessário fazer isto já que todas as shards irão receber a notificação de username change
+				handledUsernameChanges.put(event.user.id, System.currentTimeMillis())
+				val newName = event.user.name
+				val newDiscriminator = event.user.discriminator
+				val changedAt = System.currentTimeMillis()
 
-					val profile = loritta.getLorittaProfileForUser(event.user.id)
+				val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
 
-					if (profile.usernameChanges.isEmpty()) {
-						profile.usernameChanges.add((LorittaProfile.UsernameChange(event.user.creationTime.toEpochSecond() * 1000, event.user.name, event.user.discriminator)))
-					}
+				val profile = loritta.getLorittaProfileForUser(event.user.id)
 
-					profile.usernameChanges.add(changeWrapper)
-
-					loritta save profile
+				if (profile.usernameChanges.isEmpty()) {
+					profile.usernameChanges.add((LorittaProfile.UsernameChange(event.user.creationTime.toEpochSecond() * 1000, event.user.name, event.user.discriminator)))
 				}
 
-				// E agora nós iremos anunciar a troca para todos os servidores
-				for (guild in event.jda.guilds) {
-					if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
-						val config = loritta.getServerConfigForGuild(guild.id)
-						val locale = loritta.getLocaleById(config.localeId)
+				profile.usernameChanges.add(changeWrapper)
 
-						if (config.eventLogConfig.usernameChanges && config.eventLogConfig.isEnabled) {
-							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+				loritta save profile
+			}
 
-							if (textChannel != null && textChannel.canTalk()) {
-								embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
-								embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
+			// E agora nós iremos anunciar a troca para todos os servidores
+			/* for (guild in event.jda.guilds) {
+				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
+					val config = loritta.getServerConfigForGuild(guild.id)
+					val locale = loritta.getLocaleById(config.localeId)
 
-								textChannel.sendMessage(embed.build()).complete()
-							}
+					if (config.eventLogConfig.usernameChanges && config.eventLogConfig.isEnabled) {
+						val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+
+						if (textChannel != null && textChannel.canTalk()) {
+							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
+							embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
+
+							textChannel.sendMessage(embed.build()).complete()
 						}
 					}
 				}
-			}
+			} */
 		}
 	}
 
 	// TEXT CHANNEL
 	override fun onGenericTextChannel(event: GenericTextChannelEvent) {
-		loritta.eventLogExecutors.submit {
+		loritta.eventLogExecutors.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setColor(Color(35, 209, 96))
@@ -167,31 +163,31 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setDescription("\uD83C\uDF1F ${locale.EVENTLOG_CHANNEL_CREATED.msgFormat(event.channel.asMention)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@submit
+						return@execute
 					}
 					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_NAME_UPDATED.msgFormat(event.channel.asMention, event.oldName, event.channel.name)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@submit
+						return@execute
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_TOPIC_UPDATED.msgFormat(event.channel.asMention, event.oldTopic, event.channel.topic)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@submit
+						return@execute
 					}
 					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_POSITION_UPDATED.msgFormat(event.channel.asMention, event.oldPosition, event.channel.position)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@submit
+						return@execute
 					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
 						embed.setDescription("\uD83D\uDEAE ${locale.EVENTLOG_CHANNEL_DELETED.msgFormat(event.channel.name)}")
 
 						textChannel.sendMessage(embed.build()).complete()
-						return@submit
+						return@execute
 					}
 				}
 			}
@@ -200,7 +196,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Mensagens
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		loritta.eventLogExecutors.submit {
+		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdit)) {
@@ -268,7 +264,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
-		loritta.eventLogExecutors.submit {
+		loritta.eventLogExecutors.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -308,105 +304,128 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						textChannel.sendMessage(embed.build()).complete()
 
 						loritta.mongo.getDatabase("loritta").getCollection("storedmessages").deleteOne(Filters.eq("_id", event.messageId))
-						return@submit
+						return@execute
 					}
 				}
 			}
 		}
 	}
 
-	// Guilds
-	override fun onGenericGuild(event: GenericGuildEvent) {
-		loritta.eventLogExecutors.submit {
+	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
-			if (eventLogConfig.isEnabled) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId);
 
-				if (textChannel != null && textChannel.canTalk()) {
-					val embed = EmbedBuilder()
-					embed.setTimestamp(Instant.now())
+			if (eventLogConfig.voiceChannelJoins) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val embed = EmbedBuilder()
+				embed.setTimestamp(Instant.now())
 
-					// ===[ VOICE JOIN ]===
-					if (event is GuildVoiceJoinEvent && eventLogConfig.voiceChannelJoins) {
-						embed.setColor(Color(35, 209, 96))
+				embed.setColor(Color(35, 209, 96))
 
-						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-						embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${event.member.asMention} entrou no canal de voz `${event.channelJoined.name}`**")
-						embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
+				embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${event.member.asMention} entrou no canal de voz `${event.channelJoined.name}`**")
+				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 
-						textChannel.sendMessage(embed.build()).complete()
-						return@submit;
-					}
-					// ===[ VOICE LEAVE ]===
-					if (event is GuildVoiceLeaveEvent && eventLogConfig.voiceChannelLeaves) {
-						embed.setColor(Color(35, 209, 96))
+				textChannel.sendMessage(embed.build()).complete()
+				return@execute
+			}
+		}
+	}
 
-						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-						embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${event.member.asMention} saiu do canal de voz `${event.channelLeft.name}`**")
-						embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+		loritta.eventLogExecutors.execute {
+			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-						textChannel.sendMessage(embed.build()).complete()
-						return@submit;
-					}
-					// ===[ USER BANNED ]===
-					if (event is GuildBanEvent && eventLogConfig.memberBanned) {
-						embed.setColor(Color(35, 209, 96))
+			if (eventLogConfig.voiceChannelLeaves) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val embed = EmbedBuilder()
+				embed.setColor(Color(35, 209, 96))
 
-						var message = "\uD83D\uDEAB **${event.user.name} foi banido!**";
+				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
+				embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${event.member.asMention} saiu do canal de voz `${event.channelLeft.name}`**")
+				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 
-						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-							val auditLog = event.guild.auditLogs.complete().first()
+				textChannel.sendMessage(embed.build()).complete()
+				return@execute
+			}
+		}
+	}
 
-							if (auditLog.type == ActionType.BAN) {
-								message += "\n**Banido por:** ${auditLog.user.asMention}";
-								message += "\n**Motivo:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
-							}
-						}
-						embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-						embed.setDescription(message)
-						embed.setFooter("ID do usuário: ${event.user.id}", null)
+	override fun onGuildBan(event: GuildBanEvent) {
+		loritta.eventLogExecutors.execute {
+			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-						textChannel.sendMessage(embed.build()).complete()
-						return@submit;
-					}
-					// ===[ USER UNBANNED ]===
-					if (event is GuildUnbanEvent && eventLogConfig.memberUnbanned) {
-						embed.setColor(Color(35, 209, 96))
+			if (eventLogConfig.memberBanned) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val embed = EmbedBuilder()
+				embed.setColor(Color(35, 209, 96))
 
-						var message = "\uD83E\uDD1D **${event.user.name} foi desbanido!**";
+				var message = "\uD83D\uDEAB **${event.user.name} foi banido!**";
 
-						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-							val auditLog = event.guild.auditLogs.complete().first()
+				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
+					val auditLog = event.guild.auditLogs.complete().first()
 
-							if (auditLog.type == ActionType.UNBAN) {
-								message += "\n**Desbanido por:** ${auditLog.user.asMention}";
-							}
-						}
-						embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-						embed.setDescription(message)
-						embed.setFooter("ID do usuário: ${event.user.id}", null)
-
-						textChannel.sendMessage(embed.build()).complete()
-						return@submit;
-					}
-					// ===[ GENERIC MEMBER EVENT ]===
-					if (event is GenericGuildMemberEvent) {
-						embed.setColor(Color(35, 209, 96))
-
-						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-
-						// ===[ NICKNAME ]===
-						if (event is GuildMemberNickChangeEvent && eventLogConfig.nicknameChanges) {
-							embed.setDescription("\uD83D\uDCDD **Nickname de ${event.member.asMention} foi alterado!\n\nAntigo nickname: `${if (event.prevNick == null) "\uD83E\uDD37 Nenhum nickname" else event.prevNick}`\nNovo nickname: `${if (event.newNick == null) "\uD83E\uDD37 Nenhum nickname" else event.newNick}`**")
-							embed.setFooter("ID do usuário: ${event.member.user.id}", null)
-
-							textChannel.sendMessage(embed.build()).complete()
-							return@submit;
-						}
+					if (auditLog.type == ActionType.BAN) {
+						message += "\n**Banido por:** ${auditLog.user.asMention}";
+						message += "\n**Motivo:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
 					}
 				}
+				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+				embed.setDescription(message)
+				embed.setFooter("ID do usuário: ${event.user.id}", null)
+
+				textChannel.sendMessage(embed.build()).complete()
+				return@execute
+			}
+		}
+	}
+
+	override fun onGuildUnban(event: GuildUnbanEvent) {
+		loritta.eventLogExecutors.execute {
+			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+
+			if (eventLogConfig.memberUnbanned) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val embed = EmbedBuilder()
+				embed.setColor(Color(35, 209, 96))
+
+				var message = "\uD83E\uDD1D **${event.user.name} foi desbanido!**";
+
+				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
+					val auditLog = event.guild.auditLogs.complete().first()
+
+					if (auditLog.type == ActionType.UNBAN) {
+						message += "\n**Desbanido por:** ${auditLog.user.asMention}";
+					}
+				}
+				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+				embed.setDescription(message)
+				embed.setFooter("ID do usuário: ${event.user.id}", null)
+
+				textChannel.sendMessage(embed.build()).complete()
+				return@execute
+			}
+		}
+	}
+
+	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
+		loritta.eventLogExecutors.execute {
+			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			if (eventLogConfig.nicknameChanges) {
+				val embed = EmbedBuilder()
+				embed.setColor(Color(35, 209, 96))
+
+				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
+
+				// ===[ NICKNAME ]===
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				embed.setDescription("\uD83D\uDCDD **Nickname de ${event.member.asMention} foi alterado!\n\nAntigo nickname: `${if (event.prevNick == null) "\uD83E\uDD37 Nenhum nickname" else event.prevNick}`\nNovo nickname: `${if (event.newNick == null) "\uD83E\uDD37 Nenhum nickname" else event.newNick}`**")
+				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+
+				textChannel.sendMessage(embed.build()).complete()
+				return@execute
 			}
 		}
 	}

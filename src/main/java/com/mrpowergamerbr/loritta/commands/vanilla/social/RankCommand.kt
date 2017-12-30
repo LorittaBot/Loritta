@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -41,27 +40,6 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		var global = false
 		var page = 0
-
-		if (context.args.isNotEmpty()) {
-			if (context.args[0] == "global") {
-				global = true
-				val map = mutableMapOf<String, Long>()
-
-				for (lorittaProfile in loritta.ds.find(LorittaProfile::class.java)) {
-					map.put(lorittaProfile.userId!!, lorittaProfile.xp)
-				}
-
-				for ((id, xp) in map) {
-					val dummy = LorittaGuildUserData()
-					dummy.xp = xp
-					list.add(RankWrapper(id, dummy))
-				}
-			} else {
-				var aux = context.args[0].toIntOrNull()
-				if (aux != null)
-					page = aux - 1
-			}
-		}
 
 		if (!global) {
 			context.config.guildUserData
