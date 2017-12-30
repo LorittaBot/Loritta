@@ -208,6 +208,7 @@ class Loritta {
 		// tell Morphia where to find your classes
 		// can be called multiple times with different packages or classes
 		morphia.mapPackage("com.mrpowergamerbr.loritta.userdata")
+		morphia.mapPackage("com.mrpowergamerbr.loritta.utils.eventlog")
 
 		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
 		ds.ensureIndexes()
