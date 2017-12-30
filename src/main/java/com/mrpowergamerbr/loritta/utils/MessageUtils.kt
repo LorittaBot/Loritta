@@ -90,6 +90,19 @@ object MessageUtils {
 			owner = source.guild.owner.effectiveName
 		}
 
+		if (source is MessageReceivedEvent) {
+			mentionUser = source.member.asMention
+			user = source.member.user.name
+			userDiscriminator = source.member.user.discriminator
+			userId = source.member.user.id
+			avatarUrl = source.member.user.effectiveAvatarUrl
+			nickname = source.member.effectiveName
+			guild = source.guild.name
+			guildSize = source.guild.members.size.toString()
+			mentionOwner = source.guild.owner.asMention
+			owner = source.guild.owner.effectiveName
+		}
+
 		var message = text
 
 		for ((token, value) in customTokens) {

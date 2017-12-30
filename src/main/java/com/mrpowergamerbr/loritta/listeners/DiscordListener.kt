@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
+import com.mrpowergamerbr.loritta.utils.modules.AutomodModule
 import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.modules.SlowModeModule
@@ -98,6 +99,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
 							return@execute
 						}
+					}
+
+					// ===[ AUTOMOD ]===
+					if (AutomodModule.handleAutomod(event, event.guild, lorittaUser, serverConfig)) {
+						return@execute
 					}
 
 					// ===[ CÁLCULO DE XP ]===

@@ -23,6 +23,7 @@ import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
+import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -257,6 +258,8 @@ class Loritta {
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
+		ShardReviverThread().start()
+
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
 		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
@@ -380,8 +383,6 @@ class Loritta {
 		AudioSourceManagers.registerLocalSource(playerManager)
 
 		LorittaUtils.startAutoPlaylist()
-
-		// ShardReviverThread().start()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
