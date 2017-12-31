@@ -39,7 +39,13 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		val list = mutableListOf<RankWrapper>()
 
 		var global = false
-		var page = 0
+		var page = context.args.getOrNull(0)?.toIntOrNull()
+
+		if (page != null)
+			page -= 1
+
+		if (page == null)
+			page = 0
 
 		if (!global) {
 			context.config.guildUserData

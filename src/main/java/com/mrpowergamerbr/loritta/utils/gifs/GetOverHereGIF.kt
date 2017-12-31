@@ -10,7 +10,7 @@ object GetOverHereGIF {
 	fun getGIF(toUse: BufferedImage): File {
 		var fileName = Loritta.TEMP + "getoverherescorpion-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName));
-		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 100, true)
+		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		val scaled = toUse.getScaledInstance(50, 50, BufferedImage.SCALE_SMOOTH)
 		for (i in 0..52) {

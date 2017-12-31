@@ -42,6 +42,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.DiscordiaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.DrakeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.GangueCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.GetOverHereCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.GumballCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.InverterCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.JoojCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.LaranjoCommand
@@ -198,6 +199,7 @@ class CommandManager {
 		commandMap.add(LaranjoCommand())
 		commandMap.add(SustoCommand())
 		commandMap.add(TriggeredCommand())
+		commandMap.add(GumballCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())

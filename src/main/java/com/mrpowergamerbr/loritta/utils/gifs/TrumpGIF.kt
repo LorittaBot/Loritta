@@ -15,7 +15,7 @@ object TrumpGIF {
 
 		var fileName = Loritta.TEMP + "trump-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName));
-		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 100, true)
+		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		for (i in 0..70) {
 			var ogImage = ImageIO.read(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"));
