@@ -32,7 +32,10 @@ object InviteLinkModule {
 		val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(content)
 
 		while (matcher.find()) {
-			val url = matcher.group()
+			var url = matcher.group()
+			if (url.contains("discord") && url.contains("gg")) {
+				url = "discord.gg" + matcher.group(1).replace(".", "")
+			}
 			val inviteId = MiscUtils.getInviteId("https://$url") ?: continue
 
 			if (inviteId == "attachments")
