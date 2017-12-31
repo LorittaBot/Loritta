@@ -15,7 +15,7 @@ import javax.imageio.stream.FileImageOutputStream
 
 class TriggeredCommand : AbstractCommand("triggered") {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("RIPVIDA_DESCRIPTION")
+		return locale["TRIGGERED_Description"]
 	}
 
 	override fun getExample(): List<String> {
