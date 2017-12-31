@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.entities.EntityBuilder
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Icon
@@ -108,7 +109,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				str = str.replace("{users}", loritta.lorittaShards.getUserCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
-				loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
+				val shard = lorittaShards.shards.firstOrNull() ?: return
+				loritta.lorittaShards.setGame(EntityBuilder(shard).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 

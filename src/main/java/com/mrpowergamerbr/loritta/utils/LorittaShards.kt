@@ -87,7 +87,7 @@ class LorittaShards {
 
     fun getPresence(): Presence {
         // Pegar primeira shard e retornar a presença dela
-        return shards[0].presence;
+        return shards[0].presence
     }
 
     /**

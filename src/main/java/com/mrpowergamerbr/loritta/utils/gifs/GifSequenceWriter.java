@@ -67,7 +67,7 @@ public class GifSequenceWriter {
       "FALSE");
     graphicsControlExtensionNode.setAttribute(
       "delayTime",
-      Integer.toString(timeBetweenFramesMS / 10));
+      Integer.toString(timeBetweenFramesMS));
     graphicsControlExtensionNode.setAttribute(
       "transparentColorIndex",
       "0");

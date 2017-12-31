@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
@@ -246,13 +247,19 @@ object LorittaUtilsKotlin {
 				val item = json["items"][0]
 				val snippet = item["snippet"].obj
 				val statistics = item["statistics"].obj
+				val likeCount = statistics["likeCount"].nullString
+				val dislikeCount = statistics["dislikeCount"].nullString
 
 				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
 				var channelJson = parser.parse(channelResponse).obj;
 
 				track.metadata.put("viewCount", statistics["viewCount"].string)
-				track.metadata.put("likeCount", statistics["likeCount"].string)
-				track.metadata.put("dislikeCount", statistics["dislikeCount"].string)
+
+				if (likeCount != null)
+					track.metadata.put("likeCount", likeCount)
+				if (dislikeCount != null)
+					track.metadata.put("dislikeCount", dislikeCount)
+
 				if (statistics.has("commentCount")) {
 					track.metadata.put("commentCount", statistics["commentCount"].string)
 				} else {

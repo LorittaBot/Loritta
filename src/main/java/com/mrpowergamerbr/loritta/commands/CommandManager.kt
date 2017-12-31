@@ -29,6 +29,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.DiscriminatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.UserInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.AmigosCommand
@@ -60,6 +61,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.SAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.StudiopolisTvCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.SustoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TretaNewsCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.TriggeredCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TristeRealidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.TrumpCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand
@@ -100,7 +102,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.EditarXPCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.RepCommand
@@ -196,6 +197,7 @@ class CommandManager {
 		commandMap.add(ManiaTitleCardCommand())
 		commandMap.add(LaranjoCommand())
 		commandMap.add(SustoCommand())
+		commandMap.add(TriggeredCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())

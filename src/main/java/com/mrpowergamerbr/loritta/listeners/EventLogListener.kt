@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent
@@ -74,7 +75,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val inputStream = ByteArrayInputStream(os.toByteArray())
 
 			// E agora nós iremos anunciar a troca para todos os servidores
-			/* for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
+			for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
 				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
 					val config = loritta.getServerConfigForGuild(guild.id)
 					val locale = loritta.getLocaleById(config.localeId)
@@ -92,7 +93,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-			} */
+			}
 		}
 	}
 
@@ -124,7 +125,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			// E agora nós iremos anunciar a troca para todos os servidores
-			/* for (guild in event.jda.guilds) {
+			for (guild in event.jda.guilds) {
 				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
 					val config = loritta.getServerConfigForGuild(guild.id)
 					val locale = loritta.getLocaleById(config.localeId)
@@ -140,7 +141,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-			} */
+			}
 		}
 	}
 

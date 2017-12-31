@@ -19,7 +19,7 @@ object AutomodModule {
 		val automodCaps = automodConfig.automodCaps
 
 		if (automodCaps.isEnabled) {
-			val content = message.contentRaw.replace(" ", "")
+			val content = message.contentStripped.replace(" ", "")
 			val capsThreshold = automodCaps.capsThreshold
 
 			var length = content.length.toDouble()

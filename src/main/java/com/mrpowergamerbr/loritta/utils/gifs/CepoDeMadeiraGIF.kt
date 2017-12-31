@@ -13,7 +13,7 @@ object CepoDeMadeiraGIF {
 
 		var fileName = Loritta.TEMP + "cepo-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName));
-		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 1, true)
+		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 100, true)
 
 		var fogoFx = 0;
 		for (i in 0..112) {
