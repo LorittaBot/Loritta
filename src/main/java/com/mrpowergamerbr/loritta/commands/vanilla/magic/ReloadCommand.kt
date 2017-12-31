@@ -9,8 +9,11 @@ import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
@@ -53,8 +56,22 @@ class ReloadCommand : AbstractCommand("reload") {
 		val config = Loritta.GSON.fromJson(json, LorittaConfig::class.java)
 		Loritta.config = config
 
-		loritta.morphia = Morphia()
-		loritta.ds = LorittaLauncher.getInstance().morphia.createDatastore(LorittaLauncher.getInstance().mongo, "loritta")
+		val morphia = Morphia() // E o Morphia
+
+		// tell Morphia where to find your classes
+		// can be called multiple times with different packages or classes
+		morphia.mapPackage("com.mrpowergamerbr.loritta.userdata")
+		morphia.mapPackage("com.mrpowergamerbr.loritta.utils.eventlog")
+		morphia.map(ServerConfig::class.java)
+		morphia.map(LorittaProfile::class.java)
+		morphia.map(StoredMessage::class.java)
+
+		val ds = morphia.createDatastore(loritta.mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
+		ds.ensureIndexes()
+
+		loritta.morphia = morphia
+		loritta.ds = ds
+
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
 		loritta.loadServersFromFanClub()
