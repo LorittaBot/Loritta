@@ -71,8 +71,8 @@ object DebugLog {
 				val runtime = Runtime.getRuntime()
 				println("===[ INFO ]===")
 				println("Shards: ${lorittaShards.shards.size}")
-				println("Total Servers: ${lorittaShards.getGuilds().size}")
-				println("Users: ${lorittaShards.getUsers().size}")
+				println("Total Servers: ${lorittaShards.getGuildCount()}")
+				println("Users: ${lorittaShards.getUserCount()}")
 				//Print used memory
 				println("Used Memory:"
 						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);

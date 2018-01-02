@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
+import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.AccountType
@@ -34,6 +35,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 				val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
 
 				if (seconds >= 10) {
+					log("[SHARD] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 10s! ~  ${seconds}s")
 					println("[!] Shard ${shard.shardInfo.shardId} não recebeu update a mais de 10s! ~  ${seconds}s")
 				}
 			}
@@ -56,6 +58,7 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 				for (deadShard in deadShards) {
 					println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
+					log("[SHARD] Reiniciando shard ${deadShard.shardInfo.shardId}...")
 					val shardId = deadShard.shardInfo.shardId
 
 					lorittaShards.shards.remove(deadShard)

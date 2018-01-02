@@ -258,21 +258,33 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
-					functions.onReactionAdd!!.invoke(e)
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent for ${e.messageId} ~ ${e.member.user.name}")
+					loritta.executor.execute {
+						functions.onReactionAdd!!.invoke(e)
+					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
-					functions.onReactionAddByAuthor!!.invoke(e)
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent (by author) for ${e.messageId} ~ ${e.member.user.name}")
+					loritta.executor.execute {
+						functions.onReactionAddByAuthor!!.invoke(e)
+					}
 				}
 			}
 
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
-					functions.onReactionRemove!!.invoke(e)
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent for ${e.messageId} ~ ${e.member.user.name}")
+					loritta.executor.execute {
+						functions.onReactionRemove!!.invoke(e)
+					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
-					functions.onReactionRemoveByAuthor!!.invoke(e)
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent (by author) for ${e.messageId} ~ ${e.member.user.name}")
+					loritta.executor.execute {
+						functions.onReactionRemoveByAuthor!!.invoke(e)
+					}
 				}
 			}
 		}
@@ -282,12 +294,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val t = object : Thread() {
 				override fun run() {
 					try {
-						e.channel.getMessageById(e.messageId).queue({
-							context.cmd.onCommandReactionFeedback(context, e, it)
-						}, {
-							loritta.messageContextCache.remove(e.messageId)
-						})
+						com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.member.user.name}")
+						val message = e.channel.getMessageById(e.messageId).complete()
+						context.cmd.onCommandReactionFeedback(context, e, message)
 					} catch (exception: Exception) {
+						loritta.messageContextCache.remove(e.messageId)
 						exception.printStackTrace()
 						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
 					}
@@ -338,6 +349,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						// Sistema de Starboard
 						if (conf.starboardConfig.isEnabled) {
+							com.mrpowergamerbr.loritta.utils.log("[REACTION] Handling Starboard for ${e.guild.id} ~ ${e.guild.name} ~ ${e.member.user.name}")
 							StarboardModule.handleStarboardReaction(e, conf)
 						}
 					} catch (exception: Exception) {
@@ -479,7 +491,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				mm.player.isPaused = false
 			} else {
 				mm.player.isPaused = false
-				LorittaUtils.startRandomSong(event.guild)
+				LorittaUtils.startRandomSong(event.guild, config)
 			}
 		}
 	}

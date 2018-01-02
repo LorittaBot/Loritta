@@ -15,7 +15,6 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.NashornDocsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityInfoView
@@ -40,6 +39,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWel
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
@@ -54,6 +54,7 @@ object GlobalHandler {
 
 	fun render(req: Request, res: Response): String {
 		println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 
 		variables["epochMillis"] = System.currentTimeMillis()
@@ -181,7 +182,7 @@ object GlobalHandler {
 		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())
-		views.add(ServersView())
+		// views.add(ServersView())
 		views.add(ServersFanClubView())
 		views.add(NashornDocsView())
 		views.add(PatreonCallbackView())

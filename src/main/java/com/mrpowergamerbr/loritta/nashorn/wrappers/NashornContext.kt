@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.userdata.LorittaServerUserData
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -22,6 +21,8 @@ class NashornContext(
 	private var sentMessages = 0 // Quantas mensagens foram enviadas, usado para não levar rate limit
 	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
 	var sender: NashornMember = NashornLorittaUser(context.handle, context.config.getUserData(context.userHandle.id))
+
+	val nashornGuild = NashornGuild(context.message.guild, context.config)
 
 	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual, a mensagem será \"@Usuário mensagem\", caso a opção de mencionar usuários do servidor esteja desativada, a menção não aparecerá!",
 	"mensagem",
@@ -189,7 +190,8 @@ var guild = getGuild();
 reply("Você está na guild " + guild.getName() + "! 😎");
 """
 	)
+
 	fun getGuild(): NashornGuild {
-		return NashornGuild(context.message.guild)
+		return nashornGuild
 	}
 }

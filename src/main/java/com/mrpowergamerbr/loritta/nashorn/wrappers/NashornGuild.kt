@@ -10,13 +10,7 @@ import net.dv8tion.jda.core.entities.Guild
 /**
  * Wrapper para a Guild, usado para imagens de comandos Nashorn
  */
-class NashornGuild(private val guild: Guild) {
-	private val serverConfig: ServerConfig
-
-	init {
-		serverConfig = loritta.getServerConfigForGuild(guild.id)
-	}
-
+class NashornGuild(private val guild: Guild, private val serverConfig: ServerConfig) {
 	@NashornCommand.NashornDocs()
 	fun getName(): String {
 		return guild.name

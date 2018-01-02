@@ -41,7 +41,7 @@ class BotInfoCommand : AbstractCommand("botinfo") {
 		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getGuilds().size, LorittaLauncher.loritta.lorittaShards.getUsers().size, sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size])
+		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getGuildCount(), LorittaLauncher.loritta.lorittaShards.getUserCount(), sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size])
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		context.sendMessage(embed.build())

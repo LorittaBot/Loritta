@@ -149,6 +149,8 @@ class Loritta {
 	var updateTimeListener = UpdateTimeListener(this)
 	var builder: JDABuilder
 
+	val log = File(FOLDER, "log-${System.currentTimeMillis()}.log")
+
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
@@ -710,6 +712,7 @@ class Loritta {
 
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
+		com.mrpowergamerbr.loritta.utils.log("[MUSIC] Playing ${trackWrapper.track.info.title} - in guild ${guild.name}")
 		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}!")
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);

@@ -16,9 +16,13 @@ import java.util.concurrent.TimeUnit
  * Thread que atualiza o status da Loritta a cada 1s segundos
  */
 class UpdateStatusThread : Thread("Update Status Thread") {
+	companion object {
+		var skipToIndex = -1 // owo
+	}
+
 	var lastUpdate: Long = System.currentTimeMillis()
-	var currentIndex = 0 // Index atual
 	var fanArtMinutes = -1
+	var currentIndex = 0 // Index atual
 	var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
 	var currentDay = -1
 	var revertedAvatar = false
@@ -37,6 +41,10 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	}
 
 	fun updateStatus() {
+		if (skipToIndex != -1) {
+			currentIndex = skipToIndex
+			skipToIndex = -1
+		}
 		val calendar = Calendar.getInstance()
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 

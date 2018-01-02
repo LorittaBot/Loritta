@@ -72,10 +72,6 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 	}
 
 	class NashornMessageReceivedEvent(private val event: MessageReceivedEvent) {
-		fun getGuild(): NashornGuild {
-			return NashornGuild(event.guild)
-		}
-
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
 		}
@@ -101,19 +97,11 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
 		}
-
-		fun getGuild(): NashornGuild {
-			return NashornGuild(event.guild)
-		}
 	}
 
 	class NashornMemberLeaveEvent(private val event: GuildMemberLeaveEvent) {
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
-		}
-
-		fun getGuild(): NashornGuild {
-			return NashornGuild(event.guild)
 		}
 	}
 }

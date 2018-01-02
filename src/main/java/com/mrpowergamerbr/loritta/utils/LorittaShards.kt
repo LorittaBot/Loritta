@@ -33,19 +33,11 @@ class LorittaShards {
     }
 
     fun getGuildCount(): Int {
-        var count = 0
-        for (shard in shards) {
-            count += shard.guilds.size
-        }
-        return count
+        return shards.sumBy { it.guilds.size }
     }
 
     fun getUserCount(): Int {
-        var count = 0
-        for (shard in shards) {
-            count += shard.users.size
-        }
-        return count
+        return shards.sumBy { it.users.size }
     }
 
     fun getUsers(): List<User> {
@@ -77,10 +69,9 @@ class LorittaShards {
 
     fun getMutualGuilds(user: User): List<Guild> {
         // Pegar todas as mutual guilds em todos os shards
-        var guilds = ArrayList<Guild>();
-
+        var guilds = ArrayList<Guild>()
         for (shard in shards) {
-            guilds.addAll(shard.getMutualGuilds(user));
+            guilds.addAll(shard.getMutualGuilds(user))
         }
         return guilds;
     }

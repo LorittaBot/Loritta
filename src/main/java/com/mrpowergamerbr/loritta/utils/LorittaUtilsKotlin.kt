@@ -164,6 +164,13 @@ fun <T> Loritta.saveBulk(vararg objs: T) {
 	loritta.ds.save(objs.toList())
 }
 
+fun log(message: String) {
+	loritta.executor.execute {
+		val calendar = Calendar.getInstance()
+		loritta.log.appendText("[${String.format("%02d", calendar[Calendar.DAY_OF_MONTH])}/${String.format("%02d", calendar[Calendar.MONTH] + 1)}/${String.format("%02d", calendar[Calendar.YEAR])} ${String.format("%02d", calendar[Calendar.HOUR_OF_DAY])}:${String.format("%02d", calendar[Calendar.MINUTE])}] $message\n")
+	}
+}
+
 fun String.isValidSnowflake(): Boolean {
 	try {
 		MiscUtil.parseSnowflake(this)

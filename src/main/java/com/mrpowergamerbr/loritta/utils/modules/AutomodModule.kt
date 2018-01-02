@@ -23,18 +23,27 @@ object AutomodModule {
 			val capsThreshold = automodCaps.capsThreshold
 
 			var length = content.length.toDouble()
-			var caps = content.count { it.isUpperCase() }.toDouble()
+			if (length >= automodCaps.lengthThreshold) {
+				var caps = content.count { it.isUpperCase() }.toDouble()
 
-			var percentage = (caps / length) * 100
+				var percentage = (caps / length) * 100
 
-			if (percentage >= capsThreshold) {
-				if (automodCaps.deleteMessage)
-					message.delete().queue()
+				if (percentage >= capsThreshold) {
+					if (automodCaps.deleteMessage)
+						message.delete().queue()
 
-				if (automodCaps.replyToUser)
-					message.channel.sendMessage(MessageUtils.generateMessage(automodCaps.replyMessage, event)).queue()
+					if (automodCaps.replyToUser) {
+						val message = message.channel.sendMessage(MessageUtils.generateMessage(automodCaps.replyMessage, event)).complete()
 
-				return true
+						if (automodCaps.enableMessageTimeout) {
+							var delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
+							Thread.sleep(delay.toLong())
+							message.delete().queue()
+						}
+					}
+
+					return true
+				}
 			}
 		}
 		return false

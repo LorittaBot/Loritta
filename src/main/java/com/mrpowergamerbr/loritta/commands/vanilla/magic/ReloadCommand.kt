@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
+import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -46,6 +47,15 @@ class ReloadCommand : AbstractCommand("reload") {
 			context.reply(
 					LoriReply(
 							message = "Threads dumpadas com sucesso! Número de threads: " + threadCount
+					)
+			)
+			return
+		}
+		if (context.args.isNotEmpty() && context.args[0] == "setindex") {
+			UpdateStatusThread.skipToIndex = context.args[1].toInt()
+			context.reply(
+					LoriReply(
+							message = "Index alterada!"
 					)
 			)
 			return

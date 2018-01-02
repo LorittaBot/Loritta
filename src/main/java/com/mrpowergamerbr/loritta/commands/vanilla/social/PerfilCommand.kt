@@ -110,8 +110,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 
 		val guildImages = ArrayList<java.awt.Image>();
 
-		val guilds = lorittaShards.getGuilds()
-				.filter { guild -> guild.isMember(user) }
+		val guilds = lorittaShards.getMutualGuilds(user)
 				.sortedByDescending { it.members.size }
 
 		var idx = 0;

@@ -541,12 +541,14 @@ public final class LorittaUtils {
 	}
 
 	public static void startRandomSong(Guild guild) {
+		startRandomSong(guild, LorittaLauncher.loritta.getServerConfigForGuild(guild.getId()));
+	}
+
+	public static void startRandomSong(Guild guild, ServerConfig conf) {
 		long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
 
 		if (5000 > diff)
 			return; // bye
-
-		ServerConfig conf = LorittaLauncher.loritta.getServerConfigForGuild(guild.getId());
 
 		if (conf.getMusicConfig().getMusicGuildId() == null || conf.getMusicConfig().getMusicGuildId().isEmpty())
 			return;
