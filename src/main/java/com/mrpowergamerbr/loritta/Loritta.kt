@@ -23,6 +23,7 @@ import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
+import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
@@ -276,13 +277,13 @@ class Loritta {
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
+		RemindersThread().start()
+
 		DebugLog.startCommandListenerThread()
 
 		// MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
 
 		// GiveawayThread().start() // Iniciar thread para processar giveaways
-
-		LorittaUtils.startNotMigratedYetThreads() // Iniciar threads que não foram migradas para Kotlin
 
 		thread {
 			while (true) {
@@ -386,10 +387,6 @@ class Loritta {
 
 		LorittaUtils.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
-	}
-
-	fun buildShard() {
-
 	}
 
 	/**

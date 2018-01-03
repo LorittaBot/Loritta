@@ -63,9 +63,9 @@
             <version>23.6-jre</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>development-SNAPSHOT</version>
+            <version>3.4.0_322</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

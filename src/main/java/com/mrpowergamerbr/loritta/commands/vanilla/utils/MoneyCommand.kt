@@ -81,7 +81,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana")) {
 					}
 				} else {
 					// we use fixer now bois
-					value = fixerCurrencies["rates"].obj[to].nullDouble
+					value = fixerConverted["rates"].obj[to].nullDouble
 
 					if (value == null) {
 						context.reply(

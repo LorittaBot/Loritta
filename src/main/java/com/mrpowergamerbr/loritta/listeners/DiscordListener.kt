@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -258,14 +259,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent for ${e.messageId} ~ ${e.member.user.name}")
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionAdd!!.invoke(e)
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent (by author) for ${e.messageId} ~ ${e.member.user.name}")
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent (by author) for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionAddByAuthor!!.invoke(e)
 					}
@@ -274,14 +275,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent for ${e.messageId} ~ ${e.member.user.name}")
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionRemove!!.invoke(e)
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent (by author) for ${e.messageId} ~ ${e.member.user.name}")
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent (by author) for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionRemoveByAuthor!!.invoke(e)
 					}
@@ -294,13 +295,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val t = object : Thread() {
 				override fun run() {
 					try {
-						com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.member.user.name}")
+						com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.user.name}")
 						val message = e.channel.getMessageById(e.messageId).complete()
 						context.cmd.onCommandReactionFeedback(context, e, message)
 					} catch (exception: Exception) {
 						loritta.messageContextCache.remove(e.messageId)
+						if (exception is ErrorResponseException) {
+							if (exception.errorCode == 10008) // unknown channel
+								return
+						}
 						exception.printStackTrace()
-						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.member.user.name}**", exception)
+						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.user.name}**", exception)
 					}
 				}
 			}
@@ -364,12 +369,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val executors = mutableMapOf<Guild, ExecutorService>()
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
-		thread {
+		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-			LorittaLauncher.loritta.mongo
-					.getDatabase("loritta")
-					.getCollection("servers")
-					.deleteMany(Filters.eq("_id", e.guild.id)) // Tchau! :(
+			LorittaLauncher.loritta.ds.delete(ServerConfig::class.java, e.guild.id)
 		}
 	}
 

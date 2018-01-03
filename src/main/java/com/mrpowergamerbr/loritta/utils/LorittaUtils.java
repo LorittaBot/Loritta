@@ -470,45 +470,6 @@ public final class LorittaUtils {
 		return bytes;
 	}
 
-	@Deprecated
-	public static void startNotMigratedYetThreads() {
-		Runnable reminders = () -> {
-			while (true) {
-				FindIterable<Document> list = LorittaLauncher.loritta.mongo.getDatabase("loritta").getCollection("users").find(Filters.exists("reminders"));
-				for (Document doc : list) {
-					LorittaProfile profile = LorittaLauncher.loritta.getLorittaProfileForUser(doc.getString("_id"));
-					List<Reminder> toRemove = new ArrayList<Reminder>();
-					for (Reminder reminder : profile.getReminders()) {
-						if (System.currentTimeMillis() >= reminder.getRemindMe()) {
-							toRemove.add(reminder);
-
-							Guild guild = LorittaLauncher.loritta.getLorittaShards().getGuildById(reminder.getGuild());
-
-							if (guild != null) {
-								TextChannel textChannel = guild.getTextChannelById(reminder.getTextChannel());
-
-								if (textChannel != null) {
-									textChannel.sendMessage(
-											"\uD83D\uDD14 | <@" + profile.getUserId() + "> Lembrete! `" + reminder.getReason() + "`").complete();
-								}
-							}
-						}
-					}
-					if (!toRemove.isEmpty()) {
-						profile.getReminders().removeAll(toRemove);
-						LorittaLauncher.loritta.ds.save(profile);
-					}
-				}
-				try {
-					Thread.sleep(5000);
-				} catch (Exception e) {
-				}
-			}
-		};
-		new Thread(reminders, "Reminders Thread").start();
-	}
-
-
 	public static void startAutoPlaylist() {
 		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
 			while (true) {

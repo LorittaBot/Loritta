@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.google.common.cache.CacheBuilder
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -31,7 +30,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import org.bson.Document
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -223,10 +221,17 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					reuploadedAttachments.add(pomfUrl ?: attachmentUrl)
 				}
 
-				// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
-				loritta.mongo.getDatabase("loritta")
-						.getCollection("storedmessages")
-						.updateOne(Filters.eq("_id", event.message.id), Document("\$set", Document("attachments", reuploadedAttachments)))
+				if (reuploadedAttachments.isNotEmpty()) {
+					// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
+					val ops = loritta.ds
+							.createUpdateOperations(StoredMessage::class.java)
+							.set("attachments", reuploadedAttachments)
+
+					loritta.ds.update(
+							loritta.ds.createQuery(StoredMessage::class.java).field("_id").equal(event.message.id),
+							ops
+					)
+				}
 			}
 		}
 	}
@@ -240,23 +245,22 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
-					if (storedMessageDocument != null) {
-						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
+					val storedMessage = loritta.ds.find(StoredMessage::class.java).field("_id").equal(event.message.id).get()
+					if (storedMessage != null) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
 						embed.setColor(Color(238, 241, 0))
 
 						embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, oldMessage.content, event.message.rawContent, event.message.textChannel.asMention)}")
-						embed.setFooter(locale.get("EVENTLOG_USER_ID", event.member.user.id), null)
+						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, storedMessage.content, event.message.contentRaw, event.message.textChannel.asMention)}")
+						embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
 						textChannel.sendMessage(embed.build()).complete()
 
-						oldMessage.content = event.message.rawContent
+						storedMessage.content = event.message.rawContent
 
-						loritta save oldMessage
+						loritta save storedMessage
 						return@thread
 					}
 				}
@@ -274,37 +278,39 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessageDocument = loritta.mongo.getDatabase("loritta").getCollection("storedmessages").find(Filters.eq("_id", event.messageId)).first()
-					if (storedMessageDocument != null) {
-						val oldMessage = loritta.ds.get(StoredMessage::class.java, storedMessageDocument["_id"])
+					val storedMessage = loritta.ds.find(StoredMessage::class.java)
+							.field("_id")
+							.equal(event.messageId)
+							.get()
+					if (storedMessage != null) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
 						embed.setColor(Color(221, 0, 0))
 
-						embed.setAuthor(oldMessage.authorName, null, null)
+						embed.setAuthor(storedMessage.authorName, null, null)
 
-						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", oldMessage.content, "<#${oldMessage.channelId}>"]}"
+						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 							val auditEntry = event.guild.auditLogs.complete().firstOrNull()
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
-								if (auditEntry.targetId == oldMessage.authorId) {
+								if (auditEntry.targetId == storedMessage.authorId) {
 									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user.asMention] + "\n"
 								}
 							}
 						}
 
-						if (oldMessage.attachments != null && oldMessage.attachments.isNotEmpty()) {
-							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + oldMessage.attachments.joinToString(separator = "\n")
+						if (storedMessage.attachments != null && storedMessage.attachments.isNotEmpty()) {
+							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + storedMessage.attachments.joinToString(separator = "\n")
 						}
 
 						embed.setDescription(deletedMessage)
 
 						textChannel.sendMessage(embed.build()).complete()
 
-						loritta.mongo.getDatabase("loritta").getCollection("storedmessages").deleteOne(Filters.eq("_id", event.messageId))
+						loritta.ds.delete(StoredMessage::class.java, event.messageId)
 						return@execute
 					}
 				}

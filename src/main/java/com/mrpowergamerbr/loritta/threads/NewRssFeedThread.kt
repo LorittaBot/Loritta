@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
@@ -27,14 +26,12 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 	fun checkRssFeeds() {
 		try {
-			var servers = LorittaLauncher.loritta.mongo
-					.getDatabase("loritta")
-					.getCollection("servers")
-					.find(Filters.exists("rssFeedConfig.feeds", true))
+			var servers = LorittaLauncher.loritta.ds
+					.find(ServerConfig::class.java)
+					.field("rssFeedConfig.feeds")
+					.exists()
 
-			for (server in servers) {
-				var config = LorittaLauncher.loritta.ds.get(ServerConfig::class.java, server["_id"]);
-
+			for (config in servers) {
 				var rssFeedConfig = config.rssFeedConfig;
 
 				var guild = LorittaLauncher.loritta.lorittaShards.getGuildById(config.guildId)
@@ -47,9 +44,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 						if (textChannel != null && feedUrl != null) { // Wow, diferente de null!
 							if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-								val feedEntry = LorittaUtilsKotlin.getLastPostFromFeed(feedUrl)
-
-								if (feedEntry == null) { continue; }
+								val feedEntry = LorittaUtilsKotlin.getLastPostFromFeed(feedUrl) ?: continue
 
 								val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
 
