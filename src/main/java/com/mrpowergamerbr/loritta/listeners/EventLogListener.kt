@@ -322,7 +322,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-			if (eventLogConfig.voiceChannelJoins) {
+			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -343,7 +343,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-			if (eventLogConfig.voiceChannelLeaves) {
+			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
@@ -362,7 +362,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-			if (eventLogConfig.memberBanned) {
+			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
@@ -392,7 +392,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
-			if (eventLogConfig.memberUnbanned) {
+			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
@@ -420,7 +420,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
-			if (eventLogConfig.nicknameChanges) {
+			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 
