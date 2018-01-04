@@ -1,18 +1,20 @@
 package com.mrpowergamerbr.loritta.userdata
 
-data class AminoConfig(
-	var isEnabled: Boolean, // Está ativado?
-    var fixAminoImages: Boolean, // Corrigir imagens do Amino no Discord
-	var syncAmino: Boolean,
-	var aminos: MutableList<AminoInfo>
-    ) {
-	constructor() : this(false, false, false, mutableListOf<AminoInfo>())
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
 
-	data class AminoInfo(
+class AminoConfig {
+	var isEnabled: Boolean = false // Está ativado?
+	var fixAminoImages: Boolean = false // Corrigir imagens do Amino no Discord
+	var syncAmino: Boolean = false
+	var aminos: MutableList<AminoInfo> = mutableListOf()
+
+	data class AminoInfo @BsonCreator constructor(
+			@BsonProperty("inviteUrl")
 			var inviteUrl: String?, // Invite URL da comunidade do Amino, usado para a Loritta entrar lá
+			@BsonProperty("communityId")
 			var communityId: String?,
+			@BsonProperty("repostToChannelId")
 			var repostToChannelId: String?
-	) {
-		constructor() : this(null, null, null)
-	}
+	)
 }

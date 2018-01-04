@@ -202,11 +202,7 @@ class ConfigureServerView : ConfigureView() {
 			val inviteUrl = community["inviteUrl"].string
 			val communityId = community["communityId"].string
 
-			val amino = AminoConfig.AminoInfo().apply {
-				this.repostToChannelId = repostToChannelId
-				this.inviteUrl = inviteUrl
-				this.communityId = communityId
-			}
+			val amino = AminoConfig.AminoInfo(inviteUrl, communityId, repostToChannelId)
 
 			config.aminoConfig.aminos.add(amino)
 		}
@@ -224,12 +220,7 @@ class ConfigureServerView : ConfigureView() {
 			val channelId = entry["channelId"].string
 			val videoSentMessage = entry["videoSentMessage"].string
 
-			val channel = YouTubeConfig.YouTubeInfo().apply {
-				this.repostToChannelId = repostToChannelId
-				this.channelUrl = channelUrl
-				this.channelId = channelId
-				this.videoSentMessage = videoSentMessage
-			}
+			val channel = YouTubeConfig.YouTubeInfo(channelUrl, channelId, repostToChannelId, videoSentMessage)
 
 			config.youTubeConfig.channels.add(channel)
 		}
@@ -246,11 +237,7 @@ class ConfigureServerView : ConfigureView() {
 			val channelUrl = entry["channelUrl"].string
 			val videoSentMessage = entry["videoSentMessage"].string
 
-			val channel = LivestreamConfig.LivestreamInfo().apply {
-				this.repostToChannelId = repostToChannelId
-				this.channelUrl = channelUrl
-				this.videoSentMessage = videoSentMessage
-			}
+			val channel = LivestreamConfig.LivestreamInfo(channelUrl, repostToChannelId, videoSentMessage)
 
 			config.livestreamConfig.channels.add(channel)
 		}
@@ -267,11 +254,7 @@ class ConfigureServerView : ConfigureView() {
 			val feedUrl = entry["feedUrl"].string
 			val newMessage = entry["newMessage"].string
 
-			val feed = RssFeedConfig.FeedInfo().apply {
-				this.repostToChannelId = repostToChannelId
-				this.feedUrl = feedUrl
-				this.newMessage = newMessage
-			}
+			val feed = RssFeedConfig.FeedInfo(feedUrl, repostToChannelId, newMessage)
 
 			config.rssFeedConfig.feeds.add(feed)
 		}

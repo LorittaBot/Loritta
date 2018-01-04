@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.google.common.cache.CacheBuilder
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -30,6 +31,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.bson.Document
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -223,13 +225,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (reuploadedAttachments.isNotEmpty()) {
 					// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
-					val ops = loritta.ds
-							.createUpdateOperations(StoredMessage::class.java)
-							.set("attachments", reuploadedAttachments)
-
-					loritta.ds.update(
-							loritta.ds.createQuery(StoredMessage::class.java).field("_id").equal(event.message.id),
-							ops
+					loritta.storedMessagesColl.updateOne(
+							Filters.eq("_id", event.message.id),
+							Document("\$set", Document("attachments", reuploadedAttachments))
 					)
 				}
 			}
@@ -245,7 +243,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessage = loritta.ds.find(StoredMessage::class.java).field("_id").equal(event.message.id).get()
+					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.message.id)).firstOrNull()
 					if (storedMessage != null) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -278,10 +276,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessage = loritta.ds.find(StoredMessage::class.java)
-							.field("_id")
-							.equal(event.messageId)
-							.get()
+					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.messageId)).firstOrNull()
 					if (storedMessage != null) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -310,7 +305,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						textChannel.sendMessage(embed.build()).complete()
 
-						loritta.ds.delete(StoredMessage::class.java, event.messageId)
+						loritta.storedMessagesColl.deleteOne(Filters.eq("_id", event.messageId))
 						return@execute
 					}
 				}

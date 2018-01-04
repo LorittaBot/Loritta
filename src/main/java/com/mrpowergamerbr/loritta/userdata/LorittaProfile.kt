@@ -1,25 +1,15 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
-import com.mrpowergamerbr.loritta.utils.tamagotchi.TamagotchiPet
-import org.mongodb.morphia.annotations.Entity
-import org.mongodb.morphia.annotations.Id
-import org.mongodb.morphia.annotations.Indexed
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
 
 /**
  * Perfil de um usuário que usa a Loritta
  */
-@Entity(value = "users", noClassnameStored = true)
-class LorittaProfile {
-    constructor()
-
-    constructor(userId: String) : this() {
-        this.userId = userId;
-    }
-
-    @Id
-    @Indexed
-    var userId: String? = null;
+class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: String) {
+    @BsonProperty("_id")
+    val userId = _userId
     var xp: Long = 0 // XP do usuário
     var aboutMe: String = "A Loritta é minha amiga!";
     var isBanned = false;
@@ -32,7 +22,7 @@ class LorittaProfile {
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Long = 0
-    var tamagotchi: TamagotchiPet? = null
+    // var tamagotchi: TamagotchiPet? = null
 
     fun getCurrentLevel(): XpWrapper {
         var lvl = 1;
@@ -54,10 +44,9 @@ class LorittaProfile {
         return receivedReputations.size;
     }
 
-    data class XpWrapper(val currentLevel: Int, val expLeft: Long)
+    class XpWrapper @BsonCreator constructor(@BsonProperty("currentLevel") val currentLevel: Int, @BsonProperty("expLeft") val expLeft: Long)
 
-    data class UsernameChange(val changedAt: Long = 0L, val username: String = "???", val discriminator: String = "0000") {
-	}
+    class UsernameChange @BsonCreator constructor(@BsonProperty("changedAt") val changedAt: Long = 0L, @BsonProperty("username") val username: String, @BsonProperty("discriminator") val discriminator: String)
 
-    class SpinnerScore(val emoji: String = "???", val forTime: Long = 0)
+    class SpinnerScore @BsonCreator constructor(@BsonProperty("emoji") val emoji: String, @BsonProperty("forTime") val forTime: Long)
 }

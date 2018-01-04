@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -26,10 +26,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 	fun checkRssFeeds() {
 		try {
-			var servers = LorittaLauncher.loritta.ds
-					.find(ServerConfig::class.java)
-					.field("rssFeedConfig.feeds")
-					.exists()
+			val servers = loritta.serversColl.find(Filters.exists("rssFeedConfig.feeds"))
 
 			for (config in servers) {
 				var rssFeedConfig = config.rssFeedConfig;

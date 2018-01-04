@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
@@ -24,7 +24,7 @@ class RemindersThread : Thread("Reminders Thread") {
 	}
 
 	fun checkReminders() {
-		val list = loritta.ds.find(LorittaProfile::class.java).field("reminders").exists()
+		val list = loritta.usersColl.find(Filters.exists("reminders"))
 
 		for (profile in list) {
 			val toRemove = mutableListOf<Reminder>()

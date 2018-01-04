@@ -13,7 +13,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomSAMCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SpinnerCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TamagotchiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
@@ -187,7 +186,7 @@ class CommandManager {
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
 		commandMap.add(CleverbotCommand())
-		commandMap.add(TamagotchiCommand())
+		// commandMap.add(TamagotchiCommand())
 		// commandMap.add(GiveawayCommand())
 		commandMap.add(CongaParrotCommand())
 

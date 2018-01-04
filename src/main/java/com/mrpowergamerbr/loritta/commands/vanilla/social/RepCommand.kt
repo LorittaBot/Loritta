@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.saveBulk
+import com.mrpowergamerbr.loritta.utils.save
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao")) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -68,7 +68,8 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			)
 
 			// E vamos salvar as configurações
-			loritta.saveBulk(givenProfile, profile)
+			loritta save givenProfile
+			loritta save profile
 		} else {
 			if (context.args.isEmpty()) {
 				this.explain(context)

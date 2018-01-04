@@ -2,11 +2,12 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import org.bson.codecs.configuration.CodecRegistries.fromProviders
 import org.bson.codecs.configuration.CodecRegistries.fromRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.bson.codecs.pojo.annotations.BsonId
-
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
 
 fun main(args: Array<String>) {
 	val pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
@@ -18,17 +19,24 @@ fun main(args: Array<String>) {
 
 	val dbCodec = db.withCodecRegistry(pojoCodecRegistry);
 
-	val collection = dbCodec.getCollection("hello_world", HelloWorld::class.java)
+	val serverConfig = ServerConfig("-12")
+	// serverConfig.guildUserData.add(LorittaGuildUserData().apply { "-1" })
+	val collection = dbCodec.getCollection("test", ServerConfig::class.java)
 
-	val hello = HelloWorld("test", "thaay")
-
-	collection.insertOne(hello)
+	collection.insertOne(serverConfig)
+	for (test in collection.find()) {
+		for (a in test.guildUserData) {
+			// println(a.userId)
+		}
+	}
 }
 
-class HelloWorld(@BsonId val id: String, val test: String, val subClass: SubClass) {
-
+class HelloWorld @BsonCreator constructor(@BsonProperty("_id") test: String) {
+	@BsonProperty("_id")
+	val realId = test
+	var subClass = SubClass()
 }
 
-class SubClass(val howdy: String) {
-
+class SubClass {
+	var howdy: String = "???"
 }

@@ -12,6 +12,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
@@ -64,8 +66,8 @@ import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
 import net.dv8tion.jda.core.requests.SessionReconnectQueue
-import org.mongodb.morphia.Datastore
-import org.mongodb.morphia.Morphia
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
@@ -126,8 +128,9 @@ class Loritta {
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
-	lateinit var ds: Datastore // MongoDB²
-	lateinit var morphia: Morphia // MongoDB³
+	lateinit var serversColl: MongoCollection<ServerConfig>
+	lateinit var usersColl: MongoCollection<LorittaProfile>
+	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
@@ -169,8 +172,7 @@ class Loritta {
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
 	fun generateDummyServerConfig() {
-		val dummy = ServerConfig().apply {
-			guildId = "-1" // É usado -1 porque -1 é um número de guild inexistente
+		val dummy = ServerConfig("-1").apply { // É usado -1 porque -1 é um número de guild inexistente
 			commandPrefix = ""
 		}
 
@@ -202,24 +204,25 @@ class Loritta {
 
 		println("Iniciando MongoDB...")
 
+		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+
 		val mongoBuilder = MongoClientOptions.Builder().apply {
 			connectionsPerHost(1000)
+			codecRegistry(pojoCodecRegistry)
 		}
 		val options = mongoBuilder.build()
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
-		morphia = Morphia() // E o Morphia
 
-		// tell Morphia where to find your classes
-		// can be called multiple times with different packages or classes
-		morphia.mapPackage("com.mrpowergamerbr.loritta.userdata")
-		morphia.mapPackage("com.mrpowergamerbr.loritta.utils.eventlog")
-		morphia.map(ServerConfig::class.java)
-		morphia.map(LorittaProfile::class.java)
-		morphia.map(StoredMessage::class.java)
+		val db = mongo.getDatabase("loritta")
 
-		ds = morphia.createDatastore(mongo, "loritta") // E também crie uma datastore (tudo da Loritta será salvo na database "loritta")
-		ds.ensureIndexes()
+		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
+
+		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
+		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
+		storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
+
 		generateDummyServerConfig()
 
 		println("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
@@ -396,7 +399,7 @@ class Loritta {
 	 * @return ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
-		val serverConfig = ds.createQuery(ServerConfig::class.java).field("_id").equal(guildId).get()
+		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).firstOrNull()
 
 		if (serverConfig != null && !serverConfig.migratedUserData) {
 			// Migrar legacy to user
@@ -417,7 +420,7 @@ class Loritta {
 			serverConfig.userData.clear()
 		}
 
-		return serverConfig ?: ServerConfig().apply { this.guildId = guildId }
+		return serverConfig ?: ServerConfig(guildId)
 	}
 
 	/**
@@ -427,7 +430,7 @@ class Loritta {
 	 * @return LorittaProfile
 	 */
 	fun getLorittaProfileForUser(userId: String): LorittaProfile {
-		val userProfile = ds.createQuery(LorittaProfile::class.java).field("_id").equal(userId).get()
+		val userProfile = usersColl.find(Filters.eq("_id", userId)).firstOrNull()
 		return userProfile ?: LorittaProfile(userId)
 	}
 

@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 
 class LorittaUnbanCommand : AbstractCommand("lorittaunban") {
 	override fun getDescription(): String {
@@ -27,7 +29,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban") {
 			profile.isBanned = false;
 			profile.banReason = null;
 
-			LorittaLauncher.getInstance().ds.save(profile);
+			loritta save profile
 
 			context.sendMessage(context.getAsMention(true) + "Usuário desbanido com sucesso!")
 		} else {

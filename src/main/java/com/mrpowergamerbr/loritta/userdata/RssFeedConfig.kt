@@ -1,15 +1,17 @@
 package com.mrpowergamerbr.loritta.userdata
 
-data class RssFeedConfig(
-	var feeds: MutableList<FeedInfo> // Feeds
-	) {
-	constructor() : this(mutableListOf<FeedInfo>())
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
 
-	data class FeedInfo(
-		var feedUrl: String?, // URL da Feed
-		var repostToChannelId: String?, // ID do Canal
-		var newMessage: String
-	) {
-		constructor() : this(null, null, "{título}\n{link}")
-	}
+class RssFeedConfig {
+	var feeds = mutableListOf<FeedInfo>()
+
+	data class FeedInfo @BsonCreator constructor(
+			@BsonProperty("feedUrl")
+			var feedUrl: String?, // URL da Feed
+			@BsonProperty("repostToChannelId")
+			var repostToChannelId: String?, // ID do Canal
+			@BsonProperty("newMessage")
+			var newMessage: String
+	)
 }

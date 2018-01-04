@@ -5,19 +5,16 @@ import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
-import org.mongodb.morphia.annotations.Entity
-import org.mongodb.morphia.annotations.Id
-import org.mongodb.morphia.annotations.Indexed
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
 import java.util.*
 
-@Entity(value = "servers", noClassnameStored = true)
-class ServerConfig(
-	@Id
-	@Indexed
-	var guildId: String // Guild ID
+class ServerConfig @BsonCreator constructor(
+	@BsonProperty("_id")
+	_guildId: String // Guild ID
 ) {
-	constructor() : this("???")
-
+	@BsonProperty("_id")
+	val guildId = _guildId
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
 	var debugOptions = DebugOptions()
@@ -53,7 +50,7 @@ class ServerConfig(
 	var inviteBlockerConfig = InviteBlockerConfig()
 	var permissionsConfig = PermissionsConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
-	var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
+	// var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
@@ -62,7 +59,7 @@ class ServerConfig(
 	var migratedUserData = false
 
 	fun getUserData(id: String): LorittaGuildUserData {
-		var userData = guildUserData.firstOrNull { it.id == id }
+		var userData = guildUserData.firstOrNull { it.userId == id }
 
 		if (userData == null) {
 			userData = LorittaGuildUserData(id)

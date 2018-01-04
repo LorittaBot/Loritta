@@ -8,10 +8,14 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.UpdateOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
@@ -153,15 +157,32 @@ val JSON_PARSER: JsonParser
  * Salva um objeto usando o Datastore do MongoDB
  */
 infix fun <T> Loritta.save(obj: T) {
-	loritta.ds.save(obj)
-}
-
-infix fun <T> Loritta.save(objs: List<T>) {
-	loritta.ds.save(objs)
-}
-
-fun <T> Loritta.saveBulk(vararg objs: T) {
-	loritta.ds.save(objs.toList())
+	val updateOptions = UpdateOptions().upsert(true)
+	if (obj is ServerConfig) {
+		loritta.serversColl.replaceOne(
+				Filters.eq("_id", obj.guildId),
+				obj,
+				updateOptions
+		)
+		return
+	}
+	if (obj is LorittaProfile) {
+		loritta.usersColl.replaceOne(
+				Filters.eq("_id", obj.userId),
+				obj,
+				updateOptions
+		)
+		return
+	}
+	if (obj is StoredMessage) {
+		loritta.storedMessagesColl.replaceOne(
+				Filters.eq("_id", obj.messageId),
+				obj,
+				updateOptions
+		)
+		return
+	}
+	throw RuntimeException("Trying to save $obj but no collection for that type exists!")
 }
 
 fun log(message: String) {

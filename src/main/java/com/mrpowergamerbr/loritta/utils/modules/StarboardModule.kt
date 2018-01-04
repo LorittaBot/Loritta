@@ -1,14 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.humanize
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import java.awt.Color
 
 object StarboardModule {
 	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
@@ -21,7 +14,7 @@ object StarboardModule {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
 
 				if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
-					var starboardMessageId = serverConfig.starboardEmbeds[e.messageId]
+					/* var starboardMessageId = serverConfig.starboardEmbeds[e.messageId]
 					var starboardMessage: Message? = null
 					if (starboardMessageId != null) {
 						starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
@@ -81,7 +74,7 @@ object StarboardModule {
 					if (starboardMessage != null) {
 						serverConfig.starboardEmbeds.put(msg.id, starboardMessage.id)
 						loritta save serverConfig
-					}
+					} */
 				}
 			}
 		}

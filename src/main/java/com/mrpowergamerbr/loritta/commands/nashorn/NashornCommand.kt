@@ -12,7 +12,6 @@ import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.bson.types.ObjectId
 import java.awt.Color
-import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
@@ -30,8 +29,8 @@ class NashornCommand : AbstractCommand {
 	lateinit var javaScript: String // código em JS do comando
 	var jsAliases: List<String> = ArrayList() // aliases
 	var isEnabled = true // Se o comando está ativado
-	var createdDate = LocalDateTime.now() // Data criada
-	var editedDate = LocalDateTime.now() // Data editada
+	// var createdDate = LocalDateTime.now() // Data criada
+	// var editedDate = LocalDateTime.now() // Data editada
 	var authors: List<String> = ArrayList() // Autores do comando (ou seja, quem mexeu)
 	var isPublic = false // Se o comando é público no repositório de comandos
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds

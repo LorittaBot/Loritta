@@ -73,11 +73,6 @@
             <version>3.6.1</version>
         </dependency>
         <dependency>
-            <groupId>org.mongodb.morphia</groupId>
-            <artifactId>morphia</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>TemmieWebhook</artifactId>
             <version>59de40c3b6</version>

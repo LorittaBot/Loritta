@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -371,7 +371,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-			LorittaLauncher.loritta.ds.delete(ServerConfig::class.java, e.guild.id)
+			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
 		}
 	}
 

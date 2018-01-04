@@ -1,16 +1,15 @@
 package com.mrpowergamerbr.loritta.userdata
 
-data class MusicConfig(
-		var isEnabled: Boolean,
-		var musicGuildId: String?,
-		var hasMaxSecondRestriction: Boolean,
-		var maxSeconds: Int,
-		var autoPlayWhenEmpty: Boolean,
-		var urls: MutableList<String>,
-		var voteToSkip: Boolean,
-		var required: Int,
-		var allowPlaylists: Boolean,
-		var logToChannel: Boolean,
-		var channelId: String?) {
-	constructor() : this(false, null, true, 420, false, mutableListOf<String>(), true, 75, false, false, null)
+class MusicConfig {
+	var isEnabled: Boolean = false
+	var musicGuildId: String? = null
+	var hasMaxSecondRestriction: Boolean = true
+	var maxSeconds: Int = 420
+	var autoPlayWhenEmpty: Boolean = false
+	var urls: MutableList<String> = mutableListOf<String>()
+	var voteToSkip: Boolean = true
+	var required: Int = 75
+	var allowPlaylists: Boolean = false
+	var logToChannel: Boolean = false
+	var channelId: String? = null
 }

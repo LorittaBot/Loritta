@@ -6,9 +6,9 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.annotations.SerializedName
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
@@ -37,7 +37,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		debug(DebugType.TWITCH_THREAD, "Checking Twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
 
 		// Servidores que usam o módulo do YouTube
-		val servers = loritta.ds.find(ServerConfig::class.java).field("livestreamConfig.channels").exists()
+		val servers = loritta.serversColl.find(Filters.exists("livestreamConfig.channels"))
 		// IDs dos canais a serem verificados
 		var userLogins = mutableSetOf<String>()
 

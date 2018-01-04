@@ -6,10 +6,10 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -50,7 +50,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 	fun checkNewVideos() {
 		// Servidores que usam o módulo do YouTube
-		val servers = loritta.ds.find(ServerConfig::class.java).field("youTubeConfig.channels").exists()
+		val servers = loritta.serversColl.find(Filters.exists("youTubeConfig.channels"))
 		// IDs dos canais a serem verificados
 		var channelIds = mutableSetOf<String>()
 

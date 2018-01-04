@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.userdata
 
-class TextChannelConfig(val id: String) {
-	constructor() : this("???")
+import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonProperty
+
+class TextChannelConfig @BsonCreator constructor(@BsonProperty("id") _id: String?) {
+	val id = _id
 
 	// Unused
 	var isBlacklisted = false

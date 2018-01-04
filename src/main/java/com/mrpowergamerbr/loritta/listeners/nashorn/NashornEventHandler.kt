@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners.nashorn
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornGuild
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMember
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMessage
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornTextChannel
@@ -11,7 +10,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import org.bson.types.ObjectId
-import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -24,8 +22,8 @@ class NashornEventHandler {
 	var jsScriptName = "script-" + System.currentTimeMillis() // label do comando
 	lateinit var javaScript: String // código em JS do comando
 	var isEnabled = true // Se o comando está ativado
-	var createdDate = LocalDateTime.now() // Data criada
-	var editedDate = LocalDateTime.now() // Data editada
+	// var createdDate = LocalDateTime.now() // Data criada
+	// var editedDate = LocalDateTime.now() // Data editada
 	var authors: List<String> = ArrayList() // Autores do comando (ou seja, quem mexeu)
 	var isPublic = false // Se o comando é público no repositório de comandos
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds

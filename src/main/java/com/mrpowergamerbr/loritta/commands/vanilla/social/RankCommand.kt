@@ -49,7 +49,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		if (!global) {
 			context.config.guildUserData
-					.forEach { list.add(RankWrapper(it.id, it)) }
+					.forEach { list.add(RankWrapper(it.userId, it)) }
 		}
 
 		list.sortBy { it.userData.xp }
