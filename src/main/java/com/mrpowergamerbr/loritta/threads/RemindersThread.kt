@@ -24,7 +24,9 @@ class RemindersThread : Thread("Reminders Thread") {
 	}
 
 	fun checkReminders() {
-		val list = loritta.usersColl.find(Filters.exists("reminders"))
+		val list = loritta.usersColl.find(
+				Filters.gt("reminders", listOf<Any>())
+		)
 
 		for (profile in list) {
 			val toRemove = mutableListOf<Reminder>()

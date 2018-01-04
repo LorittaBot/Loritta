@@ -34,7 +34,9 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 	fun checkRepost(aminoClient: AminoClient) {
 		// Carregar todos os server configs que tem o Amino Repost ativado
-		var servers = loritta.serversColl.find(Filters.exists("aminoConfig.aminos"))
+		val servers = loritta.serversColl.find(
+				Filters.gt("aminoConfig.aminos", listOf<Any>())
+		)
 
 		// IDs das comunidades a serem verificados
 		var communityIds = mutableSetOf<String>()

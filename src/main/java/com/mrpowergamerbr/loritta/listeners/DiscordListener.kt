@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -43,6 +44,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
@@ -366,7 +368,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	val executors = mutableMapOf<Guild, ExecutorService>()
+	val executors = CacheBuilder.newBuilder().maximumSize(100L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Guild, ExecutorService>().asMap()
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		loritta.executor.execute {

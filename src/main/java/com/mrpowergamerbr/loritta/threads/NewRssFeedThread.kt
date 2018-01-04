@@ -26,7 +26,9 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 	fun checkRssFeeds() {
 		try {
-			val servers = loritta.serversColl.find(Filters.exists("rssFeedConfig.feeds"))
+			val servers = loritta.serversColl.find(
+					Filters.gt("rssFeedConfig.feeds", listOf<Any>())
+			)
 
 			for (config in servers) {
 				var rssFeedConfig = config.rssFeedConfig;

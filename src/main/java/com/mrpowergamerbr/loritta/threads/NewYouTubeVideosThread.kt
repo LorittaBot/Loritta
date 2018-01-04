@@ -50,7 +50,9 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 	fun checkNewVideos() {
 		// Servidores que usam o módulo do YouTube
-		val servers = loritta.serversColl.find(Filters.exists("youTubeConfig.channels"))
+		val servers = loritta.serversColl.find(
+				Filters.gt("youTubeConfig.channels", listOf<Any>())
+		)
 		// IDs dos canais a serem verificados
 		var channelIds = mutableSetOf<String>()
 

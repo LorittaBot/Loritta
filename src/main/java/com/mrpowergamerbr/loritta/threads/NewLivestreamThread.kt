@@ -36,8 +36,11 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	fun checkNewVideos() {
 		debug(DebugType.TWITCH_THREAD, "Checking Twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
 
-		// Servidores que usam o módulo do YouTube
-		val servers = loritta.serversColl.find(Filters.exists("livestreamConfig.channels"))
+		// Servidores que usam o módulo do Twitch
+		val servers = loritta.serversColl.find(
+				Filters.gt("livestreamConfig.channels", listOf<Any>())
+		)
+
 		// IDs dos canais a serem verificados
 		var userLogins = mutableSetOf<String>()
 
