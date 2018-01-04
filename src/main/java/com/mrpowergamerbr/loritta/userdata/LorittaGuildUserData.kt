@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
 
 /**
@@ -13,6 +14,7 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") _use
 	var temporaryMute: Boolean = false
 	var expiresIn: Long = 0L
 
+	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
 		var lvl = 1
 		var currentXp = xp
@@ -25,6 +27,7 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") _use
 		return LorittaProfile.XpWrapper(lvl, currentXp)
 	}
 
+	@BsonIgnore
 	fun getExpToAdvanceFrom(lvl: Int): Int {
 		return 325 + lvl * (25 + lvl)
 	}
