@@ -399,7 +399,7 @@ class Loritta {
 	 * @return ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
-		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).firstOrNull()
+		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
 
 		if (serverConfig != null && !serverConfig.migratedUserData) {
 			// Migrar legacy to user
@@ -430,7 +430,7 @@ class Loritta {
 	 * @return LorittaProfile
 	 */
 	fun getLorittaProfileForUser(userId: String): LorittaProfile {
-		val userProfile = usersColl.find(Filters.eq("_id", userId)).firstOrNull()
+		val userProfile = usersColl.find(Filters.eq("_id", userId)).first()
 		return userProfile ?: LorittaProfile(userId)
 	}
 

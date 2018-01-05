@@ -24,7 +24,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	})
 }) {
 	companion object {
-		lateinit var engine: PebbleEngine
+		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
 
@@ -48,12 +48,12 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	}
 
 	init {
-		LorittaWebsite.WEBSITE_URL = websiteUrl
-		LorittaWebsite.FOLDER = frontendFolder
+		WEBSITE_URL = websiteUrl
+		FOLDER = frontendFolder
 
 		val fl = FileLoader()
 		fl.prefix = frontendFolder
-		LorittaWebsite.engine = PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build()
+		ENGINE = PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build()
 	}
 
 	enum class UserPermissionLevel {
@@ -61,9 +61,9 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	}
 }
 
-inline fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
+fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
 	variables["websiteUrl"] = WEBSITE_URL
 	val writer = StringWriter()
-	LorittaWebsite.engine.getTemplate("$file").evaluate(writer, variables)
+	LorittaWebsite.ENGINE.getTemplate(file).evaluate(writer, variables)
 	return writer.toString()
 }

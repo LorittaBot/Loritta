@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.aminoreapi.AminoClient
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.launch
@@ -36,19 +37,24 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		val servers = loritta.serversColl.find(
 				Filters.gt("aminoConfig.aminos", listOf<Any>())
-		)
+		).iterator()
 
 		// IDs das comunidades a serem verificados
 		var communityIds = mutableSetOf<String>()
+		val list = mutableListOf<ServerConfig>()
 
-		for (server in servers) {
-			val aminoConfig = server.aminoConfig
+		servers.use {
+			while (it.hasNext()) {
+				val server = it.next()
+				val aminoConfig = server.aminoConfig
 
-			for (community in aminoConfig.aminos) {
-				if (community.communityId == null)
-					continue
+				for (community in aminoConfig.aminos) {
+					if (community.communityId == null)
+						continue
 
-				communityIds.add(community.communityId!!)
+					communityIds.add(community.communityId!!)
+					list.add(server)
+				}
 			}
 		}
 
@@ -76,7 +82,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 						if (postsIds.contains(post.blogId))
 							continue
 
-						for (server in servers) {
+						for (server in list) {
 							for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
 								val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
 

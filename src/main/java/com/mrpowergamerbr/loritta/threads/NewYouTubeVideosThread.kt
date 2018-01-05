@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -52,19 +53,26 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.serversColl.find(
 				Filters.gt("youTubeConfig.channels", listOf<Any>())
-		)
+		).iterator()
+
 		// IDs dos canais a serem verificados
 		var channelIds = mutableSetOf<String>()
 
-		for (server in servers) {
-			val youTubeConfig = server.youTubeConfig
+		val list = mutableListOf<ServerConfig>()
 
-			for (channel in youTubeConfig.channels) {
-				if (channel.channelId == null)
-					continue
-				if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
-					continue
-				channelIds.add(channel.channelId!!)
+		servers.use {
+			while (it.hasNext()) {
+				val server = it.next()
+				val youTubeConfig = server.youTubeConfig
+
+				for (channel in youTubeConfig.channels) {
+					if (channel.channelId == null)
+						continue
+					if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
+						continue
+					channelIds.add(channel.channelId!!)
+					list.add(server)
+				}
 			}
 		}
 
@@ -142,7 +150,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						if (lastVideo.id == lastVideoId)
 							return@launch // É o mesmo vídeo...
 
-						for (server in servers) {
+						for (server in list) {
 							val youTubeConfig = server.youTubeConfig
 							for (youTubeInfo in youTubeConfig.channels) {
 								if (youTubeInfo.channelId == channelId) {

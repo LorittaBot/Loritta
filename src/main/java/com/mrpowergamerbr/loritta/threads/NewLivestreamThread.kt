@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
@@ -39,20 +40,26 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		// Servidores que usam o módulo do Twitch
 		val servers = loritta.serversColl.find(
 				Filters.gt("livestreamConfig.channels", listOf<Any>())
-		)
+		).iterator()
 
 		// IDs dos canais a serem verificados
 		var userLogins = mutableSetOf<String>()
 
-		for (server in servers) {
-			val livestreamConfig = server.livestreamConfig
+		val list = mutableListOf<ServerConfig>()
 
-			for (channel in livestreamConfig.channels) {
-				if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
-					continue
+		servers.use {
+			while (it.hasNext()) {
+				val server = it.next()
+				val livestreamConfig = server.livestreamConfig
 
-				val userLogin = channel.channelUrl!!.split("/").last()
-				userLogins.add(userLogin)
+				for (channel in livestreamConfig.channels) {
+					if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
+						continue
+
+					val userLogin = channel.channelUrl!!.split("/").last()
+					userLogins.add(userLogin)
+					list.add(server)
+				}
 			}
 		}
 
@@ -106,7 +113,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 						channelName
 					}
 
-					for (server in servers) {
+					for (server in list) {
 						val livestreamConfig = server.livestreamConfig
 
 						val channels = livestreamConfig.channels.filter {

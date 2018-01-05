@@ -26,31 +26,35 @@ class RemindersThread : Thread("Reminders Thread") {
 	fun checkReminders() {
 		val list = loritta.usersColl.find(
 				Filters.gt("reminders", listOf<Any>())
-		)
+		).iterator()
 
-		for (profile in list) {
-			val toRemove = mutableListOf<Reminder>()
+		list.use {
+			while (it.hasNext()) {
+				val profile = it.next()
 
-			for (reminder in profile.reminders) {
-				if (System.currentTimeMillis() >= reminder.remindMe) {
-					toRemove.add(reminder);
+				val toRemove = mutableListOf<Reminder>()
 
-					if (reminder.guild == null)
-						continue
+				for (reminder in profile.reminders) {
+					if (System.currentTimeMillis() >= reminder.remindMe) {
+						toRemove.add(reminder);
 
-					val guild = lorittaShards.getGuildById(reminder.guild!!)
+						if (reminder.guild == null)
+							continue
 
-					if (guild != null) {
-						val textChannel = guild.getTextChannelById(reminder.textChannel) ?: return
+						val guild = lorittaShards.getGuildById(reminder.guild!!)
 
-						textChannel.sendMessage("\uD83D\uDD14 | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
+						if (guild != null) {
+							val textChannel = guild.getTextChannelById(reminder.textChannel) ?: return
+
+							textChannel.sendMessage("\uD83D\uDD14 | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
+						}
 					}
 				}
-			}
 
-			if (!toRemove.isEmpty()) {
-				profile.reminders.removeAll(toRemove)
-				loritta save profile
+				if (!toRemove.isEmpty()) {
+					profile.reminders.removeAll(toRemove)
+					loritta save profile
+				}
 			}
 		}
 	}

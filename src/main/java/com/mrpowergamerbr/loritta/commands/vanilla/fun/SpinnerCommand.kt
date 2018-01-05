@@ -11,11 +11,11 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -64,7 +64,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 								sort(Document("spinnerScores.forTime", -1))
 								// limit(5)
 							)
-						)
+						).iterator()
 
 				val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 				val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
@@ -102,81 +102,86 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				var currentY = 37;
 
 				var total = 0L
-				for ((index, document) in documents.withIndex()) {
-					val spinnerScore = document["spinnerScores"] as Document
-					val forTime = spinnerScore.getLong("forTime")
-					total += forTime
-					if (index !in (4 * (page - 1) + if (page != 1) 1 else 0)..(4 * page) + if (page != 1) 1 else 0) {
-						continue
-					}
-					val userId = document.getString("_id")
-
-					val user = lorittaShards.getUserById(userId)
-
-					if (user != null) {
-						// val userProfile = loritta.getLorittaProfileForUser(id)
-						val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + user.id + ".png")
-						val imageFile = if (file.exists()) file else java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/default_background.png")
-
-						val rankBackground = ImageIO.read(imageFile)
-						graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
-								.toBufferedImage()
-								.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
-
-						graphics.color = Color(0, 0, 0, 127)
-						graphics.fillRect(0, currentY, 400, 53)
-
-						graphics.color = Color(255, 255, 255)
-
-						graphics.font = oswaldRegular20
-
-						ImageUtils.drawTextWrap(user.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
-
-						graphics.font = oswaldRegular16
-
-						ImageUtils.drawTextWrap("${forTime} segundos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
-
-						graphics.font = oswaldRegular10
-
-						// ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
-
-						val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
-
-						var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
-						val avatarGraphics = editedAvatar.graphics as Graphics2D
-
-						val path = Path2D.Double()
-						path.moveTo(0.0, 45.0)
-						path.lineTo(132.0, 45.0)
-						path.lineTo(143.0, 98.0)
-						path.lineTo(0.0, 98.0)
-						path.closePath()
-
-						avatarGraphics.clip = path
-
-						avatarGraphics.drawImage(avatar, 0, 0, null)
-
-						editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
-						graphics.drawImage(editedAvatar, 0, currentY, null)
-
-						val emoji = spinnerScore.getString("emoji")
-						val image = when (emoji) {
-							"<:spinner8:344292269836206082>" -> "https://cdn.discordapp.com/emojis/344292269836206082.png"
-							"<:spinner2:327245670052397066>" -> "https://cdn.discordapp.com/emojis/327245670052397066.png"
-							"<:spinner3:327246151591919627>" -> "https://cdn.discordapp.com/emojis/327246151591919627.png"
-							"<:spinner4:344292269764902912>" -> "https://cdn.discordapp.com/emojis/344292269764902912.png"
-							"<:spinner5:344292269160923147>" -> "https://cdn.discordapp.com/emojis/344292269160923147.png"
-							"<:spinner6:344292270125613056>" -> "https://cdn.discordapp.com/emojis/344292270125613056.png"
-							"<:spinner7:344292270268350464>" -> "https://cdn.discordapp.com/emojis/344292270268350464.png"
-							"<:spinner1:327243530244325376>" -> "https://cdn.discordapp.com/emojis/327243530244325376.png"
-							else -> "https://cdn.discordapp.com/emojis/366047906689581085.png"
+				documents.use {
+					var index = 0
+					while (it.hasNext()) {
+						val document = it.next()
+						val spinnerScore = document["spinnerScores"] as Document
+						val forTime = spinnerScore.getLong("forTime")
+						total += forTime
+						if (index !in (4 * (page - 1) + if (page != 1) 1 else 0)..(4 * page) + if (page != 1) 1 else 0) {
+							continue
 						}
+						val userId = document.getString("_id")
 
-						val spinner = LorittaUtils.downloadImage(image).getScaledInstance(49, 49, BufferedImage.SCALE_SMOOTH)
-						graphics.drawImage(spinner, 400 - 49 - 2, currentY + 2, null)
+						val user = lorittaShards.getUserById(userId)
 
-						idx++
-						currentY += 53;
+						if (user != null) {
+							// val userProfile = loritta.getLorittaProfileForUser(id)
+							val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + user.id + ".png")
+							val imageFile = if (file.exists()) file else java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/default_background.png")
+
+							val rankBackground = ImageIO.read(imageFile)
+							graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
+									.toBufferedImage()
+									.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
+
+							graphics.color = Color(0, 0, 0, 127)
+							graphics.fillRect(0, currentY, 400, 53)
+
+							graphics.color = Color(255, 255, 255)
+
+							graphics.font = oswaldRegular20
+
+							ImageUtils.drawTextWrap(user.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
+
+							graphics.font = oswaldRegular16
+
+							ImageUtils.drawTextWrap("${forTime} segundos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+
+							graphics.font = oswaldRegular10
+
+							// ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+
+							val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
+
+							var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
+							val avatarGraphics = editedAvatar.graphics as Graphics2D
+
+							val path = Path2D.Double()
+							path.moveTo(0.0, 45.0)
+							path.lineTo(132.0, 45.0)
+							path.lineTo(143.0, 98.0)
+							path.lineTo(0.0, 98.0)
+							path.closePath()
+
+							avatarGraphics.clip = path
+
+							avatarGraphics.drawImage(avatar, 0, 0, null)
+
+							editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
+							graphics.drawImage(editedAvatar, 0, currentY, null)
+
+							val emoji = spinnerScore.getString("emoji")
+							val image = when (emoji) {
+								"<:spinner8:344292269836206082>" -> "https://cdn.discordapp.com/emojis/344292269836206082.png"
+								"<:spinner2:327245670052397066>" -> "https://cdn.discordapp.com/emojis/327245670052397066.png"
+								"<:spinner3:327246151591919627>" -> "https://cdn.discordapp.com/emojis/327246151591919627.png"
+								"<:spinner4:344292269764902912>" -> "https://cdn.discordapp.com/emojis/344292269764902912.png"
+								"<:spinner5:344292269160923147>" -> "https://cdn.discordapp.com/emojis/344292269160923147.png"
+								"<:spinner6:344292270125613056>" -> "https://cdn.discordapp.com/emojis/344292270125613056.png"
+								"<:spinner7:344292270268350464>" -> "https://cdn.discordapp.com/emojis/344292270268350464.png"
+								"<:spinner1:327243530244325376>" -> "https://cdn.discordapp.com/emojis/327243530244325376.png"
+								else -> "https://cdn.discordapp.com/emojis/366047906689581085.png"
+							}
+
+							val spinner = LorittaUtils.downloadImage(image).getScaledInstance(49, 49, BufferedImage.SCALE_SMOOTH)
+							graphics.drawImage(spinner, 400 - 49 - 2, currentY + 2, null)
+
+							idx++
+							currentY += 53;
+						}
+						index++
 					}
 				}
 
