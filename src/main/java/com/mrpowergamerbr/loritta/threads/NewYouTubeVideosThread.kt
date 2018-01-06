@@ -71,8 +71,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 					if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
 						continue
 					channelIds.add(channel.channelId!!)
-					list.add(server)
 				}
+				list.add(server)
 			}
 		}
 

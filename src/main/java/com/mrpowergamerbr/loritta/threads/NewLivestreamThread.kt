@@ -58,8 +58,8 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 					val userLogin = channel.channelUrl!!.split("/").last()
 					userLogins.add(userLogin)
-					list.add(server)
 				}
+				list.add(server)
 			}
 		}
 

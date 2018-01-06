@@ -53,8 +53,8 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 						continue
 
 					communityIds.add(community.communityId!!)
-					list.add(server)
 				}
+				list.add(server)
 			}
 		}
 
