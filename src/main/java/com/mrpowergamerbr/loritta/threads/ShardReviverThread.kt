@@ -1,14 +1,9 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.AccountType
-import net.dv8tion.jda.core.JDABuilder
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -52,10 +47,6 @@ class ShardReviverThread : Thread("Shard Reviver") {
 						.readTimeout(60, TimeUnit.SECONDS)
 						.writeTimeout(60, TimeUnit.SECONDS)
 
-				val discordListener = DiscordListener(loritta) // Vamos usar a mesma instância para todas as shards
-				val eventLogListener = EventLogListener(loritta) // Vamos usar a mesma instância para todas as shards
-				val updateTimeListener = UpdateTimeListener(loritta)
-
 				for (deadShard in deadShards) {
 					println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
 					log("[SHARD] Reiniciando shard ${deadShard.shardInfo.shardId}...")
@@ -63,6 +54,12 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 					lorittaShards.shards.remove(deadShard)
 					lorittaShards.lastJdaEventTime.remove(deadShard)
+
+					for (guild in deadShard.guilds) {
+						loritta.songThrottle.remove(guild.id)
+						loritta.musicManagers.remove(guild.idLong)
+						loritta.discordListener.executors.remove(guild)
+					}
 
 					var guild = loritta.lorittaShards.getGuildById("297732013006389252")
 					if (guild != null) {
@@ -74,11 +71,8 @@ class ShardReviverThread : Thread("Shard Reviver") {
 
 					thread(block = deadShard::shutdownNow)
 
-					val shard = JDABuilder(AccountType.BOT)
+					val shard = loritta.builder
 							.useSharding(shardId, Loritta.config.shards)
-							.setToken(Loritta.config.clientToken)
-							.setHttpClientBuilder(okHttpBuilder)
-							.setCorePoolSize(24)
 							.buildBlocking()
 
 					shard.addEventListener(loritta.updateTimeListener)

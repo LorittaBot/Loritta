@@ -230,11 +230,6 @@ class Loritta {
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
 
-		/* val okHttpBuilder = OkHttpClient.Builder()
-				.connectTimeout(60, TimeUnit.SECONDS)
-				.readTimeout(60, TimeUnit.SECONDS)
-				.writeTimeout(60, TimeUnit.SECONDS) */
-
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		thread {
