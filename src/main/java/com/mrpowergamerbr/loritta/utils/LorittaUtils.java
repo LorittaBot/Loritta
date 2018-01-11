@@ -1,15 +1,11 @@
 package com.mrpowergamerbr.loritta.utils;
 
 import com.github.kevinsawicki.http.HttpRequest;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Filters;
 import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
-import com.mrpowergamerbr.loritta.utils.reminders.Reminder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -25,7 +21,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.io.IOUtils;
-import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -35,7 +30,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -439,7 +433,7 @@ public final class LorittaUtils {
 	 */
 	public static boolean isValidUrl(String link) {
 		try {
-			URL url = new URL(link);
+			new URL(link);
 			return true;
 		} catch (MalformedURLException e) {
 			return false;

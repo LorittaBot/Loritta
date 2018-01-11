@@ -329,7 +329,7 @@ object LorittaUtilsKotlin {
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis))
 		);
 
-		embed.addField("\uD83D\uDD52 ${locale.MUSICINFO_LENGTH.msgFormat()}", "`$elapsed`/`$fancy`", true);
+		embed.addField("\uD83D\uDD52 ${locale["MUSICINFO_LENGTH"]}", "`$elapsed`/`$fancy`", true);
 
 		if (playingTrack.sourceManager.sourceName == "youtube") {
 			val viewCount = if (metaTrack.metadata.containsKey("viewCount")) metaTrack.metadata["viewCount"] else "???"
@@ -356,20 +356,20 @@ object LorittaUtilsKotlin {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
-		embed.setTitle("\uD83C\uDFB6 ${context.locale.MUSICINFO_INQUEUE.msgFormat()}")
+		embed.setTitle("\uD83C\uDFB6 ${context.locale["MUSICINFO_INQUEUE"]}")
 		embed.setColor(Color(93, 173, 236))
 
 		val songs = manager.scheduler.queue.toList()
 		val currentTrack = manager.scheduler.currentTrack
 		if (currentTrack != null) {
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale.MUSICINFO_REQUESTED_BY.msgFormat()} ${currentTrack.user.asMention})\n";
-			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.locale.MUSICINFO_REQUESTED_BY.msgFormat()} ${it.user.asMention})" })
+			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n";
+			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${it.user.asMention})" })
 			if (text.length >= 2048) {
 				text = text.substring(0, 2047);
 			}
 			embed.setDescription(text)
 		} else {
-			embed.setDescription(context.locale.MUSICINFO_NOMUSIC_SHORT.msgFormat());
+			embed.setDescription(context.locale["MUSICINFO_NOMUSIC_SHORT"]);
 		}
 		return embed.build();
 	}

@@ -10,28 +10,23 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.io.StringReader
 import java.net.URLEncoder
 
 
-class TempoCommand : AbstractCommand("tempo", listOf("previsão", "previsao")) {
+class TempoCommand : AbstractCommand("tempo", listOf("previsão", "previsao"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "cidade"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TEMPO_DESCRIPTION
+		return locale["TEMPO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("São Paulo");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -89,18 +84,18 @@ class TempoCommand : AbstractCommand("tempo", listOf("previsão", "previsao")) {
 					icon = "\uD83C\uDF2B ";
 				}
 
-				embed.setTitle(context.locale.TEMPO_PREVISAO_PARA.msgFormat(realCityName, countryShort))
+				embed.setTitle(locale["TEMPO_PREVISAO_PARA", realCityName, countryShort])
 				embed.setDescription(icon + description);
 				embed.setColor(Color(0, 210, 255));
-				embed.addField("🌡 ${context.locale.TEMPO_TEMPERATURA}", "**${context.locale.TEMPO_ATUAL}: **$now ºC\n**${context.locale.TEMPO_MAX}: **$max ºC\n**${context.locale.TEMPO_MIN}: **$min ºC", true);
-				embed.addField("💦 ${context.locale.TEMPO_UMIDADE}", "$humidity%", true);
-				embed.addField("🌬 ${context.locale.TEMPO_VELOCIDADE_VENTO}", "$windSpeed km/h", true);
-				embed.addField("🏋 ${context.locale.TEMPO_PRESSAO_AR}", "$pressure kPA", true);
+				embed.addField("🌡 ${context.locale["TEMPO_TEMPERATURA"]}", "**${context.locale["TEMPO_ATUAL"]}: **$now ºC\n**${context.locale["TEMPO_MAX"]}: **$max ºC\n**${context.locale["TEMPO_MIN"]}: **$min ºC", true);
+				embed.addField("💦 ${context.locale["TEMPO_UMIDADE"]}", "$humidity%", true);
+				embed.addField("🌬 ${context.locale["TEMPO_VELOCIDADE_VENTO"]}", "$windSpeed km/h", true);
+				embed.addField("🏋 ${context.locale["TEMPO_PRESSAO_AR"]}", "$pressure kPA", true);
 
 				context.sendMessage(embed.build());
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TEMPO_COULDNT_FIND.msgFormat(cidade))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TEMPO_COULDNT_FIND", cidade])
 			}
 		} else {
 			this.explain(context);

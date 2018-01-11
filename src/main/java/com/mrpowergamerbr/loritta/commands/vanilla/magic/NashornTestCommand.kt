@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class NashornTestCommand : AbstractCommand("nashorn") {
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MAGIC
-	}
-
+class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory.MAGIC) {
 	override fun onlyOwner(): Boolean {
 		return true
 	}

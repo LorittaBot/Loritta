@@ -6,10 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 
-class EncurtarCommand : AbstractCommand("encurtar", listOf("bitly", "shorten")) {
+class EncurtarCommand : AbstractCommand("encurtar", listOf("bitly", "shorten"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "link"
 	}
@@ -20,10 +19,6 @@ class EncurtarCommand : AbstractCommand("encurtar", listOf("bitly", "shorten")) 
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["BITLY_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -42,7 +37,7 @@ class EncurtarCommand : AbstractCommand("encurtar", listOf("bitly", "shorten")) 
 						)
 				)
 			} else {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BITLY_INVALID.msgFormat(context.args[0]))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BITLY_INVALID", context.args[0]])
 			}
 		} else {
 			context.explain()

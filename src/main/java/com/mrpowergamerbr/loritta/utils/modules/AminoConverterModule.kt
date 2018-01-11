@@ -13,12 +13,13 @@ object AminoConverterModule {
 			if (attachments.fileName.endsWith(".Amino") || attachments.fileName == "Amino") {
 				val bufferedImage = LorittaUtils.downloadImage(attachments.url)
 
-				val os = ByteArrayOutputStream()
-				ImageIO.write(bufferedImage, "png", os)
-				val inputStream = ByteArrayInputStream(os.toByteArray())
-
-				event.textChannel.sendFile(inputStream, "amino.png", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
-				event.message.delete().complete()
+				ByteArrayOutputStream().use {
+					ImageIO.write(bufferedImage, "png", it)
+					ByteArrayInputStream(it.toByteArray()).use { inputStream ->
+						event.textChannel.sendFile(inputStream, "amino.png", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
+						event.message.delete().complete()
+					}
+				}
 			}
 		}
 	}

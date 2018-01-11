@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -16,17 +15,13 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class ShipCommand : AbstractCommand("ship", listOf("shippar")) {
+class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
     override fun getDescription(locale: BaseLocale): String {
-        return locale.SHIP_DESCRIPTION.f()
+        return locale["SHIP_DESCRIPTION"]
     }
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta @SparklyBot")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun getUsage(): String {

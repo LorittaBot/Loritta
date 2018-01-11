@@ -15,13 +15,9 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class OCRCommand : AbstractCommand("ocr", listOf("ler", "read")) {
+class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["OCR_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -29,26 +25,27 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read")) {
 		if (!LorittaUtils.isValidImage(context, contextImage)) {
 			return;
 		}
-		val os = ByteArrayOutputStream()
-		ImageIO.write(contextImage, "png", os);
-		var json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(os.toByteArray())}"}}]}""";
-		val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVisionKey}&alt=json")
-				.contentType("application/json")
-				.header("Content-Length", json.toByteArray().size)
-				.header("Content-Type", "application/json")
-				.userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.21.0 (gzip)")
-				.send(json)
-		val body = response.body()
+		ByteArrayOutputStream().use {
+			ImageIO.write(contextImage, "png", it)
+			var json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}""";
+			val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVisionKey}&alt=json")
+					.contentType("application/json")
+					.header("Content-Length", json.toByteArray().size)
+					.header("Content-Type", "application/json")
+					.userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.21.0 (gzip)")
+					.send(json)
+			val body = response.body()
 
-		val parsedResponse = JSON_PARSER.parse(body)
+			val parsedResponse = JSON_PARSER.parse(body)
 
-		val builder = EmbedBuilder()
-		builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")
-		try {
-			builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
-		} catch (e: Exception) {
-			builder.setDescription("**${context.locale.OCR_COUDLNT_FIND}**")
+			val builder = EmbedBuilder()
+			builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")
+			try {
+				builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
+			} catch (e: Exception) {
+				builder.setDescription("**${locale["OCR_COUDLNT_FIND"]}**")
+			}
+			context.sendMessage(context.getAsMention(true), builder.build())
 		}
-		context.sendMessage(context.getAsMention(true), builder.build())
 	}
 }

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -18,13 +19,9 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking")) {
+class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RANK_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.SOCIAL;
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -80,8 +77,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		graphics.drawImage(rankHeader, 0, 0, null)
 
-		val oswaldRegular10 = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "oswald_regular.ttf")))
+		val oswaldRegular10 = Constants.OSWALD_REGULAR
 				.deriveFont(10F)
 
 		val oswaldRegular16 = oswaldRegular10

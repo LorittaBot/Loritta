@@ -1,10 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.artist
@@ -24,13 +29,9 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
+class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PERFIL_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.SOCIAL;
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -95,12 +96,21 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 		// Draw Avatar
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(72), 4, 4, null)
 
+		// biscord bots
+		val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
+				.authorization(Loritta.config.discordBotsOrgKey)
+				.body()
+
+		val idArray = JSON_PARSER.parse(discordBotsResponse).array
+
+		val upvotedOnDiscordBots = idArray.any { it.string == context.userHandle.id }
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
 			user.artist -> ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			user.isBot -> ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+			upvotedOnDiscordBots -> ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 			else -> null
 		}
 
@@ -120,16 +130,12 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 					break;
 				}
 				try {
-					val connection = java.net.URL(guild.iconUrl).openConnection() as java.net.HttpURLConnection
-					connection.setRequestProperty(
-							"User-Agent",
-							"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-					var guild = javax.imageio.ImageIO.read(connection.inputStream)
+					var guild = LorittaUtils.downloadImage(guild.iconUrl)
 					var guildImg = guild.getScaledInstance(18, 18, java.awt.Image.SCALE_SMOOTH).toBufferedImage()
 					guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1)
 					guildImg = guildImg.makeRoundedCorners(999)
 					guildImages.add(guildImg)
-					idx++;
+					idx++
 				} catch (e: Exception) {
 				}
 			}
@@ -143,10 +149,9 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 		}
 
 		if (idx > 16) {
-			val minecraftia = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-					java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "minecraftia.ttf")))
+			val minecraftia = Constants.MINECRAFTIA
 
-			graphics.font = minecraftia.deriveFont(8F);
+			graphics.font = minecraftia.deriveFont(8F)
 
 			val textToBeDrawn = "+" + (guilds.size - 16) + " guilds"
 
@@ -188,8 +193,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile")) {
 		graphics.drawString(context.locale["PERFIL_ECONOMY"], 80, 71)
 		graphics.drawString(if (Loritta.config.clientId == userProfile.userId) "^-^" else userProfile.dreams.toString(), 220, 71)
 		// Escrever nome do usuário
-		val oswaldRegular = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-				java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "oswald_regular.ttf")))
+		val oswaldRegular = Constants.OSWALD_REGULAR
 				.deriveFont(23F)
 
 		graphics.font = oswaldRegular

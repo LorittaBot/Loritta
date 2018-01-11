@@ -1,13 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -16,9 +14,8 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
-import java.util.stream.Collectors
 
-class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
+class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos"), CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
 	}
@@ -28,14 +25,14 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 			val privateChannel = context.userHandle.openPrivateChannel().complete()
 
 			if (!context.isPrivateChannel) {
-				context.event.textChannel.sendMessage(context.getAsMention(true) + "${locale.AJUDA_SENT_IN_PRIVATE.msgFormat()} \uD83D\uDE09").complete()
+				context.event.textChannel.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").complete()
 			}
 
 			var description = context.locale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
 					"https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975",
-					context?.guild?.name ?: "\uD83E\uDD37"]
+					context.guild?.name ?: "\uD83E\uDD37"]
 
 			var builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))
@@ -65,7 +62,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 	fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
 		val embeds = ArrayList<MessageEmbed>();
 		var embed = EmbedBuilder()
-		embed.setTitle(cat.fancyTitle, null)
+		embed.setTitle(context.locale[cat.fancyTitle], null)
 		val conf = context.config
 
 		var color = when (cat) {
@@ -95,13 +92,13 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 		embed.setColor(color)
 		embed.setThumbnail(image)
 
-		var description = "*" + cat.description + "*\n\n";
-		val categoryCmds = LorittaLauncher.getInstance().commandManager.commandMap.stream().filter { cmd -> cmd.getCategory() == cat }.collect(Collectors.toList<AbstractCommand>())
+		var description = "*" + context.locale[cat.description] + "*\n\n"
+		val categoryCmds = loritta.commandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					var toBeAdded = "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					var toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context) + "\n"
 					if ((description + toBeAdded).length > 2048) {
 						embed.setDescription(description);
 						embeds.add(embed.build());
@@ -109,7 +106,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 						embed.setColor(color)
 						description = "";
 					}
-					description += "[" + conf.commandPrefix + cmd.label + "]()" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " - " + cmd.getDescription(context) + "\n";
+					description += toBeAdded
 				}
 			}
 			embed.setDescription(description)
@@ -122,7 +119,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 
 	fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
 		val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
-		var description = "Escolha uma categoria...\n\n"
+		var description = context.locale["AJUDA_SelectCategory"] + "\n\n"
 
 		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
 
@@ -131,9 +128,9 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.commandManager.commandMap.filter { it.getCategory() == category }.isNotEmpty() }
+		categories = categories.filter { category -> loritta.commandManager.commandMap.filter { it.category == category }.isNotEmpty() }
 
-		val reactionEmotes = mapOf<CommandCategory, String>(
+		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to "discord:375448103517552642",
 				CommandCategory.ROBLOX to "roblox:375313891925688331",
 				CommandCategory.UNDERTALE to "undertale_heart:343839169719697408",
@@ -150,11 +147,11 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 		)
 
 		for (category in categories) {
-			val cmdCountInCategory = loritta.commandManager.commandMap.filter { it.getCategory() == category && !disabledCommands.contains(it) }.count()
+			val cmdCountInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }.count()
 			val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
 			val emoji = if (reactionEmote.contains(":")) { "<:$reactionEmote>" } else { reactionEmote }
 			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
-			description += "$emoji **" + category.fancyTitle + "** ($cmdCountInCategory $commands)\n"
+			description += "$emoji **" + context.locale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
 		}
 
 		val embed = EmbedBuilder().apply {
@@ -169,9 +166,11 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 		loritta.messageContextCache[message.id] = context
 
 		for (category in categories) {
+			// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
 			val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
 			message.addReaction(reactionEmote).complete()
 		}
+		message.addReaction("\uD83D\uDD22").complete() // all categories
 	}
 
 	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
@@ -186,9 +185,19 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos")) {
 
 		if (e.reactionEmote.name == "\uD83D\uDD19") {
 			sendInfoBox(context, msg.privateChannel)
+			return
 		}
 
-		val reactionEmotes = mapOf<CommandCategory, String>(
+		if (e.reactionEmote.name == "\uD83D\uDD22") {
+			for (category in CommandCategory.values()) {
+				getCommandsFor(context, category).forEach {
+					context.sendMessage(it)
+				}
+			}
+			return
+		}
+
+		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to "discord",
 				CommandCategory.ROBLOX to "roblox",
 				CommandCategory.UNDERTALE to "undertale_heart",

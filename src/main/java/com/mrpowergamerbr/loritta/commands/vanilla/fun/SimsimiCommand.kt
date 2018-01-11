@@ -14,12 +14,10 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.net.URLEncoder
 
-class SimsimiCommand : AbstractCommand("simsimi") {
+class SimsimiCommand : AbstractCommand("simsimi", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String = locale["SIMSIMI_DESCRIPTION"]
 
 	override fun getExample(): List<String> = listOf("Como vai você?")
-
-	override fun getCategory(): CommandCategory = CommandCategory.FUN
 
 	override fun hasCommandFeedback(): Boolean = false
 

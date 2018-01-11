@@ -6,24 +6,19 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
-class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator")) {
+class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "conta"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.CALC_DESCRIPTION
+		return locale["CALC_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("2 + 2");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -32,9 +27,9 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 			try {
 				val result = LorittaUtils.evalMath(expression)
 
-				context.sendMessage(context.getAsMention(true) + context.locale.CALC_RESULT.msgFormat(result))
+				context.sendMessage(context.getAsMention(true) + locale["CALC_RESULT", result])
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.CALC_INVALID.msgFormat(expression))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["CALC_INVALID", expression])
 			}
 		} else {
 			this.explain(context)

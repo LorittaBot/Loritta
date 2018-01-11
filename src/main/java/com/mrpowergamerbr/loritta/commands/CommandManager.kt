@@ -26,6 +26,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChatLogCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.DiscriminatorCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
@@ -127,6 +128,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.OCRCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TempoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TranslateCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.UnicodeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikipediaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command
@@ -240,6 +242,7 @@ class CommandManager {
 		commandMap.add(OCRCommand())
 		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
+		commandMap.add(UnicodeCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
@@ -248,6 +251,7 @@ class CommandManager {
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
 		commandMap.add(UserInfoCommand())
+		commandMap.add(ChatLogCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())

@@ -8,17 +8,13 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class AvaliarWaifuCommand : AbstractCommand("avaliarwaifu", listOf("ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu")) {
+class AvaliarWaifuCommand : AbstractCommand("avaliarwaifu", listOf("ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RATEWAIFU_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN;
 	}
 
 	override fun getUsage(): String {

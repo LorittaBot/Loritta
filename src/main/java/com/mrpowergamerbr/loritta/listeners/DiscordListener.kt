@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
 import com.mrpowergamerbr.loritta.utils.modules.AutomodModule
@@ -80,8 +79,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
-					if (event.message.rawContent.replace("!", "") == "<@297153970613387264>") {
-						event.textChannel.sendMessage(locale.MENTION_RESPONSE.f(event.message.author.asMention, serverConfig.commandPrefix)).complete()
+					if (event.message.contentRaw.replace("!", "") == "<@297153970613387264>") {
+						event.textChannel.sendMessage(locale["MENTION_RESPONSE", event.message.author.asMention, serverConfig.commandPrefix]).complete()
 					}
 
 					if (event.member == null) {
@@ -93,7 +92,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					// ===[ SLOW MODE ]===
-					if (SlowModeModule.checkForSlowMode(event, serverConfig)) {
+					if (SlowModeModule.checkForSlowMode(event, lorittaUser, serverConfig)) {
 						return@execute
 					}
 
@@ -434,7 +433,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val userData = conf.getUserData(event.user.id)
 
 				if (userData.isMuted) {
-					var mutedRoles = event.guild.getRolesByName(loritta.getLocaleById(conf.localeId).MUTE_ROLE_NAME, false)
+					var mutedRoles = event.guild.getRolesByName(loritta.getLocaleById(conf.localeId)["MUTE_ROLE_NAME"], false)
 					if (mutedRoles.isEmpty())
 						return@execute
 

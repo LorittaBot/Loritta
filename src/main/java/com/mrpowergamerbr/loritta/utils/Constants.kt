@@ -1,6 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.Loritta
 import java.awt.Color
+import java.awt.Font
+import java.io.File
+import java.io.FileInputStream
 
 /**
  * Constantes
@@ -23,4 +27,35 @@ object Constants {
 	val DISCORD_BURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
+
+	// ===[ FONTS ]===
+	val OSWALD_REGULAR: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "oswald_regular.ttf")).use {
+			Font.createFont(java.awt.Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val MINECRAFTIA: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val DOTUMCHE: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "dotumche.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val DETERMINATION_MONO: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "DTM-Mono.otf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val VOLTER: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "Volter__28Goldfish_29.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
 }

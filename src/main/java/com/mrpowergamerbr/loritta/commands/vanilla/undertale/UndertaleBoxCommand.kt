@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -12,11 +13,10 @@ import java.awt.Font
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox")) {
+class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["UTBOX_DESCRIPTION"]
 	}
@@ -27,10 +27,6 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox")) {
 
 	override fun getUsage(): String {
 		return "usuário (caso queira) mensagem"
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UNDERTALE
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -52,15 +48,8 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox")) {
 				val bi = ImageIO.read(File(Loritta.ASSETS + "undertale_dialogbox.png"))
 				val graph = bi.graphics
 
-				var determinationMono: Font? = null
-				try {
-					determinationMono = Font.createFont(Font.TRUETYPE_FONT,
-							FileInputStream(File(Loritta.ASSETS + "DTM-Mono.otf")))
-				} catch (e: Exception) {
-					println(e)
-				}
-
-				graph.font = determinationMono!!.deriveFont(Font.PLAIN, 27f)
+				val determinationMono = Constants.DETERMINATION_MONO
+				graph.font = determinationMono.deriveFont(Font.PLAIN, 27f)
 				graph.color = Color.WHITE
 
 				// graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
@@ -75,15 +64,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox")) {
 
 				if (true) {
 					// TODO: This
-					var minecraftia: Font? = null
-					try {
-						minecraftia = Font.createFont(Font.TRUETYPE_FONT,
-								FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")))
-					} catch (e: Exception) {
-						println(e)
-					}
-
-					graph.font = minecraftia!!.deriveFont(Font.PLAIN, 8f)
+					// graph.font = Constants.MINECRAFTIA.deriveFont(Font.PLAIN, 8f)
 
 					val x = 0
 					val y = 166

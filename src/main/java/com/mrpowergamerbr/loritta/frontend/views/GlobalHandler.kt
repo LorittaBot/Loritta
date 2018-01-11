@@ -20,7 +20,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoV
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetTwitchInfoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.CommandsView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.CommandsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAminoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAutoroleView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureCommandsView

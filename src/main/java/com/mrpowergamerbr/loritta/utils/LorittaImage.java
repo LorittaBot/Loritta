@@ -1887,7 +1887,7 @@ public class LorittaImage {
 	 *  @copyright Copyright (c) 2003 Norman Walsh
 	 ******************************************************************************/
 
-	private class MetadataParser {
+	private static class MetadataParser {
 
 		// Implementation notes:
 		// (1) Merged Version 1.1 of the "Exif.java" and "ExifData.java" classes.
@@ -2307,7 +2307,7 @@ public class LorittaImage {
 	 *
 	 ***************************************************************************/
 
-	private class Skew {
+	private static class Skew {
 
 		public final static int ZERO = 0;
 		public final static int CLAMP = 1;

@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 
-class TranslateCommand : AbstractCommand("traduzir", listOf("translate")) {
+class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRANSLATE_DESCRIPTION"]
 	}
@@ -18,10 +18,6 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate")) {
 
 	override fun getExample(): List<String> {
 		return listOf("pt Hello World!")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

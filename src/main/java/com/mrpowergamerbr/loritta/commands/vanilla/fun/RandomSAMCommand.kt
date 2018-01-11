@@ -9,13 +9,9 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
-class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamericamemes")) {
+class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamericamemes"), CommandCategory.FUN) {
 	override fun getDescription(): String {
 		return "Pega uma postagem aleatória do South America Memes"
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun needsToUploadFiles(): Boolean {

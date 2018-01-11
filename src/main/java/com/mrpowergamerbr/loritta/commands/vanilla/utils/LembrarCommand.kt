@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.utils.save
 import java.util.*
 
 
-class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "remindme", "lembrete", "reminder")) {
+class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "remindme", "lembrete", "reminder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "tempo mensagem"
 	}
@@ -25,10 +25,6 @@ class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "re
 
 	override fun getExample(): List<String> {
 		return listOf("1 minuto dar comida para o dog");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -45,7 +41,7 @@ class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "re
 			reply.onResponseByAuthor(context, {
 				loritta.messageInteractionCache.remove(reply.id)
 				reply.delete().queue()
-				val inMillis = it.message.content.convertToEpochMillis()
+				val inMillis = it.message.contentDisplay.convertToEpochMillis()
 				val calendar = Calendar.getInstance()
 				calendar.timeInMillis = inMillis
 
@@ -57,7 +53,11 @@ class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "re
 
 				loritta save profile
 
-				context.sendMessage(context.getAsMention(true) + locale["LEMBRAR_SUCCESS", calendar[Calendar.DAY_OF_MONTH], calendar[Calendar.MONTH] + 1, calendar[Calendar.YEAR], calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE]])
+				val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
+				val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
+				val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
+				val minutes = String.format("%02d", calendar[Calendar.MINUTE])
+				context.sendMessage(context.getAsMention(true) + locale["LEMBRAR_SUCCESS", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes])
 			})
 
 			reply.onReactionAddByAuthor(context, {

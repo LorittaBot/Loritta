@@ -9,17 +9,13 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import java.util.*
 
-class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball")) {
+class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VIEIRINHA_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("você me ama?")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun hasCommandFeedback(): Boolean {

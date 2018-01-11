@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.marfgamer.jraknet.identifier.MinecraftIdentifier
 import net.marfgamer.jraknet.util.RakNetUtils
@@ -14,13 +13,9 @@ import java.awt.Color
 import java.net.UnknownHostException
 import java.util.*
 
-class PeQueryCommand : AbstractCommand("pequery") {
+class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCQUERY_DESCRIPTION.msgFormat()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT
+		return locale["MCQUERY_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {

@@ -2,15 +2,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 
-class RollCommand : AbstractCommand("rolar", listOf("roll")) {
+class RollCommand : AbstractCommand("rolar", listOf("roll"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROLL_DESCRIPTION"]
 	}
@@ -56,14 +56,14 @@ class RollCommand : AbstractCommand("rolar", listOf("roll")) {
 					}
 				}
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.INVALID_NUMBER.f(context.args[0]))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["INVALID_NUMBER", context.args[0]])
 				return
 			}
 
 		}
 
 		if (0 >= value) {
-			context.sendMessage(context.getAsMention(true) + context.locale.ROLL_INVALID_NUMBER.f())
+			context.sendMessage(context.getAsMention(true) + locale["ROLL_INVALID_NUMBER"])
 			return
 		}
 

@@ -230,7 +230,14 @@ public class CommandContext {
 		} catch (Exception e) {}
 		InputStream is = new ByteArrayInputStream(os.toByteArray());
 
-		return sendFile(is, name, message);
+		Message discordMessage = sendFile(is, name, message);
+		try {
+			os.close();
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return discordMessage;
 	}
 
 	public Message sendFile(BufferedImage image, String name, Message message) {
@@ -240,7 +247,14 @@ public class CommandContext {
 		} catch (Exception e) {}
 		InputStream is = new ByteArrayInputStream(os.toByteArray());
 
-		return sendFile(is, name, message);
+		Message discordMessage = sendFile(is, name, message);
+		try {
+			os.close();
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return discordMessage;
 	}
 
 	public Message sendFile(BufferedImage image, String name, MessageEmbed message) {
@@ -250,7 +264,14 @@ public class CommandContext {
 		} catch (Exception e) {}
 		InputStream is = new ByteArrayInputStream(os.toByteArray());
 
-		return sendFile(is, name, message);
+		Message discordMessage = sendFile(is, name, message);
+		try {
+			os.close();
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return discordMessage;
 	}
 
 	public Message sendFile(InputStream data, String name, String message) {

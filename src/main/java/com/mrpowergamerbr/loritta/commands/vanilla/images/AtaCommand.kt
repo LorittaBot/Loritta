@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AtaCommand : AbstractCommand("ata") {
+class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("ATA_DESCRIPTION")
@@ -20,10 +20,6 @@ class AtaCommand : AbstractCommand("ata") {
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

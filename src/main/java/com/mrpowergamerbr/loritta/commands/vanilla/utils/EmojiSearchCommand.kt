@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
-class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder")) {
+class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "query"
 	}
@@ -30,10 +30,6 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["EMOJISEARCH_Description"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -125,22 +121,24 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 						if (it.reactionEmote.name == "wumplus") {
 							emoteInfo.delete().queue()
 							try {
-								val os = ByteArrayOutputStream()
-								try {
-									ImageIO.write(LorittaUtils.downloadImage(emote.imageUrl), "png", os)
-								} catch (e: Exception) {
-								}
+								ByteArrayOutputStream().use { os ->
+									val os = ByteArrayOutputStream()
+									try {
+										ImageIO.write(LorittaUtils.downloadImage(emote.imageUrl), "png", os)
+									} catch (e: Exception) {
+									}
 
-								val inputStream = ByteArrayInputStream(os.toByteArray())
+									ByteArrayInputStream(os.toByteArray()).use { inputStream ->
+										val emote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).complete()
 
-								val emote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).complete()
-
-								context.reply(
-										LoriReply(
-												context.locale["EMOJISEARCH_AddSuccess"],
-												emote.asMention
+										context.reply(
+												LoriReply(
+														context.locale["EMOJISEARCH_AddSuccess"],
+														emote.asMention
+												)
 										)
-								)
+									}
+								}
 							} catch (e: Exception) {
 								context.reply(
 										LoriReply(

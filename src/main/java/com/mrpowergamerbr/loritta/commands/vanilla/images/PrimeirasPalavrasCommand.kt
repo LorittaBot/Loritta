@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -14,13 +13,9 @@ import java.awt.RenderingHints
 import java.io.File
 import javax.imageio.ImageIO
 
-class PrimeirasPalavrasCommand : AbstractCommand("primeiraspalavras", listOf("firstwords")) {
+class PrimeirasPalavrasCommand : AbstractCommand("primeiraspalavras", listOf("firstwords"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PRIMEIRAS_DESCRIPTION.f()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
+		return locale["PRIMEIRAS_DESCRIPTION"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {

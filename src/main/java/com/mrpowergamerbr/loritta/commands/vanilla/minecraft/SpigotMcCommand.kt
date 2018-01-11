@@ -13,10 +13,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -27,7 +26,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
 
-class SpigotMcCommand : AbstractCommand("spigotmc") {
+class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SPIGOTMC_DESCRIPTION")
 	}
@@ -38,10 +37,6 @@ class SpigotMcCommand : AbstractCommand("spigotmc") {
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("ProtocolSupportStuff")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -79,7 +74,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc") {
 						context.metadata.put(i.toString(), item["id"].string);
 					}
 					embed.setDescription(format);
-					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
+					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
 					var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {

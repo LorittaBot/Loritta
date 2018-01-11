@@ -17,17 +17,13 @@ import java.awt.image.RGBImageFilter
 import java.io.File
 import javax.imageio.ImageIO
 
-class RazoesCommand : AbstractCommand("razoes", listOf("razões", "reasons")) {
+class RazoesCommand : AbstractCommand("razoes", listOf("razões", "reasons"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.RAZOES_DESCRIPTION.f()
+		return locale["RAZOES_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

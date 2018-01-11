@@ -31,16 +31,19 @@ class APIGetCommunityInfoView : AbstractView() {
 			return json.toString()
 		}
 
-		val document = Jsoup.parse(httpRequest.body())
+		val body = httpRequest.body()
+		val document = Jsoup.parse(body)
 
-		val title = document.getElementsByAttribute("property").first { it.attr("property") == "og:title" }
+		val title = document.getElementsByAttribute("property").first { it.attr("property") == "og:site_name" }
 		val description = document.getElementsByAttribute("property").first { it.attr("property") == "og:description" }
 		val iconUrl = document.getElementsByAttribute("property").first { it.attr("property") == "og:image" }
-		val communityId = document.getElementsByClass("deeplink-holder").first()
-		json["title"] = title.attr("content")
+
+		json["title"] = title.attr("content").replace(" | aminoapps.com", "")
 		json["description"] = description.attr("content")
 		json["iconUrl"] = iconUrl.attr("content")
-		json["communityId"] = communityId.attr("data-link").split("/")[2]
+
+		val pattern = "window\\.ServerData\\.deeplink = \"narviiapp:\\/\\/(x[0-9]+)\\/.+\";".toPattern().matcher(body)
+		json["communityId"] = pattern.group(1)
 		return json.toString()
 	}
 }

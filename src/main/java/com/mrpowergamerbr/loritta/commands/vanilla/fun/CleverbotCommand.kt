@@ -18,7 +18,7 @@ import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CleverbotCommand : AbstractCommand("cleverbot") {
+class CleverbotCommand : AbstractCommand("cleverbot", category = CommandCategory.FUN) {
 	companion object {
 		val cleverbots = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(100).build<String, Cleverbot>().asMap()
 	}
@@ -29,10 +29,6 @@ class CleverbotCommand : AbstractCommand("cleverbot") {
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("Como vai você?")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun hasCommandFeedback(): Boolean {

@@ -11,9 +11,6 @@ import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -437,59 +434,20 @@ object TretaNewsGenerator {
 				randomYt.add(member.effectiveName)
 			}
 		}
-		var avatar: BufferedImage? = null
+
 		val url1 = usr1.user.effectiveAvatarUrl
 		val url2 = usr2.user.effectiveAvatarUrl
-		try {
-			val imageUrl = URL(url1)
-			val connection = imageUrl.openConnection() as HttpURLConnection
-			connection.setRequestProperty(
-					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-			avatar = ImageIO.read(connection.inputStream)
-		} catch (e1: IOException) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace()
-		}
 
-		var avatar2: BufferedImage? = null
-		try {
-			val imageUrl = URL(url2)
-			val connection = imageUrl.openConnection() as HttpURLConnection
-			connection.setRequestProperty(
-					"User-Agent",
-					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-			avatar2 = ImageIO.read(connection.inputStream)
-		} catch (e1: IOException) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace()
-		}
+		var avatar = LorittaUtils.downloadImage(url1)
+		var avatar2 = LorittaUtils.downloadImage(url2)
 
-		var tretaCheck: BufferedImage? = null
-		try {
-			tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
-		} catch (e1: IOException) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace()
-		}
+		var tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
 
 		val top = BufferedImage(238, 138, BufferedImage.TYPE_INT_ARGB)
 
-		var treta: BufferedImage? = null
-		try {
-			treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
-		} catch (e: IOException) {
-			// TODO Auto-generated catch block
-			e.printStackTrace()
-		}
+		var treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
 
-		var novo: BufferedImage? = null
-		try {
-			novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
-		} catch (e: IOException) {
-			// TODO Auto-generated catch block
-			e.printStackTrace()
-		}
+		var novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
 
 		val tempRI1 = avatar!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 		val tempRI2 = avatar2!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)

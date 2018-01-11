@@ -9,13 +9,9 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 
-class EmojiCommand : AbstractCommand("emoji") {
+class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["EMOJI_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.DISCORD
 	}
 
 	override fun getUsage(): String {

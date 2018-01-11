@@ -8,24 +8,17 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle")) {
+class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
     override fun getDescription(locale: BaseLocale): String {
         return locale["UTBATTLE_DESCRIPTION"]
-    }
-
-    override fun getCategory(): CommandCategory {
-        return CommandCategory.UNDERTALE;
     }
 
     override fun getExample(): List<String> {
@@ -81,21 +74,19 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 var startY = 59 - (undertaleSpeechBox.height / 2)
                 graphics.drawImage(undertaleSpeechBox, startX, startY, null); // E agora o Speech Box
 
-                graphics.setPaint((Color(0, 0, 0))); // Encher de preto
+                graphics.paint = (Color(0, 0, 0)); // Encher de preto
                 // TODO: Fonte do Undertale
                 graphics.setRenderingHint(
                         RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-                val dotumChe = Font.createFont(Font.TRUETYPE_FONT,
-                        FileInputStream(File(Loritta.ASSETS + "dotumche.ttf")))
-                graphics.font = dotumChe.deriveFont(12F)
+                graphics.font = Constants.DOTUMCHE.deriveFont(12F)
                 ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics);
 
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)); // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "${context.locale.UTBATTLE_INVALID}".msgFormat(monster, validMonsterList.joinToString(", ")))
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["UTBATTLE_INVALID", monster, validMonsterList.joinToString(", ")])
             }
         } else {
             this.explain(context);

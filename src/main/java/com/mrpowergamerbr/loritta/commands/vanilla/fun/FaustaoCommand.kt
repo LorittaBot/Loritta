@@ -44,11 +44,7 @@ private val avatars = listOf(
 	"http://i.imgur.com/rVmgwZC.png",
 	"http://i.imgur.com/z7Ec5I3.png")
 
-class FaustaoCommand : AbstractCommand("faustão", listOf("faustao")) {
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
-	}
-
+class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["FAUSTAO_DESCRIPTION"]
 	}

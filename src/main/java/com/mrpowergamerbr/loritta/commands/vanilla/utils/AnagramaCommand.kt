@@ -1,29 +1,26 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
+import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 
 
-class AnagramaCommand : AbstractCommand("anagrama", listOf("shuffle", "anagram")) {
+class AnagramaCommand : AbstractCommand("anagrama", listOf("shuffle", "anagram"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "palavra"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.ANAGRAMA_DESCRIPTION
+		return locale["ANAGRAMA_DESCRIPTION"]
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
 		return mapOf("Loritta" to "Cria um anagrama usando a palavra \"Loritta\"",
 				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -34,7 +31,28 @@ class AnagramaCommand : AbstractCommand("anagrama", listOf("shuffle", "anagram")
 
 			val shuffledWord = shuffledChars.joinToString(separator = "");
 
-			context.sendMessage("✍ **|** " + context.getAsMention(true) + "${context.locale.ANAGRAMA_RESULT.msgFormat(shuffledWord)} \uD83D\uDE4B")
+			val chars = mutableMapOf<Char, Int>()
+			for (ch in palavra) {
+				chars.put(ch, chars.getOrDefault(ch, 0) + 1)
+			}
+
+			var exp = 1.toBigInteger()
+			for ((_, value) in chars.entries) {
+				exp = exp.multiply(BigIntegerMath.factorial(value))
+			}
+
+			val max = BigIntegerMath.factorial(palavra.length).divide(exp)
+
+			context.reply(
+					LoriReply(
+							message = context.locale["ANAGRAMA_RESULT", shuffledWord] + " \uD83D\uDE4B",
+							prefix = "✍"
+					),
+					LoriReply(
+							message = context.locale["ANAGRAMA_Stats", shuffledWord, max],
+							prefix = "\uD83E\uDD13"
+					)
+			)
 		} else {
 			this.explain(context);
 		}

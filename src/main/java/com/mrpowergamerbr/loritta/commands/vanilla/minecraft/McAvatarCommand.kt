@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McAvatarCommand : AbstractCommand("mcavatar") {
+class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCAVATAR_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT
 	}
 
 	override fun getUsage(): String {

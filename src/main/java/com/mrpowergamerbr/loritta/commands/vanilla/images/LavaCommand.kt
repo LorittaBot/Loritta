@@ -15,17 +15,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class LavaCommand : AbstractCommand("lava") {
+class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.LAVA_DESCRIPTION.f();
+		return locale["LAVA_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta bots indecentes");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

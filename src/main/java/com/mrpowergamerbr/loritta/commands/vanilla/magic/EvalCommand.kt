@@ -11,11 +11,7 @@ import java.util.concurrent.ExecutionException
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
-class EvalCommand : AbstractCommand("eval") {
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MAGIC
-	}
-
+class EvalCommand : AbstractCommand("eval", category = CommandCategory.MAGIC) {
 	override fun onlyOwner(): Boolean {
 		return true
 	}

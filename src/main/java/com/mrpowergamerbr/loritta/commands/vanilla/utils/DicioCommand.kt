@@ -12,7 +12,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "definir")) {
+class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "definir"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "palavra"
 	}
@@ -23,10 +23,6 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "definir")) 
 
 	override fun getExample(): List<String> {
 		return listOf("sonho");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

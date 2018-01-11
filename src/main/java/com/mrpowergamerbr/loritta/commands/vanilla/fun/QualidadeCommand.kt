@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class QualidadeCommand : AbstractCommand("qualidade") {
+class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["QUALIDADE_DESCRIPTION"]
 	}
@@ -21,10 +21,6 @@ class QualidadeCommand : AbstractCommand("qualidade") {
 
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("mensagem" to "A mensagem que você deseja transformar")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

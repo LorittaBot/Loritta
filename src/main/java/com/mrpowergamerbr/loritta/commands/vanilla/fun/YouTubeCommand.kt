@@ -15,7 +15,6 @@ import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
@@ -23,17 +22,13 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
-class YouTubeCommand : AbstractCommand("youtube", listOf("yt")) {
+class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["YOUTUBE_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("shantae tassel town")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun onlyInMusicInstance(): Boolean {
@@ -71,7 +66,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt")) {
 				var embed = EmbedBuilder();
 				embed.setColor(Color(217, 66, 52));
 				embed.setDescription(format);
-				embed.setTitle("<:youtube:314349922885566475> ${context.locale.YOUTUBE_RESULTS_FOR.msgFormat(query)}");
+				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR"]}");
 				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
 				for (i in 0 until Math.min(5, items.size)) {
@@ -79,7 +74,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt")) {
 				}
 				return;
 			} else {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.YOUTUBE_COULDNT_FIND.msgFormat(query))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["YOUTUBE_COULDNT_FIND", query])
 			}
 		} else {
 			context.explain()

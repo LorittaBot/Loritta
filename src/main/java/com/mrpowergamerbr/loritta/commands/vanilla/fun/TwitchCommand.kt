@@ -17,17 +17,13 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class TwitchCommand : AbstractCommand("twitch") {
+class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TWITCH_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

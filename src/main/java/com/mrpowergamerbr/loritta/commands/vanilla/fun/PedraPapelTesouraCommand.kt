@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.io.File
 import java.io.IOException
 
-class PedraPapelTesouraCommand : AbstractCommand("ppt", listOf("pedrapapeltesoura", "jankenpon")) {
+class PedraPapelTesouraCommand : AbstractCommand("ppt", listOf("pedrapapeltesoura", "jankenpon"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PPT_DESCRIPTION"]
 	}
@@ -26,10 +26,6 @@ class PedraPapelTesouraCommand : AbstractCommand("ppt", listOf("pedrapapeltesour
 
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("sua escolha" to "Pedra, Papel ou Tesoura")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

@@ -5,16 +5,11 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class PularCommand : AbstractCommand("pular") {
+class PularCommand : AbstractCommand("pular", category = CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.PULAR_DESCRIPTION.msgFormat()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MUSIC
+		return locale["PULAR_DESCRIPTION"]
 	}
 
 	override fun requiresMusicEnabled(): Boolean {

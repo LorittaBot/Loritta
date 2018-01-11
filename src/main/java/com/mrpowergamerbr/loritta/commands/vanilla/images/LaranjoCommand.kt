@@ -11,17 +11,13 @@ import java.awt.Font
 import java.io.File
 import javax.imageio.ImageIO
 
-class LaranjoCommand : AbstractCommand("laranjo") {
+class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LARANJO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("ei ademin bane o cara ai pfv");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

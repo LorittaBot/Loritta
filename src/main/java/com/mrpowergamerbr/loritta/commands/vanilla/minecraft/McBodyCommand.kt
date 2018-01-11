@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue")) {
+class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCBODY_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT
 	}
 
 	override fun getUsage(): String {

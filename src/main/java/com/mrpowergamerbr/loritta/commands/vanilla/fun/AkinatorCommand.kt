@@ -22,13 +22,9 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import org.json.XML
 import java.awt.Color
 
-class AkinatorCommand : AbstractCommand("akinator") {
+class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("AKINATOR_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun getBotPermissions(): List<Permission> {

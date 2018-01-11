@@ -12,7 +12,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 
-class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar", "pesquisar")) {
+class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar", "pesquisar"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "pesquisa"
 	}
@@ -23,10 +23,6 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 
 	override fun getExample(): List<String> {
 		return listOf("Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 
-class VaporQualidadeCommand : AbstractCommand("vaporqualidade") {
+class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VAPORQUALIDADE_DESCRIPTION"]
 	}
@@ -22,10 +22,6 @@ class VaporQualidadeCommand : AbstractCommand("vaporqualidade") {
 
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("mensagem" to "A mensagem que você deseja transformar")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

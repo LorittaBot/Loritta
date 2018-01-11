@@ -9,9 +9,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 
-class WikiaCommand : AbstractCommand("wikia") {
+class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("WIKIA_DESCRIPTION")
 	}
@@ -35,10 +35,6 @@ class WikiaCommand : AbstractCommand("wikia") {
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("url" to "URL de uma Wikia, se a URL de uma Wikia é \"http://naruto.wikia.com\", você deverá colocar \"naruto\"",
 				"conteúdo" to "O que você deseja procurar na Wikia")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

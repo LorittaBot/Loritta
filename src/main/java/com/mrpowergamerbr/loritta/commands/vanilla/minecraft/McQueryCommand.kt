@@ -7,18 +7,13 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCServerPinger
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class McQueryCommand : AbstractCommand("mcquery") {
+class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCQUERY_DESCRIPTION.msgFormat()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT
+		return locale["MCQUERY_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -48,7 +43,7 @@ class McQueryCommand : AbstractCommand("mcquery") {
 				val response = MCServerPinger.ping(hostname, port)
 
 				if (response == null) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCQUERY_OFFLINE.msgFormat(ip, port))
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCQUERY_OFFLINE", ip, port])
 					return
 				}
 
@@ -67,7 +62,7 @@ class McQueryCommand : AbstractCommand("mcquery") {
 				context.sendMessage(context.getAsMention(true), builder.build())
 			} catch (e: Exception) {
 				e.printStackTrace()
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCQUERY_OFFLINE.msgFormat(ip, port))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCQUERY_OFFLINE", ip, port])
 			}
 		} else {
 			context.explain()

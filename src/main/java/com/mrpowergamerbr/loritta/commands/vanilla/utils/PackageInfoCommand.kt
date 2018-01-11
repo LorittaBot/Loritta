@@ -12,22 +12,17 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : AbstractCommand("correios", listOf("packageinfo", "ctt")) {
+class PackageInfoCommand : AbstractCommand("correios", listOf("packageinfo", "ctt"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("correios")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -71,7 +66,7 @@ class PackageInfoCommand : AbstractCommand("correios", listOf("packageinfo", "ct
 
 				context.sendMessage(context.getAsMention(true), embed.build());
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.PACKAGEINFO_INVALID.msgFormat(packageId))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["PACKAGEINFO_INVALID", packageId])
 			}
 		} else {
 			context.explain()

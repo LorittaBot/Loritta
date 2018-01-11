@@ -12,13 +12,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 
-class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao")) {
+class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["REP_DESCRIPTON"];
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.SOCIAL;
 	}
 
 	override fun getExample(): List<String> {

@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Aggregates.limit
 import com.mongodb.client.model.Aggregates.project
+import com.mongodb.client.model.Aggregates.skip
 import com.mongodb.client.model.Aggregates.sort
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
@@ -10,6 +12,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -30,17 +33,13 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
-class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner")) {
+class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner"), category = CommandCategory.FUN) {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
 
 	data class FidgetSpinner(var emoji: String, var threadId: Long, var forTime: Int, var spinnedAt: Long, var lastRerotation: Long)
 	
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SPINNER_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN;
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -61,8 +60,9 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 										Projections.include("_id", "spinnerScores")
 								),
 								Document("\$unwind", "\$spinnerScores"),
-								sort(Document("spinnerScores.forTime", -1))
-								// limit(5)
+								sort(Document("spinnerScores.forTime", -1)),
+								skip(5 * (page - 1)),
+								limit(5)
 							)
 						).iterator()
 
@@ -81,8 +81,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 				graphics.drawImage(rankHeader, 0, 0, null)
 
-				val oswaldRegular10 = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
-						java.io.FileInputStream(java.io.File(com.mrpowergamerbr.loritta.Loritta.ASSETS + "oswald_regular.ttf")))
+				val oswaldRegular10 = Constants.OSWALD_REGULAR
 						.deriveFont(10F)
 
 				val oswaldRegular12 = oswaldRegular10

@@ -13,17 +13,13 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
-class TriggeredCommand : AbstractCommand("triggered") {
+class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRIGGERED_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

@@ -9,13 +9,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 
-class SeekCommand : AbstractCommand("seek") {
+class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SEEK_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MUSIC
 	}
 
 	override fun getExample(): List<String> {

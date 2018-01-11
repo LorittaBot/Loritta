@@ -16,17 +16,13 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
-class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede")) {
+class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
 	override fun getUsage(): String {
 		return "<novo background>"
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["BACKGROUND_DESCRIPTION"]
-	}
-
-	override fun getCategory(): com.mrpowergamerbr.loritta.commands.CommandCategory {
-		return CommandCategory.SOCIAL
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -67,7 +63,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
-						.setTitle("\uD83D\uDDBC ${context.locale.BACKGROUND_YOUR_CURRENT_BG}")
+						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
 				msg.editMessage(builder.build()).complete();
@@ -109,7 +105,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 				context.metadata.put("templateIdx", index)
 				var builder = EmbedBuilder()
 						.setTitle("\uD83D\uDED2 Templates")
-						.setDescription(context.locale.BACKGROUND_TEMPLATE_INFO)
+						.setDescription(context.locale["BACKGROUND_TEMPLATE_INFO"])
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
@@ -129,7 +125,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 
 	fun setAsBackground(link0: String, context: CommandContext) {
 		var link = link0
-		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale.PROCESSING}...");
+		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
 
 		val params = getQueryParameters(link)
 
@@ -140,12 +136,12 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 		val status = LorittaUtilsKotlin.getImageStatus(link)
 
 		if (status == NSFWResponse.ERROR) {
-			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.BACKGROUND_INVALID_IMAGE).complete()
+			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BACKGROUND_INVALID_IMAGE"]).complete()
 			return
 		}
 
 		if (status == NSFWResponse.NSFW) {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale.NSFW_IMAGE.msgFormat(context.asMention)).complete()
+			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale["NSFW_IMAGE", context.asMention]).complete()
 			return
 		}
 
@@ -170,14 +166,14 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"))
 		}
 		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"));
 
-		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.locale.BACKGROUND_UPDATED + if (needsEditing) " ${context.locale.BACKGROUND_EDITED}!" else "")
+		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.locale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.locale["BACKGROUND_EDITED"]}!" else "")
 		return;
 	}
 
 	fun getFirstPageEmbed(context: CommandContext): MessageEmbed {
 		var builder = net.dv8tion.jda.core.EmbedBuilder()
-				.setTitle("\uD83D\uDE4B ${context.locale.BACKGROUND_CENTRAL}")
-				.setDescription(context.locale.BACKGROUND_INFO.msgFormat(context.config.commandPrefix))
+				.setTitle("\uD83D\uDE4B ${context.locale["BACKGROUND_CENTRAL"]}")
+				.setDescription(context.locale["BACKGROUND_INFO", context.config.commandPrefix])
 				.setColor(Color(0, 223, 142))
 		return builder.build()
 	}

@@ -10,17 +10,13 @@ import java.awt.Image
 import java.io.File
 import javax.imageio.ImageIO
 
-class SAMCommand : AbstractCommand("sam", listOf("southamericamemes")) {
+class SAMCommand : AbstractCommand("sam", listOf("southamericamemes"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SAM_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("https://cdn.discordapp.com/attachments/265632341530116097/297440837871206420/meme.png")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {

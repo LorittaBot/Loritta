@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.User
 
-class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", "discriminador")) {
+class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", "discriminador"), category = CommandCategory.DISCORD) {
 	override fun getUsage(): String {
 		return "<usuário>"
 	}
@@ -24,9 +24,6 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 
 	override fun getExample(): List<String> {
 		return listOf("", "@Loritta");
-	}
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.DISCORD;
 	}
 
     override fun run(context: CommandContext, locale: BaseLocale) {

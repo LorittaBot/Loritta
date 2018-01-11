@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class NyanCatCommand : AbstractCommand("nyan") {
+class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("NYANCAT_DESCRIPTION")
 	}
@@ -27,10 +27,6 @@ class NyanCatCommand : AbstractCommand("nyan") {
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

@@ -37,7 +37,7 @@ class LorittaShards {
     }
 
     fun getUserCount(): Int {
-        return shards.sumBy { it.users.size }
+        return getUsers().size
     }
 
     fun getUsers(): List<User> {

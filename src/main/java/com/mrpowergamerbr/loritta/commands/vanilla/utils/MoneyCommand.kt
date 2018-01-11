@@ -17,17 +17,13 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana")) {
+class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MONEY_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

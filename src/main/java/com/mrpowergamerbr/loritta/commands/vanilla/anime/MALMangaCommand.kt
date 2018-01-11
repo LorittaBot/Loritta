@@ -23,13 +23,9 @@ import org.apache.commons.lang3.StringEscapeUtils
 import org.json.XML
 import java.awt.Color
 
-class MALMangaCommand : AbstractCommand("malmanga") {
+class MALMangaCommand : AbstractCommand("malmanga", category = CommandCategory.ANIME) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MALMANGA_Description"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ANIME
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

@@ -8,17 +8,13 @@ import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.gifs.CepoDeMadeiraGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class CepoCommand : AbstractCommand("cepo") {
+class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.CEPO_DESCRIPTION.f();
+		return locale["CEPO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

@@ -7,17 +7,13 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class HackBanCommand : AbstractCommand("hackban", listOf("forceban")) {
+class HackBanCommand : AbstractCommand("hackban", listOf("forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["HACKBAN_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN;
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

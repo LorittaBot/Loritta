@@ -174,9 +174,10 @@ class Loritta {
 	fun generateDummyServerConfig() {
 		val dummy = ServerConfig("-1").apply { // É usado -1 porque -1 é um número de guild inexistente
 			commandPrefix = ""
+			mentionOnCommandOutput = false
 		}
 
-		dummyServerConfig = dummy;
+		dummyServerConfig = dummy
 	}
 
 	fun resetYouTubeKeys() {
@@ -286,6 +287,8 @@ class Loritta {
 		thread {
 			while (true) {
 				try {
+					loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
+
 					cachedGuilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
 					cachedUsers = com.mrpowergamerbr.loritta.utils.lorittaShards.getUsers()
 
@@ -568,7 +571,7 @@ class Loritta {
 	fun checkAndLoad(context: CommandContext, trackUrl: String): Boolean {
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_NOTINCHANNEL.msgFormat())
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_NOTINCHANNEL"])
 			return false
 		}
 		loadAndPlay(context, trackUrl)
@@ -600,11 +603,11 @@ class Loritta {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
-						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MUSIC_MAX.msgFormat(final)).queue();
+						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue();
 						return;
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks().escapeMentions())).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
 				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
 			}
@@ -645,7 +648,7 @@ class Loritta {
 				track = playlist.tracks[0]
 			}
 
-			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_ADDED.msgFormat(track.info.title.stripCodeMarks().escapeMentions())).queue()
+			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
 			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()))
 		} else { // Mas se ela aceita...
@@ -663,9 +666,9 @@ class Loritta {
 			}
 
 			if (ignored == 0) {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED.msgFormat(playlist.tracks.size)).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED", playlist.tracks.size]).queue()
 			} else {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale.MUSIC_PLAYLIST_ADDED_IGNORED.msgFormat(playlist.tracks.size, ignored)).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED_IGNORED", playlist.tracks.size, ignored]).queue()
 			}
 		}
 	}

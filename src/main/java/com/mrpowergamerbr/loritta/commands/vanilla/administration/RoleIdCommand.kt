@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import java.util.*
 
-class RoleIdCommand : AbstractCommand("roleid") {
+class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROLEID_DESCRIPTION"]
 	}
@@ -27,10 +27,6 @@ class RoleIdCommand : AbstractCommand("roleid") {
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

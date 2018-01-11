@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -69,27 +68,28 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			graphics.drawImage(oldAvatar, 0, 0, null)
 			graphics.drawImage(newAvatar, 128, 0, null)
 
-			val os = ByteArrayOutputStream()
-			ImageIO.write(base, "png", os)
+			ByteArrayOutputStream().use { baos ->
+				ImageIO.write(base, "png", baos)
 
-			val inputStream = ByteArrayInputStream(os.toByteArray())
+				ByteArrayInputStream(baos.toByteArray()).use { bais ->
+					// E agora nós iremos anunciar a troca para todos os servidores
+					for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
+						if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
+							val config = loritta.getServerConfigForGuild(guild.id)
+							val locale = loritta.getLocaleById(config.localeId)
 
-			// E agora nós iremos anunciar a troca para todos os servidores
-			for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
-				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
-					val config = loritta.getServerConfigForGuild(guild.id)
-					val locale = loritta.getLocaleById(config.localeId)
+							if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
+								val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
-					if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
-						val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+								if (textChannel != null && textChannel.canTalk()) {
+									embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
+									embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-						if (textChannel != null && textChannel.canTalk()) {
-							embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-							embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
+									val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-							val message = MessageBuilder().append(" ").setEmbed(embed.build())
-
-							textChannel.sendFile(inputStream, "avatar.png", message.build()).complete()
+									textChannel.sendFile(bais, "avatar.png", message.build()).complete()
+								}
+							}
 						}
 					}
 				}
@@ -135,7 +135,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						if (textChannel != null && textChannel.canTalk()) {
 							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
-							embed.setFooter(locale.EVENTLOG_USER_ID.msgFormat(event.user.id), null)
+							embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 							textChannel.sendMessage(embed.build()).complete()
 						}
@@ -161,31 +161,31 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (textChannel != null && textChannel.canTalk()) {
 					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
-						embed.setDescription("\uD83C\uDF1F ${locale.EVENTLOG_CHANNEL_CREATED.msgFormat(event.channel.asMention)}")
+						embed.setDescription("\uD83C\uDF1F ${locale["EVENTLOG_CHANNEL_CREATED", event.channel.asMention]}")
 
 						textChannel.sendMessage(embed.build()).complete()
 						return@execute
 					}
 					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_NAME_UPDATED.msgFormat(event.channel.asMention, event.oldName, event.channel.name)}")
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_NAME_UPDATED", event.channel.asMention, event.oldName, event.channel.name]}")
 
 						textChannel.sendMessage(embed.build()).complete()
 						return@execute
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_TOPIC_UPDATED.msgFormat(event.channel.asMention, event.oldTopic, event.channel.topic)}")
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_TOPIC_UPDATED", event.channel.asMention, event.oldTopic, event.channel.topic]}")
 
 						textChannel.sendMessage(embed.build()).complete()
 						return@execute
 					}
 					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale.EVENTLOG_CHANNEL_POSITION_UPDATED.msgFormat(event.channel.asMention, event.oldPosition, event.channel.position)}")
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_POSITION_UPDATED", event.channel.asMention, event.oldPosition, event.channel.position]}")
 
 						textChannel.sendMessage(embed.build()).complete()
 						return@execute
 					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
-						embed.setDescription("\uD83D\uDEAE ${locale.EVENTLOG_CHANNEL_DELETED.msgFormat(event.channel.name)}")
+						embed.setDescription("\uD83D\uDEAE ${locale["EVENTLOG_CHANNEL_DELETED", event.channel.name]}")
 
 						textChannel.sendMessage(embed.build()).complete()
 						return@execute

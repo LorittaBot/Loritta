@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -17,17 +16,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class LavaReversoCommand : AbstractCommand("lavareverso", listOf("reverselava")) {
+class LavaReversoCommand : AbstractCommand("lavareverso", listOf("reverselava"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.LAVAREVERSO_DESCRIPTION.f();
+		return locale["LAVAREVERSO_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta servidores brasileiros");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

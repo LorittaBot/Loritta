@@ -20,13 +20,9 @@ import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
-class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer")) {
+class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("RBUSER_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ROBLOX
 	}
 
 	override fun getUsage(): String {

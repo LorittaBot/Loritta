@@ -5,14 +5,13 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.util.*
 
-class InverterCommand : AbstractCommand("inverter") {
+class InverterCommand : AbstractCommand("inverter", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.INVERTER_DESCRIPTION.f()
+		return locale["INVERTER_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
@@ -23,10 +22,6 @@ class InverterCommand : AbstractCommand("inverter") {
 		return ImmutableMap.builder<String, String>()
 				.put("mensagem", "Usuário sortudo")
 				.build()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {

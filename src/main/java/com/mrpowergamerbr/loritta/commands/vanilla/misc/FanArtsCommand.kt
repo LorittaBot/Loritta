@@ -11,13 +11,9 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
-class FanArtsCommand : AbstractCommand("fanarts") {
+class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["FANARTS_Description"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MISC
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

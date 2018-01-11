@@ -1,22 +1,28 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullObj
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
-class WikipediaCommand : AbstractCommand("wikipedia") {
+class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.WIKIPEDIA_DESCRIPTION
+		return locale["WIKIPEDIA_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -32,13 +38,15 @@ class WikipediaCommand : AbstractCommand("wikipedia") {
 				"conteúdo" to "O que você deseja procurar no Wikipédia")
 	}
 
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
-	}
-
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.size >= 1) {
-			var languageId = "pt"
+		if (context.args.isNotEmpty()) {
+			var languageId = when (context.config.localeId) {
+				"default" -> "pt"
+				"pt-pt" -> "pt"
+				"pt-funk" -> "pt"
+				else -> "en"
+			}
+
 			val inputLanguageId = context.args[0]
 			var hasValidLanguageId = false
 			if (inputLanguageId.startsWith("[") && inputLanguageId.endsWith("]")) {
@@ -54,15 +62,15 @@ class WikipediaCommand : AbstractCommand("wikipedia") {
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo
 
 				if (entryWikiContent.key == "-1") { // -1 = Nenhuma página encontrada
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.WIKIPEDIA_COULDNT_FIND.msgFormat(query))
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["WIKIPEDIA_COULDNT_FIND", query])
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString
 					val pageExtract = entryWikiContent.value.asJsonObject.get("extract").asString
 
 					val embed = EmbedBuilder()
-							.setTitle(pageTitle, null)
-							.setColor(Color.BLUE)
+							.setTitle("<:wikipedia:400981794666840084> $pageTitle", null)
+							.setColor(Color.BLACK)
 							.setDescription(if (pageExtract.length > 512) pageExtract.substring(0, 509) + "..." else pageExtract)
 
 					context.sendMessage(embed.build()) // Envie a mensagem!
@@ -76,4 +84,40 @@ class WikipediaCommand : AbstractCommand("wikipedia") {
 			context.explain()
 		}
 	}
+}
+
+fun main(args: Array<String>) {
+	val query = "Shantae"
+
+	val body = HttpRequest.get("https://en.wikipedia.org/w/api.php?action=query&generator=search&format=json&gsrwhat=text&gsrlimit=2&prop=categories|extracts|pageimages&exintro=&explaintext=&cllimit=max&piprop=original&gsrsearch=${URLEncoder.encode(query, "UTF-8")}")
+			.body()
+
+	val wikipedia = JSON_PARSER.parse(body).obj
+	val queryResponse = wikipedia["query"].nullObj
+
+	if (queryResponse == null) {
+		// Nada encontrado
+		return
+	}
+
+	val pages = queryResponse["pages"].obj
+
+	var pageResponse: JsonObject? = null
+
+	for ((s, jsonElement) in pages.entrySet()) {
+		val categories = jsonElement["categories"].array
+		val isDisambiguation = categories.filter { it["title"].string == "Category:Disambiguation pages" }.isNotEmpty()
+
+		if (!isDisambiguation) {
+			pageResponse = jsonElement.obj
+		}
+	}
+
+	if (pageResponse == null) {
+		// Nada encontrado
+		return
+	}
+
+	val originalImage = pageResponse["original"].nullObj
+	val sourceImage = originalImage?.get("source").nullString
 }

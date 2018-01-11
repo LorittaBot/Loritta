@@ -19,17 +19,13 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
-class GameJoltCommand : AbstractCommand("gamejolt") {
+class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GAMEJOLT_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return Arrays.asList("undertale yellow")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

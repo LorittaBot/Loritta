@@ -25,7 +25,9 @@ object GoogleTranslateUtils {
 					+ to + "&dt=t&q=" + message + "&ie=UTF-8&oe=UTF-8")
 			val uc = url.openConnection()
 			uc.setRequestProperty("User-Agent", "Mozilla/5.0")
-			val bufferedReader = BufferedReader(InputStreamReader(uc.getInputStream(), "UTF-8"))
+			val ucInputStream = uc.getInputStream()
+			val inputStreamReader = InputStreamReader(ucInputStream, "UTF-8")
+			val bufferedReader = BufferedReader(inputStreamReader)
 			var inputLine: String
 			val builder = StringBuilder()
 
@@ -52,6 +54,8 @@ object GoogleTranslateUtils {
 				}
 			}
 
+			ucInputStream.close()
+			inputStreamReader.close()
 			bufferedReader.close()
 			return sb.toString()
 		} catch (e: Exception) {

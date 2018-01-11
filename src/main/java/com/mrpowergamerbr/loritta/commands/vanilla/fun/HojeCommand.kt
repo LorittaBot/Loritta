@@ -17,13 +17,9 @@ import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 
-class HojeCommand : AbstractCommand("hoje", listOf("today")) {
+class HojeCommand : AbstractCommand("hoje", listOf("today"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TODAY_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.FUN
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

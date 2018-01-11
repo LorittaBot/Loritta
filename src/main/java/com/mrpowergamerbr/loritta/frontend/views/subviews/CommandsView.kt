@@ -1,7 +1,6 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews.api
+package com.mrpowergamerbr.loritta.frontend.views.subviews
 
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import org.jooby.Request
 import org.jooby.Response
 

@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class ResumirCommand : AbstractCommand("unpause", listOf("resumir", "despausar", "unpause", "continuar")) {
+class ResumirCommand : AbstractCommand("unpause", listOf("resumir", "despausar", "unpause", "continuar"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("UNPAUSE_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MUSIC
 	}
 
 	override fun requiresMusicEnabled(): Boolean {

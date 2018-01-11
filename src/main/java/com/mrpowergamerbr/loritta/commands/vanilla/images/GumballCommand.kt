@@ -7,17 +7,13 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.gifs.GumballGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class GumballCommand : AbstractCommand("gumball") {
+class GumballCommand : AbstractCommand("gumball", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GUMBALL_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

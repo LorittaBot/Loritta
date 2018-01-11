@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.utils.MiscUtil
 
-class LimparCommand : AbstractCommand("limpar", listOf("clean")) {
+class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LIMPAR_DESCRIPTION"]
 	}
@@ -19,10 +19,6 @@ class LimparCommand : AbstractCommand("limpar", listOf("clean")) {
 
 	override fun getExample(): List<String> {
 		return listOf("10", "25", "7 @Tsugami", "50 @Tsugami @Tsumari")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

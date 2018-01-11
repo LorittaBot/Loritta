@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
@@ -40,9 +41,9 @@ class NashornCommand : AbstractCommand {
 	override val label: String
 		get() = jsLabel
 
-	constructor() : super("javascript-command-label", listOf())
+	constructor() : super("javascript-command-label", listOf(), CommandCategory.MISC)
 
-	constructor(label: String, javaScript: String) : super(label, listOf()) {
+	constructor(label: String, javaScript: String) : super(label, listOf(), CommandCategory.MISC) {
 		this.jsLabel = label
 		this.javaScript = javaScript
 		this.aliases = jsAliases

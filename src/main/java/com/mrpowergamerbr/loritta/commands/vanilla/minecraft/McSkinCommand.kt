@@ -6,13 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer")) {
+class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MCAVATAR_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT
 	}
 
 	override fun getUsage(): String {

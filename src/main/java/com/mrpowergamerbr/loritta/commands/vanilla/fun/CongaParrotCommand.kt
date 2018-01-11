@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class CongaParrotCommand : AbstractCommand("congaparrot") {
+class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["CONGAPARROT_Description"]
 	}
@@ -18,10 +18,6 @@ class CongaParrotCommand : AbstractCommand("congaparrot") {
 
 	override fun getExample(): List<String> {
 		return listOf("5", "10")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

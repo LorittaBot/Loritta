@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.GradientPaint
@@ -16,17 +15,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmizadeCommand : AbstractCommand("amizade", listOf("friendship")) {
+class AmizadeCommand : AbstractCommand("amizade", listOf("friendship"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("AMIZADE_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Tatsumaki @Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {
@@ -68,7 +63,7 @@ class AmizadeCommand : AbstractCommand("amizade", listOf("friendship")) {
 					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			var fontMetrics = graphics.getFontMetrics(font)
 
-			val friendshipEnded = context.locale.AMIZADE_AMIZADE_COM.f(user.name)
+			val friendshipEnded = locale["AMIZADE_AMIZADE_COM", user.name]
 			var gp = GradientPaint(
 					0.0f, 0.0f,
                     Color(202, 72, 15),
@@ -82,7 +77,7 @@ class AmizadeCommand : AbstractCommand("amizade", listOf("friendship")) {
 			font = font.deriveFont(30F);
 			graphics.font = font
 
-			ImageUtils.drawCenteredStringOutlined(graphics, context.locale.AMIZADE_ENDED.f(), Rectangle(0, 30, 400, 40), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_ENDED"], Rectangle(0, 30, 400, 40), font);
 
 			font = font.deriveFont(24F)
 			graphics.font = font
@@ -94,10 +89,10 @@ class AmizadeCommand : AbstractCommand("amizade", listOf("friendship")) {
 					Color(103, 216, 11));
 			graphics.paint = gp;
 			// graphics.fillRect(0, 0, 400, 300); // debugging
-			ImageUtils.drawCenteredStringOutlined(graphics, "${context.locale.AMIZADE_NOW.f()} " + user2.name, Rectangle(0, 100, 400, 110), font);
-			ImageUtils.drawCenteredStringOutlined(graphics, "${context.locale.AMIZADE_IS_MY.f()}", Rectangle(0, 120, 400, 130), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, "${locale["AMIZADE_NOW"]} " + user2.name, Rectangle(0, 100, 400, 110), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_IS_MY"], Rectangle(0, 120, 400, 130), font);
 			graphics.color = Color.MAGENTA
-			ImageUtils.drawCenteredStringOutlined(graphics, context.locale.AMIZADE_BEST_FRIEND.f(), Rectangle(0, 140, 400, 150), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_BEST_FRIEND"], Rectangle(0, 140, 400, 150), font);
 
 			context.sendFile(template, "rip_amizade.png", context.getAsMention(true));
 		} else {

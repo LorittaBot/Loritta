@@ -6,18 +6,13 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "musicinfo")) {
+class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "musicinfo"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUSICINFO_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MUSIC
 	}
 
 	override fun getBotPermissions(): List<Permission> {
@@ -36,7 +31,7 @@ class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "musicinfo
 		context.guild.selfMember.voiceState.channel
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
 		if (manager.player.playingTrack == null) {
-			context.sendMessage(context.getAsMention(true) + context.locale.MUSICINFO_NOMUSIC.msgFormat())
+			context.sendMessage(context.getAsMention(true) + locale["MUSICINFO_NOMUSIC"])
 		} else {
 			val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
 			val message = context.sendMessage(embed)

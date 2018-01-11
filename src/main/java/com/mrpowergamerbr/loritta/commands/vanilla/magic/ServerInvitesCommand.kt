@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class ServerInvitesCommand : AbstractCommand("serverinvites") {
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MAGIC
-	}
-
+class ServerInvitesCommand : AbstractCommand("serverinvites", category = CommandCategory.MAGIC) {
 	override fun onlyOwner(): Boolean {
 		return true
 	}

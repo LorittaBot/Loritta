@@ -6,15 +6,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.util.*
 
-class TretaNewsCommand : AbstractCommand("tretanews") {
+class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TRETANEWS_DESCRIPTION.f()
+		return locale["TRETANEWS_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
@@ -32,10 +31,6 @@ class TretaNewsCommand : AbstractCommand("tretanews") {
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

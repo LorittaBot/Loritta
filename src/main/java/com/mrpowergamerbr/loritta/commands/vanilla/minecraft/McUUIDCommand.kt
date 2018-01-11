@@ -6,15 +6,14 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.util.*
 
-class McUUIDCommand : AbstractCommand("mcuuid") {
+class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
     override fun getDescription(locale: BaseLocale): String {
-        return locale.MCUUID_DESCRIPTION.msgFormat();
+        return locale["MCUUID_DESCRIPTION"]
     }
 
     override fun getUsage(): String {
@@ -23,10 +22,6 @@ class McUUIDCommand : AbstractCommand("mcuuid") {
 
     override fun getExample(): List<String> {
         return Arrays.asList("Monerk")
-    }
-
-    override fun getCategory(): CommandCategory {
-        return CommandCategory.MINECRAFT;
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
@@ -39,9 +34,9 @@ class McUUIDCommand : AbstractCommand("mcuuid") {
             try {
                 var json = JSON_PARSER.parse(data).asJsonObject;
 
-                context.sendMessage(context.getAsMention(true) + context.locale.MCUUID_RESULT.msgFormat(player, LorittaUtils.getUUID(json["id"].string)))
+                context.sendMessage(context.getAsMention(true) + context.locale["MCUUID_RESULT", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.MCUUID_INVALID.msgFormat(player));
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCUUID_INVALID", player])
             }
         } else {
             this.explain(context);

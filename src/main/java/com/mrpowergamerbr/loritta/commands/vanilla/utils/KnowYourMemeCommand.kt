@@ -11,22 +11,17 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.net.URLEncoder
 
-class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym")) {
+class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.KYM_DESCRIPTION
+		return locale["KYM_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("Arthur's Headphones")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -41,7 +36,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym")) {
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.KYM_COULDNT_FIND.msgFormat(query))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["KYM_COULDNT_FIND", query])
 				return;
 			} else {
 				// Algo foi encontrado!
@@ -53,7 +48,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym")) {
 				val summary = if (meme.obj.has("summary")) {
 					meme["summary"].string
 				} else {
-					context.locale.KYM_NO_DESCRIPTION
+					context.locale["KYM_NO_DESCRIPTION"]
 				}
 				val url = meme["url"].string
 
@@ -62,8 +57,8 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym")) {
 				embed.setTitle("<:kym:375313574085787648> $name", "http://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
-				embed.addField("\uD83C\uDF1F ${context.locale.KYM_ORIGIN}", if (origin.isNotBlank()) origin else context.locale.KYM_UNKNOWN, true)
-				embed.addField("\uD83D\uDCC6 ${context.locale.KYM_DATE}", if (originDate.isNotBlank()) originDate else context.locale.KYM_UNKNOWN, true)
+				embed.addField("\uD83C\uDF1F ${locale["KYM_ORIGIN"]}", if (origin.isNotBlank()) origin else context.locale["KYM_UNKNOWN"], true)
+				embed.addField("\uD83D\uDCC6 ${locale["KYM_DATE"]}", if (originDate.isNotBlank()) originDate else context.locale["KYM_UNKNOWN"], true)
 				embed.setColor(Color(18, 19, 63))
 
 				context.sendMessage(embed.build())

@@ -11,17 +11,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class ManiaTitleCardCommand : AbstractCommand("maniatitlecard") {
+class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MANIATITLECARD_DESCRIPTION")
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

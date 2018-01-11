@@ -9,19 +9,14 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.time.ZoneOffset
 
 
-class AminoCommand : AbstractCommand("amino") {
+class AminoCommand : AbstractCommand("amino", category = CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AMINO_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
@@ -52,31 +47,31 @@ class AminoCommand : AbstractCommand("amino") {
 						embed.setDescription(community.tagline);
 						embed.addField("\uD83D\uDD17 Link", community.link, true);
 						embed.addField("\uD83D\uDCBB ID", community.ndcId.toString(), true);
-						embed.addField("\uD83D\uDC65 ${context.locale.AMINO_MEMBERS}", community.membersCount.toString(), true);
-						embed.addField("\uD83C\uDF0E ${context.locale.AMINO_LANGUAGE}", community.primaryLanguage, true);
-						embed.addField("\uD83D\uDD25 ${context.locale.AMINO_COMMUNITY_HEAT}", community.communityHeat, true);
-						embed.addField("\uD83D\uDCC5 ${context.locale.AMINO_CREATED_IN}", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
+						embed.addField("\uD83D\uDC65 ${context.locale["AMINO_MEMBERS"]}", community.membersCount.toString(), true);
+						embed.addField("\uD83C\uDF0E ${context.locale["AMINO_LANGUAGE"]}", community.primaryLanguage, true);
+						embed.addField("\uD83D\uDD25 ${context.locale["AMINO_COMMUNITY_HEAT"]}", community.communityHeat, true);
+						embed.addField("\uD83D\uDCC5 ${context.locale["AMINO_CREATED_IN"]}", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
 						embed.setColor(Color(255, 112, 125));
 						embed.setThumbnail(community.icon)
 
 						context.sendMessage(context.asMention, embed.build());
 					} else {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_COULDNT_FIND.msgFormat(args))
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["AMINO_COULDNT_FIND", args])
 					}
 				}
 			} else {
-				if (context.args[0] == context.locale.AMINO_CONVERT) { // Converter imagens .Amino para imagens normais
+				if (context.args[0] == context.locale["AMINO_CONVERT"]) { // Converter imagens .Amino para imagens normais
 					if (context.message.attachments.isNotEmpty()) {
 						val attachment = context.message.attachments[0]
 
 						if (attachment.isImage) {
 							val imagem = LorittaUtils.downloadImage(attachment.url)
 
-							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + context.locale.AMINO_YOUR_IMAGE.msgFormat(context.message.attachments[0].fileName))
+							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + context.locale["AMINO_YOUR_IMAGE", context.message.attachments[0].fileName])
 							return;
 						}
 					}
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.AMINO_NO_IMAGE_FOUND)
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["AMINO_NO_IMAGE_FOUND"])
 					return;
 				}
 				context.explain()

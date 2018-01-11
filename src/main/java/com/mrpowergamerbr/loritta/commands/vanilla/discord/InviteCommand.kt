@@ -7,13 +7,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class InviteCommand : AbstractCommand("convidar", listOf("invite", "convidarbot", "invitebot")) {
+class InviteCommand : AbstractCommand("convidar", listOf("invite", "convidarbot", "invitebot"), CommandCategory.SOCIAL) {
     override fun getDescription(locale: BaseLocale): String {
         return locale["INVITE_DESCRIPTION"]
-    }
-
-    override fun getCategory(): CommandCategory {
-        return CommandCategory.SOCIAL;
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {

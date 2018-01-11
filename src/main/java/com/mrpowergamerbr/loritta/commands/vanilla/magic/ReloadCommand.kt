@@ -17,11 +17,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
 import java.io.File
 
-class ReloadCommand : AbstractCommand("reload") {
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MAGIC
-	}
-
+class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC) {
 	override fun onlyOwner(): Boolean {
 		return true
 	}

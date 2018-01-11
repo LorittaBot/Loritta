@@ -14,13 +14,9 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.time.Instant
 import java.time.ZoneId
 
-class UserInfoCommand : AbstractCommand("userinfo") {
+class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("USERINFO_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.DISCORD
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

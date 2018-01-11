@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.HierarchyException
 import java.awt.Color
 
-class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
+class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUTE_DESCRIPTION"]
 	}
@@ -32,10 +32,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 
 	override fun getExample(): List<String> {
 		return listOf("@Fulano");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN;
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -81,7 +77,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 				return
 			}
 
-			var mutedRole: Role? = context.guild.getRolesByName(context.locale.MUTE_ROLE_NAME, false).firstOrNull()
+			var mutedRole: Role? = context.guild.getRolesByName(locale["MUTE_ROLE_NAME"], false).firstOrNull()
 
 			if (mutedRole != null && member.roles.contains(mutedRole)) {
 				val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
@@ -184,12 +180,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar")) {
 		val user = context.metadata["user"] as User
 
 		// Vamos pegar se a nossa role existe
-		var mutedRoles = context.guild.getRolesByName(context.locale.MUTE_ROLE_NAME, false)
+		var mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false)
 		var mutedRole: Role? = null
 		if (mutedRoles.isEmpty()) {
 			// Se não existe, vamos criar ela!
 			mutedRole = context.guild.controller.createRole()
-					.setName(context.locale.MUTE_ROLE_NAME)
+					.setName(context.locale["MUTE_ROLE_NAME"])
 					.setColor(Color.BLACK)
 					.complete()
 		} else {

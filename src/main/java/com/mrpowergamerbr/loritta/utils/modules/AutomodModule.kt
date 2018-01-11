@@ -17,6 +17,7 @@ object AutomodModule {
 
 		val automodConfig = textChannelConfig.automodConfig
 		val automodCaps = automodConfig.automodCaps
+		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
 		if (automodCaps.isEnabled) {
 			val content = message.contentStripped.replace(" ", "")
@@ -43,6 +44,23 @@ object AutomodModule {
 					}
 
 					return true
+				}
+			}
+		}
+
+		if (automodSelfEmbed.isEnabled) {
+			if (message.embeds.isNotEmpty()) {
+				if (automodSelfEmbed.deleteMessage)
+					message.delete().queue()
+
+				if (automodSelfEmbed.replyToUser) {
+					val message = message.channel.sendMessage(MessageUtils.generateMessage(automodSelfEmbed.replyMessage, event)).complete()
+
+					if (automodSelfEmbed.enableMessageTimeout) {
+						var delay = Math.min(automodSelfEmbed.messageTimeout * 1000, 60000)
+						Thread.sleep(delay.toLong())
+						message.delete().queue()
+					}
 				}
 			}
 		}

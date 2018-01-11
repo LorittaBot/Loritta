@@ -5,12 +5,11 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class SoftBanCommand : AbstractCommand("softban") {
+class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.SOFTBAN_DESCRIPTION.msgFormat()
+		return locale["SOFTBAN_DESCRIPTION"]
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -21,10 +20,6 @@ class SoftBanCommand : AbstractCommand("softban") {
 
 	override fun getExample(): List<String> {
 		return listOf("@Fulano", "@Fulano Algum motivo bastante aleatório", "@Fulano 1 Limpar mensagens do último dia");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN;
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -54,11 +49,11 @@ class SoftBanCommand : AbstractCommand("softban") {
 				}
 
 				if (days > 7) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS.msgFormat());
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"]);
 					return;
 				}
 				if (0 > days) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS.msgFormat());
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"]);
 					return;
 				}
 
@@ -66,12 +61,12 @@ class SoftBanCommand : AbstractCommand("softban") {
 				if (context.args.size > 1) {
 					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
 				}
-				context.guild.controller.ban(id, days, context.locale.SOFTBAN_BY.msgFormat(context.userHandle.name + "#" + context.userHandle.discriminator) + if (reason != null) " (${context.locale.HACKBAN_REASON.msgFormat()}: " + reason + ")" else "").complete();
+				context.guild.controller.ban(id, days, locale["SOFTBAN_BY", context.userHandle.name + "#" + context.userHandle.discriminator] + if (reason != null) " (${locale["HACKBAN_REASON"]}: " + reason + ")" else "").complete()
 				context.guild.controller.unban(id).complete()
 
-				context.sendMessage(context.getAsMention(true) + context.locale.SOFTBAN_SUCCESS.msgFormat(id));
+				context.sendMessage(context.getAsMention(true) + locale["SOFTBAN_SUCCESS", id])
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.SOFTBAN_NO_PERM.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_NO_PERM"])
 			}
 		} else {
 			this.explain(context);

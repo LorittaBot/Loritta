@@ -9,17 +9,12 @@ import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 
-class ServerInfoCommand : AbstractCommand("serverinfo") {
+class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("SERVERINFO_DESCRIPTION")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.DISCORD
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -53,12 +48,14 @@ class ServerInfoCommand : AbstractCommand("serverinfo") {
 		embed.addField("💻 ID", guild.id, true) // ID da Guild
 		embed.addField("👑 ${context.locale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild
 		embed.addField("🌎 ${context.locale["SERVERINFO_REGION"]}", guild.region.getName(), true) // Região da Guild
-		embed.addField("\uD83D\uDCAC ${context.locale["SERVERINFO_CHANNELS"]}", "\uD83D\uDCDD **${context.locale.SERVERINFO_CHANNELS_TEXT.msgFormat()}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${context.locale.SERVERINFO_CHANNELS_VOICE.msgFormat()}:** ${guild.voiceChannels.size}", true) // Canais da Guild
+		embed.addField("\uD83D\uDCAC ${context.locale["SERVERINFO_CHANNELS"]} (${guild.textChannels.size + guild.voiceChannels.size})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** ${guild.voiceChannels.size}", true) // Canais da Guild
 		embed.addField("\uD83D\uDCC5 ${context.locale["SERVERINFO_CREATED_IN"]}", guild.creationTime.humanize(), true)
 		embed.addField("\uD83C\uDF1F ${context.locale["SERVERINFO_JOINED_IN"]}", guild.selfMember.joinDate.humanize(), true)
-		embed.addField("👥 ${context.locale["SERVERINFO_MEMBERS"]} (${guild.members.size})", "<:online:313956277808005120> **${context.locale.get("SERVERINFO_ONLINE")}:** ${guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.locale.get("SERVERINFO_AWAY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.locale.get("SERVERINFO_BUSY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.locale.get("SERVERINFO_OFFLINE")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.locale.get("SERVERINFO_PEOPLE")}:** ${guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.locale.get("SERVERINFO_BOTS")}:** ${guild.members.filter{ it.user.isBot }.size}", true) // Membros da Guild
+		embed.addField("👥 ${context.locale["SERVERINFO_MEMBERS"]} (${guild.members.size})", "<:online:313956277808005120> **${context.locale.get("SERVERINFO_ONLINE")}:** ${guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.locale.get("SERVERINFO_AWAY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.locale.get("SERVERINFO_BUSY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.locale.get("SERVERINFO_OFFLINE")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.locale.get("SERVERINFO_PEOPLE")}:** ${guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.locale["SERVERINFO_BOTS"]}:** ${guild.members.count { it.user.isBot }}", true) // Membros da Guild
+		val roles = guild.roles.filter { !it.isPublicRole }
+		embed.addField("\uD83D\uDCBC ${context.locale["SERVERINFO_ROLES"]} (${roles.size})", roles.joinToString(", ", transform = { it.name }), true)
 		embed.setThumbnail(guild.iconUrl)
 
-		context.sendMessage(embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}
 }

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -9,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.oauth2.TemmiePatreonAuth
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class PatreonCommand : AbstractCommand("patreon") {
+class PatreonCommand : AbstractCommand("patreon", category = CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String {
         return locale["PATREON_DESCRIPTION"]
     }

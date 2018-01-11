@@ -9,17 +9,13 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento")) {
+class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SLOWMODE_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("5");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ADMIN;
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

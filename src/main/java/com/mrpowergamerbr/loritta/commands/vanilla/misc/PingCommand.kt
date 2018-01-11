@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -10,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
-class PingCommand : AbstractCommand("ping") {
+class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String {
         return locale["PING_DESCRIPTION"]
     }

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -10,7 +11,7 @@ import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
-class BotInfoCommand : AbstractCommand("botinfo") {
+class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("BOTINFO_DESCRIPTION")
 	}

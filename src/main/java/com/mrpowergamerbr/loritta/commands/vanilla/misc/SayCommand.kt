@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class SayCommand : AbstractCommand("falar", listOf("say")) {
+class SayCommand : AbstractCommand("falar", listOf("say"), CommandCategory.MISC) {
     override fun getDescription(): String {
         return "Faça eu falar uma mensagem!";
     }
@@ -18,10 +18,6 @@ class SayCommand : AbstractCommand("falar", listOf("say")) {
 
     override fun getExample(): List<String> {
         return Arrays.asList("Eu sou fofa! :3")
-    }
-
-    override fun getCategory(): CommandCategory {
-        return CommandCategory.MISC;
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {

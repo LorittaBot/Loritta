@@ -101,7 +101,10 @@ sendImage(imagem, "😄");
 		ImageIO.write(bufferedImage, "png", os)
 		val `is` = ByteArrayInputStream(os.toByteArray())
 
-		return NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
+		val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
+		`is`.close()
+		`os`.close()
+		return message
 	}
 
 	@NashornCommand.NashornDocs(arguments = "delimitador")

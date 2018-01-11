@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
@@ -13,20 +14,15 @@ import java.awt.Graphics
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcacheviment")) {
+class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MCCONQUISTA_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta Ser muito fofa!");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT;
 	}
 
 	override fun getUsage(): String {
@@ -51,8 +47,8 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 
 			val graphics = template.graphics
 
-			val minecraftia = Font.createFont(Font.TRUETYPE_FONT, FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")))
-					.deriveFont(24.toFloat()) // A fonte para colocar no progresso
+			val minecraftia = Constants.MINECRAFTIA
+					.deriveFont(24f) // A fonte para colocar no progresso
 
 			graphics.font = minecraftia;
 			graphics.color = Color(255, 255, 0)

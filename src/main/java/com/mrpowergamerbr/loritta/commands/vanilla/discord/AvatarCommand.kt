@@ -10,13 +10,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.util.*
 
-class AvatarCommand : AbstractCommand("avatar") {
+class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AVATAR_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.DISCORD
 	}
 
 	override fun getUsage(): String {

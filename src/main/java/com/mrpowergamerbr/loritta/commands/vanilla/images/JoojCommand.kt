@@ -10,7 +10,7 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.util.*
 
-class JoojCommand : AbstractCommand("jooj") {
+class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("JOOJ_DESCRIPTION")
 	}
@@ -23,10 +23,6 @@ class JoojCommand : AbstractCommand("jooj") {
 		return ImmutableMap.builder<String, String>()
 				.put("imagem", "imagem")
 				.build()
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {

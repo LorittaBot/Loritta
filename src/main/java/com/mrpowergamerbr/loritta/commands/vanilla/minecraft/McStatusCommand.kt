@@ -6,24 +6,19 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
-class McStatusCommand : AbstractCommand("mcstatus") {
+class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {
     override fun getDescription(locale: BaseLocale): String {
-        return locale.MCSTATUS_DESCRIPTION.msgFormat();
-    }
-
-    override fun getCategory(): CommandCategory {
-        return CommandCategory.MINECRAFT;
+        return locale["MCSTATUS_DESCRIPTION"]
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
         var body = HttpRequest.get("https://mcapi.ca/mcstatus").body();
 
         var builder = EmbedBuilder()
-                .setTitle("📡 ${context.locale.MCSTATUS_MOJANG_STATUS.msgFormat()}", "https://help.mojang.com/")
+                .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
                 .setColor(Color.GREEN);
 
         var json = JSON_PARSER.parse(body);

@@ -4,27 +4,22 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
 import java.awt.Rectangle
 import java.io.File
-import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class McSignCommand : AbstractCommand("mcsign") {
+class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.MCSIGN_DESCRIPTION.msgFormat();
+		return locale["MCSIGN_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("Isto é um texto | em uma placa! | | Legal né?");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MINECRAFT;
 	}
 
 	override fun getUsage(): String {
@@ -43,14 +38,14 @@ class McSignCommand : AbstractCommand("mcsign") {
 
 			val graphics = template.graphics
 
-			val minecraftia = Font.createFont(Font.TRUETYPE_FONT, FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")))
-					.deriveFont(17.toFloat()) // A fonte para colocar na placa
+			val minecraftia = Constants.MINECRAFTIA
+					.deriveFont(17f) // A fonte para colocar na placa
 
 			graphics.font = minecraftia;
 			graphics.color = Color(0, 0, 0)
 			var currentY = 2;
 
-			for (i in 0..lines.size - 1) {
+			for (i in 0 until lines.size) {
 				drawCenteredStringColored(graphics, lines[i], Rectangle(0, currentY, 192, 23), minecraftia);
 				currentY += 23;
 			}

@@ -1,18 +1,18 @@
 package com.mrpowergamerbr.loritta.commands
 
 enum class CommandCategory constructor(val fancyTitle: String, var description: String) {
-	FUN("Diversão", "Quer um pouco de entreterimento? Quer animar o chat do seu servidor com várias coisas engraçadas e aleatórias? Então use os comandos de diversão!"),
-	IMAGES("Photoshop", "Crie imagens \uD83D\uDE02\uD83D\uDC4C\uD83D\uDD25\uD83D\uDD1D no conforto do seu servidor no Discord! Só não vá sair igual doido querendo criar várias imagens, infelizmente não tenho escravos para ficar criando as imagens no Photoshop rapidamente."),
-	MINECRAFT("Minecraft", "Comandos relacionados ao Minecraft"),
-	POKEMON("Pokémon", "Comandos relacionados ao Pokémon"),
-	UNDERTALE("Undertale", "Comandos relacionados ao Undertale"),
-	ROBLOX("Roblox", "Comandos relacionados ao ROBLOX"),
-	ANIME("Anime", "Comandos relacionados a Anime"),
-	DISCORD("Discord", "Comandos relacionados ao Discord"),
-	MISC("Miscelânea", "Comandos que até hoje não encontraram uma categoria específica para viver... Aqui você irá encontrar vários comandos que não se encaixam nas outras categorias!"),
-	ADMIN("Administração", "Comandos para a administração de servidores/guilds"),
-	UTILS("Utilitários", "Comandos úteis para facilitar a sua vida!"),
-	SOCIAL("Social", "Humanos são criaturas sociáveis e precisam de interação social. E para isto você pode interagir com a sua família, amigos, vizinhos e até mesmo com os membros do seu servidor no Discord. E, acredite, os meus comandos são um ótimo instrumento para interagir com outras pessoas!"),
-	MUSIC("Música", "Comandos relacionados a DJ Loritta"),
-	MAGIC("Mágica", "Comandos que você nunca deverá ver na sua vida") // Esta categoria é usada para comandos APENAS para o dono do bot
+	FUN("CommandCategory_FUN_Name", "CommandCategory_FUN_Description"),
+	IMAGES("CommandCategory_IMAGES_Name", "CommandCategory_IMAGES_Description"),
+	MINECRAFT("CommandCategory_MINECRAFT_Name", "CommandCategory_MINECRAFT_Description"),
+	POKEMON("CommandCategory_POKEMON_Name", "CommandCategory_POKEMON_Description"),
+	UNDERTALE("CommandCategory_UNDERTALE_Name", "CommandCategory_UNDERTALE_Description"),
+	ROBLOX("CommandCategory_ROBLOX_Name", "CommandCategory_ROBLOX_Description"),
+	ANIME("CommandCategory_ANIME_Name", "CommandCategory_ANIME_Description"),
+	DISCORD("CommandCategory_DISCORD_Name", "CommandCategory_DISCORD_Description"),
+	MISC("CommandCategory_MISC_Name", "CommandCategory_MISC_Description"),
+	ADMIN("CommandCategory_ADMIN_Name", "CommandCategory_ADMIN_Description"),
+	UTILS("CommandCategory_UTILS_Name", "CommandCategory_UTILS_Description"),
+	SOCIAL("CommandCategory_SOCIAL_Name", "CommandCategory_SOCIAL_Description"),
+	MUSIC("CommandCategory_MUSIC_Name", "CommandCategory_MUSIC_Description"),
+	MAGIC("CommandCategory_MAGIC_Name", "CommandCategory_MAGIC_Description") // Esta categoria é usada para comandos APENAS para o dono do bot
 }

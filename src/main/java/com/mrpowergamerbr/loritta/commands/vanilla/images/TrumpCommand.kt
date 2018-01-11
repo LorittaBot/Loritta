@@ -6,19 +6,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.gifs.TrumpGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 
-class TrumpCommand : AbstractCommand("trump") {
+class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.TRUMP_DESCRIPTION.msgFormat();
+		return locale["TRUMP_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

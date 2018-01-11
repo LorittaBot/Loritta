@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -12,13 +11,10 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
-class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker")) {
+class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), CommandCategory.UTILS) {
 	companion object {
 		val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toPattern()
 		val RGB_PATTERN = "(\\d{1,3})(?:,| |, )(\\d{1,3})(?:,| |, )(\\d{1,3})(?:(?:,| |, )(\\d{1,3}))?".toPattern()
@@ -29,8 +25,6 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["COLOR_Description"]
 	}
-
-	override fun getCategory(): CommandCategory = CommandCategory.UTILS
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -96,10 +90,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 			val colorInfo = BufferedImage(333, 250, BufferedImage.TYPE_INT_ARGB)
 			val graphics = colorInfo.graphics
 
-			val volter = Font.createFont(Font.TRUETYPE_FONT,
-					FileInputStream(File(Loritta.ASSETS, "Volter__28Goldfish_29.ttf"))) // A fonte para colocar os discriminators
-
-			val volter9 = volter.deriveFont(9f)
+			val volter9 = Constants.VOLTER.deriveFont(9f)
 
 			graphics.font = volter9
 

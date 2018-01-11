@@ -6,10 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.Permission
 
-class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar")) {
+class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TOCAR_DESCRIPTION")
 	}
@@ -20,10 +19,6 @@ class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar")) {
 				"https://soundcloud.com/shokkbutt/ruining-songs-forever",
 				"https://www.youtube.com/watch?v=BaUwnmncsrc",
 				"Perfect Strangers")
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.MUSIC
 	}
 
 	override fun requiresMusicEnabled(): Boolean {
@@ -38,11 +33,11 @@ class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar")) {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember;
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_MUTED.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_MUTED"])
 				return
 			}
 			if (selfMember.voiceState.isSuppressed) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.TOCAR_CANTTALK.msgFormat())
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_CANTTALK"])
 				return
 			}
 		}

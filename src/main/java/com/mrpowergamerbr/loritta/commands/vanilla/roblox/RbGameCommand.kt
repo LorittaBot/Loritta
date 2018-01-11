@@ -12,13 +12,9 @@ import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 
-class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo")) {
+class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RBGAME_Description"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.ROBLOX
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

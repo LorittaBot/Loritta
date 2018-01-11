@@ -11,17 +11,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "painting")) {
+class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "painting"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROMEROBRITTO_DESCRIPTION"];
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

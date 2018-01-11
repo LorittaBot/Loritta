@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 
-class YoutubeMp3Command : AbstractCommand("ytmp3", listOf("youtube2mp3", "youtubemp3", "yt2mp3")) {
+class YoutubeMp3Command : AbstractCommand("ytmp3", listOf("youtube2mp3", "youtubemp3", "yt2mp3"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "link"
 	}
@@ -18,10 +18,6 @@ class YoutubeMp3Command : AbstractCommand("ytmp3", listOf("youtube2mp3", "youtub
 
 	override fun getExample(): List<String> {
 		return listOf("https://youtu.be/BaUwnmncsrc");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.UTILS;
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

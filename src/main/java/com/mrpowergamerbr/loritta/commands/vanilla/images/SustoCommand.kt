@@ -10,17 +10,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class SustoCommand : AbstractCommand("susto", listOf("fright")) {
+class SustoCommand : AbstractCommand("susto", listOf("fright"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SUSTO_Description"]
 	}
 
 	override fun getExample(): List<String> {
 		return listOf("@Loritta");
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun getUsage(): String {

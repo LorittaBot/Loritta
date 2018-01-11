@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.OnlineStatus
@@ -14,17 +15,12 @@ import java.awt.Font
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadreality")) {
+class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadreality"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRISTEREALIDADE_DESCRIPTION"]
-	}
-
-	override fun getCategory(): CommandCategory {
-		return CommandCategory.IMAGES
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -41,16 +37,7 @@ class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadrea
 		val base = BufferedImage(384, 256, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics
 
-		var minecraftia: Font? = null
-
-		try {
-			minecraftia = Font.createFont(Font.TRUETYPE_FONT,
-					FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf"))) // A fonte para colocar os discriminators
-		} catch (e: Exception) {
-			println(e)
-		}
-
-		baseGraph.font = minecraftia!!.deriveFont(Font.PLAIN, 8f)
+		baseGraph.font = Constants.MINECRAFTIA.deriveFont(Font.PLAIN, 8f)
 
 		val users = ArrayList<User>()
 		var members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null }.toMutableList()

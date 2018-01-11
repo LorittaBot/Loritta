@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -19,7 +18,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
@@ -29,7 +27,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf()) {
+open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
@@ -45,10 +43,6 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 	open fun getDescription(locale: BaseLocale): String {
 		return "Insira descrição do comando aqui!"
-	}
-
-	open fun getCategory(): CommandCategory {
-		return CommandCategory.MISC
 	}
 
 	open fun getUsage(): String? {
@@ -143,7 +137,8 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
 			labels.addAll(cmdOptions.aliases)
 
-		var valid = labels.any { rawArguments[0] == prefix + it }
+		// ignoreCase = true ~ Permite usar "+cOmAnDo"
+		var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
 		var byMention = false
 
 		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
@@ -227,14 +222,14 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 						// oh no
 						var required = ""
 						missingPermissions.forEach {
-							val permissionTranslation = locale.get("PERMISSION_${it.name}")
+							val permissionTranslation = locale["PERMISSION_${it.name}"]
 							if (required.isNotEmpty()) {
 								required += ", " + permissionTranslation
 							} else {
 								required += permissionTranslation
 							}
 						}
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale.get("PERMISSION_I_NEED_PERMISSION", required)}").complete()
+						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").complete()
 						return true
 					}
 				}
@@ -256,11 +251,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					return true
 				}
 				if (!context.canUseCommand()) {
-					context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**" + context.locale.NO_PERMISSION.f() + "**")
+					context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**" + locale["NO_PERMISSION"] + "**")
 					return true
 				}
 				if (context.isPrivateChannel && !canUseInPrivateChannel()) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.CANT_USE_IN_PRIVATE.f())
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["CANT_USE_IN_PRIVATE"])
 					return true
 				}
 				if (needsToUploadFiles()) {
@@ -271,7 +266,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				if (requiresMusicEnabled()) {
 					if (!context.config.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("DJ_LORITTA_DISABLED") + " \uD83D\uDE1E" + if (canManage) context.locale.get("DJ_LORITTA_HOW_TO_ENABLE", "https://loritta.website/auth") else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) locale["DJ_LORITTA_HOW_TO_ENABLE", "https://loritta.website/dashboard"] else "")
 						return true
 					}
 				}
@@ -293,7 +288,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
 
 				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel.canTalk())
-					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale.get("ERROR_WHILE_EXECUTING_COMMAND")).complete()
+					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]).complete()
 				return true
 			}
 		}
@@ -301,23 +296,31 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	fun explain(context: CommandContext) {
-		val commandLabel = context.message.rawContent.split(" ")[0]
 		val conf = context.config
 		val ev = context.event
+		val locale = context.locale
+
 		if (conf.explainOnCommandRun) {
+			val rawArguments = context.message.contentRaw.split(" ")
+			var commandLabel = rawArguments[0]
+			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
+				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
+				commandLabel = rawArguments[1]
+			}
+
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 " + context.locale.HOW_TO_USE + "... `" + commandLabel + "`")
+			embed.setTitle("\uD83E\uDD14 " + locale["HOW_TO_USE"] + "... `" + commandLabel + "`")
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
 			var cmdInfo = getDescription(context) + "\n\n"
 
-			cmdInfo += "**" + context.locale.HOW_TO_USE + ":** " + commandLabel + usage + "\n"
+			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
 			if (!this.getDetailedUsage().isEmpty()) {
 				for ((key, value) in this.getDetailedUsage()) {
-					cmdInfo += "`$key` - $value\n"
+					cmdInfo += "${Constants.LEFT_PADDING} `$key` - $value\n"
 				}
 			}
 
@@ -333,25 +336,22 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "**" + context.locale.EXAMPLE + ":**\n" + commandLabel
+				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + ":**\n" + commandLabel
 			} else {
-				cmdInfo += "**" + context.locale.EXAMPLE + (if (this.getExample().size == 1) "" else "s") + ":**\n"
+				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExample().size == 1) "" else "s") + ":**\n"
 				for (example in examples) {
 					cmdInfo += example + "\n"
 				}
 			}
 			embed.setDescription(cmdInfo)
-			embed.setFooter(ev.author.name + "#" + ev.author.discriminator, ev.author.effectiveAvatarUrl) // Adicionar quem executou o comando
+			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
+			embed.setFooter(context.locale[this.category.fancyTitle], "https://loritta.website/assets/img/loritta_gabizinha_v1.png") // Adicionar quem executou o comando
 			embed.setTimestamp(Instant.now())
+
 			if (conf.explainInPrivate) {
 				ev.author.openPrivateChannel().complete().sendMessage(embed.build()).complete()
 			} else {
-				val builder = MessageBuilder().apply {
-					setEmbed(embed.build()).build()
-					append(context.getAsMention(true))
-				}
-
-				ev.channel.sendMessage(builder.build()).complete()
+				context.sendMessage(context.getAsMention(true), embed.build())
 			}
 		}
 	}
