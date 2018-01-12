@@ -21,11 +21,10 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		val history = context.event.channel.history
 
 		var lastCheck = -1
-		for (i in 0 until 100) {
+		for (i in 0 until 25) {
+			history.retrievePast(100).complete()
 			if (lastCheck == history.retrievedHistory.size)
 				break
-
-			history.retrievePast(100).complete()
 			lastCheck = history.retrievedHistory.size
 		}
 
@@ -44,7 +43,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		}
 
 		val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-		context.sendFile(targetStream, "chatlog-${context.guild.name}-${System.currentTimeMillis()}", context.getAsMention(true))
+		context.sendFile(targetStream, "${context.guild.name}-${System.currentTimeMillis()}.log", context.getAsMention(true))
 		targetStream.close()
 	}
 }

@@ -345,8 +345,8 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 			}
 
-			val aliases = mutableListOf<String>()
-			aliases.add(commandLabel)
+			val aliases = mutableSetOf<String>()
+			aliases.add(this.label)
 			aliases.addAll(this.aliases)
 
 			val onlyUnusedAliases = aliases.filter { it != commandLabel }
