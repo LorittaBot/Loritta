@@ -307,6 +307,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
 				commandLabel = rawArguments[1]
 			}
+			commandLabel = commandLabel.toLowerCase()
 
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
@@ -344,9 +345,15 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 			}
 
-			if (this.aliases.isNotEmpty()) {
-				cmdInfo += "\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${this.aliases.joinToString(", ")}"
+			val aliases = mutableListOf<String>()
+			aliases.add(commandLabel)
+			aliases.addAll(this.aliases)
+
+			val onlyUnusedAliases = aliases.filter { it != commandLabel }
+			if (onlyUnusedAliases.isNotEmpty()) {
+				cmdInfo += "\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
 			}
+
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
 			embed.setFooter(context.locale[this.category.fancyTitle], "https://loritta.website/assets/img/loritta_gabizinha_v1.png") // Adicionar quem executou o comando
