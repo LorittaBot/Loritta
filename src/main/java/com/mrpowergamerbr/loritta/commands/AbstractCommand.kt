@@ -349,7 +349,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 			aliases.add(this.label)
 			aliases.addAll(this.aliases)
 
-			val onlyUnusedAliases = aliases.filter { it != commandLabel }
+			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
 				cmdInfo += "\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
 			}

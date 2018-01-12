@@ -21,7 +21,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		val history = context.event.channel.history
 
 		var lastCheck = -1
-		for (i in 0 until 25) {
+		for (i in 0 until 100) {
 			history.retrievePast(100).complete()
 			if (lastCheck == history.retrievedHistory.size)
 				break
