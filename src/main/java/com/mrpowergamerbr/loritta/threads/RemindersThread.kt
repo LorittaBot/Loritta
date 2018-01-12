@@ -46,7 +46,7 @@ class RemindersThread : Thread("Reminders Thread") {
 						if (guild != null) {
 							val textChannel = guild.getTextChannelById(reminder.textChannel) ?: return
 
-							textChannel.sendMessage("\uD83D\uDD14 | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
+							textChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
 						}
 					}
 				}

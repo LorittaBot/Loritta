@@ -24,7 +24,7 @@ class UnicodeCommand : AbstractCommand("unicode", category = CommandCategory.UTI
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val message = context.rawArgs.joinToString { " " }
+			val message = context.rawArgs.joinToString(" ")
 
 			val responses = mutableListOf(
 					LoriReply(

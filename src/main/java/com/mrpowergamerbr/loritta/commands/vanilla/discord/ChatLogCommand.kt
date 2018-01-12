@@ -43,7 +43,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 			lines.add(line)
 		}
 
-		val targetStream = IOUtils.toInputStream(lines.joinToString { "\n" }, Charset.defaultCharset())
+		val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 		context.sendFile(targetStream, "chatlog-${context.guild.name}-${System.currentTimeMillis()}", context.getAsMention(true))
 		targetStream.close()
 	}
