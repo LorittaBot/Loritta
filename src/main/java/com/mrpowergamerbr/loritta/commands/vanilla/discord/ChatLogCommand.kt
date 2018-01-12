@@ -25,7 +25,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 			if (lastCheck == history.retrievedHistory.size)
 				break
 
-			history.retrievePast(100)
+			history.retrievePast(100).complete()
 			lastCheck = history.retrievedHistory.size
 		}
 

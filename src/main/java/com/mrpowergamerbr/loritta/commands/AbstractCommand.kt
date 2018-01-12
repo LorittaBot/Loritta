@@ -345,7 +345,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 			}
 
 			if (this.aliases.isNotEmpty()) {
-				cmdInfo += "\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${this.aliases.joinToString(", ")}"
+				cmdInfo += "\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${this.aliases.joinToString(", ")}"
 			}
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
