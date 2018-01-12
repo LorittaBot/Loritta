@@ -103,7 +103,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val idArray = JSON_PARSER.parse(discordBotsResponse).array
 
-		val upvotedOnDiscordBots = idArray.any { it.string == context.userHandle.id }
+		val upvotedOnDiscordBots = idArray.any { it.string == user.id }
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
