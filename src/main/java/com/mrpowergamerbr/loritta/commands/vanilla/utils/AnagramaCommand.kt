@@ -49,7 +49,7 @@ class AnagramaCommand : AbstractCommand("anagrama", listOf("shuffle", "anagram")
 							prefix = "✍"
 					),
 					LoriReply(
-							message = context.locale["ANAGRAMA_Stats", shuffledWord, max],
+							message = context.locale["ANAGRAMA_Stats", palavra, max],
 							prefix = "\uD83E\uDD13"
 					)
 			)
