@@ -109,15 +109,14 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 					.authorization(Loritta.config.discordBotsOrgKey)
 					.body()
 
-			if (System.currentTimeMillis() - lastQuery > 2000) {
+			if (System.currentTimeMillis() - lastQuery > 20000) {
 				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
 				upvotedOnDiscordBots = ID_ARRAY!!.any { it.string == user.id }
+				lastQuery = System.currentTimeMillis()
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
-
-		lastQuery = System.currentTimeMillis()
 
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
