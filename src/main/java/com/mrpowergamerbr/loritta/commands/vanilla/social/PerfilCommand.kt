@@ -116,8 +116,9 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 			e.printStackTrace()
 		}
 
-		var upvotedOnDiscordBots = ID_ARRAY!!.any { it.string == user.id }
-		
+
+		var upvotedOnDiscordBots = if (ID_ARRAY != null) { ID_ARRAY!!.any { it.string == user.id } } else { false }
+
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
