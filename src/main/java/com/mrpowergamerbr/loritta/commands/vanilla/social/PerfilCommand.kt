@@ -101,6 +101,8 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 				.authorization(Loritta.config.discordBotsOrgKey)
 				.body()
 
+		println(discordBotsResponse)
+
 		val idArray = JSON_PARSER.parse(discordBotsResponse).array
 
 		val upvotedOnDiscordBots = idArray.any { it.string == user.id }
