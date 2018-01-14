@@ -102,7 +102,6 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		// Draw Avatar
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(72), 4, 4, null)
 
-		var upvotedOnDiscordBots = false
 		try {
 			// biscord bots
 			val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
@@ -111,13 +110,14 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 			if (System.currentTimeMillis() - lastQuery > 20000) {
 				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
-				upvotedOnDiscordBots = ID_ARRAY!!.any { it.string == user.id }
 				lastQuery = System.currentTimeMillis()
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
 
+		var upvotedOnDiscordBots = ID_ARRAY!!.any { it.string == user.id }
+		
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
