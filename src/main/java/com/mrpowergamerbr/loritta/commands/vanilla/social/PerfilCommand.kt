@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -30,6 +31,11 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
+	companion object {
+		var ID_ARRAY: JsonArray? = null
+		var lastQuery = 0L
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PERFIL_DESCRIPTION"]
 	}
@@ -96,16 +102,23 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		// Draw Avatar
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(72), 4, 4, null)
 
-		// biscord bots
-		val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
-				.authorization(Loritta.config.discordBotsOrgKey)
-				.body()
+		var upvotedOnDiscordBots = false
+		try {
+			// biscord bots
+			val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
+					.authorization(Loritta.config.discordBotsOrgKey)
+					.body()
 
-		println(discordBotsResponse)
+			if (System.currentTimeMillis() - lastQuery > 2000) {
+				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
+				upvotedOnDiscordBots = ID_ARRAY!!.any { it.string == user.id }
+			}
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
 
-		val idArray = JSON_PARSER.parse(discordBotsResponse).array
+		lastQuery = System.currentTimeMillis()
 
-		val upvotedOnDiscordBots = idArray.any { it.string == user.id }
 		val badge = when {
 			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
