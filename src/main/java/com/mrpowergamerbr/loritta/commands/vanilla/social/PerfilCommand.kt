@@ -104,13 +104,13 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		try {
 			// biscord bots
-			val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
+			if (System.currentTimeMillis() - lastQuery > 60000) {
+				val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
 					.authorization(Loritta.config.discordBotsOrgKey)
 					.body()
 
-			if (System.currentTimeMillis() - lastQuery > 20000) {
-				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
 				lastQuery = System.currentTimeMillis()
+				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
@@ -139,19 +139,21 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 				.sortedByDescending { it.members.size }
 
 		var idx = 0;
-		for (guild in guilds) {
-			if (guild.iconUrl != null) {
-				if (idx > 16) {
-					break;
-				}
-				try {
-					var guild = LorittaUtils.downloadImage(guild.iconUrl)
-					var guildImg = guild.getScaledInstance(18, 18, java.awt.Image.SCALE_SMOOTH).toBufferedImage()
-					guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1)
-					guildImg = guildImg.makeRoundedCorners(999)
-					guildImages.add(guildImg)
-					idx++
-				} catch (e: Exception) {
+		if (!context.lorittaUser.profile.hideSharedServers) {
+			for (guild in guilds) {
+				if (guild.iconUrl != null) {
+					if (idx > 16) {
+						break;
+					}
+					try {
+						var guild = LorittaUtils.downloadImage(guild.iconUrl)
+						var guildImg = guild.getScaledInstance(18, 18, java.awt.Image.SCALE_SMOOTH).toBufferedImage()
+						guildImg = guildImg.getSubimage(1, 1, guildImg.height - 1, guildImg.width - 1)
+						guildImg = guildImg.makeRoundedCorners(999)
+						guildImages.add(guildImg)
+						idx++
+					} catch (e: Exception) {
+					}
 				}
 			}
 		}

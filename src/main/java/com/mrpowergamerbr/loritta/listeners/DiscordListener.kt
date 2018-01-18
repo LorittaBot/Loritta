@@ -52,7 +52,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 		}
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
-			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.content}")
+			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
 				return
 			}
@@ -112,15 +112,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// (copyright Loritta™)
 
 					// Primeiro iremos ver se a mensagem contém algo "interessante"
-					if (event.message.strippedContent.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.strippedContent.hashCode()) {
+					if (event.message.contentStripped.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.contentStripped.hashCode()) {
 						// Primeiro iremos verificar se a mensagem é "válida"
 						// 7 chars por millisegundo
-						var calculatedMessageSpeed = event.message.strippedContent.toLowerCase().length.toDouble() / 7
+						var calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
 
 						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
 
 						if (diff > calculatedMessageSpeed * 1000) {
-							var nonRepeatedCharsMessage = event.message.strippedContent.replace(Regex("(.)\\1{1,}"), "$1")
+							var nonRepeatedCharsMessage = event.message.contentStripped.replace(Regex("(.)\\1{1,}"), "$1")
 
 							if (nonRepeatedCharsMessage.length >= 12) {
 								var gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
@@ -132,7 +132,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								}
 
 								lorittaProfile.xp = lorittaProfile.xp + gainedXp
-								lorittaProfile.lastMessageSentHash = event.message.strippedContent.hashCode()
+								lorittaProfile.lastMessageSentHash = event.message.contentStripped.hashCode()
 
 								val userData = serverConfig.getUserData(event.member.user.id)
 								userData.xp = userData.xp + gainedXp
@@ -191,8 +191,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}
 
-					if (event.textChannel.canTalk() && event.message.content.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
-						val command = event.message.content.split(" ")[0].stripCodeMarks()
+					if (event.textChannel.canTalk() && event.message.contentDisplay.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
+						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
 						val message = event.textChannel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
 						Thread.sleep(5000)
 						message.delete().queue()
@@ -203,12 +203,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			debug(DebugType.MESSAGE_RECEIVED, "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.content}")
+			debug(DebugType.MESSAGE_RECEIVED, "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 			thread(name = "Message Received Thread (Private) (${event.author.id})") {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
-				if (event.message.rawContent.replace("!", "").trim() == "<@297153970613387264>") {
+				if (event.message.contentRaw.replace("!", "").trim() == "<@297153970613387264>") {
 					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
 					return@thread
 				}
@@ -470,22 +470,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-		thread(name = "Guild Voice Join Thread (${event.guild.id} ~ ${event.member.user.id})") {
+		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			if (!config.musicConfig.isEnabled)
-				return@thread
+				return@execute
 
 			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
-				return@thread
+				return@execute
 
-			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
 			if (voiceChannel.members.isEmpty())
-				return@thread
+				return@execute
 
 			if (voiceChannel.members.contains(event.guild.selfMember))
-				return@thread
+				return@execute
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)
 
@@ -500,19 +500,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-		thread(name = "Guild Voice Leave Thread (${event.guild.id} ~ ${event.member.user.id})") {
+		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			if (!config.musicConfig.isEnabled)
-				return@thread
+				return@execute
 
 			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
-				return@thread
+				return@execute
 
-			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@thread
+			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
 			if (voiceChannel.members.filter { !it.user.isBot }.isNotEmpty())
-				return@thread
+				return@execute
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)
 

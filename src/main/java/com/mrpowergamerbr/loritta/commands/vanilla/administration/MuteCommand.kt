@@ -159,13 +159,13 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		if (!context.metadata.containsKey("started"))
 			return
 
-		var time = e.message.content.convertToSpan()
+		var time = e.message.contentDisplay.convertToSpan()
 
 		if (time == 0L) {
 			context.metadata["cancelled"] = true
 			context.reply(
 					LoriReply(
-							message = "`${e.message.content}` não é um tempo válido!",
+							message = "`${e.message.contentDisplay}` não é um tempo válido!",
 							prefix = "<:erro:326509900115083266>"
 					)
 			)

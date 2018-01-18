@@ -31,6 +31,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
+	val cooldown = if (needsToUploadFiles()) 20000 else 5000
 
 	fun getDescription(context: CommandContext): String {
 		// TODO: Temporário
@@ -187,7 +188,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				// Cooldown
 				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
 
-				if (1250 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
+				if (2500 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
 					loritta.userCooldown.put(ev.author.id, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
@@ -198,7 +199,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
-				if (5000 > diff && ev.author.id != Loritta.config.ownerId) {
+				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
 					val fancy = DateUtils.formatDateDiff(diff + System.currentTimeMillis(), locale)
 					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").complete()
 					return true
@@ -279,6 +280,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 						it.delete().complete()
 					})
 				}
+				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
 				return true
 			} catch (e: Exception) {
 				e.printStackTrace()

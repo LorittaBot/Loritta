@@ -47,7 +47,6 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -63,6 +62,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
 import net.dv8tion.jda.core.requests.SessionReconnectQueue
@@ -71,6 +71,7 @@ import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -109,9 +110,9 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newCachedThreadPool() // Threads
-	val messageExecutors = Executors.newCachedThreadPool() // Threads
-	val executor = Executors.newCachedThreadPool() // Threads
+	val eventLogExecutors = Executors.newFixedThreadPool(16) // Threads
+	val messageExecutors = Executors.newFixedThreadPool(64) // Threads
+	val executor = Executors.newFixedThreadPool(16) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -147,7 +148,7 @@ class Loritta {
 	var cachedGuilds = listOf<Guild>()
 	var cachedUsers = listOf<User>()
 	var fanArts = mutableListOf<LorittaFanArt>()
-
+	val textChannelsExecutors = CacheBuilder.newBuilder().maximumSize(100L).expireAfterAccess(1L, TimeUnit.MINUTES).build<TextChannel, ExecutorService>().asMap()
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var updateTimeListener = UpdateTimeListener(this)
@@ -364,14 +365,6 @@ class Loritta {
 
 				Thread.sleep(15000)
 			}
-		}
-		val discordListener = DiscordListener(this); // Vamos usar a mesma instância para todas as shards
-		val eventLogListener = EventLogListener(this); // Vamos usar a mesma instância para todas as shards
-
-		// Vamos registrar o nosso event listener em todas as shards!
-		for (jda in lorittaShards.shards) {
-			jda.addEventListener(discordListener) // Hora de registrar o nosso listener
-			jda.addEventListener(eventLogListener) // E o nosso outro listener também!
 		}
 
 		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()

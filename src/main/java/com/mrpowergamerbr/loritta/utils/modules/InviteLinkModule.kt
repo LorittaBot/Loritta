@@ -18,7 +18,7 @@ object InviteLinkModule {
 		if (lorittaProfile.hasPermission(LorittaPermission.ALLOW_INVITES))
 			return false
 
-		val content = message.content
+		val content = message.contentRaw
 
 		val whitelisted = mutableListOf<String>()
 		inviteBlockerConfig.whitelistedIds.clear()

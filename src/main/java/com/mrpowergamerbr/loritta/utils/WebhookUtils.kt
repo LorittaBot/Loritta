@@ -32,7 +32,7 @@ object WebhookUtils {
 
 		if (webhooks.isEmpty()) {
 			try { // try catch, já que pelo visto a verificação acima falha as vezes
-				webhook = textChannel.guild.controller.createWebhook(textChannel, name).complete()
+				webhook = textChannel.createWebhook(name).complete()
 			} catch (e: PermissionException) {
 				return null
 			}

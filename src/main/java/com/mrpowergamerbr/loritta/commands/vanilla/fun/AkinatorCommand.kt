@@ -222,14 +222,14 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 					msg.editMessage(builder.build()).complete()
 
-					if (msg.reactions.filter { it.emote.name == "⏪" }.count() == 0) {
+					if (msg.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
 						if (step > 0) {
 							msg.addReaction("⏪").complete()
 						}
 					} else {
 						if (step == 0) {
 							msg.reactions.forEach {
-								if (it.emote.name == "⏪") {
+								if (it.reactionEmote.name == "⏪") {
 									it.removeReaction(context.userHandle).complete()
 								}
 							}

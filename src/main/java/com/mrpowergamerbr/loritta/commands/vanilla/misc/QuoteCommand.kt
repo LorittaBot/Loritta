@@ -43,16 +43,16 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote"), CommandCatego
 						context.message.delete().complete() // ok, vamos deletar a msg original
 					}
 
-					val args = context.args.toMutableList()
+					val args = context.rawArgs.toMutableList()
 					args.removeAt(0)
 
 					var content = msg.author.asMention + " " + args.joinToString(" ").escapeMentions()
 
 					val embed = DiscordEmbed
 							.builder()
-							.author(AuthorEmbed(msg.author.name + " ${context.locale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
-							.color(-1769728)
 							.description(msg.contentRaw)
+							.author(AuthorEmbed(msg.author.name + " ${context.locale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
+							// .color(msg.member.color.rgb)
 							.footer(FooterEmbed("em #" + context.message.textChannel.name + if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) "" else " | Não tenho permissão para deletar mensagens!", null, null))
 							.build()
 
@@ -65,7 +65,7 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote"), CommandCatego
 							.build()
 
 
-					dm.embeds = Arrays.asList(embed)
+					// dm.embeds = Arrays.asList(embed)
 
 					val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
 

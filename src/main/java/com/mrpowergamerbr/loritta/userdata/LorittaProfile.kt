@@ -23,6 +23,8 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Long = 0
+    var hidePreviousUsernames: Boolean = false
+    var hideSharedServers: Boolean = false
     // var tamagotchi: TamagotchiPet? = null
 
 	@BsonIgnore

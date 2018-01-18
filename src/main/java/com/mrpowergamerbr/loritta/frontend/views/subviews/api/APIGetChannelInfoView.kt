@@ -1,12 +1,16 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.Request
 import org.jooby.Response
 
@@ -44,6 +48,24 @@ class APIGetChannelInfoView : AbstractView() {
 			val channelId = payload["header"]["c4TabbedHeaderRenderer"]["channelId"].string
 			val title = payload["header"]["c4TabbedHeaderRenderer"]["title"].string
 			val avatarUrl = payload["header"]["c4TabbedHeaderRenderer"]["avatar"]["thumbnails"][0]["url"].string
+
+			val key = loritta.youtubeKey
+
+			var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=$channelId&key=$key")
+					.body();
+
+			var json = JSON_PARSER.parse(response).obj
+			val responseError = getResponseError(json)
+			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
+
+			if (error) {
+				println("[!] Removendo key $key...")
+				loritta.youtubeKeys.remove(key)
+			} else {
+				var hasUploadsPlaylist = json["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.has("uploads")
+
+				json["public_uploads_playlist"] = hasUploadsPlaylist
+			}
 
 			json["title"] = title
 			// json["description"] = description.attr("content")

@@ -11,17 +11,17 @@ import net.dv8tion.jda.core.entities.Message
 class NashornMessage(private val message: Message) {
 	@NashornCommand.NashornDocs()
 	fun getContent(): String {
-		return message.content
+		return message.contentDisplay
 	}
 
 	@NashornCommand.NashornDocs()
 	fun getRawContent(): String {
-		return message.rawContent
+		return message.contentRaw
 	}
 
 	@NashornCommand.NashornDocs()
 	fun getStrippedContent(): String {
-		return message.strippedContent
+		return message.contentStripped
 	}
 
 	@NashornCommand.NashornDocs()

@@ -74,9 +74,9 @@ class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory
 			}
 
 			if (ignoredMessages == 0) {
-				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.asMention])
+				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.userHandle.asMention])
 			} else {
-				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.asMention, ignoredMessages])
+				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, ignoredMessages])
 			}
 		} else {
 			this.explain(context)

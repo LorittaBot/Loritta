@@ -50,29 +50,41 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
-			val usernameChanges = lorittaProfile.usernameChanges
-			if (usernameChanges.isEmpty()) {
-				usernameChanges.add(LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
-			}
-
-			val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }
-			var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n",  transform = {
-				"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize() + ")"
-			})
-			// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
-			var alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
-
-			var aux = mutableListOf<String>()
-
-			var length = 0
-			for (line in alsoKnownAsLines) {
-				if (length + line.length >= 2000) {
-					break
+			if (lorittaProfile.hidePreviousUsernames) {
+				var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
+				setDescription(alsoKnownAs)
+			} else {
+				val usernameChanges = lorittaProfile.usernameChanges
+				if (usernameChanges.isEmpty()) {
+					usernameChanges.add(LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
 				}
-				aux.add(line)
-				length += line.length
+
+				val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }.toMutableList()
+
+				if (sortedChanges[0].discriminator == user.discriminator && sortedChanges[0].username == user.name) {
+					sortedChanges.removeAt(0)
+				}
+
+				if (sortedChanges.isNotEmpty()) {
+					var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n", transform = {
+						"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize() + ")"
+					})
+					// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
+					var alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
+
+					var aux = mutableListOf<String>()
+
+					var length = 0
+					for (line in alsoKnownAsLines) {
+						if (length + line.length >= 2000) {
+							break
+						}
+						aux.add(line)
+						length += line.length
+					}
+					setDescription(aux.reversed().joinToString(separator = "\n"))
+				}
 			}
-			setDescription(aux.reversed().joinToString(separator = "\n"))
 
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${user.name}#${user.discriminator}", true)
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), user.id, true)
@@ -82,7 +94,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 
-			var servers = sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
+			var servers = if (lorittaProfile.hideSharedServers) {
+				"*${locale["USERINFO_PrivacyOn"]}*"
+			} else {
+				sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
+			}
 
 			if (servers.length >= 1024) {
 				servers = servers.substring(0..1020) + "...";
@@ -104,6 +120,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (profile.lastMessageSent != 0L) {
 				addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(), true)
 			}
+
+			embed.setFooter(locale["USERINFO_PrivacyInfo"], null)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!

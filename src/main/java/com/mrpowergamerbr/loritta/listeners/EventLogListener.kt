@@ -207,7 +207,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					attachments.add(it.url)
 				}
 
-				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.rawContent, event.author.id, event.message.channel.id, attachments)
+				loritta save StoredMessage(event.message.id, event.author.name + "#" + event.author.discriminator, event.message.contentRaw, event.author.id, event.message.channel.id, attachments)
 
 				// Agora nós iremos fazer reupload dos attachments para o pomf
 				val reuploadedAttachments = mutableListOf<String>()
@@ -256,7 +256,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						textChannel.sendMessage(embed.build()).complete()
 
-						storedMessage.content = event.message.rawContent
+						storedMessage.content = event.message.contentRaw
 
 						loritta save storedMessage
 						return@thread

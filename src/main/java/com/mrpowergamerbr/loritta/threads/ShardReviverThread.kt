@@ -4,8 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class ShardReviverThread : Thread("Shard Reviver") {
@@ -38,15 +36,10 @@ class ShardReviverThread : Thread("Shard Reviver") {
 			val deadShards = lorittaShards.shards.filter {
 				val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(it, System.currentTimeMillis())
 
-				System.currentTimeMillis() - lastUpdate > 20000
+				System.currentTimeMillis() - lastUpdate > 60000
 			}
 
 			if (deadShards.isNotEmpty()) {
-				val okHttpBuilder = OkHttpClient.Builder()
-						.connectTimeout(60, TimeUnit.SECONDS)
-						.readTimeout(60, TimeUnit.SECONDS)
-						.writeTimeout(60, TimeUnit.SECONDS)
-
 				for (deadShard in deadShards) {
 					println("Reiniciando shard ${deadShard.shardInfo.shardId}...")
 					log("[SHARD] Reiniciando shard ${deadShard.shardInfo.shardId}...")

@@ -401,7 +401,7 @@ public final class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url) {
-		return downloadImage(url, -1);
+		return downloadImage(url, 15);
 	}
 
 	/**
@@ -411,16 +411,41 @@ public final class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url, int timeout) {
+		return downloadImage(url, timeout, 1000000);
+	}
+
+	public static BufferedImage downloadImage(String url, int timeout, int maxSize) {
+		return downloadImage(url, timeout, 1000000, 512);
+	}
+
+	public static BufferedImage downloadImage(String url, int timeout, int maxSize, int maxWidthHeight) {
 		try {
 			URL imageUrl = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 			connection.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
+					Constants.USER_AGENT);
+
+			if (connection.getHeaderFieldInt("Content-Length", 0) > maxSize) {
+				return null;
+			}
+
 			if (timeout != -1) {
 				connection.setReadTimeout(timeout);
 				connection.setConnectTimeout(timeout);
 			}
-			return ImageIO.read(connection.getInputStream());
+
+			BufferedImage bi = ImageIO.read(connection.getInputStream());
+
+			if (maxWidthHeight != -1) {
+				if (bi.getWidth() > maxWidthHeight || bi.getHeight() > maxWidthHeight) {
+					// Espero que isto não vá gastar tanto processamento...
+					LorittaImage img = new LorittaImage(bi);
+					img.resize(maxWidthHeight, maxWidthHeight, true);
+					return img.getBufferedImage();
+				}
+			}
+
+			return bi;
 		} catch (Exception e) {}
 		return null;
 	}

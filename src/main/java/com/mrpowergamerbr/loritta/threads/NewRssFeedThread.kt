@@ -39,70 +39,75 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 					if (guild != null) {
 						for (feedInfo in rssFeedConfig.feeds) {
-							var textChannel = guild.getTextChannelById(feedInfo.repostToChannelId);
+							try {
+								var textChannel = guild.getTextChannelById(feedInfo.repostToChannelId);
 
-							val feedUrl = feedInfo.feedUrl;
+								val feedUrl = feedInfo.feedUrl;
 
-							if (textChannel != null && feedUrl != null) { // Wow, diferente de null!
-								if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
-									val feedEntry = LorittaUtilsKotlin.getLastPostFromFeed(feedUrl) ?: continue
+								if (textChannel != null && feedUrl != null) { // Wow, diferente de null!
+									if (textChannel.canTalk()) { // Eu posso falar aqui? Se sim...
+										val feedEntry = LorittaUtilsKotlin.getLastPostFromFeed(feedUrl) ?: continue
 
-									val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
+										val checkedRssFeeds = lastItemTime.getOrDefault(guild.id, RssFeedCheck());
 
-									if (checkedRssFeeds.checked[feedUrl] != null) {
-										val lastDate = checkedRssFeeds.checked[feedUrl];
+										if (checkedRssFeeds.checked[feedUrl] != null) {
+											val lastDate = checkedRssFeeds.checked[feedUrl];
 
-										// Data do último item na RSS Feed
-										val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
+											// Data do último item na RSS Feed
+											val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
 
-										if (feedEntry.date.before(lastCalendar) || feedEntry.date.equals(lastCalendar)) {
-											continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+											if (feedEntry.date.before(lastCalendar) || feedEntry.date.equals(lastCalendar)) {
+												continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
+											}
+
+											// Ssalve a nova data
+											val tz = TimeZone.getTimeZone("UTC")
+											val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+											df.timeZone = tz
+
+											checkedRssFeeds.checked.put(feedUrl, df.format(Date()));
+											lastItemTime.put(guild.id, checkedRssFeeds)
+
+											// E envie para os canais necessários o nosso texto
+											var message = feedInfo.newMessage
+
+											if (message.isEmpty()) {
+												message = "{link}"
+												feedInfo.newMessage = message
+												loritta save config
+											}
+
+											val customTokens = mutableMapOf<String, String>()
+											if (feedEntry.description != null) {
+												customTokens["descrição"] = feedEntry.description
+												customTokens["description"] = feedEntry.description
+											}
+
+											customTokens["título"] = feedEntry.title
+											customTokens["title"] = feedEntry.title
+											customTokens["link"] = feedEntry.link
+
+											// E só por diversão, vamos salvar todas as tags do entry!
+											for (element in feedEntry.entry.select("*")) {
+												customTokens["rss_${element.tagName()}"] = element.text()
+											}
+
+											textChannel.sendMessage(MessageUtils.generateMessage(message, null, customTokens)).complete() // Envie a mensagem
+											continue
+										} else {
+											// Se nunca verificamos esta feed, vamos só salvar a data atual
+											val tz = TimeZone.getTimeZone("UTC")
+											val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+											df.timeZone = tz
+											checkedRssFeeds.checked.put(feedUrl, df.format(Date()));
+											lastItemTime.put(guild.id, checkedRssFeeds)
+											continue;
 										}
-
-										// Ssalve a nova data
-										val tz = TimeZone.getTimeZone("UTC")
-										val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
-										df.timeZone = tz
-
-										checkedRssFeeds.checked.put(feedUrl, df.format(Date()));
-										lastItemTime.put(guild.id, checkedRssFeeds)
-
-										// E envie para os canais necessários o nosso texto
-										var message = feedInfo.newMessage
-
-										if (message.isEmpty()) {
-											message = "{link}"
-											feedInfo.newMessage = message
-											loritta save config
-										}
-
-										val customTokens = mutableMapOf<String, String>()
-										if (feedEntry.description != null) {
-											customTokens["descrição"] = feedEntry.description
-											customTokens["description"] = feedEntry.description
-										}
-
-										customTokens["título"] = feedEntry.title
-										customTokens["title"] = feedEntry.title
-										customTokens["link"] = feedEntry.link
-
-										// E só por diversão, vamos salvar todas as tags do entry!
-										for (element in feedEntry.entry.select("*")) {
-											customTokens["rss_${element.tagName()}"] = element.text()
-										}
-
-										textChannel.sendMessage(MessageUtils.generateMessage(message, null, customTokens)).complete() // Envie a mensagem
-										continue
-									} else {
-										// Se nunca verificamos esta feed, vamos só salvar a data atual
-										val tz = TimeZone.getTimeZone("UTC")
-										val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
-										df.timeZone = tz
-										checkedRssFeeds.checked.put(feedUrl, df.format(Date()));
-										lastItemTime.put(guild.id, checkedRssFeeds)
-										continue;
 									}
 								}
+							} catch (e: Exception) {
+								println("Ignorando update a seguir...")
+								e.printStackTrace()
 							}
 						}
 					}

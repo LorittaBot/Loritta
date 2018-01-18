@@ -380,7 +380,7 @@ object LorittaUtilsKotlin {
 				if (e.reactionEmote.name == "\uD83D\uDD22") {
 					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).complete()
 					msg.reactions.forEach {
-						if (it.emote.name != "\uD83E\uDD26") {
+						if (it.reactionEmote.name != "\uD83E\uDD26") {
 							it.removeReaction().complete()
 						}
 					}
@@ -389,7 +389,7 @@ object LorittaUtilsKotlin {
 				} else if (e.reactionEmote.name == "\uD83D\uDCBF") {
 					val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
 					msg.reactions.forEach {
-						if (it.emote.name != "\uD83E\uDD26") {
+						if (it.reactionEmote.name != "\uD83E\uDD26") {
 							it.removeReaction().complete()
 						}
 					}
@@ -595,9 +595,9 @@ object LorittaUtilsKotlin {
 
 	fun sendStackTrace(message: Message, t: Throwable) {
 		if (message.isFromType(ChannelType.TEXT)) {
-			sendStackTrace("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.rawContent.stripCodeMarks()}`", t)
+			sendStackTrace("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.contentRaw.stripCodeMarks()}`", t)
 		} else {
-			sendStackTrace("[`Mensagem Direta`] **${message.author.name}**: `${message.rawContent}`", t)
+			sendStackTrace("[`Mensagem Direta`] **${message.author.name}**: `${message.contentRaw}`", t)
 		}
 	}
 
@@ -649,9 +649,9 @@ object LorittaUtilsKotlin {
 		executedCommands++
 
 		if (message.isFromType(ChannelType.TEXT)) {
-			commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
+			commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.contentStripped.stripCodeMarks()}`")
 		} else {
-			commandQueue.add("[`Mensagem Direta`] **${message.author.name.stripCodeMarks()}**: `${message.strippedContent.stripCodeMarks()}`")
+			commandQueue.add("[`Mensagem Direta`] **${message.author.name.stripCodeMarks()}**: `${message.contentStripped.stripCodeMarks()}`")
 		}
 
 		if (lastUpdate > 5000) {

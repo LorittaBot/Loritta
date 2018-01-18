@@ -12,12 +12,11 @@ import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	companion object {
@@ -38,7 +37,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			Thread.sleep(500); // Só 0.5s de delay!
+			Thread.sleep(10000); // Só 10s de delay!
 		}
 	}
 
@@ -70,6 +69,12 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						continue
 					if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
 						continue
+
+					if (doNotReverify.containsKey(channel.channelId!!)) {
+						if (900000 > System.currentTimeMillis() - doNotReverify[channel.channelId!!]!!) {
+							continue
+						}
+					}
 					channelIds.add(channel.channelId!!)
 				}
 				list.add(server)
@@ -78,11 +83,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 		// Agora iremos verificar os canais
 		val deferred = channelIds.map { channelId ->
-			launch {
+			async {
 				try {
 					if (!channelPlaylistIdCache.containsKey(channelId) && !doNotReverify.containsKey(channelId)) {
 						if (loritta.youtubeKeys.isEmpty()) {
-							return@launch
+							return@async
 						}
 
 						val key = loritta.youtubeKey
@@ -100,7 +105,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						} else {
 							if (json["items"].array.size() == 0) {
 								doNotReverify[channelId] = System.currentTimeMillis()
-								return@launch
+								return@async
 							}
 							var playlistId = json["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.get("uploads").asString;
 
@@ -110,7 +115,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 					if (channelPlaylistIdCache[channelId] == null) {
 						println("[!] Canal inválido: ${channelId} ~ Playlist privada!")
-						return@launch
+						return@async
 					}
 
 					val playlistId = channelPlaylistIdCache[channelId]!!
@@ -124,12 +129,12 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 					if (!youTubePayload.find()) {
 						println("[!] Canal inválido: ${channelId} ~ https://www.youtube.com/playlist?list=$playlistId")
-						return@launch
+						return@async
 					}
 					val payload = JSON_PARSER.parse(youTubePayload.group(1))
 
 					if (!payload.obj.has("contents"))
-						return@launch
+						return@async
 
 					try {
 						val lastVideoId = payload["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"][0]["playlistVideoListRenderer"]["contents"][0]["playlistVideoRenderer"]["videoId"].string
@@ -144,11 +149,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 							val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
 							df.timeZone = tz
 							youTubeVideoCache[channelId] = YouTubeVideo(lastVideoId)
-							return@launch
+							return@async
 						}
 
 						if (lastVideo.id == lastVideoId)
-							return@launch // É o mesmo vídeo...
+							return@async // É o mesmo vídeo...
 
 						for (server in list) {
 							val youTubeConfig = server.youTubeConfig
