@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 
-class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos"), CommandCategory.MISC) {
+class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
 	}
@@ -119,7 +119,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos"), Comman
 
 	fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
 		val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
-		var description = context.locale["AJUDA_SelectCategory"] + "\n\n"
+		var description = ""
 
 		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
 
@@ -155,6 +155,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos"), Comman
 		}
 
 		val embed = EmbedBuilder().apply {
+			setTitle(context.locale["AJUDA_SelectCategory"])
 			setDescription(description)
 			setColor(Color(0, 193, 223))
 		}

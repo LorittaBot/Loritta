@@ -19,6 +19,10 @@ class EditarXPCommand : AbstractCommand("editarxp", category = CommandCategory.S
 		return false
 	}
 
+	override fun getUsage(): String {
+		return "usuário quantidade"
+	}
+
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
 	}

@@ -25,7 +25,8 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     var dreams: Long = 0
     var hidePreviousUsernames: Boolean = false
     var hideSharedServers: Boolean = false
-    // var tamagotchi: TamagotchiPet? = null
+    var isAfk = false
+    var afkReason: String? = null
 
 	@BsonIgnore
     fun getCurrentLevel(): XpWrapper {

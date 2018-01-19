@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.dv8tion.jda.core.entities.User
 
 class LoriReply(
 		val message: String = " ",
@@ -22,6 +23,21 @@ class LoriReply(
 			} else {
 				send + commandContext.getAsMention(true)
 			}
+		}
+		send += message
+		return send
+	}
+
+	fun build(user: User): String {
+		var send = ""
+		if (prefix != null) {
+			send = prefix + " **|** "
+		} else if (hasPadding) {
+			send = Constants.LEFT_PADDING + " **|** "
+		}
+		if (mentionUser) {
+			send = send + user.asMention + " "
+
 		}
 		send += message
 		return send

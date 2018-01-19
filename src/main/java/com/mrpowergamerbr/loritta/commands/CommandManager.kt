@@ -97,10 +97,10 @@ import com.mrpowergamerbr.loritta.commands.vanilla.music.PularCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.ResumirCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.SeekCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.VolumeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.social.AfkCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.EditarXPCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
@@ -220,6 +220,7 @@ class CommandManager {
 		commandMap.add(RepCommand())
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
+		commandMap.add(AfkCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
@@ -302,7 +303,7 @@ class CommandManager {
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
 		commandMap.add(MusicInfoCommand())
-		commandMap.add(VolumeCommand())
+		// commandMap.add(VolumeCommand())
 		commandMap.add(PlaylistCommand())
 		commandMap.add(PularCommand())
 		commandMap.add(PausarCommand())

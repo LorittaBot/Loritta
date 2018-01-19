@@ -62,7 +62,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
 import net.dv8tion.jda.core.requests.SessionReconnectQueue
@@ -71,7 +70,6 @@ import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -110,7 +108,7 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newFixedThreadPool(16) // Threads
+	val eventLogExecutors = Executors.newFixedThreadPool(64) // Threads
 	val messageExecutors = Executors.newFixedThreadPool(64) // Threads
 	val executor = Executors.newFixedThreadPool(16) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
@@ -148,7 +146,6 @@ class Loritta {
 	var cachedGuilds = listOf<Guild>()
 	var cachedUsers = listOf<User>()
 	var fanArts = mutableListOf<LorittaFanArt>()
-	val textChannelsExecutors = CacheBuilder.newBuilder().maximumSize(100L).expireAfterAccess(1L, TimeUnit.MINUTES).build<TextChannel, ExecutorService>().asMap()
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var updateTimeListener = UpdateTimeListener(this)
@@ -710,7 +707,7 @@ class Loritta {
 
 		musicManager.scheduler.queue(trackWrapper, conf)
 
-		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper);
+		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper)
 	}
 
 	fun skipTrack(context: CommandContext) {

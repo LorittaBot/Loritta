@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mongodb.MongoClient
+import com.mongodb.MongoClientOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -10,11 +12,16 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.io.FileUtils
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.pojo.PojoCodecProvider
 import java.io.File
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC) {
@@ -63,6 +70,25 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
 		loritta.loadFanArts()
+
+		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+
+		val mongoBuilder = MongoClientOptions.Builder().apply {
+			connectionsPerHost(1000)
+			codecRegistry(pojoCodecRegistry)
+		}
+		val options = mongoBuilder.build()
+
+		loritta.mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
+
+		val db = loritta.mongo.getDatabase("loritta")
+
+		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
+
+		loritta.serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
+		loritta.usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
+		loritta.storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
 
 		GlobalHandler.generateViews()
 

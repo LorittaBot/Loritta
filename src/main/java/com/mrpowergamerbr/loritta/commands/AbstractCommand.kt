@@ -200,7 +200,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				lorittaShards.lastJdaEventTime[ev.jda] = System.currentTimeMillis()
 
 				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
-					val fancy = DateUtils.formatDateDiff(diff + System.currentTimeMillis(), locale)
+					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
 					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").complete()
 					return true
 				}

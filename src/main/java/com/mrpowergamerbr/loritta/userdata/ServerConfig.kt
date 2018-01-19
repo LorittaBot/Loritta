@@ -58,6 +58,8 @@ class ServerConfig @BsonCreator constructor(
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 	var migratedUserData = false
 
+	// var volume: Int = 100
+
 	fun getUserData(id: String): LorittaGuildUserData {
 		var userData = guildUserData.firstOrNull { it.userId == id }
 

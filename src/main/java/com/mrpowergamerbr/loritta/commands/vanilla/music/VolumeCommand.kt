@@ -5,7 +5,10 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 import java.util.*
 
@@ -32,7 +35,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
-		if (context.args.size >= 1) {
+		if (context.args.isNotEmpty()) {
 			try {
 				val vol = Integer.valueOf(context.args[0])
 				if (vol > 100) {
@@ -43,12 +46,28 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["VOLUME_TOOLOW"])
 					return
 				}
+
+				manager.player.volume = context.args[0].toInt()
+
+				// context.config.volume = manager.player.volume
+
+				loritta save context.config
+
 				if (manager.player.volume > vol) {
-					context.sendMessage(context.getAsMention(true) + locale["VOLUME_LOWER"])
+					context.reply(
+							LoriReply(
+									message = context.getAsMention(true) + locale["VOLUME_LOWER"],
+									prefix = "\uD83D\uDD08"
+							)
+					)
 				} else {
-					context.sendMessage(context.getAsMention(true) + locale["VOLUME_HIGHER"])
+					context.reply(
+							LoriReply(
+									message = context.getAsMention(true) + locale["VOLUME_HIGHER"],
+									prefix = "\uD83D\uDD0A"
+							)
+					)
 				}
-				manager.player.volume = Integer.valueOf(context.args[0])!!
 			} catch (e: Exception) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["VOLUME_EXCEPTION"])
 			}

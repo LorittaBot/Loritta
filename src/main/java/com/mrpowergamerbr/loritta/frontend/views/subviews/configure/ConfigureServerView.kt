@@ -59,6 +59,7 @@ class ConfigureServerView : ConfigureView() {
 					"nashorn_commands" -> serverConfig.nashornCommands
 					"event_handlers" -> serverConfig.nashornEventHandlers
 					"vanilla_commands" -> serverConfig.disabledCommands
+					"text_channels" -> serverConfig.textChannelConfigs
 					else -> null
 				}
 
@@ -306,16 +307,29 @@ class ConfigureServerView : ConfigureView() {
 		for (entry in entries) {
 			val id = entry["id"].nullString ?: continue
 
-			if (id == "default") {
+			var config = if (id == "default") {
 				// Config default
 				val textChannelConfig = TextChannelConfig("default")
 				config.defaultTextChannelConfig = textChannelConfig
+				textChannelConfig
 			} else {
 				val textChannelConfig = TextChannelConfig(id)
 				config.textChannelConfigs.add(textChannelConfig)
+				textChannelConfig
 			}
+
+			config.automodConfig.automodCaps.apply {
+				this.isEnabled = entry["isEnabled"].bool
+				this.capsThreshold = entry["capsThreshold"].int
+				this.lengthThreshold = entry["lengthThreshold"].int
+				this.deleteMessage = entry["deleteMessage"].bool
+				this.replyToUser = entry["replyToUser"].bool
+				this.replyMessage = entry["replyMessage"].string
+			}
+
+
 		}
 
-		return "nice"
+		return "Saved textChannel Configuration!"
 	}
 }

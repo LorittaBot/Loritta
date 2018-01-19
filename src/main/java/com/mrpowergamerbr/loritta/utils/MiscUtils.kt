@@ -147,7 +147,8 @@ object MiscUtils {
 					.readTimeout(2500)
 					.userAgent(Constants.USER_AGENT)
 			httpRequest.ok()
-			val url = httpRequest.url().toString()
+			val location = httpRequest.headers().entries.firstOrNull { it.key == "Location" }?.value?.getOrNull(0)
+			val url = location ?: httpRequest.url().toString()
 			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*").matcher(url)
 			if (matcher.find()) {
 				return matcher.group(3)

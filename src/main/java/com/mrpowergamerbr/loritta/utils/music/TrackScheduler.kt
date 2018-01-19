@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
@@ -95,12 +96,15 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		player.startTrack(audioTrackWrapper?.track, false)
 		this.currentTrack = audioTrackWrapper
 
-		// Então quer dizer que nós iniciamos uma música vazia?
-		// Okay então, vamos pegar nossas próprias coisas
-		if (audioTrackWrapper == null) {
-			// Ok, Audio Track é null!
-			thread(name = "Random Song Thread (${guild.id})") {
-				LorittaUtils.startRandomSong(guild)
+		thread {
+			val serverConfig = loritta.getServerConfigForGuild(guild.id)
+			// this.player.volume = serverConfig.volume
+
+			// Então quer dizer que nós iniciamos uma música vazia?
+			// Okay então, vamos pegar nossas próprias coisas
+			if (audioTrackWrapper == null) {
+				// Ok, Audio Track é null!
+				LorittaUtils.startRandomSong(guild, serverConfig)
 			}
 		}
 	}

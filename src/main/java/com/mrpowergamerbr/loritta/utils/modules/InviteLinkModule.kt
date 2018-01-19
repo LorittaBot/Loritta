@@ -19,6 +19,8 @@ object InviteLinkModule {
 			return false
 
 		val content = message.contentRaw
+				.replace("\u200B", "")
+				.replace("\\", "")
 
 		val whitelisted = mutableListOf<String>()
 		inviteBlockerConfig.whitelistedIds.clear()
@@ -36,7 +38,7 @@ object InviteLinkModule {
 			if (url.contains("discord") && url.contains("gg")) {
 				url = "discord.gg" + matcher.group(1).replace(".", "")
 			}
-			val inviteId = MiscUtils.getInviteId("https://$url") ?: continue
+			val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url") ?: continue
 
 			if (inviteId == "attachments")
 				continue
