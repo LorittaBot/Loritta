@@ -73,22 +73,28 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				ByteArrayInputStream(baos.toByteArray()).use { bais ->
 					// E agora nós iremos anunciar a troca para todos os servidores
-					for (guild in event.jda.guilds) { // Só pegar as guilds desta shard
-						if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
-							val config = loritta.getServerConfigForGuild(guild.id)
+					val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+
+					loritta.serversColl.find(
+							Filters.and(
+									Filters.eq("eventLogConfig.avatarChanges", true),
+									Filters.eq("eventLogConfig.enabled", true),
+									Filters.`in`("_id", guilds.map { it.id })
+							)
+					).iterator().use {
+						while (it.hasNext()) {
+							val config = it.next()
 							val locale = loritta.getLocaleById(config.localeId)
 
-							if (config.eventLogConfig.avatarChanges && config.eventLogConfig.isEnabled) {
-								val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+							val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
-								if (textChannel != null && textChannel.canTalk()) {
-									embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-									embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+							if (textChannel != null && textChannel.canTalk()) {
+								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
+								embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-									val message = MessageBuilder().append(" ").setEmbed(embed.build())
+								val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-									textChannel.sendFile(bais, "avatar.png", message.build()).complete()
-								}
+								textChannel.sendFile(bais, "avatar.png", message.build()).complete()
 							}
 						}
 					}
@@ -124,21 +130,26 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				loritta save profile
 			}
 
-			// E agora nós iremos anunciar a troca para todos os servidores
-			for (guild in event.jda.guilds) {
-				if (guild.isMember(event.user)) { // ...desde que o membro esteja no servidor!
-					val config = loritta.getServerConfigForGuild(guild.id)
+			val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+
+			loritta.serversColl.find(
+					Filters.and(
+							Filters.eq("eventLogConfig.usernameChanges", true),
+							Filters.eq("eventLogConfig.enabled", true),
+							Filters.`in`("_id", guilds.map { it.id })
+					)
+			).iterator().use {
+				while (it.hasNext()) {
+					val config = it.next()
 					val locale = loritta.getLocaleById(config.localeId)
 
-					if (config.eventLogConfig.usernameChanges && config.eventLogConfig.isEnabled) {
-						val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+					val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
-						if (textChannel != null && textChannel.canTalk()) {
-							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
-							embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+					if (textChannel != null && textChannel.canTalk()) {
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
+						embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-							textChannel.sendMessage(embed.build()).complete()
-						}
+						textChannel.sendMessage(embed.build()).complete()
 					}
 				}
 			}

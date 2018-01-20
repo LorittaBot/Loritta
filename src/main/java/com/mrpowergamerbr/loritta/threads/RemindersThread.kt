@@ -44,7 +44,10 @@ class RemindersThread : Thread("Reminders Thread") {
 						val guild = lorittaShards.getGuildById(reminder.guild!!)
 
 						if (guild != null) {
-							val textChannel = guild.getTextChannelById(reminder.textChannel) ?: return
+							val textChannel = guild.getTextChannelById(reminder.textChannel) ?: continue
+
+							if (!textChannel.canTalk())
+								continue
 
 							textChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
 						}

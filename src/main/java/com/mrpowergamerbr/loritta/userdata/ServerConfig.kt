@@ -50,7 +50,7 @@ class ServerConfig @BsonCreator constructor(
 	var inviteBlockerConfig = InviteBlockerConfig()
 	var permissionsConfig = PermissionsConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
-	// var starboardEmbeds = HashMap<String, String>() // Quais mensagens correspondem a mensagens no starboard
+	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
@@ -104,4 +104,6 @@ class ServerConfig @BsonCreator constructor(
 	class DebugOptions : CommandOptions() {
 		var enableAllModules: Boolean = false // Caso ativado, TODAS as modules estarão ativadas
 	}
+
+	class StarboardMessage @BsonCreator constructor(@BsonProperty("embedId") val embedId: String, @BsonProperty("messageId") val messageId: String)
 }

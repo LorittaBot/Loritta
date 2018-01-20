@@ -25,6 +25,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 
 			val bufferedImage = LorittaUtils.downloadImage("http://skins.minecraft.net/MinecraftSkins/$nickname.png")
 
+			// TODO: Corrigir skins de players que não existem
 			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()

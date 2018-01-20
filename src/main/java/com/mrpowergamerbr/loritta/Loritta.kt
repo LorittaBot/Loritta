@@ -108,7 +108,7 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newFixedThreadPool(64) // Threads
+	val eventLogExecutors = Executors.newFixedThreadPool(512) // Threads
 	val messageExecutors = Executors.newFixedThreadPool(64) // Threads
 	val executor = Executors.newFixedThreadPool(16) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager

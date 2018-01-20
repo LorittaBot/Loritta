@@ -15,7 +15,7 @@ object SlowModeModule {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
 			return false
 
-		if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE))
+		if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE))
 			return false
 
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_SLOW_MODE))

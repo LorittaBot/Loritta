@@ -1,7 +1,14 @@
 package com.mrpowergamerbr.loritta.utils.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import java.awt.Color
 
 object StarboardModule {
 	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
@@ -13,8 +20,8 @@ object StarboardModule {
 			if (msg != null) {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
 
-				if (textChannel != null && msg.textChannel != textChannel) { // Verificar se não é null e verificar se a reaction não foi na starboard
-					/* var starboardMessageId = serverConfig.starboardEmbeds[e.messageId]
+				if (textChannel != null && msg.textChannel != textChannel && textChannel.canTalk()) { // Verificar se não é null e verificar se a reaction não foi na starboard
+					var starboardMessageId = serverConfig.starboardEmbedMessages.firstOrNull { it.messageId == e.messageId }?.embedId
 					var starboardMessage: Message? = null
 					if (starboardMessageId != null) {
 						starboardMessage = textChannel.getMessageById(starboardMessageId).complete()
@@ -22,7 +29,7 @@ object StarboardModule {
 
 					val embed = EmbedBuilder()
 					val count = e.reaction.users.complete().size
-					var content = msg.rawContent
+					var content = msg.contentRaw
 					embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
 					embed.setFooter(msg.creationTime.humanize(), null)
 					embed.setColor(Color(255, 255, Math.max(200 - (count * 20), 0)))
@@ -63,7 +70,7 @@ object StarboardModule {
 					if (starboardMessage != null) {
 						if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que 0
 							starboardMessage.delete().complete()
-							serverConfig.starboardEmbeds.remove(msg.id)
+							serverConfig.starboardEmbedMessages.removeIf { it.embedId == starboardMessage!!.id }
 							loritta save serverConfig
 							return
 						}
@@ -72,9 +79,9 @@ object StarboardModule {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}
 					if (starboardMessage != null) {
-						serverConfig.starboardEmbeds.put(msg.id, starboardMessage.id)
+						serverConfig.starboardEmbedMessages.add(ServerConfig.StarboardMessage(starboardMessage.id, msg.id))
 						loritta save serverConfig
-					} */
+					}
 				}
 			}
 		}
