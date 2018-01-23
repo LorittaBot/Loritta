@@ -53,8 +53,6 @@ class ServerConfig @BsonCreator constructor(
 	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
-
-	var userData = HashMap<String, LorittaServerUserData>()
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 	var migratedUserData = false
 

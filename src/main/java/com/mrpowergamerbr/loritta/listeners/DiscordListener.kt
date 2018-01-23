@@ -438,7 +438,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	val executors = CacheBuilder.newBuilder().maximumSize(100L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Guild, ExecutorService>().asMap()
+	val executors = CacheBuilder.newBuilder().maximumSize(10L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Guild, ExecutorService>().asMap()
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		loritta.executor.execute {

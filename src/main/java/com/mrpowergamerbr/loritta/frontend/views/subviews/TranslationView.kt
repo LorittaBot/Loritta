@@ -30,7 +30,7 @@ class TranslationView : AbstractView() {
 		} else {
 			loritta.getLocaleById("default")
 		}
-		if (req.param("uploaded-json").isSet) {
+		if (req.ifFile("uploaded-json").isPresent) {
 			val upload = req.file("uploaded-json")
 			val file = upload.file()
 			val json = JSON_PARSER.parse(file.readText()).obj

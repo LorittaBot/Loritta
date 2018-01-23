@@ -26,9 +26,7 @@ import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
-import com.mrpowergamerbr.loritta.threads.ShardReviverThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -62,7 +60,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.AudioManager
 import net.dv8tion.jda.core.requests.SessionReconnectQueue
 import org.bson.codecs.configuration.CodecRegistries
@@ -139,12 +136,6 @@ class Loritta {
 	var youtubeKeys: MutableList<String> = mutableListOf<String>()
 	var lastKeyReset = 0
 
-	var famousGuilds = mutableListOf<Guild>()
-	var randomFamousGuilds = mutableListOf<Guild>()
-	var isPatreon = mutableMapOf<String, Boolean>()
-	var isDonator = mutableMapOf<String, Boolean>()
-	var cachedGuilds = listOf<Guild>()
-	var cachedUsers = listOf<User>()
 	var fanArts = mutableListOf<LorittaFanArt>()
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
@@ -207,10 +198,13 @@ class Loritta {
 				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
 
 		val mongoBuilder = MongoClientOptions.Builder().apply {
-			connectionsPerHost(1000)
 			codecRegistry(pojoCodecRegistry)
 		}
-		val options = mongoBuilder.build()
+
+		val options = mongoBuilder
+				.maxConnectionIdleTime(10000)
+				.maxConnectionLifeTime(10000)
+				.build()
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 
@@ -258,7 +252,7 @@ class Loritta {
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
-		ShardReviverThread().start()
+		// ShardReviverThread().start()
 
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
@@ -287,12 +281,10 @@ class Loritta {
 				try {
 					loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
-					cachedGuilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
-					cachedUsers = com.mrpowergamerbr.loritta.utils.lorittaShards.getUsers()
-
 					var serversFanClub = loritta.serversFanClub.sortedByDescending {
 						it.guild.members.size
 					}.toMutableList()
+
 					var donatorsFanClub = serversFanClub.filter {
 						val owner = it.guild.owner.user
 
@@ -321,41 +313,6 @@ class Loritta {
 
 					serversFanClub.removeAll(donatorsFanClub)
 					serversFanClub.addAll(0, donatorsFanClub)
-
-					val isPatreon = mutableMapOf<String, Boolean>()
-					val isDonator = mutableMapOf<String, Boolean>()
-
-					val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
-					val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-					val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-					val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-					val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-
-					patreons.forEach {
-						isPatreon[it.user.id] = true
-					}
-					donators.forEach {
-						isDonator[it.user.id] = true
-					}
-
-					this.isPatreon = isPatreon
-					this.isDonator = isDonator
-
-					val guilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
-
-					val famousGuilds = guilds
-							.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }
-							.filter {
-								// Filtros para remover alguns servidores "famosos" do website, para evitar o AdSense suspendendo a minha conta devido a conteúdo inapropriado para menores
-								it.id != "365885658386137098" // Ícone NSFW
-							}
-							.subList(0, 36)
-							.toMutableList()
-
-					this@Loritta.famousGuilds = famousGuilds
-					Collections.shuffle(famousGuilds)
-					this@Loritta.randomFamousGuilds = famousGuilds
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
@@ -388,26 +345,6 @@ class Loritta {
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
-
-		if (serverConfig != null && !serverConfig.migratedUserData) {
-			// Migrar legacy to user
-			for ((id, serverUserData) in serverConfig.userData) {
-				val memberData = LorittaGuildUserData(id)
-
-				memberData.xp = serverUserData.xp
-				memberData.temporaryMute = serverUserData.temporaryMute
-				memberData.isMuted = serverUserData.isMuted
-				memberData.expiresIn = serverUserData.expiresIn
-
-				serverConfig.guildUserData.add(memberData)
-			}
-			serverConfig.migratedUserData = true
-		}
-
-		if (serverConfig != null && serverConfig.migratedUserData) {
-			serverConfig.userData.clear()
-		}
-
 		return serverConfig ?: ServerConfig(guildId)
 	}
 

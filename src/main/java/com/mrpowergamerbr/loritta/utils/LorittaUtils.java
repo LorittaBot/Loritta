@@ -411,11 +411,11 @@ public final class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url, int timeout) {
-		return downloadImage(url, timeout, 1000000);
+		return downloadImage(url, timeout, 5000000);
 	}
 
 	public static BufferedImage downloadImage(String url, int timeout, int maxSize) {
-		return downloadImage(url, timeout, 1000000, 512);
+		return downloadImage(url, timeout, 5000000, 512);
 	}
 
 	public static BufferedImage downloadImage(String url, int timeout, int maxSize, int maxWidthHeight) {
