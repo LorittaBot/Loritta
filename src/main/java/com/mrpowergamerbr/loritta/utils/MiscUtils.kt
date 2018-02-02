@@ -14,6 +14,8 @@ import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
 object MiscUtils {
+	val experienceTable = mutableMapOf<Int, String>()
+
 	fun getResponseError(json: JsonObject): String? {
 		if (!json.has("error"))
 			return null
@@ -39,7 +41,7 @@ object MiscUtils {
 		link = link.replace("http://m.youtu.be/", "");
 
 		var videoId = link;
-		var callbackId = "jQuery321008352795758680609_1506530165791"
+		var callbackId = "jQuery${System.currentTimeMillis()}_${System.currentTimeMillis() / 1000}"
 
 		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&_=1506530165795")
 				.referer("https://ytmp3.cc/")
@@ -89,38 +91,44 @@ object MiscUtils {
 			}
 			if (progress == "3") {
 				var serverId = progressJsonResponse.get("sid").string;
-				var serverName = "";
-				when (serverId) {
-					"1" -> serverName = "odg"
-					"2" -> serverName = "ado"
-					"3" -> serverName = "jld"
-					"4" -> serverName = "tzg"
-					"5" -> serverName = "uuj"
-					"6" -> serverName = "bkl"
-					"7" -> serverName = "fnw"
-					"8" -> serverName = "eeq"
-					"9" -> serverName = "ebr"
-					"10" -> serverName = "asx"
-					"11" -> serverName = "ghn"
-					"12" -> serverName = "eal"
-					"13" -> serverName = "hrh"
-					"14" -> serverName = "quq"
-					"15" -> serverName = "zki"
-					"16" -> serverName = "tff"
-					"17" -> serverName = "aol"
-					"18" -> serverName = "eeu"
-					"19" -> serverName = "kkr"
-					"20" -> serverName = "yui"
-					"21" -> serverName = "yyd"
-					"22" -> serverName = "hdi"
-					"23" -> serverName = "ddb"
-					"24" -> serverName = "iir"
-					"25" -> serverName = "ihi"
-					"26" -> serverName = "heh"
-					"27" -> serverName = "xaa"
-					"28" -> serverName = "nim"
-					"29" -> serverName = "omp"
-					"30" -> serverName = "eez"
+				var serverName = when (serverId) {
+					"1" -> "odg"
+					"2" -> "ado"
+					"3" -> "jld"
+					"4" -> "tzg"
+					"5" -> "uuj"
+					"6" -> "bkl"
+					"7" -> "fnw"
+					"8" -> "eeq"
+					"9" -> "ebr"
+					"10" -> "asx"
+					"11" -> "ghn"
+					"12" -> "eal"
+					"13" -> "hrh"
+					"14" -> "quq"
+					"15" -> "zki"
+					"16" -> "tff"
+					"17" -> "aol"
+					"18" -> "eeu"
+					"19" -> "kkr"
+					"20" -> "yui"
+					"21" -> "yyd"
+					"22" -> "hdi"
+					"23" -> "ddb"
+					"24" -> "iir"
+					"25" -> "ihi"
+					"26" -> "heh"
+					"27" -> "xaa"
+					"28" -> "nim"
+					"29" -> "omp"
+					"30" -> "eez"
+					"31" -> "rpx"
+					"32" -> "cxq"
+					"33" -> "typ"
+					"34" -> "amv"
+					"35" -> "rlv"
+					"36" -> "xnx"
+					else -> "plz_report_this_bug_to_mrpowergamerbr"
 				}
 				mensagem.editMessage("📥 **|** " + context.getAsMention(true) + context.locale["YOUTUBEMP3_FINISHED", "https://$serverName.ymcdn.cc/download.php?id=$hash"]).complete()
 				this.cancel()

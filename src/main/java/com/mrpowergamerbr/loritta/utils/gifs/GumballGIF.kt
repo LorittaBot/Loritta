@@ -13,7 +13,11 @@ import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object GumballGIF {
-	fun getGIF(toUse: BufferedImage, locale: BaseLocale): File {
+	fun getGIF(_toUse: BufferedImage, locale: BaseLocale): File {
+		var toUse = BufferedImage(_toUse.width, _toUse.height, BufferedImage.TYPE_INT_ARGB)
+		toUse.graphics.drawImage(_toUse, 0, 0, null)
+		toUse.graphics.dispose()
+
 		var fileName = Loritta.TEMP + "gumball-" + System.currentTimeMillis() + ".gif";
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 12, true)

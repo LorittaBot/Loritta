@@ -28,22 +28,15 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     var isAfk = false
     var afkReason: String? = null
 
-	@BsonIgnore
-    fun getCurrentLevel(): XpWrapper {
-        var lvl = 1;
-        var currentXp = xp;
-        var expToAdvance = getExpToAdvanceFrom(lvl);
-        while (currentXp > expToAdvance) {
-            currentXp -= expToAdvance;
-            lvl++;
-            expToAdvance = getExpToAdvanceFrom(lvl);
-        }
-        return XpWrapper(lvl, currentXp);
+
+    @BsonIgnore
+    fun getCurrentLevel(): LorittaProfile.XpWrapper {
+        return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
     }
 
-	@BsonIgnore
+    @BsonIgnore
     fun getExpToAdvanceFrom(lvl: Int): Int {
-        return 325 + lvl * (25 + lvl)
+        return lvl * 1000
     }
 
     fun getReputation(): Int {

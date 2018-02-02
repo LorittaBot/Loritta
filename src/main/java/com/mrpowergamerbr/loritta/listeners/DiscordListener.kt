@@ -193,7 +193,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						if (afkMembers.isNotEmpty()) {
 							if (afkMembers.size == 1) {
-								event.channel.sendMessage(
+								val message = event.channel.sendMessage(
 										LoriReply(
 												message = locale["AFK_UserIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
 													" **" + locale["HACKBAN_REASON"] + "** » `${afkMembers[0].second}`"
@@ -202,7 +202,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 												},
 												prefix = "\uD83D\uDE34"
 										).build(event.author)
-								).queue()
+								).complete()
+
+								thread {
+									Thread.sleep(5000)
+
+									message.delete().complete()
+								}
 							} else {
 								val replies = mutableListOf<LoriReply>()
 								replies.add(
@@ -219,9 +225,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 											)
 									)
 								}
-								event.channel.sendMessage(
+								val message = event.channel.sendMessage(
 										replies.map { it.build(event.author) }.joinToString("\n")
-								).queue()
+								).complete()
+
+								thread {
+									Thread.sleep(5000)
+
+									message.delete().complete()
+								}
 							}
 						}
 					}

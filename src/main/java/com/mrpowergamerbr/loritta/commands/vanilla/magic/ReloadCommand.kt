@@ -59,6 +59,24 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (context.args.isNotEmpty() && context.args[0] == "fan_arts") {
+			loritta.loadFanArts()
+			context.reply(
+					LoriReply(
+							message = "Fan Arts recarregadas!"
+					)
+			)
+			return
+		}
+		if (context.args.isNotEmpty() && context.args[0] == "locales") {
+			loritta.loadLocales()
+			context.reply(
+					LoriReply(
+							message = "Locales recarregadas!"
+					)
+			)
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

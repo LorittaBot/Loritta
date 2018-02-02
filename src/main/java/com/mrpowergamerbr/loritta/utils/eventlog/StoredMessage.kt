@@ -6,7 +6,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty
 class StoredMessage @BsonCreator constructor(@BsonProperty("_id") _messageId: String) {
 	@BsonProperty("_id")
 	val messageId = _messageId
-	// val dateCreated = Date()
+	val dateCreated = System.currentTimeMillis()
 	lateinit var authorName: String
 	lateinit var content: String
 	lateinit var authorId: String

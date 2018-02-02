@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
@@ -16,19 +17,11 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") _use
 
 	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
-		var lvl = 1
-		var currentXp = xp
-		var expToAdvance = getExpToAdvanceFrom(lvl)
-		while (currentXp > expToAdvance) {
-			currentXp -= expToAdvance
-			lvl++
-			expToAdvance = getExpToAdvanceFrom(lvl)
-		}
-		return LorittaProfile.XpWrapper(lvl, currentXp)
+		return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
 	}
 
 	@BsonIgnore
 	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return 325 + lvl * (25 + lvl)
+		return lvl * 1000
 	}
 }

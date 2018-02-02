@@ -128,7 +128,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.OCRCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TempoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.TranslateCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.UnicodeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikipediaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command
@@ -243,7 +242,7 @@ class CommandManager {
 		commandMap.add(OCRCommand())
 		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
-		commandMap.add(UnicodeCommand())
+		// commandMap.add(UnicodeCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
