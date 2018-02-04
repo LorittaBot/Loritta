@@ -31,7 +31,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
-	val cooldown = if (needsToUploadFiles()) 20000 else 5000
+	val cooldown = if (needsToUploadFiles()) 10000 else 5000
 
 	fun getDescription(context: CommandContext): String {
 		// TODO: Temporário
