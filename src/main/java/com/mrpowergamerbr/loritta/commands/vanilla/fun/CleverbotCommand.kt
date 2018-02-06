@@ -106,7 +106,7 @@ class CleverbotCommand : AbstractCommand("cleverbot", category = CommandCategory
 			context.sendMessage(webhook, DiscordMessage.builder()
 					.username(context.locale["CLEVERBOT_PANTUFA"])
 					.content(context.getAsMention(true) + "$response $emoji")
-					.avatarUrl("https://i.imgur.com/AwMsfhn.png")
+					.avatarUrl("https://loritta.website/assets/img/pantufa_avatar.png")
 					.build())
 			return
 		} else {

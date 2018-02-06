@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.gifs.CepoDeMadeiraGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -28,7 +29,8 @@ class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 		}
 		var file = CepoDeMadeiraGIF.getGIF(contextImage);
 
-		context.sendFile(file, "cepo.gif", context.getAsMention(true));
+		MiscUtils.optimizeGIF(file)
+		context.sendFile(file, "cepo.gif", context.getAsMention(true))
 		file.delete()
 	}
 }

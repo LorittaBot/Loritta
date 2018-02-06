@@ -6,12 +6,20 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
+import java.io.File
 import java.io.StringReader
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
+import java.lang.Compiler.command
+import jdk.nashorn.internal.runtime.ScriptingFunctions.readLine
+import java.io.InputStreamReader
+import java.io.BufferedReader
+import java.util.concurrent.TimeUnit
+
 
 object MiscUtils {
 	val experienceTable = mutableMapOf<Int, String>()
@@ -174,6 +182,21 @@ object MiscUtils {
 		} catch (ex: com.google.gson.JsonSyntaxException) {
 			return false
 		}
+	}
 
+	fun optimizeGIF(file: File) {
+		val processBuilder = ProcessBuilder(
+				File("/home/servers/loritta/gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
+				"-i",
+				file.toString(),
+				"-O3",
+				"--lossy=200",
+				"--colors",
+				"256",
+				"-o",
+				file.toString())
+
+		val process = processBuilder.start()
+		process.waitFor(10, TimeUnit.SECONDS)
 	}
 }

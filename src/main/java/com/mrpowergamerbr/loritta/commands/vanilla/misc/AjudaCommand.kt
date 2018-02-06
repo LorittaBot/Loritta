@@ -4,7 +4,10 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.debug.DebugType
+import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
@@ -43,7 +46,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val pleaseDonate = EmbedBuilder()
 					.setColor(Color(0, 121, 183))
 					.setThumbnail("https://loritta.website/assets/img/loritta_pobre.png")
-					.setTitle("<:lori_triste:392408514154201091> ${locale["AJUDA_DonationTitle"]}")
+					.setTitle("<:lori_triste:370344565967814659> ${locale["AJUDA_DonationTitle"]}")
 					.setDescription(locale["AJUDA_PleaseDonate"])
 
 			privateChannel.sendMessage(builder.build()).complete()
@@ -181,8 +184,16 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		if (e !is MessageReactionAddEvent)
 			return
 
-		println("Processing reaction for " + e.user.name + "...")
+		debug(DebugType.REACTION_RECEIVED, "Processing help reaction by " + e.user.name + "...")
 		msg.delete().complete()
+
+		if (context.metadata["deleteMessagesOnClick"] != null) {
+			val deleteMessagesOnClick = context.metadata["deleteMessagesOnClick"]!! as List<String>
+
+			deleteMessagesOnClick.forEach {
+				e.channel.deleteMessageById(it).queue() // Usaremos queue já que nós não tempos certeza se a mensagem ainda existe (espero que sim!)
+			}
+		}
 
 		if (e.reactionEmote.name == "\uD83D\uDD19") {
 			sendInfoBox(context, msg.privateChannel)
@@ -190,7 +201,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		if (e.reactionEmote.name == "\uD83D\uDD22") {
-			for (category in CommandCategory.values()) {
+			for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
 				getCommandsFor(context, category).forEach {
 					context.sendMessage(it)
 				}
@@ -216,15 +227,25 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 		val entry = reactionEmotes.entries.firstOrNull { it.value ==  e.reactionEmote.name }
 		if (entry != null) {
-			val embeds = getCommandsFor(context, entry.key)[0]
-			val message = context.sendMessage(embeds)
-			message.addReaction("\uD83D\uDD19").complete()
-			loritta.messageContextCache[message.id] = context
-		}
-	}
+			// Algumas categorias possuem vários comandos, fazendo que seja necessário enviar vários embeds
+			val embeds = getCommandsFor(context, entry.key)
+			var lastMessage: Message? = null
 
-	companion object {
-		val SEND_IN_PRIVATE = "enviarNoPrivado"
-		val TELL_SENT_IN_PRIVATE = "avisarQueFoiEnviadoNoPrivado"
+			// Para que não fique estranho, nós iremos criar uma lista com todos os IDs que deverão ser deletados após voltar uma categoria, caso exista mais de um embed enviado
+			val deleteMessagesOnClick = mutableListOf<String>()
+
+			for (embed in embeds) {
+				if (lastMessage != null)
+					deleteMessagesOnClick.add(lastMessage.id)
+
+				lastMessage = context.sendMessage(embed)
+			}
+
+			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick
+			if (lastMessage != null) {
+				lastMessage.addReaction("\uD83D\uDD19").complete()
+				loritta.messageContextCache[lastMessage.id] = context
+			}
+		}
 	}
 }

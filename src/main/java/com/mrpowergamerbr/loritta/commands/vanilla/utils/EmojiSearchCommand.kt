@@ -46,17 +46,12 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				return
 			}
 
-			var queriedEmotes = mutableListOf<Emote>()
+			val queriedEmotes = lorittaShards.getGuilds()
+					.flatMap {
+						it.emotes.filter { it.name.toLowerCase().contains(query) }
+					}.sortedByDescending { it.guild.members.size }
 
-			for (guild in lorittaShards.getGuilds()) {
-				val emotes = guild.emotes.filter { it.name.toLowerCase().contains(query) }
-
-				queriedEmotes.addAll(emotes)
-			}
-
-			queriedEmotes = queriedEmotes.sortedByDescending { it.guild.members.size }.toMutableList()
-
-			val message = sendQueriedEmbed(context, queriedEmotes, query, 0)
+			sendQueriedEmbed(context, queriedEmotes, query, 0)
 		} else {
 			context.explain()
 		}

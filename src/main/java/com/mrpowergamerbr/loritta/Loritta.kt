@@ -156,6 +156,7 @@ class Loritta {
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(24)
+				.setBulkDeleteSplittingEnabled(true)
 				.setReconnectQueue(SessionReconnectQueue())
 	}
 

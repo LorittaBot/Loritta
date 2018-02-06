@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
@@ -84,6 +85,7 @@ class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory
 		writer.close()
 		output.close()
 
+		MiscUtils.optimizeGIF(outputFile)
 		context.sendFile(outputFile, "triggered.gif", context.getAsMention(true))
 		outputFile.delete()
 	}

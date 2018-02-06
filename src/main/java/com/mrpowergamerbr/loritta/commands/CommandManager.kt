@@ -32,39 +32,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.UserInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.AmigosCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.AmizadeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.AtaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.CepoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.DeusCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.DeusesCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.DiscordiaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.DrakeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.GangueCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.GetOverHereCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.GumballCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.InverterCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.JoojCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.LaranjoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.LavaReversoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.ManiaTitleCardCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.NyanCatCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.OjjoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.PerdaoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.PerfeitoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.PrimeirasPalavrasCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.QuadroCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.RazoesCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.RipVidaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.RomeroBrittoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.SAMCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.StudiopolisTvCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.SustoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.TretaNewsCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.TriggeredCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.TristeRealidadeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.TrumpCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaBanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaUnbanCommand
@@ -183,6 +151,10 @@ class CommandManager {
 		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
+
+		// =======[ IMAGENS ]======
+		commandMap.add(SwingCommand())
+		commandMap.add(DemonCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())

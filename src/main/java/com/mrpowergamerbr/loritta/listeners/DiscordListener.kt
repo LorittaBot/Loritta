@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
@@ -16,13 +17,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.modules.AminoConverterModule
-import com.mrpowergamerbr.loritta.utils.modules.AutomodModule
-import com.mrpowergamerbr.loritta.utils.modules.AutoroleModule
-import com.mrpowergamerbr.loritta.utils.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.utils.modules.SlowModeModule
-import com.mrpowergamerbr.loritta.utils.modules.StarboardModule
-import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
+import com.mrpowergamerbr.loritta.utils.modules.*
 import com.mrpowergamerbr.loritta.utils.patreon
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -58,15 +53,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
-			if (event.textChannel.isNSFW) { // lol nope, I'm outta here
-				return
-			}
 			loritta.messageExecutors.execute {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
 					val locale = loritta.getLocaleById(serverConfig.localeId)
+					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					lorittaProfile.isAfk = false
 					lorittaProfile.afkReason = null
@@ -88,7 +81,50 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (event.message.contentRaw.replace("!", "") == "<@297153970613387264>") {
-						event.textChannel.sendMessage(locale["MENTION_RESPONSE", event.message.author.asMention, serverConfig.commandPrefix]).complete()
+						var response = locale["MENTION_RESPONSE", event.message.author.asMention, serverConfig.commandPrefix]
+
+						if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
+							// Usuário não pode usar comandos
+
+							// Qual é o cargo que não permite utilizar os meus comandos?
+							val roles = event.member.roles.toMutableList()
+
+							val everyone = event.member.guild.publicRole
+							if (everyone != null) {
+								roles.add(everyone)
+							}
+
+							roles.sortedByDescending { it.position }
+
+							var ignoringCommandsRole: Role? = null
+							for (role in roles) {
+								val permissionRole = serverConfig.permissionsConfig.roles.getOrDefault(role.id, PermissionsConfig.PermissionRole())
+								if (permissionRole.permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
+									ignoringCommandsRole = role
+									break
+								}
+							}
+
+							if (ignoringCommandsRole == event.guild.publicRole)
+								response = locale["MENTION_ResponseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
+							else
+								response = locale["MENTION_ResponseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
+						} else {
+							if (serverConfig.blacklistedChannels.contains(event.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+								// Vamos pegar um canal que seja possível usar comandos
+								val useCommandsIn = event.guild.textChannels.firstOrNull { !serverConfig.blacklistedChannels.contains(it.id) && it.canTalk(event.member) }
+
+								response = if (useCommandsIn != null) {
+									// Canal não bloqueado!
+									locale["MENTION_ResponseBlocked", event.message.author.asMention, serverConfig.commandPrefix, useCommandsIn.asMention]
+								} else {
+									// Nenhum canal disponível...
+									locale["MENTION_ResponseBlockedNoChannels", event.message.author.asMention, serverConfig.commandPrefix]
+								}
+							}
+						}
+
+						event.textChannel.sendMessage("<:loritta:331179879582269451> **|** " + response).complete()
 					}
 
 					if (event.member == null) {
@@ -96,8 +132,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
 						return@execute
 					}
-
-					val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 					// ===[ SLOW MODE ]===
 					if (SlowModeModule.checkForSlowMode(event, lorittaUser, serverConfig)) {
@@ -117,40 +151,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					// ===[ CÁLCULO DE XP ]===
-					// (copyright Loritta™)
-
-					// Primeiro iremos ver se a mensagem contém algo "interessante"
-					if (event.message.contentStripped.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.contentStripped.hashCode()) {
-						// Primeiro iremos verificar se a mensagem é "válida"
-						// 7 chars por millisegundo
-						var calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
-
-						var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
-
-						if (diff > calculatedMessageSpeed * 1000) {
-							var nonRepeatedCharsMessage = event.message.contentStripped.replace(Regex("(.)\\1{1,}"), "$1")
-
-							if (nonRepeatedCharsMessage.length >= 12) {
-								var gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
-
-								if (event.author.patreon) {
-									var _gainedXp = gainedXp
-									_gainedXp = (_gainedXp * 1.25).toInt()
-									gainedXp = _gainedXp
-								}
-
-								lorittaProfile.xp = lorittaProfile.xp + gainedXp
-								lorittaProfile.lastMessageSentHash = event.message.contentStripped.hashCode()
-
-								val userData = serverConfig.getUserData(event.member.user.id)
-								userData.xp = userData.xp + gainedXp
-								loritta save serverConfig
-							}
-						}
-					}
-
-					lorittaProfile.lastMessageSent = System.currentTimeMillis()
-					loritta save lorittaProfile
+					ExperienceModule.handleExperience(event, serverConfig, lorittaProfile)
 
 					// ===[ CONVERTER IMAGENS DO AMINO ]===
 					if (serverConfig.aminoConfig.isEnabled && serverConfig.aminoConfig.fixAminoImages)
@@ -163,80 +164,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 						return@execute
 
-					if (event.textChannel.canTalk()) {
-						val afkMembers = mutableListOf<Pair<Member, String?>>()
-
-						for (mention in event.message.mentionedMembers) {
-							val lorittaProfile = loritta.getLorittaProfileForUser(mention.user.id)
-
-							if (lorittaProfile.isAfk) {
-								var reason = lorittaProfile.afkReason
-
-								if (reason != null) {
-									val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(reason
-											.replace("\u200B", "")
-											.replace("\\", ""))
-
-									while (matcher.find()) {
-										var url = matcher.group()
-										if (url.contains("discord") && url.contains("gg")) {
-											url = "discord.gg" + matcher.group(1).replace(".", "")
-										}
-										val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url") ?: break
-
-										reason = "¯\\_(ツ)_/¯"
-									}
-								}
-								afkMembers.add(Pair(mention, reason))
-							}
-						}
-
-						if (afkMembers.isNotEmpty()) {
-							if (afkMembers.size == 1) {
-								val message = event.channel.sendMessage(
-										LoriReply(
-												message = locale["AFK_UserIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-													" **" + locale["HACKBAN_REASON"] + "** » `${afkMembers[0].second}`"
-												} else {
-													""
-												},
-												prefix = "\uD83D\uDE34"
-										).build(event.author)
-								).complete()
-
-								thread {
-									Thread.sleep(5000)
-
-									message.delete().complete()
-								}
-							} else {
-								val replies = mutableListOf<LoriReply>()
-								replies.add(
-										LoriReply(
-												message = locale["AFK_UsersAreAFK", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
-												prefix = "\uD83D\uDE34"
-										)
-								)
-								for ((member, reason) in afkMembers.filter { it.second != null }) {
-									replies.add(
-											LoriReply(
-													message = "**" + member.effectiveName.escapeMentions().stripCodeMarks() + "** » `${reason!!.stripCodeMarks().replace("discord.gg", "")}`",
-													mentionUser = false
-											)
-									)
-								}
-								val message = event.channel.sendMessage(
-										replies.map { it.build(event.author) }.joinToString("\n")
-								).complete()
-
-								thread {
-									Thread.sleep(5000)
-
-									message.delete().complete()
-								}
-							}
-						}
-					}
+					AFKModule.handleAFK(event, locale)
 
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
@@ -312,9 +240,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
-			if (event.message.textChannel.isNSFW) { // lol nope, I'm outta here
-				return
-			}
 			thread(name = "Message Updated Thread (${event.guild.id} ~ ${event.member.user.id})") {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)

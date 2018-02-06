@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -38,20 +39,20 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		var user2: User? =  LorittaUtils.getUserFromContext(context, 1)
 
 		if (user1 == null) {
-			var member1 = context.guild.members[SplittableRandom().nextInt(context.guild.members.size)]
+			var member1 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
 
 			while (member1.onlineStatus == OnlineStatus.OFFLINE) {
-				member1 = context.guild.members[SplittableRandom().nextInt(context.guild.members.size)]
+				member1 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
 			}
 
 			user1 = member1.user
 		}
 
 		if (user2 == null) {
-			var member2 = context.guild.members[SplittableRandom().nextInt(context.guild.members.size)]
+			var member2 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
 
 			while (member2.onlineStatus == OnlineStatus.OFFLINE) {
-				member2 = context.guild.members[SplittableRandom().nextInt(context.guild.members.size)]
+				member2 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
 			}
 
 			user2 = member2.user
