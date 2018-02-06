@@ -21,6 +21,10 @@ class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.M
 		return listOf("Monerk")
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]

@@ -21,6 +21,10 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 		return listOf("Monerk")
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		context.handle
 		if (context.args.isNotEmpty()) {

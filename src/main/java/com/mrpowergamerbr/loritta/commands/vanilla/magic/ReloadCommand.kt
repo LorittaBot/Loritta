@@ -77,6 +77,16 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (context.args.isNotEmpty() && context.args[0] == "commands") {
+			val oldCommandCount = loritta.commandManager.commandMap.size
+			LorittaLauncher.loritta.loadCommandManager()
+			context.reply(
+					LoriReply(
+							"Comandos recarregados com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+					)
+			)
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

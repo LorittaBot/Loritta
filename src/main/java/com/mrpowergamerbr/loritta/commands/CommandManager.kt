@@ -39,18 +39,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaUnbanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.NashornTestCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McAvatarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McBodyCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McConquistaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McHeadCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McQueryCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McSignCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McSkinCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McStatusCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.McUUIDCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.OfflineUUIDCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.PeQueryCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.SpigotMcCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.FanArtsCommand
@@ -238,6 +227,7 @@ class CommandManager {
 		commandMap.add(McConquistaCommand())
 		commandMap.add(PeQueryCommand())
 		commandMap.add(McSkinCommand())
+		commandMap.add(McMoletomCommand())
 
 		// =======[ ROBLOX ]========
 		commandMap.add(RbUserCommand())
