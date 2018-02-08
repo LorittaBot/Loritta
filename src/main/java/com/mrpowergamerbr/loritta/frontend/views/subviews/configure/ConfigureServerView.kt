@@ -60,6 +60,7 @@ class ConfigureServerView : ConfigureView() {
 					"event_handlers" -> serverConfig.nashornEventHandlers
 					"vanilla_commands" -> serverConfig.disabledCommands
 					"text_channels" -> serverConfig.textChannelConfigs
+					"moderation" -> serverConfig.moderationConfig
 					else -> null
 				}
 

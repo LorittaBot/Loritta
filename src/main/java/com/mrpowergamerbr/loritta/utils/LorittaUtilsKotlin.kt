@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import com.mongodb.MongoWaitQueueFullException
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import com.mrpowergamerbr.loritta.Loritta
@@ -45,6 +46,7 @@ import java.io.StringReader
 import java.net.URLEncoder
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
@@ -57,6 +59,13 @@ fun OffsetDateTime.humanize(): String {
 	val months = DateFormatSymbols().getMonths();
 	return "${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
 }
+
+fun Long.humanize(): String {
+	val fixedOffset = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime()
+	val months = DateFormatSymbols().getMonths();
+	return "${fixedOffset.dayOfMonth} de ${months[fixedOffset.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
+}
+
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
@@ -602,6 +611,9 @@ object LorittaUtilsKotlin {
 	}
 
 	fun sendStackTrace(message: String, t: Throwable) {
+		if (t is MongoWaitQueueFullException) // I don't care!!! ~ Desativado para evitar floods de mensagens no #stacktraces ao recarregar a Loritta pelo JRebel
+			return
+
 		val guild = lorittaShards.getGuildById("297732013006389252")
 
 		if (guild == null) {

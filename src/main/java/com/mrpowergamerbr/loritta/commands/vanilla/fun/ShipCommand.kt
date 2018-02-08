@@ -34,8 +34,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 	}
 
     override fun run(context: CommandContext, locale: BaseLocale) {
-		var user1Name: String? = context.args.getOrNull(0)
-		var user2Name: String? = context.args.getOrNull(1)
+		var user1Name: String? = context.rawArgs.getOrNull(0)
+		var user2Name: String? = context.rawArgs.getOrNull(1)
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 		var user2AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 

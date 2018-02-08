@@ -330,6 +330,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				if (!textChannel.canTalk())
+					return@execute
+
 				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
 
@@ -351,6 +354,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				if (!textChannel.canTalk())
+					return@execute
+
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 
@@ -370,6 +376,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				if (!textChannel.canTalk())
+					return@execute
+
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 
@@ -400,6 +409,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				if (!textChannel.canTalk())
+					return@execute
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 
@@ -434,6 +445,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				// ===[ NICKNAME ]===
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				if (!textChannel.canTalk())
+					return@execute
 				embed.setDescription("\uD83D\uDCDD **Nickname de ${event.member.asMention} foi alterado!\n\nAntigo nickname: `${if (event.prevNick == null) "\uD83E\uDD37 Nenhum nickname" else event.prevNick}`\nNovo nickname: `${if (event.newNick == null) "\uD83E\uDD37 Nenhum nickname" else event.newNick}`**")
 				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 

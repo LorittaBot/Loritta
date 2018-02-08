@@ -7,7 +7,7 @@ import java.awt.Color
 
 class ParallaxEmbed {
 	var color: Int? = null
-	var title: String?  = null
+	var title: String? = null
 	var url: String?  = null
 	var description: String?  = null
 	var author: ParallaxEmbedAuthor?  = null

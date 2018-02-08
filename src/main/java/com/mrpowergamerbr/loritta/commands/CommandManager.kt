@@ -17,11 +17,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.YouTubeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.HackBanCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.LimparCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.RoleIdCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.SlowModeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.SoftBanCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
@@ -252,6 +248,9 @@ class CommandManager {
 		// commandMap.add(MuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
+		commandMap.add(TempRoleCommand())
+		commandMap.add(KickCommand())
+		commandMap.add(BanCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())

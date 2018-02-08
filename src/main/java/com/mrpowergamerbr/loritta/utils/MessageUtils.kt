@@ -49,9 +49,13 @@ object MessageUtils {
 				for (it in value.array) {
 					if (it.isJsonPrimitive) {
 						if (it.asJsonPrimitive.isString) {
+							println("Replacing ${it.string}!")
 							array.add(replaceTokens(it.string, source, customTokens))
 							continue
 						}
+					}
+					if (it.isJsonObject) {
+						handleJsonTokenReplacer(it.obj, source, customTokens)
 					}
 					array.add(it)
 				}
@@ -119,6 +123,8 @@ object MessageUtils {
 		message = message.replace("{guildsize}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner.escapeMentions())
+
+		println("${text} -> ${message}")
 		return message
 	}
 }

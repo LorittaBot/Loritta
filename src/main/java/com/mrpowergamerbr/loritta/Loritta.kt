@@ -118,6 +118,7 @@ class Loritta {
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
 	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
+	val apiCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()

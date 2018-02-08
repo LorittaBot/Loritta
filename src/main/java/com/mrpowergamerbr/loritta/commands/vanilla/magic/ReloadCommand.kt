@@ -87,6 +87,17 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (context.args.isNotEmpty() && context.args[0] == "website") {
+			GlobalHandler.views.clear()
+			GlobalHandler.views.addAll(GlobalHandler.generateViews())
+			context.reply(
+					LoriReply(
+							"Views regeneradas!"
+					)
+			)
+			return
+		}
+
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

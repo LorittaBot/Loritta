@@ -119,18 +119,30 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		var upvotedOnDiscordBots = if (ID_ARRAY != null) { ID_ARRAY!!.any { it.string == user.id } } else { false }
 
-		val badge = when {
-			user.patreon || user.id == Loritta.config.ownerId -> ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
-			user.donator -> ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
-			user.artist -> ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
-			user.id == Loritta.config.clientId -> ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
-			user.isBot -> ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			upvotedOnDiscordBots -> ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
-			else -> null
-		}
+		val badges = mutableListOf<BufferedImage>()
+		if (user.patreon || user.id == Loritta.config.ownerId) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
+		if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
+		if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
+		if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
+		if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+		if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
-		if (badge != null) {
-			graphics.drawImage(badge.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 52, 52, null)
+		val badge1 = badges.getOrNull(0)
+		val badge2 = badges.getOrNull(1)
+		val badge3 = badges.getOrNull(2)
+		val badge4 = badges.getOrNull(3)
+
+		if (badge1 != null) {
+			graphics.drawImage(badge1.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 52, 52, null)
+		}
+		if (badge2 != null) {
+			graphics.drawImage(badge2.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 2, 52, null)
+		}
+		if (badge3 != null) {
+			graphics.drawImage(badge3.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 52, 2, null)
+		}
+		if (badge4 != null) {
+			graphics.drawImage(badge4.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH), 2, 2, null)
 		}
 
 		val guildImages = ArrayList<java.awt.Image>();

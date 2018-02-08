@@ -38,8 +38,14 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 					val emojiUrl = emote.imageUrl
 
 					try {
-						val emojiImage = LorittaUtils.downloadImage(emojiUrl);
-						context.sendFile(emojiImage, "emoji.png", MessageBuilder().append(" ").build())
+						val emojiImage = LorittaUtils.downloadFile(emojiUrl, 5000)
+						var fileName = emote.name
+						if (emote.isAnimated) {
+							fileName += ".gif"
+						} else {
+							fileName += ".png"
+						}
+						context.sendFile(emojiImage, fileName, MessageBuilder().append(" ").build())
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}

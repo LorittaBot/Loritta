@@ -450,6 +450,23 @@ public final class LorittaUtils {
 		return null;
 	}
 
+	public static InputStream downloadFile(String url, int timeout) {
+		try {
+			URL imageUrl = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+			connection.setRequestProperty("User-Agent",
+					Constants.USER_AGENT);
+
+			if (timeout != -1) {
+				connection.setReadTimeout(timeout);
+				connection.setConnectTimeout(timeout);
+			}
+
+			return connection.getInputStream();
+		} catch (Exception e) {}
+		return null;
+	}
+
 	/**
 	 * Verifica se um link é uma URL válida
 	 *

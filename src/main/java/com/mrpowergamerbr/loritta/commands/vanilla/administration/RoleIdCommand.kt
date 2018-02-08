@@ -31,33 +31,51 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
-			val argument = context.rawArgs.joinToString(" ")
+			var argument = context.rawArgs.joinToString(" ")
 
-			val roles = context.guild.roles.filter { it.name.contains(argument, true) }
+			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 
 			val list = mutableListOf<LoriReply>()
-			list.add(LoriReply(
-					message = "Cargos que contém `$argument`...",
-					prefix = "\uD83D\uDCBC"
-			))
 
-			if (roles.isEmpty()) {
-				list.add(
-						LoriReply(
-								message = "*Nenhum cargo...*",
-								mentionUser = false,
-								prefix = "\uD83D\uDE22"
-						)
-				)
-			} else {
-				roles.mapTo(list) {
+			if (mentionedRoles.isNotEmpty()) {
+
+				list.add(LoriReply(
+						message = locale["ROLEID_RoleIds", argument],
+						prefix = "\uD83D\uDCBC"
+				))
+
+				mentionedRoles.mapTo(list) {
 					LoriReply(
 							message = "*${it.name}* - `${it.id}`",
 							mentionUser = false
 					)
 				}
-			}
+			} else {
+				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
+				list.add(LoriReply(
+						message = locale["ROLEID_RolesThatContains", argument],
+						prefix = "\uD83D\uDCBC"
+				))
+
+				if (roles.isEmpty()) {
+					list.add(
+							LoriReply(
+									message = "*${locale["ROLEID_NoRole"]}*",
+									mentionUser = false,
+									prefix = "\uD83D\uDE22"
+							)
+					)
+				} else {
+					roles.mapTo(list) {
+						LoriReply(
+								message = "*${it.name}* - `${it.id}`",
+								mentionUser = false
+						)
+					}
+				}
+
+			}
 			context.reply(*list.toTypedArray())
 		} else {
 			context.explain()

@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.frontend.views
 import com.github.salomonbrys.kotson.fromJson
 import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
@@ -21,23 +22,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoV
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityInfoView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetTwitchInfoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAminoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureAutoroleView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureCommandsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventHandlersView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureEventLogView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureInviteBlockerView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureLivestreamView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureMusicView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureNashornCommandsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigurePermissionsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureRSSFeedsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureServerView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureStarboardView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureTextChannelsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureWelcomerView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.ConfigureYouTubeView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.TestMessageView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -57,6 +42,17 @@ object GlobalHandler {
 		log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 
+		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
+			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
+
+			val diff = System.currentTimeMillis() - last
+			if (2500 >= diff) {
+				return GSON.toJson(mapOf("api:code" to APICodes.RATE_LIMITED, "api:message" to "RATE_LIMITED"))
+			}
+
+			loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
+		}
+		
 		variables["epochMillis"] = System.currentTimeMillis()
 
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
@@ -149,20 +145,6 @@ object GlobalHandler {
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
 
-		val guilds = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
-
-		val famousGuilds = guilds
-				.sortedByDescending { it.members.size - it.members.filter { it.user.isBot }.count() }
-				.filter {
-					// Filtros para remover alguns servidores "famosos" do website, para evitar o AdSense suspendendo a minha conta devido a conteúdo inapropriado para menores
-					it.id != "365885658386137098" // Ícone NSFW
-				}
-				.subList(0, Math.min(36, guilds.size))
-				.toMutableList()
-
-		variables["famousGuilds"] = famousGuilds
-		variables["randomFamousGuilds"] = famousGuilds.shuffled()
-
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
@@ -209,6 +191,7 @@ object GlobalHandler {
 		views.add(ConfigureEventHandlersView())
 		views.add(ConfigureCommandsView())
 		views.add(ConfigureTextChannelsView())
+		views.add(ConfigureModerationView())
 		views.add(TestMessageView())
 		views.add(FanArtsView())
 		views.add(DonateView())
@@ -220,5 +203,10 @@ object GlobalHandler {
 		views.add(AuthPathRedirectView())
 
 		return views
+	}
+
+	object APICodes {
+		const val SUCCESS = 0
+		const val RATE_LIMITED = 1
 	}
 }
