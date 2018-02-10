@@ -221,10 +221,10 @@ object LorittaUtilsKotlin {
 
 			// Se um usuário está banido...
 			try {
-			context.userHandle
-					.openPrivateChannel()
-					.complete()
-					.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
+				context.userHandle
+						.openPrivateChannel()
+						.complete()
+						.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
 			} catch (e: ErrorResponseException) {
 				// Usuário tem as DMs desativadas
 				context.event.textChannel.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
@@ -667,17 +667,19 @@ object LorittaUtilsKotlin {
 		}
 
 		if (lastUpdate > 5000) {
-			val guild = lorittaShards.getGuildById("297732013006389252") ?: return
-			val textChannel = guild.getTextChannelById("336932935838203904")
-
 			lastUpdate = System.currentTimeMillis()
 
 			val toBeSent = commandQueue.joinToString("\n")
 
 			commandQueue.clear()
 
-			if (toBeSent.isNotEmpty())
-				textChannel.sendMessage(toBeSent).queue()
+			val guild = lorittaShards.getGuildById("297732013006389252") ?: return
+			val textChannel = guild.getTextChannelById("336932935838203904") ?: return
+
+			if (toBeSent.isNotEmpty()) {
+				if (textChannel.canTalk())
+					textChannel.sendMessage(toBeSent).queue()
+			}
 		}
 	}
 }

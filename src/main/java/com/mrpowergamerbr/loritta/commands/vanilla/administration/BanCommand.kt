@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.Permission
 import java.awt.Color
 import java.time.Instant
 
-class BanCommand : AbstractCommand("ban", listOf("banir"), CommandCategory.ADMIN) {
+class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["BAN_Description"]
 	}
@@ -47,34 +47,26 @@ class BanCommand : AbstractCommand("ban", listOf("banir"), CommandCategory.ADMIN
 
 			val member = context.guild.getMember(user)
 
-			if (member == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserNotInThisServer"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			if (member != null) {
+				if (!context.guild.selfMember.canInteract(member)) {
+					context.reply(
+							LoriReply(
+									locale["BAN_RoleTooLow"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
 
-			if (!context.guild.selfMember.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_RoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
-
-			if (!context.handle.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_PunisherRoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
+				if (!context.handle.canInteract(member)) {
+					context.reply(
+							LoriReply(
+									locale["BAN_PunisherRoleTooLow"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
 			}
 
 			var rawArgs = context.rawArgs
@@ -82,7 +74,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir"), CommandCategory.ADMIN
 
 			val reason = rawArgs.joinToString(" ")
 
-			var str = locale["BAN_ReadyToPunish", locale["BAN_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
+			var str = locale["BAN_ReadyToPunish", locale["BAN_PunishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
 
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
 			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
@@ -101,7 +93,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir"), CommandCategory.ADMIN
 					var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
 					if (!isSilent) {
-						if (context.config.moderationConfig.sendPunishmentViaDm) {
+						if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 							try {
 								val embed = EmbedBuilder()
 
@@ -148,7 +140,8 @@ class BanCommand : AbstractCommand("ban", listOf("banir"), CommandCategory.ADMIN
 						}
 					}
 
-					context.guild.controller.ban(member, 0, reason).complete()
+					context.guild.controller.ban(user, 0, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+							.complete()
 
 					message.delete().complete()
 

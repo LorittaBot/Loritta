@@ -101,7 +101,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
 					if (!isSilent) {
-						if (context.config.moderationConfig.sendPunishmentViaDm) {
+						if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 							try {
 								val embed = EmbedBuilder()
 
@@ -148,7 +148,8 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 						}
 					}
 
-					context.guild.controller.kick(member, reason).complete()
+					context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+							.complete()
 
 					message.delete().complete()
 

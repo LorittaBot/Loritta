@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -88,8 +87,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 		if (context.args.isNotEmpty() && context.args[0] == "website") {
-			GlobalHandler.views.clear()
-			GlobalHandler.views.addAll(GlobalHandler.generateViews())
+			GlobalHandler.generateViews()
 			context.reply(
 					LoriReply(
 							"Views regeneradas!"
@@ -142,7 +140,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				}
 			}
 
-			val updateTimeListener = UpdateTimeListener(loritta);
 			val discordListener = DiscordListener(loritta)
 			val eventLogListener = EventLogListener(loritta)
 
@@ -150,7 +147,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			LorittaLauncher.loritta.lorittaShards.shards.forEach {
 				it.addEventListener(discordListener)
 				it.addEventListener(eventLogListener)
-				it.addEventListener(updateTimeListener)
 			}
 		}
 

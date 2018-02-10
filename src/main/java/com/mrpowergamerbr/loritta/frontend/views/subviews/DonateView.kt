@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem
 import com.mrpowergamerbr.temmiemercadopago.mp.request.PaymentRequest
+import net.dv8tion.jda.core.entities.Member
 import org.jooby.Request
 import org.jooby.Response
 
@@ -33,12 +34,21 @@ class DonateView : AbstractView() {
 				return "Redirecionando..."
 			}
 		}
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")!!
-		val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-		val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
-		val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-		val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+		var patreons: List<Member>? = null
+		var donators: List<Member>? = null
+
+		if (lorittaGuild != null) {
+			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+			val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+		} else {
+			patreons = listOf()
+			donators = listOf()
+		}
+
 
 		variables["patreons"] = patreons
 		variables["donators"] = donators

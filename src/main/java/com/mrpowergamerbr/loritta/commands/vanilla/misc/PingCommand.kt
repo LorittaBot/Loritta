@@ -22,12 +22,10 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		if (arg0 == "shards") {
 			val embed = EmbedBuilder().apply {
 				setColor(Constants.LORITTA_AQUA)
-				setTitle("\uD83C\uDF0E ${locale["PING_ShardsInfo"]}")
+				setTitle("<:jda:411518264267767818> ${locale["PING_ShardsInfo"]}")
 
 				for (shard in lorittaShards.shards) {
-					val lastUpdate = lorittaShards.lastJdaEventTime.getOrDefault(shard, System.currentTimeMillis())
-					val seconds = (System.currentTimeMillis() - lastUpdate) / 1000
-					addField("Shard ${shard.shardInfo.shardId}", "${shard.ping}ms - ${seconds}s", true)
+					addField("\uD83D\uDCE1 Shard ${shard.shardInfo.shardId}", "**WebSocket Ping:** ${shard.ping}ms\n**Status:** ${shard.status.name}", true)
 				}
 			}
 
@@ -35,7 +33,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		} else {
 			val message = context.reply(
 					LoriReply(
-							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83C\uDF0E Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
+							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
 							prefix = "\uD83C\uDFD3"
 					)
 			)

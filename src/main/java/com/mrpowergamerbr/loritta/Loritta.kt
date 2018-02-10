@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -16,9 +17,9 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
+import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.UpdateTimeListener
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
@@ -61,7 +62,6 @@ import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
-import net.dv8tion.jda.core.requests.SessionReconnectQueue
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
@@ -105,9 +105,9 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newFixedThreadPool(512) // Threads
-	val messageExecutors = Executors.newFixedThreadPool(64) // Threads
-	val executor = Executors.newFixedThreadPool(16) // Threads
+	val eventLogExecutors = Executors.newCachedThreadPool() // Threads
+	val messageExecutors = Executors.newCachedThreadPool() // Threads
+	val executor = Executors.newCachedThreadPool() // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -140,10 +140,12 @@ class Loritta {
 	var fanArts = mutableListOf<LorittaFanArt>()
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
-	var updateTimeListener = UpdateTimeListener(this)
 	var builder: JDABuilder
 
 	val log = File(FOLDER, "log-${System.currentTimeMillis()}.log")
+
+	var userCount = 0
+	var guildCount = 0
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
@@ -153,12 +155,15 @@ class Loritta {
 		Loritta.youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
+		GlobalHandler.generateViews()
 
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(24)
+				.setCorePoolSize(64)
 				.setBulkDeleteSplittingEnabled(true)
-				.setReconnectQueue(SessionReconnectQueue())
+
+		builder.addEventListener(discordListener)
+		builder.addEventListener(eventLogListener)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -227,19 +232,14 @@ class Loritta {
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
-		thread {
-			for (idx in 0..generateShards) {
-				println("Iniciando Shard $idx...")
-				val shard = builder
-						.useSharding(idx, Loritta.config.shards)
-						.buildBlocking()
+		for (idx in 0..generateShards) {
+			println("Iniciando Shard $idx...")
+			val shard = builder
+					.useSharding(idx, Loritta.config.shards)
+					.buildAsync()
 
-				shard.addEventListener(updateTimeListener)
-				shard.addEventListener(discordListener)
-				shard.addEventListener(eventLogListener)
-				lorittaShards.shards.add(shard)
-				println("Shard $idx iniciada com sucesso!")
-			}
+			lorittaShards.shards.add(shard)
+			println("Shard $idx iniciada com sucesso!")
 		}
 
 		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
@@ -253,8 +253,6 @@ class Loritta {
 		println("Sucesso! Iniciando threads da Loritta...")
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
-
-		// ShardReviverThread().start()
 
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
@@ -281,6 +279,9 @@ class Loritta {
 		thread {
 			while (true) {
 				try {
+					userCount = lorittaShards.getUserCount()
+					guildCount = lorittaShards.getGuildCount()
+
 					loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
 
 					var serversFanClub = loritta.serversFanClub.sortedByDescending {
@@ -290,26 +291,34 @@ class Loritta {
 					var donatorsFanClub = serversFanClub.filter {
 						val owner = it.guild.owner.user
 
-						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
-						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
 
-						val ownerInLorittaServer = lorittaGuild.getMember(owner)
+						if (lorittaGuild != null) {
+							val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+							val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
-						(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
+							val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+							(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
+						} else {
+							false
+						}
 					}
 
 					serversFanClub.onEach {
 						val owner = it.guild.owner.user
 
-						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")!!
-						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
 
-						val ownerInLorittaServer = lorittaGuild.getMember(owner)
+						if (lorittaGuild != null) {
+							val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+							val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
-						if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
-							it.isSuper = true
+							val ownerInLorittaServer = lorittaGuild.getMember(owner)
+
+							if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
+								it.isSuper = true
+							}
 						}
 					}
 

@@ -18,10 +18,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.NashornDocsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetChannelInfoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetCommunityInfoView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetRssFeedTitleView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.APIGetTwitchInfoView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.log
@@ -35,12 +32,13 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object GlobalHandler {
-	val views = generateViews()
+	var views = mutableListOf<AbstractView>()
+	var apiViews = mutableListOf<NoVarsView>()
 
 	fun render(req: Request, res: Response): String {
 		println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
-		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
+
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
 			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
@@ -52,7 +50,11 @@ object GlobalHandler {
 
 			loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
 		}
-		
+
+		apiViews.filter { it.handleRender(req, res) }
+				.forEach { return it.render(req, res) }
+
+		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 		variables["epochMillis"] = System.currentTimeMillis()
 
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
@@ -99,8 +101,8 @@ object GlobalHandler {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
-		variables["guilds"] = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuilds()
-		variables["userCount"] = com.mrpowergamerbr.loritta.utils.lorittaShards.getUsers()
+		variables["guildCount"] = loritta.guildCount
+		variables["userCount"] = loritta.userCount
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
@@ -164,13 +166,15 @@ object GlobalHandler {
 		return evaluate("404.html", variables)
 	}
 
-	fun generateViews(): MutableList<AbstractView> {
+	fun generateViews()  {
 		val views = mutableListOf<AbstractView>()
+		val apiViews = mutableListOf<NoVarsView>()
+
 		// ===[ APIS ]===
-		views.add(APIGetCommunityInfoView())
-		views.add(APIGetChannelInfoView())
-		views.add(APIGetRssFeedTitleView())
-		views.add(APIGetTwitchInfoView())
+		apiViews.add(APIGetCommunityInfoView())
+		apiViews.add(APIGetChannelInfoView())
+		apiViews.add(APIGetRssFeedTitleView())
+		apiViews.add(APIGetTwitchInfoView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
@@ -202,7 +206,8 @@ object GlobalHandler {
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 
-		return views
+		this.views = views
+		this.apiViews = apiViews
 	}
 
 	object APICodes {

@@ -3,9 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import java.awt.Color
+import java.time.Instant
 
 class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -37,15 +40,14 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
-				var id = context.args[0];
-
-				if (context.rawArgs[0].startsWith("<") && context.message.mentionedUsers.isNotEmpty()) {
-					id = context.message.mentionedUsers[0].id
-				}
+				val user = LorittaUtils.getUserFromContext(context, 0)
+				var rawArgs = context.rawArgs
+				rawArgs = rawArgs.remove(0) // remove o usuário
 
 				var days = 7;
 				if (context.args.size > 1 && context.args[1].toIntOrNull() != null) {
 					days = context.args[1].toInt()
+					rawArgs = rawArgs.remove(0) // remove o tempo
 				}
 
 				if (days > 7) {
@@ -57,14 +59,138 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					return;
 				}
 
-				var reason: String? = null;
-				if (context.args.size > 1) {
-					reason = context.args.toList().subList(1, context.args.size).joinToString(separator = " ");
+				var reason = rawArgs.joinToString(" ")
+				if (user == null) {
+					context.reply(
+							LoriReply(
+									locale["BAN_UserDoesntExist"],
+									Constants.ERROR
+							)
+					)
+					return
 				}
-				context.guild.controller.ban(id, days, locale["SOFTBAN_BY", context.userHandle.name + "#" + context.userHandle.discriminator] + if (reason != null) " (${locale["HACKBAN_REASON"]}: " + reason + ")" else "").complete()
-				context.guild.controller.unban(id).complete()
 
-				context.sendMessage(context.getAsMention(true) + locale["SOFTBAN_SUCCESS", id])
+				val member = context.guild.getMember(user)
+
+				if (member == null) {
+					context.reply(
+							LoriReply(
+									locale["BAN_UserNotInThisServer"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (!context.guild.selfMember.canInteract(member)) {
+					context.reply(
+							LoriReply(
+									locale["BAN_RoleTooLow"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (!context.handle.canInteract(member)) {
+					context.reply(
+							LoriReply(
+									locale["BAN_PunisherRoleTooLow"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+
+
+
+				var str = locale["BAN_ReadyToPunish", locale["SOFTBAN_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
+
+				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+				if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
+					str += " ${locale["BAN_SilentTip"]}"
+				}
+
+				val message = context.reply(
+						LoriReply(
+								message = str,
+								prefix = "⚠"
+						)
+				)
+
+				message.onReactionAddByAuthor(context) {
+					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
+						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
+
+						if (!isSilent) {
+							if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+								try {
+									val embed = EmbedBuilder()
+
+									embed.setTimestamp(Instant.now())
+									embed.setColor(Color(221, 0, 0))
+
+									embed.setThumbnail(context.guild.iconUrl)
+									embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
+									embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["SOFTBAN_PunishAction"].toLowerCase(), context.guild.name]}!")
+									embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
+									embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+
+									user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+								} catch (e: Exception) {
+									e.printStackTrace()
+								}
+							}
+
+							if (context.config.moderationConfig.sendToPunishLog) {
+								val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+
+								if (textChannel != null && textChannel.canTalk()) {
+									val message = MessageUtils.generateMessage(
+											context.config.moderationConfig.punishmentLogMessage,
+											null,
+											mutableMapOf(
+													"reason" to reason,
+													"punishment" to locale["SOFTBAN_PunishAction"],
+													"staff" to context.userHandle.name,
+													"@staff" to context.userHandle.asMention,
+													"#staff" to context.userHandle.discriminator,
+													"staff-avatar-url" to context.userHandle.avatarUrl,
+													"user" to user.name,
+													"@user" to user.asMention,
+													"#user" to user.discriminator,
+													"user-avatar-url" to user.avatarUrl,
+													"user-id" to user.id,
+													"staff-id" to context.userHandle.id
+											)
+									)
+
+									textChannel.sendMessage(message).complete()
+								}
+							}
+						}
+
+						context.guild.controller.ban(member, days, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+								.complete()
+						context.guild.controller.unban(user).complete()
+
+						message.delete().complete()
+
+						context.reply(
+								LoriReply(
+										locale["BAN_SuccessfullyPunished"],
+										"\uD83C\uDF89"
+								)
+						)
+					}
+					return@onReactionAddByAuthor
+				}
+
+				message.addReaction("✅").complete()
+				if (hasSilent) {
+					message.addReaction("\uD83D\uDE4A").complete()
+				}
 			} catch (e: Exception) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_NO_PERM"])
 			}

@@ -11,12 +11,12 @@ import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import org.jooby.Request
 import org.jooby.Response
 
-class APIGetTwitchInfoView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
+class APIGetTwitchInfoView : NoVarsView() {
+	override fun handleRender(req: Request, res: Response): Boolean {
 		return req.path().matches(Regex("^/api/v1/get_twitch_info"))
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response): String {
 		val json = JsonObject()
 
 		if (!req.param("channelLink").isSet) {

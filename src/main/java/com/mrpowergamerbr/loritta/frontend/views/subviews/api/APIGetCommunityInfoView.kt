@@ -8,12 +8,12 @@ import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
 
-class APIGetCommunityInfoView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
+class APIGetCommunityInfoView : NoVarsView() {
+	override fun handleRender(req: Request, res: Response): Boolean {
 		return req.path().matches(Regex("^/api/v1/get_community_info"))
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response): String {
 		val json = JsonObject()
 
 		if (!req.param("aminoInviteLink").isSet) {

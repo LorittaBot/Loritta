@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.EntityBuilder
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Icon
@@ -47,10 +48,13 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		}
 		val calendar = Calendar.getInstance()
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
+		val firstInstance = loritta.lorittaShards.shards.firstOrNull { it.status == JDA.Status.CONNECTED }
 
 		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
-			revertedAvatar = true
-			loritta.lorittaShards.shards[0].selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/original.png"))).complete()
+			if (firstInstance != null) {
+				revertedAvatar = true
+				firstInstance.selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/original.png"))).complete()
+			}
 		}
 
 		if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
@@ -62,9 +66,9 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			var minutes = calendar.get(Calendar.MINUTE) / 15
 			val diff = System.currentTimeMillis() - lastUpdate
 
-			if (diff >= 25000) {
+			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
-				loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 				lastUpdate = System.currentTimeMillis()
 			}
 
@@ -76,11 +80,13 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 				val fanArt = Loritta.config.fanArts[currentIndex]
 
-				loritta.lorittaShards.shards[0].selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/${fanArt.fileName}"))).complete()
-				loritta.lorittaShards.setGame(EntityBuilder(loritta.lorittaShards.shards[0]).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+				if (firstInstance != null) {
+					firstInstance.selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/${fanArt.fileName}"))).complete()
+					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 
-				currentFanArt = fanArt
-				currentIndex++
+					currentFanArt = fanArt
+					currentIndex++
+				}
 			}
 
 			fanArtMinutes = minutes

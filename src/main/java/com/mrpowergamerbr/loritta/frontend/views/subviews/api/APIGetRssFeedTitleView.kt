@@ -16,12 +16,12 @@ import org.jsoup.safety.Whitelist
 import java.text.SimpleDateFormat
 import java.util.*
 
-class APIGetRssFeedTitleView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
+class APIGetRssFeedTitleView : NoVarsView() {
+	override fun handleRender(req: Request, res: Response): Boolean {
 		return req.path().matches(Regex("^/api/v1/get_feed_title"))
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response): String {
 		val json = JsonObject()
 
 		if (!req.param("feedLink").isSet) {

@@ -243,7 +243,6 @@ class CommandManager {
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
-		commandMap.add(HackBanCommand())
 		commandMap.add(SoftBanCommand())
 		// commandMap.add(MuteCommand())
 		commandMap.add(SlowModeCommand())

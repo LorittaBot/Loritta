@@ -1,18 +1,19 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.google.common.collect.Sets
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.managers.Presence
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Guarda todos os shards da Loritta
  */
 class LorittaShards {
-    var shards: MutableList<JDA> = CopyOnWriteArrayList<JDA>()
-    val lastJdaEventTime = mutableMapOf<JDA, Long>()
+    var shards: MutableSet<JDA> = Sets.newConcurrentHashSet()
 
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {
@@ -64,7 +65,7 @@ class LorittaShards {
     }
 
     fun retriveUserById(id: String?): User? {
-        return getUserById(id) ?: shards[0].retrieveUserById(id).complete()
+        return getUserById(id) ?: shards.first().retrieveUserById(id).complete()
     }
 
     fun getMutualGuilds(user: User): List<Guild> {
@@ -78,7 +79,7 @@ class LorittaShards {
 
     fun getPresence(): Presence {
         // Pegar primeira shard e retornar a presença dela
-        return shards[0].presence
+        return shards.first().presence
     }
 
     /**
