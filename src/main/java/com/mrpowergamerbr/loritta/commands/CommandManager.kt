@@ -63,27 +63,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.social.SayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.SobreMimCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.AminoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.AnagramaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.ColorInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.DicioCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.EmojiSearchCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.EncurtarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.HojeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.IsUpCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.KnowYourMemeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.LembrarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.Md5Command
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.MoneyCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.MorseCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.OCRCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.TempoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.TranslateCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikiaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.WikipediaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.YoutubeMp3Command
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import net.pocketdreams.loriplugins.simsimi.commands.SimsimiCommand
@@ -200,6 +180,7 @@ class CommandManager {
 		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
 		// commandMap.add(UnicodeCommand())
+		commandMap.add(ReceitasCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
