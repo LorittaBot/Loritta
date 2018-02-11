@@ -1,12 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.Aggregates.limit
-import com.mongodb.client.model.Aggregates.project
-import com.mongodb.client.model.Aggregates.skip
-import com.mongodb.client.model.Aggregates.sort
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Projections
+import com.mongodb.BasicDBObject
+import com.mongodb.client.model.*
+import com.mongodb.client.model.Aggregates.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -22,6 +18,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import org.bson.BSONObject
 import org.bson.Document
 import java.awt.Color
 import java.awt.Graphics2D
@@ -66,6 +63,24 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 							)
 						).iterator()
 
+				val aggregateTime = loritta.mongo
+						.getDatabase("loritta")
+						.getCollection("users")
+						.aggregate(listOf(
+								Document("\$unwind", "\$spinnerScores"),
+								// Aggregates.match(Filters.exists("spinnerScores")),
+								// Aggregates.addFields(Field("spinnerScores.forTime", "forTime")),
+								Document("\$group", Document("_id", null).append("total", Document("\$sum", "\$spinnerScores.forTime")))
+								/* group(
+
+										"\$test", Accumulators.sum("testtesttest", true)
+								),
+								group(
+										"\$_id", Accumulators.sum("total", true)
+								) */
+						)
+						)
+
 				val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 				val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 				val graphics = base.graphics as Graphics2D
@@ -100,14 +115,15 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				var idx = 0
 				var currentY = 37;
 
-				var total = 0L
+				val document = aggregateTime.first()
+				println(document)
+				var total = document.getLong("total")
 				documents.use {
 					var index = 0
 					while (it.hasNext()) {
 						val document = it.next()
 						val spinnerScore = document["spinnerScores"] as Document
 						val forTime = spinnerScore.getLong("forTime")
-						total += forTime
 						if (index !in (4 * (page - 1) + if (page != 1) 1 else 0)..(4 * page) + if (page != 1) 1 else 0) {
 							continue
 						}
@@ -163,14 +179,14 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 							val emoji = spinnerScore.getString("emoji")
 							val image = when (emoji) {
-								"<:spinner8:344292269836206082>" -> "https://cdn.discordapp.com/emojis/344292269836206082.png"
-								"<:spinner2:327245670052397066>" -> "https://cdn.discordapp.com/emojis/327245670052397066.png"
-								"<:spinner3:327246151591919627>" -> "https://cdn.discordapp.com/emojis/327246151591919627.png"
-								"<:spinner4:344292269764902912>" -> "https://cdn.discordapp.com/emojis/344292269764902912.png"
-								"<:spinner5:344292269160923147>" -> "https://cdn.discordapp.com/emojis/344292269160923147.png"
-								"<:spinner6:344292270125613056>" -> "https://cdn.discordapp.com/emojis/344292270125613056.png"
-								"<:spinner7:344292270268350464>" -> "https://cdn.discordapp.com/emojis/344292270268350464.png"
-								"<:spinner1:327243530244325376>" -> "https://cdn.discordapp.com/emojis/327243530244325376.png"
+								"<:spinner8:411981187565879306>" -> "https://cdn.discordapp.com/emojis/344292269836206082.png"
+								"<:spinner2:411981187830251520>" -> "https://cdn.discordapp.com/emojis/327245670052397066.png"
+								"<:spinner3:411981187586850816>" -> "https://cdn.discordapp.com/emojis/327246151591919627.png"
+								"<:spinner4:411981187758686208>" -> "https://cdn.discordapp.com/emojis/344292269764902912.png"
+								"<:spinner5:411981188048224266>" -> "https://cdn.discordapp.com/emojis/344292269160923147.png"
+								"<:spinner6:411981187289186316>" -> "https://cdn.discordapp.com/emojis/344292270125613056.png"
+								"<:spinner7:411981187553165325>" -> "https://cdn.discordapp.com/emojis/344292270268350464.png"
+								"<:spinner1:411981187419078657>" -> "https://cdn.discordapp.com/emojis/327243530244325376.png"
 								else -> "https://cdn.discordapp.com/emojis/366047906689581085.png"
 							}
 
@@ -210,8 +226,8 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 			if (diff in spinner.forTime-10..spinner.forTime) {
 				var time = Loritta.RANDOM.nextInt(10, 61);
 
-				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
-				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
+				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
+				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
 
 				if (lowerBound > upperBound) {
 					val temp = upperBound;
@@ -287,11 +303,11 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		}
 		var time = Loritta.RANDOM.nextInt(10, 61); // Tempo que o Fidget Spinner irá ficar rodando
 
-		var random = listOf("<:spinner1:327243530244325376>", "<:spinner2:327245670052397066>", "<:spinner3:327246151591919627>", "<:spinner4:344292269764902912>", "<:spinner5:344292269160923147>", "<:spinner6:344292270125613056>", "<:spinner7:344292270268350464>", "<:spinner8:344292269836206082>") // Pegar um spinner aleatório
+		var random = listOf("<:spinner1:411981187419078657>", "<:spinner2:411981187830251520>", "<:spinner3:411981187586850816>", "<:spinner4:411981187758686208>", "<:spinner5:411981188048224266>", "<:spinner6:411981187289186316>", "<:spinner7:411981187553165325>", "<:spinner8:411981187565879306>") // Pegar um spinner aleatório
 		var spinnerEmoji = random[Loritta.RANDOM.nextInt(random.size)]
 
-		var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
-		var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
+		var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
+		var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
 
 		if (lowerBound > upperBound) {
 			val temp = upperBound;

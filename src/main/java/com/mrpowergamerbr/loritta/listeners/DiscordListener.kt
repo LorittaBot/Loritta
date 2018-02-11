@@ -335,26 +335,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		thread(name = name) {
 			if (e.isFromType(ChannelType.TEXT)) {
-				// TODO: Isto deveria ser feito usando a API da Loritta
-				if (e.guild.id == "297732013006389252") {
-					if (e.textChannel.id == "367359479877992449") {
-						var role: Role? = null
-						if (e.reactionEmote.name == "\uD83C\uDDE7\uD83C\uDDF7") {
-							role = e.guild.getRoleById("367359104320012288")
-						} else if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
-							role = e.guild.getRoleById("367359247891038209")
-						}
-
-						if (role != null) {
-							if (e is MessageReactionAddEvent) {
-								e.guild.controller.addSingleRoleToMember(e.member, role).complete()
-							} else if (e is MessageReactionRemoveEvent) {
-								e.guild.controller.removeSingleRoleFromMember(e.member, role).complete()
-							}
-						}
-					}
-				}
-
 				val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
 
 				executor.execute {

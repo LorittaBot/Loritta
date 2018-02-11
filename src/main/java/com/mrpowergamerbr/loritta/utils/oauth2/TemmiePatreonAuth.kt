@@ -1,15 +1,13 @@
 package com.mrpowergamerbr.loritta.utils.oauth2
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
@@ -102,7 +100,7 @@ class TemmiePatreonAuth {
 
 	fun getProjectPledges(projectId: String): MutableList<PatreonPledge> {
 		isReady()
-		val response = HttpRequest.get(String.format(PROJECT_PLEDGES_URL, projectId))
+		val response = HttpRequest.get("https://www.patreon.com/api/oauth2/api/campaigns/$projectId/pledges?include=patron.null&${"page[count]=25".encodeToUrl()}")
 				.header("User-Agent", USER_AGENT)
 				.header("Content-Type", "application/x-www-form-urlencoded")
 				.authorization("Bearer $accessToken")
@@ -115,34 +113,58 @@ class TemmiePatreonAuth {
 		}
 		val body = response.body()
 
-		val jsonObject = jsonParser.parse(body).obj
+		var jsonObject = jsonParser.parse(body).obj
 
 		val included = mutableMapOf<Int, JsonObject>()
 		val patrons = mutableListOf<PatreonPledge>()
 
-		for (element in jsonObject["included"].array) {
-			val obj = element.obj
-			val id = obj["id"].int
-			included[id] = obj
-		}
+		fun addStuff(jsonObject: JsonObject) {
+			for (element in jsonObject["included"].array) {
+				val obj = element.obj
+				val id = obj["id"].int
+				included[id] = obj
+			}
 
-		for (element in jsonObject["data"].array) {
-			if (element["attributes"].obj.has("amount_cents")) {
-				val metadata = included[element["relationships"]["patron"]["data"]["id"].int]!!["attributes"].obj
+			for (element in jsonObject["data"].array) {
+				if (element["attributes"].obj.has("amount_cents")) {
+					val metadata = included[element["relationships"]["patron"]["data"]["id"].int]!!["attributes"].obj
 
-				val fullName = metadata["full_name"].string
-				var discordId: String? = null;
+					val fullName = metadata["full_name"].string
+					var discordId: String? = null;
 
-				if (metadata.has("social_connections")) {
-					if (metadata["social_connections"].obj.has("discord")) {
-						if (!metadata["social_connections"]["discord"].isJsonNull) {
-							discordId = metadata["social_connections"]["discord"]["user_id"].string
+					if (metadata.has("social_connections")) {
+						if (metadata["social_connections"].obj.has("discord")) {
+							if (!metadata["social_connections"]["discord"].isJsonNull) {
+								discordId = metadata["social_connections"]["discord"]["user_id"].string
+							}
 						}
 					}
-				}
 
-				patrons.add(PatreonPledge(fullName, element["attributes"].obj["amount_cents"].int, discordId, !element["attributes"]["declined_since"].isJsonNull))
+					patrons.add(PatreonPledge(fullName, element["attributes"].obj["amount_cents"].int, discordId, !element["attributes"]["declined_since"].isJsonNull))
+				}
 			}
+		}
+
+		addStuff(jsonObject)
+		while (jsonObject["links"].obj["next"].nullString != null) {
+			val response = HttpRequest.get(jsonObject["links"]["next"].string)
+					.header("User-Agent", USER_AGENT)
+					.header("Content-Type", "application/x-www-form-urlencoded")
+					.authorization("Bearer $accessToken")
+
+			try {
+				checkStatusCode(response)
+			} catch (e: UnauthorizedException) {
+				refreshToken()
+				continue
+			}
+
+			val body = response.body()
+
+			jsonObject = jsonParser.parse(body).obj
+
+			addStuff(jsonObject)
+
 		}
 
 		return patrons

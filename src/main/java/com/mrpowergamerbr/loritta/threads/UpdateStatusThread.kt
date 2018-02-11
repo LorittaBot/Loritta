@@ -63,12 +63,12 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				currentIndex = 0
 			}
 
-			var minutes = calendar.get(Calendar.MINUTE) / 15
+			var minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
 
 			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
-				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 				lastUpdate = System.currentTimeMillis()
 			}
 
@@ -82,7 +82,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 				if (firstInstance != null) {
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("Fan Art by ${fanArt.artist} \uD83C\uDFA8 ~ Loritta Morenitta", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 
 					currentFanArt = fanArt
 					currentIndex++

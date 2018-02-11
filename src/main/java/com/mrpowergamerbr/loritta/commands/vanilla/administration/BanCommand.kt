@@ -129,7 +129,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 												"user" to user.name,
 												"@user" to user.asMention,
 												"#user" to user.discriminator,
-												"user-avatar-url" to user.avatarUrl,
+												"user-avatar-url" to user.effectiveAvatarUrl,
 												"user-id" to user.id,
 												"staff-id" to context.userHandle.id
 										)

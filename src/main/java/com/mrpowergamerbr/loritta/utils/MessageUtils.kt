@@ -68,7 +68,7 @@ object MessageUtils {
 		}
 	}
 
-	fun replaceTokens(text: String, source: Any?, customTokens: Map<String, String> = mutableMapOf<String, String>()): String {
+	fun replaceTokens(text: String, source: Any?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
 		var mentionUser = ""
 		var user = ""
 		var userDiscriminator = ""
@@ -109,7 +109,7 @@ object MessageUtils {
 		var message = text
 
 		for ((token, value) in customTokens) {
-			message = message.replace("{$token}", value)
+			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 		}
 
 		message = message.replace("{@user}", mentionUser)

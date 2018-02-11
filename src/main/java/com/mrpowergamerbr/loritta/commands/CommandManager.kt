@@ -36,13 +36,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.NashornTestCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.EscolherCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.FanArtsCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.LanguageCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PatreonCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.QuoteCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
 import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.PausarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.PlaylistCommand
@@ -147,6 +141,7 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(FanArtsCommand())
+		commandMap.add(DiscordBotListCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())

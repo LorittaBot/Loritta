@@ -105,9 +105,9 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newCachedThreadPool() // Threads
-	val messageExecutors = Executors.newCachedThreadPool() // Threads
-	val executor = Executors.newCachedThreadPool() // Threads
+	val eventLogExecutors = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Event Log Thread %d").build()) // Threads
+	val messageExecutors = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Message Thread %d").build()) // Threads
+	val executor = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Executor Thread %d").build()) // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -199,29 +199,7 @@ class Loritta {
 		val rootLogger = loggerContext.getLogger("org.mongodb.driver")
 		rootLogger.level = Level.OFF
 
-		println("Iniciando MongoDB...")
-
-		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
-				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
-
-		val mongoBuilder = MongoClientOptions.Builder().apply {
-			codecRegistry(pojoCodecRegistry)
-		}
-
-		val options = mongoBuilder
-				.maxConnectionIdleTime(10000)
-				.maxConnectionLifeTime(10000)
-				.build()
-
-		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
-
-		val db = mongo.getDatabase("loritta")
-
-		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
-
-		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
-		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
-		storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
+		initMongo()
 
 		generateDummyServerConfig()
 
@@ -346,6 +324,33 @@ class Loritta {
 
 		LorittaUtils.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
+	}
+
+	fun initMongo() {
+		println("Iniciando MongoDB...")
+
+		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+
+		val mongoBuilder = MongoClientOptions.Builder().apply {
+			codecRegistry(pojoCodecRegistry)
+		}
+
+		val options = mongoBuilder
+				.maxConnectionIdleTime(10000)
+				.maxConnectionLifeTime(10000)
+				.connectionsPerHost(750)
+				.build()
+
+		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
+
+		val db = mongo.getDatabase("loritta")
+
+		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
+
+		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
+		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
+		storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
 	}
 
 	/**

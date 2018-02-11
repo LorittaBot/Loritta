@@ -89,6 +89,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
+								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+									continue
+								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES))
+									continue
+								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+									continue
+								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_READ))
+									continue
+
 								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
 								embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
@@ -146,6 +155,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
+						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+							continue
+						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+							continue
+						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_READ))
+							continue
+
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
 						embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
@@ -171,6 +187,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
 
 				if (textChannel != null && textChannel.canTalk()) {
+					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+						return@execute
+					if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+						return@execute
+					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+						return@execute
+
 					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
 						embed.setDescription("\uD83C\uDF1F ${locale["EVENTLOG_CHANNEL_CREATED", event.channel.asMention]}")
 
@@ -254,6 +277,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
+					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+						return@thread
+					if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+						return@thread
+					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+						return@thread
+
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.message.id)).first()
 					if (storedMessage != null) {
 						val embed = EmbedBuilder()
@@ -285,6 +315,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
 
 				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.messageId)).first()
@@ -332,6 +368,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
 					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
 
 				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -356,6 +398,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
 					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
 
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
@@ -377,6 +425,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@execute
 
 				val embed = EmbedBuilder()
@@ -408,9 +462,16 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
 					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
+
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 
@@ -444,9 +505,16 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
 					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
+
 				embed.setDescription("\uD83D\uDCDD **Nickname de ${event.member.asMention} foi alterado!\n\nAntigo nickname: `${if (event.prevNick == null) "\uD83E\uDD37 Nenhum nickname" else event.prevNick}`\nNovo nickname: `${if (event.newNick == null) "\uD83E\uDD37 Nenhum nickname" else event.newNick}`**")
 				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
 

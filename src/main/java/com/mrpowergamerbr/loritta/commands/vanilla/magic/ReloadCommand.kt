@@ -108,24 +108,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		loritta.loadLocales()
 		loritta.loadFanArts()
 
-		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
-				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
-
-		val mongoBuilder = MongoClientOptions.Builder().apply {
-			connectionsPerHost(1000)
-			codecRegistry(pojoCodecRegistry)
-		}
-		val options = mongoBuilder.build()
-
-		loritta.mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
-
-		val db = loritta.mongo.getDatabase("loritta")
-
-		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
-
-		loritta.serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
-		loritta.usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
-		loritta.storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
+		loritta.initMongo()
 
 		GlobalHandler.generateViews()
 

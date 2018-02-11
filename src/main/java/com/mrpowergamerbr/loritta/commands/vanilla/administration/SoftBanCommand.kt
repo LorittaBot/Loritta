@@ -102,9 +102,6 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					return
 				}
 
-
-
-
 				var str = locale["BAN_ReadyToPunish", locale["SOFTBAN_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
 
 				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
@@ -156,7 +153,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 													"staff" to context.userHandle.name,
 													"@staff" to context.userHandle.asMention,
 													"#staff" to context.userHandle.discriminator,
-													"staff-avatar-url" to context.userHandle.avatarUrl,
+													"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
 													"user" to user.name,
 													"@user" to user.asMention,
 													"#user" to user.discriminator,
