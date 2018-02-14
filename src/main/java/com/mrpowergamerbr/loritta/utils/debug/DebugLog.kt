@@ -5,17 +5,17 @@ import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.debug.DebugLog.logTypes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
-	val subscribedDebugTypes = mutableListOf<DebugType>()
+	val subscribedDebugTypes = mutableListOf<DebugType>(DebugType.WEBSITE, DebugType.COMMAND_EXECUTED, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS)
+	val logTypes = mutableListOf(DebugType.COMMAND_EXECUTED, DebugType.WEBSITE, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS, DebugType.STACKTRACES)
 
 	fun startCommandListenerThread() {
 		thread {
@@ -65,6 +65,36 @@ object DebugLog {
 					}
 				}
 				println("Subscribed Debug Types: ${subscribedDebugTypes.joinToString(", ", transform = { it.name })}")
+			}
+			"log" -> {
+				if (args.isNotEmpty()) {
+					val todo = args[0]
+
+					if (todo == "all") {
+						logTypes.addAll(DebugType.values())
+						return
+					}
+					if (todo == "none") {
+						logTypes.clear()
+						return
+					}
+
+					val type = args[1]
+
+					if (todo == "add") {
+						logTypes.add(DebugType.valueOf(type))
+
+						println("$type added to the subscription list")
+						return
+					}
+					if (todo == "remove") {
+						logTypes.remove(DebugType.valueOf(type))
+
+						println("$type removed from the subscription list")
+						return
+					}
+				}
+				println("Subscribed Debug Types: ${logTypes.joinToString(", ", transform = { it.name })}")
 			}
 			"info" -> {
 				val mb = 1024 * 1024
@@ -149,11 +179,14 @@ object DebugLog {
 }
 
 enum class DebugType {
-	MESSAGE_RECEIVED, REACTION_RECEIVED, COMMAND_EXECUTED, TWITCH_THREAD
+	MESSAGE_RECEIVED, REACTION_RECEIVED, COMMAND_EXECUTED, COMMAND_STATUS, STACKTRACES, TWITCH_THREAD, WEBSITE
 }
 
 fun debug(type: DebugType, message: Any?) {
 	if (subscribedDebugTypes.contains(type)) {
-		System.out.println("[${type.name}] $message")
+		System.out.println("${ConsoleColors.YELLOW_BOLD}[${type.name}]${ConsoleColors.RESET} $message")
+	}
+	if (logTypes.contains(type)) {
+		log("[${type.name}] $message")
 	}
 }

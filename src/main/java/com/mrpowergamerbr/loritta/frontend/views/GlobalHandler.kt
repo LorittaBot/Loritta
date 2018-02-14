@@ -21,9 +21,12 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.debug.DebugType
+import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jooby.Request
 import org.jooby.Response
 import java.lang.management.ManagementFactory
@@ -36,8 +39,9 @@ object GlobalHandler {
 	var apiViews = mutableListOf<NoVarsView>()
 
 	fun render(req: Request, res: Response): String {
-		println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
-		log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		// println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		// log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		debug(DebugType.WEBSITE, "${req.header("X-Forwarded-For").value()}: ${req.path()}")
 
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
@@ -159,8 +163,14 @@ object GlobalHandler {
 			}
 		}
 
-		views.filter { it.handleRender(req, res, variables) }
-			.forEach { return it.render(req, res, variables) }
+		try {
+			views.filter { it.handleRender(req, res, variables) }
+					.forEach { return it.render(req, res, variables) }
+		} catch (e: Exception) {
+			val stacktraceAsString = ExceptionUtils.getStackTrace(e)
+			debug(DebugType.STACKTRACES, stacktraceAsString)
+			throw e
+		}
 
 		res.status(404)
 		return evaluate("404.html", variables)

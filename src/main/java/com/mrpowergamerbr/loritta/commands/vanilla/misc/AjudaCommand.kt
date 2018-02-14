@@ -63,9 +63,25 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	}
 
 	fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
+		val reactionEmotes = mapOf(
+				CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
+				CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
+				CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
+				CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
+				CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
+				CommandCategory.SOCIAL to "<a:lori_ablobcouple:412577132007653383>",
+				CommandCategory.FUN to "<:vieirinha:412574915879763982>",
+				CommandCategory.ADMIN to "\uD83D\uDC6E",
+				CommandCategory.IMAGES to "\uD83C\uDFA8",
+				CommandCategory.MUSIC to "\uD83C\uDFA7",
+				CommandCategory.UTILS to "\uD83D\uDD27",
+				CommandCategory.MISC to "\uD83D\uDDC3",
+				CommandCategory.ANIME to "\uD83D\uDCFA"
+		)
+
 		val embeds = ArrayList<MessageEmbed>();
 		var embed = EmbedBuilder()
-		embed.setTitle(context.locale[cat.fancyTitle], null)
+		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.locale[cat.fancyTitle], null)
 		val conf = context.config
 
 		var color = when (cat) {
@@ -131,16 +147,16 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.commandManager.commandMap.filter { it.category == category }.isNotEmpty() }
+		categories = categories.filter { category -> loritta.commandManager.commandMap.any { it.category == category } }
 
 		val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to "discord:375448103517552642",
-				CommandCategory.ROBLOX to "roblox:375313891925688331",
-				CommandCategory.UNDERTALE to "undertale_heart:343839169719697408",
-				CommandCategory.POKEMON to "pokeball:343837491905691648",
-				CommandCategory.MINECRAFT to "grass:383612358318227457",
-				CommandCategory.SOCIAL to "blobBlush2:375602225940267018",
-				CommandCategory.FUN to "vieirinha:339905091425271820",
+				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
+				CommandCategory.ROBLOX to ":roblox_logo:412576693803286528",
+				CommandCategory.UNDERTALE to ":undertale_heart:412576128340066304",
+				CommandCategory.POKEMON to ":pokeball:412575443024216066",
+				CommandCategory.MINECRAFT to ":minecraft_logo:412575161041289217",
+				CommandCategory.SOCIAL to "a:lori_ablobcouple:412577132007653383",
+				CommandCategory.FUN to ":vieirinha:412574915879763982",
 				CommandCategory.ADMIN to "\uD83D\uDC6E",
 				CommandCategory.IMAGES to "\uD83C\uDFA8",
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
@@ -151,8 +167,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 		for (category in categories) {
 			val cmdCountInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }.count()
-			val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
-			val emoji = if (reactionEmote.contains(":")) { "<:$reactionEmote>" } else { reactionEmote }
+			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
+			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }
 			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
 			description += "$emoji **" + context.locale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
 		}
@@ -210,12 +226,12 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to "discord",
-				CommandCategory.ROBLOX to "roblox",
+				CommandCategory.DISCORD to "discord_logo",
+				CommandCategory.ROBLOX to "roblox_logo",
 				CommandCategory.UNDERTALE to "undertale_heart",
 				CommandCategory.POKEMON to "pokeball",
-				CommandCategory.MINECRAFT to "grass",
-				CommandCategory.SOCIAL to "blobBlush2",
+				CommandCategory.MINECRAFT to "minecraft_logo",
+				CommandCategory.SOCIAL to "lori_ablobcouple",
 				CommandCategory.FUN to "vieirinha",
 				CommandCategory.ADMIN to "\uD83D\uDC6E",
 				CommandCategory.IMAGES to "\uD83C\uDFA8",

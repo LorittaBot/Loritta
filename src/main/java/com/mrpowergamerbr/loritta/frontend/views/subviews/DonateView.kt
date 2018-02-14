@@ -42,8 +42,8 @@ class DonateView : AbstractView() {
 		if (lorittaGuild != null) {
 			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
 			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-			val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+			patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+			donators = lorittaGuild.getMembersWithRoles(roleDonators)
 		} else {
 			patreons = listOf()
 			donators = listOf()

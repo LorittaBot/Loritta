@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -150,12 +151,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 		if (valid) {
 			try {
+				var start = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					debug(DebugType.COMMAND_EXECUTED, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-					log("[COMMAND_EXECUTED] (${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				} else {
 					debug(DebugType.COMMAND_EXECUTED, "(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-					log("[COMMAND_EXECUTED] (Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
 				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
@@ -273,15 +273,24 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				run(context, context.locale)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
-				if (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand)) {
+				if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
 					ev.message.textChannel.getMessageById(ev.messageId).queue({ // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-						it.delete().complete()
+							it.delete().complete()
 					})
 				}
+
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
+				val end = System.currentTimeMillis()
+				if (ev.message.isFromType(ChannelType.TEXT)) {
+					debug(DebugType.COMMAND_STATUS, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+				} else {
+					debug(DebugType.COMMAND_EXECUTED, "(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+				}
 				return true
 			} catch (e: Exception) {
 				e.printStackTrace()
+				val stacktraceAsString = ExceptionUtils.getStackTrace(e)
+				debug(DebugType.STACKTRACES, stacktraceAsString)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado

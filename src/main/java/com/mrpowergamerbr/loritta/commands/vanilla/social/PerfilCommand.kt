@@ -8,20 +8,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.artist
-import com.mrpowergamerbr.loritta.utils.donator
-import com.mrpowergamerbr.loritta.utils.drawText
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
-import com.mrpowergamerbr.loritta.utils.patreon
-import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -121,6 +109,8 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val badges = mutableListOf<BufferedImage>()
 		if (user.patreon || user.id == Loritta.config.ownerId) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
+		if (user.supervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
+		if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 		if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
 		if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 		if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))

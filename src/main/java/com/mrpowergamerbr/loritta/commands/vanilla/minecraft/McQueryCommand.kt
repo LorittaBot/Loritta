@@ -51,7 +51,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 
 				builder.setColor(Color.GREEN)
 
-				builder.setTitle("<:grass:383612358318227457> $hostname:$port", null)
+				builder.setTitle("<:minecraft_logo:412575161041289217> $hostname:$port", null)
 
 				builder.addField("MOTD", response.motd, false)
 				builder.addField("Players", response.playersOnline.toString() + "/" + response.playersMax, true)

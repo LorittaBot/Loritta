@@ -24,7 +24,7 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
         var json = JSON_PARSER.parse(body);
         for (section in json.asJsonObject.entrySet()) {
             var status = section.value.asJsonObject.get("status").asString;
-            var prefix = if (section.key.contains("minecraft")) "<:grass:383612358318227457> " else "<:mojang:383612358129352704>";
+            var prefix = if (section.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704>";
             var emoji = if (status == "Online") "✅" else "❌";
             builder.addField(prefix + section.key, "${emoji} ${status}", true)
         }

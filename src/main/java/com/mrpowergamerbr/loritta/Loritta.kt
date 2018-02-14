@@ -160,7 +160,7 @@ class Loritta {
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(64)
-				.setBulkDeleteSplittingEnabled(true)
+				.setBulkDeleteSplittingEnabled(false)
 
 		builder.addEventListener(discordListener)
 		builder.addEventListener(eventLogListener)
@@ -254,7 +254,7 @@ class Loritta {
 
 		// GiveawayThread().start() // Iniciar thread para processar giveaways
 
-		thread {
+		thread(name = "AFK Delete Message Thread") {
 			while (true) {
 				try {
 					userCount = lorittaShards.getUserCount()
@@ -322,7 +322,7 @@ class Loritta {
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
 
-		LorittaUtils.startAutoPlaylist()
+		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 

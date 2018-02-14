@@ -482,7 +482,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				mm.player.isPaused = false
 			} else {
 				mm.player.isPaused = false
-				LorittaUtils.startRandomSong(event.guild, config)
+				LorittaUtilsKotlin.startRandomSong(event.guild, config)
 			}
 		}
 	}

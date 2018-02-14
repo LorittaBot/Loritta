@@ -37,15 +37,12 @@ import java.util.UUID;
 import static com.mrpowergamerbr.loritta.utils.TextUtilsKt.f;
 
 public final class LorittaUtils {
-	@Deprecated
-	public static final String ERROR = "<:erro:326509900115083266>";
-
 	private LorittaUtils() {
 	}
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().getPermissions().contains(Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
 			return false;
 		}
 		return true;
@@ -98,7 +95,7 @@ public final class LorittaUtils {
 	 */
 	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
-			context.sendMessage(ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("NO_VALID_IMAGE")));
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("NO_VALID_IMAGE")));
 			return false;
 		}
 		return true;
@@ -504,73 +501,6 @@ public final class LorittaUtils {
 			if (is != null) is.close();
 		}
 		return bytes;
-	}
-
-	public static void startAutoPlaylist() {
-		Runnable playlistMagic = () -> {  // Agora iremos iniciar o playlist magic
-			while (true) {
-				try {
-					manageAutoPlaylists();
-				} catch (Exception e) {}
-				try {
-					Thread.sleep(2500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		new Thread(playlistMagic, "Playlist Magic").start(); // Pronto!
-	}
-
-	public static void manageAutoPlaylists() {
-		for (GuildMusicManager mm : LorittaLauncher.loritta.musicManagers.values()) {
-			if (mm.player.getPlayingTrack() == null) {
-				Thread x = new Thread(() -> {
-					try {
-						startRandomSong(mm.scheduler.getGuild());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				});
-				x.start();
-			}
-		}
-	}
-
-	public static void startRandomSong(Guild guild) {
-		startRandomSong(guild, LorittaLauncher.loritta.getServerConfigForGuild(guild.getId()));
-	}
-
-	public static void startRandomSong(Guild guild, ServerConfig conf) {
-		long diff = System.currentTimeMillis() - LorittaLauncher.getInstance().getSongThrottle().getOrDefault(guild.getId(), 0L);
-
-		if (5000 > diff)
-			return; // bye
-
-		if (conf.getMusicConfig().getMusicGuildId() == null || conf.getMusicConfig().getMusicGuildId().isEmpty())
-			return;
-
-		VoiceChannel voiceChannel = guild.getVoiceChannelById(conf.getMusicConfig().getMusicGuildId());
-
-		if (voiceChannel == null)
-			return;
-
-		if (!guild.getSelfMember().hasPermission(voiceChannel, Permission.VOICE_CONNECT))
-			return;
-
-		if (voiceChannel.getMembers().isEmpty())
-			return;
-
-		if (conf.getMusicConfig().getAutoPlayWhenEmpty() && !conf.getMusicConfig().getUrls().isEmpty()) {
-			String trackUrl = conf.getMusicConfig().getUrls().get(
-					Loritta.getRANDOM().nextInt(0, conf.getMusicConfig().getUrls().size()));
-
-			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-			LorittaLauncher.getInstance().getSongThrottle().put(guild.getId(), System.currentTimeMillis());
-
-			// E agora carregue a música
-			LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl); // Só vai meu parça
-		}
 	}
 
 	public static String toUnicode(int ch) {

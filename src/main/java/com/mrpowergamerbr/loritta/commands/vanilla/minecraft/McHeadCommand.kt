@@ -35,7 +35,7 @@ class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINEC
 			builder.setColor(Color.DARK_GRAY)
 			builder.setImage("attachment://avatar.png")
 
-			builder.setTitle("<:grass:383612358318227457> ${context.locale.get("MCHEAD_HEAD_DE", nickname)}")
+			builder.setTitle("<:minecraft_logo:412575161041289217> ${context.locale.get("MCHEAD_HEAD_DE", nickname)}")
 
 			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {

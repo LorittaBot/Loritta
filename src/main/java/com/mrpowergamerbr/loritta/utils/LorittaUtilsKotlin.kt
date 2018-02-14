@@ -21,6 +21,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
@@ -137,6 +138,38 @@ val User.artist: Boolean
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("341343754336337921")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
+
+val User.supervisor: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("351473717194522647")
+			val member = lorittaGuild.getMember(this)
+
+			if (member != null && role != null) {
+				if (member.roles.contains(role))
+					return true
+			}
+		}
+		return false
+	}
+
+val User.support: Boolean
+	get() {
+		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+
+		if (lorittaGuild != null) {
+			val role = lorittaGuild.getRoleById("399301696892829706")
 			val member = lorittaGuild.getMember(this)
 
 			if (member != null && role != null) {
@@ -680,6 +713,70 @@ object LorittaUtilsKotlin {
 				if (textChannel.canTalk())
 					textChannel.sendMessage(toBeSent).queue()
 			}
+		}
+	}
+
+	fun startAutoPlaylist() {
+		val playlistMagic = {
+			// Agora iremos iniciar o playlist magic
+			while (true) {
+				try {
+					manageAutoPlaylists()
+				} catch (e: Exception) {
+				}
+
+				try {
+					Thread.sleep(2500)
+				} catch (e: InterruptedException) {
+					e.printStackTrace()
+				}
+
+			}
+		}
+		Thread(playlistMagic, "Playlist Magic").start() // Pronto!
+	}
+
+	fun manageAutoPlaylists() {
+		val musicManagers = LorittaLauncher.loritta.musicManagers.values.filter { it.player.playingTrack == null }
+
+		val serverConfigs = loritta.serversColl.find(
+				Filters.`in`("_id", musicManagers.map { it.scheduler.guild.id })
+		)
+
+		for (serverConfig in serverConfigs) {
+			startRandomSong(loritta.lorittaShards.getGuildById(serverConfig.guildId)!!, serverConfig)
+		}
+	}
+
+	fun startRandomSong(guild: Guild) {
+		startRandomSong(guild, LorittaLauncher.loritta.getServerConfigForGuild(guild.id))
+	}
+
+	fun startRandomSong(guild: Guild, conf: ServerConfig) {
+		val diff = System.currentTimeMillis() - (LorittaLauncher.getInstance().songThrottle as java.util.Map<String, Long>).getOrDefault(guild.id, 0L)
+
+		if (5000 > diff)
+			return  // bye
+
+		if (conf.musicConfig.musicGuildId == null || conf.musicConfig.musicGuildId!!.isEmpty())
+			return
+
+		val voiceChannel = guild.getVoiceChannelById(conf.musicConfig.musicGuildId) ?: return
+
+		if (!guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT))
+			return
+
+		if (voiceChannel.members.isEmpty())
+			return
+
+		if (conf.musicConfig.autoPlayWhenEmpty && !conf.musicConfig.urls.isEmpty()) {
+			val trackUrl = conf.musicConfig.urls[Loritta.RANDOM.nextInt(0, conf.musicConfig.urls.size)]
+
+			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
+			LorittaLauncher.getInstance().songThrottle.put(guild.id, System.currentTimeMillis())
+
+			// E agora carregue a música
+			LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
 		}
 	}
 }

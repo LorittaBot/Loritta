@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.google.gson.Gson
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mrpowergamerbr.loritta.Loritta
@@ -99,7 +100,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
-		val config = Loritta.GSON.fromJson(json, LorittaConfig::class.java)
+		val config = Gson().fromJson(json, LorittaConfig::class.java)
 		Loritta.config = config
 
 		loritta.generateDummyServerConfig()

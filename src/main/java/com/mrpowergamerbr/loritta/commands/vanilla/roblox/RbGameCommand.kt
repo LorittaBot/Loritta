@@ -79,7 +79,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val upvotes = voteSection.attr("data-total-up-votes")
 			val downvotes = voteSection.attr("data-total-down-votes")
 
-			embed.setTitle("<:roblox:375313891925688331> $gameName", gameUrl)
+			embed.setTitle("<:roblox_logo:412576693803286528> $gameName", gameUrl)
 			embed.addField("\uD83D\uDCBB ${locale["RBUSER_ID_DO_ROBLOX"]}", placeId, true)
 			embed.addField("<:twitt_starstruck:392408611269378068> ${locale["RBGAME_Favorites"]}", favoriteCount, true)
 			embed.addField("\uD83D\uDC4D ${locale["MUSICINFO_LIKES"]}", upvotes, true)

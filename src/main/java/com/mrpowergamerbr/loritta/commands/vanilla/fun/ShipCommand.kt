@@ -80,8 +80,15 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
 				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
-					if (user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) {
+					if ((user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {
 						percentage = random.nextInt(0, 51)
+					}
+				}
+
+				if (user1.id == "377571754698080256" || user2.id == "377571754698080256") {
+					if (user1.id == Loritta.config.ownerId || user2.id == Loritta.config.ownerId) {
+						percentage = 100
+						shipName = "Leethaay"
 					}
 				}
 			}

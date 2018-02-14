@@ -124,9 +124,6 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 						val document = it.next()
 						val spinnerScore = document["spinnerScores"] as Document
 						val forTime = spinnerScore.getLong("forTime")
-						if (index !in (4 * (page - 1) + if (page != 1) 1 else 0)..(4 * page) + if (page != 1) 1 else 0) {
-							continue
-						}
 						val userId = document.getString("_id")
 
 						val user = lorittaShards.getUserById(userId)

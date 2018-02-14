@@ -55,7 +55,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 			var embed = EmbedBuilder();
 
 			embed.apply {
-				setTitle("<:pokeball:343837491905691648> $name", "https://veekun.com/dex/pokemon/${context.args[0].toLowerCase()}")
+				setTitle("<:pokeball:412575443024216066> $name", "https://veekun.com/dex/pokemon/${context.args[0].toLowerCase()}")
 				setDescription(description)
 				setThumbnail(sprite)
 				setColor(Color(255, 28, 28))

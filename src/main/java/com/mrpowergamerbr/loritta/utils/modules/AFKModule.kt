@@ -50,7 +50,7 @@ object AFKModule {
 							).build(event.author)
 					).complete()
 
-					thread {
+					thread(name = "AFK Delete Message Thread") {
 						Thread.sleep(5000)
 
 						message.delete().complete()
@@ -75,7 +75,7 @@ object AFKModule {
 							replies.map { it.build(event.author) }.joinToString("\n")
 					).complete()
 
-					thread {
+					thread(name = "AFK Delete Message Thread") {
 						Thread.sleep(5000)
 
 						message.delete().complete()
