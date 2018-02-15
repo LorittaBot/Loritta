@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -40,7 +41,29 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 			val nickname = context.args.getOrNull(0)
 
 			if (nickname != null) {
-				skin = LorittaUtils.downloadImage("http://skins.minecraft.net/MinecraftSkins/$nickname.png")
+				val profile = MCUtils.getUserProfileFromName(nickname)
+
+				if (profile == null) {
+					context.reply(
+							LoriReply(
+									locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (!profile.textures.containsKey("SKIN")) {
+					context.reply(
+							LoriReply(
+									"Player não possui skin!",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				skin = LorittaUtils.downloadImage(profile.textures["SKIN"]!!.url)
 			} else {
 				this.explain(context)
 				return

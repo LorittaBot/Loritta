@@ -64,11 +64,11 @@ class AminoCommand : AbstractCommand("amino", category = CommandCategory.UTILS) 
 					if (context.message.attachments.isNotEmpty()) {
 						val attachment = context.message.attachments[0]
 
-						if (attachment.isImage) {
-							val imagem = LorittaUtils.downloadImage(attachment.url)
+						val imagem = LorittaUtils.downloadImage(attachment.url)
 
+						if (imagem != null) {
 							context.sendFile(imagem, "amino.png", "\uD83D\uDDBC **|** " + context.getAsMention(true) + context.locale["AMINO_YOUR_IMAGE", context.message.attachments[0].fileName])
-							return;
+							return
 						}
 					}
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["AMINO_NO_IMAGE_FOUND"])
