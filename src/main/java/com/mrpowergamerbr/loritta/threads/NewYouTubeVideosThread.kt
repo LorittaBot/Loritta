@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -24,6 +25,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		val youTubeVideoCache = ConcurrentHashMap<String, YouTubeVideo>()
 		var apiCheckTime = 0L
 		var channelPlaylistIdCache = ConcurrentHashMap<String, String>()
+		val logger = LoggerFactory.getLogger(NewYouTubeVideosThread::class.java)
 	}
 
 	class YouTubeVideo(val id: String)
@@ -100,8 +102,9 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
 						if (error) {
-							println("[!] Removendo key $key...")
+							logger.info("Removendo YouTube API key \"$key\"...")
 							loritta.youtubeKeys.remove(key)
+							logger.info("Key removida! ${loritta.youtubeKey.length} keys restantes...")
 						} else {
 							if (json["items"].array.size() == 0) {
 								doNotReverify[channelId] = System.currentTimeMillis()
@@ -114,7 +117,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 					}
 
 					if (channelPlaylistIdCache[channelId] == null) {
-						println("[!] Canal inválido: ${channelId} ~ Playlist privada!")
+						logger.info("Canal inválido: ${channelId} ~ Playlist privada! TODO: Fallback para RSS Feeds")
 						return@launch
 					}
 
@@ -128,7 +131,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 					val youTubePayload = "window\\[\"ytInitialData\"\\] = (.+);".toPattern().matcher(channelStuff)
 
 					if (!youTubePayload.find()) {
-						println("[!] Canal inválido: ${channelId} ~ https://www.youtube.com/playlist?list=$playlistId")
+						logger.info("Canal inválido: ${channelId} ~ https://www.youtube.com/playlist?list=$playlistId")
 						return@launch
 					}
 					val payload = JSON_PARSER.parse(youTubePayload.group(1))
@@ -177,7 +180,8 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 									// message = message.replace("{descrição}", description);
 									message = message.replace("{link}", "https://youtu.be/" + lastVideoId);
 
-									textChannel.sendMessage(message.substringIfNeeded()).complete();
+									textChannel.sendMessage(message.substringIfNeeded()).complete()
+									logger.info("Vídeo de $channelName \"${lastVideoTitle}\": $lastVideoId foi notificado com sucesso na guild ${guild.name}!")
 								}
 							}
 						}
@@ -186,7 +190,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 					} catch (e: NoSuchElementException) {
 					}
 				} catch (e: Exception) {
-					e.printStackTrace()
+					logger.error("Erro ao tentar processar canal $channelId", e)
 				}
 			}
 		}
@@ -199,7 +203,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			if (diff > 60000) {
 				apiCheckTime = System.currentTimeMillis()
 			}
-			println("${deferred.size} canais foram verificados com sucesso!")
+			logger.info("${deferred.size} canais foram verificados com sucesso!")
 		}
 	}
 }

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
+import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,6 +14,7 @@ import java.util.*
 class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 	companion object {
 		val lastItemTime = HashMap<String, RssFeedCheck>(); // HashMap usada para guardar a data do útimo item na RSS
+		val logger = LoggerFactory.getLogger(NewRssFeedThread::class.java)
 	}
 
 	override fun run() {
@@ -27,11 +29,14 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 	fun checkRssFeeds() {
 		val servers = loritta.serversColl.find(
 				Filters.gt("rssFeedConfig.feeds", listOf<Any>())
-		).iterator()
+		)
 
-		servers.use {
+		logger.info("Verificando RSS feeds de ${servers.count()} servidores...")
+
+		servers.iterator().use {
 			while (it.hasNext()) {
 				val config = it.next()
+
 				try {
 					var rssFeedConfig = config.rssFeedConfig;
 
@@ -106,13 +111,12 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 									}
 								}
 							} catch (e: Exception) {
-								println("Ignorando update a seguir...")
-								e.printStackTrace()
+								logger.error("Erro ao atualizar RSS feed!", e)
 							}
 						}
 					}
 				} catch (e: Exception) {
-					e.printStackTrace()
+					logger.error("Erro ao processar RSS feeds!", e)
 				}
 			}
 		}

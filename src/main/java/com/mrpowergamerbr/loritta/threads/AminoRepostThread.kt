@@ -9,11 +9,13 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
+import org.slf4j.LoggerFactory
 import java.awt.Color
 
 class AminoRepostThread : Thread("Amino Repost Thread") {
 	companion object {
 		var storedLastIds = HashMap<String, MutableSet<String>>();
+		val logger = LoggerFactory.getLogger(AminoRepostThread::class.java)
 	}
 
 	override fun run() {
