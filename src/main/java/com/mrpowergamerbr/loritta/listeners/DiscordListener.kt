@@ -145,6 +145,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
+					if (event.guild.id == "297732013006389252") {
+						if (DeleteNonLorittaInvitesModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
+							return@execute
+						}
+
+						ServerSupportModule.checkForSupport(event, event.message)
+					}
+
 					// ===[ AUTOMOD ]===
 					if (AutomodModule.handleAutomod(event, event.guild, lorittaUser, serverConfig)) {
 						return@execute

@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
+import com.github.salomonbrys.kotson.set
+import com.google.gson.JsonArray
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -15,6 +18,8 @@ class ConfigureAminoView : ConfigureView() {
 
 	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
 		variables["saveType"] = "amino"
+		serverConfig.aminoConfig.aminos = serverConfig.aminoConfig.aminos.filter { guild.getTextChannelById(it.repostToChannelId) != null }.toMutableList()
+
 		return evaluate("amino.html", variables)
 	}
 }

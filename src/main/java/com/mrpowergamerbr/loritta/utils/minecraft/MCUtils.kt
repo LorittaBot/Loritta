@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
  * Classe de utilidades relacionadas ao Minecraft (como UUID query)
  */
 object MCUtils {
-	val username2uuid = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
-	val uuid2profile = CacheBuilder.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
+	val username2uuid = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
+	val uuid2profile = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
 
 	fun getProxy(): Pair<String, Int> {
 		val document = Jsoup.connect("https://www.sslproxies.org/").get()

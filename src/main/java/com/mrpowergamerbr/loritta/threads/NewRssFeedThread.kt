@@ -97,8 +97,11 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 												customTokens["rss_${element.tagName()}"] = element.text()
 											}
 
-											textChannel.sendMessage(MessageUtils.generateMessage(message, null, customTokens)).complete() // Envie a mensagem
-											continue
+											val generatedMessage = MessageUtils.generateMessage(message, null, customTokens)
+											if (generatedMessage.contentRaw.isNullOrEmpty())
+												continue
+
+											textChannel.sendMessage(generatedMessage).complete() // Envie a mensagem
 										} else {
 											// Se nunca verificamos esta feed, vamos só salvar a data atual
 											val tz = TimeZone.getTimeZone("UTC")
@@ -106,7 +109,6 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 											df.timeZone = tz
 											checkedRssFeeds.checked.put(feedUrl, df.format(Date()));
 											lastItemTime.put(guild.id, checkedRssFeeds)
-											continue;
 										}
 									}
 								}

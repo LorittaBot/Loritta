@@ -67,6 +67,7 @@ import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -105,14 +106,24 @@ class Loritta {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Event Log Thread %d").build()) // Threads
-	val messageExecutors = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Message Thread %d").build()) // Threads
-	val executor = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat("Executor Thread %d").build()) // Threads
+	val eventLogExecutors = createThreadPool("Event Log Thread %d") // Threads
+	val messageExecutors = createThreadPool("Message Thread %d") // Threads
+	val executor = createThreadPool("Executor Thread %d") // Threads
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
 	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
+	fun createThreadPool(name: String): ThreadPoolExecutor {
+		return ThreadPoolExecutor(256, // core size
+				512, // max size
+				10*60, // idle timeout
+				TimeUnit.SECONDS,
+				ArrayBlockingQueue<Runnable>(64)).apply {
+			allowCoreThreadTimeOut(true)
+			threadFactory = ThreadFactoryBuilder().setNameFormat(name).build()
+		}
+	}
 	var rawServersFanClub = listOf<ServerFanClub>()
 	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
