@@ -206,7 +206,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
 
-				LorittaUtilsKotlin.trackCommands(ev.message)
+				LorittaUtilsKotlin.executedCommands++
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel) {

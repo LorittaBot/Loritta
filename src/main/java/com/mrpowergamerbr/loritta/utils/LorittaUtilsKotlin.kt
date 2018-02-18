@@ -685,36 +685,7 @@ object LorittaUtilsKotlin {
 		textChannel.sendMessage(messageBuilder.build()).queue()
 	}
 
-	val commandQueue = ConcurrentLinkedQueue<String>()
-	var lastUpdate = System.currentTimeMillis()
 	var executedCommands = 0;
-
-	@JvmStatic
-	fun trackCommands(message: Message) {
-		executedCommands++
-
-		if (message.isFromType(ChannelType.TEXT)) {
-			commandQueue.add("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.contentStripped.stripCodeMarks()}`")
-		} else {
-			commandQueue.add("[`Mensagem Direta`] **${message.author.name.stripCodeMarks()}**: `${message.contentStripped.stripCodeMarks()}`")
-		}
-
-		if (lastUpdate > 5000) {
-			lastUpdate = System.currentTimeMillis()
-
-			val toBeSent = commandQueue.joinToString("\n")
-
-			commandQueue.clear()
-
-			val guild = lorittaShards.getGuildById("297732013006389252") ?: return
-			val textChannel = guild.getTextChannelById("336932935838203904") ?: return
-
-			if (toBeSent.isNotEmpty()) {
-				if (textChannel.canTalk())
-					textChannel.sendMessage(toBeSent).queue()
-			}
-		}
-	}
 
 	fun startAutoPlaylist() {
 		val playlistMagic = {

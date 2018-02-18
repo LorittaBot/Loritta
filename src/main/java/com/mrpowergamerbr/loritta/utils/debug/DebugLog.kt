@@ -147,7 +147,6 @@ object DebugLog {
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
 				println("cleverbots.size: ${CleverbotCommand.cleverbots.size}")
-				println("commandQueue.size: ${LorittaUtilsKotlin.commandQueue.size}")
 				println("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
