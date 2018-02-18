@@ -12,7 +12,7 @@ abstract class ProtectedView : AbstractView() {
 		if (req.path().startsWith("/dashboard")) {
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
-					res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
+					res.redirect(Loritta.config.authorizationUrl)
 					return false
 				}
 			} else {
@@ -35,7 +35,7 @@ abstract class ProtectedView : AbstractView() {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {
 			req.session().unset("discordAuth")
-			res.redirect("https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds&response_type=code&client_id=297153970613387264")
+			res.redirect(Loritta.config.authorizationUrl)
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth

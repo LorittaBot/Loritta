@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -34,7 +35,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			var description = context.locale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
-					"https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975",
+					Loritta.config.addBotUrl,
 					context.guild?.name ?: "\uD83E\uDD37"]
 
 			var builder = EmbedBuilder()

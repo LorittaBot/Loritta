@@ -53,7 +53,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
 			if (firstInstance != null) {
 				revertedAvatar = true
-				firstInstance.selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/original.png"))).complete()
+				firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
 			}
 		}
 
@@ -81,7 +81,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val fanArt = Loritta.config.fanArts[currentIndex]
 
 				if (firstInstance != null) {
-					firstInstance.selfUser.manager.setAvatar(Icon.from(File("/home/servers/loritta/assets/avatar_fanarts/${fanArt.fileName}"))).complete()
+					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
 					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 
 					currentFanArt = fanArt

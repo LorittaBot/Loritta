@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
@@ -184,7 +185,7 @@ object MiscUtils {
 
 	fun optimizeGIF(file: File) {
 		val processBuilder = ProcessBuilder(
-				File("/home/servers/loritta/gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
+				File(Loritta.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
 				"-i",
 				file.toString(),
 				"-O3",

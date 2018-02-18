@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -59,7 +60,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				return;
 			}
 			if (e.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
-				val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png");
+				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png");
 				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
@@ -164,7 +165,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				bufferedImage = bufferedImage.getSubimage(0, 0, Math.min(bufferedImage.width, 400), Math.min(bufferedImage.height, 300));
 			}
 		}
-		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"));
+		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"));
 
 		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.locale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.locale["BACKGROUND_EDITED"]}!" else "")
 		return;

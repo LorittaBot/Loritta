@@ -130,8 +130,8 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 						if (user != null) {
 							// val userProfile = loritta.getLorittaProfileForUser(id)
-							val file = java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + user.id + ".png")
-							val imageFile = if (file.exists()) file else java.io.File("/home/servers/loritta/frontend/static/assets/img/backgrounds/default_background.png")
+							val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + user.id + ".png")
+							val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
 							val rankBackground = ImageIO.read(imageFile)
 							graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)

@@ -83,13 +83,15 @@ class Loritta {
 		@JvmStatic
 		lateinit var config: LorittaConfig // Configuração da Loritta
 		@JvmField
-		val FOLDER = "/home/servers/loritta/" // Pasta usada na Loritta
+		var FOLDER = "/home/servers/loritta/" // Pasta usada na Loritta
 		@JvmField
-		val ASSETS = "/home/servers/loritta/assets/" // Pasta de assets da Loritta
+		var ASSETS = "/home/servers/loritta/assets/" // Pasta de assets da Loritta
 		@JvmField
-		val TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
+		var TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
 		@JvmField
-		val LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
+		var LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
+		@JvmField
+		var FRONTEND = "/home/servers/loritta/frontend/" // Pasta usada para as locales
 		@JvmStatic
 		var temmieMercadoPago: TemmieMercadoPago? = null // Usado na página de "doar"
 
@@ -160,6 +162,12 @@ class Loritta {
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
+		FOLDER = config.lorittaFolder
+		ASSETS = config.assetsFolder
+		TEMP = config.tempFolder
+		LOCALES = config.localesFolder
+		FRONTEND = config.frontendFolder
+
 		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
 		loadLocales()
 		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago

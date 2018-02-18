@@ -70,10 +70,10 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v2.png"))
 
-		var file = File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png");
+		var file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png");
 
 		val background = when {
-			file.exists() -> ImageIO.read(File("/home/servers/loritta/frontend/static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
+			file.exists() -> ImageIO.read(File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
 			else -> ImageIO.read(File(Loritta.ASSETS + "default_background.png")) // Background padrão
 		}
 
