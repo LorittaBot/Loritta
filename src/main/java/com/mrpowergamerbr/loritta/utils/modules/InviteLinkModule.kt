@@ -53,7 +53,7 @@ object InviteLinkModule {
 			if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 				message.delete().queue()
 
-			if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty())
+			if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk())
 				message.textChannel.sendMessage(inviteBlockerConfig.warnMessage
 						.replace("{@user}", asMention)
 						.replace("{user}", name)
