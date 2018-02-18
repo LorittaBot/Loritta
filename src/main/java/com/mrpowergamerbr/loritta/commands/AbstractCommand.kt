@@ -151,7 +151,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 		if (valid) {
 			try {
-				var isPrivateChannel = ev.guild != null
+				var isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 				var start = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					debug(DebugType.COMMAND_EXECUTED, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
@@ -209,7 +209,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				LorittaUtilsKotlin.trackCommands(ev.message)
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-				if (ev.isFromType(ChannelType.TEXT)) {
+				if (!isPrivateChannel) {
 					// Verificar se a Loritta possui todas as permissões necessárias
 					var botPermissions = ArrayList<Permission>(getBotPermissions())
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)

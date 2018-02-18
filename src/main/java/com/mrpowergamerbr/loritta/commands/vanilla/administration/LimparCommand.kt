@@ -29,6 +29,10 @@ class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val toClear = context.args[0].toIntOrNull()

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.threads.AminoRepostThread
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
@@ -36,6 +37,15 @@ object DebugLog {
 		args.removeAt(0)
 
 		when (command) {
+			"reload" -> {
+				val arg0 = args.getOrNull(0)
+
+				if (arg0 == "commands") {
+					LorittaLauncher.loritta.loadCommandManager()
+					println("${com.mrpowergamerbr.loritta.utils.loritta.commandManager.commandMap.size} comandos carregados")
+					return
+				}
+			}
 			"debug" -> {
 				if (args.isNotEmpty()) {
 					val todo = args[0]

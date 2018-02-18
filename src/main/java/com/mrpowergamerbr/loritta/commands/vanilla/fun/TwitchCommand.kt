@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -12,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -34,15 +32,17 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");
 
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${query}")
+			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${query.encodeToUrl()}")
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
+			println(payload)
+
 			val response = JSON_PARSER.parse(payload).obj
 
-			val data = response["data"].array
+			val data = response["data"].nullArray
 
-			if (data.size() == 0) {
+			if (data == null || data.size() == 0) {
 				context.reply(
 						LoriReply(
 								context.locale["YOUTUBE_COULDNT_FIND", query],
