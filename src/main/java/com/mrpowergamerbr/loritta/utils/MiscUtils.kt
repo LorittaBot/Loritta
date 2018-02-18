@@ -5,23 +5,15 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.google.gson.stream.JsonReader
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.StringReader
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
-import java.lang.Compiler.command
-import jdk.nashorn.internal.runtime.ScriptingFunctions.readLine
-import org.slf4j.LoggerFactory
-import java.io.InputStreamReader
-import java.io.BufferedReader
-import java.util.concurrent.TimeUnit
-
 
 object MiscUtils {
 	val logger = LoggerFactory.getLogger(MiscUtils::class.java)

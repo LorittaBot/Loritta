@@ -151,6 +151,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 		if (valid) {
 			try {
+				var isPrivateChannel = ev.guild != null
 				var start = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					debug(DebugType.COMMAND_EXECUTED, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
@@ -273,10 +274,13 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				run(context, context.locale)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
-				if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
-					ev.message.textChannel.getMessageById(ev.messageId).queue({ // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
+				if (!isPrivateChannel) {
+					if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
+						ev.message.textChannel.getMessageById(ev.messageId).queue({
+							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
 							it.delete().complete()
-					})
+						})
+					}
 				}
 
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
