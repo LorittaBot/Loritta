@@ -114,8 +114,22 @@ object MessageUtils {
 		// para que elas simplesmente "funcionem:tm:"
 		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
 		if (guild != null) {
+
 			for (emote in guild.emotes) {
-				message = message.replace(Regex("^(?!<):${emote.name}:"), emote.asMention)
+				var index = 0
+				var overflow = 0
+				while (message.indexOf(":${emote.name}:", index) != -1) {
+					if (overflow == 999) {
+						println("Overflow on String ${message}!!!")
+						break
+					}
+					val _index = index
+					index = message.indexOf(":${emote.name}:", index) + 1
+					if (message.indexOf(":${emote.name}:", _index) == 0 || (message[message.indexOf(":${emote.name}:", _index) - 1] != 'a' && message[message.indexOf(":${emote.name}:", _index) - 1] != '<')) {
+						message = message.replaceRange(index - 1..(index - 2) + ":${emote.name}:".length, emote.asMention)
+					}
+					overflow++
+				}
 			}
 			for (textChannel in guild.textChannels) {
 				message = message.replace("#${textChannel.name}", textChannel.asMention)
