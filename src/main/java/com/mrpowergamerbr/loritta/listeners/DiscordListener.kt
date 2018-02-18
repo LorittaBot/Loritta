@@ -308,7 +308,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		if (loritta.messageContextCache.containsKey(e.messageId)) {
-			val context = LorittaLauncher.getInstance().messageContextCache[e.messageId] as CommandContext
+			val context = LorittaLauncher.loritta.messageContextCache[e.messageId] as CommandContext
 			val t = object : Thread() {
 				override fun run() {
 					try {

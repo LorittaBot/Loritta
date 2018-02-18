@@ -54,7 +54,7 @@ public class CommandContext {
 	}
 
 	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
-		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.getInstance().getLorittaProfileForUser(event.getMember().getUser().getId()));
+		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.loritta.getLorittaProfileForUser(event.getMember().getUser().getId()));
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
@@ -165,7 +165,7 @@ public class CommandContext {
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendMessage(message).complete();
-				LorittaLauncher.getInstance().getMessageContextCache().put(sentMessage.getId(), this);
+				LorittaLauncher.loritta.getMessageContextCache().put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
@@ -189,7 +189,7 @@ public class CommandContext {
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendMessage(embed).complete();
-				LorittaLauncher.getInstance().getMessageContextCache().put(sentMessage.getId(), this);
+				LorittaLauncher.loritta.getMessageContextCache().put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
@@ -299,7 +299,7 @@ public class CommandContext {
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendFile(data, name, message).complete();
-				LorittaLauncher.getInstance().getMessageContextCache().put(sentMessage.getId(), this);
+				LorittaLauncher.loritta.getMessageContextCache().put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());
@@ -326,7 +326,7 @@ public class CommandContext {
 		} else {
 			if (isPrivateChannel() || event.getTextChannel().canTalk()) {
 				Message sentMessage = event.getChannel().sendFile(file, name, message).complete();;
-				LorittaLauncher.getInstance().getMessageContextCache().put(sentMessage.getId(), this);
+				LorittaLauncher.loritta.getMessageContextCache().put(sentMessage.getId(), this);
 				return sentMessage;
 			} else {
 				LorittaUtils.warnOwnerNoPermission(getGuild(), event.getTextChannel(), lorittaUser.getConfig());

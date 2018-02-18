@@ -23,7 +23,7 @@ class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCateg
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)
 		val message = context.sendMessage(embed)
 		context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual

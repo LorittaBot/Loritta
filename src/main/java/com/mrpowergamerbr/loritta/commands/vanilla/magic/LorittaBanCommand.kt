@@ -22,7 +22,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 			var monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";
 			var reason = context.args.joinToString(" ");
-			var profile = LorittaLauncher.getInstance().getLorittaProfileForUser(monster);
+			var profile = LorittaLauncher.loritta.getLorittaProfileForUser(monster);
 
 			profile.isBanned = true;
 			profile.banReason = reason;

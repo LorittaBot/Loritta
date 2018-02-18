@@ -395,7 +395,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createPlaylistInfoEmbed(context: CommandContext): MessageEmbed {
-		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
 		embed.setTitle("\uD83C\uDFB6 ${context.locale["MUSICINFO_INQUEUE"]}")
@@ -753,7 +753,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
-		val diff = System.currentTimeMillis() - (LorittaLauncher.getInstance().songThrottle as java.util.Map<String, Long>).getOrDefault(guild.id, 0L)
+		val diff = System.currentTimeMillis() - (LorittaLauncher.loritta.songThrottle as java.util.Map<String, Long>).getOrDefault(guild.id, 0L)
 
 		if (5000 > diff)
 			return  // bye
@@ -773,10 +773,10 @@ object LorittaUtilsKotlin {
 			val trackUrl = conf.musicConfig.urls[Loritta.RANDOM.nextInt(0, conf.musicConfig.urls.size)]
 
 			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-			LorittaLauncher.getInstance().songThrottle.put(guild.id, System.currentTimeMillis())
+			LorittaLauncher.loritta.songThrottle.put(guild.id, System.currentTimeMillis())
 
 			// E agora carregue a música
-			LorittaLauncher.getInstance().loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
+			LorittaLauncher.loritta.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
 		}
 	}
 }

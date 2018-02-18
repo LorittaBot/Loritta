@@ -20,7 +20,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			var monster = context.args[0].toLowerCase(); // ID
-			var profile = LorittaLauncher.getInstance().getLorittaProfileForUser(monster);
+			var profile = LorittaLauncher.loritta.getLorittaProfileForUser(monster);
 
 			profile.isBanned = false;
 			profile.banReason = null;

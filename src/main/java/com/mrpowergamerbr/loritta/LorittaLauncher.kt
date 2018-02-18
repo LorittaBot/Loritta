@@ -9,17 +9,10 @@ object LorittaLauncher {
 	// STATIC MAGIC(tm)
 	lateinit var loritta: Loritta
 
-	// Compatibilidade
-	@Deprecated(message = "Usar LorittaLauncher#loritta")
-	@JvmStatic
-	fun getInstance(): Loritta {
-		return loritta;
-	}
-
 	@JvmStatic
 	fun main(args: Array<String>) {
 		val gson = GsonBuilder().setPrettyPrinting().create()
-		val file = File(System.getProperty("conf")?: "./config.json")
+		val file = File(System.getProperty("conf") ?: "./config.json")
 		var config: LorittaConfig? = null
 
 		if (file.exists()) {

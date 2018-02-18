@@ -34,7 +34,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.getInstance().getGuildAudioPlayer(context.guild)
+		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 		if (context.args.isNotEmpty()) {
 			try {
 				val vol = Integer.valueOf(context.args[0])
