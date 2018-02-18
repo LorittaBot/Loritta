@@ -127,6 +127,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								val message = MessageUtils.generateMessage(
 										context.config.moderationConfig.punishmentLogMessage,
 										null,
+										context.guild,
 										mutableMapOf(
 												"reason" to reason,
 												"punishment" to locale["KICK_PunishAction"],

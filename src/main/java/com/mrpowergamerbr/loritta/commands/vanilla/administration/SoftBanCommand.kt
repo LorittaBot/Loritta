@@ -147,6 +147,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 									val message = MessageUtils.generateMessage(
 											context.config.moderationConfig.punishmentLogMessage,
 											null,
+											context.guild,
 											mutableMapOf(
 													"reason" to reason,
 													"punishment" to locale["SOFTBAN_PunishAction"],

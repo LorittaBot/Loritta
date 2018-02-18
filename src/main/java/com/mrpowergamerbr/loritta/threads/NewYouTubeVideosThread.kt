@@ -8,10 +8,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
+import com.mrpowergamerbr.loritta.utils.*
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
@@ -177,10 +174,17 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 
 									message = message.replace("{canal}", channelName);
 									message = message.replace("{título}", lastVideoTitle);
-									// message = message.replace("{descrição}", description);
 									message = message.replace("{link}", "https://youtu.be/" + lastVideoId);
 
-									textChannel.sendMessage(message.substringIfNeeded()).complete()
+									val customTokens = mapOf(
+											"canal" to channelName,
+											"channel" to channelName,
+											"título" to lastVideoTitle,
+											"title" to lastVideoTitle,
+											"link" to "https://youtu.be/" + lastVideoId
+									)
+
+									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
 									logger.info("Vídeo de $channelName \"${lastVideoTitle}\": $lastVideoId foi notificado com sucesso na guild ${guild.name}!")
 								}
 							}

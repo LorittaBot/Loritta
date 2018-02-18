@@ -43,24 +43,14 @@ public class CommandContext {
 	public HashMap<String, Object> metadata = new HashMap<>();
 	public BaseLocale locale = LorittaLauncher.loritta.getLocales().get("default");
 
-	public CommandContext(ServerConfig conf, LorittaUser profile, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
+	public CommandContext(ServerConfig conf, LorittaUser profile, BaseLocale locale, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
 		this.lorittaUser = profile;
 		this.event = event;
 		this.cmd = cmd;
 		this.args = args;
 		this.rawArgs = rawArgs;
 		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocaleById(conf.getLocaleId());
-	}
-
-	public CommandContext(Member member, ServerConfig conf, MessageReceivedEvent event, AbstractCommand cmd, String[] args, String[] rawArgs, String[] strippedArgs) {
-		this.lorittaUser = new LorittaUser(member.getUser(), conf, LorittaLauncher.loritta.getLorittaProfileForUser(event.getMember().getUser().getId()));
-		this.event = event;
-		this.cmd = cmd;
-		this.args = args;
-		this.rawArgs = rawArgs;
-		this.strippedArgs = strippedArgs;
-		this.locale = LorittaLauncher.loritta.getLocaleById(conf.getLocaleId());
+		this.locale = locale;
 	}
 
 	public String[] getRawArgs() {

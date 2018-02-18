@@ -29,7 +29,10 @@ object ServerSupportModule {
 				MentionChannelResponse(),
 				MusicResponse(),
 				StarboardResponse(),
-				LimparPlaylistResponse()
+				LimparPlaylistResponse(),
+				AddEmotesResponse(),
+				SendFanArtsResponse(),
+				LoriMandarComandosResponse()
 		)
 
 		responses.forEach {

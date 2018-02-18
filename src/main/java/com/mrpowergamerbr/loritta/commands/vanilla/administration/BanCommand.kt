@@ -119,6 +119,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 								val message = MessageUtils.generateMessage(
 										context.config.moderationConfig.punishmentLogMessage,
 										null,
+										context.guild,
 										mutableMapOf(
 												"reason" to reason,
 												"punishment" to locale["BAN_PunishAction"],

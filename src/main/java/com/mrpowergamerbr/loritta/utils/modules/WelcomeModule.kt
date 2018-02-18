@@ -23,7 +23,7 @@ object WelcomeModule {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, event)).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, guild)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
@@ -95,7 +95,7 @@ object WelcomeModule {
 						}
 
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, customTokens)).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, guild, customTokens)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}

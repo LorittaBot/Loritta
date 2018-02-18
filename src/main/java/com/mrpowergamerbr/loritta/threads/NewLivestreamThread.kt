@@ -10,12 +10,9 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import java.io.File
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
@@ -136,12 +133,14 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 								message = "{link}"
 							}
 
-							message = message.replace("{game}", gameInfo?.name ?: "???")
-							message = message.replace("{title}", livestreamInfo.title)
-							message = message.replace("{streamer}", displayName)
-							message = message.replace("{link}", "https://www.twitch.tv/$userLogin")
+							val customTokens = mapOf(
+									"game" to (gameInfo?.name ?: "???"),
+									"title" to livestreamInfo.title,
+									"streamer" to displayName,
+									"link" to "https://www.twitch.tv/$userLogin"
+							)
 
-							textChannel.sendMessage(message.substringIfNeeded()).complete();
+							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
 						}
 					}
 				}

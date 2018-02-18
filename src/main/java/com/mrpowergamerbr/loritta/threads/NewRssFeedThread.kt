@@ -97,7 +97,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 												customTokens["rss_${element.tagName()}"] = element.text()
 											}
 
-											val generatedMessage = MessageUtils.generateMessage(message, null, customTokens)
+											val generatedMessage = MessageUtils.generateMessage(message, null, guild, customTokens)
 											if (generatedMessage.contentRaw.isNullOrEmpty())
 												continue
 

@@ -12,14 +12,16 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
+import java.util.regex.Pattern
 
 object MessageUtils {
-	fun generateMessage(message: String, source: Any?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message {
+	fun generateMessage(message: String, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message {
 		val jsonObject = try {
 			JSON_PARSER.parse(message).obj
 		} catch (ex: Exception) {
@@ -29,32 +31,32 @@ object MessageUtils {
 		val messageBuilder = MessageBuilder()
 		if (jsonObject != null) {
 			// alterar tokens
-			handleJsonTokenReplacer(jsonObject, source, customTokens)
+			handleJsonTokenReplacer(jsonObject, source, guild, customTokens)
 			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
 			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
-			messageBuilder.append(replaceTokens(message, source, customTokens).substringIfNeeded())
+			messageBuilder.append(replaceTokens(message, source, guild, customTokens).substringIfNeeded())
 		}
 		return messageBuilder.build()
 	}
 
-	fun handleJsonTokenReplacer(jsonObject: JsonObject, source: Any?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
+	fun handleJsonTokenReplacer(jsonObject: JsonObject, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
 		for ((key, value) in jsonObject.entrySet()) {
 			if (value.isJsonObject) {
-				handleJsonTokenReplacer(value.obj, source, customTokens)
+				handleJsonTokenReplacer(value.obj, source, guild, customTokens)
 			}
 			if (value.isJsonArray) {
 				val array = JsonArray()
 				for (it in value.array) {
 					if (it.isJsonPrimitive) {
 						if (it.asJsonPrimitive.isString) {
-							array.add(replaceTokens(it.string, source, customTokens))
+							array.add(replaceTokens(it.string, source, guild, customTokens))
 							continue
 						}
 					}
 					if (it.isJsonObject) {
-						handleJsonTokenReplacer(it.obj, source, customTokens)
+						handleJsonTokenReplacer(it.obj, source, guild, customTokens)
 					}
 					array.add(it)
 				}
@@ -62,20 +64,20 @@ object MessageUtils {
 			}
 			if (value.isJsonPrimitive) {
 				if (value.asJsonPrimitive.isString) {
-					jsonObject[key] = replaceTokens(value.string, source, customTokens)
+					jsonObject[key] = replaceTokens(value.string, source, guild, customTokens)
 				}
 			}
 		}
 	}
 
-	fun replaceTokens(text: String, source: Any?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
+	fun replaceTokens(text: String, source: Any?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
 		var mentionUser = ""
 		var user = ""
 		var userDiscriminator = ""
 		var userId = ""
 		var nickname = ""
 		var avatarUrl = ""
-		var guild = ""
+		var guildName = ""
 		var guildSize = ""
 		var mentionOwner = ""
 		var owner = ""
@@ -87,7 +89,7 @@ object MessageUtils {
 			userId = source.member.user.id
 			avatarUrl = source.member.user.effectiveAvatarUrl
 			nickname = source.member.effectiveName
-			guild = source.guild.name
+			guildName = source.guild.name
 			guildSize = source.guild.members.size.toString()
 			mentionOwner = source.guild.owner.asMention
 			owner = source.guild.owner.effectiveName
@@ -100,13 +102,31 @@ object MessageUtils {
 			userId = source.member.user.id
 			avatarUrl = source.member.user.effectiveAvatarUrl
 			nickname = source.member.effectiveName
-			guild = source.guild.name
+			guildName = source.guild.name
 			guildSize = source.guild.members.size.toString()
 			mentionOwner = source.guild.owner.asMention
 			owner = source.guild.owner.effectiveName
 		}
 
 		var message = text
+
+		// Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
+		// para que elas simplesmente "funcionem:tm:"
+		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
+		if (guild != null) {
+			for (emote in guild.emotes) {
+				message = message.replace(Regex("^(?!<):${emote.name}:"), emote.asMention)
+			}
+			for (textChannel in guild.textChannels) {
+				message = message.replace("#${textChannel.name}", textChannel.asMention)
+			}
+			for (roles in guild.roles) {
+				message = message.replace("@${roles.name}", roles.asMention)
+			}
+			for (member in guild.members) {
+				message = message.replace("@${member.user.name}#${member.user.discriminator}", member.asMention)
+			}
+		}
 
 		for ((token, value) in customTokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
@@ -118,7 +138,7 @@ object MessageUtils {
 		message = message.replace("{userAvatarUrl}", avatarUrl)
 		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname.escapeMentions())
-		message = message.replace("{guild}", guild.escapeMentions())
+		message = message.replace("{guild}", guildName.escapeMentions())
 		message = message.replace("{guildsize}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner.escapeMentions())
