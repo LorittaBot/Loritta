@@ -185,6 +185,10 @@ object GlobalHandler {
 		apiViews.add(APIGetChannelInfoView())
 		apiViews.add(APIGetRssFeedTitleView())
 		apiViews.add(APIGetTwitchInfoView())
+		apiViews.add(APILoriGetBalanceView())
+		apiViews.add(APILoriGiveBalanceView())
+		apiViews.add(APILoriSetBalanceView())
+		apiViews.add(APILoriWithdrawBalanceView())
 
 		views.add(HomeView())
 		views.add(TranslationView())

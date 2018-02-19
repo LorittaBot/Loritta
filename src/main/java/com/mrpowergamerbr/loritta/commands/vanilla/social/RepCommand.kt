@@ -33,7 +33,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			if (user == context.userHandle) {
 				context.reply(
 						LoriReply(
-								message = context.getAsMention(true) + locale["REP_SELF"],
+								message = locale["REP_SELF"],
 								prefix = Constants.ERROR
 						)
 				)

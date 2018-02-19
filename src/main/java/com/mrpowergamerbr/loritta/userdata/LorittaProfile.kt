@@ -22,7 +22,7 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
 	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
-    var dreams: Long = 0
+    var dreams: Double = 0.0
     var hidePreviousUsernames: Boolean = false
     var hideSharedServers: Boolean = false
     var isAfk = false

@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -54,7 +55,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 			if (config.musicConfig.logToChannel) {
 				val textChannel = guild.getTextChannelById(config.musicConfig.channelId)
 
-				if (textChannel.canTalk()) {
+				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 					val t = object : Thread("Track Scheduler Logging Thread") {
 						override fun run() {
 							var seconds = 0
