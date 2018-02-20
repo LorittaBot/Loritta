@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.StringReader
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
@@ -46,7 +47,7 @@ object MiscUtils {
 		var videoId = link;
 		var callbackId = "jQuery${System.currentTimeMillis()}_${System.currentTimeMillis() / 1000}"
 
-		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&k=f7eB169F4fC_b&_=${System.currentTimeMillis() / 1000}")
+		var checkResponse = HttpRequest.get("https://d.ymcdn.cc/check.php?callback=$callbackId&v=$videoId&f=mp3&k=Z_41_4&_=${System.currentTimeMillis() / 1000}")
 				.referer("https://ytmp3.cc/")
 				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0")
 				.body()
