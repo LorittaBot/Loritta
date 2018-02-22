@@ -117,8 +117,8 @@ class Loritta {
 	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	fun createThreadPool(name: String): ThreadPoolExecutor {
-		return ThreadPoolExecutor(256, // core size
-				512, // max size
+		return ThreadPoolExecutor(128, // core size
+				256, // max size
 				10*60, // idle timeout
 				TimeUnit.SECONDS,
 				ArrayBlockingQueue<Runnable>(64)).apply {
