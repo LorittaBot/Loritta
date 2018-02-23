@@ -86,7 +86,7 @@ class TestMessageView : ConfigureView() {
 			response["success"] = true
 		} else {
 			try {
-				member.user.openPrivateChannel().complete().sendMessage(MessageUtils.replaceTokens(message, null, guild, customTokens)).complete()
+				member.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
 			} catch (e: Exception) {
 				response["error"] = "Sua DM está desativada"
 			}

@@ -28,7 +28,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory) {
+open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf()) {
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}
@@ -232,16 +232,24 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						var required = ""
-						missingPermissions.forEach {
-							val permissionTranslation = locale["PERMISSION_${it.name}"]
-							if (required.isNotEmpty()) {
-								required += ", " + permissionTranslation
-							} else {
-								required += permissionTranslation
-							}
-						}
+						var required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}" + "`" ]})
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").complete()
+						return true
+					}
+				}
+
+				if (!isPrivateChannel) {
+					var missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
+
+					if (missingPermissions.isNotEmpty()) {
+						// oh no
+						var required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
+						var message = locale["LORIPERMISSION_MissingPermissions", required]
+
+						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
+							message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.websiteUrl]}"
+						}
+						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").complete()
 						return true
 					}
 				}

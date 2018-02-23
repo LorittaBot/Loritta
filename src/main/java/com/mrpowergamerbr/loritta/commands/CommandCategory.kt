@@ -13,6 +13,7 @@ enum class CommandCategory constructor(val fancyTitle: String, var description: 
 	ADMIN("CommandCategory_ADMIN_Name", "CommandCategory_ADMIN_Description"),
 	UTILS("CommandCategory_UTILS_Name", "CommandCategory_UTILS_Description"),
 	SOCIAL("CommandCategory_SOCIAL_Name", "CommandCategory_SOCIAL_Description"),
+	ECONOMY("CommandCategory_ECONOMY_Name", "CommandCategory_ECONOMY_Description"),
 	MUSIC("CommandCategory_MUSIC_Name", "CommandCategory_MUSIC_Description"),
 	MAGIC("CommandCategory_MAGIC_Name", "CommandCategory_MAGIC_Description") // Esta categoria é usada para comandos APENAS para o dono do bot
 }

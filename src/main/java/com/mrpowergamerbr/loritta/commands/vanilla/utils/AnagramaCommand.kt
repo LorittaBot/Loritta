@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 
-class AnagramaCommand : AbstractCommand("anagrama", listOf("shuffle", "anagram"), CommandCategory.UTILS) {
+class AnagramaCommand : AbstractCommand("anagrama", listOf("anagram"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "palavra"
 	}

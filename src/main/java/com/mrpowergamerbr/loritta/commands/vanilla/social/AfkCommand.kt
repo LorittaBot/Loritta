@@ -16,10 +16,6 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 		return locale["AFK_Description"];
 	}
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
 

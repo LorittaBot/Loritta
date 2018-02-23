@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import java.util.regex.Pattern
 
 object MessageUtils {
-	fun generateMessage(message: String, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message {
+	fun generateMessage(message: String, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
 		val jsonObject = try {
 			JSON_PARSER.parse(message).obj
 		} catch (ex: Exception) {
@@ -38,6 +38,8 @@ object MessageUtils {
 		} else {
 			messageBuilder.append(replaceTokens(message, source, guild, customTokens).substringIfNeeded())
 		}
+		if (messageBuilder.isEmpty)
+			return null
 		return messageBuilder.build()
 	}
 

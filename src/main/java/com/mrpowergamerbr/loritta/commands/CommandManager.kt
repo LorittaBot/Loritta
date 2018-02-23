@@ -28,6 +28,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.UserInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoterittaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaBanCommand
@@ -37,13 +38,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.music.MusicInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.PausarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.PlaylistCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.PularCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.ResumirCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.SeekCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.music.TocarCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
@@ -245,6 +240,12 @@ class CommandManager {
 		commandMap.add(ResumirCommand())
 		commandMap.add(SeekCommand())
 		commandMap.add(YouTubeCommand())
+		commandMap.add(RestartSongCommand())
+		commandMap.add(TocarAgoraCommand())
+		commandMap.add(ShuffleCommand())
+
+		// =======[ ECONOMIA ]========
+		commandMap.add(LoterittaCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)

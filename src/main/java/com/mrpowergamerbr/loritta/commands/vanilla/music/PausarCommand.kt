@@ -5,20 +5,17 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class PausarCommand : AbstractCommand("pause", listOf("pausar"), CommandCategory.MUSIC) {
+class PausarCommand : AbstractCommand("pause", listOf("pausar"), CommandCategory.MUSIC, listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("PAUSAR_DESCRIPTION")
 	}
 
 	override fun requiresMusicEnabled(): Boolean {
 		return true
-	}
-
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.VOICE_MUTE_OTHERS)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

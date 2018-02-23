@@ -33,10 +33,10 @@ object WelcomeModule {
 
 		if (joinLeaveConfig.tellOnPrivate && joinLeaveConfig.joinPrivateMessage.isNotEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
 			if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
-				val msg = LorittaUtils.replaceTokens(joinLeaveConfig.joinPrivateMessage, event)
+				val msg = joinLeaveConfig.joinPrivateMessage
 				try {
 					if (msg.isNotEmpty())
-						event.user.openPrivateChannel().complete().sendMessage(msg.substringIfNeeded()).complete() // Pronto!
+						event.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(msg, event, event.guild)).complete() // Pronto!
 				} catch (e: ErrorResponseException) {
 					if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
 						throw e

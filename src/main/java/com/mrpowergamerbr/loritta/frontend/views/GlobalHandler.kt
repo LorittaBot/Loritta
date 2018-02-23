@@ -7,17 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AuthPathRedirectView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.CommandsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.DashboardView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.DonateView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.FanArtsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.HomeView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.NashornDocsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.PatreonCallbackView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.ServersFanClubView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.TranslationView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
@@ -193,6 +183,7 @@ object GlobalHandler {
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
+		views.add(LorigotchiView())
 		views.add(ConfigureServerView())
 		views.add(ConfigureEventLogView())
 		views.add(ConfigureInviteBlockerView())

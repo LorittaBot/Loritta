@@ -507,7 +507,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
-			if (voiceChannel.members.filter { !it.user.isBot }.isNotEmpty())
+			if (voiceChannel.members.any { !it.user.isBot })
 				return@execute
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)

@@ -30,25 +30,14 @@ import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.FacebookPostWrapper
-import com.mrpowergamerbr.loritta.utils.LorittaFanArt
-import com.mrpowergamerbr.loritta.utils.LorittaShards
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
-import com.mrpowergamerbr.loritta.utils.ServerFanClubEntry
-import com.mrpowergamerbr.loritta.utils.YouTubeUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
@@ -104,6 +93,8 @@ class Loritta {
 		val JSON_PARSER = JsonParser() // Json Parser
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
+
+		val logger = LoggerFactory.getLogger(Loritta::class.java)
 	}
 
 	// ===[ LORITTA ]===
@@ -530,23 +521,39 @@ class Loritta {
 		return musicManager
 	}
 
-	fun checkAndLoad(context: CommandContext, trackUrl: String): Boolean {
+	fun checkAndLoad(context: CommandContext, trackUrl: String, override: Boolean = false): Boolean {
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_NOTINCHANNEL"])
+			val channel = context.guild.getVoiceChannelById(context.config.musicConfig.musicGuildId)
+
+			if (channel != null) {
+				context.reply(
+						LoriReply(
+								context.locale["TOCAR_NOTINCHANNEL", channel.name.stripCodeMarks()],
+								Constants.ERROR
+						)
+				)
+			} else {
+				context.reply(
+						LoriReply(
+								context.locale["TOCAR_InvalidChannel"],
+								Constants.ERROR
+						)
+				)
+			}
 			return false
 		}
-		loadAndPlay(context, trackUrl)
+		loadAndPlay(context, trackUrl, override)
 		return true
 	}
 
 	val playlistCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
 
-	fun loadAndPlay(context: CommandContext, trackUrl: String) {
-		loadAndPlay(context, trackUrl, false);
+	fun loadAndPlay(context: CommandContext, trackUrl: String, override: Boolean = false) {
+		loadAndPlay(context, trackUrl, false, override);
 	}
 
-	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean) {
+	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean, override: Boolean = false) {
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
@@ -556,7 +563,7 @@ class Loritta {
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
 
 		if (playlistCache.containsKey(trackUrl)) {
-			playPlaylist(context, musicManager, playlistCache[trackUrl]!!)
+			playPlaylist(context, musicManager, playlistCache[trackUrl]!!, override)
 			return
 		}
 
@@ -564,19 +571,19 @@ class Loritta {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						var final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
+						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
 						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue();
 						return;
 					}
 				}
 				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
-				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()))
+				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
 			}
 
 			override fun playlistLoaded(playlist: AudioPlaylist) {
 				playlistCache[trackUrl] = playlist
-				playPlaylist(context, musicManager, playlist)
+				playPlaylist(context, musicManager, playlist, override)
 			}
 
 			override fun noMatches() {
@@ -599,11 +606,11 @@ class Loritta {
 		})
 	}
 
-	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist) {
+	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist, override: Boolean = false) {
 		val channel = context.event.channel
 		val musicConfig = context.config.musicConfig
 
-		if (!musicConfig.allowPlaylists) { // Se esta guild NÃO aceita playlists
+		if (!musicConfig.allowPlaylists && !override) { // Se esta guild NÃO aceita playlists
 			var track = playlist.selectedTrack
 
 			if (track == null) {
@@ -612,7 +619,7 @@ class Loritta {
 
 			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
-			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()))
+			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override)
 		} else { // Mas se ela aceita...
 			var ignored = 0;
 			for (track in playlist.tracks) {
@@ -623,8 +630,7 @@ class Loritta {
 					}
 				}
 
-
-				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()));
+				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override);
 			}
 
 			if (ignored == 0) {
@@ -662,22 +668,29 @@ class Loritta {
 		})
 	}
 
-	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
-		play(context.guild, context.config, musicManager, trackWrapper)
+	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
+		play(context.guild, context.config, musicManager, trackWrapper, override)
 	}
 
-	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper) {
+	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
 		if (musicManager.scheduler.queue.size >= 100)
 			return
 
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
-		com.mrpowergamerbr.loritta.utils.log("[MUSIC] Playing ${trackWrapper.track.info.title} - in guild ${guild.name}")
-		println("Playing ${trackWrapper.track.info.title} - in guild ${guild.name}!")
+		if (override) {
+			logger.info("Force Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
+		} else {
+			logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
+		}
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
-		musicManager.scheduler.queue(trackWrapper, conf)
+		if (override) {
+			musicManager.player.startTrack(trackWrapper.track, false)
+		} else {
+			musicManager.scheduler.queue(trackWrapper, conf)
+		}
 
 		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper)
 	}
@@ -685,8 +698,13 @@ class Loritta {
 	fun skipTrack(context: CommandContext) {
 		val musicManager = getGuildAudioPlayer(context.getGuild());
 		musicManager.scheduler.nextTrack();
-		val channel = context.event.channel
-		channel.sendMessage("🤹 ${context.locale["PULAR_MUSICSKIPPED"]}").queue();
+
+		context.reply(
+				LoriReply(
+						context.locale["PULAR_MUSICSKIPPED"],
+						"\uD83E\uDD39"
+				)
+		)
 	}
 
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
