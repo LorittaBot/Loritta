@@ -90,11 +90,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 						context.metadata.remove("currentItem")
 					}
 				}
-
-				if (!context.metadata.containsKey("downloading") && e.reactionEmote.name == "\uD83D\uDCE5") {
-					context.metadata["downloading"] = true
-					MiscUtils.sendYouTubeVideoMp3(context, "https://youtu.be/${item.id.videoId}")
-				}
 				return
 			}
 

@@ -45,6 +45,11 @@ object DebugLog {
 					println("${com.mrpowergamerbr.loritta.utils.loritta.commandManager.commandMap.size} comandos carregados")
 					return
 				}
+				if (arg0 == "mongo") {
+					LorittaLauncher.loritta.initMongo()
+					println("MongoDB recarregado!")
+					return
+				}
 			}
 			"debug" -> {
 				if (args.isNotEmpty()) {

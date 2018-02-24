@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.entities.Emote
 import java.time.Instant
 import java.time.ZoneId
 
@@ -120,6 +121,18 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (profile.lastMessageSent != 0L) {
 				addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(), true)
 			}
+
+			val favoriteEmotes = lorittaProfile.usedEmotes.entries.sortedByDescending { it.value }
+			var emotes = mutableListOf<Emote>()
+
+			for (favoriteEmote in favoriteEmotes) {
+				val emote = lorittaShards.getEmoteById(favoriteEmote.key)
+				if (emote != null)
+					emotes.add(emote)
+			}
+
+			if (emotes.isNotEmpty())
+				addField("<:lori_yum:414222275223617546> ${locale["USERINFO_FavoriteEmojis"]}", emotes.joinToString("", limit = 5, truncated = "", transform = { it.asMention }), true)
 
 			embed.setFooter(locale["USERINFO_PrivacyInfo"], null)
 		}

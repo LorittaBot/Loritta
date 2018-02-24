@@ -169,37 +169,37 @@ fun String.convertToEpochMillis(): Long {
 
 	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(this)
 	if (yearsMatcher.find()) {
-		var addYears = yearsMatcher.group(1).toInt()
+		var addYears = yearsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.YEAR] += addYears
 	}
 	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(this)
 	if (monthMatcher.find()) {
-		var addMonths = monthMatcher.group(1).toInt()
+		var addMonths = monthMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MONTH] += addMonths
 	}
 	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(this)
 	if (weekMatcher.find()) {
-		var addWeeks = weekMatcher.group(1).toInt()
+		var addWeeks = weekMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.WEEK_OF_YEAR] += addWeeks
 	}
 	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(this)
 	if (dayMatcher.find()) {
-		var addDays = dayMatcher.group(1).toInt()
+		var addDays = dayMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.DAY_OF_YEAR] += addDays
 	}
 	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(this)
 	if (hourMatcher.find()) {
-		var addHours = hourMatcher.group(1).toInt()
+		var addHours = hourMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.HOUR_OF_DAY] += addHours
 	}
 	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(this)
 	if (minuteMatcher.find()) {
-		var addMinutes = minuteMatcher.group(1).toInt()
+		var addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MINUTE] += addMinutes
 	}
 	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(this)
 	if (secondsMatcher.find()) {
-		var addSeconds = secondsMatcher.group(1).toInt()
+		var addSeconds = secondsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.SECOND] += addSeconds
 	}
 

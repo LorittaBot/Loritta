@@ -43,6 +43,5 @@ object ExperienceModule {
 		}
 
 		lorittaProfile.lastMessageSent = System.currentTimeMillis()
-		loritta save lorittaProfile
 	}
 }

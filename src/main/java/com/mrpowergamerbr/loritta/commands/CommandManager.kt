@@ -42,14 +42,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.AfkCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.BackgroundCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.EditarXPCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.RankCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.RepCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.SayCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.SobreMimCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.social.*
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
@@ -155,7 +148,6 @@ class CommandManager {
 		commandMap.add(MoneyCommand())
 		commandMap.add(ColorInfoCommand())
 		commandMap.add(LembrarCommand())
-		commandMap.add(YoutubeMp3Command())
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())
 		commandMap.add(AminoCommand())

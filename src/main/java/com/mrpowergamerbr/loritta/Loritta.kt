@@ -2,10 +2,7 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
@@ -20,14 +17,7 @@ import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.threads.AminoRepostThread
-import com.mrpowergamerbr.loritta.threads.DiscordBotsInfoThread
-import com.mrpowergamerbr.loritta.threads.FetchFacebookPostsThread
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
-import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
-import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
-import com.mrpowergamerbr.loritta.threads.RemindersThread
-import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
+import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -151,6 +141,8 @@ class Loritta {
 	var userCount = 0
 	var guildCount = 0
 
+	lateinit var loteriaThread: LoteriaThread
+
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
 		FOLDER = config.lorittaFolder
@@ -257,6 +249,20 @@ class Loritta {
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
 		RemindersThread().start()
+
+		val loteriaFile = File(FOLDER, "loteria.json")
+
+		if (loteriaFile.exists()) {
+			val json = JSON_PARSER.parse(loteriaFile.readText())
+
+			LoteriaThread.started = json["started"].long
+			LoteriaThread.lastWinnerId = json["lastWinnerId"].string
+			LoteriaThread.lastWinnerPrize = json["lastWinnerPrize"].int
+			LoteriaThread.userIds = GSON.fromJson(json["userIds"])
+		}
+
+		loteriaThread = LoteriaThread()
+		loteriaThread.start()
 
 		DebugLog.startCommandListenerThread()
 
@@ -593,7 +599,7 @@ class Loritta {
 					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
 
 					if (items.isNotEmpty()) {
-						loadAndPlay(context, items[0].id.videoId, true);
+						loadAndPlay(context, items[0].id.videoId, true, override)
 						return;
 					}
 				}

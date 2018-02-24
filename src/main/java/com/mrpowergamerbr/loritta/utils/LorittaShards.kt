@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.google.common.collect.Sets
 import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
@@ -75,6 +76,18 @@ class LorittaShards {
             guilds.addAll(shard.getMutualGuilds(user))
         }
         return guilds;
+    }
+
+    fun getEmoteById(id: String?): Emote? {
+        if (id == null)
+            return null
+
+        for (shard in shards) {
+            val emote = shard.getEmoteById(id)
+            if (emote != null)
+                return emote
+        }
+        return null
     }
 
     fun getPresence(): Presence {

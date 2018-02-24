@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
+import java.time.LocalDate
+import java.util.*
 
 /**
  * Perfil de um usuário que usa a Loritta
@@ -27,7 +29,7 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     var hideSharedServers: Boolean = false
     var isAfk = false
     var afkReason: String? = null
-
+    var usedEmotes = mutableMapOf<String, Int>()
 
     @BsonIgnore
     fun getCurrentLevel(): LorittaProfile.XpWrapper {

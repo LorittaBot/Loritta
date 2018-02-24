@@ -41,7 +41,7 @@ class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar"), Comma
 				return
 			}
 		}
-		if (context.args.size >= 1) {
+		if (context.args.isNotEmpty()) {
 			val music = context.args.joinToString(" ")
 
 			if (music.equals("reset", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {

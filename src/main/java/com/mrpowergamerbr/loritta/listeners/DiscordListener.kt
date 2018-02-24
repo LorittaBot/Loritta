@@ -169,6 +169,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						eventHandler.handleMessageReceived(event)
 					}
 
+					// emotes favoritos
+					event.message.emotes.forEach {
+						lorittaProfile.usedEmotes.put(it.id, lorittaProfile.usedEmotes.getOrDefault(it.id, 0) + 1)
+					}
+
+					loritta save lorittaProfile
+
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 						return@execute
 
