@@ -155,8 +155,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					// Se o sistema de músicas está ativado...
 					msg.addReaction("▶").complete(); // Vamos colocar um ícone para tocar!
 				}
-
-				msg.addReaction("\uD83D\uDCE5").complete(); // Adicionar ícone para baixar a música em MP3
 			} else {
 				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
 				var channelJson = JSON_PARSER.parse(channelResponse).obj
