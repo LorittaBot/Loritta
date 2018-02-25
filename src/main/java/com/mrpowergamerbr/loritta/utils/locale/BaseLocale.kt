@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.f
 
 /**
@@ -12,6 +13,10 @@ open class BaseLocale {
 	var strings = mutableMapOf<String, String>()
 
 	operator fun get(key: String, vararg arguments: Any?): String {
+		if (!strings.containsKey(key)) {
+			Loritta.logger.error("Missing translation key! $key")
+			return key
+		}
 		return strings[key]!!.f(*arguments)
 	}
 
