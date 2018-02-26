@@ -24,11 +24,16 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 
 open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf()) {
+	companion object {
+		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
+	}
+
 	open fun getDescription(): String {
 		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
 	}

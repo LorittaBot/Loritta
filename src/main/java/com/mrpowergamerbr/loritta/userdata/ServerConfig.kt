@@ -50,6 +50,7 @@ class ServerConfig @BsonCreator constructor(
 	var inviteBlockerConfig = InviteBlockerConfig()
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
+	var partnerConfig = PartnerConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
 	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")

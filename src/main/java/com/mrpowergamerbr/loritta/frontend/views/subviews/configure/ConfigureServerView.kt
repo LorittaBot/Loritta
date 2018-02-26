@@ -1,23 +1,14 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.configure
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.bool
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
+import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.frontend.evaluate
+import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
-import com.mrpowergamerbr.loritta.userdata.AminoConfig
-import com.mrpowergamerbr.loritta.userdata.LivestreamConfig
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.userdata.RssFeedConfig
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
-import com.mrpowergamerbr.loritta.userdata.YouTubeConfig
+import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -61,11 +52,18 @@ class ConfigureServerView : ConfigureView() {
 					"vanilla_commands" -> serverConfig.disabledCommands
 					"text_channels" -> serverConfig.textChannelConfigs
 					"moderation" -> serverConfig.moderationConfig
+					"partner" -> serverConfig.partnerConfig
 					else -> null
 				}
 
 				if (target == null) {
 					return "Invalid type: $type"
+				}
+
+				if (target is PartnerConfig && !serverConfig.partnerConfig.isPartner) {
+					val jsonObject = JsonObject()
+					jsonObject["api:code"] = LoriWebCodes.TRYING_TO_SAVE_PARTNER_CONFIG_WHILE_NOT_PARTNER
+					return jsonObject.toString()
 				}
 				var response = ""
 

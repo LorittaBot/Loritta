@@ -4,10 +4,9 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 
@@ -38,7 +37,17 @@ class DashboardView : ProtectedView() {
 			return response.toString()
 		}
 
-		val guilds = discordAuth.getUserGuilds().filter { LorittaWebsite.canManageGuild(it) }
+		val guilds = discordAuth.getUserGuilds().filter {
+			val guild = lorittaShards.getGuildById(it.id)
+			if (guild != null) {
+				val member = guild.getMemberById(lorittaProfile.userId)
+				val config = loritta.getServerConfigForGuild(it.id)
+				val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
+				LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+			} else {
+				LorittaWebsite.canManageGuild(it)
+			}
+		}
 
 		variables["userGuilds"] = guilds
 		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.DiscordGuild, LorittaWebsite.UserPermissionLevel>()

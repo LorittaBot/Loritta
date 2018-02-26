@@ -39,7 +39,7 @@ object GlobalHandler {
 
 			val diff = System.currentTimeMillis() - last
 			if (2500 >= diff) {
-				return GSON.toJson(mapOf("api:code" to APICodes.RATE_LIMITED, "api:message" to "RATE_LIMITED"))
+				return GSON.toJson(mapOf("api:code" to LoriWebCodes.RATE_LIMITED, "api:message" to "RATE_LIMITED"))
 			}
 
 			loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
@@ -184,6 +184,7 @@ object GlobalHandler {
 		views.add(TranslationView())
 		views.add(DashboardView())
 		views.add(LorigotchiView())
+		views.add(LoriPartnerView())
 		views.add(ConfigureServerView())
 		views.add(ConfigureEventLogView())
 		views.add(ConfigureInviteBlockerView())
@@ -201,6 +202,7 @@ object GlobalHandler {
 		views.add(ConfigureCommandsView())
 		views.add(ConfigureTextChannelsView())
 		views.add(ConfigureModerationView())
+		views.add(ConfigureLoriPartnerView())
 		views.add(TestMessageView())
 		views.add(FanArtsView())
 		views.add(DonateView())
@@ -213,10 +215,5 @@ object GlobalHandler {
 
 		this.views = views
 		this.apiViews = apiViews
-	}
-
-	object APICodes {
-		const val SUCCESS = 0
-		const val RATE_LIMITED = 1
 	}
 }

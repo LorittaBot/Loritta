@@ -5,21 +5,18 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonArray
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import java.awt.Color
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.awt.Font
-import java.awt.Graphics
-import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
 import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
@@ -147,12 +144,70 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
-		val background = when {
-			file.exists() -> ImageIO.read(File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
-			else -> ImageIO.read(File(Loritta.ASSETS + "default_background.png")) // Background padrão
+		val polluxDocument: Document by lazy {
+			Jsoup.connect("http://www.pollux.fun/profile/${userProfile.userId}").get()
 		}
 
-		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null) // TODO: Permitir backgrounds maiores
+		var aboutMe: String? = null
+
+		if (userProfile.userId == Loritta.config.clientId) {
+			aboutMe = locale["PERFIL_LORITTA_DESCRIPTION"]
+		}
+
+		if (userProfile.userId == "390927821997998081") {
+			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do PocketDreams (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
+		}
+
+		if (userProfile.aboutMe != null && userProfile.aboutMe != "A Loritta é minha amiga!") {
+			aboutMe = userProfile.aboutMe
+		}
+
+		if (aboutMe == null) {
+			val polluxAboutMe = polluxDocument.getElementById("persotex").text()
+
+			if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
+				aboutMe = polluxAboutMe
+		}
+
+		if (aboutMe == null) {
+			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
+		}
+
+		val background = when {
+			file.exists() -> ImageIO.read(File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
+			else -> {
+				// ===[ POLLUX ]===
+				val polluxBackground = try {
+					val background = polluxDocument.getElementsByClass("bgprofile").attr("src")
+
+					if (background != "/backdrops/5zhr3HWlQB4OmyCBFyHbFuoIhxrZY6l6.png") { // Caso não seja o background padrão...
+						val polluxOriginalBackground = LorittaUtils.downloadImage("https://www.pollux.fun$background")
+								.getScaledInstance(971, 473, BufferedImage.SCALE_SMOOTH)
+						val polluxBase = BufferedImage(800, 473, BufferedImage.SCALE_SMOOTH)
+						val polluxGraphics = polluxBase.graphics
+						polluxGraphics.drawImage(polluxOriginalBackground, -86, 0, null)
+						polluxBase
+					} else {
+						null
+					}
+				} catch (e: Exception) {
+					logger.error("Exception while pulling background information from Pollux", e)
+					null
+				}
+				if (polluxBackground != null) {
+					polluxBackground
+				} else {
+					ImageIO.read(File(Loritta.ASSETS + "default_background.png"))
+				}
+			} // Background padrão
+		}
+
+		if (background.width == 400) { // Suporte aos antigos backgrounds
+			graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
+		} else {
+			graphics.drawImage(background.getScaledInstance(800, 473, BufferedImage.SCALE_SMOOTH), 0, 127, null) // TODO: Permitir backgrounds maiores
+		}
+
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(115), 6, 6, null)
 
@@ -215,12 +270,12 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		graphics.font = whitneyBold20
 		graphics.drawText(context.locale["PERFIL_ECONOMY"], 562, 492, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("${context.lorittaUser.profile.dreams}", 562, 511, 800 - 6)
+		graphics.drawText("${userProfile.dreams}", 562, 511, 800 - 6)
 
 		graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(userProfile.aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
 
 		graphics.drawImage(profileWrapperOverlay, 0, 0, null)
 

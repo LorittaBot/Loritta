@@ -14,7 +14,7 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     @BsonProperty("_id")
     val userId = _userId
     var xp: Long = 0 // XP do usuário
-    var aboutMe: String = "A Loritta é minha amiga!";
+    var aboutMe: String = "A Loritta é minha amiga!" // TODO: null
     var isBanned = false;
     var banReason: String? = null;
     var reminders: MutableList<Reminder> = arrayListOf();

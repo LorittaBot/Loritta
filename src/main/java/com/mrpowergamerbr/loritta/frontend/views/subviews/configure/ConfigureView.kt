@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.subviews.ProtectedView
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -24,14 +26,28 @@ abstract class ConfigureView : ProtectedView() {
 		val guildId = split[3]
 
 		val temmieGuild = discordAuth.getUserGuilds().firstOrNull { it.id == guildId }
+		val jdaGuild = lorittaShards.getGuildById(guildId)
+		val serverConfig = loritta.getServerConfigForGuild(guildId)
 
-		if (discordAuth.getUserIdentification().id != Loritta.config.ownerId && (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild))) {
+		if (jdaGuild == null) {
+			return "Eu não estou neste servidor ou as minhas shards ainda não reiniciaram!"
+		}
+
+		val id = discordAuth.getUserIdentification().id
+		val member = jdaGuild.getMemberById(id)
+		var canAccessDashboardViaPermission = false
+
+		if (member != null) {
+			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
+
+			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+		}
+
+		var canBypass = discordAuth.getUserIdentification().id == Loritta.config.ownerId || canAccessDashboardViaPermission
+		if ((!canBypass) && (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild))) {
 			return "Você não tem permissão!"
 		}
 
-		val serverConfig = loritta.getServerConfigForGuild(guildId)
-
-		val jdaGuild = lorittaShards.getGuildById(guildId)!!
 		variables["guild"] = jdaGuild
 		variables["serverConfig"] = serverConfig
 		return renderConfiguration(req, res, variables, discordAuth, jdaGuild, serverConfig)
