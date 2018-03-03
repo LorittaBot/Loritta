@@ -269,7 +269,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
-		thread(name = "Guild Message Update Update Thread (${event.channel.id})") {
+		loritta.eventLogExecutors.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -278,11 +278,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-						return@thread
+						return@execute
 					if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-						return@thread
+						return@execute
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-						return@thread
+						return@execute
 
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.message.id)).first()
 					if (storedMessage != null) {
@@ -300,7 +300,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						storedMessage.content = event.message.contentRaw
 
 						loritta save storedMessage
-						return@thread
+						return@execute
 					}
 				}
 			}

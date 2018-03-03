@@ -6,9 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.whirvis.jraknet.identifier.MinecraftIdentifier
+import com.whirvis.jraknet.util.RakNetUtils
 import net.dv8tion.jda.core.EmbedBuilder
-import net.marfgamer.jraknet.identifier.MinecraftIdentifier
-import net.marfgamer.jraknet.util.RakNetUtils
 import java.awt.Color
 import java.net.UnknownHostException
 import java.util.*

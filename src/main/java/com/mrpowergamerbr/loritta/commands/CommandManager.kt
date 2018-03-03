@@ -30,12 +30,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.UserInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoterittaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.EvalCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaBanCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.LorittaUnbanCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.NashornTestCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.ReloadCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.ServerInvitesCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
 import com.mrpowergamerbr.loritta.commands.vanilla.music.*
@@ -221,6 +216,7 @@ class CommandManager {
 		commandMap.add(ServerInvitesCommand())
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())
+		commandMap.add(LoriServerListConfigCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())

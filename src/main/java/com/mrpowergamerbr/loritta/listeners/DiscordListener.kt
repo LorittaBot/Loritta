@@ -230,19 +230,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
 			debug(DebugType.MESSAGE_RECEIVED, "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
-			thread(name = "Message Received Thread (Private) (${event.author.id})") {
+			loritta.messageExecutors.execute {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 				if (event.message.contentRaw.replace("!", "").trim() == "<@297153970613387264>") {
 					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
-					return@thread
+					return@execute
 				}
 
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
 					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
-						return@thread
+						return@execute
 					}
 				}
 			}
@@ -255,7 +255,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
-			thread(name = "Message Updated Thread (${event.guild.id} ~ ${event.member.user.id})") {
+			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
@@ -316,24 +316,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (loritta.messageContextCache.containsKey(e.messageId)) {
 			val context = LorittaLauncher.loritta.messageContextCache[e.messageId] as CommandContext
-			val t = object : Thread() {
-				override fun run() {
-					try {
-						com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.user.name}")
-						val message = e.channel.getMessageById(e.messageId).complete()
-						context.cmd.onCommandReactionFeedback(context, e, message)
-					} catch (exception: Exception) {
-						loritta.messageContextCache.remove(e.messageId)
-						if (exception is ErrorResponseException) {
-							if (exception.errorCode == 10008) // unknown channel
-								return
-						}
-						exception.printStackTrace()
-						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.user.name}**", exception)
+			loritta.executor.execute {
+				try {
+					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.user.name}")
+					val message = e.channel.getMessageById(e.messageId).complete()
+					context.cmd.onCommandReactionFeedback(context, e, message)
+				} catch (exception: Exception) {
+					loritta.messageContextCache.remove(e.messageId)
+					if (exception is ErrorResponseException) {
+						if (exception.errorCode == 10008) // unknown channel
+							return@execute
 					}
+					exception.printStackTrace()
+					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.user.name}**", exception)
 				}
 			}
-			t.start()
 		}
 
 		if (e.isFromType(ChannelType.TEXT)) {
@@ -342,13 +339,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			debug(DebugType.REACTION_RECEIVED, "(Direct Message -> Reaction Add) ${e.user.name}#${e.user.discriminator} (${e.user.id}): ${e.reactionEmote.name}")
 		}
 
-		var name = "Message Reaction Thread ${e.user.id}"
-
-		if (e.guild != null) {
-			name = "Message Reaction Thread (${e.guild.id} ~ ${e.member.user.id})"
-		}
-
-		thread(name = name) {
+		loritta.executor.execute {
 			if (e.isFromType(ChannelType.TEXT)) {
 				val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
 
@@ -393,24 +384,24 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		// E depois iremos salvar a configuração do servidor
-		thread(name = "Guild Join Thread (Loritta) (${event.guild.id})") {
+		loritta.executor.execute {
 			loritta save serverConfig
 
 			event.guild.members.forEach {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val guilds = lorittaShards.getMutualGuilds(it.user)
 
-					if (guilds.any { guild -> // Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
+					if (!guilds.any { guild ->
+						// Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
 						guild.getMember(it.user).hasPermission(Permission.ADMINISTRATOR) || guild.getMember(it.user).hasPermission(Permission.MANAGE_SERVER)
 					}) {
-						return@thread
+
+						val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
+
+						it.user.openPrivateChannel().queue({
+							it.sendMessage(message).queue()
+						})
 					}
-
-					val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
-
-					it.user.openPrivateChannel().queue({
-						it.sendMessage(message).queue()
-					})
 				}
 			}
 		}

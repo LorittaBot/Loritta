@@ -2,10 +2,7 @@ package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.threads.AminoRepostThread
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
-import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
-import com.mrpowergamerbr.loritta.threads.NewYouTubeVideosThread
+import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.logTypes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
@@ -117,20 +114,19 @@ object DebugLog {
 				println("===[ INFO ]===")
 				println("Shards: ${lorittaShards.shards.size}")
 				println("Total Servers: ${lorittaShards.getGuildCount()}")
-				println("Users: ${lorittaShards.getUserCount()}")
-				//Print used memory
 				println("Used Memory:"
 						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
-
-				//Print free memory
 				println("Free Memory:"
 						+ runtime.freeMemory() / mb);
-
-				//Print total available memory
 				println("Total Memory:" + runtime.totalMemory() / mb);
-
-				//Print Maximum available memory
 				println("Max Memory:" + runtime.maxMemory() / mb);
+			}
+			"shards" -> {
+				val shards = lorittaShards.shards
+
+				for ((index, shard) in shards.withIndex()) {
+					println("SHARD $index (${shard.status.name}): ${shard.guilds.size} guilds - ${shard.users.size} members")
+				}
 			}
 			"extendedinfo" -> {
 				println("===[ EXTENDED INFO ]===")
@@ -166,6 +162,7 @@ object DebugLog {
 				println("eventLogExecutors: ${(loritta.eventLogExecutors as ThreadPoolExecutor).activeCount}")
 				println("messageExecutors: ${(loritta.messageExecutors as ThreadPoolExecutor).activeCount}")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
+				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}
 			"mongo" -> {
 				println("===[ MONGODB ]===")

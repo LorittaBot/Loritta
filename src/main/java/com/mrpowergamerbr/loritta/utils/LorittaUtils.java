@@ -21,6 +21,9 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -226,6 +229,14 @@ public final class LorittaUtils {
 		if (toBeDownloaded != null) {
 			// Vamos baixar a imagem!
 			try {
+				// Workaround para imagens do prnt.scr/prntscr.com (mesmo que o Lightshot seja um lixo)
+				if (toBeDownloaded.contains("prnt.sc") || toBeDownloaded.contains("prntscr.com")) {
+					Document document = Jsoup.connect(toBeDownloaded).get();
+					Elements elements =  document.getElementsByAttributeValue("property", "og:image");
+					if (!elements.isEmpty()) {
+						toBeDownloaded = elements.attr("content");
+					}
+				}
 				image = downloadImage(toBeDownloaded);
 			} catch (Exception e) {}
 		}

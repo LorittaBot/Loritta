@@ -47,6 +47,7 @@ class DiscordBotsInfoThread : Thread("Discord Bot Info Thread") {
 			logger.info("eventLogExecutors: ${(loritta.eventLogExecutors as ThreadPoolExecutor).activeCount}")
 			logger.info("messageExecutors: ${(loritta.messageExecutors as ThreadPoolExecutor).activeCount}")
 			logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
+			logger.info("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

@@ -96,6 +96,15 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (context.args.isNotEmpty() && context.args[0] == "mongo") {
+			loritta.initMongo()
+			context.reply(
+					LoriReply(
+							"MongoDB recarregado!"
+					)
+			)
+			return
+		}
 
 		val oldCommandCount = loritta.commandManager.commandMap.size
 

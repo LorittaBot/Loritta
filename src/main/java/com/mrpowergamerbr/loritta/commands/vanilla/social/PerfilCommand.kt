@@ -163,7 +163,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		}
 
 		if (aboutMe == null) {
-			val polluxAboutMe = polluxDocument.getElementById("persotex").text()
+			val polluxAboutMe = polluxDocument.getElementById("persotex")?.text()
 
 			if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
 				aboutMe = polluxAboutMe

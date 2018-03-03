@@ -98,15 +98,16 @@ class Loritta {
 	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	fun createThreadPool(name: String): ThreadPoolExecutor {
-		return ThreadPoolExecutor(128, // core size
-				256, // max size
+		return ThreadPoolExecutor(256, // core size
+				384, // max size
 				10*60, // idle timeout
 				TimeUnit.SECONDS,
-				ArrayBlockingQueue<Runnable>(64)).apply {
+				ArrayBlockingQueue<Runnable>(16)).apply {
 			allowCoreThreadTimeOut(true)
 			threadFactory = ThreadFactoryBuilder().setNameFormat(name).build()
 		}
 	}
+
 	var rawServersFanClub = listOf<ServerFanClub>()
 	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
@@ -270,7 +271,7 @@ class Loritta {
 
 		// GiveawayThread().start() // Iniciar thread para processar giveaways
 
-		thread(name = "AFK Delete Message Thread") {
+		thread(name = "Small Update Stuff") {
 			while (true) {
 				try {
 					userCount = lorittaShards.getUserCount()

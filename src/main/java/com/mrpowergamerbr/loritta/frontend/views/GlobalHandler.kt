@@ -9,6 +9,12 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.frontend.views.subviews.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIGetServerConfigView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIUpdateServerConfigView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServerInformationView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServerSampleView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServersView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIVoteServerView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
@@ -140,6 +146,7 @@ object GlobalHandler {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
+		variables["localeAsJson"] = GSON.toJson(lorittaLocale.strings)
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -179,12 +186,20 @@ object GlobalHandler {
 		apiViews.add(APILoriGiveBalanceView())
 		apiViews.add(APILoriSetBalanceView())
 		apiViews.add(APILoriWithdrawBalanceView())
+		apiViews.add(APIGetServerSampleView())
+		apiViews.add(APIGetServerInformationView())
+		apiViews.add(APIVoteServerView())
+		apiViews.add(APIGetServerConfigView())
+		apiViews.add(APIUpdateServerConfigView())
+		apiViews.add(APIGetServersView())
+		apiViews.add(APIGetLocaleView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
 		views.add(LorigotchiView())
 		views.add(LoriPartnerView())
+		views.add(ServersView())
 		views.add(ConfigureServerView())
 		views.add(ConfigureEventLogView())
 		views.add(ConfigureInviteBlockerView())

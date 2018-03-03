@@ -63,9 +63,8 @@ object WelcomeModule {
 						if (joinLeaveConfig.tellOnBan) {
 							// Para a mensagem de ban nós precisamos ter a permissão de banir membros
 							if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-								val banList = guild.bans.complete()
-								if (banList.contains(event.user)) {
-
+								val banList = guild.banList.complete()
+								if (banList.firstOrNull { it.user == event.user } != null) {
 									if (joinLeaveConfig.banMessage.isNotEmpty()) {
 										msg = joinLeaveConfig.banMessage
 									}

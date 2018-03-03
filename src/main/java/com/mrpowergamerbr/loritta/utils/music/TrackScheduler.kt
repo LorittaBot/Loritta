@@ -56,32 +56,28 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 				val textChannel = guild.getTextChannelById(config.musicConfig.channelId)
 
 				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
-					val t = object : Thread("Track Scheduler Logging Thread") {
-						override fun run() {
-							var seconds = 0
+					loritta.executor.execute {
+						var seconds = 0
 
-							while (true) {
-								if (seconds >= 5) {
-									return
-								}
+						while (true) {
+							if (seconds >= 5) {
+								return@execute
+							}
 
-								if (!track.metadata.isEmpty()) {
-									val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true)
+							if (!track.metadata.isEmpty()) {
+								val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true)
 
-									textChannel.sendMessage(embed).complete()
-									return
-								}
-								seconds++
-								try {
-									Thread.sleep(1000)
-								} catch (e: InterruptedException) {
-									e.printStackTrace()
-								}
-
+								textChannel.sendMessage(embed).complete()
+								return@execute
+							}
+							seconds++
+							try {
+								Thread.sleep(1000)
+							} catch (e: InterruptedException) {
+								e.printStackTrace()
 							}
 						}
 					}
-					t.start()
 				}
 			}
 		}
@@ -97,7 +93,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		player.startTrack(audioTrackWrapper?.track, false)
 		this.currentTrack = audioTrackWrapper
 
-		thread(name = "Audio Track Wrapper Thread") {
+		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)
 			// this.player.volume = serverConfig.volume
 
