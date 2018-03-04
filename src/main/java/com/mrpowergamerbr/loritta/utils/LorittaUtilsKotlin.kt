@@ -620,21 +620,6 @@ object LorittaUtilsKotlin {
 		}
 	}
 
-	@JvmStatic
-	fun generateServersInFanClub() {
-		val entries = mutableListOf<ServerFanClubEntry>()
-		loritta.rawServersFanClub.forEach{
-			val guild = lorittaShards.getGuildById(it.serverId)
-			if (guild != null) {
-				entries.add(ServerFanClubEntry(it.id,
-						guild,
-						it.inviteUrl,
-						it.description))
-			}
-		}
-		loritta.serversFanClub = entries
-	}
-
 	fun sendStackTrace(message: Message, t: Throwable) {
 		if (message.isFromType(ChannelType.TEXT)) {
 			sendStackTrace("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.contentRaw.stripCodeMarks()}`", t)
@@ -764,25 +749,6 @@ data class FeedEntry(
 		val entry: Element
 )
 
-class ServerFanClubEntry {
-	val id: String
-	val guild: Guild
-	val inviteUrl: String
-	val description: String
-	val guildIcon: String
-	val fancyJoinDate: String
-	var isSuper: Boolean = false
-
-	constructor(id: String, guild: Guild, inviteUrl: String, description: String) {
-		this.id = id;
-		this.guild = guild;
-		this.inviteUrl = inviteUrl;
-		this.description = description;
-		this.guildIcon = guild.iconUrl.replace("jpg", "png")
-		this.fancyJoinDate = guild.selfMember.joinDate.humanize()
-	}
-}
-
 class PanelOptionWrapper(
 		val obj: Any,
 		val id: String,
@@ -799,9 +765,3 @@ class PanelOptionWrapper(
 		}
 	}
 }
-
-class ServerMiscInfo(
-		val members: Long,
-		val bots: Long,
-		val joinDate: String
-)

@@ -67,6 +67,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		val executor = Executors.newSingleThreadExecutor()
 		val future = executor.submit(NashornEventTask(engine, "$blacklisted $inlineMethods\n$javaScript", call, *objects))
 		future.get(15, TimeUnit.SECONDS)
+		executor.shutdownNow()
 	}
 
 	class NashornMessageReceivedEvent(private val event: MessageReceivedEvent) {

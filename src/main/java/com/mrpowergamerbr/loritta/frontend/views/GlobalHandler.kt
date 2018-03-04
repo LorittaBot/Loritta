@@ -127,7 +127,6 @@ object GlobalHandler {
 			}
 		}
 
-		variables["serversFanClub"] = loritta.serversFanClub
 		variables["clientId"] = Loritta.config.clientId
 		variables["isPatreon"] = isPatreon
 		variables["isDonator"] = isDonator
@@ -200,6 +199,13 @@ object GlobalHandler {
 		views.add(LorigotchiView())
 		views.add(LoriPartnerView())
 		views.add(ServersView())
+		views.add(FanArtsView())
+		views.add(DonateView())
+		views.add(CommandsView())
+		views.add(NashornDocsView())
+		views.add(PatreonCallbackView())
+		views.add(AuthPathRedirectView())
+
 		views.add(ConfigureServerView())
 		views.add(ConfigureEventLogView())
 		views.add(ConfigureInviteBlockerView())
@@ -219,14 +225,6 @@ object GlobalHandler {
 		views.add(ConfigureModerationView())
 		views.add(ConfigureLoriPartnerView())
 		views.add(TestMessageView())
-		views.add(FanArtsView())
-		views.add(DonateView())
-		views.add(CommandsView())
-		// views.add(ServersView())
-		views.add(ServersFanClubView())
-		views.add(NashornDocsView())
-		views.add(PatreonCallbackView())
-		views.add(AuthPathRedirectView())
 
 		this.views = views
 		this.apiViews = apiViews

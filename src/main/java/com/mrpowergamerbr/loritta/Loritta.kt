@@ -22,7 +22,6 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.config.ServerFanClub
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -46,10 +45,7 @@ import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
-import java.util.concurrent.ArrayBlockingQueue
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import kotlin.concurrent.thread
 
 /**
@@ -97,19 +93,10 @@ class Loritta {
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
 	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
-	fun createThreadPool(name: String): ThreadPoolExecutor {
-		return ThreadPoolExecutor(256, // core size
-				384, // max size
-				10*60, // idle timeout
-				TimeUnit.SECONDS,
-				ArrayBlockingQueue<Runnable>(16)).apply {
-			allowCoreThreadTimeOut(true)
-			threadFactory = ThreadFactoryBuilder().setNameFormat(name).build()
-		}
+	fun createThreadPool(name: String): ExecutorService {
+		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	var rawServersFanClub = listOf<ServerFanClub>()
-	var serversFanClub = mutableListOf<ServerFanClubEntry>()
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
 	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
@@ -223,8 +210,6 @@ class Loritta {
 			println("Shard $idx iniciada com sucesso!")
 		}
 
-		loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
-
 		println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
 
 		val website = thread(true, name = "Website Thread") {
@@ -276,49 +261,6 @@ class Loritta {
 				try {
 					userCount = lorittaShards.getUserCount()
 					guildCount = lorittaShards.getGuildCount()
-
-					loadServersFromFanClub() // Carregue todos os servidores do fã clube da Loritta
-
-					var serversFanClub = loritta.serversFanClub.sortedByDescending {
-						it.guild.members.size
-					}.toMutableList()
-
-					var donatorsFanClub = serversFanClub.filter {
-						val owner = it.guild.owner.user
-
-						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
-
-						if (lorittaGuild != null) {
-							val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-							val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-							val ownerInLorittaServer = lorittaGuild.getMember(owner)
-
-							(ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))
-						} else {
-							false
-						}
-					}
-
-					serversFanClub.onEach {
-						val owner = it.guild.owner.user
-
-						val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
-
-						if (lorittaGuild != null) {
-							val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-							val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-							val ownerInLorittaServer = lorittaGuild.getMember(owner)
-
-							if ((ownerInLorittaServer != null && (ownerInLorittaServer.roles.contains(rolePatreons) || ownerInLorittaServer.roles.contains(roleDonators)))) {
-								it.isSuper = true
-							}
-						}
-					}
-
-					serversFanClub.removeAll(donatorsFanClub)
-					serversFanClub.addAll(0, donatorsFanClub)
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
@@ -399,14 +341,6 @@ class Loritta {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		commandManager = CommandManager()
-	}
-
-	/**
-	 * Carrega todos os servidores do Fã Clube da Loritta
-	 */
-	fun loadServersFromFanClub() {
-		rawServersFanClub = GSON.fromJson(File("./fanclub.json").readText())
-		LorittaUtilsKotlin.generateServersInFanClub()
 	}
 
 	fun loadFanArts() {

@@ -114,7 +114,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
-		loritta.loadServersFromFanClub()
 		loritta.loadLocales()
 		loritta.loadFanArts()
 

@@ -86,8 +86,8 @@ var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
 var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
+			val executor = Executors.newSingleThreadExecutor()
 			try {
-				val executor = Executors.newSingleThreadExecutor()
 				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Exception) {
@@ -110,6 +110,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				builder.setColor(Color.RED)
 				ogContext.sendMessage(builder.build())
 			}
+			executor.shutdownNow()
 		} else {
 			val factory = NashornScriptEngineFactory()
 
@@ -126,9 +127,9 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var channel = context.message.channel
 				var client = context.client
 			""".trimIndent()
+			val executor = Executors.newSingleThreadExecutor()
 			try {
 				val parallaxContext = ParallaxContext(ogContext)
-				val executor = Executors.newSingleThreadExecutor()
 				val future = executor.submit(ParallaxTask(engine, "$blacklisted function parallaxCommand(context) {\n$inlineMethods\n$javaScript\n}", ogContext, parallaxContext))
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Exception) {
@@ -151,6 +152,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				builder.setColor(Color.RED)
 				ogContext.sendMessage(builder.build())
 			}
+			executor.shutdownNow()
 		}
 	}
 

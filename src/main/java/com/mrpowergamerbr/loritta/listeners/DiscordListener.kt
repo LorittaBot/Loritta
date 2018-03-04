@@ -341,21 +341,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		loritta.executor.execute {
 			if (e.isFromType(ChannelType.TEXT)) {
-				val executor = executors.getOrPut(e.guild, { Executors.newFixedThreadPool(1) })
+				try {
+					val conf = loritta.getServerConfigForGuild(e.guild.id)
 
-				executor.execute {
-					try {
-						val conf = loritta.getServerConfigForGuild(e.guild.id)
-
-						// Sistema de Starboard
-						if (conf.starboardConfig.isEnabled) {
-							com.mrpowergamerbr.loritta.utils.log("[REACTION] Handling Starboard for ${e.guild.id} ~ ${e.guild.name} ~ ${e.member.user.name}")
-							StarboardModule.handleStarboardReaction(e, conf)
-						}
-					} catch (exception: Exception) {
-						exception.printStackTrace()
-						LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
+					// Sistema de Starboard
+					if (conf.starboardConfig.isEnabled) {
+						com.mrpowergamerbr.loritta.utils.log("[REACTION] Handling Starboard for ${e.guild.id} ~ ${e.guild.name} ~ ${e.member.user.name}")
+						StarboardModule.handleStarboardReaction(e, conf)
 					}
+				} catch (exception: Exception) {
+					exception.printStackTrace()
+					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 				}
 			}
 		}

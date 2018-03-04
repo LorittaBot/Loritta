@@ -135,8 +135,6 @@ object DebugLog {
 				println("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
 				println("messageContextCache.size: ${loritta.messageContextCache.size}")
 				println("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
-				println("rawServersFanClub.size: ${loritta.rawServersFanClub.size}")
-				println("serversFanClub.size: ${loritta.serversFanClub.size}")
 				println("locales.size: ${loritta.locales.size}")
 				println("ignoreIds.size: ${loritta.ignoreIds.size}")
 				println("userCooldown.size: ${loritta.userCooldown.size}")
