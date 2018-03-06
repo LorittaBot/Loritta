@@ -85,16 +85,11 @@ class APIJoinServerView : NoVarsView() {
 		if (nickname != null)
 			payload["nick"] = nickname
 
-		println(payload.toString())
-
-		println(Route.Guilds.MODIFY_MEMBER.compile("a", "b").baseRoute)
 		val body = HttpRequest.put("https://discordapp.com/api/v6/guilds/${guild.id}/members/$userId")
 				.header("User-Agent", "DiscordBot (https://github.com/LorittaBot/Loritta, 0)")
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bot ${Loritta.config.clientToken}")
 				.send(payload.toString())
 				.body()
-
-		println(body)
 	}
 }
