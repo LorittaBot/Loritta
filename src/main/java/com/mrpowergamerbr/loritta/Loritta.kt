@@ -236,6 +236,8 @@ class Loritta {
 
 		RemindersThread().start()
 
+		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
+
 		val loteriaFile = File(FOLDER, "loteria.json")
 
 		if (loteriaFile.exists()) {

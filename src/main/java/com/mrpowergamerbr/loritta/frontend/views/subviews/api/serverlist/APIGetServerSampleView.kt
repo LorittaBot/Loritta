@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.OnlineStatus
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
@@ -29,6 +30,7 @@ class APIGetServerSampleView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -40,7 +42,6 @@ class APIGetServerSampleView : NoVarsView() {
 			}
 		}
 
-		var start = System.currentTimeMillis()
 		val sponsoredConfigs = loritta.serversColl
 				.aggregate(
 						listOf(
@@ -59,9 +60,7 @@ class APIGetServerSampleView : NoVarsView() {
 								Aggregates.sort(Sorts.descending("serverListConfig.sponsorPaid"))
 						)
 				)
-		println("Sponsored: ${System.currentTimeMillis() - start}")
 
-		start = System.currentTimeMillis()
 		val partnerConfigs = loritta.serversColl
 				.aggregate(
 						listOf(
@@ -73,9 +72,7 @@ class APIGetServerSampleView : NoVarsView() {
 								Aggregates.sample(8)
 						)
 				)
-		println("Partner: ${System.currentTimeMillis() - start}")
 
-		start = System.currentTimeMillis()
 		val query = org.bson.Document.parse("{ \$addFields: { \"serverListConfig.validVotes\": { \$filter: { input: \"\$serverListConfig.votes\", as: \"item\", cond: {\$gt: [\"\$\$item.votedAt\", ${System.currentTimeMillis() - 2592000000}]}}}}}")
 		val topConfigs = loritta.serversColl
 				.aggregate(
@@ -86,9 +83,17 @@ class APIGetServerSampleView : NoVarsView() {
 								Aggregates.sort(Sorts.descending("length")),
 								Aggregates.limit(25))
 				)
-		println("Topperson: ${System.currentTimeMillis() - start}")
 
-		start = System.currentTimeMillis()
+		val recentlyBumped = loritta.serversColl
+				.aggregate(
+						listOf(
+								Aggregates.match(Filters.eq("serverListConfig.enabled", true)),
+								query,
+								org.bson.Document("\$addFields", org.bson.Document("length", org.bson.Document("\$size", org.bson.Document("\$ifNull", listOf("\$serverListConfig.validVotes", emptyList<Any>()))))),
+								Aggregates.sort(Sorts.descending("serverListConfig.lastBump")),
+								Aggregates.limit(25))
+				)
+
 		val randomConfigs =
 				loritta.serversColl
 						.aggregate(
@@ -97,19 +102,20 @@ class APIGetServerSampleView : NoVarsView() {
 										Aggregates.sample(26)
 								)
 						)
-		println("Random: ${System.currentTimeMillis() - start}")
 
 		val wat = System.currentTimeMillis()
 		val sponsoredArray = transformToJsonArray(sponsoredConfigs.toMutableList(), userIdentification)
 		val partnerArray = transformToJsonArray(partnerConfigs.toMutableList(), userIdentification)
 		val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 		val randomArray = transformToJsonArray(randomConfigs.toMutableList(), userIdentification)
+		val recentlyArray = transformToJsonArray(recentlyBumped.toMutableList(), userIdentification)
 		println("AFTER DOING ALL THAT STUFF: ${System.currentTimeMillis() - wat}")
 
 		val samples = JsonObject()
 		samples["sponsored"] = sponsoredArray
 		samples["partners"] = partnerArray
 		samples["top"] = topArray
+		samples["recentlyBumped"] = recentlyArray // os bumped recente sempre será totalCount
 		samples["random"] = randomArray
 		samples["sponsoredCount"] = loritta.serversColl.count(Filters.or(
 				Filters.and(

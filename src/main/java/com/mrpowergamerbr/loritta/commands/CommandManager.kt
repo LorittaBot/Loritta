@@ -202,7 +202,7 @@ class CommandManager {
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
 		commandMap.add(SoftBanCommand())
-		// commandMap.add(MuteCommand())
+		commandMap.add(MuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
 		commandMap.add(TempRoleCommand())

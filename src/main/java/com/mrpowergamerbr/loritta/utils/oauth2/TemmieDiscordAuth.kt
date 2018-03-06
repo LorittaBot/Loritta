@@ -30,7 +30,7 @@ class TemmieDiscordAuth {
 	private var clientSecret: String
 	var debug = false
 
-	private var accessToken: String? = null
+	var accessToken: String? = null
 	private var refreshToken: String? = null
 	private var expiresIn: Long? = null
 	private var generatedIn: Long? = null

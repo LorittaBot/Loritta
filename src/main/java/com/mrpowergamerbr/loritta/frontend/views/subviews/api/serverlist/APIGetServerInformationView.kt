@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.OnlineStatus
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
@@ -29,6 +30,7 @@ class APIGetServerInformationView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())

@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -357,9 +358,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	val executors = CacheBuilder.newBuilder().maximumSize(10L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Guild, ExecutorService>().asMap()
-
 	override fun onGuildLeave(e: GuildLeaveEvent) {
+		// Remover threads de role removal caso a Loritta tenha saido do servidor
+		val toRemove = mutableListOf<String>()
+		MuteCommand.roleRemovalThreads.forEach { key, value ->
+			if (key.startsWith(e.guild.id)) {
+				value.interrupt()
+				toRemove.add(key)
+			}
+		}
+		toRemove.forEach { MuteCommand.roleRemovalThreads.remove(it) }
+
 		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
 			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
@@ -383,6 +392,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			loritta save serverConfig
 
+			val locale = loritta.getLocaleById(serverConfig.localeId)
+
 			event.guild.members.forEach {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val guilds = lorittaShards.getMutualGuilds(it.user)
@@ -392,7 +403,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						guild.getMember(it.user).hasPermission(Permission.ADMINISTRATOR) || guild.getMember(it.user).hasPermission(Permission.MANAGE_SERVER)
 					}) {
 
-						val message = loritta.getLocaleById(serverConfig.localeId)["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", "https://discord.gg/V7Kbh4z", loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
+						val message = locale["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
 
 						it.user.openPrivateChannel().queue({
 							it.sendMessage(message).queue()
@@ -437,6 +448,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
+		// Remover thread de role removal caso o usuário tenha saido do servidor
+		val thread = MuteCommand.roleRemovalThreads[event.guild.id + "#" + event.member.user.id]
+		if (thread != null)
+			thread.interrupt()
+		MuteCommand.roleRemovalThreads.remove(event.guild.id + "#" + event.member.user.id)
+
 		loritta.executor.execute {
 			try {
 				if (event.user.id == Loritta.config.clientId) {

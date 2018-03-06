@@ -10,6 +10,7 @@ class ServerListConfig {
 	var isSponsored = false
 	var sponsoredUntil: Long = 0
 	var sponsorPaid: Double = 0.0
+	var lastBump: Long = 0
 	var vanityUrl: String? = null
 	var inviteUrl: String? = null // Invite do servidor, é necessário que o usuário coloque o invite
 	var tagline: String? = null
@@ -23,6 +24,10 @@ class ServerListConfig {
 			@BsonProperty("id")
 			val id: String,
 			@BsonProperty("votedAt")
-			val votedAt: Long
+			val votedAt: Long,
+			@BsonProperty("ip")
+			val ip: String,
+			@BsonProperty("email")
+			val email: String
 	)
 }

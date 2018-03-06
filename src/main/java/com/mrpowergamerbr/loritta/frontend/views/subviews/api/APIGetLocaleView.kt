@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 import com.google.common.collect.Lists
 import com.google.gson.Gson
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
@@ -13,6 +14,7 @@ class APIGetLocaleView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
 
 		// Vamos parsear!

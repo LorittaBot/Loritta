@@ -112,11 +112,25 @@ object MessageUtils {
 
 		var message = text
 
+		for ((token, value) in customTokens) {
+			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
+		}
+
+		message = message.replace("{@user}", mentionUser)
+		message = message.replace("{user}", user.escapeMentions())
+		message = message.replace("{user-id}", userId)
+		message = message.replace("{userAvatarUrl}", avatarUrl)
+		message = message.replace("{user-discriminator}", userDiscriminator)
+		message = message.replace("{nickname}", nickname.escapeMentions())
+		message = message.replace("{guild}", guildName.escapeMentions())
+		message = message.replace("{guildsize}", guildSize)
+		message = message.replace("{@owner}", mentionOwner)
+		message = message.replace("{owner}", owner.escapeMentions())
+
 		// Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
 		// para que elas simplesmente "funcionem:tm:"
 		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
 		if (guild != null) {
-
 			for (emote in guild.emotes) {
 				var index = 0
 				var overflow = 0
@@ -144,20 +158,6 @@ object MessageUtils {
 			}
 		}
 
-		for ((token, value) in customTokens) {
-			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
-		}
-
-		message = message.replace("{@user}", mentionUser)
-		message = message.replace("{user}", user.escapeMentions())
-		message = message.replace("{user-id}", userId)
-		message = message.replace("{userAvatarUrl}", avatarUrl)
-		message = message.replace("{user-discriminator}", userDiscriminator)
-		message = message.replace("{nickname}", nickname.escapeMentions())
-		message = message.replace("{guild}", guildName.escapeMentions())
-		message = message.replace("{guildsize}", guildSize)
-		message = message.replace("{@owner}", mentionOwner)
-		message = message.replace("{owner}", owner.escapeMentions())
 		return message
 	}
 }

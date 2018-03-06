@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import org.apache.commons.lang3.time.DateUtils
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
@@ -22,6 +23,7 @@ class APIGetRssFeedTitleView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		val json = JsonObject()
 
 		if (!req.param("feedLink").isSet) {

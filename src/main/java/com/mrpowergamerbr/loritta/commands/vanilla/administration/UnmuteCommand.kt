@@ -17,7 +17,7 @@ import java.awt.Color
 import java.time.Instant
 import kotlin.concurrent.thread
 
-class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
+class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUTE_DESCRIPTION"]
 	}

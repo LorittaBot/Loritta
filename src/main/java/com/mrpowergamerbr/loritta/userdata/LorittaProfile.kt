@@ -30,6 +30,8 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
     var isAfk = false
     var afkReason: String? = null
     var usedEmotes = mutableMapOf<String, Int>()
+    var receivedDailyAt = 0L
+    var ip: String? = null
 
     @BsonIgnore
     fun getCurrentLevel(): LorittaProfile.XpWrapper {

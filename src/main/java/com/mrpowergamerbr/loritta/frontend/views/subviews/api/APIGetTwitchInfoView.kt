@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 
@@ -17,6 +18,7 @@ class APIGetTwitchInfoView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		val json = JsonObject()
 
 		if (!req.param("channelLink").isSet) {

@@ -1,26 +1,25 @@
-package com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist
+package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.userdata.ServerListConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.save
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
-import org.json.XML
-import java.net.InetAddress
 import java.util.*
 
-class APIVoteServerView : NoVarsView() {
+class APILoriDailyRewardView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/server-list/vote"))
+		return req.path().matches(Regex("^/api/v1/economy/daily-reward"))
 	}
 
 	override fun render(req: Request, res: Response): String {
@@ -43,26 +42,6 @@ class APIVoteServerView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val type = req.param("guildId").value()
-
-		val serverConfig = loritta.serversColl.find(
-				Filters.eq("_id", type)
-		).firstOrNull()
-
-		if (serverConfig == null) {
-			val payload = JsonObject()
-			payload["api:code"] = LoriWebCodes.UNKNOWN_GUILD
-			return payload.toString()
-		}
-
-		val guild = lorittaShards.getGuildById(type)!!
-		if (guild.getMemberById(userIdentification.id) == null) {
-			val payload = JsonObject()
-			payload["api:code"] = LoriWebCodes.NOT_IN_GUILD
-			return payload.toString()
-		}
-
-
 		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.recaptchaToken}&response=$recaptcha")
 				.body()
 
@@ -79,14 +58,16 @@ class APIVoteServerView : NoVarsView() {
 		val ips = req.header("X-Forwarded-For").value() // Cloudflare, Apache
 		val ip = ips.split(", ")[0]
 
+		val lorittaProfile = loritta.getLorittaProfileForUser(userIdentification.id)
+
 		// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 		// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-		val vote = serverConfig.serverListConfig.votes.lastOrNull {
-			it.id == userIdentification.id || it.ip == ip
-		}
+		val sameIpProfile = loritta.usersColl.find(
+				Filters.eq("ip", ip)
+		).firstOrNull()
 
-		if (vote != null) {
-			val votedAt = vote.votedAt
+		run {
+			val votedAt = lorittaProfile.receivedDailyAt
 
 			val calendar = Calendar.getInstance()
 			calendar.timeInMillis = votedAt
@@ -95,16 +76,41 @@ class APIVoteServerView : NoVarsView() {
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			val canVote = System.currentTimeMillis() > tomorrow
+			val canGetDaily = System.currentTimeMillis() > tomorrow
 
-			if (!canVote) {
+			if (!canGetDaily) {
 				val payload = JsonObject()
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				return payload.toString()
 			}
 		}
 
+		if (sameIpProfile != null) {
+			run {
+				val votedAt = sameIpProfile.receivedDailyAt
+
+				val calendar = Calendar.getInstance()
+				calendar.timeInMillis = votedAt
+				calendar.set(Calendar.HOUR_OF_DAY, 0)
+				calendar.set(Calendar.MINUTE, 0)
+				calendar.add(Calendar.DAY_OF_MONTH, 1)
+				val tomorrow = calendar.timeInMillis
+
+				val canGetDaily = System.currentTimeMillis() > tomorrow
+
+				if (!canGetDaily) {
+					val payload = JsonObject()
+					payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
+					return payload.toString()
+				}
+			}
+		}
+
 		val status = MiscUtils.verifyAccount(userIdentification, ip)
+
+		Loritta.logger.info("AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}")
+		Loritta.logger.info("Is verified? ${userIdentification.verified}")
+		Loritta.logger.info("Email ${userIdentification.email}")
 
 		if (!status.canAccess) {
 			val payload = JsonObject()
@@ -135,29 +141,29 @@ class APIVoteServerView : NoVarsView() {
 			}.toString()
 		}
 
-		val votedAt = System.currentTimeMillis()
-		val calendar = Calendar.getInstance()
-		calendar.timeInMillis = votedAt
-		calendar.set(Calendar.HOUR_OF_DAY, 0)
-		calendar.set(Calendar.MINUTE, 0)
-		calendar.add(Calendar.DAY_OF_MONTH, 1)
-		val tomorrow = calendar.timeInMillis
+		val random = RANDOM.nextInt(0, 30)
+		val multiplier = when (random) {
+			in 8..14 -> 3
+			in 15..20 -> 4
+			in 21..25 -> 5
+			in 26..29 -> 6
+			else -> 2
+		}
 
-		serverConfig.serverListConfig.votes.add(
-				ServerListConfig.ServerVote(
-						userIdentification.id,
-						System.currentTimeMillis(),
-						ip,
-						userIdentification.email!!
-				)
-		)
+		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, (555 * multiplier) + 1) // 555 (lower bound) -> 555 * sites de votação do PocketDreams
 
-		loritta save serverConfig
-
+		val receivedDailyAt = System.currentTimeMillis()
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
-		payload["votedAt"] = System.currentTimeMillis()
-		payload["canVoteAgain"] = tomorrow
+		payload["receivedDailyAt"] = receivedDailyAt
+		payload["dailyPayout"] = dailyPayout
+
+		lorittaProfile.dreams += dailyPayout
+		lorittaProfile.ip = ip
+		lorittaProfile.receivedDailyAt = receivedDailyAt
+
+		loritta save lorittaProfile
+
 		return payload.toString()
 	}
 }

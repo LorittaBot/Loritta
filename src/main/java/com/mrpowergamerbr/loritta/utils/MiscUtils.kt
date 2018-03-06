@@ -1,17 +1,19 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
+import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
+import org.json.XML
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.StringReader
+import java.net.InetAddress
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -80,5 +82,87 @@ object MiscUtils {
 
 		val process = processBuilder.start()
 		process.waitFor(10, TimeUnit.SECONDS)
+	}
+
+	fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
+		if (!userIdentification.verified)
+			return AccountCheckResult.NOT_VERIFIED
+
+		val email = userIdentification.email ?: return AccountCheckResult.NOT_VERIFIED // Sem email == não verificado (?)
+
+		val domain = email.split("@")
+		if (2 > domain.size) // na verdade seria "INVALID_EMAIL" mas...
+			return AccountCheckResult.NOT_VERIFIED
+
+		val list = HttpRequest.get("https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blacklist.conf")
+				.body()
+				.split("\n")
+				.toMutableList()
+
+		// Alguns emails que não estão na lista
+		list.add("sparklmail.com")
+		list.add("l8oaypr.com")
+
+		val matches = list.any { it == domain[1] }
+
+		if (matches)
+			return AccountCheckResult.BAD_EMAIL
+
+		return verifyIP(ip)
+	}
+
+	fun verifyIP(ip: String): AccountCheckResult {
+		// Para identificar meliantes, cada request terá uma razão determinando porque o IP foi bloqueado
+		// 0 = Stop Forum Spam
+		// 1 = Bad hostname
+		// 2 = OVH IP
+
+		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
+		val stopForumSpam = HttpRequest.get("http://api.stopforumspam.org/api?ip=$ip")
+				.body()
+
+		// STOP FORUM SPAM
+		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
+
+		val response = JSON_PARSER.parse(xmlJSONObj.toString(4)).obj["response"]
+
+		val isSpam = response["appears"].bool
+
+		if (isSpam)
+			return AccountCheckResult.STOP_FORUM_SPAM
+
+		// HOSTNAME BLOCC:tm:
+		val addr = InetAddress.getByName(ip)
+		val host = addr.hostName.toLowerCase()
+
+		val hostnames = listOf(
+				"anchorfree", // Hotspot Shield
+				"ipredator.se", // IP redator
+				"pixelfucker.org", // Pixelfucker
+				"theremailer.net", // TheRemailer
+				"tor-exit", // Tor Exit
+				"torexit",
+				"exitpoint"
+		)
+
+		val badHostname = hostnames.any { host.contains(it) }
+
+		if (badHostname)
+			return AccountCheckResult.BAD_HOSTNAME
+
+		// OVH BLOCC:tm:
+		if (host.matches(Regex(".*ns[0-9]+.*")))
+			return AccountCheckResult.OVH_HOSTNAME
+
+		return AccountCheckResult.SUCCESS
+	}
+
+	enum class AccountCheckResult(val canAccess: Boolean) {
+		SUCCESS(true),
+		NOT_VERIFIED(false),
+		BAD_EMAIL(false),
+		STOP_FORUM_SPAM(false),
+		BAD_HOSTNAME(false),
+		OVH_HOSTNAME(false)
 	}
 }

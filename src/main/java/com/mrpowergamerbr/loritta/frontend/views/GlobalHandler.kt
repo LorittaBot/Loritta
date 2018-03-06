@@ -11,10 +11,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIGetServerConfigView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIUpdateServerConfigView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServerInformationView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServerSampleView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServersView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIVoteServerView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
@@ -38,7 +35,6 @@ object GlobalHandler {
 		// println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		// log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		debug(DebugType.WEBSITE, "${req.header("X-Forwarded-For").value()}: ${req.path()}")
-
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
 			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
@@ -192,6 +188,9 @@ object GlobalHandler {
 		apiViews.add(APIUpdateServerConfigView())
 		apiViews.add(APIGetServersView())
 		apiViews.add(APIGetLocaleView())
+		apiViews.add(APILoriDailyRewardView())
+		apiViews.add(APILoriDailyRewardStatusView())
+		apiViews.add(APIJoinServerView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
@@ -202,6 +201,7 @@ object GlobalHandler {
 		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())
+		views.add(DailyView())
 		views.add(NashornDocsView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())

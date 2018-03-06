@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.OnlineStatus
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
@@ -29,6 +30,7 @@ class APIGetServersView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response): String {
+		res.type(MediaType.json)
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -42,37 +44,59 @@ class APIGetServersView : NoVarsView() {
 
 		val skip = req.param("skip").intValue(0)
 		val size = Math.min(req.param("size").intValue(49), 99)
+		val serverType = req.param("serverType").value()
 
 		val query = org.bson.Document.parse("{ \$addFields: { \"serverListConfig.validVotes\": { \$filter: { input: \"\$serverListConfig.votes\", as: \"item\", cond: {\$gt: [\"\$\$item.votedAt\", ${System.currentTimeMillis() - 2592000000}]}}}}}")
-		val topConfigs = loritta.serversColl
-				.aggregate(
-						listOf(
-								Aggregates.match(Filters.eq("serverListConfig.enabled", true)),
-								query,
-								org.bson.Document("\$addFields", org.bson.Document("length", org.bson.Document("\$size", org.bson.Document("\$ifNull", listOf("\$serverListConfig.validVotes", emptyList<Any>()))))),
-								Aggregates.sort(Sorts.descending("length")),
-								Aggregates.skip(skip),
-								Aggregates.limit(size)
-						)
-				)
+		if (serverType == "top") {
+			val topConfigs = loritta.serversColl
+					.aggregate(
+							listOf(
+									Aggregates.match(Filters.eq("serverListConfig.enabled", true)),
+									query,
+									org.bson.Document("\$addFields", org.bson.Document("length", org.bson.Document("\$size", org.bson.Document("\$ifNull", listOf("\$serverListConfig.validVotes", emptyList<Any>()))))),
+									Aggregates.sort(Sorts.descending("length")),
+									Aggregates.skip(skip),
+									Aggregates.limit(size)
+							)
+					)
 
 
-		val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+			val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 
-		val samples = JsonObject()
+			val samples = JsonObject()
 
-		samples["result"] = topArray
-		samples["totalCount"] = loritta.serversColl
-				.aggregate(
-						listOf(
-								Aggregates.match(Filters.eq("serverListConfig.enabled", true)),
-								query,
-								org.bson.Document("\$addFields", org.bson.Document("length", org.bson.Document("\$size", org.bson.Document("\$ifNull", listOf("\$serverListConfig.validVotes", emptyList<Any>()))))),
-								Aggregates.sort(Sorts.descending("length"))
-						)
-				).count()
+			samples["result"] = topArray
+			samples["totalCount"] = loritta.serversColl.count(
+					Filters.eq("serverListConfig.enabled", true)
+			)
 
-		return samples.toString()
+			return samples.toString()
+		} else if (serverType == "recentlyBumped") {
+			val topConfigs = loritta.serversColl
+					.aggregate(
+							listOf(
+									Aggregates.match(Filters.eq("serverListConfig.enabled", true)),
+									query,
+									org.bson.Document("\$addFields", org.bson.Document("length", org.bson.Document("\$size", org.bson.Document("\$ifNull", listOf("\$serverListConfig.validVotes", emptyList<Any>()))))),
+									Aggregates.sort(Sorts.descending("serverListConfig.lastBump")),
+									Aggregates.skip(skip),
+									Aggregates.limit(size)
+							)
+					)
+
+
+			val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+
+			val samples = JsonObject()
+
+			samples["result"] = topArray
+			samples["totalCount"] = loritta.serversColl.count(
+					Filters.eq("serverListConfig.enabled", true)
+			)
+
+			return samples.toString()
+		}
+		return JsonObject().toString()
 	}
 
 	fun transformToJsonArray(serverConfigs: List<ServerConfig>, userIdentification: TemmieDiscordAuth.UserIdentification?): JsonArray {
