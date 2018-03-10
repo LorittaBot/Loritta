@@ -12,13 +12,13 @@ class ServerListConfig {
 	var sponsorPaid: Double = 0.0
 	var lastBump: Long = 0
 	var vanityUrl: String? = null
-	var inviteUrl: String? = null // Invite do servidor, é necessário que o usuário coloque o invite
 	var tagline: String? = null
 	var description: String? = null
 	var websiteUrl: String? = null
 	var keywords = mutableListOf<LorittaPartner.Keyword>()
 	var languages = mutableListOf<LorittaPartner.Language>()
 	var votes = mutableListOf<ServerListConfig.ServerVote>()
+	var joinedViaLori = mutableSetOf<String>()
 
 	class ServerVote @BsonCreator constructor(
 			@BsonProperty("id")

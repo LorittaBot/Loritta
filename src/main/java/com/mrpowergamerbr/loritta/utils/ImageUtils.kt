@@ -315,6 +315,11 @@ object ImageUtils {
 			var idx = 0
 			for (c in str.toCharArray()) { // E agora nós iremos printar todos os chars
 				idx++
+				if (c == '\n') {
+					currentX = startX // Nós iremos fazer wrapping do texto
+					currentY += lineHeight
+					continue
+				}
 				width = fontMetrics.charWidth(c)
 				if (!graphics.font.canDisplay(c)) {
 					try {

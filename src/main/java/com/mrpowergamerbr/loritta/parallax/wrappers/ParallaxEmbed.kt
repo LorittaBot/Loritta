@@ -52,7 +52,6 @@ class ParallaxEmbed {
 
 		if (fields != null) {
 			fields!!.forEach {
-				println(it)
 				embed.addField(it.name, it.value, it.inline)
 			}
 		}

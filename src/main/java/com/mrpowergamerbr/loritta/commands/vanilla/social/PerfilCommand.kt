@@ -11,6 +11,9 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.profile.DefaultProfileCreator
+import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
+import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.awt.Font
@@ -40,8 +43,8 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
-		var contextUser = LorittaUtils.getUserFromContext(context, 0)
-		var user = if (contextUser != null) contextUser else context.userHandle
+		val contextUser = LorittaUtils.getUserFromContext(context, 0)
+		val user = if (contextUser != null) contextUser else context.userHandle
 
 		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
@@ -132,16 +135,6 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
 		if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
-		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
-		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
-		val graphics = base.graphics as java.awt.Graphics2D;
-		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
-
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
 		val polluxDocument: Document by lazy {
@@ -202,83 +195,31 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 			} // Background padrão
 		}
 
-		if (background.width == 400) { // Suporte aos antigos backgrounds
-			graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
-		} else {
-			graphics.drawImage(background.getScaledInstance(800, 473, BufferedImage.SCALE_SMOOTH), 0, 127, null) // TODO: Permitir backgrounds maiores
-		}
+		val map = mapOf(
+				"default" to DefaultProfileCreator::class.java,
+				"nostalgia" to NostalgiaProfileCreator::class.java,
+				"msn" to MSNProfileCreator::class.java
+		)
 
-		graphics.drawImage(profileWrapper, 0, 0, null)
-		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(115), 6, 6, null)
+		var type = context.args.getOrNull(0) ?: "default"
+		if ((context.userHandle.id != Loritta.config.ownerId && context.guild.id != "297732013006389252") || !map.containsKey(type))
+			type = "default"
 
-		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneySemiBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val creator = map[type]!!
+		val profileCreator = creator.newInstance()
+		val profile = profileCreator.create(
+				context.userHandle,
+				user,
+				userProfile,
+				context.guild,
+				context.config,
+				badges,
+				locale,
+				background,
+				aboutMe,
+				member
+		)
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
-
-		graphics.font = whitneySemiBold38
-
-		if (badges.isEmpty()) {
-			graphics.drawText(user.name, 139, 71, 517 - 6)
-		} else { // Caso exista badges, nós iremos alterar um pouquinho aonde o nome é desenhado
-			graphics.drawText(user.name, 139, 61 - 4, 517 - 6)
-			var x = 139
-			// E agora desenhar as badges
-			badges.forEach {
-				val badge = it.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH)
-				graphics.drawImage(badge, x, 66 + 4, null)
-				x += 27 + 8
-			}
-		}
-
-		val position = loritta.usersColl.find(Filters.gt("xp", userProfile.xp)).count() + 1
-
-		val guildIcon = LorittaUtils.downloadImage(context.guild?.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png").getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
-
-		graphics.font = whitneyBold20
-		graphics.drawText("Global", 562, 21, 800 - 6)
-		graphics.font = whitneySemiBold20
-		graphics.drawText("#$position / ${userProfile.xp} XP", 562, 39, 800 - 6)
-
-		val localPosition = context.config.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == userProfile.userId } + 1
-		val xpLocal = context.config.guildUserData.firstOrNull { it.userId == userProfile.userId }
-
-		graphics.font = whitneyBold20
-		graphics.drawText(context.guild.name, 562, 61, 800 - 6)
-		graphics.font = whitneySemiBold20
-		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / ${xpLocal.xp} XP", 562, 78, 800 - 6)
-		} else {
-			graphics.drawText("???", 562, 78, 800 - 6)
-		}
-
-		graphics.font = whitneyBold20
-		graphics.drawText("Reputação", 562, 102, 800 - 6)
-		graphics.font = whitneySemiBold20
-		graphics.drawText("${userProfile.receivedReputations.size} reps", 562, 120, 800 - 6)
-
-		graphics.font = whitneyBold20
-		graphics.drawText(context.locale["PERFIL_ECONOMY"], 562, 492, 800 - 6)
-		graphics.font = whitneySemiBold20
-		graphics.drawText("${userProfile.dreams}", 562, 511, 800 - 6)
-
-		graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
-		graphics.font = whitneyMedium22
-
-		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
-
-		graphics.drawImage(profileWrapperOverlay, 0, 0, null)
-
-		context.sendFile(base.makeRoundedCorners(15), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"]); // E agora envie o arquivo
+		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"]); // E agora envie o arquivo
 	}
 }

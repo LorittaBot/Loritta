@@ -21,7 +21,11 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 		super.run()
 
 		while (true) {
-			checkRssFeeds();
+			try {
+				checkRssFeeds();
+			} catch (e: Exception) {
+				logger.error("Erro ao verificar novas RSS feeds!", e)
+			}
 			Thread.sleep(10000); // Só 10s de delay!
 		}
 	}

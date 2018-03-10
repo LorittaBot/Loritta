@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 
 fun main(args: Array<String>) {
-	val input = "{@user} adicionou o cargo {&Gamer} agora ele(a) terá acesso a todos os canais de games {role:+Gamer} {announce:comandos-log} {require:Membros} {delete}"
+	val input = "{@user} adicionou o cargo {&ABCDEF} agora ele(a) terá acesso a todos os canais de games {role:+ABCDEF} {announce:comandos-log} {require:ABCDEF} {delete}"
 	var contentInput = input
 
 	// start parallax processing tool

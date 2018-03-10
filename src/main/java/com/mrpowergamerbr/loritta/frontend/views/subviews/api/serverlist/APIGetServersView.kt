@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsRequireAuthView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.APIGetServerSampleView.Companion.transformToJsonArray
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -61,7 +62,7 @@ class APIGetServersView : NoVarsView() {
 					)
 
 
-			val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+			val topArray = APIGetServerSampleView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 
 			val samples = JsonObject()
 
@@ -85,7 +86,7 @@ class APIGetServersView : NoVarsView() {
 					)
 
 
-			val topArray = transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+			val topArray = APIGetServerSampleView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 
 			val samples = JsonObject()
 
@@ -97,88 +98,5 @@ class APIGetServersView : NoVarsView() {
 			return samples.toString()
 		}
 		return JsonObject().toString()
-	}
-
-	fun transformToJsonArray(serverConfigs: List<ServerConfig>, userIdentification: TemmieDiscordAuth.UserIdentification?): JsonArray {
-		val allServersSample = JsonArray()
-		for (server in serverConfigs.toList()) {
-			val guild = lorittaShards.getGuildById(server.guildId) ?: continue
-
-			val serverSample = JsonObject()
-			serverSample["id"] = server.guildId
-			server.serverListConfig.description = Jsoup.clean(server.serverListConfig.description, "", Whitelist.none(), Document.OutputSettings().prettyPrint(false))
-			server.serverListConfig.tagline = Jsoup.clean(server.serverListConfig.tagline, "", Whitelist.none(), Document.OutputSettings().prettyPrint(false))
-			serverSample["voteCount"] = server.serverListConfig.votes.size
-			serverSample["validVoteCount"] = server.serverListConfig.votes.count { it.votedAt > System.currentTimeMillis() - 2592000000}
-			serverSample["canVote"] = true
-			// 1 = not logged in
-			// 2 = not member
-			// 3 = needs to wait more than 1 hour before voting
-			// 4 = needs to wait until next day
-			if (userIdentification != null) {
-				val isMember = guild.getMemberById(userIdentification.id) != null
-
-				if (!isMember) {
-					serverSample["canVote"] = false
-					serverSample["cantVoteReason"] = 2
-				} else {
-					val vote = server.serverListConfig.votes
-							.lastOrNull { it.id == userIdentification.id }
-
-					if (vote == null) {
-						serverSample["canVote"] = true
-					} else {
-						val votedAt = vote.votedAt
-
-						val calendar = Calendar.getInstance()
-						calendar.timeInMillis = votedAt
-						calendar.set(Calendar.HOUR_OF_DAY, 0)
-						calendar.set(Calendar.MINUTE, 0)
-						calendar.add(Calendar.DAY_OF_MONTH, 1)
-						val tomorrow = calendar.timeInMillis
-
-						val canVote = System.currentTimeMillis() > tomorrow
-
-						if (canVote) {
-							serverSample["canVote"] = true
-						} else {
-							serverSample["canVote"] = false
-							serverSample["cantVoteReason"] = 4
-							serverSample["canVoteNext"] = tomorrow
-						}
-					}
-				}
-			} else {
-				serverSample["canVote"] = false
-				serverSample["cantVoteReason"] = 1
-			}
-
-			val serverListConfig = Gson().toJsonTree(server.serverListConfig).obj
-			serverListConfig.remove("votes")
-			serverSample["serverListConfig"] = serverListConfig
-
-			serverSample["iconUrl"] = guild.iconUrl
-			serverSample["invite"] = "https://google.com/"
-			serverSample["name"] = guild.name
-			serverSample["ownerId"] = guild.owner.user.id
-			serverSample["ownerName"] = guild.owner.user.name
-			serverSample["ownerDiscriminator"] = guild.owner.user.discriminator
-			serverSample["memberCount"] = guild.members.size
-			serverSample["onlineCount"] = guild.members.count { it.onlineStatus != OnlineStatus.OFFLINE }
-
-			val serverEmotes = JsonArray()
-
-			guild.emotes.forEach {
-				val emote = JsonObject()
-				emote["name"] = it.name
-				emote["imageUrl"] = it.imageUrl
-				serverEmotes.add(emote)
-			}
-
-			serverSample["serverEmotes"] = serverEmotes
-
-			allServersSample.add(serverSample)
-		}
-		return allServersSample
 	}
 }

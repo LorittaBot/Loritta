@@ -439,6 +439,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						return@execute
 
 					event.guild.controller.addSingleRoleToMember(event.member, mutedRoles.first()).complete()
+
+					if (userData.temporaryMute)
+						MuteCommand.spawnRoleRemovalThread(event.guild, loritta.getLocaleById(conf.localeId), conf, conf.getUserData(event.user.id))
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()

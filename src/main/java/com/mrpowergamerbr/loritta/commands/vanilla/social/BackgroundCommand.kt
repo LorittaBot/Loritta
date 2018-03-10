@@ -155,14 +155,14 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			return;
 		}
 		var needsEditing = false;
-		if (!(bufferedImage.width == 800 && bufferedImage.height == 473)) {
+		if (!(bufferedImage.width == 800 && bufferedImage.height == 600)) {
 			needsEditing = true;
-			if (bufferedImage.width > 800 && bufferedImage.height > 473) {
+			if (bufferedImage.width > 800 && bufferedImage.height > 600) {
 				var newWidth = 800.toDouble() / bufferedImage.width.toDouble();
-				var newHeight = 473.toDouble() / bufferedImage.height.toDouble();
+				var newHeight = 600.toDouble() / bufferedImage.height.toDouble();
 				var use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight;
 				bufferedImage = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(bufferedImage.getScaledInstance((bufferedImage.width * use).toInt(), (bufferedImage.height * use).toInt(), java.awt.image.BufferedImage.SCALE_SMOOTH));
-				bufferedImage = bufferedImage.getSubimage(0, 0, Math.min(bufferedImage.width, 800), Math.min(bufferedImage.height, 473))
+				bufferedImage = bufferedImage.getSubimage(0, 0, Math.min(bufferedImage.width, 800), Math.min(bufferedImage.height, 600))
 			}
 		}
 		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"));

@@ -201,7 +201,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		if (e !is MessageReactionAddEvent)
 			return
 
-		debug(DebugType.REACTION_RECEIVED, "Processing help reaction by " + e.user.name + "...")
+		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
+
 		msg.delete().complete()
 
 		if (context.metadata["deleteMessagesOnClick"] != null) {

@@ -170,12 +170,6 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				if (ev.message.isFromType(ChannelType.TEXT)) {
-					debug(DebugType.COMMAND_EXECUTED, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				} else {
-					debug(DebugType.COMMAND_EXECUTED, "(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				}
-
 				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true
@@ -311,15 +305,13 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					debug(DebugType.COMMAND_STATUS, "(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
 				} else {
-					debug(DebugType.COMMAND_EXECUTED, "(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
 				}
 				return true
 			} catch (e: Exception) {
-				e.printStackTrace()
-				val stacktraceAsString = ExceptionUtils.getStackTrace(e)
-				debug(DebugType.STACKTRACES, stacktraceAsString)
+				logger.error("Exception ao executar comando ${this.javaClass.simpleName}", e)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado

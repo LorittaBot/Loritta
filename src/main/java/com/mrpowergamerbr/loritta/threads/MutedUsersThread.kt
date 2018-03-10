@@ -27,12 +27,18 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				Filters.eq("guildUserData.temporaryMute", true)
 		)
 
-		logger.info("Verificando usuários silenciados de ${servers.count()} servidores...")
+		logger.info("Verificando usuários temporariamente silenciados de ${servers.count()} servidores... Removal threads ativas: ${MuteCommand.roleRemovalThreads.size}")
 
 		servers.iterator().use {
 			while (it.hasNext()) {
 				val next = it.next()
-				val guild = lorittaShards.getGuildById(next.guildId) ?: continue
+				val guild = lorittaShards.getGuildById(next.guildId)
+
+				if (guild == null) {
+					logger.info("Guild \"${next.guildId}\" não existe ou está indisponível!")
+					continue
+				}
+
 				val locale = loritta.getLocaleById(next.localeId)
 				next.guildUserData.filter { it.temporaryMute }.forEach {
 					if (!MuteCommand.roleRemovalThreads.containsKey("${guild.id}#${it.userId}")) {

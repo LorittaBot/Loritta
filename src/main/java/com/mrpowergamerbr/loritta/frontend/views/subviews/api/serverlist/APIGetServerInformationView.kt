@@ -20,6 +20,7 @@ import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.safety.Whitelist
 import java.io.File
 import java.util.*
@@ -64,79 +65,7 @@ class APIGetServerInformationView : NoVarsView() {
 		}
 
 		val guild = lorittaShards.getGuildById(server.guildId)!!
-
-		val information = JsonObject()
-		information["id"] = guild.id
-		information["iconUrl"] = guild.iconUrl?.replace("jpg", "png")
-		information["invite"] = guild.invites.complete().first { !it.isTemporary }.url
-		information["name"] = guild.name
-		information["tagline"] = Jsoup.clean(server.serverListConfig.tagline, Whitelist.none())
-		information["description"] = Jsoup.clean(server.serverListConfig.description, Whitelist.none())
-		information["keywords"] = Loritta.GSON.toJsonTree(server.serverListConfig.keywords)
-		information["ownerId"] = guild.owner.user.id
-		information["ownerName"] = guild.owner.user.name
-		information["ownerDiscriminator"] = guild.owner.user.discriminator
-		information["ownerAvatarUrl"] = guild.owner.user.effectiveAvatarUrl.replace("jpg", "png")
-		information["memberCount"] = guild.members.size
-		information["onlineCount"] = guild.members.count { it.onlineStatus != OnlineStatus.OFFLINE }
-		information["serverCreatedAt"] = guild.creationTime.toEpochSecond() * 1000
-		information["joinedAt"] = guild.selfMember.joinDate.toEpochSecond() * 1000
-		information["hasCustomBackground"] = File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${server.guildId}.png").exists()
-		information["voteCount"] = server.serverListConfig.votes.size
-		information["validVoteCount"] = server.serverListConfig.votes.count { it.votedAt > System.currentTimeMillis() - 2592000000}
-		information["canVote"] = true
-		// 1 = not logged in
-		// 2 = not member
-		// 3 = needs to wait more than 1 hour before voting
-		// 4 = needs to wait until next day
-		if (userIdentification != null) {
-			val isMember = guild.getMemberById(userIdentification.id) != null
-
-			if (!isMember) {
-				information["canVote"] = false
-				information["cantVoteReason"] = 2
-			} else {
-				val vote = server.serverListConfig.votes
-						.lastOrNull { it.id == userIdentification.id }
-
-				if (vote == null) {
-					information["canVote"] = true
-				} else {
-					val votedAt = vote.votedAt
-
-					val calendar = Calendar.getInstance()
-					calendar.timeInMillis = votedAt
-					calendar.set(Calendar.HOUR_OF_DAY, 0)
-					calendar.set(Calendar.MINUTE, 0)
-					calendar.add(Calendar.DAY_OF_MONTH, 1)
-					val tomorrow = calendar.timeInMillis
-
-					val canVote = System.currentTimeMillis() > tomorrow
-
-					if (canVote) {
-						information["canVote"] = true
-					} else {
-						information["canVote"] = false
-						information["cantVoteReason"] = 4
-						information["canVoteNext"] = tomorrow
-					}
-				}
-			}
-		} else {
-			information["canVote"] = false
-			information["cantVoteReason"] = 1
-		}
-
-		val serverEmotes = JsonArray()
-
-		guild.emotes.forEach {
-			val emote = JsonObject()
-			emote["name"] = it.name
-			emote["imageUrl"] = it.imageUrl
-			serverEmotes.add(emote)
-		}
-
-		information["serverEmotes"] = serverEmotes
+		val information = APIGetServerSampleView.transformToJsonObject(guild, server, userIdentification)
 
 		return information.toString()
 	}

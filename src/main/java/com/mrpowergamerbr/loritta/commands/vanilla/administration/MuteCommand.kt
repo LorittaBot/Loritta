@@ -296,18 +296,43 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		val roleRemovalThreads = mutableMapOf<String, Thread>()
 
 		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, serverConfig: ServerConfig, userData: LorittaGuildUserData) {
+			logger.info("Criando role removal thread para usuário ${userData.userId} na guild ${guild.id}!")
+
 			val previousThread = roleRemovalThreads["${guild.id}#${userData.userId}"]
 			if (previousThread != null) {
 				roleRemovalThreads.remove("${guild.id}#${userData.userId}")
+				logger.info("Interrompendo thread de ${userData.userId} na guild ${guild.id}! Criar outra removal thread enquanto uma já está ativa é feio!")
 				previousThread.interrupt() // lol nope
 			}
 
-			val member = guild.getMemberById(userData.userId)
-
 			// Vamos pegar se a nossa role existe
 			var mutedRoles = guild.getRolesByName(locale["MUTE_ROLE_NAME"], false)
-			if (member == null || mutedRoles.isEmpty()) {
-				logger.info("Removendo status de silenciado cargo silenciado de ${member.user.id} na guild ${guild.id}, motivo: Usuário não está no servidor ou cargo não existe mais!")
+			val mutedRole = mutedRoles.getOrNull(0)
+
+			val member = guild.getMemberById(userData.userId)
+
+			val time = userData.expiresIn
+			val delay = time - System.currentTimeMillis()
+			if (0 > delay) {
+				logger.info("Removendo cargo silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Já expirou!")
+
+				// Tempo menor que 0 = já expirou!
+				userData.temporaryMute = false
+				userData.isMuted = false
+				userData.expiresIn = 0
+
+				loritta save serverConfig
+
+				if (mutedRole != null && member != null) {
+					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
+
+					removeRole.complete()
+				}
+				return
+			}
+
+			if (mutedRole == null) {
+				logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Cargo não existe mais!")
 				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
 				userData.temporaryMute = false
 				userData.isMuted = false
@@ -316,26 +341,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				loritta save serverConfig
 			} else {
 				// Se existe, vamos carregar a atual
-				val mutedRole = mutedRoles[0]
-
-				val time = userData.expiresIn
-				val delay = time - System.currentTimeMillis()
-				if (0 > delay) {
-					logger.info("Removendo cargo silenciado de ${member.user.id} na guild ${guild.id}, motivo: Já expirou!")
-
-					// Tempo menor que 0 = já expirou!
-					userData.temporaryMute = false
-					userData.isMuted = false
-					userData.expiresIn = 0
-
-					loritta save serverConfig
-
-					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
-
-					removeRole.complete()
-					return
-				}
-
 				roleRemovalThreads.put("${guild.id}#${userData.userId}",
 						thread {
 							logger.info("Criado role removal thread de ${member.user.id} na guild ${guild.id}, irá expirar em ${time}")
@@ -356,7 +361,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 								removeRole.complete()
 							} catch (e: InterruptedException) {
-								logger.info("Role removal thread de ${member.user.id} na guild ${guild.id} foi cancelado!")
+								logger.info("Role removal thread de ${member.user.id} na guild ${guild.id} foi interrompida!")
 							}
 						}
 				)

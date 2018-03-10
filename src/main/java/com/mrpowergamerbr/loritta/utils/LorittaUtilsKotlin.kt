@@ -67,7 +67,6 @@ fun Long.humanize(): String {
 	return "${fixedOffset.dayOfMonth} de ${months[fixedOffset.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
 }
 
-
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
 }

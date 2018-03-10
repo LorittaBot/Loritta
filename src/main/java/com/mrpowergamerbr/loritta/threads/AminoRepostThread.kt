@@ -29,7 +29,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 			try {
 				checkRepost(aminoClient);
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("Erro ao verificar novos posts no Amino!", e)
 			}
 			Thread.sleep(10000);
 		}

@@ -34,7 +34,7 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			try {
 				checkNewVideos()
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("Erro ao verificar novos vídeos!", e)
 			}
 			Thread.sleep(500); // Só 0.5s de delay!
 		}

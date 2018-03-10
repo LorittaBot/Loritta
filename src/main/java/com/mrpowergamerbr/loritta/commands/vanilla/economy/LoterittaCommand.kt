@@ -17,27 +17,32 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "comprar" || arg0 == "buy") {
+			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
+
 			val lorittaProfile = context.lorittaUser.profile
-			if (lorittaProfile.dreams >= 250) {
-				lorittaProfile.dreams -= 250
-				LoteriaThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
+			val requiredCount = quantity * 250
+			if (lorittaProfile.dreams >= requiredCount) {
+				lorittaProfile.dreams -= requiredCount
+				for (i in 0 until quantity) {
+					LoteriaThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
+				}
 				loritta.loteriaThread.save()
 				loritta save lorittaProfile
 
 				context.reply(
 						LoriReply(
-								"Você comprou um ticket por **250 Sonhos**! Agora é só sentar e relaxar até o resultado da loteria sair!",
+								"Você comprou ${quantity} ticket${if (quantity == 1) "" else "s"} por **${requiredCount} Sonhos**! Agora é só sentar e relaxar até o resultado da loteria sair!",
 								"\uD83C\uDFAB"
 						),
 						LoriReply(
-								"Querendo mais chances de ganhar? Que tal comprar outro ticket? \uD83D\uDE09 `${context.config.commandPrefix}loteria comprar`",
+								"Querendo mais chances de ganhar? Que tal comprar outro ticket? \uD83D\uDE09 `${context.config.commandPrefix}loteria comprar [quantidade]`",
 								mentionUser = false
 						)
 				)
 			} else {
 				context.reply(
 						LoriReply(
-								"Você precisa ter **+${250 - lorittaProfile.dreams} Sonhos** para poder comprar um ticket!",
+								"Você precisa ter **+${requiredCount - lorittaProfile.dreams} Sonhos** para poder comprar ${quantity} ticket${if (quantity == 1) "" else "s"}!",
 								Constants.ERROR
 						)
 				)

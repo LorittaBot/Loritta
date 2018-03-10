@@ -5,6 +5,7 @@ import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.frontend.views.subviews.*
@@ -22,6 +23,7 @@ import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jooby.Request
 import org.jooby.Response
+import org.slf4j.LoggerFactory
 import java.lang.management.ManagementFactory
 import java.text.MessageFormat
 import java.util.*
@@ -31,9 +33,10 @@ object GlobalHandler {
 	var views = mutableListOf<AbstractView>()
 	var apiViews = mutableListOf<NoVarsView>()
 
+	val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
+
 	fun render(req: Request, res: Response): String {
-		// println("${req.ip()} ~ ${req.header("X-Forwarded-For").value()}: ${req.path()}")
-		// log("[WEBSITE] ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		logger.info(" ${req.header("X-Forwarded-For").value()}: ${req.path()}")
 		debug(DebugType.WEBSITE, "${req.header("X-Forwarded-For").value()}: ${req.path()}")
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
@@ -82,7 +85,7 @@ object GlobalHandler {
 		}
 
 		if (req.param("logout").isSet) {
-			req.session().unset("discordAuth")
+			req.session().destroy()
 		}
 
 		if (req.session().isSet("forceLocale")) {
@@ -159,6 +162,7 @@ object GlobalHandler {
 			views.filter { it.handleRender(req, res, variables) }
 					.forEach { return it.render(req, res, variables) }
 		} catch (e: Exception) {
+			logger.error("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
 			val stacktraceAsString = ExceptionUtils.getStackTrace(e)
 			debug(DebugType.STACKTRACES, stacktraceAsString)
 			throw e

@@ -7,12 +7,14 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.requests.Route
+import org.bson.Document
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -68,6 +70,12 @@ class APIJoinServerView : NoVarsView() {
 			return payload.toString()
 		}
 
+		if (guild.getMemberById(userIdentification.id) != null) {
+			val payload = JsonObject()
+			payload["api:code"] = LoriWebCodes.ALREADY_IN_GUILD
+			return payload.toString()
+		}
+
 		addMemberToServer(guild, userIdentification.id, discordAuth.accessToken!!)
 
 		val payload = JsonObject()
@@ -91,5 +99,10 @@ class APIJoinServerView : NoVarsView() {
 				.header("Authorization", "Bot ${Loritta.config.clientToken}")
 				.send(payload.toString())
 				.body()
+
+		loritta.serversColl.updateOne(
+				Filters.eq("_id", guild.id),
+				Document("\$addToSet", Document("serverListConfig.joinedViaLori", userId))
+		)
 	}
 }

@@ -11,8 +11,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.debug.DebugType
-import com.mrpowergamerbr.loritta.utils.debug.debug
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
@@ -25,14 +24,14 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			try {
 				checkNewVideos()
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("Erro ao verificar novas streams do Twitch!", e)
 			}
 			Thread.sleep(5000); // Só 5s de delay!
 		}
 	}
 
 	fun checkNewVideos() {
-		debug(DebugType.TWITCH_THREAD, "Checking Twitch streams... ${isLivestreaming.joinToString(separator = ", ")}")
+		logger.info("Verificando streams da Twitch... Pessoas que estão atualmente fazendo livestreams: ${isLivestreaming.joinToString(separator = ", ")}")
 
 		// Servidores que usam o módulo do Twitch
 		val servers = loritta.serversColl.find(
@@ -79,7 +78,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 		// Agora iremos verificar os canais
 		batchs.forEach { userLogins ->
-			debug(DebugType.TWITCH_THREAD, "Verifying batch ${userLogins.joinToString(separator = ", ")}")
+			logger.info("Verificando batch (${userLogins.size}): ${userLogins.joinToString(separator = ", ")}")
 			try {
 				val livestreamsInfo = getLivestreamsInfo(userLogins)
 
@@ -104,7 +103,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 						displayNameCache[userLogin]!!
 					} else {
 						val userDisplayName = getUserDisplayName(userLogin)
-						debug(DebugType.TWITCH_THREAD, "User Display Name for ${userLogin} is $userDisplayName")
+						logger.info("User Display Name para \"${userLogin}\" é \"$userDisplayName\"")
 						val channelName = userDisplayName ?: continue
 						displayNameCache[userLogin] = channelName
 						channelName
@@ -147,12 +146,12 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			debug(DebugType.TWITCH_THREAD, "Finished updating batch! ")
+			logger.info("Batch foi atualizada com sucesso!")
 			sleep(3000)
 		}
 
-		debug(DebugType.TWITCH_THREAD, "LIVESTREAMING BEFORE: ${isLivestreaming.joinToString(separator = ", ")}")
-		debug(DebugType.TWITCH_THREAD, "LIVESTREAMING NOW: ${nowStreaming.joinToString(separator = ", ")}")
+		logger.info("Usuários fazendo livestream antes: ${isLivestreaming.joinToString(separator = ", ")}")
+		logger.info("Usuários fazendo livestream agora: ${nowStreaming.joinToString(separator = ", ")}")
 
 		isLivestreaming.clear()
 
@@ -167,6 +166,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		var isLivestreaming = mutableSetOf<String>()
 		val gameInfoCache = ConcurrentHashMap<String, GameInfo>()
 		val displayNameCache = ConcurrentHashMap<String, String>()
+		val logger = LoggerFactory.getLogger(NewLivestreamThread::class.java)
 
 		fun getUserDisplayName(userLogin: String): String? {
 			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
@@ -178,7 +178,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			try {
 				val data = response["data"].array
 
-				debug(DebugType.TWITCH_THREAD, "getUserDisplayName payload response contains ${data.size()} objects!")
+				logger.info("getUserDisplayName payload contém ${data.size()} objetos!")
 
 				if (data.size() == 0) {
 					return null
@@ -187,7 +187,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val channel = data[0].obj
 				return channel["display_name"].string
 			} catch (e: IllegalStateException) {
-				debug(DebugType.TWITCH_THREAD, payload)
+				logger.error("Estado inválido ao manipular payload de getUserDisplayName!", e)
 				return null
 			}
 		}
@@ -211,11 +211,11 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			try {
 				val data = response["data"].array
 
-				debug(DebugType.TWITCH_THREAD, "getLivestreamsInfo payload response contains ${data.size()} objects!")
+				logger.info("getLivestreamsInfo payload contém ${data.size()} objetos!")
 
 				return GSON.fromJson(data)
-			} catch (e: java.lang.IllegalStateException) {
-				debug(DebugType.TWITCH_THREAD, payload)
+			} catch (e: IllegalStateException) {
+				logger.error("Estado inválido ao manipular payload de getLivestreamsInfo!", e)
 				throw e
 			}
 		}
