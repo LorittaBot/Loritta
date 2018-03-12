@@ -198,6 +198,8 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					punishUser(null)
 				}
 			}
+
+			setHour.addReaction("\uD83D\uDD04").complete()
 		} else {
 			this.explain(context);
 		}

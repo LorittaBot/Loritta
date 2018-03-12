@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ConfigPayloadType
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ServerListPayload
 import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -86,7 +87,8 @@ class APIUpdateServerConfigView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 
 		val payloadHandlers = mapOf(
-				"server_list" to ServerListPayload::class.java
+				"server_list" to ServerListPayload::class.java,
+				"moderation" to ModerationPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

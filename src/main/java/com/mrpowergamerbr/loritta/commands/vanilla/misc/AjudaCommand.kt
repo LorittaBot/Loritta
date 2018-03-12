@@ -32,26 +32,38 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				context.event.textChannel.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").complete()
 			}
 
-			var description = context.locale[
+			val description = context.locale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
 					Loritta.config.addBotUrl,
 					context.guild?.name ?: "\uD83E\uDD37"]
 
-			var builder = EmbedBuilder()
+			val builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))
 					.setTitle("💁 ${context.locale.get("AJUDA_MY_HELP")}")
 					.setDescription(description)
 					.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 
 			val pleaseDonate = EmbedBuilder()
-					.setColor(Color(0, 121, 183))
+					.setColor(Color(114, 137, 218))
 					.setThumbnail("https://loritta.website/assets/img/loritta_pobre.png")
 					.setTitle("<:lori_triste:370344565967814659> ${locale["AJUDA_DonationTitle"]}")
 					.setDescription(locale["AJUDA_PleaseDonate"])
 
+			val discordServerList = EmbedBuilder()
+					.setColor(Color(0, 121, 183))
+					.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
+					.setAuthor("Loritta")
+					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
+					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
+
 			privateChannel.sendMessage(builder.build()).complete()
 			privateChannel.sendMessage(pleaseDonate.build()).complete()
+
+			// TODO: Remover verificação após ter a lista traduzida
+			if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
+				privateChannel.sendMessage(discordServerList.build()).complete()
+			}
 
 			sendInfoBox(context, privateChannel)
 		} catch (e: ErrorResponseException) {

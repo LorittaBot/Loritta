@@ -19,6 +19,9 @@ class ServerListConfig {
 	var languages = mutableListOf<LorittaPartner.Language>()
 	var votes = mutableListOf<ServerListConfig.ServerVote>()
 	var joinedViaLori = mutableSetOf<String>()
+	var sendOnVote: Boolean = false
+	var voteBroadcastChannelId: String? = null
+	var voteBroadcastMessage: String? = null
 
 	class ServerVote @BsonCreator constructor(
 			@BsonProperty("id")

@@ -20,6 +20,7 @@ import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
+import java.net.SocketTimeoutException
 import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
@@ -156,10 +157,14 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		}
 
 		if (aboutMe == null) {
-			val polluxAboutMe = polluxDocument.getElementById("persotex")?.text()
+			try {
+				val polluxAboutMe = polluxDocument.getElementById("persotex")?.text()
 
-			if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
-				aboutMe = polluxAboutMe
+				if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
+					aboutMe = polluxAboutMe
+			} catch (e: SocketTimeoutException) {
+				logger.error("Exception while pulling about me information from Pollux", e)
+			}
 		}
 
 		if (aboutMe == null) {

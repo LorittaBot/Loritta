@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.debug.DebugType
 import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.escapeMentions
@@ -52,6 +53,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.author.isBot) { // Se uma mensagem de um bot, ignore a mensagem!
 			return
 		}
+		if (DebugLog.cancelAllEvents)
+			return
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 			loritta.messageExecutors.execute {
@@ -254,6 +257,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.author.isBot) {
 			return
 		}
+		if (DebugLog.cancelAllEvents)
+			return
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			loritta.executor.execute {
@@ -270,6 +275,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onMessageDelete(event: MessageDeleteEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.messageContextCache.remove(event.messageId)
 		loritta.messageInteractionCache.remove(event.messageId)
 	}
@@ -278,6 +286,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (e.user.isBot) {
 			return
 		} // Ignorar reactions de bots
+		if (DebugLog.cancelAllEvents)
+			return
 
 		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
 			val functions = loritta.messageInteractionCache[e.messageId]!!
@@ -415,6 +425,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.executor.execute {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
@@ -451,6 +464,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		// Remover thread de role removal caso o usuário tenha saido do servidor
 		val thread = MuteCommand.roleRemovalThreads[event.guild.id + "#" + event.member.user.id]
 		if (thread != null)
@@ -480,6 +496,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
@@ -510,6 +529,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 

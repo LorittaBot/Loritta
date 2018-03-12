@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.save
@@ -47,6 +48,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	// ===[ EVENT LOG ]===
 	// USERS
 	override fun onUserAvatarUpdate(event: UserAvatarUpdateEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -113,6 +117,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onUserNameUpdate(event: UserNameUpdateEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -174,6 +181,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// TEXT CHANNEL
 	override fun onGenericTextChannel(event: GenericTextChannelEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -231,6 +241,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Mensagens
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -269,6 +282,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
@@ -308,6 +324,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
@@ -361,6 +380,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -391,6 +413,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -419,6 +444,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildBan(event: GuildBanEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -458,6 +486,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildUnban(event: GuildUnbanEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -496,6 +527,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
 		loritta.eventLogExecutors.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {

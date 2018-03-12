@@ -23,7 +23,7 @@ object WelcomeModule {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, guild)).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event), guild)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
@@ -36,7 +36,7 @@ object WelcomeModule {
 				val msg = joinLeaveConfig.joinPrivateMessage
 				try {
 					if (msg.isNotEmpty())
-						event.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(msg, event, event.guild)).complete() // Pronto!
+						event.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(msg, listOf(event), event.guild)).complete() // Pronto!
 				} catch (e: ErrorResponseException) {
 					if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
 						throw e
@@ -94,7 +94,7 @@ object WelcomeModule {
 						}
 
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, event, guild, customTokens)).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event), guild, customTokens)).complete()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}

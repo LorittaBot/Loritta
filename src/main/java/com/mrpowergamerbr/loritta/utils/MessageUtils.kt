@@ -13,7 +13,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
@@ -21,7 +23,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import java.util.regex.Pattern
 
 object MessageUtils {
-	fun generateMessage(message: String, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
 		val jsonObject = try {
 			JSON_PARSER.parse(message).obj
 		} catch (ex: Exception) {
@@ -31,34 +33,34 @@ object MessageUtils {
 		val messageBuilder = MessageBuilder()
 		if (jsonObject != null) {
 			// alterar tokens
-			handleJsonTokenReplacer(jsonObject, source, guild, customTokens)
+			handleJsonTokenReplacer(jsonObject, sources, guild, customTokens)
 			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
 			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
-			messageBuilder.append(replaceTokens(message, source, guild, customTokens).substringIfNeeded())
+			messageBuilder.append(replaceTokens(message, sources, guild, customTokens).substringIfNeeded())
 		}
 		if (messageBuilder.isEmpty)
 			return null
 		return messageBuilder.build()
 	}
 
-	fun handleJsonTokenReplacer(jsonObject: JsonObject, source: Any?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
+	fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
 		for ((key, value) in jsonObject.entrySet()) {
 			if (value.isJsonObject) {
-				handleJsonTokenReplacer(value.obj, source, guild, customTokens)
+				handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
 			}
 			if (value.isJsonArray) {
 				val array = JsonArray()
 				for (it in value.array) {
 					if (it.isJsonPrimitive) {
 						if (it.asJsonPrimitive.isString) {
-							array.add(replaceTokens(it.string, source, guild, customTokens))
+							array.add(replaceTokens(it.string, sources, guild, customTokens))
 							continue
 						}
 					}
 					if (it.isJsonObject) {
-						handleJsonTokenReplacer(it.obj, source, guild, customTokens)
+						handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
 					}
 					array.add(it)
 				}
@@ -66,13 +68,13 @@ object MessageUtils {
 			}
 			if (value.isJsonPrimitive) {
 				if (value.asJsonPrimitive.isString) {
-					jsonObject[key] = replaceTokens(value.string, source, guild, customTokens)
+					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
 				}
 			}
 		}
 	}
 
-	fun replaceTokens(text: String, source: Any?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
+	fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
 		var mentionUser = ""
 		var user = ""
 		var userDiscriminator = ""
@@ -84,30 +86,63 @@ object MessageUtils {
 		var mentionOwner = ""
 		var owner = ""
 
-		if (source is GenericGuildMemberEvent) {
-			mentionUser = source.member.asMention
-			user = source.member.user.name
-			userDiscriminator = source.member.user.discriminator
-			userId = source.member.user.id
-			avatarUrl = source.member.user.effectiveAvatarUrl
-			nickname = source.member.effectiveName
-			guildName = source.guild.name
-			guildSize = source.guild.members.size.toString()
-			mentionOwner = source.guild.owner.asMention
-			owner = source.guild.owner.effectiveName
-		}
+		if (sources != null) {
+			for (source in sources) {
+				if (source is User) {
+					mentionUser = source.asMention
+					user = source.name
+					userDiscriminator = source.discriminator
+					userId = source.id
+					user = source.name
+					avatarUrl = source.effectiveAvatarUrl
+				}
+				if (source is Member) {
+					mentionUser = source.asMention
+					user = source.user.name
+					userDiscriminator = source.user.discriminator
+					userId = source.user.id
+					nickname = source.effectiveName
+					avatarUrl = source.user.effectiveAvatarUrl
+				}
+				if (source is Guild) {
+					guildName = source.name
+					guildSize = source.members.size.toString()
+					mentionOwner = source.owner.asMention
+					owner = source.owner.effectiveName
+				}
+			}
 
-		if (source is MessageReceivedEvent) {
-			mentionUser = source.member.asMention
-			user = source.member.user.name
-			userDiscriminator = source.member.user.discriminator
-			userId = source.member.user.id
-			avatarUrl = source.member.user.effectiveAvatarUrl
-			nickname = source.member.effectiveName
-			guildName = source.guild.name
-			guildSize = source.guild.members.size.toString()
-			mentionOwner = source.guild.owner.asMention
-			owner = source.guild.owner.effectiveName
+			// Legacy
+			// TODO: remove
+			val source = sources.getOrNull(0)
+
+			if (source != null) {
+				if (source is GenericGuildMemberEvent) {
+					mentionUser = source.member.asMention
+					user = source.member.user.name
+					userDiscriminator = source.member.user.discriminator
+					userId = source.member.user.id
+					avatarUrl = source.member.user.effectiveAvatarUrl
+					nickname = source.member.effectiveName
+					guildName = source.guild.name
+					guildSize = source.guild.members.size.toString()
+					mentionOwner = source.guild.owner.asMention
+					owner = source.guild.owner.effectiveName
+				}
+
+				if (source is MessageReceivedEvent) {
+					mentionUser = source.member.asMention
+					user = source.member.user.name
+					userDiscriminator = source.member.user.discriminator
+					userId = source.member.user.id
+					avatarUrl = source.member.user.effectiveAvatarUrl
+					nickname = source.member.effectiveName
+					guildName = source.guild.name
+					guildSize = source.guild.members.size.toString()
+					mentionOwner = source.guild.owner.asMention
+					owner = source.guild.owner.effectiveName
+				}
+			}
 		}
 
 		var message = text

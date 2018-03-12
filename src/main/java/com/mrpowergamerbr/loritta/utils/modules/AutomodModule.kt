@@ -34,7 +34,7 @@ object AutomodModule {
 						message.delete().queue()
 
 					if (automodCaps.replyToUser) {
-						val message = message.channel.sendMessage(MessageUtils.generateMessage(automodCaps.replyMessage, event, guild)).complete()
+						val message = message.channel.sendMessage(MessageUtils.generateMessage(automodCaps.replyMessage, listOf(event), guild)).complete()
 
 						if (automodCaps.enableMessageTimeout) {
 							var delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
@@ -54,7 +54,7 @@ object AutomodModule {
 					message.delete().queue()
 
 				if (automodSelfEmbed.replyToUser) {
-					val message = message.channel.sendMessage(MessageUtils.generateMessage(automodSelfEmbed.replyMessage, event, guild)).complete()
+					val message = message.channel.sendMessage(MessageUtils.generateMessage(automodSelfEmbed.replyMessage, listOf(event), guild)).complete()
 
 					if (automodSelfEmbed.enableMessageTimeout) {
 						var delay = Math.min(automodSelfEmbed.messageTimeout * 1000, 60000)

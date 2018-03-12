@@ -14,6 +14,7 @@ import kotlin.concurrent.thread
 object DebugLog {
 	val subscribedDebugTypes = mutableListOf<DebugType>(DebugType.WEBSITE, DebugType.COMMAND_EXECUTED, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS)
 	val logTypes = mutableListOf(DebugType.COMMAND_EXECUTED, DebugType.WEBSITE, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS, DebugType.STACKTRACES)
+	var cancelAllEvents = false
 
 	fun startCommandListenerThread() {
 		thread {
@@ -34,6 +35,11 @@ object DebugLog {
 		args.removeAt(0)
 
 		when (command) {
+			"toggleevents" -> {
+				cancelAllEvents = !cancelAllEvents
+
+				println("Cancel all events: ${cancelAllEvents}")
+			}
 			"reload" -> {
 				val arg0 = args.getOrNull(0)
 

@@ -7,6 +7,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.core.entities.User
 import java.awt.Color
 import java.time.Instant
 
@@ -100,57 +102,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
 					var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
-					if (!isSilent) {
-						if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
-							try {
-								val embed = EmbedBuilder()
-
-								embed.setTimestamp(Instant.now())
-								embed.setColor(Color(221, 0, 0))
-
-								embed.setThumbnail(context.guild.iconUrl)
-								embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-								embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["KICK_PunishAction"].toLowerCase(), context.guild.name]}!")
-								embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
-								embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
-
-								user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
-							} catch (e: Exception) {
-								e.printStackTrace()
-							}
-						}
-
-						if (context.config.moderationConfig.sendToPunishLog) {
-							val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
-
-							if (textChannel != null && textChannel.canTalk()) {
-								val message = MessageUtils.generateMessage(
-										context.config.moderationConfig.punishmentLogMessage,
-										null,
-										context.guild,
-										mutableMapOf(
-												"reason" to reason,
-												"punishment" to locale["KICK_PunishAction"],
-												"staff" to context.userHandle.name,
-												"@staff" to context.userHandle.asMention,
-												"#staff" to context.userHandle.discriminator,
-												"staff-avatar-url" to context.userHandle.avatarUrl,
-												"user" to user.name,
-												"@user" to user.asMention,
-												"#user" to user.discriminator,
-												"user-avatar-url" to user.effectiveAvatarUrl,
-												"user-id" to user.id,
-												"staff-id" to context.userHandle.id
-										)
-								)
-
-								textChannel.sendMessage(message).complete()
-							}
-						}
-					}
-
-					context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
-							.complete()
+					kick(context, locale, member, user, reason, isSilent)
 
 					message.delete().complete()
 
@@ -170,6 +122,62 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 			}
 		} else {
 			this.explain(context);
+		}
+	}
+
+	companion object {
+		fun kick(context: CommandContext, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+			if (!isSilent) {
+				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+					try {
+						val embed = EmbedBuilder()
+
+						embed.setTimestamp(Instant.now())
+						embed.setColor(Color(221, 0, 0))
+
+						embed.setThumbnail(context.guild.iconUrl)
+						embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
+						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["KICK_PunishAction"].toLowerCase(), context.guild.name]}!")
+						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
+						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+
+						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
+
+				if (context.config.moderationConfig.sendToPunishLog) {
+					val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+
+					if (textChannel != null && textChannel.canTalk()) {
+						val message = MessageUtils.generateMessage(
+								context.config.moderationConfig.punishmentLogMessage,
+								null,
+								context.guild,
+								mutableMapOf(
+										"reason" to reason,
+										"punishment" to locale["KICK_PunishAction"],
+										"staff" to context.userHandle.name,
+										"@staff" to context.userHandle.asMention,
+										"#staff" to context.userHandle.discriminator,
+										"staff-avatar-url" to context.userHandle.avatarUrl,
+										"user" to user.name,
+										"@user" to user.asMention,
+										"#user" to user.discriminator,
+										"user-avatar-url" to user.effectiveAvatarUrl,
+										"user-id" to user.id,
+										"staff-id" to context.userHandle.id
+								)
+						)
+
+						textChannel.sendMessage(message).complete()
+					}
+				}
+			}
+
+			context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+					.complete()
 		}
 	}
 }

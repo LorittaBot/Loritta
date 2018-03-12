@@ -154,6 +154,27 @@ class APIVoteServerView : NoVarsView() {
 
 		loritta save serverConfig
 
+		if (serverConfig.serverListConfig.sendOnVote && serverConfig.serverListConfig.voteBroadcastChannelId != null && serverConfig.serverListConfig.voteBroadcastMessage != null) {
+			val textChannel = guild.getTextChannelById(serverConfig.serverListConfig.voteBroadcastChannelId)
+
+			if (textChannel != null) {
+				val member = guild.getMemberById(userIdentification.id)
+
+				val customTokens = mutableMapOf<String, String>(
+						"vote-count" to serverConfig.serverListConfig.votes.count { it.id == member.user.id }.toString()
+				)
+
+				val message = MessageUtils.generateMessage(
+						serverConfig.serverListConfig.voteBroadcastMessage!!,
+						listOf(guild, member),
+						guild,
+						customTokens
+				)
+
+				// TODO: acabar
+			}
+		}
+
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["votedAt"] = System.currentTimeMillis()

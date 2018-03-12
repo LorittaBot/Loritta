@@ -208,6 +208,8 @@ class CommandManager {
 		commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
+		commandMap.add(WarnCommand())
+		commandMap.add(UnwarnCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())

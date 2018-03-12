@@ -14,6 +14,7 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") _use
 	var isMuted: Boolean = false
 	var temporaryMute: Boolean = false
 	var expiresIn: Long = 0L
+	var warns = mutableListOf<ModerationConfig.Warn>()
 
 	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
