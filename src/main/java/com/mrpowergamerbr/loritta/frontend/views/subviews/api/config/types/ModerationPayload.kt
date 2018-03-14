@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types
 
 import com.github.salomonbrys.kotson.*
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
@@ -19,6 +20,6 @@ class ModerationPayload : ConfigPayloadType("moderation") {
 		moderationConfig.punishmentLogChannelId = payload["punishmentLogChannelId"].string
 		moderationConfig.punishmentLogMessage = payload["punishmentLogMessage"].string
 
-		moderationConfig.punishmentActions = GSON.fromJson(payload["punishmentActions"])
+		moderationConfig.punishmentActions = Gson().fromJson(payload["punishmentActions"])
 	}
 }

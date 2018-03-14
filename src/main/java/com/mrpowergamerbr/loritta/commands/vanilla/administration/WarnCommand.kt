@@ -155,10 +155,12 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					val punishments = config.moderationConfig.punishmentActions.filter { it.warnCount == warnCount }
 
 					for (punishment in punishments) {
-						when (punishment.punishmentAction) {
-							ModerationConfig.PunishmentAction.BAN -> BanCommand.ban(context, locale, user, reason, isSilent)
-							ModerationConfig.PunishmentAction.SOFT_BAN -> SoftBanCommand.softBan(context, locale, member, 30, user, reason, isSilent)
-							ModerationConfig.PunishmentAction.KICK -> KickCommand.kick(context, locale, member, user, reason, isSilent)
+						if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context, locale, user, reason, isSilent)
+						else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN) SoftBanCommand.softBan(context, locale, member, 30, user, reason, isSilent)
+						else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK) KickCommand.kick(context, locale, member, user, reason, isSilent)
+						else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE) {
+							val time = punishment.customMetadata0?.convertToEpochMillis()
+							MuteCommand.muteUser(context, member, time, locale, user, reason, isSilent)
 						}
 					}
 
