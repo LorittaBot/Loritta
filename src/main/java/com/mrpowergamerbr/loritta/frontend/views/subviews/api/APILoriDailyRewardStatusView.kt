@@ -18,11 +18,11 @@ import java.net.InetAddress
 import java.util.*
 
 class APILoriDailyRewardStatusView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/economy/daily-reward-status"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/economy/daily-reward-status"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {

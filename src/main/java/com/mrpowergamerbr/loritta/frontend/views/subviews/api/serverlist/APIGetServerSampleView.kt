@@ -27,11 +27,11 @@ import java.io.File
 import java.util.*
 
 class APIGetServerSampleView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/server-list/get-sample"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/server-list/get-sample"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {

@@ -20,6 +20,10 @@ class ServerListPayload : ConfigPayloadType("server_list") {
 		serverListConfig.tagline = payload["tagline"].string
 		serverListConfig.description = payload["description"].string
 		serverListConfig.keywords = payload["keywords"].array.mapNotNull { LorittaPartner.Keyword.valueOf(it.string) }.toMutableList()
+		serverListConfig.sendOnVote = payload["sendOnVote"].bool
+		serverListConfig.voteBroadcastChannelId = payload["voteBroadcastChannelId"].string
+		serverListConfig.voteBroadcastMessage = payload["voteBroadcastMessage"].string
+
 		if (serverListConfig.isPartner || serverListConfig.isSponsored) {
 			serverListConfig.vanityUrl = payload["vanityUrl"].string
 		}

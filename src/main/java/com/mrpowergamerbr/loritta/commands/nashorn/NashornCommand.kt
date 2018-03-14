@@ -119,13 +119,13 @@ var getGuild=function() { return contexto.getGuild(); };"""
 
 			// Funções inline para facilitar a programação de comandos
 			val inlineMethods = """
-				var guild = context.guild
-				var member = context.member
-				var user = context.member
-				var author = context.member
-				var message = context.message
-				var channel = context.message.channel
-				var client = context.client
+				var guild = context.guild;
+				var member = context.member;
+				var user = context.member;
+				var author = context.member;
+				var message = context.message;
+				var channel = context.message.channel;
+				var client = context.client;
 			""".trimIndent()
 			val executor = Executors.newSingleThreadExecutor()
 			try {

@@ -9,4 +9,7 @@ class ParallaxContext(private val context: CommandContext) {
 	val guild = ParallaxGuild(context.guild)
 	val member = ParallaxMember(context.handle)
 	val client = ParallaxClient(context.guild.jda)
+	val args = context.args
+	val rawArgs = context.rawArgs
+	val strippedArgs = context.strippedArgs
 }

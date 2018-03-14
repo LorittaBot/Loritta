@@ -10,11 +10,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class DonateView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path() == "/donate"
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path == "/donate"
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		if (req.param("who-donated").isSet && req.param("grana").isSet) {
 			val whoDonated = req.param("who-donated").value()
 			var grana = req.param("grana").value().replace(",", ".").replace("R$", "").replace("$", "").toDoubleOrNull()

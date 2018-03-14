@@ -17,8 +17,8 @@ import java.io.File
 import org.jsoup.safety.Whitelist
 
 class LoriPartnerView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		val arg0 = req.path().split("/").getOrNull(2) ?: return false
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		val arg0 = path.split("/").getOrNull(2) ?: return false
 
 		val server = loritta.serversColl.find(
 				Filters.or(
@@ -33,11 +33,11 @@ class LoriPartnerView : AbstractView() {
 				)
 		).firstOrNull() ?: return false
 
-		return req.path().startsWith("/s/")
+		return path.startsWith("/s/")
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
-		val arg0 = req.path().split("/").getOrNull(2) ?: return ":whatdog:"
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
+		val arg0 = path.split("/").getOrNull(2) ?: return ":whatdog:"
 		variables["guildId"] = arg0
 		val server = loritta.serversColl.find(
 				Filters.or(

@@ -62,7 +62,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 }
 
 fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
-	variables["websiteUrl"] = WEBSITE_URL
+	// variables["websiteUrl"] = WEBSITE_URL
 	val writer = StringWriter()
 	LorittaWebsite.ENGINE.getTemplate(file).evaluate(writer, variables)
 	return writer.toString()

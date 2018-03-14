@@ -16,12 +16,12 @@ import org.jooby.Response
 import java.io.File
 
 class TranslationView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path().startsWith("/translation")
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path.startsWith("/translation")
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
-		val split = req.path().split("/")
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
+		val split = path.split("/")
 		var localeId = "default"
 		val defaultLocale = loritta.getLocaleById("default")
 		var locale = if (split.size >= 3) {

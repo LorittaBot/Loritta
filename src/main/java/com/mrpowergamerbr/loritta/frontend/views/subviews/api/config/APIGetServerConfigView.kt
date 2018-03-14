@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews.api.config
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
@@ -19,11 +20,11 @@ import org.jooby.Response
 import java.util.*
 
 class APIGetServerConfigView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/config/get-server-config"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/config/get-server-config"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -76,6 +77,21 @@ class APIGetServerConfigView : NoVarsView() {
 			return payload.toString()
 		}
 
-		return Gson().toJson(serverConfig)
+		val serverConfigJson = Gson().toJsonTree(serverConfig)
+
+		val textChannels = JsonArray()
+		for (textChannel in server.textChannels) {
+			val json = JsonObject()
+
+			json["id"] = textChannel.id
+			json["canTalk"] = textChannel.canTalk()
+			json["name"] = textChannel.name
+
+			textChannels.add(json)
+		}
+
+		serverConfigJson["textChannels"] = textChannels
+
+		return serverConfigJson.toString()
 	}
 }

@@ -9,12 +9,12 @@ import org.jooby.Request
 import org.jooby.Response
 
 class ConfigureCommandsView : ConfigureView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		super.handleRender(req, res, variables)
-		return req.path().matches(Regex("^/dashboard/configure/[0-9]+/commands"))
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		super.handleRender(req, res, path, variables)
+		return path.matches(Regex("^/dashboard/configure/[0-9]+/commands"))
 	}
 
-	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
+	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
 		variables["saveType"] = "vanilla_commands"
 
 		variables["commands"] = loritta.commandManager.commandMap

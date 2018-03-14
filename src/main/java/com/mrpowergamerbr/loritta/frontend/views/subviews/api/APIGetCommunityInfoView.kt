@@ -10,11 +10,11 @@ import org.jooby.Response
 import org.jsoup.Jsoup
 
 class APIGetCommunityInfoView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/get_community_info"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/get_community_info"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		val json = JsonObject()
 

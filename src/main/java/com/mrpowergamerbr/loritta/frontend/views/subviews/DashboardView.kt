@@ -11,12 +11,12 @@ import org.jooby.Request
 import org.jooby.Response
 
 class DashboardView : ProtectedView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		super.handleRender(req, res, variables)
-		return req.path() == "/dashboard"
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		super.handleRender(req, res, path, variables)
+		return path == "/dashboard"
 	}
 
-	override fun renderProtected(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
+	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
 		val lorittaProfile = loritta.getLorittaProfileForUser(discordAuth.getUserIdentification().id)
 
 		variables["lorittaProfile"] = lorittaProfile

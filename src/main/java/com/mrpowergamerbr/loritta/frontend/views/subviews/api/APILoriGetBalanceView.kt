@@ -15,11 +15,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class APILoriGetBalanceView : NoVarsRequireAuthView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/economy/get-balance"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/economy/get-balance"))
 	}
 
-	override fun renderProtected(req: Request, res: Response): String {
+	override fun renderProtected(req: Request, res: Response, path: String): String {
 		val json = JsonObject()
 
 		val body = JSON_PARSER.parse(req.body().value()).obj

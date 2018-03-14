@@ -3,21 +3,27 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.set
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
 abstract class ProtectedView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		if (req.path().startsWith("/dashboard")) {
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		if (path.startsWith("/dashboard")) {
 			val state = req.param("state")
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
-					res.redirect(Loritta.config.authorizationUrl)
+					val state = JsonObject()
+					state["redirectUrl"] = LorittaWebsite.Companion.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+					res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 					return false
 				}
 			} else {
@@ -45,7 +51,7 @@ abstract class ProtectedView : AbstractView() {
 		return false
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		val discordAuth = GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 		try {
 			discordAuth.isReady(true)
@@ -55,8 +61,8 @@ abstract class ProtectedView : AbstractView() {
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth
-		return renderProtected(req, res, variables, discordAuth)
+		return renderProtected(req, res, path, variables, discordAuth)
 	}
 
-	abstract fun renderProtected(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String
+	abstract fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String
 }

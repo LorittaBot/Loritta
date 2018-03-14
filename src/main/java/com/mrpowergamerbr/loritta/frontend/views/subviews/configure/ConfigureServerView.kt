@@ -19,13 +19,13 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class ConfigureServerView : ConfigureView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		super.handleRender(req, res, variables)
-		return req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)?(save)?"))
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		super.handleRender(req, res, path, variables)
+		return path.matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)?(save)?"))
 	}
 
-	override fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
-		val split = req.path().split("/");
+	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
+		val split = path.split("/");
 		if (split.size == 5) {
 			val argument = split[4];
 

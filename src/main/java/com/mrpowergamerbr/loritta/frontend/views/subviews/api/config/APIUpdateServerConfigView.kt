@@ -22,11 +22,11 @@ import org.jooby.Response
 import java.util.*
 
 class APIUpdateServerConfigView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/config/update-server-config"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/config/update-server-config"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())

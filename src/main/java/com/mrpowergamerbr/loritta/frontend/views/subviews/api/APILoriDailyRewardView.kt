@@ -18,11 +18,11 @@ import org.jooby.Response
 import java.util.*
 
 class APILoriDailyRewardView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/economy/daily-reward"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/economy/daily-reward"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		val recaptcha = req.param("recaptcha").value()
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null

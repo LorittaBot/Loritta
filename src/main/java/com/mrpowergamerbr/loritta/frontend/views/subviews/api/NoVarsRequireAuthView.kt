@@ -9,12 +9,12 @@ import org.jooby.Response
 // Para evitar criações de objetos desncessários, nós podemos usar o NoVarsView, que não precisa de uma map com as variáveis para usar
 // Usado para a APIs do website da Loritta que não precisam de autenticação
 abstract class NoVarsRequireAuthView : NoVarsView() {
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		val header = req.header("Lori-Authentication")
 		val auth = header.value("???")
 
 		if (Loritta.config.websiteApiKeys.contains(auth)) {
-			return renderProtected(req, res)
+			return renderProtected(req, res, path)
 		} else {
 			val response = JsonObject()
 			response["api:message"] = "UNAUTHORIZED"
@@ -22,5 +22,5 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 		}
 	}
 
-	abstract fun renderProtected(req: Request, res: Response): String
+	abstract fun renderProtected(req: Request, res: Response, path: String): String
 }

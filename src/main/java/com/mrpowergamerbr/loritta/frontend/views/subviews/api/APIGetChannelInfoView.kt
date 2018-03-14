@@ -16,11 +16,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class APIGetChannelInfoView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/get_channel_info"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/get_channel_info"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		val json = JsonObject()
 

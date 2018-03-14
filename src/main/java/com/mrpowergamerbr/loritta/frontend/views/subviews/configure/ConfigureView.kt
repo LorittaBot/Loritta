@@ -14,12 +14,12 @@ import org.jooby.Request
 import org.jooby.Response
 
 abstract class ConfigureView : ProtectedView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path().matches(Regex("^/dashboard/configure/[0-9]+"))
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path.matches(Regex("^/dashboard/configure/[0-9]+"))
 	}
 
-	override fun renderProtected(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val split = req.path().split("/");
+	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
+		val split = path.split("/");
 		if (4 > split.size) {
 			return "Servidor não encontrado!"
 		}
@@ -50,8 +50,8 @@ abstract class ConfigureView : ProtectedView() {
 
 		variables["guild"] = jdaGuild
 		variables["serverConfig"] = serverConfig
-		return renderConfiguration(req, res, variables, discordAuth, jdaGuild, serverConfig)
+		return renderConfiguration(req, res, path, variables, discordAuth, jdaGuild, serverConfig)
 	}
 
-	abstract fun renderConfiguration(req: Request, res: Response, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String
+	abstract fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String
 }

@@ -12,11 +12,11 @@ import org.jooby.Response
 import java.util.*
 
 class DailyView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path().startsWith("/daily")
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path.startsWith("/daily")
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		return evaluate("daily.html", variables)
 	}
 }

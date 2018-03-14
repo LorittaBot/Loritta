@@ -20,11 +20,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class APIJoinServerView : NoVarsView() {
-	override fun handleRender(req: Request, res: Response): Boolean {
-		return req.path().matches(Regex("^/api/v1/server-list/join"))
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/server-list/join"))
 	}
 
-	override fun render(req: Request, res: Response): String {
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		val guildId = req.param("guildId").value()
 

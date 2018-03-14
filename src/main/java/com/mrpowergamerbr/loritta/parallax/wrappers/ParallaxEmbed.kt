@@ -6,7 +6,9 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import java.awt.Color
 
 class ParallaxEmbed {
+	var rgb: ParallaxColor? = null
 	var color: Int? = null
+	var hex: String? = null
 	var title: String? = null
 	var url: String?  = null
 	var description: String?  = null
@@ -24,6 +26,15 @@ class ParallaxEmbed {
 			val green = color!! shr 8 and 0xFF
 			val blue = color!! and 0xFF
 			embed.setColor(Color(red, green, blue))
+		}
+
+		if (rgb != null) {
+			val rgb = rgb!!
+			embed.setColor(Color(rgb.r, rgb.b, rgb.g))
+		}
+
+		if (hex != null) {
+			embed.setColor(Color.decode(hex))
 		}
 
 		if (description != null) {

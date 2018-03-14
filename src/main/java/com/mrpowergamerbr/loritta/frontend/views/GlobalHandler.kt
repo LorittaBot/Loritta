@@ -50,12 +50,13 @@ object GlobalHandler {
 			loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
 		}
 
-		apiViews.filter { it.handleRender(req, res) }
-				.forEach { return it.render(req, res) }
+		apiViews.filter { it.handleRender(req, res, req.path()) }
+				.forEach { return it.render(req, res, req.path()) }
 
 		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
 		variables["epochMillis"] = System.currentTimeMillis()
 
+		// TODO: Deprecated
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
 
 		// Vamos parsear!
@@ -64,8 +65,10 @@ object GlobalHandler {
 		val defaultLocale = LorittaLauncher.loritta.getLocaleById("default")
 		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
 
+		var localeId: String? = null
+
 		for (range in ranges) {
-			var localeId = range.range.toLowerCase()
+			localeId = range.range.toLowerCase()
 			var bypassCheck = false
 			if (localeId == "pt-br" || localeId == "pt") {
 				localeId = "default"
@@ -96,6 +99,19 @@ object GlobalHandler {
 			lorittaLocale = LorittaLauncher.loritta.getLocaleById(req.param("locale").value())
 		}
 
+		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
+		val languageCode = req.path().split("/").getOrNull(1)
+
+		if (languageCode != null) {
+			lorittaLocale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> lorittaLocale
+			}
+		}
+
 		for (locale in lorittaLocale.strings) {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
@@ -105,6 +121,33 @@ object GlobalHandler {
 		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
 		variables["commandMap"] = loritta.commandManager.commandMap
 		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
+		variables["path"] = req.path()
+		var pathNoLanguageCode = req.path()
+		val split = pathNoLanguageCode.split("/").toMutableList()
+		val languageCode2 = split.getOrNull(1)
+
+		val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
+		if (hasLangCode) {
+			split.removeAt(0)
+			split.removeAt(0)
+			pathNoLanguageCode = "/" + split.joinToString("/")
+		} else {
+			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
+			if (localeId != null) {
+				if (req.path() != "/dashboard" && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
+					res.status(302) // temporary redirect / no page rank penalty (?)
+					if (localeId == "default") {
+						res.redirect("https://loritta.website/br${req.path()}")
+					}
+					if (localeId == "en-us") {
+						res.redirect("https://loritta.website/us${req.path()}")
+					}
+				}
+			}
+		}
+
+		variables["pathNL"] = pathNoLanguageCode // path no language code
+		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
 		val isPatreon = mutableMapOf<String, Boolean>()
 		val isDonator = mutableMapOf<String, Boolean>()
@@ -139,12 +182,14 @@ object GlobalHandler {
 		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
+		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
 		variables["uptimeDays"] = days
 		variables["uptimeHours"] = hours
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
-		variables["currentUrl"] = LorittaWebsite.WEBSITE_URL + req.path().substring(1)
+		variables["currentUrl"] = correctUrl + req.path().substring(1)
 		variables["localeAsJson"] = GSON.toJson(lorittaLocale.strings)
+		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -159,8 +204,8 @@ object GlobalHandler {
 		}
 
 		try {
-			views.filter { it.handleRender(req, res, variables) }
-					.forEach { return it.render(req, res, variables) }
+			views.filter { it.handleRender(req, res, pathNoLanguageCode, variables) }
+					.forEach { return it.render(req, res, pathNoLanguageCode, variables) }
 		} catch (e: Exception) {
 			logger.error("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
 			val stacktraceAsString = ExceptionUtils.getStackTrace(e)

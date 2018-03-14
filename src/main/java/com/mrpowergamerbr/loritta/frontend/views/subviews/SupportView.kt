@@ -5,11 +5,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class SupportView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path() == "/support"
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path == "/support"
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		return evaluate("support.html", variables)
 	}
 }

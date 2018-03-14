@@ -14,11 +14,11 @@ import org.jooby.Request
 import org.jooby.Response
 
 class NashornDocsView : AbstractView() {
-	override fun handleRender(req: Request, res: Response, variables: MutableMap<String, Any?>): Boolean {
-		return req.path() == "/loriapi"
+	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
+		return path == "/loriapi"
 	}
 
-	override fun render(req: Request, res: Response, variables: MutableMap<String, Any?>): String {
+	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		variables.put("docsAnnotation", NashornCommand.NashornDocs::class.java);
 		variables.put("nashClasses",
 				listOf(
