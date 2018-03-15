@@ -16,6 +16,5 @@ class AutorolePayload : ConfigPayloadType("autorole") {
 		val autoroleConfig = serverConfig.autoroleConfig
 		autoroleConfig.isEnabled = payload["isEnabled"].bool
 		autoroleConfig.roles = payload["roles"].array.map { it.string }.toMutableList()
-		autoroleConfig.rolesVoteRewards = Gson().fromJson(payload["rolesVoteRewards"])
 	}
 }

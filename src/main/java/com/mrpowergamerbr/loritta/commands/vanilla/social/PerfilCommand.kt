@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.utils.profile.OrkutProfileCreator
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.awt.Font
@@ -203,11 +204,12 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		val map = mapOf(
 				"default" to DefaultProfileCreator::class.java,
 				"nostalgia" to NostalgiaProfileCreator::class.java,
-				"msn" to MSNProfileCreator::class.java
+				"msn" to MSNProfileCreator::class.java,
+				"orkut" to OrkutProfileCreator::class.java
 		)
 
-		var type = context.args.getOrNull(0) ?: "default"
-		if ((context.userHandle.id != Loritta.config.ownerId && context.guild.id != "297732013006389252") || !map.containsKey(type))
+		var type = context.rawArgs.getOrNull(1) ?: context.rawArgs.getOrNull(0) ?: "default"
+		if (!map.containsKey(type))
 			type = "default"
 
 		val creator = map[type]!!
@@ -225,6 +227,6 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 				member
 		)
 
-		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"]); // E agora envie o arquivo
+		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}"); // E agora envie o arquivo
 	}
 }

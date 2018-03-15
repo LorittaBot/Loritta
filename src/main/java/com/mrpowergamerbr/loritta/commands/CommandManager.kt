@@ -114,6 +114,7 @@ class CommandManager {
 		commandMap.add(SustoCommand())
 		commandMap.add(TriggeredCommand())
 		commandMap.add(GumballCommand())
+		commandMap.add(ContentAwareScaleCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())

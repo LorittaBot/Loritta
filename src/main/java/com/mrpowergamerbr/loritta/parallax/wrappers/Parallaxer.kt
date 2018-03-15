@@ -65,31 +65,31 @@ fun main(args: Array<String>) {
 
 	var variableIndex = 0
 	for (role in requireRoles) {
-		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\")[0];\nif (!member.hasRole(role$variableIndex)) { reply(\"Sem Permissão!\"); }\n\n"
+		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\", false)[0];\nif (!member.hasRole(role$variableIndex)) { message.reply(\"Sem Permissão!\"); return; }\n\n"
 		variableIndex++
 	}
 
 	for (role in blockRoles) {
-		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\")[0];\nif (member.hasRole(role$variableIndex)) { reply(\"Sem Permissão!\"); }\n\n"
+		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\", false)[0];\nif (member.hasRole(role$variableIndex)) { message.reply(\"Sem Permissão!\"); return; }\n\n"
 		variableIndex++
 	}
 
 	if (announceIn.isEmpty()) {
-		javaScript += "reply(\"${contentInput}\");\n\n"
+		javaScript += "message.reply(\"${contentInput}\");\n\n"
 	} else {
 		for (role in announceIn) {
-			javaScript += "var channel$variableIndex = guild.getTextChannelsByName(\"${role}\")[0];\nchannel$variableIndex.sendMessage(\"${contentInput}\");\n\n"
+			javaScript += "var channel$variableIndex = guild.getTextChannelsByName(\"${role}\", false)[0];\nchannel$variableIndex.send(\"${contentInput}\");\n\n"
 			variableIndex++
 		}
 	}
 
 	for (role in giveRoles) {
-		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\")[0];\nmember.addRole(role$variableIndex);\n\n"
+		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\", false)[0];\nmember.addRole(role$variableIndex);\n\n"
 		variableIndex++
 	}
 
 	for (role in removeRoles) {
-		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\")[0];\nmember.removeRole(role$variableIndex);\n\n"
+		javaScript += "var role$variableIndex = guild.getRolesByName(\"${role}\", false)[0];\nmember.removeRole(role$variableIndex);\n\n"
 		variableIndex++
 	}
 
