@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.frontend.views.subviews.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.*
+import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIGetApiKeyView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIGetServerConfigView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIUpdateServerConfigView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.*
@@ -240,6 +241,8 @@ object GlobalHandler {
 		apiViews.add(APILoriDailyRewardView())
 		apiViews.add(APILoriDailyRewardStatusView())
 		apiViews.add(APIJoinServerView())
+		apiViews.add(APIGetApiKeyView())
+		apiViews.add(APIGetServerVotesView())
 
 		views.add(HomeView())
 		views.add(TranslationView())

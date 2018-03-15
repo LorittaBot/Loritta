@@ -1,30 +1,20 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api.config
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.AutorolePayload
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ConfigPayloadType
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ModerationPayload
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ServerListPayload
-import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
+import org.apache.commons.lang3.RandomStringUtils
 import org.jooby.Request
 import org.jooby.Response
-import java.util.*
 
-class APIUpdateServerConfigView : NoVarsView() {
+class APIGetApiKeyView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
-		return path.matches(Regex("^/api/v1/config/update-server-config"))
+		return path.matches(Regex("^/api/v1/config/get-api-key"))
 	}
 
 	override fun render(req: Request, res: Response, path: String): String {
@@ -80,30 +70,17 @@ class APIUpdateServerConfigView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val body = JSON_PARSER.parse(req.body().value()).obj // content payload
-		val type = body["type"].string
-		val config = body["config"].obj
-
-		val payload = JsonObject()
-		payload["api:code"] = LoriWebCodes.SUCCESS
-
-		val payloadHandlers = mapOf(
-				"server_list" to ServerListPayload::class.java,
-				"moderation" to ModerationPayload::class.java,
-				"autorole" to AutorolePayload::class.java
-		)
-
-		val payloadHandlerClass = payloadHandlers[type]
-
-		if (payloadHandlerClass != null) {
-			val payloadHandler = payloadHandlerClass.newInstance()
-			payloadHandler.process(config, serverConfig, server)
+		if (serverConfig.apiKey == null) {
+			val apiKey = RandomStringUtils.random(32, 0, 66, true, true, *"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@!$&".toCharArray())
+			serverConfig.apiKey = apiKey
 			loritta save serverConfig
-		} else {
-			payload["api:code"] = LoriWebCodes.MISSING_PAYLOAD_HANDLER
-			payload["missing_payload_handler"] = type
 		}
 
-		return payload.toString()
+		val json = JsonObject()
+
+		json["apí:code"] = LoriWebCodes.SUCCESS
+		json["apiKey"] = serverConfig.apiKey
+
+		return json.toString()
 	}
 }

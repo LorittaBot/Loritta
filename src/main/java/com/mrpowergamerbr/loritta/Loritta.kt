@@ -74,7 +74,7 @@ class Loritta {
 		@JvmStatic
 		val RANDOM = SplittableRandom() // Um splittable RANDOM global, para não precisar ficar criando vários (menos GC)
 		@JvmStatic
-		val GSON = Gson() // Gson
+		var GSON = Gson() // Gson
 		@JvmStatic
 		val JSON_PARSER = JsonParser() // Json Parser
 		@JvmStatic

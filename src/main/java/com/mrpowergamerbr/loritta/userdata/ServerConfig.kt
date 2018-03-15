@@ -57,7 +57,7 @@ class ServerConfig @BsonCreator constructor(
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 
-	// var volume: Int = 100
+	var apiKey: String? = null
 
 	fun getUserData(id: String): LorittaGuildUserData {
 		var userData = guildUserData.firstOrNull { it.userId == id }

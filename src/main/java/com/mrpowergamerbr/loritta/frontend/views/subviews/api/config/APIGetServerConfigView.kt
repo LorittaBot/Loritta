@@ -92,6 +92,21 @@ class APIGetServerConfigView : NoVarsView() {
 
 		serverConfigJson["textChannels"] = textChannels
 
+		val roles = JsonArray()
+		for (role in server.roles) {
+			val json = JsonObject()
+
+			json["id"] = role.id
+			json["name"] = role.name
+			json["isPublicRole"] = role.isPublicRole
+			json["isManaged"] = role.isManaged
+			json["canInteract"] = server.selfMember.canInteract(role)
+
+			roles.add(json)
+		}
+
+		serverConfigJson["roles"] = roles
+
 		return serverConfigJson.toString()
 	}
 }
