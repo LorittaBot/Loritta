@@ -1,11 +1,14 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.threads.*
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.logTypes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
+import net.dv8tion.jda.core.entities.Guild
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
