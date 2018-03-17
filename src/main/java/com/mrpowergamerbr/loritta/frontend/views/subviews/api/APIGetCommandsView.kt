@@ -1,16 +1,22 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 
+import com.github.salomonbrys.kotson.set
+import com.github.salomonbrys.kotson.toJsonArray
 import com.google.common.collect.Lists
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
-class APIGetLocaleView : NoVarsView() {
+class APIGetCommandsView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
-		return path.matches(Regex("^/api/v1/misc/get-locale"))
+		return path.matches(Regex("^/api/v1/misc/get-commands"))
 	}
 
 	override fun render(req: Request, res: Response, path: String): String {
@@ -50,6 +56,25 @@ class APIGetLocaleView : NoVarsView() {
 		if (req.param("locale").isSet) {
 			lorittaLocale = LorittaLauncher.loritta.getLocaleById(req.param("locale").value())
 		}
-		return Gson().toJson(lorittaLocale.strings)
+
+		val array = JsonArray()
+
+		loritta.commandManager.commandMap.forEach {
+			val obj = JsonObject()
+			obj["name"] = it::class.java.simpleName
+			obj["label"] = it.label
+			obj["aliases"] = it.aliases.toJsonArray()
+			obj["category"] = it.category.name
+			obj["description"] = it.getDescription(lorittaLocale)
+			obj["usage"] = it.getUsage()
+			obj["detailedUsage"] = GSON.toJsonTree(it.getDetailedUsage())
+			obj["example"] = it.getExample().toJsonArray()
+			obj["extendedExamples"] = GSON.toJsonTree(it.getExtendedExamples())
+			obj["requiredUserPermissions"] = it.getDiscordPermissions().map { it.name }.toJsonArray()
+			obj["requiredBotPermissions"] = it.getBotPermissions().map { it.name }.toJsonArray()
+			array.add(obj)
+		}
+
+		return array.toString()
 	}
 }

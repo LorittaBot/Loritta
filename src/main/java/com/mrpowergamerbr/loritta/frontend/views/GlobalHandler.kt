@@ -243,6 +243,7 @@ object GlobalHandler {
 		apiViews.add(APIJoinServerView())
 		apiViews.add(APIGetApiKeyView())
 		apiViews.add(APIGetServerVotesView())
+		apiViews.add(APIGetCommandsView())
 
 		views.add(HomeView())
 		views.add(TranslationView())

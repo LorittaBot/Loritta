@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
 class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepesonho"), category = CommandCategory.IMAGES) {
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("ART_Description")
+		return locale.get("PEPEDREAM_Description")
 	}
 
 	override fun getExample(): List<String> {
