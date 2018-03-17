@@ -130,7 +130,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					var toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context) + "\n"
+					var toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
 					if ((description + toBeAdded).length > 2048) {
 						embed.setDescription(description);
 						embeds.add(embed.build());

@@ -34,19 +34,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 	}
 
-	open fun getDescription(): String {
-		return getDescription(LorittaLauncher.loritta.getLocaleById("default"))
-	}
 	val cooldown = if (needsToUploadFiles()) 10000 else 5000
-
-	fun getDescription(context: CommandContext): String {
-		// TODO: Temporário
-		val description = getDescription(context.locale)
-		if (description == "Insira descrição do comando aqui!") {
-			return description
-		}
-		return description
-	}
 
 	open fun getDescription(locale: BaseLocale): String {
 		return "Insira descrição do comando aqui!"
@@ -345,7 +333,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
-			var cmdInfo = getDescription(context) + "\n\n"
+			var cmdInfo = getDescription(context.locale) + "\n\n"
 
 			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
