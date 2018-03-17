@@ -8,8 +8,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
 class SayCommand : AbstractCommand("falar", listOf("say"), CommandCategory.MISC) {
-    override fun getDescription(): String {
-        return "Faça eu falar uma mensagem!";
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["SAY_Description"]
     }
 
     override fun getUsage(): String {

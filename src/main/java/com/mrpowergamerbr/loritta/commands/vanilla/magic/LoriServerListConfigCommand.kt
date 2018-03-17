@@ -28,7 +28,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		return true
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}
 

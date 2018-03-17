@@ -11,7 +11,7 @@ class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory
 		return true
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
 	}
 

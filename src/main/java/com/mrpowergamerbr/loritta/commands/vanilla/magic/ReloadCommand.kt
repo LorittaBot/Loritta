@@ -29,7 +29,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		return true
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}
 

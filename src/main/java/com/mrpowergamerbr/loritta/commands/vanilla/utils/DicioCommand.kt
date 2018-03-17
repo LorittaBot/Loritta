@@ -17,8 +17,8 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "definir"), 
 		return "palavra"
 	}
 
-	override fun getDescription(): String {
-		return "Procure o significado de uma palavra no dicionário!"
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["DICIO_Description"]
 	}
 
 	override fun getExample(): List<String> {

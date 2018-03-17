@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
 class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamericamemes"), CommandCategory.FUN) {
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Pega uma postagem aleatória do South America Memes"
 	}
 

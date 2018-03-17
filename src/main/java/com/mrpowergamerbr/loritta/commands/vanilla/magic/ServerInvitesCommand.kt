@@ -11,7 +11,7 @@ class ServerInvitesCommand : AbstractCommand("serverinvites", category = Command
 		return true
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Pega os invites de um servidor a partir do ID dele"
 	}
 

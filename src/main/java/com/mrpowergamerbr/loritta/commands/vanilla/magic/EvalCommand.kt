@@ -16,7 +16,7 @@ class EvalCommand : AbstractCommand("eval", category = CommandCategory.MAGIC) {
 		return true
 	}
 
-	override fun getDescription(): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em JavaScript"
 	}
 
