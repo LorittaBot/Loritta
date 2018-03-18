@@ -37,6 +37,7 @@ class NashornCommand : AbstractCommand {
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 	var useNewAPI: Boolean = false
+	var description: String? = null
 
 	override val label: String
 		get() = jsLabel

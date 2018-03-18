@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
@@ -20,7 +21,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	companion object {
 		val doNotReverify = ConcurrentHashMap<String, Long>()
 		val youTubeVideoCache = ConcurrentHashMap<String, YouTubeVideo>()
-		var apiCheckTime = 0L
 		var channelPlaylistIdCache = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(NewYouTubeVideosThread::class.java)
 	}
@@ -36,7 +36,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			} catch (e: Exception) {
 				logger.error("Erro ao verificar novos vídeos!", e)
 			}
-			Thread.sleep(500); // Só 0.5s de delay!
 		}
 	}
 
@@ -51,14 +50,16 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		// Servidores que usam o módulo do YouTube
 		val servers = loritta.serversColl.find(
 				Filters.gt("youTubeConfig.channels", listOf<Any>())
-		).iterator()
+		)
 
 		// IDs dos canais a serem verificados
 		var channelIds = mutableSetOf<String>()
 
 		val list = mutableListOf<ServerConfig>()
 
-		servers.use {
+		logger.info("Verificando canais do YouTube de ${servers.count()} servidores...")
+
+		servers.iterator().use {
 			while (it.hasNext()) {
 				val server = it.next()
 				val youTubeConfig = server.youTubeConfig
@@ -80,9 +81,11 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			}
 		}
 
+		logger.info("Existem ${channelIds.size} canais no YouTube que eu irei verificar!")
+
 		// Agora iremos verificar os canais
 		val deferred = channelIds.map { channelId ->
-			launch {
+			launch(start = CoroutineStart.DEFAULT) {
 				try {
 					if (!channelPlaylistIdCache.containsKey(channelId) && !doNotReverify.containsKey(channelId)) {
 						if (loritta.youtubeKeys.isEmpty()) {
@@ -202,10 +205,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		runBlocking {
 			deferred.onEach {
 				it.join()
-			}
-			val diff = System.currentTimeMillis() - apiCheckTime
-			if (diff > 60000) {
-				apiCheckTime = System.currentTimeMillis()
 			}
 			logger.info("${deferred.size} canais foram verificados com sucesso!")
 		}

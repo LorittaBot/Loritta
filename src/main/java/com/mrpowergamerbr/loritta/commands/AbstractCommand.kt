@@ -35,6 +35,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	val cooldown = if (needsToUploadFiles()) 10000 else 5000
+	var executedCount = 0
 
 	open fun getDescription(locale: BaseLocale): String {
 		return "Insira descrição do comando aqui!"
@@ -206,6 +207,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
 
 				LorittaUtilsKotlin.executedCommands++
+				executedCount++
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel) {
