@@ -3,8 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -15,6 +18,7 @@ import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import org.jsoup.Jsoup
+import java.io.IOException
 import java.net.URLEncoder
 
 class SimsimiCommand : AbstractCommand("simsimi", category = CommandCategory.FUN) {
@@ -51,17 +55,25 @@ class SimsimiCommand : AbstractCommand("simsimi", category = CommandCategory.FUN
 
 			logger.info("Usando proxy ${proxy.first}:${proxy.second} para o Simsimi!")
 			// {"status":200,"respSentence":"Olá \nTudo bem \nTe amo\nU"}
-			var get = HttpRequest.get("https://simsimi.com/getRealtimeReq?lc=$locale&ft=1&normalProb=4&reqText=${query.encodeToUrl()}&status=W&talkCnt=0")
-					.useProxy(proxy.first, proxy.second)
-					.header("Accept", "application/json, text/javascript, */*; q=0.01")
-					.header("Accept-Language", "en-US,en;q=0.5")
-					.header("Content-Type", "application/json; charset=utf-8")
-					.header("Cookie", "dotcom_session_key=s%3ADAArvz4yHpchCAf7sOOpKRDB3lJIqQa9.yH9dLgRKVlVeY3TCaDNAMjWWcMmIK%2BWU5VB0ixyVWz0; bbl_cnt=0; normalProb=4; user_displayName=Loritta; user_photo=undefined; lc=$locale; lname=Portugu%C3%AAs; currentChatCnt=0; _gat=1")
-					.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0")
-					.header("Host", "simsimi.com")
-					.header("Referer", "https://simsimi.com/")
-					.header("X-Requested-With", "XMLHttpRequest")
-					.body()
+			var get = try {
+				HttpRequest.get("https://simsimi.com/getRealtimeReq?lc=$locale&ft=1&normalProb=4&reqText=${query.encodeToUrl()}&status=W&talkCnt=0")
+						.useProxy(proxy.first, proxy.second)
+						.header("Accept", "application/json, text/javascript, */*; q=0.01")
+						.header("Accept-Language", "en-US,en;q=0.5")
+						.header("Content-Type", "application/json; charset=utf-8")
+						.header("Cookie", "dotcom_session_key=s%3ADAArvz4yHpchCAf7sOOpKRDB3lJIqQa9.yH9dLgRKVlVeY3TCaDNAMjWWcMmIK%2BWU5VB0ixyVWz0; bbl_cnt=0; normalProb=4; user_displayName=Loritta; user_photo=undefined; lc=$locale; lname=Portugu%C3%AAs; currentChatCnt=0; _gat=1")
+						.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0")
+						.header("Host", "simsimi.com")
+						.header("Referer", "https://simsimi.com/")
+						.header("X-Requested-With", "XMLHttpRequest")
+						.body()
+			} catch (e: HttpRequest.HttpRequestException) { // erro de proxy
+				logger.error("Erro ao utilizar proxy ${proxy.first}:${proxy.second}", e)
+				currentProxy = renewProxy()
+				val obj = JsonObject()
+				obj["res"] = "Proxy Error"
+				obj.toString()
+			}
 
 			logger.info(get)
 			val jsonElement = JSON_PARSER.parse(get).obj
@@ -113,21 +125,34 @@ class SimsimiCommand : AbstractCommand("simsimi", category = CommandCategory.FUN
 		}
 	}
 
-	fun renewProxy(): Pair<String, Int>? {
-		logger.info("Renovando o proxy do Simsimi!")
+	fun renewProxy(random: Boolean = false): Pair<String, Int>? {
+		logger.info("Renovando o proxy do Simsimi! Random? $random")
 		val document = Jsoup.connect("http://www.gatherproxy.com/proxylist/country/?c=Canada")
 				.get()
 
 		val classes = document.getElementsByTag("script")
 
-		val firstProxy = classes.firstOrNull { it.html().contains("insertPrx") }
+		val firstProxy = if (random) {
+			val filtered = classes.filter { it.html().contains("insertPrx") }
+			filtered[RANDOM.nextInt(0, filtered.size)]
+		} else {
+			classes.firstOrNull { it.html().contains("insertPrx") }
+		}
 
 		if (firstProxy != null) {
 			val jsonPayload = firstProxy.html().substring(13, firstProxy.html().length - 2)
 			val json = JSON_PARSER.parse(jsonPayload)
 
 			logger.info(json.toString())
-			return Pair(json["PROXY_IP"].string, Integer.parseInt(json["PROXY_PORT"].string, 16).toInt())
+
+			val ip = json["PROXY_IP"].string
+			val port = Integer.parseInt(json["PROXY_PORT"].string, 16)
+
+			if (currentProxy != null && ip == currentProxy!!.first && port == currentProxy!!.second) { // Se é igual, nós iremos pegar um proxy aleatório da lista
+				return renewProxy(true)
+			}
+
+			return Pair(json["PROXY_IP"].string, port)
 		}
 		logger.info("Oh no, nenhum proxy encontrado!")
 		return null
