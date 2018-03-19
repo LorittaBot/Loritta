@@ -88,6 +88,8 @@ class Loritta {
 	val eventLogExecutors = createThreadPool("Event Log Thread %d") // Threads
 	val messageExecutors = createThreadPool("Message Thread %d") // Threads
 	val executor = createThreadPool("Executor Thread %d") // Threads
+	val socket = SocketServer(10699)
+
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
@@ -219,6 +221,10 @@ class Loritta {
 		println("Sucesso! Iniciando threads da Loritta...")
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
+
+		thread {
+			socket.start()
+		}
 
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 

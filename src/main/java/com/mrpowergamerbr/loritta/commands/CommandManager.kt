@@ -43,7 +43,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
-import net.pocketdreams.loriplugins.simsimi.commands.SimsimiCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SimsimiCommand
 import java.util.*
 
 class CommandManager {
