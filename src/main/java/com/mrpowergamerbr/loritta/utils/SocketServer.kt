@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
+import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -23,72 +24,74 @@ class SocketServer(val socketPort: Int) {
 		try {
 			while (true) {
 				val socket = listener.accept()
-				try {
-					val fromClient = BufferedReader(InputStreamReader(socket.getInputStream(), "UTF-8"))
-					val reply = fromClient.readLine()
+				launch {
+					try {
+						val fromClient = BufferedReader(InputStreamReader(socket.getInputStream(), "UTF-8"))
+						val reply = fromClient.readLine()
 
-					logger.info(reply)
+						logger.info(reply)
 
-					val jsonObject = jsonParser.parse(reply).obj
+						val jsonObject = jsonParser.parse(reply).obj
 
-					val videoId = jsonObject["videoId"].string
-					val title = jsonObject["videoId"].string
-					val channelId = jsonObject["channelId"].string
+						val videoId = jsonObject["videoId"].string
+						val title = jsonObject["videoId"].string
+						val channelId = jsonObject["channelId"].string
 
-					val servers = loritta.serversColl.find(
-							Filters.eq("youTubeConfig.channels.channelId", channelId)
-					).iterator()
+						val servers = loritta.serversColl.find(
+								Filters.eq("youTubeConfig.channels.channelId", channelId)
+						).iterator()
 
-					logger.info("Recebi notificação de vídeo $title ($videoId) de $channelId")
+						logger.info("Recebi notificação de vídeo $title ($videoId) de $channelId")
 
-					servers.use {
-						while (it.hasNext()) {
-							val config = it.next()
+						servers.use {
+							while (it.hasNext()) {
+								val config = it.next()
 
-							val guild = lorittaShards.getGuildById(config.guildId) ?: continue
+								val guild = lorittaShards.getGuildById(config.guildId) ?: continue
 
-							val youTubeInfos = config.youTubeConfig.channels.filter { it.channelId == channelId }
+								val youTubeInfos = config.youTubeConfig.channels.filter { it.channelId == channelId }
 
-							for (youTubeInfo in youTubeInfos) {
-								val textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId) ?: continue
+								for (youTubeInfo in youTubeInfos) {
+									val textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId) ?: continue
 
-								if (!textChannel.canTalk())
-									continue
+									if (!textChannel.canTalk())
+										continue
 
-								var message = youTubeInfo.videoSentMessage ?: "{link}";
+									var message = youTubeInfo.videoSentMessage ?: "{link}";
 
-								if (message.isEmpty()) {
-									message = "{link}"
+									if (message.isEmpty()) {
+										message = "{link}"
+									}
+
+									val customTokens = mapOf(
+											"título" to title,
+											"title" to title,
+											"link" to "https://youtu.be/" + videoId,
+											"video-id" to videoId
+									)
+
+									val discordMessage = MessageUtils.generateMessage(
+											message,
+											listOf(guild),
+											guild,
+											customTokens
+									) ?: continue
+
+									textChannel.sendMessage(discordMessage).complete()
 								}
-
-								val customTokens = mapOf(
-										"título" to title,
-										"title" to title,
-										"link" to "https://youtu.be/" + videoId,
-										"video-id" to videoId
-								)
-
-								val discordMessage = MessageUtils.generateMessage(
-										message,
-										listOf(guild),
-										guild,
-										customTokens
-								) ?: continue
-
-								textChannel.sendMessage(discordMessage).complete()
 							}
 						}
+
+						val response = JsonObject()
+						response["type"] = "noop"
+
+						val out = PrintWriter(socket.getOutputStream(), true)
+						out.println(response.toString() + "\n")
+						out.flush()
+						fromClient.close()
+					} finally {
+						socket.close()
 					}
-
-					val response = JsonObject()
-					response["type"] = "noop"
-
-					val out = PrintWriter(socket.getOutputStream(), true)
-					out.println(response.toString() + "\n")
-					out.flush()
-					fromClient.close()
-				} finally {
-					socket.close()
 				}
 			}
 		} finally {
