@@ -20,9 +20,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 	companion object {
-		val doNotReverify = ConcurrentHashMap<String, Long>()
-		val youTubeVideoCache = ConcurrentHashMap<String, YouTubeVideo>()
-		var channelPlaylistIdCache = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(NewYouTubeVideosThread::class.java)
 	}
 
@@ -72,11 +69,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 						continue
 					if (!channel.channelUrl!!.startsWith("http"))
 						continue
-					if (doNotReverify.containsKey(channel.channelId!!)) {
-						if (900000 > System.currentTimeMillis() - doNotReverify[channel.channelId!!]!!) {
-							continue
-						}
-					}
 					val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
 
 					if (!textChannel.canTalk())
@@ -107,10 +99,10 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 			fromServer.close()
 		}
 
-		val shard0 = channelIds.filter { it.hashCode() % 4 == 0 }
-		val shard1 = channelIds.filter { it.hashCode() % 4 == 1 }
-		val shard2 = channelIds.filter { it.hashCode() % 4 == 2 }
-		val shard3 = channelIds.filter { it.hashCode() % 4 == 3 }
+		val shard0 = channelIds.filter { Math.abs(it.hashCode()) % 4 == 0 }
+		val shard1 = channelIds.filter { Math.abs(it.hashCode()) % 4 == 1 }
+		val shard2 = channelIds.filter { Math.abs(it.hashCode()) % 4 == 2 }
+		val shard3 = channelIds.filter { Math.abs(it.hashCode()) % 4 == 3 }
 
 		// enviar para todas as shards
 		sendToRelayShard(shard0, 10700)

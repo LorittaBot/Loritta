@@ -160,9 +160,6 @@ object DebugLog {
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
 				println("lastItemTime.size: ${NewRssFeedThread.lastItemTime.size}")
-				println("channelPlaylistIdCache.size: ${NewYouTubeVideosThread.channelPlaylistIdCache.size}")
-				println("doNotReverify.size: ${NewYouTubeVideosThread.doNotReverify.size}")
-				println("youTubeVideoCache.size: ${NewYouTubeVideosThread.youTubeVideoCache.size}")
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
