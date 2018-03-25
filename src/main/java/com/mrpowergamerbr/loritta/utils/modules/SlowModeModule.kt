@@ -15,7 +15,7 @@ object SlowModeModule {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
 			return false
 
-		if (event.guild.owner.user.patreon || event.guild.owner.user.donator) {
+		if (false) { // TODO: Acabar
 			if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_CHANNEL) && !event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_PERMISSIONS))
 				return false
 
