@@ -236,6 +236,7 @@ class CommandManager {
 		commandMap.add(RestartSongCommand())
 		commandMap.add(TocarAgoraCommand())
 		commandMap.add(ShuffleCommand())
+		commandMap.add(PararCommand())
 
 		// =======[ ECONOMIA ]========
 		commandMap.add(LoterittaCommand())
