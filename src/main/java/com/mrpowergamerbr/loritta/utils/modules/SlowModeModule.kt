@@ -15,7 +15,7 @@ object SlowModeModule {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
 			return false
 
-		if (false) { // TODO: Acabar
+		if (false) { // TODO: Acabar o sistema, o atual é bem ruim
 			if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_CHANNEL) && !event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_PERMISSIONS))
 				return false
 
