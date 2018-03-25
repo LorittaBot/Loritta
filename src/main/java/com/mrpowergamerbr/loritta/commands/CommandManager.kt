@@ -1,22 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AkinatorCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.AvaliarWaifuCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CongaParrotCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.FaustaoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.GameJoltCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.MagicBallCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.PedraPapelTesouraCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.QualidadeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RandomSAMCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.RollCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.ShipCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SpinnerCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TwitchCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporQualidadeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.VaporondaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.YouTubeCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
@@ -43,7 +27,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.SimsimiCommand
 import java.util.*
 
 class CommandManager {
@@ -104,6 +87,7 @@ class CommandManager {
 		// commandMap.add(TamagotchiCommand())
 		// commandMap.add(GiveawayCommand())
 		commandMap.add(CongaParrotCommand())
+		commandMap.add(GabrielaCommand())
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
