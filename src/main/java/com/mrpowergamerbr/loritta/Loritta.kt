@@ -24,7 +24,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
-import com.mrpowergamerbr.loritta.utils.gabriela.Gabriela
+import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
@@ -113,7 +113,7 @@ class Loritta {
 	lateinit var serversColl: MongoCollection<ServerConfig>
 	lateinit var usersColl: MongoCollection<LorittaProfile>
 	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
-	lateinit var gabrielaMessagesColl: MongoCollection<Gabriela.GabrielaMessage>
+	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
@@ -320,7 +320,7 @@ class Loritta {
 		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
 		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
 		storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
-		gabrielaMessagesColl = dbCodec.getCollection("gabriela", Gabriela.GabrielaMessage::class.java)
+		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
 	/**
