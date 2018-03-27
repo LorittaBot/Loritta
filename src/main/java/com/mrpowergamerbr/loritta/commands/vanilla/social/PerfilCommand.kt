@@ -139,8 +139,13 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
-		val polluxDocument: Document by lazy {
-			Jsoup.connect("http://www.pollux.fun/profile/${userProfile.userId}").get()
+		val polluxDocument: Document? by lazy {
+			try {
+				Jsoup.connect("http://www.pollux.fun/profile/${userProfile.userId}").get()
+			} catch (e: Exception) {
+				logger.error("Exception while pulling about me information from Pollux", e)
+				null
+			}
 		}
 
 		var aboutMe: String? = null
@@ -159,7 +164,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		if (aboutMe == null) {
 			try {
-				val polluxAboutMe = polluxDocument.getElementById("persotex")?.text()
+				val polluxAboutMe = polluxDocument?.getElementById("persotex")?.text()
 
 				if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
 					aboutMe = polluxAboutMe
@@ -177,7 +182,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 			else -> {
 				// ===[ POLLUX ]===
 				val polluxBackground = try {
-					val background = polluxDocument.getElementsByClass("bgprofile").attr("src")
+					val background = polluxDocument?.getElementsByClass("bgprofile")?.attr("src")
 
 					if (background != "/backdrops/5zhr3HWlQB4OmyCBFyHbFuoIhxrZY6l6.png") { // Caso não seja o background padrão...
 						val polluxOriginalBackground = LorittaUtils.downloadImage("https://www.pollux.fun$background")
