@@ -1,32 +1,16 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.debug.DebugType
-import com.mrpowergamerbr.loritta.utils.debug.debug
-import com.mrpowergamerbr.loritta.utils.escapeMentions
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.modules.*
-import com.mrpowergamerbr.loritta.utils.patreon
-import com.mrpowergamerbr.loritta.utils.save
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
@@ -42,11 +26,6 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
-import kotlin.concurrent.thread
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -56,7 +35,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
-			debug(DebugType.MESSAGE_RECEIVED, "(${event.guild.name} -> ${event.message.textChannel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 			loritta.messageExecutors.execute {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
@@ -233,7 +211,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			debug(DebugType.MESSAGE_RECEIVED, "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 			loritta.messageExecutors.execute {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
@@ -342,12 +319,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.user.name}**", exception)
 				}
 			}
-		}
-
-		if (e.isFromType(ChannelType.TEXT)) {
-			debug(DebugType.REACTION_RECEIVED, "(${e.guild.name} -> Reaction Add) ${e.user.name}#${e.user.discriminator} (${e.user.id}): ${e.reactionEmote.name}")
-		} else {
-			debug(DebugType.REACTION_RECEIVED, "(Direct Message -> Reaction Add) ${e.user.name}#${e.user.discriminator} (${e.user.id}): ${e.reactionEmote.name}")
 		}
 
 		loritta.executor.execute {

@@ -23,7 +23,7 @@ object WelcomeModule {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event), guild)).complete()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event), guild)).queue()
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
@@ -36,7 +36,9 @@ object WelcomeModule {
 				val msg = joinLeaveConfig.joinPrivateMessage
 				try {
 					if (msg.isNotEmpty())
-						event.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(msg, listOf(event), event.guild)).complete() // Pronto!
+						event.user.openPrivateChannel().queue({
+							it.sendMessage(MessageUtils.generateMessage(msg, listOf(event), event.guild)).queue() // Pronto!
+						})
 				} catch (e: ErrorResponseException) {
 					if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
 						throw e
@@ -60,41 +62,42 @@ object WelcomeModule {
 						var msg = joinLeaveConfig.leaveMessage
 						val customTokens = mutableMapOf<String, String>()
 
-						if (joinLeaveConfig.tellOnBan) {
-							// Para a mensagem de ban nós precisamos ter a permissão de banir membros
-							if (event.guild.selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-								val banList = guild.banList.complete()
-								if (banList.firstOrNull { it.user == event.user } != null) {
-									if (joinLeaveConfig.banMessage.isNotEmpty()) {
-										msg = joinLeaveConfig.banMessage
-									}
-								}
-							}
+						val callback: (String, Map<String, String>) -> Unit = { msg, customTokens ->
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)).queue()
 						}
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditLogs = guild.auditLogs.complete()
-							if (auditLogs.isNotEmpty()) {
-								val entry = guild.auditLogs.complete().first()
+							guild.auditLogs.queue({ auditLogs ->
+								if (auditLogs.isNotEmpty()) {
+									val entry = guild.auditLogs.complete().first()
 
-								if (entry.targetId == event.user.id) {
-									if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-										msg = joinLeaveConfig.kickMessage
-										customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-										customTokens["@staff"] = entry.user.asMention
-										customTokens["staff"] = entry.user.name
-									}
-									if (entry.type == ActionType.BAN) {
-										customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-										customTokens["@staff"] = entry.user.asMention
-										customTokens["staff"] = entry.user.name
+									if (entry.targetId == event.user.id) {
+										if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
+											if (joinLeaveConfig.kickMessage.isNotEmpty()) {
+												msg = joinLeaveConfig.kickMessage
+												customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+												customTokens["@staff"] = entry.user.asMention
+												customTokens["staff"] = entry.user.name
+												callback.invoke(msg, customTokens)
+											}
+										}
+										if (entry.type == ActionType.BAN) {
+											if (joinLeaveConfig.banMessage.isNotEmpty()) {
+												msg = joinLeaveConfig.banMessage
+												customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+												customTokens["@staff"] = entry.user.asMention
+												customTokens["staff"] = entry.user.name
+												callback.invoke(msg, customTokens)
+											}
+										}
 									}
 								}
-							}
+							})
+							return
 						}
 
 						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event), guild, customTokens)).complete()
+							callback.invoke(msg, customTokens)
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}

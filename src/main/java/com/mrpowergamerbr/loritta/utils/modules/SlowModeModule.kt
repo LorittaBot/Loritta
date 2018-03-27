@@ -15,51 +15,23 @@ object SlowModeModule {
 		if (!config.slowModeChannels.contains(event.textChannel.id))
 			return false
 
-		if (false) { // TODO: Acabar o sistema, o atual é bem ruim
-			if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_CHANNEL) && !event.guild.selfMember.hasPermission(event.textChannel, Permission.MANAGE_PERMISSIONS))
-				return false
+		if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE))
+			return false
 
-			if (lorittaUser.hasPermission(LorittaPermission.BYPASS_SLOW_MODE))
-				return false
+		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_SLOW_MODE))
+			return false
 
-			val delay = config.slowModeChannels[event.textChannel.id]!!
+		val delay = config.slowModeChannels[event.textChannel.id]!!
+		val key = event.textChannel.id + "-" + event.author.name
+		val lastMessageSent = slowModeDelay.getOrDefault(key, 0L)
 
-			var permissionOverride = event.textChannel.getPermissionOverride(event.member)
-			var created = false
-
-			if (permissionOverride == null) {
-				permissionOverride = event.textChannel.createPermissionOverride(event.member).complete()
-				created = true
-			}
-
-			permissionOverride.manager.deny(Permission.MESSAGE_WRITE).complete()
-
-			loritta.executor.execute {
-				Thread.sleep(delay.toLong() * 1000)
-				if (created) {
-					permissionOverride.delete().complete()
-				} else {
-					permissionOverride.manager.clear(Permission.MESSAGE_WRITE).complete()
-				}
-			}
-		} else {
-			if (!event.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE))
-				return false
-
-			if (lorittaUser.hasPermission(LorittaPermission.BYPASS_SLOW_MODE))
-				return false
-
-			val delay = config.slowModeChannels[event.textChannel.id]!!
-			val key = event.textChannel.id + "-" + event.author.name
-			val lastMessageSent = slowModeDelay.getOrDefault(key, 0L)
-
-			if (delay * 1000 > System.currentTimeMillis() - lastMessageSent) {
-				event.message.delete().complete()
-				return true
-			}
-
-			slowModeDelay[key] = System.currentTimeMillis()
+		if (delay * 1000 > System.currentTimeMillis() - lastMessageSent) {
+			event.message.delete().complete()
+			return true
 		}
+
+		slowModeDelay[key] = System.currentTimeMillis()
+
 		return false
 	}
 }

@@ -16,8 +16,6 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.APIUpdateSe
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.debug.DebugType
-import com.mrpowergamerbr.loritta.utils.debug.debug
 import com.mrpowergamerbr.loritta.utils.log
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -38,7 +36,6 @@ object GlobalHandler {
 
 	fun render(req: Request, res: Response): String {
 		logger.info(" ${req.header("X-Forwarded-For").value()}: ${req.path()}")
-		debug(DebugType.WEBSITE, "${req.header("X-Forwarded-For").value()}: ${req.path()}")
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
 			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
@@ -209,8 +206,6 @@ object GlobalHandler {
 					.forEach { return it.render(req, res, pathNoLanguageCode, variables) }
 		} catch (e: Exception) {
 			logger.error("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
-			val stacktraceAsString = ExceptionUtils.getStackTrace(e)
-			debug(DebugType.STACKTRACES, stacktraceAsString)
 			throw e
 		}
 

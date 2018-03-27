@@ -1,22 +1,18 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.threads.*
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.debug.DebugLog.logTypes
-import com.mrpowergamerbr.loritta.utils.debug.DebugLog.subscribedDebugTypes
-import net.dv8tion.jda.core.entities.Guild
+import com.mrpowergamerbr.loritta.threads.AminoRepostThread
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
+import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
-	val subscribedDebugTypes = mutableListOf<DebugType>(DebugType.WEBSITE, DebugType.COMMAND_EXECUTED, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS)
-	val logTypes = mutableListOf(DebugType.COMMAND_EXECUTED, DebugType.WEBSITE, DebugType.TWITCH_THREAD, DebugType.COMMAND_STATUS, DebugType.STACKTRACES)
 	var cancelAllEvents = false
 
 	fun startCommandListenerThread() {
@@ -56,66 +52,6 @@ object DebugLog {
 					println("MongoDB recarregado!")
 					return
 				}
-			}
-			"debug" -> {
-				if (args.isNotEmpty()) {
-					val todo = args[0]
-
-					if (todo == "all") {
-						subscribedDebugTypes.addAll(DebugType.values())
-						return
-					}
-					if (todo == "none") {
-						subscribedDebugTypes.clear()
-						return
-					}
-
-					val type = args[1]
-
-					if (todo == "add") {
-						subscribedDebugTypes.add(DebugType.valueOf(type))
-
-						println("$type added to the subscription list")
-						return
-					}
-					if (todo == "remove") {
-						subscribedDebugTypes.remove(DebugType.valueOf(type))
-
-						println("$type removed from the subscription list")
-						return
-					}
-				}
-				println("Subscribed Debug Types: ${subscribedDebugTypes.joinToString(", ", transform = { it.name })}")
-			}
-			"log" -> {
-				if (args.isNotEmpty()) {
-					val todo = args[0]
-
-					if (todo == "all") {
-						logTypes.addAll(DebugType.values())
-						return
-					}
-					if (todo == "none") {
-						logTypes.clear()
-						return
-					}
-
-					val type = args[1]
-
-					if (todo == "add") {
-						logTypes.add(DebugType.valueOf(type))
-
-						println("$type added to the subscription list")
-						return
-					}
-					if (todo == "remove") {
-						logTypes.remove(DebugType.valueOf(type))
-
-						println("$type removed from the subscription list")
-						return
-					}
-				}
-				println("Subscribed Debug Types: ${logTypes.joinToString(", ", transform = { it.name })}")
 			}
 			"info" -> {
 				val mb = 1024 * 1024
@@ -190,18 +126,5 @@ object DebugLog {
 				println("Wait Queue Size: " + waitQueueSize.get())
 			}
 		}
-	}
-}
-
-enum class DebugType {
-	MESSAGE_RECEIVED, REACTION_RECEIVED, COMMAND_EXECUTED, COMMAND_STATUS, STACKTRACES, TWITCH_THREAD, RSSFEED_THREAD, WEBSITE
-}
-
-fun debug(type: DebugType, message: Any?) {
-	if (subscribedDebugTypes.contains(type)) {
-		System.out.println("${ConsoleColors.YELLOW_BOLD}[${type.name}]${ConsoleColors.RESET} $message")
-	}
-	if (logTypes.contains(type)) {
-		log("[${type.name}] $message")
 	}
 }
