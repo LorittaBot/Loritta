@@ -271,14 +271,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionAdd!!.invoke(e)
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionAddEvent (by author) for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionAddByAuthor!!.invoke(e)
 					}
@@ -287,14 +285,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionRemove!!.invoke(e)
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing MessageReactionRemoveEvent (by author) for ${e.messageId} ~ ${e.user.name}")
 					loritta.executor.execute {
 						functions.onReactionRemoveByAuthor!!.invoke(e)
 					}
@@ -306,7 +302,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val context = LorittaLauncher.loritta.messageContextCache[e.messageId] as CommandContext
 			loritta.executor.execute {
 				try {
-					com.mrpowergamerbr.loritta.utils.log("[REACTION] Processing DEPRECATED onCommandReactionFeedback for ${e.messageId} ~ ${e.user.name}")
 					val message = e.channel.getMessageById(e.messageId).complete()
 					context.cmd.onCommandReactionFeedback(context, e, message)
 				} catch (exception: Exception) {
@@ -328,7 +323,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// Sistema de Starboard
 					if (conf.starboardConfig.isEnabled) {
-						com.mrpowergamerbr.loritta.utils.log("[REACTION] Handling Starboard for ${e.guild.id} ~ ${e.guild.name} ~ ${e.member.user.name}")
 						StarboardModule.handleStarboardReaction(e, conf)
 					}
 				} catch (exception: Exception) {

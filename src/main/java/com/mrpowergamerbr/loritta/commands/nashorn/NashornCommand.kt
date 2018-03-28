@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.log
 import jdk.nashorn.api.scripting.ClassFilter
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.EmbedBuilder
@@ -18,8 +17,6 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.script.Invocable
-
-
 
 /**
  * Comandos usando a Nashorn Engine
@@ -55,7 +52,6 @@ class NashornCommand : AbstractCommand {
 	}
 
 	fun nashornRun(ogContext: CommandContext, context: NashornContext) {
-		log("[JAVASCRIPT] $javaScript")
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 
