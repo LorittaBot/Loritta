@@ -55,7 +55,7 @@ class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory
 				aux -= cleanUp
 				val toDelete = mutableListOf<String>()
 
-				for (msg in context.event.textChannel.history.retrievePast(cleanUp).complete()) {
+				for (msg in context.event.textChannel!!.history.retrievePast(cleanUp).complete()) {
 					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
 					if (context.message.mentionedUsers.isNotEmpty()) {
 						if (!context.message.mentionedUsers.contains(msg.author)) {
@@ -74,7 +74,7 @@ class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory
 					return
 				}
 
-				context.event.textChannel.deleteMessagesByIds(toDelete).complete()
+				context.event.textChannel!!.deleteMessagesByIds(toDelete).complete()
 			}
 
 			if (ignoredMessages == 0) {

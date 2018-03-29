@@ -15,9 +15,9 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -115,7 +115,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		return false
 	}
 
-	fun handle(ev: MessageReceivedEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	fun handle(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val rawMessage = ev.message.contentRaw
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -156,14 +156,14 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				if (conf != loritta.dummyServerConfig && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+				if (conf != loritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true
 				}
 
 				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (conf.warnIfBlacklisted) {
-						if (conf.blacklistWarning.isNotEmpty()) {
+						if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
 							var message = conf.blacklistWarning
 							message = message.replace("{@user}", ev.member.asMention)
 							message = message.replace("{user}", ev.member.user.name)
@@ -207,7 +207,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				executedCount++
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-				if (!isPrivateChannel) {
+				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {
 					// Verificar se a Loritta possui todas as permissões necessárias
 					var botPermissions = ArrayList<Permission>(getBotPermissions())
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
@@ -224,7 +224,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				if (!isPrivateChannel) {
+				if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
 					var missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
@@ -280,7 +280,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				run(context, context.locale)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
-				if (!isPrivateChannel) {
+				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
 						ev.message.textChannel.getMessageById(ev.messageId).queue({
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
@@ -304,7 +304,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
 
-				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel.canTalk())
+				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk())
 					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]).complete()
 				return true
 			}
@@ -368,7 +368,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
-				cmdInfo += "\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
+				cmdInfo += "\n\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
 			}
 
 			embed.setDescription(cmdInfo)
@@ -389,4 +389,20 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 	@Deprecated(message = "message.onResponse")
 	open fun onCommandMessageReceivedFeedback(context: CommandContext, e: MessageReceivedEvent, msg: Message) {} // Quando uma mensagem é recebida
+
+	class LorittaMessageEvent(
+			val author: User,
+			val member: Member?,
+			val message: Message,
+			val messageId: String,
+			val guild: Guild?,
+			val channel: MessageChannel,
+			val textChannel: TextChannel?
+	) {
+		val jda: JDA get() = author.jda
+
+		fun isFromType(type: ChannelType): Boolean {
+			return this.channel.type == type
+		}
+	}
 }

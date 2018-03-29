@@ -26,7 +26,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val privateChannel = context.userHandle.openPrivateChannel().complete()
 
 			if (!context.isPrivateChannel) {
-				context.event.textChannel.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").complete()
+				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").complete()
 			}
 
 			val description = context.locale[
@@ -65,7 +65,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			sendInfoBox(context, privateChannel)
 		} catch (e: ErrorResponseException) {
 			if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
-				context.event.textChannel.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).complete()
+				context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).complete()
 				return
 			}
 			throw e

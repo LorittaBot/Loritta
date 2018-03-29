@@ -40,16 +40,16 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 			}
 
 			if (0 >= seconds) {
-				context.config.slowModeChannels.remove(context.event.textChannel.id)
+				context.config.slowModeChannels.remove(context.event.textChannel!!.id)
 				loritta save context.config
 
-				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["SLOWMODE_DisabledInChannel", context.event.textChannel.asMention])
+				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
-			context.config.slowModeChannels[context.event.textChannel.id] = seconds
+			context.config.slowModeChannels[context.event.textChannel!!.id] = seconds
 			loritta save context.config
 
-			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["SLOWMODE_EnabledInChannel", context.event.textChannel.asMention, seconds])
+			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {
 			this.explain(context)
 		}

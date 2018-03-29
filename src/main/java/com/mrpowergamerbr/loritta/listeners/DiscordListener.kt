@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.listeners
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
@@ -163,16 +164,26 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					AFKModule.handleAFK(event, locale)
 
+					val lorittaMessageEvent = AbstractCommand.LorittaMessageEvent(
+							event.author,
+							event.member,
+							event.message,
+							event.messageId,
+							event.guild,
+							event.channel,
+							event.textChannel
+					)
+
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
-						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
+						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 							return@execute
 						}
 					}
 
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
-						if (cmd.handle(event, serverConfig, locale, lorittaUser)) {
+						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 							return@execute
 						}
 					}
@@ -220,9 +231,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 				}
 
+				val lorittaMessageEvent = AbstractCommand.LorittaMessageEvent(
+						event.author,
+						event.member,
+						event.message,
+						event.messageId,
+						event.guild,
+						event.channel,
+						event.textChannel
+				)
+
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
-					if (cmd.handle(event, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
+					if (cmd.handle(lorittaMessageEvent, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
 						return@execute
 					}
 				}
@@ -241,11 +262,36 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 				// ===[ VERIFICAR INVITE LINKS ]===
 				if (serverConfig.inviteBlockerConfig.isEnabled) {
 					InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
+				}
+
+				val lorittaMessageEvent = AbstractCommand.LorittaMessageEvent(
+						event.author,
+						event.member,
+						event.message,
+						event.messageId,
+						event.guild,
+						event.channel,
+						event.channel
+				)
+
+				// Primeiro os comandos vanilla da Loritta(tm)
+				loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
+					if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@execute
+					}
+				}
+
+				// E depois os comandos usando JavaScript (Nashorn)
+				serverConfig.nashornCommands.forEach { cmd ->
+					if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@execute
+					}
 				}
 			}
 		}

@@ -4,14 +4,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.AvatarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.BotInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChatLogCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.DiscriminatorCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.InviteCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ServerInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.UserInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoterittaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
@@ -78,18 +71,6 @@ class CommandManager {
 		commandMap.add(TwitchCommand())
 
 		// =======[ IMAGENS ]======
-		commandMap.add(SwingCommand())
-		commandMap.add(DemonCommand())
-
-		// =======[ DIVERSÃO ]======
-		commandMap.add(SimsimiCommand())
-		commandMap.add(CleverbotCommand())
-		// commandMap.add(TamagotchiCommand())
-		// commandMap.add(GiveawayCommand())
-		commandMap.add(CongaParrotCommand())
-		commandMap.add(GabrielaCommand())
-
-		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
 		commandMap.add(RomeroBrittoCommand())
 		commandMap.add(StudiopolisTvCommand())
@@ -101,6 +82,20 @@ class CommandManager {
 		commandMap.add(ContentAwareScaleCommand())
 		commandMap.add(ArtCommand())
 		commandMap.add(PepeDreamCommand())
+		commandMap.add(SwingCommand())
+		commandMap.add(DemonCommand())
+		commandMap.add(TodoGrupoTemCommand())
+		commandMap.add(TioDoPaveCommand())
+		commandMap.add(VemDeZapCommand())
+
+		// =======[ DIVERSÃO ]======
+		commandMap.add(SimsimiCommand())
+		commandMap.add(CleverbotCommand())
+		// commandMap.add(TamagotchiCommand())
+		// commandMap.add(GiveawayCommand())
+		commandMap.add(CongaParrotCommand())
+		commandMap.add(GabrielaCommand())
+		commandMap.add(BemBoladaCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
@@ -154,6 +149,7 @@ class CommandManager {
 		commandMap.add(InviteCommand())
 		commandMap.add(UserInfoCommand())
 		commandMap.add(ChatLogCommand())
+		commandMap.add(InviteInfoCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())

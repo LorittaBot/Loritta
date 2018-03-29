@@ -252,7 +252,7 @@ object LorittaUtilsKotlin {
 						.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
 			} catch (e: ErrorResponseException) {
 				// Usuário tem as DMs desativadas
-				context.event.textChannel.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
+				context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
 			}
 			return true
 		}

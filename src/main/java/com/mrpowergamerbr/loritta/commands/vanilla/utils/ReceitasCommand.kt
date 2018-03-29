@@ -84,7 +84,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 			}
 
 			if (finalMessage != null) {
-				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), finalMessage);
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), finalMessage);
 			} else {
 				var message = DiscordMessage.builder()
 						.username("Louro José")
@@ -92,7 +92,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 						.content(context.getAsMention(true) + context.locale["RECEITAS_COULDNT_FIND", query])
 						.build();
 
-				context.sendMessage(getOrCreateWebhook(context.event.textChannel, "Louro José"), message)
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), message)
 			}
 		} else {
 			this.explain(context);

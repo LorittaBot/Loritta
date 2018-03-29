@@ -102,7 +102,7 @@ class CleverbotCommand : AbstractCommand("cleverbot", category = CommandCategory
 				else -> ""
 			}
 
-			val webhook = getOrCreateWebhook(context.event.textChannel, "Cleverbot")
+			val webhook = getOrCreateWebhook(context.event.textChannel!!, "Cleverbot")
 			context.sendMessage(webhook, DiscordMessage.builder()
 					.username(context.locale["CLEVERBOT_PANTUFA"])
 					.content(context.getAsMention(true) + "$response $emoji")

@@ -35,7 +35,7 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote"), CommandCatego
 			if (context.args[0].isValidSnowflake()) {
 				var msg: Message? = null
 				try {
-					msg = context.event.textChannel.getMessageById(context.args[0]).complete()
+					msg = context.event.textChannel!!.getMessageById(context.args[0]).complete()
 				} catch (e: ErrorResponseException) {
 				}
 				if (msg != null) {
@@ -67,7 +67,7 @@ class QuoteCommand : AbstractCommand("mencionar", listOf("quote"), CommandCatego
 
 					// dm.embeds = Arrays.asList(embed)
 
-					val temmie = getOrCreateWebhook(context.event.textChannel, "Quote Webhook")
+					val temmie = getOrCreateWebhook(context.event.textChannel!!, "Quote Webhook")
 
 					temmie!!.sendMessage(dm)
 				} else {

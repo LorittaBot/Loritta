@@ -24,7 +24,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val temmie = getOrCreateWebhook(context.event.textChannel, "Vieirinha")
+			val temmie = getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")

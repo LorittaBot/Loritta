@@ -83,9 +83,13 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		}
 
 
-		var upvotedOnDiscordBots = if (ID_ARRAY != null) {
-			ID_ARRAY!!.any { it.string == user.id }
-		} else {
+		var upvotedOnDiscordBots = try {
+			if (ID_ARRAY != null) {
+				ID_ARRAY!!.any { it.string == user.id }
+			} else {
+				false
+			}
+		} catch (e: Exception) {
 			false
 		}
 
