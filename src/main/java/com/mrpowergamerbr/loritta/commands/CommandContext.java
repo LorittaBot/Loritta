@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands;
 
+import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
@@ -99,6 +100,10 @@ public class CommandContext {
 			return (cmdOptions.getMentionOnCommandOutput() ?
 					lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
 					"");
+		}
+		// Primeiro de abril!
+		if (Loritta.getRANDOM().nextInt(0, 49) == 0) {
+			return "@someone ";
 		}
 		return lorittaUser.getAsMention(true);
 	}

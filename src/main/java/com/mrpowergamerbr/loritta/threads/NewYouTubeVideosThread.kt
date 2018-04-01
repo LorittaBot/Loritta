@@ -23,8 +23,6 @@ class NewYouTubeVideosThread : Thread("YouTube Query Thread") {
 		val logger = LoggerFactory.getLogger(NewYouTubeVideosThread::class.java)
 	}
 
-	class YouTubeVideo(val id: String)
-
 	override fun run() {
 		super.run()
 

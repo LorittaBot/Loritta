@@ -80,20 +80,8 @@ object GlobalHandler {
 			}
 		}
 
-		if (req.param("force_locale").isSet) {
-			req.session()["forceLocale"] = req.param("force_locale").value()
-		}
-
 		if (req.param("logout").isSet) {
 			req.session().destroy()
-		}
-
-		if (req.session().isSet("forceLocale")) {
-			lorittaLocale  = LorittaLauncher.loritta.getLocaleById(req.session()["forceLocale"].value())
-		}
-
-		if (req.param("locale").isSet) {
-			lorittaLocale = LorittaLauncher.loritta.getLocaleById(req.param("locale").value())
 		}
 
 		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
@@ -131,14 +119,19 @@ object GlobalHandler {
 		} else {
 			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 			if (localeId != null) {
-				if (req.path() != "/dashboard" && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
+				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
 						res.redirect("https://loritta.website/br${req.path()}")
 					}
-					if (localeId == "en-us") {
-						res.redirect("https://loritta.website/us${req.path()}")
+					if (localeId == "pt-pt") {
+						res.redirect("https://loritta.website/pt${req.path()}")
 					}
+					if (localeId == "es-es") {
+						res.redirect("https://loritta.website/es${req.path()}")
+					}
+					res.redirect("https://loritta.website/us${req.path()}")
+					return "Redirecting..."
 				}
 			}
 		}

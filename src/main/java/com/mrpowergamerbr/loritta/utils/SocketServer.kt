@@ -34,7 +34,7 @@ class SocketServer(val socketPort: Int) {
 						val jsonObject = jsonParser.parse(reply).obj
 
 						val videoId = jsonObject["videoId"].string
-						val title = jsonObject["videoId"].string
+						val title = jsonObject["title"].string
 						val channelId = jsonObject["channelId"].string
 
 						val servers = loritta.serversColl.find(
