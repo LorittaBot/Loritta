@@ -63,7 +63,7 @@ class APIBumpServerView : NoVarsView() {
 			return payload.toString()
 		}
 
-		if (System.currentTimeMillis() > serverConfig.serverListConfig.lastBump + 14_400_000) {
+		if (serverConfig.serverListConfig.lastBump + 14_400_000 > System.currentTimeMillis()) {
 			val payload = JsonObject()
 			payload["api:code"] = LoriWebCodes.RATE_LIMITED
 			return payload.toString()
@@ -71,13 +71,13 @@ class APIBumpServerView : NoVarsView() {
 
 		val profile = loritta.getLorittaProfileForUser(userIdentification.id)
 
-		if (1500 > profile.dreams) {
+		if (750 > profile.dreams) {
 			val payload = JsonObject()
 			payload["api:code"] = LoriWebCodes.INSUFFICIENT_FUNDS
 			return payload.toString()
 		}
 
-		profile.dreams -= 1500
+		profile.dreams -= 750
 
 		serverConfig.serverListConfig.lastBump = System.currentTimeMillis()
 		loritta save serverConfig

@@ -117,13 +117,9 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 							emoteInfo.delete().queue()
 							try {
 								ByteArrayOutputStream().use { os ->
-									val os = ByteArrayOutputStream()
-									try {
-										ImageIO.write(LorittaUtils.downloadImage(emote.imageUrl), "png", os)
-									} catch (e: Exception) {
-									}
+									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
 
-									ByteArrayInputStream(os.toByteArray()).use { inputStream ->
+									os.use { inputStream ->
 										val emote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).complete()
 
 										context.reply(

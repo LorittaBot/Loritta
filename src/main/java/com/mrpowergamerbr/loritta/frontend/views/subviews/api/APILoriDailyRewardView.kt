@@ -150,7 +150,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			else -> 2
 		}
 
-		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, (555 * multiplier) + 1) // 555 (lower bound) -> 555 * sites de votação do PocketDreams
+		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, (555 * multiplier) + 1) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 
 		val receivedDailyAt = System.currentTimeMillis()
 		val payload = JsonObject()
