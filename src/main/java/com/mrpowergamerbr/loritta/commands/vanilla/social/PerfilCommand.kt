@@ -145,15 +145,6 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
-		val polluxDocument: Document? by lazy {
-			try {
-				Jsoup.connect("http://www.pollux.fun/profile/${userProfile.userId}").get()
-			} catch (e: Exception) {
-				logger.error("Exception while pulling about me information from Pollux", e)
-				null
-			}
-		}
-
 		var aboutMe: String? = null
 
 		if (userProfile.userId == Loritta.config.clientId) {
@@ -161,22 +152,11 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		}
 
 		if (userProfile.userId == "390927821997998081") {
-			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do PocketDreams (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
+			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do PerfectDreams (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
 		}
 
 		if (userProfile.aboutMe != null && userProfile.aboutMe != "A Loritta é minha amiga!") {
 			aboutMe = userProfile.aboutMe
-		}
-
-		if (aboutMe == null) {
-			try {
-				val polluxAboutMe = polluxDocument?.getElementById("persotex")?.text()
-
-				if (polluxAboutMe != "I have no personal text because I'm too lazy to set one.")
-					aboutMe = polluxAboutMe
-			} catch (e: SocketTimeoutException) {
-				logger.error("Exception while pulling about me information from Pollux", e)
-			}
 		}
 
 		if (aboutMe == null) {
@@ -186,30 +166,9 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		val background = when {
 			file.exists() -> ImageIO.read(File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
 			else -> {
-				// ===[ POLLUX ]===
-				val polluxBackground = try {
-					val background = polluxDocument?.getElementsByClass("bgprofile")?.attr("src")
-
-					if (background != "/backdrops/5zhr3HWlQB4OmyCBFyHbFuoIhxrZY6l6.png") { // Caso não seja o background padrão...
-						val polluxOriginalBackground = LorittaUtils.downloadImage("https://www.pollux.fun$background")
-								.getScaledInstance(971, 473, BufferedImage.SCALE_SMOOTH)
-						val polluxBase = BufferedImage(800, 473, BufferedImage.SCALE_SMOOTH)
-						val polluxGraphics = polluxBase.graphics
-						polluxGraphics.drawImage(polluxOriginalBackground, -86, 0, null)
-						polluxBase
-					} else {
-						null
-					}
-				} catch (e: Exception) {
-					logger.error("Exception while pulling background information from Pollux", e)
-					null
-				}
-				if (polluxBackground != null) {
-					polluxBackground
-				} else {
-					ImageIO.read(File(Loritta.ASSETS + "default_background.png"))
-				}
-			} // Background padrão
+				// Background padrão
+				ImageIO.read(File(Loritta.ASSETS + "default_background.png"))
+			}
 		}
 
 		val map = mapOf(
