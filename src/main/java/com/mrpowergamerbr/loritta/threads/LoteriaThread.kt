@@ -80,6 +80,7 @@ class LoteriaThread : Thread("Loteria Thread") {
 			loritta save lorittaProfile
 			userIds.clear()
 
+			val locale = loritta.getLocaleById(winner.second)
 			val user = lorittaShards.getUserById(lastWinnerId)
 
 			if (user != null) {
@@ -87,8 +88,8 @@ class LoteriaThread : Thread("Loteria Thread") {
 					val embed = EmbedBuilder()
 					embed.setThumbnail("attachment://loritta_money.png")
 					embed.setColor(Constants.LORITTA_AQUA)
-					embed.setTitle("\uD83C\uDF89 Parabéns!")
-					embed.setDescription("Você ganhou **${lastWinnerPrize} Sonhos** na Loteria! \uD83E\uDD11")
+					embed.setTitle("\uD83C\uDF89 ${locale["LOTERIA_Congratulations"]}!")
+					embed.setDescription("${locale["LOTERIA_YouEarned", lastWinnerPrize]} \uD83E\uDD11")
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 					user.openPrivateChannel().complete().sendFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png", message).complete()

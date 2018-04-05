@@ -66,7 +66,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				var embed = EmbedBuilder();
 				embed.setColor(Color(217, 66, 52));
 				embed.setDescription(format);
-				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR"]}");
+				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
 				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
 				for (i in 0 until Math.min(5, items.size)) {

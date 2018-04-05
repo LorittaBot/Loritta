@@ -170,10 +170,19 @@ class APIGetServerSampleView : NoVarsView() {
 			information["onlineCount"] = guild.members.count { it.onlineStatus != OnlineStatus.OFFLINE }
 			information["serverCreatedAt"] = guild.creationTime.toEpochSecond() * 1000
 			information["joinedAt"] = guild.selfMember.joinDate.toEpochSecond() * 1000
-			information["hasCustomBackground"] = File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${server.guildId}.png").exists()
+			val background = File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${server.guildId}.png")
+			information["hasCustomBackground"] = background.exists()
+			if (background.exists()) {
+				// Para evitar que o usuário tenha que baixar o background toda hora que a página é recarregada, nós iremos salvar uma key "única" para cada bg
+				// Para ficar mais fácil, nós iremos usar a data de modificação do arquivo como o "background key", já que toda hora que o usuário troca o
+				// background, a data de modificação irá mudar também.
+				information["backgroundKey"] = background.lastModified()
+			}
+
 			information["voteCount"] = server.serverListConfig.votes.size
 			information["validVoteCount"] = server.serverListConfig.votes.count { it.votedAt > System.currentTimeMillis() - 2592000000}
 			information["canVote"] = true
+			information["lastBump"] = server.serverListConfig.lastBump
 			// 1 = not logged in
 			// 2 = not member
 			// 3 = needs to wait more than 1 hour before voting

@@ -101,10 +101,6 @@ public class CommandContext {
 					lorittaUser.getUser().getAsMention() + (addSpace ? " " : "") :
 					"");
 		}
-		// Primeiro de abril!
-		if (Loritta.getRANDOM().nextInt(0, 49) == 0) {
-			return "@someone ";
-		}
 		return lorittaUser.getAsMention(true);
 	}
 

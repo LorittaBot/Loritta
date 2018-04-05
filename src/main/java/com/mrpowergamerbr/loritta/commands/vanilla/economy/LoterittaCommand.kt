@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery"), CommandCategory.SOCIAL) {
+class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LOTERIA_Description"];
 	}
@@ -31,27 +31,22 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 
 				context.reply(
 						LoriReply(
-								"Você comprou ${quantity} ticket${if (quantity == 1) "" else "s"} por **${requiredCount} Sonhos**! Agora é só sentar e relaxar até o resultado da loteria sair!",
+								context.locale["LOTERIA_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
 								"\uD83C\uDFAB"
 						),
 						LoriReply(
-								"Querendo mais chances de ganhar? Que tal comprar outro ticket? \uD83D\uDE09 `${context.config.commandPrefix}loteria comprar [quantidade]`",
+								context.locale["LOTERIA_WantMoreChances", context.config.commandPrefix],
 								mentionUser = false
 						)
 				)
 			} else {
 				context.reply(
 						LoriReply(
-								"Você precisa ter **+${requiredCount - lorittaProfile.dreams} Sonhos** para poder comprar ${quantity} ticket${if (quantity == 1) "" else "s"}!",
+								context.locale["LOTERIA_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
 								Constants.ERROR
 						)
 				)
 			}
-			return
-		}
-
-		if (arg0 == "force") {
-			loritta.loteriaThread.handleWin()
 			return
 		}
 
@@ -76,32 +71,32 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 						"<:loritta:331179879582269451>"
 				),
 				LoriReply(
-						"Prêmio atual: **${LoteriaThread.userIds.size * 250} Sonhos**",
+						context.locale["LOTERIA_CurrentPrize", (LoteriaThread.userIds.size * 250).toString()],
 						"<:twitt_starstruck:352216844603752450>",
 						mentionUser = false
 				),
 				LoriReply(
-						"Tickets comprados: **${LoteriaThread.userIds.size} Tickets**",
+						context.locale["LOTERIA_BoughtTickets", LoteriaThread.userIds.size],
 						"\uD83C\uDFAB",
 						mentionUser = false
 				),
 				LoriReply(
-						"Pessoas participando: **${LoteriaThread.userIds.distinctBy { it.first }.size} Pessoas**",
+						context.locale["LOTERIA_UsersParticipating", LoteriaThread.userIds.distinctBy { it.first }.size],
 						"\uD83D\uDC65",
 						mentionUser = false
 				),
 				LoriReply(
-						"Último ganhador: `${nameAndDiscriminator.stripCodeMarks()} (${LoteriaThread.lastWinnerPrize} Sonhos)`",
+						context.locale["LOTERIA_LastWinner", nameAndDiscriminator.stripCodeMarks(), LoteriaThread.lastWinnerPrize],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
 				LoriReply(
-						"Resultado irá sair daqui a **${DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)}**!",
+						context.locale["LOTERIA_ResultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
 						prefix = "\uD83D\uDD52",
 						mentionUser = false
 				),
 				LoriReply(
-						"Compre um ticket por **250 Sonhos** usando `${context.config.commandPrefix}loteria comprar`!",
+						context.locale["LOTERIA_BuyAnTicketFor", context.config.commandPrefix],
 						prefix = "\uD83D\uDCB5",
 						mentionUser = false
 				)

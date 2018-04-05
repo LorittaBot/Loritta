@@ -22,7 +22,7 @@ class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "u
 			setColor(Constants.LORITTA_AQUA)
 			setThumbnail("https://loritta.website/assets/img/loritta_star.png")
 			setTitle("✨ Discord Bot List")
-			setDescription(locale["DBL_Info", context.config.commandPrefix, PerfilCommand.ID_ARRAY?.size() ?: 0, "https://discordbots.org/bot/loritta"])
+			setDescription(locale["DBL_Info", context.config.commandPrefix, PerfilCommand.userVotes?.size ?: 0, "https://discordbots.org/bot/loritta"])
 		}
 
 	    context.sendMessage(context.getAsMention(true), embed.build())

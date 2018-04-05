@@ -4,10 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.userdata.InviteBlockerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import kotlinx.coroutines.experimental.launch
 import net.dv8tion.jda.core.Permission
@@ -49,25 +46,22 @@ object InviteLinkModule {
 					val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
 
 					if (inviteId != null) { // INVITES DO DISCORD
-						if (inviteId == "attachments")
+						if (inviteId == "attachments" || inviteId == "forums")
 							continue
 
 						if (whitelisted.contains(inviteId))
 							continue
 
-						val asMention = message.author.asMention
-						val name = message.author.name
-						val effectiveName = message.member.effectiveName
-
 						if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 							message.delete().queue()
 
-						if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk())
-							message.textChannel.sendMessage(inviteBlockerConfig.warnMessage
-									.replace("{@user}", asMention)
-									.replace("{user}", name)
-									.replace("{nickname}", effectiveName)).queue()
-						return@callback
+						if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+							val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild) ?: return@callback
+
+							message.textChannel.sendMessage(toBeSent).queue()
+
+							return@callback
+						}
 					}
 				}
 			}

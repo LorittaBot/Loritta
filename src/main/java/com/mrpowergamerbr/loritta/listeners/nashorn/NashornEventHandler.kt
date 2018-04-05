@@ -57,7 +57,7 @@ class NashornEventHandler {
 	fun run(call: String, vararg objects: Any) {
 		val factory = NashornScriptEngineFactory()
 
-		val engine = factory.getScriptEngine(NashornCommand.NashornClassFilter())
+		val engine = factory.getScriptEngine(arrayOf("-doe"), this::class.java.classLoader, NashornCommand.NashornClassFilter())
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 		// Funções inline para facilitar a programação de comandos

@@ -86,7 +86,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
 				CommandCategory.UTILS to "\uD83D\uDD27",
 				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA"
+				CommandCategory.ANIME to "\uD83D\uDCFA",
+				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
 		val embeds = ArrayList<MessageEmbed>();
@@ -104,6 +105,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			CommandCategory.MISC -> Color(255, 176, 0)
 			CommandCategory.UTILS -> Color(176, 146, 209)
 			CommandCategory.MUSIC -> Color(124, 91, 197)
+			CommandCategory.ECONOMY -> Color(167, 210, 139)
 			else -> Color(186, 0, 239)
 		}
 
@@ -115,6 +117,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
 			CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
 			CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
+			CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
 			else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
 		}
 
@@ -172,7 +175,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
 				CommandCategory.UTILS to "\uD83D\uDD27",
 				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA"
+				CommandCategory.ANIME to "\uD83D\uDCFA",
+				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
 		for (category in categories) {
@@ -249,7 +253,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.MUSIC to "\uD83C\uDFA7",
 				CommandCategory.UTILS to "\uD83D\uDD27",
 				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA"
+				CommandCategory.ANIME to "\uD83D\uDCFA",
+				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
 		val entry = reactionEmotes.entries.firstOrNull { it.value ==  e.reactionEmote.name }

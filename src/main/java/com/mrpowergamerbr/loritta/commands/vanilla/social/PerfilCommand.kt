@@ -2,10 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonArray
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -26,7 +28,7 @@ import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
 	companion object {
-		var ID_ARRAY: JsonArray? = null
+		var userVotes: List<DiscordBotVote>? = null
 		var lastQuery = 0L
 	}
 
@@ -76,7 +78,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 						.body()
 
 				lastQuery = System.currentTimeMillis()
-				ID_ARRAY = JSON_PARSER.parse(discordBotsResponse).array
+				userVotes = GSON.fromJson(discordBotsResponse)
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
@@ -84,8 +86,8 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 
 		var upvotedOnDiscordBots = try {
-			if (ID_ARRAY != null) {
-				ID_ARRAY!!.any { it.string == user.id }
+			if (userVotes != null) {
+				userVotes!!.any { it.id == user.id }
 			} else {
 				false
 			}
@@ -238,4 +240,11 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 
 		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}"); // E agora envie o arquivo
 	}
+
+	class DiscordBotVote(
+			val username: String,
+			val discriminator: String,
+			val id: String,
+			val avatar: String?
+	)
 }

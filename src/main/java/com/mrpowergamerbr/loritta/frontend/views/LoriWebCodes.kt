@@ -15,4 +15,5 @@ object LoriWebCodes {
 	const val BAD_EMAIL = 11 // email usado para spam
 	const val MISSING_PERMISSION = 12 // quando falta alguma permissão
 	const val ALREADY_IN_GUILD = 13 // quando o usuário já está na guild
+	const val INSUFFICIENT_FUNDS = 14 // usuário não possui dinheiro suficiente
 }

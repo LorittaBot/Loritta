@@ -84,6 +84,10 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				"\\b(flar)\\b" to "falar"
 		)
 
+		val wordBlacklist = mutableListOf<String>(
+				"calcinha","cueca","buceta","pau","foder","fuder","vadia","crl","puta", "bucetaa","bucetaaa","cu","cú","cuu","cuuu","cuh","whatsapp","endereço","vaca","putaa","gozei","gozar","meter","meti","piranha","cadela","penetro","penetrar","boquete","boqueteira","chupa","chupar","safada","putinha","safadinha","viado","viada","gay","fdp","capeta","demonio","demônio","fudi","fudiii","arrombado","arrombada","prostituta","transa","transar","transei","transou","possuir","seu corpo","estrupar","estrupei","arrombada","piriguete","putona","novinha","novinhas","meter","meteria","comer","comeria","cama","bunda","bundinha","bucetinha","ppk","xoxota","passa o","pauzudo","bucetuda", "camisinha", "cocaína", "fude", "fudee", "viadinho", "xereca","pedofilo", "penis","pênis", "rapariga", "gostosa", "eu chupo","todinha", "sexoo","sexooo", "sex","sexo", "punheta", "siririca", "ponheta", "transaria", "comi ela", "Vo infia tão fundo", "infia", "cuzinho", "cuzao", "cuzão", "bucetinhaa", "bicha","Que tranza","tranza","pica", "pika", "me encontre", "passa","endereço", "vc mora", "você mora", "deu muito", "pika", "bct", "cuu", "gostoso", "putiane", "arrombado", "rolas", "gozo","virgindade","estrupa", "arrombar", "estrupado","estrupada", "estruparei", "chupar", "estrupador", "galinha","estrupar", "penetra","bucetuda","porra","fode", "gozada","nudes","adiciona","cu!","soca","socar","mata","matar","morrer","morre","mora","casa","pelado","pelada", "fudeee", "meteu" ,"chupo", "chupeta"
+		)
+
 		if (context.args.isNotEmpty()) {
 			val webhook = getOrCreateWebhook(context.event.textChannel!!, locale["FRASETOSCA_GABRIELA"])
 
@@ -127,44 +131,80 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					}
 				}
 
-				val answer = document.answers[RANDOM.nextInt(document.answers.size)]
-
-				discordWebhook.send(
-						com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
-								context.locale["FRASETOSCA_GABRIELA"],
-								context.getAsMention(true) + answer.answer.escapeMentions(),
-								"https://loritta.website/assets/img/gabriela_avatar.png"
-						),
-						true,
-						{
-							val messageId = it["id"].string
-							val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
-							val message = context.message.textChannel.getMessageById(messageId).complete()
-
-							if (message != null) {
-								learnGabriela(pergunta, message, context, functions, true, document, answer)
-							}
+				val answers = document.answers.filter { raw ->
+					wordBlacklist.forEach {
+						if (raw.answer.contains(it, true)) {
+							return@filter false
 						}
-				)
-			} else {
-				discordWebhook.send(
-						com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
-								context.locale["FRASETOSCA_GABRIELA"],
-								"${context.getAsMention(true)}Eu não sei uma resposta para esta pergunta! \uD83D\uDE22 — Se você quer me ensinar, clique no \uD83D\uDCA1!",
-								"https://loritta.website/assets/img/gabriela_avatar.png"
-						),
-						true,
-						{
-							val messageId = it["id"].string
-							val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
-							val message = context.message.textChannel.getMessageById(messageId).complete()
+					}
+					true
+				}
 
-							if (message != null) {
-								learnGabriela(pergunta, message, context, functions)
-							}
+				if (answers.isNotEmpty()) {
+					val weightedAnswers = mutableListOf<GabrielaAnswer>()
+					// Nós iremos guardar qual é a pior nota...
+					// Por exemplo, "-7"
+					var lowestVotes = 0
+					for (answer in answers) {
+						if (lowestVotes > answer.downvotes.size) {
+							lowestVotes = answer.downvotes.size
 						}
-				)
+					}
+
+					// Agora para aplicar um weighted random, vamos transformar a nota em positiva usando absolute values
+					lowestVotes = Math.abs(lowestVotes)
+					// Ou seja, agora os downvotes seriam "7"!
+
+					// E agora vamos verificar todas as respostas!
+					for (answer in answers) {
+						var totalUpvotes = ((answer.upvotes.size - answer.downvotes.size) + lowestVotes)
+
+						// Mesmo que seja 0..0 vai adicionar uma vez
+						for (i in 0..totalUpvotes) {
+							weightedAnswers.add(answer)
+						}
+					}
+
+					// E agora... nós selecionamos a resposta (finalmente!)
+					val answer = weightedAnswers[RANDOM.nextInt(weightedAnswers.size)]
+
+					discordWebhook.send(
+							com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
+									context.locale["FRASETOSCA_GABRIELA"],
+									context.getAsMention(true) + answer.answer.escapeMentions(),
+									"https://loritta.website/assets/img/gabriela_avatar.png"
+							),
+							true,
+							{
+								val messageId = it["id"].string
+								val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+								val message = context.message.textChannel.getMessageById(messageId).complete()
+
+								if (message != null) {
+									learnGabriela(pergunta, message, context, functions, true, document, answer)
+								}
+							}
+					)
+					return
+				}
 			}
+			discordWebhook.send(
+					com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
+							context.locale["FRASETOSCA_GABRIELA"],
+							context.getAsMention(true) + locale["FRASETOSCA_DontKnow"],
+							"https://loritta.website/assets/img/gabriela_avatar.png"
+					),
+					true,
+					{
+						val messageId = it["id"].string
+						val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+						val message = context.message.textChannel.getMessageById(messageId).complete()
+
+						if (message != null) {
+							learnGabriela(pergunta, message, context, functions)
+						}
+					}
+			)
 		} else {
 			context.explain()
 		}
@@ -172,7 +212,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 	}
 
 	fun learnGabriela(pergunta: String, message: Message, context: CommandContext, functions: MessageInteractionFunctions, allowUpvoteDownvote: Boolean = false, document: GabrielaMessage? = null, answer: GabrielaAnswer? = null) {
-		functions.onReactionAddByAuthor = {
+		functions.onReactionAdd = {
 			// UPVOTE
 			if (it.reactionEmote.name == "\uD83D\uDC4D" && document != null && answer != null) {
 				val message = loritta.gabrielaMessagesColl.find(
@@ -184,7 +224,8 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				if (message != null) {
 					val answer = message.answers.firstOrNull { answer.answer == it.answer }
 
-					if (answer != null) {
+					if (answer != null && !answer.upvotes.contains(context.userHandle.id)) {
+						answer.downvotes.remove(context.userHandle.id)
 						answer.upvotes.add(context.userHandle.id)
 
 						val updateOptions = UpdateOptions().upsert(true)
@@ -209,6 +250,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 					if (answer != null) {
 						answer.downvotes.add(context.userHandle.id)
+						answer.upvotes.remove(context.userHandle.id)
 
 						val updateOptions = UpdateOptions().upsert(true)
 						loritta.gabrielaMessagesColl.replaceOne(
@@ -219,11 +261,14 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					}
 				}
 			}
+		}
+
+		functions.onReactionAddByAuthor = {
 			// ENSINAR
 			if (it.reactionEmote.name == "\uD83D\uDCA1") {
 				val ask = context.reply(
 						LoriReply(
-								"Quando alguém perguntar `${pergunta.stripCodeMarks()}`, o que a Gabriela deve responder?",
+								context.locale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],
 								"\uD83E\uDD14"
 						)
 				)
@@ -245,7 +290,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					).firstOrNull()
 
 					if (document == null) {
-						val aux = GabrielaMessage(ObjectId(), "default")
+						val aux = GabrielaMessage(ObjectId(), context.config.localeId)
 						val questionWords = mutableSetOf<String>()
 						val split = pergunta.split(" ")
 
@@ -270,7 +315,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						if (5 > levensteinDistance.apply(deveResponder, it.answer)) {
 							context.reply(
 									LoriReply(
-											"A Gabriela já conhece uma resposta similar a sua nova resposta! Tente ser mais criativo na sua resposta!",
+											context.locale["FRASETOSCA_TooSimilar"],
 											Constants.ERROR
 									)
 							)
@@ -294,7 +339,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 					context.reply(
 							LoriReply(
-									"Agora a Gabriela está mais esperta, obrigada! \uD83E\uDD13",
+									context.locale["FRASETOSCA_ThanksForHelping"],
 									"\uD83D\uDCA1"
 							)
 					)

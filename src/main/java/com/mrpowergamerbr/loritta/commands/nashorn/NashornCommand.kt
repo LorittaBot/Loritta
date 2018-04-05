@@ -111,7 +111,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 		} else {
 			val factory = NashornScriptEngineFactory()
 
-			val engine = factory.getScriptEngine(NashornClassFilter())
+			val engine = factory.getScriptEngine(arrayOf("-doe"), this::class.java.classLoader, NashornClassFilter())
 			val invocable = engine as Invocable
 
 			// Funções inline para facilitar a programação de comandos
