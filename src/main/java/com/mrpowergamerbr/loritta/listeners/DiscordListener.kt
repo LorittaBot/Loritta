@@ -419,17 +419,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					val guilds = lorittaShards.getMutualGuilds(it.user)
 
-					if (!guilds.any { guild ->
-						// Não enviar mensagem de "Você não me conhece?" caso o usuário seja admin/manager de outro servidor
-						guild.getMember(it.user).hasPermission(Permission.ADMINISTRATOR) || guild.getMember(it.user).hasPermission(Permission.MANAGE_SERVER)
-					}) {
+					val message = locale["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
 
-						val message = locale["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
-
-						it.user.openPrivateChannel().queue({
-							it.sendMessage(message).queue()
-						})
-					}
+					it.user.openPrivateChannel().queue({
+						it.sendMessage(message).queue()
+					})
 				}
 			}
 		}
