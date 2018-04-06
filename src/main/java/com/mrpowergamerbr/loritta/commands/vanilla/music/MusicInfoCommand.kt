@@ -4,9 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
@@ -42,8 +40,45 @@ class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "playingno
 			val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
 			val message = context.sendMessage(embed)
 			context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
-			message.addReaction("\uD83E\uDD26").complete()
-			message.addReaction("\uD83D\uDD22").complete();
+
+			message.onReactionAddByAuthor(context) {
+				if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
+					if (it.reactionEmote.name == "⏪") {
+						RestartSongCommand.skip(context, locale, manager)
+					}
+					if (it.reactionEmote.name == "⏯") {
+						if (manager.player.isPaused) {
+							manager.player.isPaused = false
+							context.sendMessage("▶ **|** " + context.getAsMention(true) + context.locale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
+						} else {
+							manager.player.isPaused = true
+							context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
+						}
+					}
+					if (it.reactionEmote.name == "⏩") {
+						loritta.skipTrack(context)
+					}
+				}
+			}
+
+			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
+				message.addReaction("⏪").complete()
+				message.addReaction("⏯").complete()
+				message.addReaction("⏩").complete()
+			}
+
+			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
+				message.addReaction("⏯").complete()
+			}
+
+			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
+				message.addReaction("⏩").complete()
+			}
+
+			if (context.config.musicConfig.voteToSkip)
+				message.addReaction("\uD83E\uDD26").complete()
+
+			message.addReaction("\uD83D\uDD22").complete()
 		}
 	}
 

@@ -336,7 +336,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createTrackInfoEmbed(context: CommandContext): MessageEmbed {
-		return createTrackInfoEmbed(context.guild, context.locale, false)
+		return createTrackInfoEmbed(context.guild, context.locale, context.config.musicConfig.voteToSkip)
 	}
 
 	@JvmStatic

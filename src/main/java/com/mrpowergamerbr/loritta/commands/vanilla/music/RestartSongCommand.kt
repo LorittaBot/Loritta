@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -30,13 +31,7 @@ class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusic
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.playingTrack != null) {
-			manager.player.playingTrack.position = 0L
-			context.reply(
-					LoriReply(
-							locale["RESTARTSONG_SongRestarted"],
-							"⏪"
-					)
-			)
+			skip(context, locale, manager)
 		} else {
 			context.reply(
 					LoriReply(
@@ -47,7 +42,15 @@ class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusic
 		}
 	}
 
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		LorittaUtilsKotlin.handleMusicReaction(context, e, msg)
+	companion object {
+		fun skip(context: CommandContext, locale: BaseLocale, manager: GuildMusicManager) {
+			manager.player.playingTrack.position = 0L
+			context.reply(
+					LoriReply(
+							locale["RESTARTSONG_SongRestarted"],
+							"⏪"
+					)
+			)
+		}
 	}
 }
