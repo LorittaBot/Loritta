@@ -21,7 +21,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			val user = LorittaUtils.getUserFromContext(context, 0)
 			val howMuch = context.rawArgs.getOrNull(1)?.toDoubleOrNull()
 
-			if (user == null) {
+			if (user == null || context.userHandle == user) {
 				context.reply(
 						LoriReply(
 								locale["REP_InvalidUser"],

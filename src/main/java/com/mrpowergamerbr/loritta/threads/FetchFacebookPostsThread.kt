@@ -21,16 +21,11 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 		logger.info("Pegando posts do Facebook...")
 		try {
 			val pagePostsSAM = LorittaUtilsKotlin.getRandomPostsFromPage("samemes2")
-			val groupPostsSAM = LorittaUtilsKotlin.getRandomPostsFromGroup("293117011064847")
 
 			loritta.southAmericaMemesPageCache.addAll(pagePostsSAM)
-			loritta.southAmericaMemesGroupCache.addAll(groupPostsSAM)
 
 			if (loritta.southAmericaMemesPageCache.size > 20) {
 				loritta.southAmericaMemesPageCache = loritta.southAmericaMemesPageCache.subList(19, loritta.southAmericaMemesPageCache.size)
-			}
-			if (loritta.southAmericaMemesGroupCache.size > 20) {
-				loritta.southAmericaMemesGroupCache = loritta.southAmericaMemesGroupCache.subList(19, loritta.southAmericaMemesGroupCache.size)
 			}
 		} catch (e: Exception) {
 			logger.error("Erro ao pegar posts do Facebook!", e)

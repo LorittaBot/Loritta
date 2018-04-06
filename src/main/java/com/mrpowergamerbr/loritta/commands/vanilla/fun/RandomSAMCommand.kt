@@ -19,31 +19,19 @@ class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamerica
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val source = if (Loritta.RANDOM.nextBoolean()) "página" else "grupo";
+		val source = "página"
 
-		val post = if (source == "página") {
-			if (loritta.southAmericaMemesPageCache.isEmpty()) {
-				context.reply(
-						LoriReply(
-								Constants.ERROR,
-								"Atualmente eu não tenho nenhum post da página da South America Memes para te mostrar... tente mais tarde!"
-						)
-				)
-				return
-			}
-			loritta.southAmericaMemesPageCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size)]
-		} else {
-			if (loritta.southAmericaMemesGroupCache.isEmpty()) {
-				context.reply(
-						LoriReply(
-								Constants.ERROR,
-								"Atualmente eu não tenho nenhum post do grupo da South America Memes para te mostrar... tente mais tarde!"
-						)
-				)
-				return
-			}
-			loritta.southAmericaMemesGroupCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesGroupCache.size)]
+		if (loritta.southAmericaMemesPageCache.isEmpty()) {
+			context.reply(
+					LoriReply(
+							"Atualmente eu não tenho nenhum post da página da South America Memes para te mostrar... tente mais tarde!",
+							Constants.ERROR
+
+					)
+			)
+			return
 		}
+		val post = loritta.southAmericaMemesPageCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size)]
 
 		if (post != null) {
 			context.sendMessage("<:sam:383614103853203456> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) ${post.url} `${post.description}`")

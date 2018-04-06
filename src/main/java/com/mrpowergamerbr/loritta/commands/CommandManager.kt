@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.DailyCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoterittaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.economy.SonhosCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
@@ -224,6 +225,7 @@ class CommandManager {
 		commandMap.add(LoterittaCommand())
 		commandMap.add(DailyCommand())
 		commandMap.add(PagarCommand())
+		commandMap.add(SonhosCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)
