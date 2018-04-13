@@ -19,6 +19,7 @@ class ModerationConfig {
 			var punishmentAction: PunishmentAction
 	) {
 		var customMetadata0: String? = null // usado para mute "30 minutes"
+		var customMetadata1: Int = 0 // usado para punições que permitem deletar os dias (como ban, softban)
 	}
 
 	class Warn @BsonCreator constructor(

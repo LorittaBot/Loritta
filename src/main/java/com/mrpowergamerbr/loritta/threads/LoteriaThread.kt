@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.EntityBuilder
 import net.dv8tion.jda.core.entities.Game
 import net.dv8tion.jda.core.entities.Icon
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.time.Instant
@@ -31,6 +32,7 @@ class LoteriaThread : Thread("Loteria Thread") {
 		var started: Long = System.currentTimeMillis()
 		// user ID + locale ID
 		var userIds = mutableListOf<Pair<String, String>>()
+		val logger = LoggerFactory.getLogger(LoteriaThread::class.java)
 	}
 
 	override fun run() {
@@ -74,6 +76,8 @@ class LoteriaThread : Thread("Loteria Thread") {
 
 			val money = userIds.size * 250
 			lastWinnerPrize = money
+
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos na Loteria!")
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(winnerId)
 			lorittaProfile.dreams += money

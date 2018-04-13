@@ -1,11 +1,15 @@
 package com.mrpowergamerbr.loritta.frontend
 
+import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite.Companion.WEBSITE_URL
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
+import com.mrpowergamerbr.loritta.frontend.views.WebSocketHandler
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import org.jooby.Jooby
 import org.jooby.Kooby
+import org.jooby.internal.SessionManager
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
 import java.io.File
@@ -22,6 +26,27 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	post("/**", { req, res ->
 		res.send(GlobalHandler.render(req, res))
 	})
+	ws("/lorisocket") { handler, ws ->
+		val _field = Jooby::class.java.getDeclaredField("injector")
+		_field.isAccessible = true
+
+		val injector = _field.get(this) as Injector
+		val sm = injector.getProvider(SessionManager::class.java).get()
+
+		val session = sm.get(handler, null)
+
+		ws.onMessage {
+			WebSocketHandler.onMessageReceived(ws, it, session)
+		}
+		ws.onClose {
+			WebSocketHandler.onSocketClose(ws, session)
+		}
+		ws.onError {
+			WebSocketHandler.onSocketError(ws, session)
+		}
+
+		WebSocketHandler.onSocketConnected(ws, session)
+	}
 }) {
 	companion object {
 		lateinit var ENGINE: PebbleEngine

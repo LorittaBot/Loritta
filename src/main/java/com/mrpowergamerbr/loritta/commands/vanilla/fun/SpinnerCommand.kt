@@ -34,7 +34,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
 
 	data class FidgetSpinner(var emoji: String, var threadId: Long, var forTime: Int, var spinnedAt: Long, var lastRerotation: Long)
-	
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SPINNER_DESCRIPTION"]
 	}
@@ -42,7 +42,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}
-	
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val arg = context.args[0]
@@ -60,7 +60,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 								sort(Document("spinnerScores.forTime", -1)),
 								skip(5 * (page - 1)),
 								limit(5)
-							)
+						)
 						).iterator()
 
 				val aggregateTime = loritta.mongo
@@ -68,16 +68,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 						.getCollection("users")
 						.aggregate(listOf(
 								Document("\$unwind", "\$spinnerScores"),
-								// Aggregates.match(Filters.exists("spinnerScores")),
-								// Aggregates.addFields(Field("spinnerScores.forTime", "forTime")),
 								Document("\$group", Document("_id", null).append("total", Document("\$sum", "\$spinnerScores.forTime")))
-								/* group(
-
-										"\$test", Accumulators.sum("testtesttest", true)
-								),
-								group(
-										"\$_id", Accumulators.sum("total", true)
-								) */
 						)
 						)
 
@@ -207,7 +198,6 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				_total -= TimeUnit.MINUTES.toMillis(minutes)
 				val seconds = TimeUnit.MILLISECONDS.toSeconds(_total)
 
-				// embed.setFooter("⏰ No total, ${days}d ${hours}h ${minutes}m ${seconds}s foram gastos girando spinners! (Wow, quanto tempo!)", null)
 				graphics.font = oswaldRegular12
 				ImageUtils.drawCenteredString(graphics, "No total, ${days}d ${hours}h ${minutes}m ${seconds}s foram gastos girando spinners! (Wow, quanto tempo!)", Rectangle(0, 11, 400, 28), oswaldRegular12)
 
@@ -220,14 +210,17 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 			val diff = (System.currentTimeMillis() - spinner.lastRerotation) / 1000
 
-			if (diff in spinner.forTime-10..spinner.forTime) {
-				var time = Loritta.RANDOM.nextInt(10, 61);
+			if (diff in spinner.forTime - 5 .. spinner.forTime + 5) {
+				val time = Loritta.RANDOM.nextInt(10, 61)
 
-				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
-				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
+				// Ao passar do tempo, mais difícil fica regirar um spinner (cansaço)
+				val bound = ((diff / 15) + 5).toInt()
+
+				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-bound, bound + 1))
+				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-bound, bound + 1))
 
 				if (lowerBound > upperBound) {
-					val temp = upperBound;
+					val temp = upperBound
 					upperBound = lowerBound
 					lowerBound = temp
 				}
@@ -238,13 +231,13 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 								prefix = spinner.emoji
 						),
 						LoriReply(
-								message = "*" + context.locale["SPINNER_MAGIC_BALL", lowerBound, upperBound] + "*",
+								message = "*" + context.locale["SPINNER_MAGIC_BALL", " $lowerBound ", " $upperBound "] + "*",
 								prefix = "\uD83D\uDD2E"
 						)
 				)
 
 				val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
-					Thread.sleep((time * 1000).toLong());
+					Thread.sleep((time * 1000).toLong())
 
 					if (spinningSpinners.contains(context.userHandle.id)) {
 						val spinner = spinningSpinners[context.userHandle.id]!!
@@ -303,8 +296,8 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		var random = listOf("<:spinner1:411981187419078657>", "<:spinner2:411981187830251520>", "<:spinner3:411981187586850816>", "<:spinner4:411981187758686208>", "<:spinner5:411981188048224266>", "<:spinner6:411981187289186316>", "<:spinner7:411981187553165325>", "<:spinner8:411981187565879306>") // Pegar um spinner aleatório
 		var spinnerEmoji = random[Loritta.RANDOM.nextInt(random.size)]
 
-		var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
-		var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-10, 11))
+		var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
+		var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-5, 6))
 
 		if (lowerBound > upperBound) {
 			val temp = upperBound;

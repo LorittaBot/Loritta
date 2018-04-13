@@ -270,7 +270,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				if (PerfilCommand.userVotes != null && RANDOM.nextInt(0, 250) == 0) {
+				if (PerfilCommand.userVotes != null && RANDOM.nextInt(0, 100) == 0) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta>"],

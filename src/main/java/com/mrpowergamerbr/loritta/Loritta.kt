@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.threads.*
+import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -134,6 +135,8 @@ class Loritta {
 	var guildCount = 0
 
 	lateinit var loteriaThread: LoteriaThread
+
+	var ticTacToeServer = TicTacToeServer()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {

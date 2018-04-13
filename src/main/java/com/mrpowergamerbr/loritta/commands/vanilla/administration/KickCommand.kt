@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
 import java.awt.Color
 import java.time.Instant
@@ -82,7 +83,62 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 			var rawArgs = context.rawArgs
 			rawArgs = rawArgs.remove(0) // remove o usuário
 
-			val reason = rawArgs.joinToString(" ")
+			var reason = rawArgs.joinToString(" ")
+
+			val pipedReason = reason.split("|")
+
+			var usingPipedArgs = false
+			var skipConfirmation = false
+			var delDays = 0
+
+			if (pipedReason.size > 1) {
+				val pipedArgs=  pipedReason.toMutableList()
+				val _reason = pipedArgs[0]
+				pipedArgs.removeAt(0)
+
+				pipedArgs.forEach {
+					val arg = it.trim()
+					if (arg == "force") {
+						skipConfirmation = true
+						usingPipedArgs = true
+					}
+					if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
+						delDays = it.split(" ")[0].toIntOrNull() ?: 0
+
+						if (delDays > 7) {
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"]);
+							return
+						}
+						if (0 > delDays) {
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"]);
+							return
+						}
+
+						usingPipedArgs = true
+					}
+				}
+
+				if (usingPipedArgs)
+					reason = _reason
+			}
+
+			val kickCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
+				kick(context, locale, member, user, reason, isSilent)
+
+				message?.delete()?.complete()
+
+				context.reply(
+						LoriReply(
+								locale["BAN_SuccessfullyPunished"],
+								"\uD83C\uDF89"
+						)
+				)
+			}
+
+			if (skipConfirmation) {
+				kickCallback.invoke(null, false)
+				return
+			}
 
 			var str = locale["BAN_ReadyToPunish", locale["KICK_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
 
@@ -100,18 +156,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-					var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
-
-					kick(context, locale, member, user, reason, isSilent)
-
-					message.delete().complete()
-
-					context.reply(
-							LoriReply(
-									locale["BAN_SuccessfullyPunished"],
-									"\uD83C\uDF89"
-							)
-					)
+					kickCallback.invoke(message, it.reactionEmote.name == "\uD83D\uDE4A")
 				}
 				return@onReactionAddByAuthor
 			}

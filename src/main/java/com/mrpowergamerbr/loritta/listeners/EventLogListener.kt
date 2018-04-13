@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
@@ -448,6 +449,18 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.eventLogExecutors.execute {
+			// Fazer relay de bans
+			if (event.guild.id == "297732013006389252") {
+				val relayTo = lorittaShards.getGuildById("420626099257475072")
+
+				relayTo?.controller?.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
+			}
+			if (event.guild.id == "420626099257475072") {
+				val relayTo = lorittaShards.getGuildById("297732013006389252")
+
+				relayTo?.controller?.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
+			}
+
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
@@ -490,6 +503,18 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.eventLogExecutors.execute {
+			// Fazer relay de unbans
+			if (event.guild.id == "297732013006389252") {
+				val relayTo = lorittaShards.getGuildById("420626099257475072")
+
+				relayTo?.controller?.unban(event.user)?.queue()
+			}
+			if (event.guild.id == "420626099257475072") {
+				val relayTo = lorittaShards.getGuildById("297732013006389252")
+
+				relayTo?.controller?.unban(event.user)?.queue()
+			}
+
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {

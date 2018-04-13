@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
 import java.awt.Color
 import java.time.Instant
@@ -73,7 +74,62 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			var rawArgs = context.rawArgs
 			rawArgs = rawArgs.remove(0) // remove o usuário
 
-			val reason = rawArgs.joinToString(" ")
+			var reason = rawArgs.joinToString(" ")
+
+			val pipedReason = reason.split("|")
+
+			var usingPipedArgs = false
+			var skipConfirmation = false
+			var delDays = 7
+
+			if (pipedReason.size > 1) {
+				val pipedArgs=  pipedReason.toMutableList()
+				val _reason = pipedArgs[0]
+				pipedArgs.removeAt(0)
+
+				pipedArgs.forEach {
+					val arg = it.trim()
+					if (arg == "force") {
+						skipConfirmation = true
+						usingPipedArgs = true
+					}
+					if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
+						delDays = it.split(" ")[0].toIntOrNull() ?: 0
+
+						if (delDays > 7) {
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"]);
+							return
+						}
+						if (0 > delDays) {
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"]);
+							return
+						}
+
+						usingPipedArgs = true
+					}
+				}
+
+				if (usingPipedArgs)
+					reason = _reason
+			}
+
+			val banCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
+				ban(context, locale, user, reason, isSilent, delDays)
+
+				message?.delete()?.complete()
+
+				context.reply(
+						LoriReply(
+								locale["BAN_SuccessfullyPunished"],
+								"\uD83C\uDF89"
+						)
+				)
+			}
+
+			if (skipConfirmation) {
+				banCallback.invoke(null, false)
+				return
+			}
 
 			var str = locale["BAN_ReadyToPunish", locale["BAN_PunishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
 
@@ -91,18 +147,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-					val isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
-
-					ban(context, locale, user, reason, isSilent)
-
-					message.delete().complete()
-
-					context.reply(
-							LoriReply(
-									locale["BAN_SuccessfullyPunished"],
-									"\uD83C\uDF89"
-							)
-					)
+					banCallback.invoke(message, it.reactionEmote.name == "\uD83D\uDE4A")
 				}
 				return@onReactionAddByAuthor
 			}
@@ -117,8 +162,8 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	}
 
 	companion object {
-		fun ban(context: CommandContext, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
-				if (!isSilent) {
+		fun ban(context: CommandContext, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = EmbedBuilder()
@@ -167,7 +212,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				}
 			}
 
-			context.guild.controller.ban(user, 0, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+			context.guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
 					.complete()
 		}
 	}

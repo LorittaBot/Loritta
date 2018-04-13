@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.modules.*
+import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Role
@@ -441,6 +442,49 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberJoin(event)
+				}
+
+				if (event.guild.id == "297732013006389252") {
+					val mutualServers = lorittaShards.getMutualGuilds(event.user)
+
+					if (1 == mutualServers.size) {
+						val textChannel = event.guild.getTextChannelById("358774895850815488")
+						val locale = loritta.getLocaleById(conf.localeId)
+
+						if (textChannel != null) {
+							val embed = EmbedBuilder().apply {
+								setTitle("\uD83D\uDC40 Usuário parece ser suspeito!")
+								setColor(Constants.ROBLOX_RED)
+								setThumbnail(event.user.effectiveAvatarUrl)
+								addField("\uD83D\uDCBB " + locale["USERINFO_TAG_DO_DISCORD"], "${event.user.name}#${event.user.discriminator}", true)
+								addField("\uD83D\uDCBB " + locale["USERINFO_ID_DO_DISCORD"], event.user.id, true)
+								addField("\uD83C\uDF0E Servidores compartilhados (${mutualServers.size})", mutualServers.joinToString(transform = { it.name }), true)
+								addField("\uD83D\uDCC5 Conta criada em", event.user.creationTime.humanize(), true)
+							}
+							textChannel.sendMessage(embed.build()).queue()
+						}
+					}
+				}
+				if (event.guild.id == "420626099257475072") {
+					val mutualServers = lorittaShards.getMutualGuilds(event.user)
+
+					if (1 == mutualServers.size) {
+						val textChannel = event.guild.getTextChannelById("422103894462824468")
+						val locale = loritta.getLocaleById(conf.localeId)
+
+						if (textChannel != null) {
+							val embed = EmbedBuilder().apply {
+								setTitle("\uD83D\uDC40 User seems to be shady!")
+								setColor(Constants.ROBLOX_RED)
+								setThumbnail(event.user.effectiveAvatarUrl)
+								addField("\uD83D\uDCBB " + locale["USERINFO_TAG_DO_DISCORD"], "${event.user.name}#${event.user.discriminator}", true)
+								addField("\uD83D\uDCBB " + locale["USERINFO_ID_DO_DISCORD"], event.user.id, true)
+								addField("\uD83C\uDF0E Mutual servers (${mutualServers.size})", mutualServers.joinToString(transform = { it.name }), true)
+								addField("\uD83D\uDCC5 Account created at", event.user.creationTime.humanize(), true)
+							}
+							textChannel.sendMessage(embed.build()).queue()
+						}
+					}
 				}
 
 				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
