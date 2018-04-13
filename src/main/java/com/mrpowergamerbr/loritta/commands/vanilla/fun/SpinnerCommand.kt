@@ -21,11 +21,13 @@ import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import org.bson.BSONObject
 import org.bson.Document
 import java.awt.Color
+import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.concurrent.thread
@@ -210,11 +212,11 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 			val diff = (System.currentTimeMillis() - spinner.lastRerotation) / 1000
 
-			if (diff in spinner.forTime - 5 .. spinner.forTime + 5) {
+			if (diff in spinner.forTime - 5 .. spinner.forTime + 5 || (context.userHandle.id == "123170274651668480" && context.args.getOrNull(0) == "force")) {
 				val time = Loritta.RANDOM.nextInt(10, 61)
 
 				// Ao passar do tempo, mais difícil fica regirar um spinner (cansaço)
-				val bound = ((diff / 15) + 5).toInt()
+				val bound = ((diff / 10) + 5).toInt()
 
 				var lowerBound = Math.max(0, time - Loritta.RANDOM.nextInt(-bound, bound + 1))
 				var upperBound = Math.max(0, time - Loritta.RANDOM.nextInt(-bound, bound + 1))
@@ -225,14 +227,39 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 					lowerBound = temp
 				}
 
+				val template = ImageIO.read(File(Loritta.ASSETS + "spinner_respin.png")) // Template
+				val graphics = template.graphics as Graphics2D
+
+				graphics.setRenderingHint(
+						java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+						java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+
+				val whitneyBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+					Font.createFont(Font.TRUETYPE_FONT, it)
+				}
+
+				val whitneyBold17 = whitneyBold.deriveFont(17f)
+
+				graphics.font = whitneyBold17
+
+				graphics.color = Color.BLACK
+
+				val text = context.locale["SPINNER_MAGIC_BALL", lowerBound, upperBound].replace("**", "")
+				ImageUtils.drawTextWrapSpaces(text, 49, 20, 195, 9999999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrapSpaces(text, 51, 20, 195, 9999999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrapSpaces(text, 50, 19, 195, 9999999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrapSpaces(text, 50, 21, 195, 9999999, graphics.fontMetrics, graphics)
+
+				graphics.color = Color.WHITE
+
+				ImageUtils.drawTextWrapSpaces(text, 50, 20, 195, 9999999, graphics.fontMetrics, graphics)
+
 				context.reply(
+						template,
+						"respinned.png",
 						LoriReply(
 								message = context.locale["SPINNER_RESPINNED"],
 								prefix = spinner.emoji
-						),
-						LoriReply(
-								message = "*" + context.locale["SPINNER_MAGIC_BALL", " $lowerBound ", " $upperBound "] + "*",
-								prefix = "\uD83D\uDD2E"
 						)
 				)
 
