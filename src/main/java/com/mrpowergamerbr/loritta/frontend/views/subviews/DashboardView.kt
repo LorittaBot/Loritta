@@ -41,9 +41,13 @@ class DashboardView : ProtectedView() {
 			val guild = lorittaShards.getGuildById(it.id)
 			if (guild != null) {
 				val member = guild.getMemberById(lorittaProfile.userId)
-				val config = loritta.getServerConfigForGuild(it.id)
-				val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
-				LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+				if (member != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
+					val config = loritta.getServerConfigForGuild(it.id)
+					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
+					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+				} else {
+					LorittaWebsite.canManageGuild(it)
+				}
 			} else {
 				LorittaWebsite.canManageGuild(it)
 			}
