@@ -246,6 +246,7 @@ object GlobalHandler {
 		views.add(DailyView())
 		views.add(SupportView())
 		views.add(NashornDocsView())
+		views.add(TermsOfServiceView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 

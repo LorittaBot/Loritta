@@ -122,7 +122,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
 						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
-						SoftBanCommand.softBan(context, locale, member, 30, user, reason, isSilent)
+						SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 
 						message.delete().complete()
 
