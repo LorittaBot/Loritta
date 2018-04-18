@@ -58,6 +58,7 @@ class ServerConfig @BsonCreator constructor(
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 
 	var apiKey: String? = null
+	var premiumKey: String? = null
 
 	fun getUserData(id: String): LorittaGuildUserData {
 		var userData = guildUserData.firstOrNull { it.userId == id }

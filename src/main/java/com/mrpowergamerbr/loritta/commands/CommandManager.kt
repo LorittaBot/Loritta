@@ -110,6 +110,7 @@ class CommandManager {
 		commandMap.add(PatreonCommand())
 		commandMap.add(FanArtsCommand())
 		commandMap.add(DiscordBotListCommand())
+		commandMap.add(ActivateKeyCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
@@ -210,7 +211,7 @@ class CommandManager {
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
 		commandMap.add(MusicInfoCommand())
-		// commandMap.add(VolumeCommand())
+		commandMap.add(VolumeCommand())
 		commandMap.add(PlaylistCommand())
 		commandMap.add(PularCommand())
 		commandMap.add(PausarCommand())

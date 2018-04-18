@@ -137,6 +137,7 @@ class Loritta {
 	lateinit var loteriaThread: LoteriaThread
 
 	var ticTacToeServer = TicTacToeServer()
+	var premiumKeys = mutableListOf<PremiumKey>()
 
 	// Constructor da Loritta
 	constructor(config: LorittaConfig) {
@@ -152,6 +153,7 @@ class Loritta {
 		Loritta.youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
+		loadPremiumKeys()
 		GlobalHandler.generateViews()
 
 		builder = JDABuilder(AccountType.BOT)
@@ -459,6 +461,23 @@ class Loritta {
 
 	fun getLocaleById(localeId: String): BaseLocale {
 		return locales.getOrDefault(localeId, locales.get("default"))!!
+	}
+
+	fun getPremiumKey(name: String?): PremiumKey? {
+		return premiumKeys.filter {
+			it.name == name
+		}.filter {
+			it.validUntil > System.currentTimeMillis()
+		}.firstOrNull()
+	}
+
+	fun loadPremiumKeys() {
+		if (File("./premium-keys.json").exists())
+			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
+	}
+
+	fun savePremiumKeys() {
+		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
 	}
 
 	@Synchronized

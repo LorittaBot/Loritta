@@ -34,6 +34,16 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
+		val premiumKey = loritta.getPremiumKey(context.config.premiumKey)
+
+		if (premiumKey == null || 10 > premiumKey.paid) {
+			context.reply(
+					locale["PREMIUM_CantUseFeature"],
+					"\uD83D\uDCB8"
+			)
+			return
+		}
+
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 		if (context.args.isNotEmpty()) {
 			try {
@@ -56,14 +66,14 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 				if (manager.player.volume > vol) {
 					context.reply(
 							LoriReply(
-									message = context.getAsMention(true) + locale["VOLUME_LOWER"],
+									message = locale["VOLUME_LOWER"],
 									prefix = "\uD83D\uDD08"
 							)
 					)
 				} else {
 					context.reply(
 							LoriReply(
-									message = context.getAsMention(true) + locale["VOLUME_HIGHER"],
+									message = locale["VOLUME_HIGHER"],
 									prefix = "\uD83D\uDD0A"
 							)
 					)

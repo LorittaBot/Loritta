@@ -105,6 +105,24 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (context.args.isNotEmpty() && context.args[0] == "savekeys") {
+			loritta.savePremiumKeys()
+			context.reply(
+					LoriReply(
+							"Premium Keys salvas!"
+					)
+			)
+			return
+		}
+		if (context.args.isNotEmpty() && context.args[0] == "loadkeys") {
+			loritta.loadPremiumKeys()
+			context.reply(
+					LoriReply(
+							"Premium Keys carregadas!"
+					)
+			)
+			return
+		}
 
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
