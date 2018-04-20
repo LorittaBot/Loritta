@@ -270,11 +270,20 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				if (PerfilCommand.userVotes != null && RANDOM.nextInt(0, 100) == 0) {
+				val randomValue = RANDOM.nextInt(0, 200)
+
+				if (randomValue == 0) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta>"],
 									"\uD83D\uDE0A"
+							)
+					)
+				} else if (randomValue == 100) {
+					context.reply(
+							LoriReply(
+									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
+									"<:lori_owo:432530033316462593>"
 							)
 					)
 				}
