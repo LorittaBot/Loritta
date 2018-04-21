@@ -20,6 +20,7 @@ import java.io.File
 import java.lang.management.ManagementFactory
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 /**
@@ -31,7 +32,7 @@ class LoteriaThread : Thread("Loteria Thread") {
 		var lastWinnerPrize = 0
 		var started: Long = System.currentTimeMillis()
 		// user ID + locale ID
-		var userIds = mutableListOf<Pair<String, String>>()
+		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
 		val logger = LoggerFactory.getLogger(LoteriaThread::class.java)
 	}
 

@@ -26,13 +26,28 @@ object ExperienceModule {
 				if (nonRepeatedCharsMessage.length >= 12) {
 					var gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
-					if (event.author.patreon) {
-						var _gainedXp = gainedXp
-						_gainedXp = (_gainedXp * 1.25).toInt()
-						gainedXp = _gainedXp
+					var globalGainedXp = gainedXp
+
+					val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
+
+					if (lorittaGuild != null) {
+						val xpBoost1 = lorittaGuild.getRoleById("436919257993969666") // Pagadores de Aluguel
+						val xpBoost2 = lorittaGuild.getRoleById("435856512787677214") // Contribuidor Inativo
+
+						if (event.member.roles.contains(xpBoost1)) {
+							var _gainedXp = gainedXp
+							_gainedXp = (_gainedXp * 1.25).toInt()
+							globalGainedXp = _gainedXp
+						}
+
+						if (event.member.roles.contains(xpBoost2)) {
+							var _gainedXp = gainedXp
+							_gainedXp = (_gainedXp * 1.5).toInt()
+							globalGainedXp = _gainedXp
+						}
 					}
 
-					lorittaProfile.xp = lorittaProfile.xp + gainedXp
+					lorittaProfile.xp = lorittaProfile.xp + globalGainedXp
 					lorittaProfile.lastMessageSentHash = event.message.contentStripped.hashCode()
 
 					val userData = serverConfig.getUserData(event.member.user.id)

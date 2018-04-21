@@ -26,8 +26,8 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 				for (i in 0 until quantity) {
 					LoteriaThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 				}
-				loritta.loteriaThread.save()
 				loritta save lorittaProfile
+				loritta.loteriaThread.save()
 
 				context.reply(
 						LoriReply(

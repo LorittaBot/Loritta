@@ -23,17 +23,33 @@ class APIGetCommunityInfoView : NoVarsView() {
 			return json.toString()
 		}
 
-		val aminoInviteLink = req.param("aminoInviteLink").value()
+		var aminoInviteLink = req.param("aminoInviteLink").value()
 
+		// Amino agora apenas aceita https
+		aminoInviteLink = aminoInviteLink.replace("http://", "https://")
+
+		if (!aminoInviteLink.endsWith("/home/")) {
+			aminoInviteLink = aminoInviteLink.replace("/home", "")
+			aminoInviteLink = aminoInviteLink + "/home/"
+		}
 
 		val httpRequest = HttpRequest.get(aminoInviteLink)
+				.followRedirects(true)
 
 		if (httpRequest.code() == 404) {
 			json["error"] = "Unknown Amino community"
 			return json.toString()
 		}
 
+		println("headers...")
+		httpRequest.headers().forEach { t, u ->
+			println("$t - $u")
+		}
+
 		val body = httpRequest.body()
+
+		println(body)
+
 		val document = Jsoup.parse(body)
 
 		val title = document.getElementsByAttribute("property").first { it.attr("property") == "og:site_name" }
