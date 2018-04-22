@@ -25,6 +25,12 @@ class SonhosCommand : AbstractCommand("sonhos", category = CommandCategory.ECONO
 			loritta.getLorittaProfileForUser(retriveDreamsFromUser.id)
 		}
 
+		if (lorittaProfile.dreams.isNaN()) {
+			lorittaProfile.dreams = 0.0
+			loritta save lorittaProfile
+			return
+		}
+
 		if (context.userHandle == retriveDreamsFromUser) {
 			context.reply(
 					LoriReply(

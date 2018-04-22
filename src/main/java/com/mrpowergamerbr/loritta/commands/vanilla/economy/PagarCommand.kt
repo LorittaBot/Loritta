@@ -31,7 +31,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (howMuch == null) {
+			if (howMuch == null || howMuch.isNaN()) {
 				context.reply(
 						LoriReply(
 								locale["INVALID_NUMBER", context.rawArgs[1]],
@@ -41,7 +41,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (0 >= howMuch) {
+			if (0 >= howMuch || context.lorittaUser.profile.dreams.isNaN()) {
 				context.reply(
 						LoriReply(
 								locale["INVALID_NUMBER", context.rawArgs[1]],
@@ -63,6 +63,17 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Hora de transferir!
 			val receiverProfile = loritta.getLorittaProfileForUser(user.id)
+
+			if (receiverProfile.dreams.isNaN()) {
+				// receiverProfile.dreams = 0.0
+				return
+			}
+
+			if (context.lorittaUser.profile.dreams.isNaN()) {
+				// context.lorittaUser.profile.dreams = 0.0
+				return
+			}
+
 			context.lorittaUser.profile.dreams -= howMuch
 			receiverProfile.dreams += howMuch
 
