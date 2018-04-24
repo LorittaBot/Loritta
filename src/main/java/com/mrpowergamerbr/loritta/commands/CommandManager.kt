@@ -99,6 +99,7 @@ class CommandManager {
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
+		commandMap.add(RandomNaoEntreAkiCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
