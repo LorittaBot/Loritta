@@ -9,9 +9,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomnaoentreaki", "randomnea"), CommandCategory.FUN) {
@@ -45,10 +43,12 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 
 		val post = json["data"].array[0]
 		val image = post["images"].array[0]["url"].string
+		val title = post["title"].string
+		val author = post["user"]["nick"].string
 
 		context.reply(
 				LoriReply(
-						image,
+						"`${title.stripCodeMarks()}` por ${author.escapeMentions().stripCodeMarks()} — $image",
 						"<:neaki:438383984691642369>"
 				)
 		)
