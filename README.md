@@ -29,7 +29,7 @@ Mas se você quiser mesmo hospedar a Loritta (você tem certeza MESMO que você 
 3. Faça ```git clone https://github.com/LorittaBot/Loritta.git``` em uma pasta qualquer.
 4. Abra a Loritta no seu IDE favorito (Eu uso o IntelliJ IDEA) e altere algumas coisas que são "hardcoded" (como o Loritta#FOLDER), em breve eu irei colocar todas essas coisas hardcoded na config da Loritta.
 5. Compile a Loritta usando ```mvn install```
-6. Inicie a JAR da Loritta (que está na pasta ```target``` (Pegue a JAR com as dependências!)
+6. Inicie a JAR da Loritta que está na pasta ```target``` (Pegue a JAR com as dependências!)
 7. Ao iniciar, ela irá gerar uma config, preencha toda a config com as informações necessárias sobre a Loritta!
 8. Após terminar de configurar, você terá que clonar o website da Loritta usando ```git clone https://github.com/LorittaBot/LorittaWebsite```
 9. Inicie a JAR da Loritta novamente e, se tudo der certo, ela irá iniciar e você poderá usar os comandos dela! 🎉
