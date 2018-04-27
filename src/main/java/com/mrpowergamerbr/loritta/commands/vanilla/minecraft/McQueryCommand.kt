@@ -29,6 +29,12 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 			val ip = context.args[0]
 			var hostname = ip
 			var port = 25565
+			
+			if (hostname.startsWith("127.0.0.1") || hostname.startsWith("localhost")) { // Previne com que usuários vejam a query de servidores da mesma máquina
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale("CANNOT_QUERY"])
+				return
+			}
+			
 			if (ip.contains(":")) {
 				// IP + Porta
 				hostname = ip.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
