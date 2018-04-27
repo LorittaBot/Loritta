@@ -43,6 +43,7 @@ class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: Stri
         return lvl * 1000
     }
 
+    @BsonIgnore
     fun getReputation(): Int {
         return receivedReputations.size;
     }
