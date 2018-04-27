@@ -15,7 +15,7 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
-        var body = HttpRequest.get("https://mcapi.ca/mcstatus").body();
+        var body = HttpRequest.get("https://use.gameapis.net/mc/extra/status").body();
 
         var builder = EmbedBuilder()
                 .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
