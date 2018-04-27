@@ -110,7 +110,7 @@ class Loritta {
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
 
 	// ===[ MONGODB ]===
-	lateinit var mongo: MongoClient // MongoDB
+	lateinit var mongo: MongoClient //Client do MongoDB
 	lateinit var serversColl: MongoCollection<ServerConfig>
 	lateinit var usersColl: MongoCollection<LorittaProfile>
 	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
