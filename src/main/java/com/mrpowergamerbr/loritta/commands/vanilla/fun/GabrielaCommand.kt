@@ -217,7 +217,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			if (it.reactionEmote.name == "\uD83D\uDC4D" && document != null && answer != null) {
 				val message = loritta.gabrielaMessagesColl.find(
 						Filters.eq(
-								"_id", document.id
+								"_id", document.messageId
 						)
 				).firstOrNull()
 
@@ -230,7 +230,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 						val updateOptions = UpdateOptions().upsert(true)
 						loritta.gabrielaMessagesColl.replaceOne(
-								Filters.eq("_id", document.id),
+								Filters.eq("_id", document.messageId),
 								message,
 								updateOptions
 						)
@@ -241,7 +241,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			if (it.reactionEmote.name == "\uD83D\uDC4E" && document != null && answer != null) {
 				val message = loritta.gabrielaMessagesColl.find(
 						Filters.eq(
-								"_id", document.id
+								"_id", document.messageId
 						)
 				).firstOrNull()
 
@@ -254,7 +254,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 						val updateOptions = UpdateOptions().upsert(true)
 						loritta.gabrielaMessagesColl.replaceOne(
-								Filters.eq("_id", document.id),
+								Filters.eq("_id", document.messageId),
 								message,
 								updateOptions
 						)
@@ -332,7 +332,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					// upsert = Se já existe, apenas dê replace, se não existe, insira
 					val updateOptions = UpdateOptions().upsert(true)
 					loritta.gabrielaMessagesColl.replaceOne(
-							Filters.eq("_id", document.id),
+							Filters.eq("_id", document.messageId),
 							document,
 							updateOptions
 					)

@@ -27,6 +27,18 @@ class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
 
 		val lorittaProfile = loritta.getLorittaProfileForUser(userId)
 
+		if (quantity.isNaN()) {
+			json["api:message"] = "Not a number"
+			json["api:code"] = LoriWebCodes.UNAUTHORIZED
+			return json.toString()
+		}
+
+		if (0 >= quantity) {
+			json["api:message"] = "Trying to withdraw less or equal to zero amount"
+			json["api:code"] = LoriWebCodes.UNAUTHORIZED
+			return json.toString()
+		}
+
 		if (quantity > lorittaProfile.dreams) {
 			json["api:message"] = "INSUFFICIENT_FUNDS"
 			json["api:code"] = LoriWebCodes.INSUFFICIENT_FUNDS
