@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 class GabrielaMessage @BsonCreator constructor(
 		@BsonProperty("_id")
 		@get:[BsonIgnore]
-		val id: ObjectId,
+		val messageId: ObjectId,
 		@BsonProperty("localeId")
 		val localeId: String
 ) {
