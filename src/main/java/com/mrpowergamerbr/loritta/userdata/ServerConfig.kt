@@ -6,15 +6,15 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
 import java.util.*
 
 class ServerConfig @BsonCreator constructor(
 	@BsonProperty("_id")
-	_guildId: String // Guild ID
+	@get:[BsonIgnore]
+	val guildId: String // Guild ID
 ) {
-	@BsonProperty("_id")
-	val guildId = _guildId
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
 	var debugOptions = DebugOptions()

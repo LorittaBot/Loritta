@@ -10,9 +10,11 @@ import java.util.*
 /**
  * Perfil de um usuário que usa a Loritta
  */
-class LorittaProfile @BsonCreator constructor(@BsonProperty("_id") _userId: String) {
-    @BsonProperty("_id")
-    val userId = _userId
+class LorittaProfile @BsonCreator constructor(
+        @BsonProperty("_id")
+        @get:[BsonIgnore]
+        val userId: String
+) {
     var xp: Long = 0 // XP do usuário
     var aboutMe: String = "A Loritta é minha amiga!" // TODO: null
     var isBanned = false;

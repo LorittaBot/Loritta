@@ -1,11 +1,14 @@
 package com.mrpowergamerbr.loritta.utils.eventlog
 
 import org.bson.codecs.pojo.annotations.BsonCreator
+import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
 
-class StoredMessage @BsonCreator constructor(@BsonProperty("_id") _messageId: String) {
-	@BsonProperty("_id")
-	val messageId = _messageId
+class StoredMessage @BsonCreator constructor(
+		@BsonProperty("_id")
+		@get:[BsonIgnore]
+		val messageId: String
+) {
 	val dateCreated = System.currentTimeMillis()
 	lateinit var authorName: String
 	lateinit var content: String
