@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import org.jooby.Request
 import org.jooby.Response
 
@@ -13,11 +14,19 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 		val header = req.header("Lori-Authentication")
 		val auth = header.value("???")
 
-		if (Loritta.config.websiteApiKeys.contains(auth)) {
+		val validKey = Loritta.config.websiteApiKeys.filter {
+			it.name == auth &&
+					(it.allowed.contains("*") || it.allowed.contains(path))
+		}.firstOrNull()
+
+		Loritta.logger.info("$auth está tentando acessar $path, utilizando key $validKey")
+		if (validKey != null) {
 			return renderProtected(req, res, path)
 		} else {
+			Loritta.logger.info("$auth foi rejeitado ao tentar acessar $path!")
 			val response = JsonObject()
 			response["api:message"] = "UNAUTHORIZED"
+			response["api:code"] = LoriWebCodes.UNAUTHORIZED
 			return response.toString()
 		}
 	}

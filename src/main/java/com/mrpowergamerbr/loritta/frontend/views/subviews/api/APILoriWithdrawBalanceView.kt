@@ -1,11 +1,10 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import org.jooby.Request
@@ -23,16 +22,24 @@ class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
 
 		val userId = body["userId"].string
 		val quantity = body["quantity"].double
+		val reason = body["reason"].string
+		val guildId = body["guildId"].string
+
 		val lorittaProfile = loritta.getLorittaProfileForUser(userId)
 
 		if (quantity > lorittaProfile.dreams) {
 			json["api:message"] = "INSUFFICIENT_FUNDS"
+			json["api:code"] = LoriWebCodes.INSUFFICIENT_FUNDS
 			return json.toString()
 		}
+
+		val before = lorittaProfile.dreams
 
 		lorittaProfile.dreams -= quantity
 		loritta save lorittaProfile
 		json["balance"] = lorittaProfile.dreams
+
+		Loritta.logger.info("${lorittaProfile.userId} teve $quantity sonhos removidos (antes possuia $before sonhos), motivo: ${reason} - ID: ${guildId}")
 		return json.toString()
 	}
 }

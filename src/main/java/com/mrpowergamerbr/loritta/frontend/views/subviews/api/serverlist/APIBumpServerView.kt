@@ -86,6 +86,9 @@ class APIBumpServerView : NoVarsView() {
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["bumpedAt"] = serverConfig.serverListConfig.lastBump
+
+		Loritta.logger.info("${userIdentification.id} promoveu ${serverConfig.guildId}!")
+
 		return payload.toString()
 	}
 }

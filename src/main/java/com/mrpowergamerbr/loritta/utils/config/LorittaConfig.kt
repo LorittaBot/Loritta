@@ -8,7 +8,7 @@ data class LorittaConfig(
 		val clientId: String,
 		val clientSecret: String,
 		val youtubeKeys: List<String>,
-		val websiteApiKeys: List<String>,
+		val websiteApiKeys: List<AuthenticationKey>,
 		val ownerId: String,
 		val websiteUrl: String,
 		val lorittaFolder: String,
@@ -83,4 +83,6 @@ data class LorittaConfig(
 	class LorittaGameStatus(val name: String, val type: String)
 
 	class LorittaAvatarFanArt(val fileName: String, val artist: String)
+
+	class AuthenticationKey(val name: String, val description: String, val allowed: List<String>)
 }

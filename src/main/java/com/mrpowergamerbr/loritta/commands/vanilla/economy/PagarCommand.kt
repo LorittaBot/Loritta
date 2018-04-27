@@ -74,10 +74,13 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
+			val beforeGiver = context.lorittaUser.profile.dreams
+			val beforeReceiver = receiverProfile.dreams
+
 			context.lorittaUser.profile.dreams -= howMuch
 			receiverProfile.dreams += howMuch
 
-			logger.info("${context.userHandle.id} transferiu ${howMuch} sonhos para ${receiverProfile.userId}")
+			logger.info("${context.userHandle.id} (antes possuia ${beforeReceiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeGiver} sonhos)")
 			loritta save context.lorittaUser.profile
 			loritta save receiverProfile
 

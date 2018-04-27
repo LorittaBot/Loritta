@@ -164,6 +164,8 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		loritta save lorittaProfile
 
+		Loritta.logger.info("${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}")
+
 		return payload.toString()
 	}
 }
