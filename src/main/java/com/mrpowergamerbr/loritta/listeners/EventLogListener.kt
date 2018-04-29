@@ -453,12 +453,20 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (event.guild.id == "297732013006389252") {
 				val relayTo = lorittaShards.getGuildById("420626099257475072")
 
-				relayTo?.controller?.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
+				if (relayTo != null) {
+					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
+						relayTo.controller.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
+					}
+				}
 			}
 			if (event.guild.id == "420626099257475072") {
 				val relayTo = lorittaShards.getGuildById("297732013006389252")
 
-				relayTo?.controller?.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
+				if (relayTo != null) {
+					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
+						relayTo.controller.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
+					}
+				}
 			}
 
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig

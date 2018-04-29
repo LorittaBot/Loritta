@@ -63,6 +63,13 @@ class LoteriaThread : Thread("Loteria Thread") {
 		json["lastWinnerPrize"] = lastWinnerPrize
 		json["userIds"] = Loritta.GSON.toJsonTree(userIds)
 
+		logger.info("""Salvando loteria.json...
+			|Iniciou às: $started
+			|Último vencedor: $lastWinnerId
+			|Prémio do último vencedor: $lastWinnerPrize
+			|IDs dos usuários que estão competindo: ${userIds.joinToString(", ")}
+		""".trimMargin())
+
 		loteriaFile.writeText(json.toString())
 	}
 
@@ -78,9 +85,9 @@ class LoteriaThread : Thread("Loteria Thread") {
 			val money = userIds.size * 250
 			lastWinnerPrize = money
 
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos na Loteria!")
-
 			val lorittaProfile = loritta.getLorittaProfileForUser(winnerId)
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.dreams} sonhos) na Loteria!")
+
 			lorittaProfile.dreams += money
 			loritta save lorittaProfile
 			userIds.clear()

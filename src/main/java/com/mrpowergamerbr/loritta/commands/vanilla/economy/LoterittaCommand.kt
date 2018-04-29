@@ -26,6 +26,8 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 				for (i in 0 until quantity) {
 					LoteriaThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 				}
+				LoteriaThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.dreams + requiredCount}) sonhos!")
+
 				loritta save lorittaProfile
 				loritta.loteriaThread.save()
 

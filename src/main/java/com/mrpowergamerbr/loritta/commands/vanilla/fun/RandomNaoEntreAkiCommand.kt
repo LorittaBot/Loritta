@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomnaoentreaki", "randomnea"), CommandCategory.FUN) {
+class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomnaoentreaki", "randomnea", "rneaki", "rnea", "rnaoentreaki"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Pega uma postagem aleatória do Não Entre Aki"
 	}

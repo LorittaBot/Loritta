@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class SonhosCommand : AbstractCommand("sonhos", category = CommandCategory.ECONOMY) {
+class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SONHOS_Description"]
 	}

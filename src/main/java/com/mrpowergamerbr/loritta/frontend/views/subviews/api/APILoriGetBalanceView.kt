@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
@@ -29,6 +30,7 @@ class APILoriGetBalanceView : NoVarsRequireAuthView() {
 		val lorittaProfile = loritta.getLorittaProfileForUser(userId)
 
 		json["balance"] = lorittaProfile.dreams
+		json["api:code"] = LoriWebCodes.SUCCESS
 		return json.toString()
 	}
 }

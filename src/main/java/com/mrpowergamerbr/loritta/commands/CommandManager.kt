@@ -87,9 +87,7 @@ class CommandManager {
 		commandMap.add(PepeDreamCommand())
 		commandMap.add(SwingCommand())
 		commandMap.add(DemonCommand())
-		commandMap.add(TodoGrupoTemCommand())
-		commandMap.add(TioDoPaveCommand())
-		commandMap.add(VemDeZapCommand())
+		// commandMap.add(LicencaCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
@@ -100,6 +98,9 @@ class CommandManager {
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
 		commandMap.add(RandomNaoEntreAkiCommand())
+		commandMap.add(TodoGrupoTemCommand())
+		commandMap.add(TioDoPaveCommand())
+		commandMap.add(VemDeZapCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
@@ -112,6 +113,7 @@ class CommandManager {
 		commandMap.add(FanArtsCommand())
 		commandMap.add(DiscordBotListCommand())
 		commandMap.add(ActivateKeyCommand())
+		commandMap.add(VotarCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())

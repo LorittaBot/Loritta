@@ -5,6 +5,8 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.misc.PomfUtils.uploadFile
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -12,14 +14,14 @@ import okhttp3.Request
 import okhttp3.RequestBody
 
 object PomfUtils {
-	const val POMF_URL = "http://pomf.cat/upload.php"
+	const val POMF_URL = "https://pomf.space/upload.php"
 
 	fun uploadFile(array: ByteArray): String? {
-		return uploadFile(POMF_URL, "mirror.png", array)
+		return uploadFile("https://pomf.space/upload.php", "mirror.png", array)
 	}
 
 	fun uploadFile(array: ByteArray, fileName: String): String? {
-		return uploadFile(POMF_URL, fileName, array)
+		return uploadFile("https://pomf.space/upload.php", fileName, array)
 	}
 
 	fun uploadFile(url: String, fileName: String, array: ByteArray): String? {
@@ -38,7 +40,7 @@ object PomfUtils {
 		val json = JSON_PARSER.parse(_response).obj
 
 		if (json.has("files")) {
-			return "http://a.pomf.cat/${json["files"].array[0]["url"].string}"
+			return json["files"].array[0]["url"].string
 		} else {
 			return null
 		}

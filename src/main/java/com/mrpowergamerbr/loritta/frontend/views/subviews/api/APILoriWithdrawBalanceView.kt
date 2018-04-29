@@ -50,6 +50,7 @@ class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
 		lorittaProfile.dreams -= quantity
 		loritta save lorittaProfile
 		json["balance"] = lorittaProfile.dreams
+		json["api:code"] = LoriWebCodes.SUCCESS
 
 		Loritta.logger.info("${lorittaProfile.userId} teve $quantity sonhos removidos (antes possuia $before sonhos), motivo: ${reason} - ID: ${guildId}")
 		return json.toString()
