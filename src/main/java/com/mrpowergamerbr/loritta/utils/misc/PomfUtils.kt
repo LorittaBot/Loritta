@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.JSON_PARSER
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils.uploadFile
@@ -32,6 +33,7 @@ object PomfUtils {
 						RequestBody.create(MediaType.parse("image/png"), array))
 				.build()
 		val request = Request.Builder().url(url)
+				.header("token", Loritta.config.pomfSpaceToken)
 				.post(formBody).build()
 		val response = client.newCall(request).execute()
 

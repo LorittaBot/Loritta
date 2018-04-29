@@ -38,6 +38,7 @@ data class LorittaConfig(
 		val twitchClientId: String,
 		val apoiaSeCookies: String,
 		val recaptchaToken: String,
+		val pomfSpaceToken: String,
 		val fanArtExtravaganza: Boolean,
 		val fanArts: List<LorittaAvatarFanArt>,
 		val currentlyPlaying: List<LorittaGameStatus>) {
@@ -76,6 +77,7 @@ data class LorittaConfig(
 			"Client ID do Twitch",
 			"Cookie do apoia.se",
 			"Token do No Captcha reCAPTCHA",
+			"Token do pomf.space",
 			true,
 			listOf<LorittaAvatarFanArt>(),
 			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
