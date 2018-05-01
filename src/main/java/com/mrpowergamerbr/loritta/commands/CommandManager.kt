@@ -91,7 +91,6 @@ class CommandManager {
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
-		commandMap.add(CleverbotCommand())
 		// commandMap.add(TamagotchiCommand())
 		// commandMap.add(GiveawayCommand())
 		commandMap.add(CongaParrotCommand())

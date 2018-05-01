@@ -1,11 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.LoteriaThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import java.io.File
 import java.util.*
 
 class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery"), CommandCategory.ECONOMY) {
@@ -23,12 +27,13 @@ class LoterittaCommand : AbstractCommand("loteritta", listOf("loteria", "lottery
 			val requiredCount = quantity * 250
 			if (lorittaProfile.dreams >= requiredCount) {
 				lorittaProfile.dreams -= requiredCount
+				loritta save lorittaProfile
+
 				for (i in 0 until quantity) {
 					LoteriaThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 				}
 				LoteriaThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.dreams + requiredCount}) sonhos!")
 
-				loritta save lorittaProfile
 				loritta.loteriaThread.save()
 
 				context.reply(

@@ -67,7 +67,7 @@ class LoteriaThread : Thread("Loteria Thread") {
 			|Iniciou às: $started
 			|Último vencedor: $lastWinnerId
 			|Prémio do último vencedor: $lastWinnerPrize
-			|IDs dos usuários que estão competindo: ${userIds.joinToString(", ")}
+			|Tickets: ${userIds.size}
 		""".trimMargin())
 
 		loteriaFile.writeText(json.toString())
