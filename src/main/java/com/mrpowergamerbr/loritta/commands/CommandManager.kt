@@ -22,7 +22,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.*
 
 class CommandManager {

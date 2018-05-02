@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -215,11 +216,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}
 
-					if (event.textChannel.canTalk() && event.message.contentDisplay.startsWith(serverConfig.commandPrefix, true) && serverConfig.warnOnUnknownCommand) {
-						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.textChannel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
-						Thread.sleep(5000)
-						message.delete().queue()
+					if (event.textChannel.canTalk() && serverConfig.warnOnUnknownCommand) {
+						val startsWithCommandPattern = Regex("^" + Pattern.quote(serverConfig.commandPrefix) + "[A-z0-9]+.*")
+
+						if (event.message.contentRaw.matches(startsWithCommandPattern)) {
+							val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
+							val message = event.textChannel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
+							Thread.sleep(5000)
+							message.delete().queue()
+						}
 					}
 				} catch (e: Exception) {
 					e.printStackTrace()

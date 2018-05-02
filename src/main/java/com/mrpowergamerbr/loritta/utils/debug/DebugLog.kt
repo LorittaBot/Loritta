@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.pocketdreams.loriplugins.cleverbot.commands.CleverbotCommand
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
@@ -90,7 +89,6 @@ object DebugLog {
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
-				println("cleverbots.size: ${CleverbotCommand.cleverbots.size}")
 				println("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
