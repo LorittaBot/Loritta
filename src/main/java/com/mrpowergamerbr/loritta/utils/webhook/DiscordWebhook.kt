@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
@@ -33,7 +33,7 @@ class DiscordWebhook(val url: String) {
 					.body()
 
 			if (response.isNotEmpty()) { // oh no
-				val json = JSON_PARSER.parse(response).obj
+				val json = jsonParser.parse(response).obj
 
 				if (json.contains("retry_after")) { // Rate limited, vamos colocar o request dentro de uma queue
 					requestQueue.add(Pair(message, callback))

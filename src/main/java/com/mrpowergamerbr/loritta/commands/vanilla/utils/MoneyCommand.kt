@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -42,16 +42,16 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			val to = context.strippedArgs[1].toUpperCase()
 
 			var value: Double? = null
-			val fixerCurrencies = JSON_PARSER.parse(HttpRequest.get("http://api.fixer.io/latest?base=USD").acceptJson().body()).obj
+			val fixerCurrencies = jsonParser.parse(HttpRequest.get("http://api.fixer.io/latest?base=USD").acceptJson().body()).obj
 			val validCurrencies = fixerCurrencies["rates"].obj.keys()
-			val fixerConverted = JSON_PARSER.parse(HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body()).obj
+			val fixerConverted = jsonParser.parse(HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body()).obj
 
 			if (from == to) { // :rolling_eyes:
 				value = 1.0
 			} else {
 				if (fixerConverted.has("error") || !validCurrencies.contains(to)) {
 					// Se tem erro, vamos tentar converter usando crypto, iremos pegar em USD e no "to"
-					val crypto = JSON_PARSER.parse(HttpRequest.get("https://min-api.cryptocompare.com/data/price?fsym=$from&tsyms=USD,$to").body()).obj
+					val crypto = jsonParser.parse(HttpRequest.get("https://min-api.cryptocompare.com/data/price?fsym=$from&tsyms=USD,$to").body()).obj
 
 					if (crypto.has("Response")) {
 						// damn

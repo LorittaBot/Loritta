@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -40,7 +40,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val body = HttpRequest.get("https://www.roblox.com/search/users/results?keyword=${URLEncoder.encode(username, "UTF-8")}&maxRows=12&startIndex=0")
 					.body()
 
-			val response = JSON_PARSER.parse(body).obj
+			val response = jsonParser.parse(body).obj
 
 			var userId: Long? = null
 			var name: String? = null
@@ -84,7 +84,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val avatarBody = HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
 					.body()
 
-			val avatarResponse = JSON_PARSER.parse(avatarBody).obj
+			val avatarResponse = jsonParser.parse(avatarBody).obj
 
 			// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
 			val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
@@ -102,7 +102,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val followingBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 					.body()
 
-			val followingResponse = JSON_PARSER.parse(followingBody)
+			val followingResponse = jsonParser.parse(followingBody)
 
 			val totalFollowing = followingResponse["TotalFriends"].int
 
@@ -110,7 +110,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val followersBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Followers&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 					.body()
 
-			val followersResponse = JSON_PARSER.parse(followersBody)
+			val followersResponse = jsonParser.parse(followersBody)
 
 			val totalFollowers = followersResponse["TotalFriends"].int
 
@@ -118,7 +118,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val friendsBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=AllFriends&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
 					.body()
 
-			val friendsResponse = JSON_PARSER.parse(friendsBody)
+			val friendsResponse = jsonParser.parse(friendsBody)
 
 			val totalFriends = friendsResponse["TotalFriends"].int
 
@@ -131,7 +131,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/robloxcollections-json?userId=$userId")
 						.body()
 
-				val robloxCollections = JSON_PARSER.parse(robloxCollectionsResponse).obj
+				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 				for (coll in robloxCollections["CollectionsItems"].array) {
 					if (x >= 333) {
@@ -153,7 +153,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId")
 						.body()
 
-				val robloxCollections = JSON_PARSER.parse(robloxCollectionsResponse).obj
+				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 				for (coll in robloxCollections["Assets"].array) {
 					if (x >= 333) {

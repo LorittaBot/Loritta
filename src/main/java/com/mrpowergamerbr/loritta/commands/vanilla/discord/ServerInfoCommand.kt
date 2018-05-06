@@ -29,7 +29,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val id = if (context.args.isNotEmpty()) { context.args[0] } else { null }
 
 		if (id != null && id.isValidSnowflake()) {
-			guild = lorittaShards.getGuildById(context.args[0])
+			guild = lorittaShards.getGuildById(context.args[0])!!
 		}
 
 		if (guild == null) {

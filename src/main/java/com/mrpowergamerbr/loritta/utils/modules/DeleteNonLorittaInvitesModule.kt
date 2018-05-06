@@ -41,7 +41,7 @@ object DeleteNonLorittaInvitesModule {
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
-			val json = JSON_PARSER.parse(discordResult).obj
+			val json = jsonParser.parse(discordResult).obj
 
 			val code = json["code"].string
 			if (code == "10006")

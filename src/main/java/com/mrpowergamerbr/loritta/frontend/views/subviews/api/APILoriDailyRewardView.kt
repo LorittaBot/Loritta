@@ -7,7 +7,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -45,7 +45,7 @@ class APILoriDailyRewardView : NoVarsView() {
 		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.recaptchaToken}&response=$recaptcha")
 				.body()
 
-		val jsonParser = JSON_PARSER.parse(body).obj
+		val jsonParser = jsonParser.parse(body).obj
 
 		val success = jsonParser["success"].bool
 

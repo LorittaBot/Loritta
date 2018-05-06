@@ -20,12 +20,11 @@ import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
-import java.util.regex.Pattern
 
 object MessageUtils {
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
 		val jsonObject = try {
-			JSON_PARSER.parse(message).obj
+			jsonParser.parse(message).obj
 		} catch (ex: Exception) {
 			null
 		}

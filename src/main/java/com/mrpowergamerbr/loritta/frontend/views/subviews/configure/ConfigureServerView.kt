@@ -30,7 +30,7 @@ class ConfigureServerView : ConfigureView() {
 			val argument = split[4];
 
 			if (argument == "save") {
-				val receivedPayload = JSON_PARSER.parse(req.body().value()).obj
+				val receivedPayload = jsonParser.parse(req.body().value()).obj
 				val type = receivedPayload["type"].string
 				receivedPayload.remove("type")
 

@@ -1,26 +1,18 @@
 package com.mrpowergamerbr.loritta.frontend.views.subviews.api.config
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.AutorolePayload
-import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ConfigPayloadType
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.frontend.views.subviews.api.config.types.ServerListPayload
-import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
-import java.util.*
 
 class APIUpdateServerConfigView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
@@ -80,7 +72,7 @@ class APIUpdateServerConfigView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val body = JSON_PARSER.parse(req.body().value()).obj // content payload
+		val body = jsonParser.parse(req.body().value()).obj // content payload
 		val type = body["type"].string
 		val config = body["config"].obj
 

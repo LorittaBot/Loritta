@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -51,7 +51,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 					.userAgent("LorittaBot")
 					.body()
 
-			val json = JSON_PARSER.parse(response)
+			val json = jsonParser.parse(response)
 
 			if (json.isJsonObject) {
 				// Erro!
@@ -116,7 +116,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		embed.setColor(Color(227, 156, 17))
 
 		val resource = getResourceInfo(resourceId)
-		val author = JSON_PARSER.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
+		val author = jsonParser.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
 
 		embed.setAuthor(author["name"].string, null, "https://www.spigotmc.org/${author["icon"]["url"].string}")
 		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
@@ -147,7 +147,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 				.userAgent("LorittaBot")
 				.body()
 
-		val json = JSON_PARSER.parse(response).obj
+		val json = jsonParser.parse(response).obj
 
 		return SpigotResource(
 				json["name"].string,

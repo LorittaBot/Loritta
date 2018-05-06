@@ -53,7 +53,7 @@ import kotlin.concurrent.thread
 /**
  * Classe principal da Loritta
  */
-class Loritta {
+class Loritta(config: LorittaConfig) {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -139,28 +139,24 @@ class Loritta {
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
 
-	// Constructor da Loritta
-	constructor(config: LorittaConfig) {
+	init {
 		FOLDER = config.lorittaFolder
 		ASSETS = config.assetsFolder
 		TEMP = config.tempFolder
 		LOCALES = config.localesFolder
 		FRONTEND = config.frontendFolder
-
-		Loritta.config = config // Salvar a nossa configuração na variável Loritta#config
+		Loritta.config = config
 		loadLocales()
-		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken) // Iniciar o client do MercadoPago
+		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
 		Loritta.youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
 		loadPremiumKeys()
 		GlobalHandler.generateViews()
-
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(64)
 				.setBulkDeleteSplittingEnabled(false)
-
 		builder.addEventListener(discordListener)
 		builder.addEventListener(eventLogListener)
 	}
@@ -266,10 +262,6 @@ class Loritta {
 		loteriaThread.start()
 
 		DebugLog.startCommandListenerThread()
-
-		// MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
-
-		// GiveawayThread().start() // Iniciar thread para processar giveaways
 
 		thread(name = "Small Update Stuff") {
 			while (true) {
@@ -670,7 +662,7 @@ class Loritta {
 	}
 
 	fun skipTrack(context: CommandContext) {
-		val musicManager = getGuildAudioPlayer(context.getGuild());
+		val musicManager = getGuildAudioPlayer(context.guild);
 		musicManager.scheduler.nextTrack();
 
 		context.reply(

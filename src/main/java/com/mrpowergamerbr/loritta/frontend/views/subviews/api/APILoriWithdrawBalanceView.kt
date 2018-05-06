@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import org.jooby.Request
@@ -18,7 +18,7 @@ class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
 	override fun renderProtected(req: Request, res: Response, path: String): String {
 		val json = JsonObject()
 
-		val body = JSON_PARSER.parse(req.body().value()).obj
+		val body = jsonParser.parse(req.body().value()).obj
 
 		val userId = body["userId"].string
 		val quantity = body["quantity"].double

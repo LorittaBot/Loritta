@@ -7,7 +7,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
@@ -21,7 +21,7 @@ class TestMessageView : ConfigureView() {
 	}
 
 	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
-		val receivedPayload = JSON_PARSER.parse(req.body().value()).obj
+		val receivedPayload = jsonParser.parse(req.body().value()).obj
 		val type = receivedPayload["type"].string
 		val content = receivedPayload["content"].string
 

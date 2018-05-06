@@ -5,9 +5,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.MediaType
@@ -106,7 +105,7 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 		// STOP FORUM SPAM
 		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
 
-		val response = JSON_PARSER.parse(xmlJSONObj.toString(4)).obj["response"]
+		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
 
 		val isSpam = response["appears"].bool
 

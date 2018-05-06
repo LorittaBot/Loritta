@@ -28,7 +28,7 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 				.userAgent(Constants.USER_AGENT)
 				.body()
 
-		val json = JSON_PARSER.parse(body).obj
+		val json = jsonParser.parse(body).obj
 
 		if (json["data"].array.size() == 0) {
 			context.reply(

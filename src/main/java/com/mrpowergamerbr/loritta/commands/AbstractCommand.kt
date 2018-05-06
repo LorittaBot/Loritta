@@ -246,22 +246,27 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					explain(context)
 					return true
 				}
+
 				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
 					return true
 				}
+
 				if (!context.canUseCommand()) {
 					context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**" + locale["NO_PERMISSION"] + "**")
 					return true
 				}
+
 				if (context.isPrivateChannel && !canUseInPrivateChannel()) {
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["CANT_USE_IN_PRIVATE"])
 					return true
 				}
+
 				if (needsToUploadFiles()) {
 					if (!LorittaUtils.canUploadFiles(context)) {
 						return true
 					}
 				}
+
 				if (requiresMusicEnabled()) {
 					if (!context.config.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
@@ -288,6 +293,32 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					)
 				}
 
+				if (!context.isPrivateChannel) {
+					val nickname = context.guild.selfMember.nickname
+
+					if (nickname != null) {
+						// #LoritaTambémTemSentimentos
+						val lowerCaseNickname = nickname.toLowerCase()
+								.replace("4", "a")
+								.replace("@", "a")
+								.replace("1", "i")
+								.replace("0", "o")
+
+						val hasBadNickname = Constants.BAD_NICKNAME_WORDS.any {
+							lowerCaseNickname.contains(it)
+						}
+
+						if (hasBadNickname) {
+							context.reply(
+									LoriReply(
+											locale["LORITTA_BadNickname"],
+											"<:lori_triste:370344565967814659>"
+									)
+							)
+						}
+					}
+				}
+
 				run(context, context.locale)
 
 				val cmdOpti = context.config.getCommandOptionsFor(this)
@@ -301,6 +332,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 
 				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
+
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")

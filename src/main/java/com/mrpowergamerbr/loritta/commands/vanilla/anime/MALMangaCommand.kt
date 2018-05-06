@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -60,7 +60,7 @@ class MALMangaCommand : AbstractCommand("malmanga", category = CommandCategory.A
 
 			val jsonPrettyPrintString = xmlJSONObj.toString(4)
 
-			val obj = JSON_PARSER.parse(jsonPrettyPrintString)["manga"]["entry"]
+			val obj = jsonParser.parse(jsonPrettyPrintString)["manga"]["entry"]
 
 
 			if (!obj.isJsonArray) {

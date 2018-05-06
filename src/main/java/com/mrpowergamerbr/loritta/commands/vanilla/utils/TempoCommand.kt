@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -36,7 +36,7 @@ class TempoCommand : AbstractCommand("tempo", listOf("previsão", "previsao"), C
 			var cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + Loritta.config.openWeatherMapKey).body()
 			val reader = StringReader(cidadeResponse)
 			val jsonReader = JsonReader(reader)
-			val cidadeJsonResponse = JSON_PARSER.parse(jsonReader).asJsonObject // Base
+			val cidadeJsonResponse = jsonParser.parse(jsonReader).asJsonObject // Base
 
 			if (cidadeJsonResponse.get("cod").asString == "200") { // Nós encontramos alguma coisa?
 				var status = cidadeJsonResponse.get("list").asJsonArray.get(0).asJsonObject;

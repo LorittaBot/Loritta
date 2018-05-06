@@ -4,10 +4,9 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import org.jsoup.Jsoup
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -48,7 +47,7 @@ object MCUtils {
 				.send(payload.toString())
 				.body()
 
-		val array = JSON_PARSER.parse(profile).array
+		val array = jsonParser.parse(profile).array
 
 		array.forEach {
 			username2uuid[it["name"].string.toLowerCase()] = it["id"].string
@@ -74,7 +73,7 @@ object MCUtils {
 				.contentType("application/json")
 				.body()
 
-		val profile = JSON_PARSER.parse(rawJson).obj
+		val profile = jsonParser.parse(rawJson).obj
 
 		val textureValue = profile["properties"].array.firstOrNull { it["name"].nullString == "textures" }
 

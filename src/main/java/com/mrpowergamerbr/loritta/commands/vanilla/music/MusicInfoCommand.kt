@@ -39,7 +39,7 @@ class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "playingno
 		} else {
 			val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
 			val message = context.sendMessage(embed)
-			context.metadata.put("currentTrack", manager.scheduler.currentTrack) // Salvar a track atual
+			context.metadata.put("currentTrack", manager.scheduler.currentTrack!!) // Salvar a track atual
 
 			message.onReactionAddByAuthor(context) {
 				if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {

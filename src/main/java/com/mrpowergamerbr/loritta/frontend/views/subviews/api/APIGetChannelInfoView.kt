@@ -7,8 +7,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
@@ -45,7 +44,7 @@ class APIGetChannelInfoView : NoVarsView() {
 		try {
 			val youTubePayload = "window\\[\"ytInitialData\"\\] = (.+);".toPattern().matcher(body).apply { find() }
 
-			val payload = JSON_PARSER.parse(youTubePayload.group(1))
+			val payload = jsonParser.parse(youTubePayload.group(1))
 
 			val channelId = payload["header"]["c4TabbedHeaderRenderer"]["channelId"].string
 			val title = payload["header"]["c4TabbedHeaderRenderer"]["title"].string
@@ -56,7 +55,7 @@ class APIGetChannelInfoView : NoVarsView() {
 			var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=$channelId&key=$key")
 					.body();
 
-			var json = JSON_PARSER.parse(response).obj
+			var json = jsonParser.parse(response).obj
 			val responseError = getResponseError(json)
 			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 

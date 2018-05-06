@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.frontend.views
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Mutant
@@ -16,7 +16,7 @@ object WebSocketHandler {
 	}
 
 	fun onMessageReceived(ws: WebSocket, mutant: Mutant, session: Session) {
-		val json = JSON_PARSER.parse(mutant.value()).obj
+		val json = jsonParser.parse(mutant.value()).obj
 
 		val type = json["type"].string
 

@@ -44,8 +44,8 @@ public final class LorittaUtils {
 	}
 
 	public static boolean canUploadFiles(CommandContext context) {
-		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
+		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.getEvent().getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.getLocale().get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
 			return false;
 		}
 		return true;
@@ -98,7 +98,7 @@ public final class LorittaUtils {
 	 */
 	public static boolean isValidImage(CommandContext context, Image image) {
 		if (image == null) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.locale.get("NO_VALID_IMAGE")));
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.getLocale().get("NO_VALID_IMAGE")));
 			return false;
 		}
 		return true;
@@ -378,7 +378,7 @@ public final class LorittaUtils {
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.event.getTextChannel(), Permission.MESSAGE_HISTORY)) {
+		if (search > 0 && toBeDownloaded == null && context.getGuild().getSelfMember().hasPermission(context.getEvent().getTextChannel(), Permission.MESSAGE_HISTORY)) {
 			try {
 				List<Message> message = context.getMessage().getChannel().getHistory().retrievePast(search).complete();
 

@@ -51,7 +51,6 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
@@ -182,17 +181,15 @@ val User.support: Boolean
 /**
  * Retorna a instância atual da Loritta
  */
-val loritta: Loritta
-	get() = LorittaLauncher.loritta
+val loritta get() = LorittaLauncher.loritta
 
 /**
  * Retorna a LorittaShards
  */
-val lorittaShards: LorittaShards
-	get() = LorittaLauncher.loritta.lorittaShards
+val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
 
-val JSON_PARSER: JsonParser
-	get() = Loritta.JSON_PARSER
+val gson get() = Loritta.GSON
+val jsonParser get() = Loritta.JSON_PARSER
 
 /**
  * Salva um objeto usando o Datastore do MongoDB
@@ -281,7 +278,7 @@ object LorittaUtilsKotlin {
 		try {
 			val reader = StringReader(response)
 			val jsonReader = JsonReader(reader)
-			val apiResponse = JSON_PARSER.parse(jsonReader).asJsonObject // Base
+			val apiResponse = jsonParser.parse(jsonReader).asJsonObject // Base
 
 			if (apiResponse.has("error")) {
 				return NSFWResponse.ERROR
@@ -469,7 +466,7 @@ object LorittaUtilsKotlin {
 				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}")
 				.body()
 
-		val json = JSON_PARSER.parse(response)
+		val json = jsonParser.parse(response)
 
 		var url: String? = null;
 		var description: String? = null;
@@ -496,7 +493,7 @@ object LorittaUtilsKotlin {
 	fun getRandomPostsFromGroup(group: String): List<FacebookPostWrapper> {
 		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}")
 				.body()
-		val json = JSON_PARSER.parse(response)
+		val json = jsonParser.parse(response)
 
 		var url: String? = null;
 		var description: String? = null;

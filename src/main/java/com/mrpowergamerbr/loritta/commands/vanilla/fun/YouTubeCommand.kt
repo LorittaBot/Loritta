@@ -10,8 +10,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -51,7 +50,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					var item = items[i];
 					if (item.id.kind == "youtube#video") {
 						var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
-						var parser = JSON_PARSER
+						var parser = jsonParser
 						var json = parser.parse(response).asJsonObject
 						var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
 						var duration = java.time.Duration.parse(strDuration)
@@ -157,7 +156,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				}
 			} else {
 				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
-				var channelJson = JSON_PARSER.parse(channelResponse).obj
+				var channelJson = jsonParser.parse(channelResponse).obj
 
 				var embed = EmbedBuilder()
 
@@ -188,7 +187,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 				if (uploadsPlaylistId != null) {
 					var uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-					var uploadsPlaylist = JSON_PARSER.parse(uploadsPlaylistResponse).obj
+					var uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
 
 					lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
 					lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
@@ -196,7 +195,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 				if (likesPlaylistId != null) {
 					var likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-					var likesPlaylist = JSON_PARSER.parse(likesPlaylistResponse).obj
+					var likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
 
 					lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
 					lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string

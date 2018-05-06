@@ -28,6 +28,25 @@ object Constants {
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
 
+	// Palavras inapropariadas
+	val BAD_NICKNAME_WORDS = listOf(
+			"puta",
+			"vagabunda",
+			"lixo",
+			"desgraça",
+			"burra",
+			"piranha",
+			"protistuta",
+			"bicha",
+			"bixa",
+			"arromabada",
+			"cachorra",
+			"ruim",
+			"boquete",
+			"boqueteira",
+			"putona"
+	)
+
 	// ===[ FONTS ]===
 	val OSWALD_REGULAR: Font by lazy {
 		FileInputStream(File(Loritta.ASSETS + "oswald_regular.ttf")).use {

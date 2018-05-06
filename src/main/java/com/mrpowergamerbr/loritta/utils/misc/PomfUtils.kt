@@ -5,9 +5,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.misc.PomfUtils.uploadFile
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -39,7 +37,7 @@ object PomfUtils {
 
 		val _response = response.body()!!.string()
 
-		val json = JSON_PARSER.parse(_response).obj
+		val json = jsonParser.parse(_response).obj
 
 		if (json.has("files")) {
 			return json["files"].array[0]["url"].string

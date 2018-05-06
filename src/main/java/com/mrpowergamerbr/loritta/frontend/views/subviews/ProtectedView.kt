@@ -8,7 +8,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Request
@@ -36,7 +36,7 @@ abstract class ProtectedView : AbstractView() {
 				if (state.isSet) {
 					// state = base 64 encoded JSON
 					val decodedState = Base64.getDecoder().decode(state.value()).toString(Charsets.UTF_8)
-					val jsonState = JSON_PARSER.parse(decodedState).obj
+					val jsonState = jsonParser.parse(decodedState).obj
 					val redirectUrl = jsonState["redirectUrl"].nullString
 
 					if (redirectUrl != null) {

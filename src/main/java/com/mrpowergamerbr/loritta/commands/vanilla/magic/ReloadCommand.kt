@@ -19,6 +19,8 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import net.dv8tion.jda.core.entities.Guild
 import org.apache.commons.io.FileUtils
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
@@ -119,6 +121,35 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Premium Keys carregadas!"
+					)
+			)
+			return
+		}
+
+		if (context.args.isNotEmpty() && context.args[0] == "exportdate") {
+			val dates = mutableMapOf<String, Int>()
+
+			val file = File("./date_export.txt")
+			file.delete()
+
+			lorittaShards.getGuilds().forEach {
+				val self = it.selfMember
+				val year = self.joinDate.year
+				val month = self.joinDate.monthValue
+
+				val padding = month.toString().padStart(2, '0')
+				dates.put("$year-$padding", dates.getOrDefault("$year-$padding", 0) + 1)
+			}
+
+			val sorted = dates.entries.sortedBy { it.key }
+
+			val servers = sorted.sumBy { it.value }
+
+			file.writeText(sorted.joinToString("\n", transform = { it.key + " - " + it.value + " servidores"}) + "\n\nTotal: ${servers} servidores")
+
+			context.reply(
+					LoriReply(
+							"Datas exportadas!"
 					)
 			)
 			return

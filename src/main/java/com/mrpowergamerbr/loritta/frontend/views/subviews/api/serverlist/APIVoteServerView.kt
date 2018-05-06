@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
@@ -15,8 +14,6 @@ import net.dv8tion.jda.core.entities.Role
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
-import org.json.XML
-import java.net.InetAddress
 import java.util.*
 
 class APIVoteServerView : NoVarsView() {
@@ -67,7 +64,7 @@ class APIVoteServerView : NoVarsView() {
 		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.recaptchaToken}&response=$recaptcha")
 				.body()
 
-		val jsonParser = JSON_PARSER.parse(body).obj
+		val jsonParser = jsonParser.parse(body).obj
 
 		val success = jsonParser["success"].bool
 

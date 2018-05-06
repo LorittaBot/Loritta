@@ -173,7 +173,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
-			val response = JSON_PARSER.parse(payload).obj
+			val response = jsonParser.parse(payload).obj
 
 			try {
 				val data = response["data"].array
@@ -206,7 +206,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
-			val response = JSON_PARSER.parse(payload).obj
+			val response = jsonParser.parse(payload).obj
 
 			try {
 				val data = response["data"].array
@@ -225,7 +225,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					.header("Client-ID", Loritta.config.twitchClientId)
 					.body()
 
-			val response = JSON_PARSER.parse(payload).obj
+			val response = jsonParser.parse(payload).obj
 
 			val data = response["data"].array
 

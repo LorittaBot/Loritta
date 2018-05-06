@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
@@ -32,7 +32,7 @@ class HojeCommand : AbstractCommand("hoje", listOf("today"), CommandCategory.FUN
 		val query = "$day de " + DateFormatSymbols().months[month].toLowerCase()
 		val url = "https://$languageId.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&titles=" + URLEncoder.encode(query, "UTF-8")
 		val wikipediaResponse = HttpRequest.get(url).body()
-		val wikipedia = JSON_PARSER.parse(wikipediaResponse).asJsonObject // Base
+		val wikipedia = jsonParser.parse(wikipediaResponse).asJsonObject // Base
 		val wikiQuery = wikipedia["query"].obj // Query
 		val wikiPages = wikiQuery["pages"].obj // Páginas
 		val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo

@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -21,7 +21,7 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
                 .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
                 .setColor(Color.GREEN);
 
-        var json = JSON_PARSER.parse(body);
+        var json = jsonParser.parse(body);
         for (section in json.asJsonObject.entrySet()) {
             var status = section.value.asJsonObject.get("status").asString;
             var prefix = if (section.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "

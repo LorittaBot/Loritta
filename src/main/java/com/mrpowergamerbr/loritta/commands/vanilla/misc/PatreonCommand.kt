@@ -1,19 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
-import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmiePatreonAuth
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Member
 import java.awt.Color
 
 class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor"), category = CommandCategory.MISC) {

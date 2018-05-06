@@ -107,6 +107,19 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		} else {
 			false
 		}
+
+		var isLorittaPartner = if (lorittaGuild != null) {
+			if (lorittaGuild.isMember(user)) {
+				val member = lorittaGuild.getMember(user)
+				val role = lorittaGuild.getRoleById("434512654292221952")
+				member.roles.contains(role)
+			} else {
+				false
+			}
+		} else {
+			false
+		}
+
 		var usesPocketDreamsRichPresence = if (member != null) {
 			val game = member.game
 			if (game != null && game.isRich) {
@@ -117,6 +130,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		} else {
 			false
 		}
+
 		val pocketDreamsGuild = lorittaShards.getGuildById("320248230917046282")
 		var isPocketDreamsStaff = if (pocketDreamsGuild != null) {
 			if (pocketDreamsGuild.isMember(user)) {
@@ -136,6 +150,7 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
 		if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 		if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
+		if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
 		if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 		if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
 		if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
@@ -172,8 +187,8 @@ class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCatego
 		}
 
 		val map = mapOf(
-				"default" to DefaultProfileCreator::class.java,
-				"nostalgia" to NostalgiaProfileCreator::class.java,
+				"default" to NostalgiaProfileCreator::class.java,
+				"modern" to DefaultProfileCreator::class.java,
 				"msn" to MSNProfileCreator::class.java,
 				"orkut" to OrkutProfileCreator::class.java
 		)

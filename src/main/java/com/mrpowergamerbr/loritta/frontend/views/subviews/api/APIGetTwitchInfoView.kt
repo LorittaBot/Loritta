@@ -6,8 +6,7 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.frontend.views.subviews.AbstractView
-import com.mrpowergamerbr.loritta.utils.JSON_PARSER
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -33,7 +32,7 @@ class APIGetTwitchInfoView : NoVarsView() {
 				.header("Client-ID", Loritta.config.twitchClientId)
 				.body()
 
-		val response = JSON_PARSER.parse(payload).obj
+		val response = jsonParser.parse(payload).obj
 
 		val data = response["data"].array
 

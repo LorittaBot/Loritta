@@ -38,7 +38,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (event.jda.ping > 1000) // Se o ping está muito alto, vamos ignorar qualquer request até que ela volte ao normal
+		if (event.jda.ping > 5000) // Se o ping está muito alto, vamos ignorar qualquer request até que ela volte ao normal
 			return
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto

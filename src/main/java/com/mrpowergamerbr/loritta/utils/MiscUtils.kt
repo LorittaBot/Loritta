@@ -5,19 +5,14 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import org.json.XML
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.io.StringReader
 import java.net.InetAddress
-import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
-import kotlin.concurrent.fixedRateTimer
 
 object MiscUtils {
 	val logger = LoggerFactory.getLogger(MiscUtils::class.java)
@@ -109,7 +104,7 @@ object MiscUtils {
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
-			val element = JSON_PARSER.parse(body)
+			val element = jsonParser.parse(body)
 
 			val array = element.array
 			val domainsArray = array[1].array
@@ -140,7 +135,7 @@ object MiscUtils {
 		// STOP FORUM SPAM
 		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
 
-		val response = JSON_PARSER.parse(xmlJSONObj.toString(4)).obj["response"]
+		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
 
 		val isSpam = response["appears"].bool
 
