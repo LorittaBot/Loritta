@@ -26,8 +26,8 @@ class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCateg
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
 		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)
 		val message = context.sendMessage(embed)
-		context.metadata.put("currentTrack", manager.scheduler.currentTrack!!) // Salvar a track atual
 		if (manager.scheduler.currentTrack != null) { // Só adicione os reactions caso esteja tocando alguma música
+			context.metadata.put("currentTrack", manager.scheduler.currentTrack!!) // Salvar a track atual
 			message.addReaction("\uD83E\uDD26").complete()
 			message.addReaction("\uD83D\uDCBF").complete();
 		}

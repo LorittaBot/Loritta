@@ -29,7 +29,7 @@ class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "playingno
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
-		if (manager.player.playingTrack == null) {
+		if (manager.player.playingTrack == null || manager.scheduler.currentTrack == null) {
 			context.reply(
 					LoriReply(
 							locale["MUSICINFO_NOMUSIC", context.config.commandPrefix],

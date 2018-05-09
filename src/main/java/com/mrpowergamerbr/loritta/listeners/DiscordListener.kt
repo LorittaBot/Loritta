@@ -211,7 +211,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// Executar todos os onCommandMessageReceivedFeedback
 					loritta.messageContextCache.values.filter {
-						it.guild == event.guild
+						!it.isPrivateChannel && it.guild == event.guild
 					}.forEach {
 						commandContext -> commandContext.cmd.onCommandMessageReceivedFeedback(commandContext, event, event.message)
 					}

@@ -184,82 +184,86 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					return
 				}
 
-				val jsonAnswer = jsonResult["PARAMETERS"]
+				try {
+					val jsonAnswer = jsonResult["PARAMETERS"]
 
-				var question = jsonAnswer["QUESTION"].string
-				var progression = jsonAnswer["PROGRESSION"].double
-				step = jsonAnswer["STEP"].int
-				var answers = jsonAnswer["ANSWERS"]["ANSWER"].array
+					var question = jsonAnswer["QUESTION"].string
+					var progression = jsonAnswer["PROGRESSION"].double
+					step = jsonAnswer["STEP"].int
+					var answers = jsonAnswer["ANSWERS"]["ANSWER"].array
 
-				if (95 >= progression) {
-					var text = "[`";
-					for (i in 0..100 step 10) {
-						if (progression >= i) {
-							text += "█";
+					if (95 >= progression) {
+						var text = "[`";
+						for (i in 0..100 step 10) {
+							if (progression >= i) {
+								text += "█";
+							} else {
+								text += ".";
+							}
+						}
+						text += "`]"
+
+						var reactionInfo = ""
+
+						for ((idx, answer) in answers.withIndex()) {
+							reactionInfo += Constants.INDEXES[idx] + " ${answer.string}\n"
+						}
+
+						val builder = EmbedBuilder().apply {
+							setTitle("<:akinator:383613256939470849> Akinator (${context.handle.effectiveName})")
+							setThumbnail("https://loritta.website/assets/img/akinator_embed.png")
+							setDescription(question + "\n\n$progression% $text\n\n$reactionInfo")
+							setColor(Color(20, 158, 255))
+						}
+
+						context.metadata["channel"] = channel
+						context.metadata["session"] = session
+						context.metadata["signature"] = signature
+						context.metadata["step"] = step
+
+						msg.editMessage(builder.build()).complete()
+
+						if (msg.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
+							if (step > 0) {
+								msg.addReaction("⏪").complete()
+							}
 						} else {
-							text += ".";
-						}
-					}
-					text += "`]"
-
-					var reactionInfo = ""
-
-					for ((idx, answer) in answers.withIndex()) {
-						reactionInfo += Constants.INDEXES[idx] + " ${answer.string}\n"
-					}
-
-					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:383613256939470849> Akinator (${context.handle.effectiveName})")
-						setThumbnail("https://loritta.website/assets/img/akinator_embed.png")
-						setDescription(question + "\n\n$progression% $text\n\n$reactionInfo")
-						setColor(Color(20, 158, 255))
-					}
-
-					context.metadata["channel"] = channel
-					context.metadata["session"] = session
-					context.metadata["signature"] = signature
-					context.metadata["step"] = step
-
-					msg.editMessage(builder.build()).complete()
-
-					if (msg.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
-						if (step > 0) {
-							msg.addReaction("⏪").complete()
-						}
-					} else {
-						if (step == 0) {
-							msg.reactions.forEach {
-								if (it.reactionEmote.name == "⏪") {
-									it.removeReaction(context.userHandle).complete()
+							if (step == 0) {
+								msg.reactions.forEach {
+									if (it.reactionEmote.name == "⏪") {
+										it.removeReaction(context.userHandle).complete()
+									}
 								}
 							}
 						}
+					} else {
+						val response = HttpRequest.get("$apiEndpoint/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
+								.body()
+
+						val xmlJSONObj = XML.toJSONObject(response);
+
+						val jsonPrettyPrintString = xmlJSONObj.toString(4);
+
+						val jsonAnswer = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
+
+						val builder = EmbedBuilder().apply {
+							setTitle("<:akinator:383613256939470849> ${jsonAnswer["NAME"].string}")
+							setImage(jsonAnswer["ABSOLUTE_PICTURE_PATH"].string)
+							setDescription(jsonAnswer["DESCRIPTION"].string)
+							addField("Ranking", "#${jsonAnswer["RANKING"].string}", false)
+							setColor(Color(20, 158, 255))
+						}
+
+						context.metadata.remove("channel")
+						context.metadata.remove("signature")
+						context.metadata.remove("session")
+						context.metadata.remove("step")
+
+						msg.clearReactions().complete()
+						msg.editMessage(builder.build()).complete()
 					}
-				} else {
-					val response = HttpRequest.get("$apiEndpoint/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
-							.body()
-
-					val xmlJSONObj = XML.toJSONObject(response);
-
-					val jsonPrettyPrintString = xmlJSONObj.toString(4);
-
-					val jsonAnswer = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
-
-					val builder = EmbedBuilder().apply {
-						setTitle("<:akinator:383613256939470849> ${jsonAnswer["NAME"].string}")
-						setImage(jsonAnswer["ABSOLUTE_PICTURE_PATH"].string)
-						setDescription(jsonAnswer["DESCRIPTION"].string)
-						addField("Ranking", "#${jsonAnswer["RANKING"].string}", false)
-						setColor(Color(20, 158, 255))
-					}
-
-					context.metadata.remove("channel")
-					context.metadata.remove("signature")
-					context.metadata.remove("session")
-					context.metadata.remove("step")
-
-					msg.clearReactions().complete()
-					msg.editMessage(builder.build()).complete()
+				} catch (e: Exception) {
+					logger.error(response, e)
 				}
 			}
 		}

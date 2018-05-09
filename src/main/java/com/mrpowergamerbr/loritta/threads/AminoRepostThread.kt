@@ -1,41 +1,38 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.aminoreapi.AminoClient
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
+import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.awt.Color
+import java.util.concurrent.ConcurrentHashMap
 
 class AminoRepostThread : Thread("Amino Repost Thread") {
 	companion object {
-		var storedLastIds = HashMap<String, MutableSet<String>>();
+		var storedLastIds = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(AminoRepostThread::class.java)
 	}
 
 	override fun run() {
 		super.run()
 
-		// Logar na conta da Loritta no Amino
-		var aminoClient = AminoClient(Loritta.config.aminoEmail, Loritta.config.aminoPassword, Loritta.config.aminoDeviceId);
-		aminoClient.login();
-
 		while (true) {
 			try {
-				checkRepost(aminoClient);
+				checkRepost()
 			} catch (e: Exception) {
 				logger.error("Erro ao verificar novos posts no Amino!", e)
 			}
-			Thread.sleep(10000);
+			Thread.sleep(10000)
 		}
 	}
 
-	fun checkRepost(aminoClient: AminoClient) {
+	fun checkRepost() {
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		val servers = loritta.serversColl.find(
 				Filters.gt("aminoConfig.aminos", listOf<Any>())
@@ -45,16 +42,20 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		var communityIds = mutableSetOf<String>()
 		val list = mutableListOf<ServerConfig>()
 
+		val pattern = Regex("aminoapps\\.com/c/([A-z0-9]+)")
+				.toPattern()
+
 		servers.use {
 			while (it.hasNext()) {
 				val server = it.next()
 				val aminoConfig = server.aminoConfig
 
 				for (community in aminoConfig.aminos) {
-					if (community.communityId == null)
-						continue
+					val matcher = pattern.matcher(community.inviteUrl)
 
-					communityIds.add(community.communityId!!)
+					if (matcher.find()) {
+						communityIds.add(matcher.group(1))
+					}
 				}
 				list.add(server)
 			}
@@ -64,67 +65,114 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		val deferred = communityIds.map { communityId ->
 			launch {
 				try {
-					var community = aminoClient.getCommunityById(communityId) ?: return@launch
+					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")
+							.userAgent(Constants.USER_AGENT)
+							.ignoreHttpErrors(true)
+							.execute()
 
-					try {
-						community.join(communityId)
-					} catch (e: Exception) {
+					val statusCode = connection.statusCode()
+
+					if (statusCode != 200)
+						return@launch
+
+					val document = connection.parse()
+
+					val listItems = document.getElementsByClass("list-item")
+
+					var firstLink: String? = null
+
+					val linksFound = mutableListOf<String>()
+
+					var lastLoadedUrl = storedLastIds.getOrDefault(communityId, null)
+
+					for (item in listItems) {
+						val postLink = item.getElementsByAttributeValue("data-vce", "rich-content").first { !it.attr("href").contains("/user/") }.attr("href")
+
 						try {
-							community.join();
+							if (postLink.isEmpty())
+								continue
+
+							if (firstLink == null) {
+								firstLink = postLink
+							}
+
+							if (lastLoadedUrl == null) {
+								storedLastIds.put(communityId, postLink)
+								break
+							} else if (lastLoadedUrl == postLink) {
+								break
+							}
+
+							linksFound.add(postLink)
 						} catch (e: Exception) {
-							e.printStackTrace()
+							logger.error(postLink, e)
 						}
 					}
 
-					var posts = community.getBlogFeed(0, 5)
+					if (firstLink == null)
+						return@launch
 
-					val postsIds = storedLastIds.getOrPut(communityId, { mutableSetOf() })
+					storedLastIds.put(communityId, firstLink)
 
-					for (post in posts) {
-						if (postsIds.contains(post.blogId))
+					val links = linksFound.reversed()
+
+					for (link in links) {
+						val post = try {
+							Jsoup.connect(link).get()
+						} catch (e: IllegalArgumentException) {
 							continue
+						}
+
+						val titleDiv = post.getElementsByClass("main-post").first()
+
+						val title = titleDiv.getElementsByTag("header").first().getElementsByTag("h3").text()
+						val nickname = titleDiv.getElementsByClass("overflow-hidden").first().getElementsByClass("nickname").text()
+						val avatar = titleDiv.getElementsByTag("section").first().getElementsByClass("avatar").firstOrNull()?.attr("data-src")
+
+						val richContent = titleDiv.getElementsByAttributeValue("data-vce", "post-content-body").first()
+
+						if (richContent == null) {
+							logger.error("Post não tem post-content-body! $link")
+							continue
+						}
+
+						val firstImage = richContent.getElementsByTag("img").firstOrNull()
+						val imageUrl = firstImage?.attr("src")
 
 						for (server in list) {
-							for (aminoInfo in server.aminoConfig.aminos.filter { it.communityId == communityId }) {
+							for (aminoInfo in server.aminoConfig.aminos.filter {
+								val matcher = pattern.matcher(it.inviteUrl)
+								if (matcher.find())
+									matcher.group(1) == communityId
+								else
+									false
+							}) {
 								val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
 
 								val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId) ?: return@launch
 
 								if (!textChannel.canTalk())
-									return@launch
+									continue
 
 								// Enviar mensagem
-								var embed = EmbedBuilder().apply {
-									setAuthor(post.author.nickname, null, post.author.icon)
-									setTitle(post.title)
-									setDescription(post.content)
+								val embed = EmbedBuilder().apply {
+									setAuthor(nickname, null, "https:" + avatar)
+									setTitle("<:amino:375313236234469386> $title", link)
+									setDescription(richContent.text())
+
+									if (imageUrl != null)
+										setImage("https:" + imageUrl)
+
 									setColor(Color(255, 112, 125))
 
-									/* if (post.mediaList != null) {
-									var obj = post.mediaList ?: ;
-									var inside = obj[0];
-
-									if (inside is List<*>) {
-										var link = inside.get(1) as String;
-
-										if (link.contains("narvii.com") && (link.endsWith("jpg") || link.endsWith("png") || link.endsWith("gif"))) {
-											setImage(link);
-										}
-									}
-								} */
-									setFooter("Enviado as " + post.modifiedTime, null);
+									setFooter(communityId, null)
 								}
 								textChannel.sendMessage(embed.build()).complete()
 							}
 						}
 					}
-					postsIds.clear()
-
-					posts.forEach {
-						postsIds.add(it.blogId)
-					}
 				} catch (e: Exception) {
-
+					logger.error(communityId, e)
 				}
 			}
 		}

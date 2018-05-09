@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
@@ -16,6 +17,10 @@ object StarboardModule {
 		val starboardConfig = serverConfig.starboardConfig
 
 		if (e.reactionEmote.name == "⭐") {
+			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
+			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY))
+				return
+
 			val msg = e.textChannel.getMessageById(e.messageId).complete()
 			if (msg != null) {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)

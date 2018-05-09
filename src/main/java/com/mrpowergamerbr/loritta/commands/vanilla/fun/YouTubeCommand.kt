@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -46,7 +43,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 			if (items.isNotEmpty()) {
 				var format = "";
 				var youtubeKey = loritta.youtubeKey
-				for (i in 0 until Math.min(5, items.size)) {
+				for (i in 0 until Math.min(10, items.size)) {
 					var item = items[i];
 					if (item.id.kind == "youtube#video") {
 						var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
@@ -68,7 +65,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
 				var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
 				// Adicionar os reactions
-				for (i in 0 until Math.min(5, items.size)) {
+				for (i in 0 until Math.min(10, items.size)) {
 					mensagem.addReaction(Constants.INDEXES[i]).complete();
 				}
 				return;
@@ -92,18 +89,13 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				return
 			}
 
-			var item: YouTubeItem;
-			if (e.reactionEmote.name == "1⃣") {
-				item = context.metadata["0"] as YouTubeItem;
-			} else if (e.reactionEmote.name == "2⃣") {
-				item = context.metadata["1"] as YouTubeItem;
-			} else if (e.reactionEmote.name == "3⃣") {
-				item = context.metadata["2"] as YouTubeItem;
-			} else if (e.reactionEmote.name == "4⃣") {
-				item = context.metadata["3"] as YouTubeItem;
-			} else {
-				item = context.metadata["4"] as YouTubeItem;
-			}
+			val idx = Constants.INDEXES.indexOf(e.reactionEmote.name)
+
+			// Caso seja uma reaçõa inválida ou que não tem no metadata, ignore!
+			if (idx == -1 || !context.metadata.containsKey(idx.toString()))
+				return
+
+			var item: YouTubeItem = context.metadata[idx.toString()] as YouTubeItem
 
 			// Remover todos os reactions
 			msg.clearReactions().complete();
@@ -120,8 +112,8 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				var channelJson = parser.parse(channelResponse).obj;
 
 				val viewCount = statistics["viewCount"].string
-				val likeCount = statistics["likeCount"].string
-				val dislikeCount = statistics["dislikeCount"].string
+				val likeCount = statistics["likeCount"].nullString ?: "???"
+				val dislikeCount = statistics["dislikeCount"].nullString  ?: "???"
 				val commentCount = if (statistics.has("commentCount")) {
 					statistics["commentCount"].string
 				} else {

@@ -146,7 +146,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					// Por exemplo, "-7"
 					var lowestVotes = 0
 					for (answer in answers) {
-						if (lowestVotes > answer.downvotes.size) {
+						if (answer.downvotes.size > lowestVotes) {
 							lowestVotes = answer.downvotes.size
 						}
 					}
@@ -157,7 +157,12 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 					// E agora vamos verificar todas as respostas!
 					for (answer in answers) {
-						var totalUpvotes = ((answer.upvotes.size - answer.downvotes.size) + lowestVotes)
+						val totalUpvotes = ((answer.upvotes.size - answer.downvotes.size) + lowestVotes)
+						val relative = answer.upvotes.size - answer.downvotes.size
+
+						if (-15 > relative) { // Se a resposta possui mais de -15 downvotes totais, ela será completamente ignorada pela Gabriela
+							continue
+						}
 
 						// Mesmo que seja 0..0 vai adicionar uma vez
 						for (i in 0..totalUpvotes) {
@@ -165,27 +170,29 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						}
 					}
 
-					// E agora... nós selecionamos a resposta (finalmente!)
-					val answer = weightedAnswers[RANDOM.nextInt(weightedAnswers.size)]
+					if (weightedAnswers.isNotEmpty()) {
+						// E agora... nós selecionamos a resposta (finalmente!)
+						val answer = weightedAnswers[RANDOM.nextInt(weightedAnswers.size)]
 
-					discordWebhook.send(
-							com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
-									context.locale["FRASETOSCA_GABRIELA"],
-									context.getAsMention(true) + answer.answer.escapeMentions(),
-									"https://loritta.website/assets/img/gabriela_avatar.png"
-							),
-							true,
-							{
-								val messageId = it["id"].string
-								val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
-								val message = context.message.textChannel.getMessageById(messageId).complete()
+						discordWebhook.send(
+								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
+										context.locale["FRASETOSCA_GABRIELA"],
+										context.getAsMention(true) + answer.answer.escapeMentions(),
+										"https://loritta.website/assets/img/gabriela_avatar.png"
+								),
+								true,
+								{
+									val messageId = it["id"].string
+									val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+									val message = context.message.textChannel.getMessageById(messageId).complete()
 
-								if (message != null) {
-									learnGabriela(pergunta, message, context, functions, true, document, answer)
+									if (message != null) {
+										learnGabriela(pergunta, message, context, functions, true, document, answer)
+									}
 								}
-							}
-					)
-					return
+						)
+						return
+					}
 				}
 			}
 			discordWebhook.send(

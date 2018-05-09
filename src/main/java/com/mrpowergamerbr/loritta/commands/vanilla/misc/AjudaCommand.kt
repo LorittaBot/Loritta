@@ -33,7 +33,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
 					Loritta.config.addBotUrl,
-					context.guild?.name ?: "\uD83E\uDD37"]
+					context.event.guild?.name ?: "\uD83E\uDD37"]
 
 			val builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))

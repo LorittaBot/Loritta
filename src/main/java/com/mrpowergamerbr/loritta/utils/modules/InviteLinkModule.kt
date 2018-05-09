@@ -69,7 +69,7 @@ object InviteLinkModule {
 			// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
 			// necessário, e, ao pegar, vamos guardar no cache de invites
 			if (inviteBlockerConfig.whitelistServerInvites) {
-				if (!cachedInviteLinks.containsKey(guild.id)) {
+				if (!cachedInviteLinks.containsKey(guild.id) && guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
 					guild.invites.queue({
 						cachedInviteLinks.put(guild.id, it.map { it.code })
 						it.forEach {

@@ -61,7 +61,16 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 			val wikiaName = metadata["siteName"].string
 
 			val query = StringUtils.join(context.args, " ", 1, context.args.size)
-			val body = HttpRequest.get("$wikiaUrl/api/v1/Search/List/?query=" + URLEncoder.encode(query, "UTF-8") + "&limit=1&namespaces=0%2C14").body()
+			val body = try {
+				HttpRequest.get("$wikiaUrl/api/v1/Search/List/?query=" + URLEncoder.encode(query, "UTF-8") + "&limit=1&namespaces=0%2C14").body()
+			} catch (e: Exception) {
+				null
+			}
+
+			if (body == null) {
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
+				return
+			}
 
 			// Resolvi usar JsonParser em vez de criar um objeto para o Gson desparsear..
 			try {
