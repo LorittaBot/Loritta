@@ -64,6 +64,12 @@ class APIJoinServerView : NoVarsView() {
 			return payload.toString()
 		}
 
+		if (!serverConfig.serverListConfig.isEnabled) {
+			val payload = JsonObject()
+			payload["api:code"] = LoriWebCodes.NOT_IN_SERVER_LIST
+			return payload.toString()
+		}
+
 		if (!guild.selfMember.hasPermission(Permission.CREATE_INSTANT_INVITE)) {
 			val payload = JsonObject()
 			payload["api:code"] = LoriWebCodes.MISSING_PERMISSION
