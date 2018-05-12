@@ -24,7 +24,14 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         if (context.args.isEmpty()) {
             channel = context.message.textChannel
         } else {
-            channel = if (context.guild.getTextChannelById(context.args[0]) != null) context.guild.getTextChannelById(context.args[0]) else null
+
+            // aquela gambiarra que você respeita
+            try {
+                channel = if (context.guild.getTextChannelById(context.args[0]) != null) context.guild.getTextChannelById(context.args[0]) else null
+            } catch (exception: NumberFormatException) {
+                // ok, provavelmente o usuário não colocou o ID do canal, vamos checar os nomes dos canais!
+                channel = context.guild.textChannels.filter { it.name == context.args[0] }.get(0)
+            }
         }
 
         if (channel == null) {
@@ -45,7 +52,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
             addField("Nome do canal", channel.name, true)
             addField("ID do canal", channel.id, true)
             addField("Data de criação", channel.creationTime.humanize(), true)
-            addField("Tópico", if (channel.topic != null) channel.topic else "Não definido", true)
+            addField("Tópico", if (!channel.topic.isEmpty()) channel.topic else "Não definido", true)
             addField("NSFW Ativado", if (channel.isNSFW) "Sim" else "Não", true)
         }
 
