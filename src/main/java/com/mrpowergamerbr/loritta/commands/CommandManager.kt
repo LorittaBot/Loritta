@@ -155,6 +155,7 @@ class CommandManager {
 		commandMap.add(UserInfoCommand())
 		commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
+		commandMap.add(ChannelInfoCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
