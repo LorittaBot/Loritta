@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.entities.*
 class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
 
     // Criado por MrGaabriel
-    // TODO: Mudar as mensagens hardcoded para as das locales
 
     override fun getDescription(locale: BaseLocale): String {
         return locale["CHANNELINFO_Description"]
@@ -24,7 +23,6 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         if (context.args.isEmpty()) {
             channel = context.message.textChannel
         } else {
-
             // aquela gambiarra que você respeita
             try {
                 channel = if (context.guild.getTextChannelById(context.args[0]) != null) context.guild.getTextChannelById(context.args[0]) else null
@@ -36,7 +34,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
 
         if (channel == null) {
             context.reply(LoriReply(
-                    message = "Canal não encontrado!",
+                    message = locale["CHANNELINFO_ChannelNotFound"],
                     mentionUser = true,
                     prefix = "<:erro:326509900115083266>"
             ))
@@ -48,12 +46,12 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
             setAuthor(context.userHandle.name, null, context.userHandle.avatarUrl)
             setColor(Constants.DISCORD_BURPLE)
 
-            setTitle("Informações do canal #${channel.name}")
-            addField("Nome do canal", channel.name, true)
-            addField("ID do canal", channel.id, true)
-            addField("Data de criação", channel.creationTime.humanize(), true)
-            addField("Tópico", if (!channel.topic.isEmpty()) channel.topic else "Não definido", true)
-            addField("NSFW Ativado", if (channel.isNSFW) "Sim" else "Não", true)
+            setTitle("${locale["CHANNELINFO_ChannelInfo"]} #${channel.name}")
+            addField("${locale["CHANNELINFO_ChannelName"]}", channel.name, true)
+            addField("${locale["CHANNELINFO_ChannelID"]}", channel.id, true)
+            addField("${locale["CHANNELINFO_ChannelCreationTime"]}", channel.creationTime.humanize(), true)
+            addField("${locale["CHANNELINFO_Topic"]}", if (!channel.topic.isEmpty()) channel.topic else locale["CHANNELINFO_TopicUndefined"], true)
+            addField("${locale["CHANNELINFO_NsfwActivated"]}", if (channel.isNSFW) locale["LORITTA_Yes"] else locale["LORITTA_No"], true)
         }
 
         context.sendMessage(context.userHandle.asMention, builder.build())
