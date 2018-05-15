@@ -16,7 +16,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : AbstractCommand("correios", listOf("packageinfo", "ctt"), CommandCategory.UTILS) {
+class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}

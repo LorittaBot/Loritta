@@ -16,7 +16,7 @@ import java.io.StringReader
 import java.net.URLEncoder
 
 
-class TempoCommand : AbstractCommand("tempo", listOf("previsão", "previsao"), CommandCategory.UTILS) {
+class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "cidade"
 	}

@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class RipVidaCommand : AbstractCommand("ripvida", listOf("riplife"), CommandCategory.IMAGES) {
+class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("RIPVIDA_DESCRIPTION")
 	}

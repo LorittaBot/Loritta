@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 
-class EditarXPCommand : AbstractCommand("editarxp", category = CommandCategory.SOCIAL) {
+class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["EDITARXP_DESCRIPTION"]
 	}

@@ -26,7 +26,7 @@ import java.io.FileInputStream
 import java.net.SocketTimeoutException
 import javax.imageio.ImageIO
 
-class PerfilCommand : AbstractCommand("perfil", listOf("profile"), CommandCategory.SOCIAL) {
+class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
 		var userVotes: List<DiscordBotVote>? = null
 		var lastQuery = 0L

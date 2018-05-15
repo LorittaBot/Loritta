@@ -197,6 +197,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		if (!context.metadata.containsKey("guildId") && !context.isPrivateChannel) {
 			context.metadata["guildId"] = context.guild.id
 		}
+
 		loritta.messageContextCache[message.id] = context
 
 		for (category in categories) {

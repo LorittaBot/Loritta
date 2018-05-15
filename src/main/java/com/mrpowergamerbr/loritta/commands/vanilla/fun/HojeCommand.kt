@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.utils
+package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
@@ -17,7 +17,7 @@ import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 
-class HojeCommand : AbstractCommand("hoje", listOf("today"), CommandCategory.FUN) {
+class HojeCommand : AbstractCommand("today", listOf("hoje"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TODAY_DESCRIPTION")
 	}

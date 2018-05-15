@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.social
+package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
-class SayCommand : AbstractCommand("falar", listOf("say"), CommandCategory.MISC) {
+class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String {
         return locale["SAY_Description"]
     }

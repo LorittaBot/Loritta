@@ -12,7 +12,7 @@ import org.bson.Document
 import java.awt.Color
 import java.util.*
 
-class LembrarCommand : AbstractCommand("lembrar", listOf("lembre", "remind", "remindme", "lembrete", "reminder"), CommandCategory.UTILS) {
+class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "tempo mensagem"
 	}

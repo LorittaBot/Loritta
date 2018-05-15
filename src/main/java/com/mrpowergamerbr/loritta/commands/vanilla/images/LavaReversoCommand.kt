@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class LavaReversoCommand : AbstractCommand("lavareverso", listOf("reverselava"), CommandCategory.IMAGES) {
+class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LAVAREVERSO_DESCRIPTION"]
 	}

@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.utils.MiscUtil
 
-class LimparCommand : AbstractCommand("limpar", listOf("clean"), CommandCategory.ADMIN) {
+class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["LIMPAR_DESCRIPTION"]
 	}

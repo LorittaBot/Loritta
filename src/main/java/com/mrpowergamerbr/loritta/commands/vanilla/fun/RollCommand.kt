@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 
-class RollCommand : AbstractCommand("rolar", listOf("roll"), CommandCategory.FUN) {
+class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROLL_DESCRIPTION"]
 	}

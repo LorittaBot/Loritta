@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 
-class PularCommand : AbstractCommand("pular", listOf("skip"), category = CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
+class PularCommand : AbstractCommand("skip", listOf("pular"), category = CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PULAR_DESCRIPTION"]
 	}

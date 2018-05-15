@@ -17,7 +17,7 @@ import java.awt.image.RGBImageFilter
 import java.io.File
 import javax.imageio.ImageIO
 
-class RazoesCommand : AbstractCommand("razoes", listOf("razões", "reasons"), CommandCategory.IMAGES) {
+class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RAZOES_DESCRIPTION"]
 	}

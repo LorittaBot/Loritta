@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.Permission
 
-class TocarCommand : AbstractCommand("tocar", listOf("play", "adicionar"), CommandCategory.MUSIC) {
+class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("TOCAR_DESCRIPTION")
 	}

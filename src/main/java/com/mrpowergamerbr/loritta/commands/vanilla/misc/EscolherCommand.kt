@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class EscolherCommand : AbstractCommand("escolher", listOf("choose"), category = CommandCategory.MISC) {
+class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ESCOLHER_DESCRIPTION"]
 	}

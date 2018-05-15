@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.util.*
 
-class InverterCommand : AbstractCommand("inverter", category = CommandCategory.IMAGES) {
+class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["INVERTER_DESCRIPTION"]
 	}

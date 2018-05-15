@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.gifs.MentionGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class DiscordiaCommand : AbstractCommand("discordia", listOf("discórdia", "discord"), CommandCategory.IMAGES) {
+class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["DISCORDIA_DESCRIPTION"]
 	}

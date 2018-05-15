@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class QuadroCommand : AbstractCommand("quadro", listOf("frame", "wolverine"), CommandCategory.IMAGES) {
+class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["QUADRO_DESCRIPTION"]
 	}

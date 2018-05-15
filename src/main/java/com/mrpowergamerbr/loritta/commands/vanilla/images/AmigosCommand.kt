@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmigosCommand : AbstractCommand("amigos", listOf("friends", "meusamigos", "myfriends"), CommandCategory.IMAGES) {
+class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", "myfriends"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AMIGOS_DESCRIPTION"]
 	}

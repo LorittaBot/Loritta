@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 
-class SobreMimCommand : AbstractCommand("sobremim", listOf("aboutme"), CommandCategory.SOCIAL) {
+class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
     override fun getUsage(): String {
         return "<nova mensagem>"
     }

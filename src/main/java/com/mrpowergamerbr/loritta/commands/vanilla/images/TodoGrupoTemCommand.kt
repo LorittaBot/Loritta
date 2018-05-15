@@ -17,7 +17,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class TodoGrupoTemCommand : AbstractCommand("todogrupotem", listOf("everygrouphas"), CommandCategory.IMAGES) {
+class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TODOGRUPOTEM_Description"]
 	}

@@ -316,9 +316,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
-		if (e.user.isBot) {
+		if (e.user.isBot) // Ignorar reactions de bots
 			return
-		} // Ignorar reactions de bots
+
 		if (DebugLog.cancelAllEvents)
 			return
 

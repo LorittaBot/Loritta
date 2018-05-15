@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
-class PararCommand : AbstractCommand("parar", listOf("stop"), CommandCategory.MUSIC, listOf(LorittaPermission.DJ)) {
+class PararCommand : AbstractCommand("stop", listOf("parar"), CommandCategory.MUSIC, listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PARAR_Description"]
 	}

@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DeusCommand : AbstractCommand("deus", listOf("god"), CommandCategory.IMAGES) {
+class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["DEUS_DESCRIPTION"]
 	}

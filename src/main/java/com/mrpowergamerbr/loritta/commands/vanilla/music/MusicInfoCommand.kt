@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
-class MusicInfoCommand : AbstractCommand("tocando", listOf("playing", "playingnow", "musicinfo", "np"), CommandCategory.MUSIC) {
+class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingnow", "musicinfo", "np"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["MUSICINFO_DESCRIPTION"]
 	}

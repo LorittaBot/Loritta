@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 
-class EncurtarCommand : AbstractCommand("encurtar", listOf("bitly", "shorten"), CommandCategory.UTILS) {
+class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "link"
 	}

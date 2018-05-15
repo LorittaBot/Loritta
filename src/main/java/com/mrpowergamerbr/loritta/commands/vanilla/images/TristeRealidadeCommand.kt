@@ -18,7 +18,7 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class TristeRealidadeCommand : AbstractCommand("tristerealidade", listOf("sadreality"), CommandCategory.IMAGES) {
+class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristerealidade"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["TRISTEREALIDADE_DESCRIPTION"]
 	}

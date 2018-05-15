@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class GangueCommand : AbstractCommand("gangue", listOf("gang"), CommandCategory.IMAGES) {
+class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GANGUE_DESCRIPTION"]
 	}
