@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.entities.MessageEmbed
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.awt.Color
@@ -156,7 +157,13 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 								// Enviar mensagem
 								val embed = EmbedBuilder().apply {
-									setAuthor(nickname, null, "https:" + avatar)
+									val avatarUrl = "https:$avatar"
+									if (avatarUrl.length > MessageEmbed.URL_MAX_LENGTH || !EmbedBuilder.URL_PATTERN.matcher(avatarUrl).matches()) {
+										setAuthor(nickname, null, null)
+									} else {
+										setAuthor(nickname, null, avatarUrl)
+									}
+
 									setTitle("<:amino:375313236234469386> $title", link)
 									setDescription(richContent.text())
 
