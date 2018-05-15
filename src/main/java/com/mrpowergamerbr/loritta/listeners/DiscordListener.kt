@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.modules.*
+import kotlinx.coroutines.experimental.launch
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -42,7 +43,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
-			loritta.messageExecutors.execute {
+			launch {
 				try {
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
@@ -56,13 +57,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (ownerProfile.isBanned) { // Se o dono está banido...
 						if (event.member.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 							event.guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-							return@execute
+							return@launch
 						}
 					}
 
 					if (loritta.ignoreIds.contains(event.author.id)) { // Se o usuário está sendo ignorado...
 						if (lorittaProfile.isBanned) { // E ele ainda está banido...
-							return@execute // Então flw galerinha
+							return@launch // Então flw galerinha
 						} else {
 							// Se não, vamos remover ele da lista do ignoreIds
 							loritta.ignoreIds.remove(event.author.id)
@@ -119,24 +120,24 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (event.member == null) {
 						println("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
 						println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
-						return@execute
+						return@launch
 					}
 
 					// ===[ SLOW MODE ]===
 					if (SlowModeModule.checkForSlowMode(event, lorittaUser, serverConfig)) {
-						return@execute
+						return@launch
 					}
 
 					// ===[ VERIFICAR INVITE LINKS ]===
 					if (serverConfig.inviteBlockerConfig.isEnabled) {
 						if (InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
-							return@execute
+							return@launch
 						}
 					}
 
 					if (event.guild.id == "297732013006389252") {
 						if (DeleteNonLorittaInvitesModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)) {
-							return@execute
+							return@launch
 						}
 
 						ServerSupportModule.checkForSupport(event, event.message)
@@ -144,7 +145,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					// ===[ AUTOMOD ]===
 					if (AutomodModule.handleAutomod(event, event.guild, lorittaUser, serverConfig)) {
-						return@execute
+						return@launch
 					}
 
 					// ===[ CÁLCULO DE XP ]===
@@ -166,7 +167,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					loritta save lorittaProfile
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
-						return@execute
+						return@launch
 
 					AFKModule.handleAFK(event, locale)
 
@@ -183,14 +184,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					// Primeiro os comandos vanilla da Loritta(tm)
 					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
 						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-							return@execute
+							return@launch
 						}
 					}
 
 					// E depois os comandos usando JavaScript (Nashorn)
 					serverConfig.nashornCommands.forEach { cmd ->
 						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-							return@execute
+							return@launch
 						}
 					}
 
@@ -232,13 +233,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		} else if (event.isFromType(ChannelType.PRIVATE)) { // Mensagens em DMs
-			loritta.messageExecutors.execute {
+			launch {
 				val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 				val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 				val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 				if (event.message.contentRaw.replace("!", "").trim() == "<@297153970613387264>") {
 					event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
-					return@execute
+					return@launch
 				}
 
 				val lorittaMessageEvent = AbstractCommand.LorittaMessageEvent(
@@ -254,7 +255,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Comandos vanilla da Loritta
 				loritta.commandManager.commandMap.forEach{ cmd ->
 					if (cmd.handle(lorittaMessageEvent, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
-						return@execute
+						return@launch
 					}
 				}
 			}
