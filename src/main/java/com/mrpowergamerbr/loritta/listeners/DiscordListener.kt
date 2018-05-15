@@ -33,9 +33,9 @@ import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onMessageReceived(event: MessageReceivedEvent) {
-		if (event.author.isBot) { // Se uma mensagem de um bot, ignore a mensagem!
+		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
-		}
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -263,9 +263,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
-		if (event.author.isBot) {
+		if (event.author.isBot)
 			return
-		}
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -277,9 +277,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 				// ===[ VERIFICAR INVITE LINKS ]===
-				if (serverConfig.inviteBlockerConfig.isEnabled) {
+				if (serverConfig.inviteBlockerConfig.isEnabled)
 					InviteLinkModule.checkForInviteLinks(event.message, event.guild, lorittaUser, serverConfig.permissionsConfig, serverConfig.inviteBlockerConfig)
-				}
 
 				val lorittaMessageEvent = AbstractCommand.LorittaMessageEvent(
 						event.author,
