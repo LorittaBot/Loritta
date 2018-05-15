@@ -371,7 +371,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 " + locale["HOW_TO_USE"] + "... `" + commandLabel + "`")
+			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
 			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
@@ -399,9 +399,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 			if (examples.isEmpty()) {
 				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + ":**\n" + commandLabel
 			} else {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExample().size == 1) "" else "s") + ":**\n"
+				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExample().size == 1) "" else "s") + ":**"
 				for (example in examples) {
-					cmdInfo += example + "\n"
+					cmdInfo += "\n" + example
 				}
 			}
 
