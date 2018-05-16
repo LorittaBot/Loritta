@@ -29,8 +29,8 @@ import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
-import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent
-import net.dv8tion.jda.core.events.user.UserNameUpdateEvent
+import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
+import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import org.bson.Document
 import java.awt.Color
@@ -41,14 +41,11 @@ import java.net.URL
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
-import kotlin.concurrent.thread
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val handledUsernameChanges = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
 
-	// ===[ EVENT LOG ]===
-	// USERS
-	override fun onUserAvatarUpdate(event: UserAvatarUpdateEvent) {
+	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -59,7 +56,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			embed.setColor(Constants.DISCORD_BURPLE)
 			embed.setImage("attachment://avatar.png")
 
-			val rawOldAvatar = LorittaUtils.downloadImage(if (event.previousAvatarUrl == null) event.user.defaultAvatarUrl else event.previousAvatarUrl.replace("jpg", "png"))
+			val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
 			val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
 			if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
@@ -91,16 +88,18 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val config = it.next()
 							val locale = loritta.getLocaleById(config.localeId)
 
-							val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+							val guild = guilds.first { it.id == config.guildId }
+
+							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
-								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+								if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 									continue
-								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES))
+								if (!guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES))
 									continue
-								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+								if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 									continue
-								if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_READ))
+								if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 									continue
 
 								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
@@ -117,7 +116,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	override fun onUserNameUpdate(event: UserNameUpdateEvent) {
+	override fun onUserUpdateName(event: UserUpdateNameEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -160,17 +159,19 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val config = it.next()
 					val locale = loritta.getLocaleById(config.localeId)
 
-					val textChannel = guilds.first { it.id == config.guildId }.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+					val guild = guilds.first { it.id == config.guildId }
+
+					val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
-						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+						if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 							continue
-						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+						if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 							continue
-						if (!guilds.first { it.id == config.guildId }.selfMember.hasPermission(Permission.MESSAGE_READ))
+						if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 							continue
 
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldValue}", "${event.user.name}#${event.user.discriminator}"]}")
 						embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 						textChannel.sendMessage(embed.build()).complete()
@@ -385,10 +386,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.eventLogExecutors.execute {
-			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val locale = loritta.getLocaleById(serverConfig.localeId)
+
 				if (!textChannel.canTalk())
 					return@execute
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -404,8 +408,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setColor(Color(35, 209, 96))
 
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-				embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${event.member.asMention} entrou no canal de voz `${event.channelJoined.name}`**")
-				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+				embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["EVENTLOG_JoinedVoiceChannel", event.member.asMention, event.channelJoined.name]}**")
+				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
 				textChannel.sendMessage(embed.build()).complete()
 				return@execute
@@ -418,10 +422,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.eventLogExecutors.execute {
-			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@execute
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -432,11 +438,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				val embed = EmbedBuilder()
+				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
-				embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${event.member.asMention} saiu do canal de voz `${event.channelLeft.name}`**")
-				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+				embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["EVENTLOG_LeftVoiceChannel", event.member.asMention, event.channelLeft.name]}**")
+				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
 				textChannel.sendMessage(embed.build()).complete()
 				return@execute
@@ -469,10 +476,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 
-			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val locale = loritta.getLocaleById(serverConfig.localeId)
+
 				if (!textChannel.canTalk())
 					return@execute
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -483,22 +493,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				val embed = EmbedBuilder()
+				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83D\uDEAB **${event.user.name} foi banido!**";
+				var message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**";
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
 					val auditLog = event.guild.auditLogs.complete().first()
 
 					if (auditLog.type == ActionType.BAN) {
-						message += "\n**Banido por:** ${auditLog.user.asMention}";
-						message += "\n**Motivo:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
+						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user.asMention}";
+						message += "\n**${locale["BAN_PunishmentReason"]}:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
 					}
 				}
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter("ID do usuário: ${event.user.id}", null)
+				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 				textChannel.sendMessage(embed.build()).complete()
 				return@execute
@@ -523,10 +534,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				relayTo?.controller?.unban(event.user)?.queue()
 			}
 
-			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@execute
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -537,21 +550,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				val embed = EmbedBuilder()
+				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83E\uDD1D **${event.user.name} foi desbanido!**";
+				var message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**";
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
 					val auditLog = event.guild.auditLogs.complete().first()
 
 					if (auditLog.type == ActionType.UNBAN) {
-						message += "\n**Desbanido por:** ${auditLog.user.asMention}";
+						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user.asMention]}"
 					}
 				}
+
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter("ID do usuário: ${event.user.id}", null)
+				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 				textChannel.sendMessage(embed.build()).complete()
 				return@execute
@@ -564,11 +579,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.eventLogExecutors.execute {
-			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = serverConfig.eventLogConfig
+
 			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
-
+				embed.setTimestamp(Instant.now())
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
@@ -582,8 +600,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@execute
 
-				embed.setDescription("\uD83D\uDCDD **Nickname de ${event.member.asMention} foi alterado!\n\nAntigo nickname: `${if (event.prevNick == null) "\uD83E\uDD37 Nenhum nickname" else event.prevNick}`\nNovo nickname: `${if (event.newNick == null) "\uD83E\uDD37 Nenhum nickname" else event.newNick}`**")
-				embed.setFooter("ID do usuário: ${event.member.user.id}", null)
+				val oldNickname = if (event.prevNick == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.prevNick
+				val newNickname = if (event.newNick == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNick
+
+				embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NicknameChanged", oldNickname, newNickname]}")
+				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
 				textChannel.sendMessage(embed.build()).complete()
 				return@execute

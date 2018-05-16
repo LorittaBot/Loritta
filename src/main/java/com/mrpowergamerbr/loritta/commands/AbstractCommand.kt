@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -155,22 +156,24 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 
 				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (conf.warnIfBlacklisted) {
-						if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
-							var message = conf.blacklistWarning
-							message = message.replace("{@user}", ev.member.asMention)
-							message = message.replace("{user}", ev.member.user.name)
-							message = message.replace("{nickname}", ev.member.effectiveName)
-							message = message.replace("{guild}", ev.guild.name)
-							message = message.replace("{guildsize}", ev.guild.members.size.toString())
-							message = message.replace("{@owner}", ev.guild.owner.asMention)
-							message = message.replace("{owner}", ev.guild.owner.effectiveName)
-							message = message.replace("{@channel}", ev.textChannel.asMention)
-							message = message.replace("{channel}", ev.textChannel.name)
-							ev.textChannel.sendMessage(message).complete()
+					if (conf.miscellaneousConfig.enableBomDiaECia && this !is LigarCommand) {
+						if (conf.warnIfBlacklisted) {
+							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
+								var message = conf.blacklistWarning
+								message = message.replace("{@user}", ev.member.asMention)
+								message = message.replace("{user}", ev.member.user.name)
+								message = message.replace("{nickname}", ev.member.effectiveName)
+								message = message.replace("{guild}", ev.guild.name)
+								message = message.replace("{guildsize}", ev.guild.members.size.toString())
+								message = message.replace("{@owner}", ev.guild.owner.asMention)
+								message = message.replace("{owner}", ev.guild.owner.effectiveName)
+								message = message.replace("{@channel}", ev.textChannel.asMention)
+								message = message.replace("{channel}", ev.textChannel.name)
+								ev.textChannel.sendMessage(message).complete()
+							}
 						}
+						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 					}
-					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 				}
 
 				if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))

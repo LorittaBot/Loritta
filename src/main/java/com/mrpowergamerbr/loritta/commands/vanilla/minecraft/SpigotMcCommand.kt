@@ -36,7 +36,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 	}
 
 	override fun getExample(): List<String> {
-		return Arrays.asList("ProtocolSupportStuff")
+		return Arrays.asList("EssentialsX", "FastAsyncWorldEdit", "ProtocolSupport", "ProtocolSupportStuff")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

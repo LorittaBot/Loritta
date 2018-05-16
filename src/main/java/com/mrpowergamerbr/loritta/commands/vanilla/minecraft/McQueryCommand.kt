@@ -21,7 +21,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 	}
 
 	override fun getExample(): List<String> {
-		return Arrays.asList("jogar.sparklypower.net")
+		return Arrays.asList("mc.hypixel.net")
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

@@ -6,10 +6,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
-import com.mrpowergamerbr.loritta.commands.vanilla.economy.DailyCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoterittaCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.economy.SonhosCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
@@ -232,6 +229,7 @@ class CommandManager {
 		commandMap.add(DailyCommand())
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
+		commandMap.add(LigarCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)

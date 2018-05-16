@@ -2,10 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.google.common.collect.Sets
 import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.Emote
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.managers.Presence
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -44,13 +41,13 @@ class LorittaShards {
 
     fun getUsers(): List<User> {
         // Pegar todas os users em todos os shards
-        var users = ArrayList<User>();
+        val users = ArrayList<User>();
 
         for (shard in shards) {
             users.addAll(shard.users);
         }
 
-        var nonDuplicates = users.distinctBy { it.id }
+        val nonDuplicates = users.distinctBy { it.id }
 
         return nonDuplicates;
     }
@@ -71,7 +68,7 @@ class LorittaShards {
 
     fun getMutualGuilds(user: User): List<Guild> {
         // Pegar todas as mutual guilds em todos os shards
-        var guilds = ArrayList<Guild>()
+        val guilds = ArrayList<Guild>()
         for (shard in shards) {
             guilds.addAll(shard.getMutualGuilds(user))
         }
@@ -86,6 +83,18 @@ class LorittaShards {
             val emote = shard.getEmoteById(id)
             if (emote != null)
                 return emote
+        }
+        return null
+    }
+
+    fun getTextChannelById(id: String?): TextChannel? {
+        if (id == null)
+            return null
+
+        for (shard in shards) {
+            val textChannel = shard.getTextChannelById(id)
+            if (textChannel != null)
+                return textChannel
         }
         return null
     }

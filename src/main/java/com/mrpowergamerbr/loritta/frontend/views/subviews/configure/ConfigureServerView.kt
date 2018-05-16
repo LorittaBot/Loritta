@@ -211,7 +211,6 @@ class ConfigureServerView : ConfigureView() {
 		config.aminoConfig.aminos.clear()
 		val communities = receivedPayload["communities"].array
 
-		config.aminoConfig.isEnabled = receivedPayload["isEnabled"].bool
 		config.aminoConfig.fixAminoImages = receivedPayload["fixAminoImages"].bool
 		config.aminoConfig.syncAmino = receivedPayload["syncAmino"].bool
 

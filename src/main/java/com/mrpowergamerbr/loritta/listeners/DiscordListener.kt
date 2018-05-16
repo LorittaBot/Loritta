@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
+import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -123,6 +124,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						return@launch
 					}
 
+					// BOM DIA & CIA
+					if (serverConfig.miscellaneousConfig.enableBomDiaECia) {
+						val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(event.channel.id, BomDiaECia.YudiTextChannelInfo())
+						activeTextChannelInfo.lastMessageSent = System.currentTimeMillis()
+						activeTextChannelInfo.users.add(event.author)
+						loritta.bomDiaECia.activeTextChannels[event.channel.id] = activeTextChannelInfo
+					}
+
 					// ===[ SLOW MODE ]===
 					if (SlowModeModule.checkForSlowMode(event, lorittaUser, serverConfig)) {
 						return@launch
@@ -152,7 +161,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					ExperienceModule.handleExperience(event, serverConfig, lorittaProfile)
 
 					// ===[ CONVERTER IMAGENS DO AMINO ]===
-					if (serverConfig.aminoConfig.isEnabled && serverConfig.aminoConfig.fixAminoImages)
+					if (serverConfig.aminoConfig.fixAminoImages)
 						AminoConverterModule.convertToImage(event)
 
 					for (eventHandler in serverConfig.nashornEventHandlers) {
@@ -182,7 +191,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					)
 
 					// Primeiro os comandos vanilla da Loritta(tm)
-					loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
+					loritta.commandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
 						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 							return@launch
 						}

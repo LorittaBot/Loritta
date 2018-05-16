@@ -4,7 +4,6 @@ import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonProperty
 
 class AminoConfig {
-	var isEnabled: Boolean = false // Está ativado?
 	var fixAminoImages: Boolean = false // Corrigir imagens do Amino no Discord
 	var syncAmino: Boolean = false
 	var aminos: MutableList<AminoInfo> = mutableListOf()

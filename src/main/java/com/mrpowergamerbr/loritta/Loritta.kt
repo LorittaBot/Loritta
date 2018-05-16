@@ -135,6 +135,7 @@ class Loritta(config: LorittaConfig) {
 	var guildCount = 0
 
 	lateinit var loteriaThread: LoteriaThread
+	lateinit var bomDiaECia: BomDiaECia
 
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
@@ -246,6 +247,8 @@ class Loritta(config: LorittaConfig) {
 		RemindersThread().start()
 
 		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
+
+		bomDiaECia = BomDiaECia()
 
 		val loteriaFile = File(FOLDER, "loteria.json")
 

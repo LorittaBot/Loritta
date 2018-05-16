@@ -123,6 +123,9 @@ object DebugLog {
 				val waitQueueSize = waitQueueField.get(conPool) as AtomicInteger
 				println("Wait Queue Size: " + waitQueueSize.get())
 			}
+			"bomdiaecia" -> {
+				loritta.bomDiaECia.handleBomDiaECia(true)
+			}
 		}
 	}
 }
