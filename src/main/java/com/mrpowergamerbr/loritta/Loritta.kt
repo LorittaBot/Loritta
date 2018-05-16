@@ -198,7 +198,7 @@ class Loritta(config: LorittaConfig) {
 
 		generateDummyServerConfig()
 
-		println("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
+		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
@@ -206,22 +206,22 @@ class Loritta(config: LorittaConfig) {
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		for (idx in 0..generateShards) {
-			println("Iniciando Shard $idx...")
+			logger.info("Iniciando Shard $idx...")
 			val shard = builder
 					.useSharding(idx, Loritta.config.shards)
 					.buildAsync()
 
 			lorittaShards.shards.add(shard)
-			println("Shard $idx iniciada com sucesso!")
+			logger.info("Shard $idx iniciada com sucesso!")
 		}
 
-		println("Sucesso! Iniciando Loritta (Website)...") // E agora iremos iniciar o website da Loritta
+		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		val website = thread(true, name = "Website Thread") {
 			org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
 		}
 
-		println("Sucesso! Iniciando threads da Loritta...")
+		logger.info("Sucesso! Iniciando threads da Loritta...")
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
@@ -279,12 +279,6 @@ class Loritta(config: LorittaConfig) {
 		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 		playerManager = DefaultAudioPlayerManager()
 
-		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
-
-		trackInfoExecutorServiceField.isAccessible = true
-		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
-		trackInfoExecutorService.maximumPoolSize = 100
-
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
 
@@ -293,7 +287,7 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	fun initMongo() {
-		println("Iniciando MongoDB...")
+		logger.info("Iniciando MongoDB...")
 
 		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
@@ -563,11 +557,11 @@ class Loritta(config: LorittaConfig) {
 						return;
 					}
 				}
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_NOTFOUND", trackUrl)).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue();
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("MUSIC_ERROR", exception.message)).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_ERROR", exception.message]).queue();
 			}
 		})
 	}

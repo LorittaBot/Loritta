@@ -32,7 +32,7 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 		if (context.args.isNotEmpty()) {
 			val playerValue = context.args[0]
 
-			val janken = Jankenpon.getFromLangString(playerValue.toLowerCase())
+			val janken = Jankenpon.getFromLangString(playerValue.toLowerCase(), locale)
 
 			if (janken != null) {
 				val opponent = Jankenpon.values()[Loritta.RANDOM.nextInt(Jankenpon.values().size)]

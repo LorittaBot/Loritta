@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
@@ -52,12 +53,12 @@ public final class LorittaUtils {
 	}
 
 	public static void warnOwnerNoPermission(Guild guild, TextChannel textChannel, ServerConfig serverConf) {
-		// TODO: Localization
 		if (serverConf.getWarnOnMissingPermission()) {
 			for (Member member : guild.getMembers()) {
 				if (!member.getUser().isBot() && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
 					try {
-						member.getUser().openPrivateChannel().complete().sendMessage("Hey, eu estou sem permissão no **" + textChannel.getName() + "** na guild **" + guild.getName() + "**! Você pode configurar o meu grupo para poder falar lá? Obrigada! 😊").complete();
+						BaseLocale locale = LorittaLauncher.loritta.getLocaleById(serverConf.getLocaleId());
+						member.getUser().openPrivateChannel().complete().sendMessage(locale.get("LORITTA_HeyIDontHavePermission", textChannel.getAsMention(), guild.getName())).complete();
 					} catch (ErrorResponseException e){
 						if (e.getErrorResponse().getCode() == 50007) { // Usuário tem as DMs desativadas
 							continue;

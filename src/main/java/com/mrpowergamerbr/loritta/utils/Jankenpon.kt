@@ -1,10 +1,12 @@
 package com.mrpowergamerbr.loritta.utils
 
-enum class Jankenpon
-	private constructor(var lang: String, var emoji: String, var wins: String, var loses: String) {
-	ROCK("pedra", "\uD83C\uDF11", "SCISSORS", "PAPER"),
-	PAPER("papel", ":newspaper:", "ROCK", "SCISSORS"),
-	SCISSORS("tesoura", ":scissors:", "PAPER", "ROCK");
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+
+enum class Jankenpon(var lang: String, var emoji: String, var wins: String, var loses: String) {
+	// Os wins e os loses precisam ser uma string já que os enums ainda não foram inicializados
+	ROCK("PPT_Rock", "\uD83C\uDF11", "SCISSORS", "PAPER"),
+	PAPER("PPT_Paper", ":newspaper:", "ROCK", "SCISSORS"),
+	SCISSORS("PPT_Scissors", ":scissors:", "PAPER", "ROCK");
 
 	fun getStatus(janken: Jankenpon): JankenponStatus {
 		if (this.name.equals(janken.loses, ignoreCase = true)) {
@@ -23,9 +25,9 @@ enum class Jankenpon
 	}
 
 	companion object {
-		fun getFromLangString(str: String): Jankenpon? {
+		fun getFromLangString(str: String, locale: BaseLocale): Jankenpon? {
 			for (janken in Jankenpon.values()) {
-				if (janken.lang == str) {
+				if (locale[str] == str) {
 					return janken
 				}
 			}

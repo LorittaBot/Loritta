@@ -39,6 +39,8 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
 import org.jsoup.safety.Whitelist
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -54,16 +56,33 @@ import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-fun OffsetDateTime.humanize(): String {
-	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols().getMonths();
-	return "${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
+fun <R : Any> R.logger(): Lazy<Logger> {
+	return lazy { LoggerFactory.getLogger(getClassName(this.javaClass)) }
+}
+fun <T : Any> getClassName(clazz: Class<T>): String {
+	return clazz.name.removeSuffix("\$Companion")
 }
 
-fun Long.humanize(): String {
-	val fixedOffset = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols().getMonths();
-	return "${fixedOffset.dayOfMonth} de ${months[fixedOffset.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}";
+fun OffsetDateTime.humanize(locale: BaseLocale): String {
+	val localeId = loritta.locales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
+	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
+	val months = DateFormatSymbols().months
+
+	return if (localeId == "en-us") {
+		val fancy = when (this.dayOfMonth) {
+			1 -> "st"
+			2 -> "nd"
+			3 -> "rd"
+			else -> "th"
+		}
+		"${this.dayOfMonth}${fancy} of ${months[this.month.value - 1]}, ${fixedOffset.year} at ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
+	} else {
+		"${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
+	}
+}
+
+fun Long.humanize(locale: BaseLocale): String {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale)
 }
 
 fun Image.toBufferedImage() : BufferedImage {
@@ -237,6 +256,8 @@ enum class NSFWResponse {
 }
 
 object LorittaUtilsKotlin {
+	val logger by logger()
+
 	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
 		if (profile.isBanned) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.id)
@@ -288,7 +309,7 @@ object LorittaUtilsKotlin {
 				return NSFWResponse.NSFW
 			}
 		} catch (e: Exception) {
-			println("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
+			logger.info("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
 			return NSFWResponse.EXCEPTION
 		}
 		return NSFWResponse.OK
@@ -369,16 +390,16 @@ object LorittaUtilsKotlin {
 			val commentCount = if (metaTrack.metadata.containsKey("commentCount")) metaTrack.metadata["commentCount"] else "???"
 
 			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${locale.get("MUSICINFO_VIEWS")}", viewCount, true);
-			embed.addField("\uD83D\uDE0D ${locale.get("MUSICINFO_LIKES")}", likeCount, true);
-			embed.addField("\uD83D\uDE20 ${locale.get("MUSICINFO_DISLIKES")}", dislikeCount, true);
-			embed.addField("\uD83D\uDCAC ${locale.get("MUSICINFO_COMMENTS")}", commentCount, true);
-			embed.setThumbnail(metaTrack.metadata.get("thumbnail"))
-			embed.setAuthor("${playingTrack.info.author}", null, metaTrack.metadata["channelIcon"])
+			embed.addField("\uD83D\uDCFA ${locale["MUSICINFO_VIEWS"]}", viewCount, true);
+			embed.addField("\uD83D\uDE0D ${locale["MUSICINFO_LIKES"]}", likeCount, true);
+			embed.addField("\uD83D\uDE20 ${locale["MUSICINFO_DISLIKES"]}", dislikeCount, true);
+			embed.addField("\uD83D\uDCAC ${locale["MUSICINFO_COMMENTS"]}", commentCount, true);
+			embed.setThumbnail(metaTrack.metadata["thumbnail"])
+			embed.setAuthor(playingTrack.info.author, null, metaTrack.metadata["channelIcon"])
 		}
 
 		if (!stripSkipInfo)
-			embed.addField("\uD83D\uDCAB ${locale.get("MUSICINFO_SKIPTITLE")}", locale.get("MUSICINFO_SKIPTUTORIAL"), false)
+			embed.addField("\uD83D\uDCAB ${locale["MUSICINFO_SKIPTITLE"]}", locale["MUSICINFO_SKIPTUTORIAL"], false)
 
 		return embed.build()
 	}
@@ -623,14 +644,14 @@ object LorittaUtilsKotlin {
 		val guild = lorittaShards.getGuildById("297732013006389252")
 
 		if (guild == null) {
-			println("Não foi possível enviar stacktrace: Guild inexistente!")
+			logger.error("Não foi possível enviar stacktrace: Guild inexistente!")
 			return
 		}
 
 		val textChannel = guild.getTextChannelById("336834673441243146")
 
 		if (textChannel == null) {
-			println("Não foi possível enviar stacktrace: Canal de texto inexistente!")
+			logger.error("Não foi possível enviar stacktrace: Canal de texto inexistente!")
 			return
 		}
 
@@ -697,7 +718,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
-		val diff = System.currentTimeMillis() - (LorittaLauncher.loritta.songThrottle as java.util.Map<String, Long>).getOrDefault(guild.id, 0L)
+		val diff = System.currentTimeMillis() - LorittaLauncher.loritta.songThrottle.getOrDefault(guild.id, 0L)
 
 		if (5000 > diff)
 			return  // bye
@@ -736,20 +757,3 @@ data class FeedEntry(
 		val description: String?,
 		val entry: Element
 )
-
-class PanelOptionWrapper(
-		val obj: Any,
-		val id: String,
-		val description: String) {
-	var result: Any
-
-	init {
-		val field = obj.javaClass.getDeclaredField(id)
-		field.isAccessible = true
-		result = false
-
-		if (field.type == Boolean::class.javaPrimitiveType) {
-			result = field.getBoolean(obj)
-		}
-	}
-}

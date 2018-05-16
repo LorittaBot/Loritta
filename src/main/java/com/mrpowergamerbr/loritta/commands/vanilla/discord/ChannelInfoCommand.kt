@@ -44,7 +44,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
             setTitle("Informações do canal #${channel.name}")
             addField("Nome do canal", channel.name, true)
             addField("ID do canal", channel.id, true)
-            addField("Data de criação", channel.creationTime.humanize(), true)
+            addField("Data de criação", channel.creationTime.humanize(locale), true)
             addField("Tópico", if (channel.topic != null) channel.topic else "Não definido", true)
             addField("NSFW Ativado", if (channel.isNSFW) "Sim" else "Não", true)
         }

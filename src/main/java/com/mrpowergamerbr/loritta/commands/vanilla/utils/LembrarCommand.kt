@@ -130,7 +130,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			}
 
 			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.reason}")
-			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindMe.humanize()}\n")
+			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindMe.humanize(locale)}\n")
 			embed.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
 			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embed.setColor(Color(255, 179, 43))

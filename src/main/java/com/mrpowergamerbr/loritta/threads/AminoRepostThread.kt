@@ -43,7 +43,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 		var communityIds = mutableSetOf<String>()
 		val list = mutableListOf<ServerConfig>()
 
-		val pattern = Regex("aminoapps\\.com/c/([A-z0-9]+)")
+		val pattern = Regex("aminoapps\\.com/c/([A-z0-9\\-_]+)")
 				.toPattern()
 
 		servers.use {

@@ -40,7 +40,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.size > 0) {
+		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 
 			val embed = EmbedBuilder()
@@ -64,7 +64,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 					// Se for apenas um...
 					val resourceId = array[0]["id"].string
 
-					context.sendMessage(context.getAsMention(true), createResourceEmbed(context, resourceId).build())
+					context.sendMessage(context.getAsMention(true), createResourceEmbed(context, resourceId, locale).build())
 				} else {
 					var format = "";
 					for (i in 0..Math.min(5, array.size()) - 1) {
@@ -103,14 +103,14 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 			}
 
 			// Criar novo embed!
-			msg.editMessage(createResourceEmbed(context, resourceId).build()).complete();
+			msg.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).complete();
 
 			// Remover todos os reactions
 			msg.clearReactions().complete();
 		}
 	}
 
-	fun createResourceEmbed(context: CommandContext, resourceId: String) : EmbedBuilder {
+	fun createResourceEmbed(context: CommandContext, resourceId: String, locale: BaseLocale) : EmbedBuilder {
 		val embed = EmbedBuilder()
 		embed.setTitle("<:spigotmc:375314413357629440> Spigot")
 		embed.setColor(Color(227, 156, 17))
@@ -134,8 +134,8 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		val updateInstant = Instant.ofEpochSecond(updateEpoch)
 		ZonedDateTime.ofInstant(updateInstant, ZoneOffset.UTC)
 
-		embed.addField(context.locale.get("SPIGOTMC_RELEASED"), releaseInstant.atOffset(ZoneOffset.UTC).humanize(), true)
-		embed.addField(context.locale.get("SPIGOTMC_UPDATED"), updateInstant.atOffset(ZoneOffset.UTC).humanize(), true)
+		embed.addField(context.locale.get("SPIGOTMC_RELEASED"), releaseInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
+		embed.addField(context.locale.get("SPIGOTMC_UPDATED"), updateInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
 
 		embed.addField(context.locale.get("SPIGOTMC_DOWNLOAD"), "https://www.spigotmc.org/${resource.downloadLink}", true)
 

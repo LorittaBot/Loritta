@@ -59,7 +59,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 			context.reply(
 					LoriReply(
-							"Servidor `${guild.name}` foi marcado como patrociado até `${serverConfig.serverListConfig.sponsoredUntil.humanize()}`"
+							"Servidor `${guild.name}` foi marcado como patrociado até `${serverConfig.serverListConfig.sponsoredUntil.humanize(locale)}`"
 					)
 			)
 		}

@@ -269,7 +269,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
+		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
@@ -468,7 +468,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								addField("\uD83D\uDCBB " + locale["USERINFO_TAG_DO_DISCORD"], "${event.user.name}#${event.user.discriminator}", true)
 								addField("\uD83D\uDCBB " + locale["USERINFO_ID_DO_DISCORD"], event.user.id, true)
 								addField("\uD83C\uDF0E Servidores compartilhados (${mutualServers.size})", mutualServers.joinToString(transform = { it.name }), true)
-								addField("\uD83D\uDCC5 Conta criada em", event.user.creationTime.humanize(), true)
+								addField("\uD83D\uDCC5 Conta criada em", event.user.creationTime.humanize(locale), true)
 							}
 							textChannel.sendMessage(embed.build()).queue()
 						}
@@ -489,7 +489,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								addField("\uD83D\uDCBB " + locale["USERINFO_TAG_DO_DISCORD"], "${event.user.name}#${event.user.discriminator}", true)
 								addField("\uD83D\uDCBB " + locale["USERINFO_ID_DO_DISCORD"], event.user.id, true)
 								addField("\uD83C\uDF0E Mutual servers (${mutualServers.size})", mutualServers.joinToString(transform = { it.name }), true)
-								addField("\uD83D\uDCC5 Account created at", event.user.creationTime.humanize(), true)
+								addField("\uD83D\uDCC5 Account created at", event.user.creationTime.humanize(locale), true)
 							}
 							textChannel.sendMessage(embed.build()).queue()
 						}

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.HojeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
@@ -13,6 +14,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.SayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
