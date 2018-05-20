@@ -87,19 +87,17 @@ class Loritta(config: LorittaConfig) {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val eventLogExecutors = createThreadPool("Event Log Thread %d") // Threads
-	val messageExecutors = createThreadPool("Message Thread %d") // Threads
-	val executor = createThreadPool("Executor Thread %d") // Threads
 	val socket = SocketServer(10699)
+	val executor = createThreadPool("Executor Thread %d") // Threads
+
+	fun createThreadPool(name: String): ExecutorService {
+		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+	}
 
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
 	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
-
-	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
-	}
 
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
@@ -121,7 +119,7 @@ class Loritta(config: LorittaConfig) {
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
 	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
 
-	var youtubeKeys: MutableList<String> = mutableListOf<String>()
+	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
 
 	var fanArts = mutableListOf<LorittaFanArt>()
@@ -129,16 +127,16 @@ class Loritta(config: LorittaConfig) {
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var builder: JDABuilder
 
-	val log = File(FOLDER, "log-${System.currentTimeMillis()}.log")
-
-	var userCount = 0
-	var guildCount = 0
-
-	lateinit var loteriaThread: LoteriaThread
+	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
 
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
+
+	var isPatreon = mutableMapOf<String, Boolean>()
+	var isDonator = mutableMapOf<String, Boolean>()
+	var userCount = 0
+	var guildCount = 0
 
 	init {
 		FOLDER = config.lorittaFolder
@@ -230,6 +228,37 @@ class Loritta(config: LorittaConfig) {
 			socket.start()
 		}
 
+		thread(name = "Update Random Stuff") {
+			while (true) {
+				userCount = lorittaShards.getUserCount()
+				guildCount = lorittaShards.getGuildCount()
+
+				val isPatreon = mutableMapOf<String, Boolean>()
+				val isDonator = mutableMapOf<String, Boolean>()
+
+				val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
+
+				if (lorittaGuild != null) {
+					val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+					val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+
+					val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+					val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+
+					patreons.forEach {
+						isPatreon[it.user.id] = true
+					}
+					donators.forEach {
+						isDonator[it.user.id] = true
+					}
+
+					this.isPatreon = isPatreon
+					this.isDonator = isDonator
+				}
+				Thread.sleep(15000)
+			}
+		}
+
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
 		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
@@ -250,34 +279,21 @@ class Loritta(config: LorittaConfig) {
 
 		bomDiaECia = BomDiaECia()
 
-		val loteriaFile = File(FOLDER, "loteria.json")
+		val raffleFile = File(FOLDER, "raffle.json")
 
-		if (loteriaFile.exists()) {
-			val json = JSON_PARSER.parse(loteriaFile.readText())
+		if (raffleFile.exists()) {
+			val json = JSON_PARSER.parse(raffleFile.readText())
 
-			LoteriaThread.started = json["started"].long
-			LoteriaThread.lastWinnerId = json["lastWinnerId"].string
-			LoteriaThread.lastWinnerPrize = json["lastWinnerPrize"].int
-			LoteriaThread.userIds = GSON.fromJson(json["userIds"])
+			RaffleThread.started = json["started"].long
+			RaffleThread.lastWinnerId = json["lastWinnerId"].string
+			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].int
+			RaffleThread.userIds = GSON.fromJson(json["userIds"])
 		}
 
-		loteriaThread = LoteriaThread()
-		loteriaThread.start()
+		raffleThread = RaffleThread()
+		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
-
-		thread(name = "Small Update Stuff") {
-			while (true) {
-				try {
-					userCount = lorittaShards.getUserCount()
-					guildCount = lorittaShards.getGuildCount()
-				} catch (e: Exception) {
-					e.printStackTrace()
-				}
-
-				Thread.sleep(15000)
-			}
-		}
 
 		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 		playerManager = DefaultAudioPlayerManager()

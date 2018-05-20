@@ -87,7 +87,6 @@ object DebugLog {
 				println("musicManagers.size: ${loritta.musicManagers.size}")
 				println("songThrottle.size: ${loritta.songThrottle.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
-				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
 				println("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
@@ -97,8 +96,6 @@ object DebugLog {
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
-				println("eventLogExecutors: ${(loritta.eventLogExecutors as ThreadPoolExecutor).activeCount}")
-				println("messageExecutors: ${(loritta.messageExecutors as ThreadPoolExecutor).activeCount}")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}

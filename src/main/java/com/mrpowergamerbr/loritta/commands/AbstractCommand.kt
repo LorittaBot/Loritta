@@ -156,7 +156,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 
 				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (conf.miscellaneousConfig.enableBomDiaECia && this !is LigarCommand) {
+					if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && this !is LigarCommand)) {
 						if (conf.warnIfBlacklisted) {
 							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								var message = conf.blacklistWarning

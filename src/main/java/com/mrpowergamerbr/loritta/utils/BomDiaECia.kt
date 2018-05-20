@@ -1,28 +1,35 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.core.entities.*
+import java.awt.Color
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
 
 class BomDiaECia() {
-	val thread: BomDiaECiaThread
+	val thread: BomDiaECiaThread = BomDiaECiaThread()
 
 	init {
-		thread = BomDiaECiaThread()
 		thread.start()
 	}
 
-	var lastAnnounce = System.currentTimeMillis()
-	var estimatedTime = 0L
 	var activeTextChannels = ConcurrentHashMap<String, YudiTextChannelInfo>()
 	var available = false
+
+	var randomTexts = mutableListOf(
+			"amo o yudi e a priscilla!",
+			"bts? eu só conheço o sbt!",
+			"preisteicho dois!",
+			"preisteicho treis!",
+			"preisteicho!",
+			"não quero ganhar um jogo da vida!"
+	)
+
+	var currentText = randomTexts[0]
 
 	val logger by logger()
 
@@ -38,11 +45,17 @@ class BomDiaECia() {
 
 		val embedsForLocales = mutableMapOf<String, MessageEmbed>()
 
+		currentText = randomTexts[RANDOM.nextInt(randomTexts.size)]
+
+		val obfuscatedText = currentText.toCharArray()
+				.joinToString("\u200B")
+
 		loritta.locales.forEach { localeId, locale ->
 			val embed = EmbedBuilder()
-			embed.setTitle("Bom Dia & Cia")
-			embed.setDescription("Você aí de casa querendo prêmios agora, neste instante? Então ligue para o Bom Dia & Cia! Corra que apenas a primeira pessoa que ligar irá ganhar prêmios! (Cada tentativa de ligação custa **75 Sonhos**!) `+ligar 4002-8922`")
+			embed.setTitle("<:sbt:447560158344904704> Bom Dia & Cia")
+			embed.setDescription("Você aí de casa querendo prêmios agora, neste instante? Então ligue para o Bom Dia & Cia! Corra que apenas a primeira pessoa que ligar irá ganhar prêmios! (Cada tentativa de ligação custa **75 Sonhos**!) `+ligar 4002-8922 ${obfuscatedText}`")
 			embed.setImage("https://loritta.website/assets/img/bom-dia-cia.jpg")
+			embed.setColor(Color(74, 39, 138))
 
 			embedsForLocales[localeId] = embed.build()
 		}
@@ -60,7 +73,8 @@ class BomDiaECia() {
 			thread.start()
 	}
 
-	fun announceWinner(user: User) {
+	@Synchronized
+	fun announceWinner(guild: Guild, user: User) {
 		val validTextChannels = getActiveTextChannels()
 
 		activeTextChannels.clear()
@@ -68,7 +82,7 @@ class BomDiaECia() {
 		val messageForLocales = mutableMapOf<String, Message>()
 
 		loritta.locales.forEach { localeId, locale ->
-			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks()}#${user.discriminator}` por ter ligado primeiro!")
+			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks()}#${user.discriminator}` por ter ligado primeiro no `${guild.name.stripCodeMarks()}`!")
 
 			messageForLocales[localeId] = message.build()
 		}

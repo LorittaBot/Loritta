@@ -49,7 +49,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
@@ -120,7 +120,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
@@ -186,7 +186,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setColor(Color(35, 209, 96))
@@ -246,7 +246,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdit)) {
@@ -287,7 +287,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -329,7 +329,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -360,7 +360,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
 								if (auditEntry.targetId == storedMessage.authorId) {
-									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user.asMention] + "\n"
+									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user?.asMention ?: "???"] + "\n"
 								}
 							}
 						}
@@ -385,7 +385,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val eventLogConfig = serverConfig.eventLogConfig
 
@@ -421,7 +421,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val eventLogConfig = serverConfig.eventLogConfig
 
@@ -455,7 +455,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			// Fazer relay de bans
 			if (event.guild.id == "297732013006389252") {
 				val relayTo = lorittaShards.getGuildById("420626099257475072")
@@ -503,7 +503,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val auditLog = event.guild.auditLogs.complete().first()
 
 					if (auditLog.type == ActionType.BAN) {
-						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user.asMention}";
+						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}";
 						message += "\n**${locale["BAN_PunishmentReason"]}:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
 					}
 				}
@@ -521,7 +521,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			// Fazer relay de unbans
 			if (event.guild.id == "297732013006389252") {
 				val relayTo = lorittaShards.getGuildById("420626099257475072")
@@ -560,7 +560,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val auditLog = event.guild.auditLogs.complete().first()
 
 					if (auditLog.type == ActionType.UNBAN) {
-						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user.asMention]}"
+						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user?.asMention ?: "???"]}"
 					}
 				}
 
@@ -578,7 +578,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.eventLogExecutors.execute {
+		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val eventLogConfig = serverConfig.eventLogConfig
 

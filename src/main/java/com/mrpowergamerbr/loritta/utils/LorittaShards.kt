@@ -44,7 +44,7 @@ class LorittaShards {
         val users = ArrayList<User>();
 
         for (shard in shards) {
-            users.addAll(shard.users);
+            users.addAll(shard.users)
         }
 
         val nonDuplicates = users.distinctBy { it.id }

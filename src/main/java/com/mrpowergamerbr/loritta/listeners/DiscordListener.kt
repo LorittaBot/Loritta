@@ -612,7 +612,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
-			if (voiceChannel.members.any { !it.user.isBot })
+			if (voiceChannel.members.any { !it.user.isBot && (it.voiceState.isDeafened || it.voiceState.isGuildDeafened) })
 				return@execute
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)

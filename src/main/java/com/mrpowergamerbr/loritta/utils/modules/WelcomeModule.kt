@@ -77,8 +77,8 @@ object WelcomeModule {
 												if (joinLeaveConfig.kickMessage.isNotEmpty()) {
 													msg = joinLeaveConfig.kickMessage
 													customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-													customTokens["@staff"] = entry.user.asMention
-													customTokens["staff"] = entry.user.name
+													customTokens["@staff"] = entry.user?.asMention ?: "???"
+													customTokens["staff"] = entry.user?.name ?: "???"
 													callback.invoke(msg, customTokens)
 													return@queue
 												}
@@ -87,8 +87,8 @@ object WelcomeModule {
 												if (joinLeaveConfig.banMessage.isNotEmpty()) {
 													msg = joinLeaveConfig.banMessage
 													customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-													customTokens["@staff"] = entry.user.asMention
-													customTokens["staff"] = entry.user.name
+													customTokens["@staff"] = entry.user?.asMention ?: "???"
+													customTokens["staff"] = entry.user?.name ?: "???"
 													callback.invoke(msg, customTokens)
 													return@queue
 												}

@@ -225,7 +225,7 @@ class CommandManager {
 		commandMap.add(PararCommand())
 
 		// =======[ ECONOMIA ]========
-		commandMap.add(LoterittaCommand())
+		commandMap.add(LoraffleCommand())
 		commandMap.add(DailyCommand())
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())

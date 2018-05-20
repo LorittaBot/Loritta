@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.frontend.views.subviews.api.serverlist.*
 import com.mrpowergamerbr.loritta.frontend.views.subviews.configure.*
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jooby.Request
@@ -50,8 +51,17 @@ object GlobalHandler {
 		apiViews.filter { it.handleRender(req, res, req.path()) }
 				.forEach { return it.render(req, res, req.path()) }
 
-		val variables = mutableMapOf<String, Any?>("discordAuth" to null)
-		variables["epochMillis"] = System.currentTimeMillis()
+		val variables = mutableMapOf(
+				"discordAuth" to null,
+				"epochMillis" to System.currentTimeMillis(),
+				"guildCount" to loritta.guildCount,
+				"userCount" to loritta.userCount,
+				"availableCommandsCount" to loritta.commandManager.commandMap.size,
+				"commandMap" to loritta.commandManager.commandMap,
+				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
+				"path" to req.path(),
+				"clientId" to Loritta.config.clientId
+		)
 
 		// TODO: Deprecated
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
@@ -101,12 +111,6 @@ object GlobalHandler {
 			variables[locale.key] = MessageFormat.format(locale.value)
 		}
 
-		variables["guildCount"] = loritta.guildCount
-		variables["userCount"] = loritta.userCount
-		variables["availableCommandsCount"] = loritta.commandManager.commandMap.size
-		variables["commandMap"] = loritta.commandManager.commandMap
-		variables["executedCommandsCount"] = LorittaUtilsKotlin.executedCommands
-		variables["path"] = req.path()
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()
 		val languageCode2 = split.getOrNull(1)
@@ -139,29 +143,9 @@ object GlobalHandler {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		val isPatreon = mutableMapOf<String, Boolean>()
-		val isDonator = mutableMapOf<String, Boolean>()
+		variables["isPatreon"] = loritta.isPatreon
+		variables["isDonator"] = loritta.isDonator
 
-		val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
-
-		if (lorittaGuild != null) {
-			val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-			val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
-
-			val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-
-			patreons.forEach {
-				isPatreon[it.user.id] = true
-			}
-			donators.forEach {
-				isDonator[it.user.id] = true
-			}
-		}
-
-		variables["clientId"] = Loritta.config.clientId
-		variables["isPatreon"] = isPatreon
-		variables["isDonator"] = isDonator
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
 		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)

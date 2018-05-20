@@ -136,13 +136,13 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 						embeds.add(embed.build());
 						embed = EmbedBuilder();
 						embed.setColor(color)
-						description = "";
+						description = ""
 					}
 					description += toBeAdded
 				}
 			}
 			embed.setDescription(description)
-			embeds.add(embed.build());
+			embeds.add(embed.build())
 			return embeds
 		} else {
 			return embeds
@@ -160,7 +160,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.commandManager.commandMap.any { it.category == category } }
+		categories = categories.filter { category -> loritta.commandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
 
 		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
@@ -180,11 +180,16 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		)
 
 		for (category in categories) {
-			val cmdCountInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }.count()
+			val cmdsInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
+			val cmdCountInCategory = cmdsInCategory.count()
 			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
 			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }
 			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
 			description += "$emoji **" + context.locale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
+			// Exemplos de comandos, iremos pegar os comandos mais usados e mostrar lá
+			val mostUsedCommands = cmdsInCategory.sortedByDescending { it.executedCount }
+			val subList = mostUsedCommands.subList(0, Math.min(5, mostUsedCommands.size))
+			description += "• ${subList.joinToString(", ", transform = { "**`${it.label}`**" })}...\n"
 		}
 
 		val embed = EmbedBuilder().apply {
