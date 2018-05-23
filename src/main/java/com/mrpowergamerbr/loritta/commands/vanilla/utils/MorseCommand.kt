@@ -38,7 +38,7 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 			val embed = EmbedBuilder();
 
 			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB ${locale["MORSE_TO_FROM"]}" else "\uD83D\uDC49\uD83D\uDCFB ${locale["MORSE_FROM_TO"]}")
-			embed.setDescription("*beep* *boop*```${if (fromMorse.isNotEmpty()) fromMorse else toMorse}```")
+			embed.setDescription("*beep boop*```${if (fromMorse.isNotEmpty()) fromMorse else toMorse}```")
 			embed.setColor(Color(153, 170, 181))
 
 			context.sendMessage(context.getAsMention(true), embed.build())
