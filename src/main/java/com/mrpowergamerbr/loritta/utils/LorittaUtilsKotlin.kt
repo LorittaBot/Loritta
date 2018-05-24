@@ -360,8 +360,8 @@ object LorittaUtilsKotlin {
 	@JvmStatic
 	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
 		val manager = loritta.getGuildAudioPlayer(guild)
-		val playingTrack = manager.player.playingTrack;
-		val metaTrack = manager.scheduler.currentTrack!!
+		val playingTrack = manager.player.playingTrack
+		val metaTrack = manager.scheduler.currentTrack
 		val embed = EmbedBuilder()
 		embed.setTitle("\uD83C\uDFB5 ${playingTrack.info.title}", playingTrack.info.uri)
 		embed.setColor(Color(93, 173, 236))
@@ -383,7 +383,7 @@ object LorittaUtilsKotlin {
 
 		embed.addField("\uD83D\uDD52 ${locale["MUSICINFO_LENGTH"]}", "`$elapsed`/`$fancy`", true);
 
-		if (playingTrack.sourceManager.sourceName == "youtube") {
+		if (playingTrack.sourceManager.sourceName == "youtube" && metaTrack != null) {
 			val viewCount = if (metaTrack.metadata.containsKey("viewCount")) metaTrack.metadata["viewCount"] else "???"
 			val likeCount = if (metaTrack.metadata.containsKey("likeCount")) metaTrack.metadata["likeCount"] else "???"
 			val dislikeCount = if (metaTrack.metadata.containsKey("dislikeCount")) metaTrack.metadata["dislikeCount"] else "???"

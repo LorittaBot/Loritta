@@ -259,7 +259,7 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Pq portugues compra moto e não anda?\n\nPq ele compra yamaha hahaha",
 				"Como um míope sobe a escada?\n\nCom óculos degrau",
 				"O que é um alcoólotra?\n\nUm guri foi até seu pai e lhe fez uma pergunta: Pai, o que é um alcoólatra? Está vendo aquelas quatro árvores filhão? Pois então, um alcoólatra é quem vê oito delas. Mas pai, eu só vejo duas árvores.",
-				"Levar um tomo na Ucrania pode ser fatal...\n\n...porque todo traumatismo lá é UCRANIANO",
+				"Levar um tombo na Ucrania pode ser fatal...\n\n...porque todo traumatismo lá é UCRANIANO",
 				"Temer vira para Marcela e pergunta: \"Amor, onde jantaremos hoje?\"\n\nEla responde: Fora, Temer",
 				"Os nadadores americanos não são culpados\n\nO que as gravações não mostram é eles perguntando a um cara na rua aonde ele podiam ir pra mijar, e o cara respondendo: \"Lá no posto ipiranga\"",
 				"Construir prédio não é fácil...\n\nedifício.",

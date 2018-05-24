@@ -40,9 +40,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (event.jda.ping > 5000) // Se o ping está muito alto, vamos ignorar qualquer request até que ela volte ao normal
-			return
-
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			launch {
 				try {
@@ -612,7 +609,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
-			if (voiceChannel.members.any { !it.user.isBot && (it.voiceState.isDeafened || it.voiceState.isGuildDeafened) })
+			if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
 				return@execute
 
 			val mm = loritta.getGuildAudioPlayer(event.guild)

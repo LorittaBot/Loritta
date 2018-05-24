@@ -69,28 +69,6 @@ public final class LorittaUtils {
 		}
 	}
 
-	public static String replaceTokens(String message, GuildMemberJoinEvent e) {
-		message = message.replace("{@user}", e.getMember().getAsMention());
-		message = message.replace("{user}", e.getMember().getUser().getName());
-		message = message.replace("{nickname}", e.getMember().getEffectiveName());
-		message = message.replace("{guild}", e.getGuild().getName());
-		message = message.replace("{guildsize}", String.valueOf(e.getGuild().getMembers().size()));
-		message = message.replace("{@owner}", e.getGuild().getOwner().getAsMention());
-		message = message.replace("{owner}", e.getGuild().getOwner().getEffectiveName());
-		return message;
-	}
-
-	public static String replaceTokens(String message, GuildMemberLeaveEvent e) {
-		message = message.replace("{@user}", e.getMember().getAsMention());
-		message = message.replace("{user}", e.getMember().getUser().getName());
-		message = message.replace("{nickname}", e.getMember().getEffectiveName());
-		message = message.replace("{guild}", e.getGuild().getName());
-		message = message.replace("{guildsize}", String.valueOf(e.getGuild().getMembers().size()));
-		message = message.replace("{@owner}", e.getGuild().getOwner().getAsMention());
-		message = message.replace("{owner}", e.getGuild().getOwner().getEffectiveName());
-		return message;
-	}
-
 	/**
 	 * Verifica se uma imagem é válida (ou seja, diferente de null), caso seja null, a Loritta irá avisar ao usuário que ela não tem nenhuma imagem "utilizável"
 	 * @param context

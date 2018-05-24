@@ -22,6 +22,9 @@ class ServerListConfig {
 	var sendOnVote: Boolean = false
 	var voteBroadcastChannelId: String? = null
 	var voteBroadcastMessage: String? = null
+	var sendOnPromote: Boolean = false
+	var promoteBroadcastChannelId: String? = null
+	var promoteBroadcastMessage: String? = null
 
 	class ServerVote @BsonCreator constructor(
 			@BsonProperty("id")

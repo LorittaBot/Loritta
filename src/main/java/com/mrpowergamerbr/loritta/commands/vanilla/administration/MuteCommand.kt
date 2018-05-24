@@ -334,8 +334,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			if (mutedRole == null) {
-				logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Cargo não existe mais!")
+			if (mutedRole == null || !member.roles.contains(mutedRole)) {
+				if (mutedRole == null) {
+					logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Cargo não existe mais!")
+				} else {
+					logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Usuário não possui mais o cargo!")
+				}
 				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
 				userData.temporaryMute = false
 				userData.isMuted = false

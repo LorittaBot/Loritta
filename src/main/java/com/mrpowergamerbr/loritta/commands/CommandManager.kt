@@ -230,6 +230,7 @@ class CommandManager {
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
+		commandMap.add(SonhosTopCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)

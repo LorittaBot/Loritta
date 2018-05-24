@@ -83,6 +83,29 @@ class APIBumpServerView : NoVarsView() {
 		loritta save serverConfig
 		loritta save profile
 
+
+		val member = guild.getMemberById(userIdentification.id)
+
+		if (serverConfig.serverListConfig.sendOnPromote && serverConfig.serverListConfig.promoteBroadcastChannelId != null && serverConfig.serverListConfig.promoteBroadcastMessage != null) {
+			val textChannel = guild.getTextChannelById(serverConfig.serverListConfig.promoteBroadcastChannelId)
+
+			if (textChannel != null) {
+				val customTokens = mutableMapOf<String, String>(
+						"vote-count" to serverConfig.serverListConfig.votes.count { it.id == member.user.id }.toString()
+				)
+
+				val message = MessageUtils.generateMessage(
+						serverConfig.serverListConfig.promoteBroadcastMessage!!,
+						listOf(guild, member),
+						guild,
+						customTokens
+				)
+
+				if (message != null)
+					textChannel.sendMessage(message).complete()
+			}
+		}
+
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["bumpedAt"] = serverConfig.serverListConfig.lastBump

@@ -23,6 +23,9 @@ class ServerListPayload : ConfigPayloadType("server_list") {
 		serverListConfig.sendOnVote = payload["sendOnVote"].bool
 		serverListConfig.voteBroadcastChannelId = payload["voteBroadcastChannelId"].string
 		serverListConfig.voteBroadcastMessage = payload["voteBroadcastMessage"].string
+		serverListConfig.sendOnPromote = payload["sendOnPromote"].bool
+		serverListConfig.promoteBroadcastChannelId = payload["promoteBroadcastChannelId"].string
+		serverListConfig.promoteBroadcastMessage = payload["promoteBroadcastMessage"].string
 
 		if (serverListConfig.isPartner || serverListConfig.isSponsored) {
 			serverListConfig.vanityUrl = payload["vanityUrl"].string

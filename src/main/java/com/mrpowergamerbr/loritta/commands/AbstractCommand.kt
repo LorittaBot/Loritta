@@ -278,7 +278,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
-				val randomValue = RANDOM.nextInt(0, 200)
+				val randomValue = RANDOM.nextInt(0, 100)
 
 				if (randomValue == 0) {
 					context.reply(
@@ -287,7 +287,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if (randomValue == 100) {
+				} else if (randomValue == 50) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],

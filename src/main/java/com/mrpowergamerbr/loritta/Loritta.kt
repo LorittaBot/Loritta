@@ -230,30 +230,34 @@ class Loritta(config: LorittaConfig) {
 
 		thread(name = "Update Random Stuff") {
 			while (true) {
-				userCount = lorittaShards.getUserCount()
-				guildCount = lorittaShards.getGuildCount()
+				try {
+					userCount = lorittaShards.getUserCount()
+					guildCount = lorittaShards.getGuildCount()
 
-				val isPatreon = mutableMapOf<String, Boolean>()
-				val isDonator = mutableMapOf<String, Boolean>()
+					val isPatreon = mutableMapOf<String, Boolean>()
+					val isDonator = mutableMapOf<String, Boolean>()
 
-				val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
+					val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
 
-				if (lorittaGuild != null) {
-					val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-					val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+					if (lorittaGuild != null) {
+						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
+						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
 
-					val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-					val donators = lorittaGuild.getMembersWithRoles(roleDonators)
+						val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
+						val donators = lorittaGuild.getMembersWithRoles(roleDonators)
 
-					patreons.forEach {
-						isPatreon[it.user.id] = true
+						patreons.forEach {
+							isPatreon[it.user.id] = true
+						}
+						donators.forEach {
+							isDonator[it.user.id] = true
+						}
+
+						this.isPatreon = isPatreon
+						this.isDonator = isDonator
 					}
-					donators.forEach {
-						isDonator[it.user.id] = true
-					}
-
-					this.isPatreon = isPatreon
-					this.isDonator = isDonator
+				} catch (e: Exception) {
+					logger.error("Erro ao atualizar informações aleatórias", e)
 				}
 				Thread.sleep(15000)
 			}
@@ -300,6 +304,13 @@ class Loritta(config: LorittaConfig) {
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
+
+		// As vezes, a Loritta fica sem nenhum executor disponível para carregar músicas
+		// Isto aumenta os executors que ela pode usar para... tocar música!
+		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
+		trackInfoExecutorServiceField.isAccessible = true
+		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
+		trackInfoExecutorService.maximumPoolSize = 100
 
 		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
