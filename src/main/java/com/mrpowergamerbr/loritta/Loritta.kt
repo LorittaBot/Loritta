@@ -31,6 +31,7 @@ import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
@@ -156,6 +157,7 @@ class Loritta(config: LorittaConfig) {
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(64)
 				.setBulkDeleteSplittingEnabled(false)
+				.setAudioSendFactory(NativeAudioSendFactory())
 		builder.addEventListener(discordListener)
 		builder.addEventListener(eventLogListener)
 	}
