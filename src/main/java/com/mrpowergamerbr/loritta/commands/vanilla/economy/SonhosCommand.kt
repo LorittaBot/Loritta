@@ -33,6 +33,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 							"\uD83D\uDCB5"
 					)
 			)
+			logger.info("Usuário ${lorittaProfile.userId} possui ${lorittaProfile.dreams} sonhos!")
 		} else {
 			context.reply(
 					LoriReply(
@@ -40,6 +41,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 							"\uD83D\uDCB5"
 					)
 			)
+			logger.info("Usuário ${retriveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
 		}
 	}
 }

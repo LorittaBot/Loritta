@@ -60,15 +60,18 @@ class APIGetServerConfigView : NoVarsView() {
 		val id = userIdentification.id
 		val member = server.getMemberById(id)
 		var canAccessDashboardViaPermission = false
+		var hasAdministrationOrManageServerPermission = false
 
 		if (member != null) {
 			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+			hasAdministrationOrManageServerPermission = member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)
 		}
 
 		val canBypass = id == Loritta.config.ownerId || canAccessDashboardViaPermission
-		if ((!canBypass)) {
+
+		if (!canBypass && !hasAdministrationOrManageServerPermission) {
 			val payload = JsonObject()
 			payload["api:code"] = LoriWebCodes.UNAUTHORIZED
 			return payload.toString()

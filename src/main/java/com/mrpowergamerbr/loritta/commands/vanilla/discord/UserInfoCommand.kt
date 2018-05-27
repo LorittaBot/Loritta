@@ -4,12 +4,8 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Emote
 import java.time.Instant
@@ -28,6 +24,15 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		var user = LorittaUtils.getUserFromContext(context, 0)
 
 		if (user == null) {
+			if (context.args.getOrNull(0) != null) {
+				context.reply(
+						LoriReply(
+								locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
+								Constants.ERROR
+						)
+				)
+				return
+			}
 			user = context.userHandle
 		}
 

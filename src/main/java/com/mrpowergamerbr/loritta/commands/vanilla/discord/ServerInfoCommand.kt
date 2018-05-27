@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
+import net.dv8tion.jda.core.entities.Guild
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -25,11 +26,11 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()
 
-		var guild = context.guild
+		var guild: Guild? = context.guild
 		val id = if (context.args.isNotEmpty()) { context.args[0] } else { null }
 
 		if (id != null && id.isValidSnowflake()) {
-			guild = lorittaShards.getGuildById(context.args[0])!!
+			guild = lorittaShards.getGuildById(context.args[0])
 		}
 
 		if (guild == null) {

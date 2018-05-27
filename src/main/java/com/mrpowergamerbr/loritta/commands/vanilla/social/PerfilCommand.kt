@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.utils.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.OrkutProfileCreator
+import net.dv8tion.jda.core.entities.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.awt.Font
@@ -30,6 +31,114 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	companion object {
 		var userVotes: List<DiscordBotVote>? = null
 		var lastQuery = 0L
+
+		fun getUserBadges(user: User): List<BufferedImage> {
+			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
+			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
+
+			try {
+				// biscord bots
+				if (System.currentTimeMillis() - lastQuery > 60000) {
+					val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
+							.authorization(Loritta.config.discordBotsOrgKey)
+							.body()
+
+					lastQuery = System.currentTimeMillis()
+					userVotes = GSON.fromJson(discordBotsResponse)
+				}
+			} catch (e: Exception) {
+				e.printStackTrace()
+			}
+
+
+			var upvotedOnDiscordBots = try {
+				if (userVotes != null) {
+					userVotes!!.any { it.id == user.id }
+				} else {
+					false
+				}
+			} catch (e: Exception) {
+				false
+			}
+
+			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+			var hasNotifyMeRole = if (lorittaGuild != null) {
+				if (lorittaGuild.isMember(user)) {
+					val member = lorittaGuild.getMember(user)
+					val role = lorittaGuild.getRoleById("334734175531696128")
+					member.roles.contains(role)
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+
+			var isLorittaPartner = if (lorittaGuild != null) {
+				if (lorittaGuild.isMember(user)) {
+					val member = lorittaGuild.getMember(user)
+					val role = lorittaGuild.getRoleById("434512654292221952")
+					member.roles.contains(role)
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+
+			var isTranslator = if (lorittaGuild != null) {
+				if (lorittaGuild.isMember(user)) {
+					val member = lorittaGuild.getMember(user)
+					val role = lorittaGuild.getRoleById("385579854336360449")
+					member.roles.contains(role)
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+
+			var usesPocketDreamsRichPresence = if (member != null) {
+				val game = member.game
+				if (game != null && game.isRich) {
+					game.asRichPresence().applicationId == "415617983411388428"
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+
+			val pocketDreamsGuild = lorittaShards.getGuildById("320248230917046282")
+			var isPocketDreamsStaff = if (pocketDreamsGuild != null) {
+				if (pocketDreamsGuild.isMember(user)) {
+					val member = pocketDreamsGuild.getMember(user)
+					val role = pocketDreamsGuild.getRoleById("332650495522897920")
+					member.roles.contains(role)
+				} else {
+					false
+				}
+			} else {
+				false
+			}
+
+			val badges = mutableListOf<BufferedImage>()
+			if (user.patreon || user.id == Loritta.config.ownerId) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
+			if (user.supervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
+			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
+			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
+			if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
+			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
+			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
+			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
+			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
+			if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
+			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
+			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
+
+			return badges
+		}
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
@@ -69,94 +178,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-
-		try {
-			// biscord bots
-			if (System.currentTimeMillis() - lastQuery > 60000) {
-				val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.clientId}/votes?onlyids=1")
-						.authorization(Loritta.config.discordBotsOrgKey)
-						.body()
-
-				lastQuery = System.currentTimeMillis()
-				userVotes = GSON.fromJson(discordBotsResponse)
-			}
-		} catch (e: Exception) {
-			e.printStackTrace()
-		}
-
-
-		var upvotedOnDiscordBots = try {
-			if (userVotes != null) {
-				userVotes!!.any { it.id == user.id }
-			} else {
-				false
-			}
-		} catch (e: Exception) {
-			false
-		}
-
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
-		var hasNotifyMeRole = if (lorittaGuild != null) {
-			if (lorittaGuild.isMember(user)) {
-				val member = lorittaGuild.getMember(user)
-				val role = lorittaGuild.getRoleById("334734175531696128")
-				member.roles.contains(role)
-			} else {
-				false
-			}
-		} else {
-			false
-		}
-
-		var isLorittaPartner = if (lorittaGuild != null) {
-			if (lorittaGuild.isMember(user)) {
-				val member = lorittaGuild.getMember(user)
-				val role = lorittaGuild.getRoleById("434512654292221952")
-				member.roles.contains(role)
-			} else {
-				false
-			}
-		} else {
-			false
-		}
-
-		var usesPocketDreamsRichPresence = if (member != null) {
-			val game = member.game
-			if (game != null && game.isRich) {
-				game.asRichPresence().applicationId == "415617983411388428"
-			} else {
-				false
-			}
-		} else {
-			false
-		}
-
-		val pocketDreamsGuild = lorittaShards.getGuildById("320248230917046282")
-		var isPocketDreamsStaff = if (pocketDreamsGuild != null) {
-			if (pocketDreamsGuild.isMember(user)) {
-				val member = pocketDreamsGuild.getMember(user)
-				val role = pocketDreamsGuild.getRoleById("332650495522897920")
-				member.roles.contains(role)
-			} else {
-				false
-			}
-		} else {
-			false
-		}
-
-		val badges = mutableListOf<BufferedImage>()
-		if (user.patreon || user.id == Loritta.config.ownerId) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
-		if (user.supervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
-		if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
-		if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
-		if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
-		if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
-		if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
-		if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
-		if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
-		if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
-		if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-		if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
+		val badges = getUserBadges(user)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 

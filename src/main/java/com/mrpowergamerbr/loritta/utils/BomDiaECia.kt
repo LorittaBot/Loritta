@@ -21,12 +21,29 @@ class BomDiaECia() {
 	var available = false
 
 	var randomTexts = mutableListOf(
+			"amo o yudi!",
+			"amo o yudi",
+			"amo a priscilla!",
+			"amo a priscilla",
 			"amo o yudi e a priscilla!",
+			"amo o yudi e a priscilla",
 			"bts? eu só conheço o sbt!",
 			"preisteicho dois!",
 			"preisteicho treis!",
 			"preisteicho!",
-			"não quero ganhar um jogo da vida!"
+			"playstation dois!",
+			"playstation treis!",
+			"playstation!",
+			"é o funk do yudi que vai dar preisteicho dois!",
+			"é o funk do yudi que vai dar preisteicho 2!",
+			"é o funk do yudi que vai dar preisteicho 3!",
+			"é o funk do yudi que vai dar preisteicho treis!",
+			"é o funk do yudi que vai dar playstation dois!",
+			"é o funk do yudi que vai dar playstation 2!",
+			"é o funk do yudi que vai dar playstation 3!",
+			"é o funk do yudi que vai dar playstation treis!",
+			"não quero ganhar um jogo da vida!",
+			"alôoooo, cê tá me escutando?"
 	)
 
 	var currentText = randomTexts[0]
@@ -48,7 +65,16 @@ class BomDiaECia() {
 		currentText = randomTexts[RANDOM.nextInt(randomTexts.size)]
 
 		val obfuscatedText = currentText.toCharArray()
-				.joinToString("\u200B")
+				.joinToString("", transform = {
+					var obfIdx = RANDOM.nextInt(3)
+
+					if (obfIdx == 2)
+						"\u200B$it"
+					else if (obfIdx == 1)
+						"\u200D$it"
+					else
+						"\u200C$it"
+				})
 
 		loritta.locales.forEach { localeId, locale ->
 			val embed = EmbedBuilder()

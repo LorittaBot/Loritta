@@ -47,6 +47,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 			}
 
 			profile.warns.forEach {
+				var expired = context.config.moderationConfig.warnExpiresIn
 				embed.appendDescription("**${locale["BAN_PunishedBy"]}:** <@${it.punishedBy}>\n**${locale["BAN_PunishmentReason"]}:** ${it.reason}\n**${locale["KYM_DATE"]}:** ${it.time.humanize(locale)}\n⸻\n")
 			}
 

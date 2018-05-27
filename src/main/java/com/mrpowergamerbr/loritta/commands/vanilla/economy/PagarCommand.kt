@@ -75,7 +75,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			context.lorittaUser.profile.dreams -= howMuch
 			receiverProfile.dreams += howMuch
 
-			logger.info("${context.userHandle.id} (antes possuia ${beforeReceiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeGiver} sonhos)")
+			logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos)")
 			loritta save context.lorittaUser.profile
 			loritta save receiverProfile
 

@@ -19,16 +19,17 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
-			val lorittaProfile = context.lorittaUser.profile
-			val requiredCount = quantity * 250
-			if (lorittaProfile.dreams >= requiredCount) {
-				synchronized(this) {
+			synchronized(this) {
+				val lorittaProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
+				val requiredCount = quantity * 250
+				if (lorittaProfile.dreams >= requiredCount) {
 					lorittaProfile.dreams -= requiredCount
 					loritta save lorittaProfile
 
 					for (i in 0 until quantity) {
 						RaffleThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 					}
+
 					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.dreams + requiredCount}) sonhos!")
 
 					loritta.raffleThread.save()
@@ -43,14 +44,14 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 									mentionUser = false
 							)
 					)
+				} else {
+					context.reply(
+							LoriReply(
+									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
+									Constants.ERROR
+							)
+					)
 				}
-			} else {
-				context.reply(
-						LoriReply(
-								context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
-								Constants.ERROR
-						)
-				)
 			}
 			return
 		}

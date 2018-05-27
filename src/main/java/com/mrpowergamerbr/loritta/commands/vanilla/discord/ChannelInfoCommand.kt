@@ -1,10 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.*
-import net.dv8tion.jda.core.*
-import net.dv8tion.jda.core.entities.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandCategory
+import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.EmbedBuilder
 
 class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
     override fun getDescription(locale: BaseLocale): String {
@@ -16,20 +19,20 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
-        var channel = if (context.args.isEmpty()) {
+        val channel = if (context.args.isEmpty()) {
             context.message.textChannel
         } else {
-            if (context.guild.getTextChannelById(context.args[0]) != null)
+            try {
                 context.guild.getTextChannelById(context.args[0])
-            else
+            } catch (e: Exception) {
                 null
+            }
         }
 
         if (channel == null) {
             context.reply(
                     LoriReply(
-                            message = "Canal não encontrado!",
-                            mentionUser = true,
+                            message = locale["CHANNELINFO_ChannelNotFound"],
                             prefix = Constants.ERROR
                     )
             )
@@ -40,13 +43,12 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         builder.apply {
             setAuthor(context.userHandle.name, null, context.userHandle.avatarUrl)
             setColor(Constants.DISCORD_BURPLE)
-
-            setTitle("Informações do canal #${channel.name}")
-            addField("Nome do canal", channel.name, true)
-            addField("ID do canal", channel.id, true)
-            addField("Data de criação", channel.creationTime.humanize(locale), true)
-            addField("Tópico", if (channel.topic != null) channel.topic else "Não definido", true)
-            addField("NSFW Ativado", if (channel.isNSFW) "Sim" else "Não", true)
+            setTitle(locale["CHANNELINFO_ChannelInformation", channel.name])
+            addField(locale["DASHBOARD_ChannelName"], channel.name, true)
+            addField(locale["CHANNELINFO_ChannelId"], channel.id, true)
+            addField(locale["SERVERINFO_CREATED_IN"], channel.creationTime.humanize(locale), true)
+            addField(locale["CHANNELINFO_Topic"], if (channel.topic != null) channel.topic else locale["CHANNELINFO_Undefined"], true)
+            addField(locale["CHANNELINFO_NsfwEnabled"], if (channel.isNSFW) locale["LORITTA_Yes"] else locale["LORITTA_No"], true)
         }
 
         context.sendMessage(context.userHandle.asMention, builder.build())

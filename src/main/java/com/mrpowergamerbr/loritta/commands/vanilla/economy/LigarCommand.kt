@@ -37,7 +37,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						val text = args.joinToString(" ")
 								.toLowerCase()
 
-						if (text.contains("\u200B")) {
+						if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
 							context.reply(
 									LoriReply(
 											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)",
