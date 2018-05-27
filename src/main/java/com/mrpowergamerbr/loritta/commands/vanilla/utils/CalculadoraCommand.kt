@@ -27,7 +27,10 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 			try {
 				val result = LorittaUtils.evalMath(expression)
 
-				context.sendMessage(context.getAsMention(true) + locale["CALC_RESULT", result])
+				context.reply(
+						locale["CALC_RESULT", result],
+						"\uD83E\uDD13"
+				)
 			} catch (e: Exception) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["CALC_INVALID", expression])
 			}

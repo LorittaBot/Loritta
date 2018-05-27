@@ -43,7 +43,7 @@ abstract class ConfigureView : ProtectedView() {
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
 
-		var canBypass = discordAuth.getUserIdentification().id == Loritta.config.ownerId || canAccessDashboardViaPermission
+		val canBypass = discordAuth.getUserIdentification().id == Loritta.config.ownerId || canAccessDashboardViaPermission
 		if ((!canBypass) && (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild))) {
 			return "Você não tem permissão!"
 		}

@@ -37,18 +37,18 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 	fun getApiEndpoint(localeId: String): String {
 		return when (localeId) {
-			"default", "pt-pt", "pt-funk" -> "http://api-pt3.akinator.com"
+			"default", "pt-pt", "pt-funk" -> "http://api-pt4.akinator.com"
 			"tr-tr" -> "http://api-tr3.akinator.com"
-			"pl-pl" -> "http://api-pl3.akinator.com"
-			"ru-ru" -> "http://api-ru3.akinator.com"
-			"nl-nl" -> "http://api-nl2.akinator.com"
+			"pl-pl" -> "http://api-pl3.akinator.com" // TODO: parece que está desatulizado
+			"ru-ru" -> "http://api-ru4.akinator.com"
+			"nl-nl" -> "http://api-nl2.akinator.com" // TODO: parece que está desatulizado
 			"kr-kr" -> "http://api-kr1.akinator.com"
-			"ja-jp" -> "http://api-jp3.akinator.com"
+			"ja-jp" -> "http://api-jp3.akinator.com" // TODO: parece que está desatulizado
 			"it-it" -> "http://api-it3.akinator.com"
 			"he-il" -> "http://api-il1.akinator.com"
 			"fr-fr" -> "http://api-fr3.akinator.com"
-			"es-es" -> "http://api-es1.akinator.com"
-			"ar-sa" -> "http://api-ar2.akinator.com"
+			"es-es" -> "http://api-es1.akinator.com" // TODO: parece que está desatulizado
+			"ar-sa" -> "http://api-ar2.akinator.com"  // TODO: parece que está desatulizado
 			"ch-ch" -> "http://api-cn1.akinator.com"
 			else -> "http://api-us3.akinator.com"
 		}

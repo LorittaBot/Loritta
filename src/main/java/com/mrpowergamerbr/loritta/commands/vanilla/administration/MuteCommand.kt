@@ -9,10 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.HierarchyException
 import java.awt.Color
 import java.time.Instant
@@ -36,7 +33,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS)
+		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -123,6 +120,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						if (!result) {
 							return@onReactionAddByAuthor
 						}
+
 						context.reply(
 								LoriReply(
 										locale["BAN_SuccessfullyPunished"],
@@ -222,12 +220,18 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 			if (delay != null && 0 > delay) {
 				// :whatdog:
+				context.reply(
+						LoriReply(
+								locale["MUTE_NegativeTime"],
+								Constants.ERROR
+						)
+				)
 				return false
 			}
 
 			// Vamos pegar se a nossa role existe
 			var mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false)
-			var mutedRole: Role? = null
+			var mutedRole: Role?
 			if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
 				mutedRole = context.guild.controller.createRole()
@@ -239,19 +243,25 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				mutedRole = mutedRoles[0]
 			}
 
+			val couldntEditChannels = mutableListOf<TextChannel>()
+
 			// E agora vamos pegar todos os canais de texto do servidor
 			for (textChannel in context.guild.textChannels) {
-				var permissionOverride = textChannel.getPermissionOverride(mutedRole)
-				if (permissionOverride == null) { // Se é null...
-					textChannel.createPermissionOverride(mutedRole)
-							.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-							.complete()
-				} else {
-					if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-						permissionOverride.manager
-								.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+				if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+					val permissionOverride = textChannel.getPermissionOverride(mutedRole)
+					if (permissionOverride == null) { // Se é null...
+						textChannel.createPermissionOverride(mutedRole)
+								.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
 								.complete()
+					} else {
+						if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
+							permissionOverride.manager
+									.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+									.complete()
+						}
 					}
+				} else {
+					couldntEditChannels.add(textChannel)
 				}
 			}
 
@@ -264,6 +274,15 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						)
 				)
 				return false
+			}
+
+			if (couldntEditChannels.isNotEmpty()) {
+				context.reply(
+						LoriReply(
+								context.locale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
+								Constants.ERROR
+						)
+				)
 			}
 
 			try {
@@ -331,6 +350,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 					removeRole.complete()
 				}
+				return
+			}
+
+			if (member == null) {
+				logger.info("Ignorando role removal de ${userData.userId} - Motivo: Ela não está mais no servidor!")
 				return
 			}
 

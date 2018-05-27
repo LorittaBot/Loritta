@@ -7,10 +7,6 @@ import net.dv8tion.jda.core.*
 import net.dv8tion.jda.core.entities.*
 
 class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
-
-    // Criado por MrGaabriel
-    // TODO: Mudar as mensagens hardcoded para as das locales
-
     override fun getDescription(locale: BaseLocale): String {
         return locale["CHANNELINFO_Description"]
     }
@@ -20,19 +16,23 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
-        var channel: TextChannel? = null
-        if (context.args.isEmpty()) {
-            channel = context.message.textChannel
+        var channel = if (context.args.isEmpty()) {
+            context.message.textChannel
         } else {
-            channel = if (context.guild.getTextChannelById(context.args[0]) != null) context.guild.getTextChannelById(context.args[0]) else null
+            if (context.guild.getTextChannelById(context.args[0]) != null)
+                context.guild.getTextChannelById(context.args[0])
+            else
+                null
         }
 
         if (channel == null) {
-            context.reply(LoriReply(
-                    message = "Canal não encontrado!",
-                    mentionUser = true,
-                    prefix = "<:erro:326509900115083266>"
-            ))
+            context.reply(
+                    LoriReply(
+                            message = "Canal não encontrado!",
+                            mentionUser = true,
+                            prefix = Constants.ERROR
+                    )
+            )
             return
         }
 

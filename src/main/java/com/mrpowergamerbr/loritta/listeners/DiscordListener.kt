@@ -33,6 +33,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
+	val logger by logger()
+
 	override fun onMessageReceived(event: MessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
@@ -334,13 +336,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
 					loritta.executor.execute {
-						functions.onReactionAdd!!.invoke(e)
+						try {
+							functions.onReactionAdd!!.invoke(e)
+						} catch (e: Exception) {
+							logger.error("Erro ao tentar processar onReactionAdd", e)
+						}
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
 					loritta.executor.execute {
-						functions.onReactionAddByAuthor!!.invoke(e)
+						try {
+							functions.onReactionAddByAuthor!!.invoke(e)
+						} catch (e: Exception) {
+							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
+						}
 					}
 				}
 			}
@@ -348,13 +358,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
 					loritta.executor.execute {
-						functions.onReactionRemove!!.invoke(e)
+						try {
+							functions.onReactionRemove!!.invoke(e)
+						} catch (e: Exception) {
+							logger.error("Erro ao tentar processar onReactionRemove", e)
+						}
 					}
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
 					loritta.executor.execute {
-						functions.onReactionRemoveByAuthor!!.invoke(e)
+						try {
+							functions.onReactionRemoveByAuthor!!.invoke(e)
+						} catch (e: Exception) {
+							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
+						}
 					}
 				}
 			}

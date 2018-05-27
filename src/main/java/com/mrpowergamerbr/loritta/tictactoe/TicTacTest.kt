@@ -21,11 +21,7 @@ class TicTacTest : Jooby() {
 		assets("/**", File("C:\\Users\\Whistler\\Documents\\TavaresBot\\tic_tac_toe\\").toPath())
 		/** Start a websocket at /ws and send back JSON: */
 		ws("/ws", { handler, ws ->
-			/** Send back message: */
-			ws.onMessage({ ws.send("Received Message! ${handler.session().get("test")}") });
-
-			/** Broadcast to all clients: */
-			ws.broadcast("Hello World!!!");
+			val test = handler.session().get("test")
 		})
 	}
 }

@@ -214,7 +214,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						var required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}"] + "`" })
+						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}"] + "`" })
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").complete()
 						return true
 					}

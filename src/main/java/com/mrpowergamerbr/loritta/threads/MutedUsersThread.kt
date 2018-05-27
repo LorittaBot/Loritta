@@ -42,6 +42,7 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				val locale = loritta.getLocaleById(next.localeId)
 				next.guildUserData.filter { it.temporaryMute }.forEach {
 					if (!MuteCommand.roleRemovalThreads.containsKey("${guild.id}#${it.userId}")) {
+						logger.info("Adicionado removal thread pelo MutedUsersThread ~ Guild: ${next.guildId} - User: ${it.userId}")
 						MuteCommand.spawnRoleRemovalThread(guild, locale, next, it)
 					}
 				}
