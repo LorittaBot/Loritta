@@ -45,6 +45,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			launch {
 				try {
+					if (event.member == null) {
+						println("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
+						println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
+						return@launch
+					}
+
 					val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 					val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 					val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
@@ -115,12 +121,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 
 						event.textChannel.sendMessage("<:loritta:331179879582269451> **|** " + response).complete()
-					}
-
-					if (event.member == null) {
-						println("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
-						println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
-						return@launch
 					}
 
 					// BOM DIA & CIA
