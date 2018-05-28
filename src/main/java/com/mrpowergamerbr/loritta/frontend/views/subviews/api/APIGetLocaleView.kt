@@ -8,6 +8,7 @@ import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
+@Deprecated(message = "Now embed within the page")
 class APIGetLocaleView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/misc/get-locale"))

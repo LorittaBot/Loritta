@@ -14,6 +14,7 @@ import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
+@Deprecated(message = "Now embed within the page")
 class APIGetSelfUserProfileView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/lori/get-self-profile"))

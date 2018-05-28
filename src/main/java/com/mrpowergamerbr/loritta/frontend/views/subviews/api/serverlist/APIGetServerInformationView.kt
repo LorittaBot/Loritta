@@ -13,6 +13,7 @@ import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 
+@Deprecated(message = "Now embed within the page")
 class APIGetServerInformationView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/server-list/information"))

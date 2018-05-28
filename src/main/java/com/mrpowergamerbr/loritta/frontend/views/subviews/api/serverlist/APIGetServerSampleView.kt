@@ -22,6 +22,7 @@ import org.jsoup.safety.Whitelist
 import java.io.File
 import java.util.*
 
+@Deprecated(message = "Now embed within the page")
 class APIGetServerSampleView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/server-list/get-sample"))

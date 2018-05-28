@@ -27,12 +27,15 @@ class ProfileView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
+		var start = System.currentTimeMillis()
+
 		val arg0 = path.split("/").getOrNull(2) ?: "derp"
 		val user = lorittaShards.getUserById(arg0)!!
 		val lorittaProfile = loritta.getLorittaProfileForUser(arg0)
+		System.out.println("Retrived profile ${System.currentTimeMillis() - start}ms")
 
 		variables["profileUser"] = user
-		variables["lorittaProfile"] = loritta.getLorittaProfileForUser(arg0)
+		variables["lorittaProfile"] = lorittaProfile
 		variables["badgesBase64"] = PerfilCommand.getUserBadges(user).map {
 			val baos = ByteArrayOutputStream()
 			ImageIO.write(it, "png", baos)
@@ -40,9 +43,12 @@ class ProfileView : AbstractView() {
 		}
 
 		val favoriteEmotes = lorittaProfile.usedEmotes.entries.sortedByDescending { it.value }
-		var emotes = mutableListOf<Emote>()
+		val emotes = mutableListOf<Emote>()
 
 		for (favoriteEmote in favoriteEmotes) {
+			if (emotes.size > 34)
+				break
+
 			val emote = lorittaShards.getEmoteById(favoriteEmote.key)
 			if (emote != null)
 				emotes.add(emote)

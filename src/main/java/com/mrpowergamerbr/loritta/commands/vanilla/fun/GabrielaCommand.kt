@@ -25,6 +25,10 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 	override fun hasCommandFeedback(): Boolean = false
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val corretores = mapOf(
 				"(dima)" to "diamante",
