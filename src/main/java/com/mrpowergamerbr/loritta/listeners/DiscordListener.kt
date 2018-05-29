@@ -236,7 +236,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				} catch (e: Exception) {
-					e.printStackTrace()
+					logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}")
 					LorittaUtilsKotlin.sendStackTrace(event.message, e)
 				}
 			}
@@ -390,7 +390,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (exception.errorCode == 10008) // unknown channel
 							return@execute
 					}
-					exception.printStackTrace()
+					logger.error("[${e.guild.name}] onGenericMessageReaction ${e.user.name}", exception)
 					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **onGenericMessageReaction ${e.user.name}**", exception)
 				}
 			}
@@ -406,7 +406,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						StarboardModule.handleStarboardReaction(e, conf)
 					}
 				} catch (exception: Exception) {
-					exception.printStackTrace()
+					logger.error("[${e.guild.name}] Starboard ${e.member.user.name}", exception)
 					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 				}
 			}
@@ -541,7 +541,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						MuteCommand.spawnRoleRemovalThread(event.guild, loritta.getLocaleById(conf.localeId), conf, conf.getUserData(event.user.id))
 				}
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
 			}
 		}
@@ -573,7 +573,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					WelcomeModule.handleLeave(event, conf)
 				}
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
 		}

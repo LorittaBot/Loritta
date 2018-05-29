@@ -216,6 +216,7 @@ object GlobalHandler {
 		apiViews.add(APIGetServerVotesView())
 		apiViews.add(APIGetCommandsView())
 		apiViews.add(APIGetSelfUserProfileView())
+		apiViews.add(APISaveSelfUserProfileView())
 		apiViews.add(APIBumpServerView())
 
 		views.add(HomeView())
