@@ -24,6 +24,8 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 		return "<imagem>";
 	}
 
+	override fun needsToUploadFiles() = true
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0, 25, 256);
 		if (!LorittaUtils.isValidImage(context, contextImage)) {

@@ -36,23 +36,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.isNotEmpty() && context.args[0] == "dump_threads") {
-			var threadCount = 0
-			val threadSet = Thread.getAllStackTraces().keys
-			for (t in threadSet) {
-				if (t.threadGroup === Thread.currentThread().threadGroup) {
-					File(Loritta.FOLDER, "thread_dump.txt").appendText("Thread :" + t + ":" + "state:" + t.state + "\n")
-					++threadCount
-				}
-			}
-			context.reply(
-					LoriReply(
-							message = "Threads dumpadas com sucesso! Número de threads: " + threadCount
-					)
-			)
-			return
-		}
-		if (context.args.isNotEmpty() && context.args[0] == "setindex") {
+		val arg0 = context.rawArgs.getOrNull(0)
+
+		if (arg0 == "setindex") {
 			UpdateStatusThread.skipToIndex = context.args[1].toInt()
 			context.reply(
 					LoriReply(
@@ -61,7 +47,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "fan_arts") {
+		if (arg0 == "fan_arts" || arg0 == "fanarts") {
 			loritta.loadFanArts()
 			context.reply(
 					LoriReply(
@@ -70,7 +56,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "locales") {
+		if (arg0 == "locales") {
 			loritta.loadLocales()
 			context.reply(
 					LoriReply(
@@ -79,7 +65,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "commands") {
+
+		if (arg0 == "commands") {
 			val oldCommandCount = loritta.commandManager.commandMap.size
 			LorittaLauncher.loritta.loadCommandManager()
 			context.reply(
@@ -89,7 +76,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "website") {
+
+		if (arg0 == "website") {
 			GlobalHandler.generateViews()
 			context.reply(
 					LoriReply(
@@ -98,7 +86,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "mongo") {
+
+		if (arg0 == "mongo") {
 			loritta.initMongo()
 			context.reply(
 					LoriReply(
@@ -107,7 +96,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "savekeys") {
+		if (arg0 == "savekeys") {
 			loritta.savePremiumKeys()
 			context.reply(
 					LoriReply(
@@ -116,7 +105,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "loadkeys") {
+		if (arg0 == "loadkeys") {
 			loritta.loadPremiumKeys()
 			context.reply(
 					LoriReply(
@@ -126,7 +115,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
-		if (context.args.isNotEmpty() && context.args[0] == "exportdate") {
+		if (arg0 == "exportdate") {
 			val dates = mutableMapOf<String, Int>()
 
 			val file = File("./date_export.txt")
@@ -150,6 +139,18 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Datas exportadas!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "config") {
+			val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
+			val config = Gson().fromJson(json, LorittaConfig::class.java)
+			Loritta.config = config
+			context.reply(
+					LoriReply(
+							"Config recarregada!"
 					)
 			)
 			return

@@ -30,12 +30,50 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			val palavra = URLEncoder.encode(context.args[0], "UTF-8");
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
 					.userAgent(Constants.USER_AGENT)
-			val response = httpRequest.body();
+			val response = httpRequest.body()
+
 			if (httpRequest.code() == 404) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
-				return;
+				context.reply(
+						"Palavra não encontrada no meu dicionário!",
+						Constants.ERROR
+				)
+				return
 			}
-			val jsoup = Jsoup.parse(response);
+
+			var jsoup = Jsoup.parse(response)
+
+			// Ao usar pesquisa.php, ele pode retornar uma página de pesquisa ou uma página com a palavra, por isto iremos primeiro descobrir se estamos na página de pesquisa
+			val resultadosClass = jsoup.getElementsByClass("resultados")
+			val resultados = resultadosClass.firstOrNull()
+
+			if (resultados != null) {
+				val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
+
+				if (resultadosLi == null) {
+					context.reply(
+							"Palavra não encontrada no meu dicionário!",
+							Constants.ERROR
+					)
+					return
+				}
+
+				val linkElement = resultadosLi.getElementsByClass("_sugg").first()
+				val link = linkElement.attr("href")
+
+				val httpRequest2 = HttpRequest.get("https://www.dicio.com.br$link")
+						.userAgent(Constants.USER_AGENT)
+				val response2 = httpRequest2.body()
+
+				if (httpRequest2.code() == 404) {
+					context.reply(
+							"Palavra não encontrada no meu dicionário!",
+							Constants.ERROR
+					)
+					return
+				}
+
+				jsoup = Jsoup.parse(response2)
+			}
 
 			// Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
 			if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de")) {
@@ -77,7 +115,6 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build());
-
 		} else {
 			this.explain(context);
 		}

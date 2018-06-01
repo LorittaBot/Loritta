@@ -22,6 +22,8 @@ class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES)
 		return "<imagem>";
 	}
 
+	override fun needsToUploadFiles() = true
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var contextImage = LorittaUtils.getImageFromContext(context, 0)
 		var contextImage2 = LorittaUtils.getImageFromContext(context, 1)

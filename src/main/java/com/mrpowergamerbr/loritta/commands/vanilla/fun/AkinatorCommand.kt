@@ -37,20 +37,20 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 	fun getApiEndpoint(localeId: String): String {
 		return when (localeId) {
-			"default", "pt-pt", "pt-funk" -> "http://api-pt4.akinator.com"
-			"tr-tr" -> "http://api-tr3.akinator.com"
-			"pl-pl" -> "http://api-pl3.akinator.com" // TODO: parece que está desatulizado
-			"ru-ru" -> "http://api-ru4.akinator.com"
-			"nl-nl" -> "http://api-nl2.akinator.com" // TODO: parece que está desatulizado
-			"kr-kr" -> "http://api-kr1.akinator.com"
-			"ja-jp" -> "http://api-jp3.akinator.com" // TODO: parece que está desatulizado
-			"it-it" -> "http://api-it3.akinator.com"
-			"he-il" -> "http://api-il1.akinator.com"
-			"fr-fr" -> "http://api-fr3.akinator.com"
-			"es-es" -> "http://api-es1.akinator.com" // TODO: parece que está desatulizado
-			"ar-sa" -> "http://api-ar2.akinator.com"  // TODO: parece que está desatulizado
-			"ch-ch" -> "http://api-cn1.akinator.com"
-			else -> "http://api-us3.akinator.com"
+			"default", "pt-pt", "pt-funk" -> "http://62.4.22.192:8166"
+			"tr-tr" -> "http://62.4.22.192:8164"
+			"pl-pl" -> "http://37.187.149.213:8143"
+			"ru-ru" -> "http://62.4.22.192:8169"
+			"nl-nl" -> "http://62.210.100.133:8158"
+			"kr-kr" -> "http://62.4.22.192:8168"
+			"ja-jp" -> "http://178.33.63.63:8012"
+			"it-it" -> "http://62.210.100.133:8159"
+			"he-il" -> "http://178.33.63.63:8006"
+			"fr-fr" -> "http://62.4.22.192:8165"
+			"es-es" -> "http://62.210.100.133:8160"
+			"ar-sa" -> "http://62.210.100.133:8155"
+			"ch-ch" -> "http://158.69.225.49:8150"
+			else -> "http://62.210.100.133:8157"
 		}
 	}
 

@@ -63,13 +63,13 @@ object MiscUtils {
 		}
 	}
 
-	fun optimizeGIF(file: File) {
+	fun optimizeGIF(file: File, lossy: Int = 200) {
 		val processBuilder = ProcessBuilder(
 				File(Loritta.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
 				"-i",
 				file.toString(),
 				"-O3",
-				"--lossy=200",
+				"--lossy=$lossy",
 				"--colors",
 				"256",
 				"-o",

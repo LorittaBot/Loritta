@@ -85,6 +85,7 @@ class CommandManager {
 		commandMap.add(PepeDreamCommand())
 		commandMap.add(SwingCommand())
 		commandMap.add(DemonCommand())
+		commandMap.add(KnuxThrowCommand())
 		// commandMap.add(LicencaCommand())
 
 		// =======[ DIVERSÃO ]======

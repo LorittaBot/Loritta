@@ -1,11 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
@@ -33,8 +28,11 @@ object MessageUtils {
 		if (jsonObject != null) {
 			// alterar tokens
 			handleJsonTokenReplacer(jsonObject, sources, guild, customTokens)
-			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
+			val jsonEmbed = jsonObject["embed"].nullObj
+			if (jsonEmbed != null) {
+				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
+				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
+			}
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
 			messageBuilder.append(replaceTokens(message, sources, guild, customTokens).substringIfNeeded())
