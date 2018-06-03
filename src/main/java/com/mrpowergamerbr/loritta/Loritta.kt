@@ -14,6 +14,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandManager
+import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
@@ -41,6 +42,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import org.bson.codecs.configuration.CodecRegistries
@@ -97,8 +99,8 @@ class Loritta(config: LorittaConfig) {
 
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
-	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
-	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
+	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
+	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
@@ -118,7 +120,7 @@ class Loritta(config: LorittaConfig) {
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
 	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
-	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
+	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -138,6 +140,9 @@ class Loritta(config: LorittaConfig) {
 	var isDonator = mutableMapOf<String, Boolean>()
 	var userCount = 0
 	var guildCount = 0
+
+	lateinit var website: LorittaWebsite
+	lateinit var websiteThread: Thread
 
 	init {
 		FOLDER = config.lorittaFolder
@@ -218,8 +223,11 @@ class Loritta(config: LorittaConfig) {
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
-		val website = thread(true, name = "Website Thread") {
-			org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
+		websiteThread = thread(true, name = "Website Thread") {
+			website = com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			org.jooby.run({
+				website
+			})
 		}
 
 		logger.info("Sucesso! Iniciando threads da Loritta...")
@@ -309,10 +317,10 @@ class Loritta(config: LorittaConfig) {
 
 		// As vezes, a Loritta fica sem nenhum executor disponível para carregar músicas
 		// Isto aumenta os executors que ela pode usar para... tocar música!
-		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
-		trackInfoExecutorServiceField.isAccessible = true
-		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
-		trackInfoExecutorService.maximumPoolSize = 100
+		// val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
+		// trackInfoExecutorServiceField.isAccessible = true
+		// val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
+		// trackInfoExecutorService.maximumPoolSize = 100
 
 		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
@@ -683,8 +691,6 @@ class Loritta(config: LorittaConfig) {
 		} else {
 			musicManager.scheduler.queue(trackWrapper, conf)
 		}
-
-		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper)
 	}
 
 	fun skipTrack(context: CommandContext) {

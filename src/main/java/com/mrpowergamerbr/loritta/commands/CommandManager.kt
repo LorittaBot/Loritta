@@ -209,6 +209,7 @@ class CommandManager {
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())
 		commandMap.add(LoriServerListConfigCommand())
+		commandMap.add(TicTacToeCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())

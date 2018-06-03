@@ -35,7 +35,13 @@ object GlobalHandler {
 	val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 
 	fun render(req: Request, res: Response): String {
-		logger.info(" ${req.header("X-Forwarded-For").value()}: ${req.path()}")
+		val queryString = if (req.queryString().isPresent) {
+			"?" + req.queryString().get()
+		} else {
+			""
+		}
+
+		logger.info("${req.header("X-Forwarded-For").value()}: ${req.path()}${queryString}")
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
 			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
@@ -126,15 +132,15 @@ object GlobalHandler {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("https://loritta.website/br${req.path()}")
+						res.redirect("https://loritta.website/br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("https://loritta.website/pt${req.path()}")
+						res.redirect("https://loritta.website/pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("https://loritta.website/es${req.path()}")
+						res.redirect("https://loritta.website/es${req.path()}${queryString}")
 					}
-					res.redirect("https://loritta.website/us${req.path()}")
+					res.redirect("https://loritta.website/us${req.path()}${queryString}")
 					return "Redirecting..."
 				}
 			}
@@ -233,6 +239,7 @@ object GlobalHandler {
 		views.add(NashornDocsView())
 		views.add(TermsOfServiceView())
 		views.add(ProfileView())
+		views.add(TicTacToeView())
 		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 

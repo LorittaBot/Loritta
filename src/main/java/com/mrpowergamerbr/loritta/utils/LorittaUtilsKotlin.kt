@@ -348,7 +348,7 @@ object LorittaUtilsKotlin {
 				track.metadata.put("thumbnail", snippet["thumbnails"]["high"]["url"].string)
 				track.metadata.put("channelIcon", channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string)
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("Erro ao pegar informações sobre ${track.track}!", e)
 			}
 		}
 	}

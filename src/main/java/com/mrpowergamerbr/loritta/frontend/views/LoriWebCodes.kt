@@ -20,6 +20,8 @@ object LoriWebCodes {
 
 	// TIC-TAC-TOE
 	const val INVALID_ROOM = 101
-	const val ROOM_IS_FULL = 101
-	const val MOVEMENT_DONE = 102
+	const val MISSING_ROOM_ID = 102
+	const val ROOM_IS_FULL = 103
+	const val ALREADY_INSIDE_THIS_ROOM = 104
+	const val MOVEMENT_DONE = 105
 }

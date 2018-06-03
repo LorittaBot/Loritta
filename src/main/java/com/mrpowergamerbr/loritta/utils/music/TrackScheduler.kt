@@ -29,6 +29,25 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		this.queue = LinkedBlockingQueue()
 	}
 
+	override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
+		loritta.executor.execute {
+			val serverConfig = loritta.getServerConfigForGuild(guild.id)
+
+			if (serverConfig.musicConfig.logToChannel) {
+				val textChannel = guild.getTextChannelById(serverConfig.musicConfig.channelId)
+
+				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
+					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@execute)
+					if (currentTrack!!.metadata.isNotEmpty()) {
+						val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(serverConfig.localeId), true)
+
+						textChannel.sendMessage(embed).complete()
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Add the next track to queue or play right away if nothing is in the queue.
 	 *
@@ -51,35 +70,6 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 			queue.offer(track)
 		} else {
 			currentTrack = track
-
-			if (config.musicConfig.logToChannel) {
-				val textChannel = guild.getTextChannelById(config.musicConfig.channelId)
-
-				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
-					loritta.executor.execute {
-						var seconds = 0
-
-						while (true) {
-							if (seconds >= 5) {
-								return@execute
-							}
-
-							if (!track.metadata.isEmpty()) {
-								val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(config.localeId), true)
-
-								textChannel.sendMessage(embed).complete()
-								return@execute
-							}
-							seconds++
-							try {
-								Thread.sleep(1000)
-							} catch (e: InterruptedException) {
-								e.printStackTrace()
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 

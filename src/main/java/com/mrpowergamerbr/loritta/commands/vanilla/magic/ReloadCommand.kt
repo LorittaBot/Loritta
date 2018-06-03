@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.frontend.LorittaWebsite
 import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
@@ -25,6 +26,7 @@ import org.apache.commons.io.FileUtils
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import java.io.File
+import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC) {
 	override fun onlyOwner(): Boolean {
@@ -82,6 +84,28 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Views regeneradas!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "fullwebsite" || arg0 == "full_website") {
+			logger.info("Parando o Jooby...")
+			loritta.website.stop()
+			logger.info("Interrompendo a Thread do Website...")
+			loritta.websiteThread.interrupt()
+			logger.info("Iniciando instância do Website...")
+			loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
+			logger.info("Iniciando website...")
+			loritta.websiteThread = thread(true, name = "Website Thread") {
+				loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
+				org.jooby.run({
+					loritta.website
+				})
+			}
+			context.reply(
+					LoriReply(
+							"Full website reload completado!"
 					)
 			)
 			return

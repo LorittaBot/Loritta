@@ -20,13 +20,8 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
 	assets("/**", File(frontendFolder, "static/").toPath())
-	get("/**", { req, res ->
-		res.send(GlobalHandler.render(req, res))
-	})
-	post("/**", { req, res ->
-		res.send(GlobalHandler.render(req, res))
-	})
 	ws("/lorisocket") { handler, ws ->
+		println("WEBSOCKET BOIS")
 		val _field = Jooby::class.java.getDeclaredField("injector")
 		_field.isAccessible = true
 
@@ -47,6 +42,14 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 		WebSocketHandler.onSocketConnected(ws, session)
 	}
+	get("/**", { req, res ->
+		res.send(GlobalHandler.render(req, res))
+	})
+	post("/**", { req, res ->
+		if (!req.path().startsWith("/lorisocket")) {
+			res.send(GlobalHandler.render(req, res))
+		}
+	})
 }) {
 	companion object {
 		lateinit var ENGINE: PebbleEngine
