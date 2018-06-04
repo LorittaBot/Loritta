@@ -63,9 +63,14 @@
             <version>25.1-jre</version>
         </dependency>
         <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+        <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.6.0_370</version>
+            <version>3.6.0_372</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -76,11 +81,6 @@
             <groupId>com.github.MrPowerGamerBR</groupId>
             <artifactId>TemmieWebhook</artifactId>
             <version>59de40c3b6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.MrPowerGamerBR</groupId>
-            <artifactId>TemmieDiscordAuth</artifactId>
-            <version>8f58e8ec64</version>
         </dependency>
         <dependency>
             <groupId>com.github.MrPowerGamerBR</groupId>
