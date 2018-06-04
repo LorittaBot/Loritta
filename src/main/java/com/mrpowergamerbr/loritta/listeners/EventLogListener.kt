@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -43,7 +44,7 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
-	val handledUsernameChanges = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
+	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
 
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)

@@ -99,6 +99,7 @@ A Lori utiliza várias [dependências no código-fonte dela](https://github.com/
 | [Kotlin](https://kotlinlang.org/) | JetBrains  |
 | [Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines) | JetBrains  |
 | [Guava](https://github.com/google/guava) | Google  |
+| [Caffeine](https://github.com/ben-manes/caffeine) | Ben Manes  |
 | [JDA](https://github.com/DV8FromTheWorld/JDA) | DV8FromTheWorld, kantenkugel, MinnDevelopment, Almighty-Alpaca, etc  |
 | [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) |  MongoDB  |
 | [TemmieWebhook](https://github.com/MrPowerGamerBR/TemmieWebhook) |  MrPowerGamerBR  |

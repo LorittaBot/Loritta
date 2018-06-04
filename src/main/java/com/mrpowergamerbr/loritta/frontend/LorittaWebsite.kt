@@ -46,9 +46,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		res.send(GlobalHandler.render(req, res))
 	})
 	post("/**", { req, res ->
-		if (!req.path().startsWith("/lorisocket")) {
-			res.send(GlobalHandler.render(req, res))
-		}
+		res.send(GlobalHandler.render(req, res))
 	})
 }) {
 	companion object {

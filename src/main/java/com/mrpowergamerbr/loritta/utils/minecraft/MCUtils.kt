@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.minecraft
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit
  * Classe de utilidades relacionadas ao Minecraft (como UUID query)
  */
 object MCUtils {
-	val username2uuid = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
-	val uuid2profile = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
+	val username2uuid = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
+	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
 
 	fun getProxy(): Pair<String, Int> {
 		val document = Jsoup.connect("https://www.sslproxies.org/").get()

@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.modules
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -9,7 +10,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import java.util.concurrent.TimeUnit
 
 object SlowModeModule {
-	val slowModeDelay = CacheBuilder.newBuilder().expireAfterAccess(1L, TimeUnit.HOURS).build<String, Long>().asMap()
+	val slowModeDelay = Caffeine.newBuilder().expireAfterAccess(1L, TimeUnit.HOURS).build<String, Long>().asMap()
 
 	fun checkForSlowMode(event: MessageReceivedEvent, lorittaUser: GuildLorittaUser, config: ServerConfig): Boolean {
 		if (!config.slowModeChannels.contains(event.textChannel.id))

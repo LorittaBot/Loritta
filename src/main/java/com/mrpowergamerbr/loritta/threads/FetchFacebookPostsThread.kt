@@ -12,8 +12,8 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 	override fun run() {
 		super.run()
 		while (true) {
-			fetchPosts();
-			Thread.sleep(10000)
+			fetchPosts()
+			Thread.sleep(30000)
 		}
 	}
 

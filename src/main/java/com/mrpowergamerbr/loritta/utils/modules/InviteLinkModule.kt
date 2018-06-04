@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.modules
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.userdata.InviteBlockerConfig
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 object InviteLinkModule {
-	val cachedInviteLinks = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
+	val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
 
 	fun checkForInviteLinks(message: Message, guild: Guild, lorittaProfile: GuildLorittaUser, permissionsConfig: PermissionsConfig, inviteBlockerConfig: InviteBlockerConfig): Boolean {
 		if (inviteBlockerConfig.whitelistedChannels.contains(message.channel.id))

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -99,13 +100,13 @@ class Loritta(config: LorittaConfig) {
 
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
-	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
-	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
+	var messageContextCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
+	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
-	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
-	val apiCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
+	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
+	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
 	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
@@ -119,8 +120,8 @@ class Loritta(config: LorittaConfig) {
 
 	// ===[ MÚSICA ]===
 	lateinit var playerManager: AudioPlayerManager
-	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
-	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
+	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
+	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -160,7 +161,7 @@ class Loritta(config: LorittaConfig) {
 		GlobalHandler.generateViews()
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(64)
+				.setCorePoolSize(8)
 				.setBulkDeleteSplittingEnabled(false)
 				.setAudioSendFactory(NativeAudioSendFactory())
 		builder.addEventListener(discordListener)
@@ -309,7 +310,6 @@ class Loritta(config: LorittaConfig) {
 
 		DebugLog.startCommandListenerThread()
 
-		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 		playerManager = DefaultAudioPlayerManager()
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
@@ -317,10 +317,10 @@ class Loritta(config: LorittaConfig) {
 
 		// As vezes, a Loritta fica sem nenhum executor disponível para carregar músicas
 		// Isto aumenta os executors que ela pode usar para... tocar música!
-		// val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
-		// trackInfoExecutorServiceField.isAccessible = true
-		// val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
-		// trackInfoExecutorService.maximumPoolSize = 100
+		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
+		trackInfoExecutorServiceField.isAccessible = true
+		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
+		trackInfoExecutorService.maximumPoolSize = 100
 
 		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
@@ -547,7 +547,7 @@ class Loritta(config: LorittaConfig) {
 		return true
 	}
 
-	val playlistCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
+	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
 
 	fun loadAndPlay(context: CommandContext, trackUrl: String, override: Boolean = false) {
 		loadAndPlay(context, trackUrl, false, override);
