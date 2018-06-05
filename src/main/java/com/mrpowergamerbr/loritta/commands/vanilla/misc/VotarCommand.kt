@@ -21,7 +21,7 @@ class VotarCommand : AbstractCommand("vote", listOf("votar"), category = Command
 		    val canUseVanityUrl = serverListConfig.isPartner || (serverListConfig.isSponsored && (serverListConfig.sponsoredUntil == -1L || System.currentTimeMillis() > serverListConfig.sponsoredUntil))
 
 		    val websiteLink = Loritta.config.websiteUrl + "s/" + if (canUseVanityUrl && serverListConfig.vanityUrl != null) {
-			    context
+			    serverListConfig.vanityUrl
 		    } else {
 			    context.guild.id
 		    }
