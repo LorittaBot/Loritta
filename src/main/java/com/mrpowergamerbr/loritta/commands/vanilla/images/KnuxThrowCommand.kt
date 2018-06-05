@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class KnuxThrowCommand : AbstractCommand("knuxthrow", listOf("knucklesthrow", "throwknux", "throwknuckles", "knucklesjogar", "knuxjogar", "jogarknuckles", "jogarknux"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["KNUXTHROW_Command"]
+		return locale["KNUXTHROW_Description"]
 	}
 
 	override fun getExample(): List<String> {

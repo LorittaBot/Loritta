@@ -150,6 +150,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
+				conf.lastCommandReceivedAt = System.currentTimeMillis()
+				loritta save conf
+
 				if (conf != loritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true

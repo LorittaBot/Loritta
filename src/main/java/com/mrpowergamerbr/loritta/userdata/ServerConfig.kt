@@ -17,8 +17,7 @@ class ServerConfig @BsonCreator constructor(
 ) {
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
-	var debugOptions = DebugOptions()
-	var deleteMessageAfterCommand: Boolean = false // Deletar mensagem do comando após executar ele?
+	var deleteMessageAfterCommand = false // Deletar mensagem do comando após executar ele?
 	var localeId = "default"
 
 	var commandOptions = HashMap<String, CommandOptions>() // Command Options
@@ -58,6 +57,7 @@ class ServerConfig @BsonCreator constructor(
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 
+	var lastCommandReceivedAt = 0L
 	var apiKey: String? = null
 	var premiumKey: String? = null
 
@@ -81,10 +81,6 @@ class ServerConfig @BsonCreator constructor(
 		return textChannelConfigs.firstOrNull { it.id == id } != null
 	}
 
-	// var temporaryBans = HashMap<String, Long>()
-
-	// var giveaways = ArrayList<Giveaway>()
-
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
 		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
 			// Vamos retornar uma configuração padrão!
@@ -100,10 +96,6 @@ class ServerConfig @BsonCreator constructor(
 		} else {
 			return CommandOptions()
 		}
-	}
-
-	class DebugOptions : CommandOptions() {
-		var enableAllModules: Boolean = false // Caso ativado, TODAS as modules estarão ativadas
 	}
 
 	class StarboardMessage @BsonCreator constructor(@BsonProperty("embedId") val embedId: String, @BsonProperty("messageId") val messageId: String)
