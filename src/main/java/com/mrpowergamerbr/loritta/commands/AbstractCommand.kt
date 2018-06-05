@@ -286,7 +286,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				if (randomValue == 0) {
 					context.reply(
 							LoriReply(
-									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta>"],
+									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta/vote>"],
 									"\uD83D\uDE0A"
 							)
 					)

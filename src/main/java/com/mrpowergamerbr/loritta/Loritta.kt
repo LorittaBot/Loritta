@@ -95,7 +95,7 @@ class Loritta(config: LorittaConfig) {
 	val executor = createThreadPool("Executor Thread %d") // Threads
 
 	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+		return Executors.newFixedThreadPool(384, ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	lateinit var commandManager: CommandManager // Nosso command manager
@@ -161,7 +161,7 @@ class Loritta(config: LorittaConfig) {
 		GlobalHandler.generateViews()
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(8)
+				.setCorePoolSize(24)
 				.setBulkDeleteSplittingEnabled(false)
 				.setAudioSendFactory(NativeAudioSendFactory())
 		builder.addEventListener(discordListener)
