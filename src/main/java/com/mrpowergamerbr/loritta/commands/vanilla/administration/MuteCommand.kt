@@ -303,6 +303,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 				loritta save serverConfig
 				if (delay != null) {
+					// Ao enviar um role change, iremos esperar alguns segundos para ver se o mute foi realmente "aplicado"
+					for (x in 0..9) {
+						if (member.roles.contains(mutedRole))
+							break
+						Thread.sleep(100)
+					}
 					spawnRoleRemovalThread(context.guild, context.locale, serverConfig, userData)
 				}
 			} catch (e: HierarchyException) {
