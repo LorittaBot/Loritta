@@ -39,6 +39,22 @@ class LorittaShards {
         return getUsers().size
     }
 
+    fun getEmoteCount(): Int {
+        return shards.sumBy { it.emotes.size }
+    }
+
+    fun getChannelCount(): Int {
+        return getTextChannelCount() + getVoiceChannelCount()
+    }
+
+    fun getTextChannelCount(): Int {
+        return shards.sumBy { it.textChannels.size }
+    }
+
+    fun getVoiceChannelCount(): Int {
+        return shards.sumBy { it.textChannels.size }
+    }
+
     fun getUsers(): List<User> {
         // Pegar todas os users em todos os shards
         val users = ArrayList<User>();
