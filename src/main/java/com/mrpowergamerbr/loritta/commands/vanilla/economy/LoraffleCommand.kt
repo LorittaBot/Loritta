@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -16,12 +17,30 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
+		if (arg0 == "clear" && context.userHandle.id == Loritta.config.ownerId) {
+			context.reply(
+					LoriReply(
+							"Limpando ${RaffleThread.userIds.size}..."
+					)
+			)
+			RaffleThread.userIds.clear()
+			context.reply(
+					LoriReply(
+							"Limpo! ${RaffleThread.userIds.size}"
+					)
+			)
+			return
+		}
+
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
+			val requiredCount = quantity.toLong() * 250
+			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
+
 			synchronized(this) {
 				val lorittaProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
-				val requiredCount = quantity * 250
+
 				if (lorittaProfile.dreams >= requiredCount) {
 					lorittaProfile.dreams -= requiredCount
 					loritta save lorittaProfile
