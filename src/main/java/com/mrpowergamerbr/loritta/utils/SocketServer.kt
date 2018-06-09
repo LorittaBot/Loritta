@@ -77,7 +77,7 @@ class SocketServer(val socketPort: Int) {
 											customTokens
 									) ?: continue
 
-									textChannel.sendMessage(discordMessage).complete()
+									textChannel.sendMessage(discordMessage).queue()
 								}
 							}
 						}

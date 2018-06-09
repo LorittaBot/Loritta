@@ -3,16 +3,11 @@ package com.mrpowergamerbr.loritta.tictactoe
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.userdata.JoinLeaveConfig
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.modules.WelcomeModule
 import org.jooby.Session
 import org.jooby.WebSocket
 
@@ -167,7 +162,7 @@ class TicTacToeRoom {
 		).obj
 
 		if (player1 != null) {
-			val user = lorittaShards.retriveUserById(player1)
+			val user = lorittaShards.retrieveUserById(player1)
 
 			if (user != null) {
 				roomAsJson["player1Metadata"] = jsonObject(
@@ -179,7 +174,7 @@ class TicTacToeRoom {
 		}
 
 		if (player2 != null) {
-			val user = lorittaShards.retriveUserById(player2)
+			val user = lorittaShards.retrieveUserById(player2)
 
 			if (user != null) {
 				roomAsJson["player2Metadata"] = jsonObject(

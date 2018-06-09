@@ -78,7 +78,7 @@ class LorittaShards {
         return null;
     }
 
-    fun retriveUserById(id: String?): User? {
+    fun retrieveUserById(id: String?): User? {
         return getUserById(id) ?: shards.first().retrieveUserById(id).complete()
     }
 

@@ -5,13 +5,10 @@ import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -40,15 +37,22 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.net.URL
 import java.time.Instant
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
+	val logger by logger()
 
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onUserUpdateAvatar")
+			return
+		}
 
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
@@ -121,6 +125,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onUserUpdateName")
+			return
+		}
+
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -187,6 +196,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGenericTextChannel")
+			return
+		}
+
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -247,6 +261,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildMessageReceived")
+			return
+		}
+
 		loritta.executor.execute {
 			val eventLogConfig = loritta.getServerConfigForGuild(event.guild.id).eventLogConfig
 
@@ -287,6 +306,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildMessageUpdate")
+			return
+		}
 
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
@@ -329,6 +353,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildMessageDelete")
+			return
+		}
 
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
@@ -386,6 +415,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildVoiceJoin")
+			return
+		}
+
 		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val eventLogConfig = serverConfig.eventLogConfig
@@ -421,6 +455,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildVoiceLeave")
+			return
+		}
 
 		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
@@ -578,6 +617,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildMemberNickChange")
+			return
+		}
 
 		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)

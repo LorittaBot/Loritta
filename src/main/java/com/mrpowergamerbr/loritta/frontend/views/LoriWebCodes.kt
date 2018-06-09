@@ -17,6 +17,7 @@ object LoriWebCodes {
 	const val ALREADY_IN_GUILD = 13 // quando o usuário já está na guild
 	const val INSUFFICIENT_FUNDS = 14 // usuário não possui dinheiro suficiente
 	const val NOT_IN_SERVER_LIST = 15 // quando o servidor não está na lista de servidores
+	const val DISABLED_DIRECT_MESSAGES = 16
 
 	// TIC-TAC-TOE
 	const val INVALID_ROOM = 101

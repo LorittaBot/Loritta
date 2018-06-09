@@ -27,7 +27,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 		val embed = EmbedBuilder().apply {
 			setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
 
-			val user = lorittaShards.retriveUserById(fanArt.artistId)!!
+			val user = lorittaShards.retrieveUserById(fanArt.artistId)!!
 
 			val displayName = fanArt.fancyName ?: user.name
 			val discord = user.name + "#" + user.discriminator

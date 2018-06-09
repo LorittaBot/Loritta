@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
@@ -41,6 +42,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onMessageReceived")
+			return
+		}
 
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			loritta.executor.execute {
@@ -277,6 +283,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildMessageUpdate")
+			return
+		}
+
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
@@ -319,6 +330,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onMessageDelete")
+			return
+		}
+
 		loritta.messageContextCache.remove(event.messageId)
 		loritta.messageInteractionCache.remove(event.messageId)
 	}
@@ -329,6 +345,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGenericMessageReaction")
+			return
+		}
 
 		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
 			val functions = loritta.messageInteractionCache[e.messageId]!!
@@ -582,6 +603,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
+			logger.error("Can't keep up! Is the server overloaded? onGuildVoiceJoin")
+			return
+		}
 
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)

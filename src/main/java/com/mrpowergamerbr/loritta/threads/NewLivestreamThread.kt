@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -14,6 +11,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLEncoder
+import java.time.Instant
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
@@ -30,33 +29,154 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		}
 	}
 
-	fun checkNewVideos() {
-		logger.info("Verificando streams da Twitch... Pessoas que estão atualmente fazendo livestreams: ${isLivestreaming.joinToString(separator = ", ")}")
+	// Webhook do Mixer
+	var mixerWebhook: MixerWebhook? = null
 
-		// Servidores que usam o módulo do Twitch
+	fun checkNewVideos() {
+		val mixerWebhookFile = File(Loritta.FOLDER, "mixer_webhook.json")
+
+		if (mixerWebhook == null && mixerWebhookFile.exists())
+			mixerWebhook = gson.fromJson(mixerWebhookFile.readText())
+
+		// Servidores que usam o módulo de Livestreams
 		val servers = loritta.serversColl.find(
 				Filters.gt("livestreamConfig.channels", listOf<Any>())
-		).iterator()
+		).toMutableList()
+
+		logger.info("Criando webhooks de serviços de livestreams...")
+
+		logger.info("Verificando webhooks do Mixer...")
+		val channelNamePattern = Regex("mixer\\.com\\/([A-z0-9]+)").toPattern()
+
+		val channelIds = mutableSetOf<String>()
+
+		try {
+			for (server in servers) {
+				val livestreamConfig = server.livestreamConfig
+
+				val mixerChannels = livestreamConfig.channels.filter { it.channelUrl?.startsWith("https://mixer.com/") ?: false || it.channelUrl?.startsWith("http://mixer.com/") ?: false }
+
+				// Canais do Mixer permitem que a gente atualize uma webhook com vários eventos (yay, mágica!)
+				// Ou seja, caso um novo canal seja adicionado, é melhor a gente deletar a webhook atual e criar uma nova (woosh, mágica!)
+				mixerChannels.forEach {
+					val channelUrl = it.channelUrl
+
+					if (channelUrl != null) {
+						val matcher = channelNamePattern.matcher(channelUrl)
+
+						if (matcher.find()) {
+							val channelName = matcher.group(1)
+
+							// Agora nós iremos fazer um request para pegar o ID do canal, caso seja necessário
+							val channelId = mixerUsernameToId.getOrPut(channelName, {
+								// Okay, nós não sabemos quem é esse cara... daora a vida...
+								val payload = HttpRequest.get("https://mixer.com/api/v1/channels/$channelName?fields=id")
+										.acceptJson()
+										.body()
+
+								val channelId = jsonParser.parse(payload).obj["id"].nullLong
+
+								if (channelId != null) {
+									logger.info("ID do canal de ${channelName} é ${channelId}!")
+									channelId
+								} else {
+									-1
+								}
+							})
+
+							if (channelId != -1L) {
+								// ID = -1 == canal inválido!
+								channelIds.add(channelId.toString())
+							}
+						}
+					}
+				}
+			}
+
+			logger.info("Atualmente eu conheço ${channelIds.size} canais no Mixer!")
+
+			val sameValues = channelIds.equals(mixerWebhook?.channelIds)
+
+			if (!sameValues && channelIds.isNotEmpty()) {
+				logger.info("O set não contém os mesmos valores! Nós iremos deletar a webhook atual e criar uma nova...")
+
+				if (mixerWebhook != null) {
+					val mixerWebhook = mixerWebhook!!
+					logger.info("Desativando webhook do Mixer antigo... ${mixerWebhook.hookId}")
+
+					HttpRequest.post("https://mixer.com/api/v1/hooks/${mixerWebhook.hookId}/deactivate")
+							.acceptJson()
+							.header("Client-ID", Loritta.config.mixerClientId)
+							.header("Authorization", "Secret ${Loritta.config.mixerClientSecret}")
+							.ok()
+
+					logger.info("Webhook do Mixer desativado com sucesso! ${mixerWebhook.hookId}")
+				}
+
+				logger.info("Criando uma nova Webhook do Mixer!")
+
+				val events = mutableListOf<String>()
+
+				for (channelId in channelIds) {
+					events.add("channel:$channelId:update")
+				}
+
+				val json = jsonObject(
+						"kind" to "web",
+						"events" to gson.toJsonTree(events),
+						"url" to Loritta.config.websiteUrl + "api/v1/mixer-webhook",
+						"secret" to Loritta.config.mixerWebhookSecret
+				)
+
+				val payload = HttpRequest.post("https://mixer.com/api/v1/hooks")
+						.acceptJson()
+						.header("Client-ID", Loritta.config.mixerClientId)
+						.header("Authorization", "Secret ${Loritta.config.mixerClientSecret}")
+						.send(json.toString())
+						.body()
+
+				logger.info("Recebido ao tentar criar uma Webhook: ${payload}")
+				val receivedJson = jsonParser.parse(payload).obj
+
+				val hookId = receivedJson["id"].string
+				val expiresAtString = receivedJson["expiresAt"].string
+				val expiresAt = System.currentTimeMillis() + 7776000000L
+
+				this.mixerWebhook = MixerWebhook(
+						hookId,
+						expiresAt
+				).apply {
+					this.channelIds.addAll(channelIds)
+				}
+
+				logger.info("Nova Webhook do Mixer criada com sucesso!")
+
+				mixerWebhookFile.writeText(
+						gson.toJson(mixerWebhook)
+				)
+			}
+		} catch (e: Exception) {
+			logger.error("Erro ao verificar livestreams do Mixer!", e)
+		}
+
+		logger.info("Verificando streams da Twitch... Pessoas que estão atualmente fazendo livestreams: ${isLivestreaming.joinToString(separator = ", ")}")
 
 		// IDs dos canais a serem verificados
 		var userLogins = mutableSetOf<String>()
 
 		val list = mutableListOf<ServerConfig>()
 
-		servers.use {
-			while (it.hasNext()) {
-				val server = it.next()
-				val livestreamConfig = server.livestreamConfig
+		for (server in servers) {
+			val livestreamConfig = server.livestreamConfig
 
-				for (channel in livestreamConfig.channels) {
-					if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http"))
-						continue
+			for (channel in livestreamConfig.channels) {
+				if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http") && (!channel.channelUrl!!.startsWith("http://twitch.tv") && !channel.channelUrl!!.startsWith("https://twitch.tv")))
+					continue
 
-					val userLogin = channel.channelUrl!!.split("/").last()
-					userLogins.add(userLogin)
-				}
-				list.add(server)
+				val userLogin = channel.channelUrl!!.split("/").last()
+				userLogins.add(userLogin)
 			}
+			list.add(server)
 		}
 
 		// Vamos criar uma "lista" de IDs para serem procurados (batching)
@@ -168,6 +288,11 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		val displayNameCache = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(NewLivestreamThread::class.java)
 
+		// ===[ MIXER ]===
+		val isMixerLivestreaming = mutableSetOf<String>()
+		// Channel Username -> Channel ID
+		val mixerUsernameToId = ConcurrentHashMap<String, Long>()
+
 		fun getUserDisplayName(userLogin: String): String? {
 			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
 					.header("Client-ID", Loritta.config.twitchClientId)
@@ -263,5 +388,12 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val id: String,
 				val name: String
 		)
+	}
+
+	class MixerWebhook(
+			val hookId: String, // ID do Webhook
+			val expiresAt: Long // Quando deve ser renovado
+	) {
+		val channelIds = mutableSetOf<String>() // ID do canais
 	}
 }

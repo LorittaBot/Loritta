@@ -17,7 +17,7 @@ class FanArtsView : AbstractView() {
 
 		val users = mutableMapOf<String, User?>()
 		loritta.fanArts.forEach {
-			users.put(it.artistId, lorittaShards.retriveUserById(it.artistId))
+			users.put(it.artistId, lorittaShards.retrieveUserById(it.artistId))
 		}
 		variables["fanArtsUsers"] = users
 

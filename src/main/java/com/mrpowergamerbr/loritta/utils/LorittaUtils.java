@@ -1,12 +1,10 @@
 package com.mrpowergamerbr.loritta.utils;
 
 import com.github.kevinsawicki.http.HttpRequest;
-import com.mrpowergamerbr.loritta.Loritta;
 import com.mrpowergamerbr.loritta.LorittaLauncher;
 import com.mrpowergamerbr.loritta.commands.CommandContext;
 import com.mrpowergamerbr.loritta.userdata.ServerConfig;
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale;
-import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -16,9 +14,6 @@ import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.io.IOUtils;
@@ -173,7 +168,7 @@ public final class LorittaUtils {
 			// Ok, então só pode ser um ID do Discord!
 			if (toBeDownloaded == null) {
 				try {
-					User user = LorittaLauncher.loritta.getLorittaShards().retriveUserById(link);
+					User user = LorittaLauncher.loritta.getLorittaShards().retrieveUserById(link);
 
 					if (user != null) { // Pelo visto é!
 						toBeDownloaded = user.getEffectiveAvatarUrl() + "?size=" + avatarSize;
@@ -279,7 +274,7 @@ public final class LorittaUtils {
 			// Ok, então só pode ser um ID do Discord!
 			if (realUser == null) {
 				try {
-					User user = LorittaLauncher.loritta.getLorittaShards().retriveUserById(link);
+					User user = LorittaLauncher.loritta.getLorittaShards().retrieveUserById(link);
 
 					if (user != null) { // Pelo visto é!
 						realUser = user;

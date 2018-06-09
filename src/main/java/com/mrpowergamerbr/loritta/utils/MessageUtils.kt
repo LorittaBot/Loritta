@@ -213,6 +213,12 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: (MessageRea
 	return this
 }
 
+fun Message.onReactionAddByAuthor(userId: String, function: (MessageReactionAddEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(null, userId) }
+	functions.onReactionAddByAuthor = function
+	return this
+}
+
 fun Message.onReactionRemoveByAuthor(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
@@ -237,7 +243,8 @@ fun Message.onMessageReceived(context: CommandContext, function: (MessageReceive
 	return this
 }
 
-class MessageInteractionFunctions(val guild: String, val originalAuthor: String) {
+class MessageInteractionFunctions(val guild: String?, val originalAuthor: String) {
+	// Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
 	var onReactionAdd: ((MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemove: ((MessageReactionRemoveEvent) -> Unit)? = null
 	var onReactionAddByAuthor: ((MessageReactionAddEvent) -> Unit)? = null

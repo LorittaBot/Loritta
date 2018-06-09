@@ -95,7 +95,7 @@ class Loritta(config: LorittaConfig) {
 	val executor = createThreadPool("Executor Thread %d") // Threads
 
 	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newFixedThreadPool(384, ThreadFactoryBuilder().setNameFormat(name).build())
+		return Executors.newFixedThreadPool(512, ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	lateinit var commandManager: CommandManager // Nosso command manager

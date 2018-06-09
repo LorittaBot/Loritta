@@ -12,12 +12,12 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var retriveDreamsFromUser = LorittaUtils.getUserFromContext(context, 0) ?: context.userHandle
+		var retrieveDreamsFromUser = LorittaUtils.getUserFromContext(context, 0) ?: context.userHandle
 
-		val lorittaProfile = if (retriveDreamsFromUser == context.userHandle) {
+		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
 			context.lorittaUser.profile
 		} else {
-			loritta.getLorittaProfileForUser(retriveDreamsFromUser.id)
+			loritta.getLorittaProfileForUser(retrieveDreamsFromUser.id)
 		}
 
 		if (lorittaProfile.dreams.isNaN()) {
@@ -26,7 +26,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			return
 		}
 
-		if (context.userHandle == retriveDreamsFromUser) {
+		if (context.userHandle == retrieveDreamsFromUser) {
 			context.reply(
 					LoriReply(
 							locale["SONHOS_YouHave", lorittaProfile.dreams],
@@ -37,11 +37,11 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		} else {
 			context.reply(
 					LoriReply(
-							locale["SONHOS_UserHas", retriveDreamsFromUser.asMention, lorittaProfile.dreams],
+							locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.dreams],
 							"\uD83D\uDCB5"
 					)
 			)
-			logger.info("Usuário ${retriveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
+			logger.info("Usuário ${retrieveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
 		}
 	}
 }
