@@ -65,8 +65,8 @@ Mas se você quiser mesmo hospedar a Loritta, siga os seguintes passos:
 4. Tenha o IntelliJ IDEA instalado na sua máquina.
 5. Faça ```git clone https://github.com/LorittaBot/Loritta.git``` em alguma pasta no seu computador.
 6. Agora, usando o PowerShell (ou o próprio Git Bash), entre na pasta criada e utilize `mvn install`
-7. Após terminar de compilar, vá na pasta `target` e pegue a JAR `Loritta-0.0.1-SNAPSHOT-jar-with-dependencies.jar` (a JAR será uns ~40MB), ela é a JAR contendo todas as dependências que a Lori precisa para executar.
-8. Inicie a JAR que você copiou pelo prompt de comando utilizando `java -jar Loritta-0.0.1-SNAPSHOT-jar-with-dependencies.jar`, você provavelmente terá que futuramente colocar mais memória nela para evitar OutOfMemoryExceptions, no momento que eu escrevi este post, a versão pública dela está utilizando `-Xmx8G -Xms8G` (ou seja, 8GBs de memória alocada)
+7. Após terminar de compilar, vá na pasta `target` e pegue a JAR `Loritta-0.0.1-SNAPSHOT.jar` e a pasta "libs".
+8. Inicie a JAR que você copiou pelo prompt de comando utilizando `java -jar Loritta-0.0.1-SNAPSHOT.jar`, você provavelmente terá que futuramente colocar mais memória nela para evitar OutOfMemoryExceptions, no momento que eu escrevi este post, a versão pública dela está utilizando `-Xmx8G -Xms8G` (ou seja, 8GBs de memória alocada)
 9. Após iniciar, um arquivo chamado `config.json` será criado, abra ele com um editor de texto decente (como o Notepad++) e preencha todas as opções, a configuração já vem com alguns valores padrões e alguns destes valores padrões vem com explicações sobre para que ele serve e da onde ele surgiu.
 10. Após terminar de configurar, inicie a JAR novamente e, se tudo der certo, ela irá iniciar e você poderá usar os comandos dela! 🎉
 
