@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.userdata
 
-import com.mrpowergamerbr.loritta.utils.MiscUtils
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
@@ -14,6 +13,7 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") val 
 	var temporaryMute: Boolean = false
 	var expiresIn: Long = 0L
 	var warns = mutableListOf<ModerationConfig.Warn>()
+	var money = 0.0 // Dinheiro do usuário, caso a economia local do servidor esteja ativada
 
 	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {

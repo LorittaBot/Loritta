@@ -4,14 +4,12 @@ import com.google.common.collect.Sets
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.managers.Presence
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Guarda todos os shards da Loritta
  */
 class LorittaShards {
-    var shards: MutableSet<JDA> = Sets.newConcurrentHashSet()
+    var shards: MutableSet<JDA> = mutableSetOf()
 
     fun getGuildById(id: String): Guild? {
         for (shard in shards) {

@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import org.jooby.Session
 import org.jooby.WebSocket

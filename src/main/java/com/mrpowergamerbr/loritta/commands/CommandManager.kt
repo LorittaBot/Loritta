@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.HojeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
@@ -11,7 +10,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.SayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
@@ -86,12 +84,9 @@ class CommandManager {
 		commandMap.add(SwingCommand())
 		commandMap.add(DemonCommand())
 		commandMap.add(KnuxThrowCommand())
-		// commandMap.add(LicencaCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
-		// commandMap.add(TamagotchiCommand())
-		// commandMap.add(GiveawayCommand())
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
@@ -141,9 +136,7 @@ class CommandManager {
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
-		// commandMap.add(UnicodeCommand())
 		commandMap.add(ReceitasCommand())
 
 		// =======[ DISCORD ]=======
@@ -210,6 +203,7 @@ class CommandManager {
 		commandMap.add(LorittaUnbanCommand())
 		commandMap.add(LoriServerListConfigCommand())
 		commandMap.add(TicTacToeCommand())
+		commandMap.add(EvalKotlinCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())

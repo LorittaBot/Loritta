@@ -1,32 +1,22 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-
-import javax.imageio.ImageIO
+import net.dv8tion.jda.core.entities.*
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
-import java.util.HashMap
+import java.util.*
+import javax.imageio.ImageIO
 
 /**
  * Contexto do comando executado
@@ -87,7 +77,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
 		var send = ""
 		if (prefix != null) {
-			send = prefix + " **|** "
+			send = "$prefix **|** "
 		}
 		send = send + (if (forceMention) userHandle.asMention + " " else getAsMention(true)) + message
 		return sendMessage(send)
@@ -182,121 +172,79 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		}
 	}
 
-	fun sendFile(image: BufferedImage, name: String, message: String): Message {
-		val os = ByteArrayOutputStream()
-		try {
-			ImageIO.write(image, "png", os)
-		} catch (e: Exception) {
-		}
-
-		val `is` = ByteArrayInputStream(os.toByteArray())
-
-		val discordMessage = sendFile(`is`, name, message)
-		try {
-			os.close()
-			`is`.close()
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
-
-		return discordMessage
-	}
-
-	fun sendFile(image: BufferedImage, name: String, message: Message): Message {
-		val os = ByteArrayOutputStream()
-		try {
-			ImageIO.write(image, "png", os)
-		} catch (e: Exception) {
-		}
-
-		val `is` = ByteArrayInputStream(os.toByteArray())
-
-		val discordMessage = sendFile(`is`, name, message)
-		try {
-			os.close()
-			`is`.close()
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
-
-		return discordMessage
-	}
-
-	fun sendFile(image: BufferedImage, name: String, message: MessageEmbed): Message {
-		val os = ByteArrayOutputStream()
-		try {
-			ImageIO.write(image, "png", os)
-		} catch (e: Exception) {
-		}
-
-		val `is` = ByteArrayInputStream(os.toByteArray())
-
-		val discordMessage = sendFile(`is`, name, message)
-		try {
-			os.close()
-			`is`.close()
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
-
-		return discordMessage
-	}
-
-	fun sendFile(data: InputStream, name: String, message: String): Message {
+	fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
-		return sendFile(data, name, builder.build())
-	}
-
-	fun sendFile(data: InputStream, name: String, message: MessageEmbed): Message {
-		val messageBuilder = MessageBuilder()
-		messageBuilder.setEmbed(message)
-		messageBuilder.append(" ")
-		return sendFile(data, name, messageBuilder.build())
-	}
-
-	fun sendFile(data: InputStream, name: String, message: Message): Message {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
-		}
-		if (privateReply || cmd is AjudaCommand) {
-			return lorittaUser.user.openPrivateChannel().complete().sendFile(data, name, message).complete()
-		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendFile(data, name, message).complete()
-				LorittaLauncher.loritta.messageContextCache.put(sentMessage.id, this)
-				return sentMessage
-			} else {
-				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
-			}
-		}
-	}
-
-	@Throws(IOException::class)
-	fun sendFile(file: File, name: String, message: String): Message {
-		// Corrigir erro ao construir uma mensagem vazia
-		val builder = MessageBuilder()
-		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
 		return sendFile(file, name, builder.build())
 	}
 
-	@Throws(IOException::class)
 	fun sendFile(file: File, name: String, message: Message): Message {
+		val inputStream = file.inputStream()
+		return sendFile(inputStream, name, message)
+	}
+
+	fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): Message {
+		return sendFile(image, name, "", embed)
+	}
+
+	fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
+
+		return sendFile(image, name, builder.build())
+	}
+
+	fun sendFile(image: BufferedImage, name: String, message: Message): Message {
+		val outputStream = ByteArrayOutputStream()
+		outputStream.use {
+			ImageIO.write(image, "png", it)
+		}
+
+		val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+
+		return sendFile(inputStream, name, message)
+	}
+
+	fun sendFile(inputStream: InputStream, name: String, message: String): Message {
+		// Corrigir erro ao construir uma mensagem vazia
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		return sendFile(inputStream, name, builder.build())
+	}
+
+	fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
+		return sendFile(inputStream, name, "", embed)
+	}
+
+	fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
+		// Corrigir erro ao construir uma mensagem vazia
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
+		return sendFile(inputStream, name, builder.build())
+	}
+
+	fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
 		if (privateReply || cmd is AjudaCommand) {
-			return lorittaUser.user.openPrivateChannel().complete().sendFile(file, name, message).complete()
+			val message = lorittaUser.user.openPrivateChannel().complete().sendFile(inputStream, name, message).complete()
+			inputStream.close()
+			return message
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendFile(file, name, message).complete()
-				LorittaLauncher.loritta.messageContextCache.put(sentMessage.id, this)
+				val sentMessage = event.channel.sendFile(inputStream, name, message).complete()
+				LorittaLauncher.loritta.messageContextCache[sentMessage.id] = this
+				inputStream.close()
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)

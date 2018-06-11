@@ -1,21 +1,9 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
-import java.io.File
-import java.lang.management.ManagementFactory
-import java.time.Instant
-import java.util.*
-import java.util.concurrent.TimeUnit
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.logger
+import com.mrpowergamerbr.loritta.utils.loritta
 
 /**
  * Thread para o Bom Dia & Cia
