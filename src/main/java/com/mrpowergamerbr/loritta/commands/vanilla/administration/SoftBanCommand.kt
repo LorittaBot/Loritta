@@ -42,7 +42,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
-				val user = LorittaUtils.getUserFromContext(context, 0)
+				val user = context.getUserAt(0)
 				var rawArgs = context.rawArgs
 				rawArgs = rawArgs.remove(0) // remove o usuário
 

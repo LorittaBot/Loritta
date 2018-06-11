@@ -38,7 +38,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 
 			if (user == null) {
 				context.reply(

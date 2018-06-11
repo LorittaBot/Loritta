@@ -22,7 +22,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var user = LorittaUtils.getUserFromContext(context, 0)
+		var user = context.getUserAt(0)
 
 		if (user == null) {
 			if (context.args.getOrNull(0) != null) {

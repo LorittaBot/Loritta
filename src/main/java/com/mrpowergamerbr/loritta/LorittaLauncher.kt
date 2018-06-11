@@ -5,6 +5,11 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import java.io.File
 import java.io.IOException
 
+/**
+ * Loritta's Launcher
+ *
+ * @author MrPowerGamerBR
+ */
 object LorittaLauncher {
 	// STATIC MAGIC(tm)
 	lateinit var loritta: Loritta
@@ -27,10 +32,10 @@ object LorittaLauncher {
 			}
 
 		} else {
-			println("Bem-Vindo(a) a Loritta!")
-			println("Como é a sua primeira vez executando ela, nós iremos criar um arquivo chamado \"config.json\", que você deverá configurar a Loritta antes de usar ela!")
+			println("Welcome to Loritta!")
+			println("Because this is your first time executing me, I will create a file named \"config.json\", that you will need to configure before using me!")
 			println("")
-			println("Após configurar a Loritta, inicie ela novamente!")
+			println("After configuring the file, run me again!")
 			try {
 				file.writeText(gson.toJson(LorittaConfig()))
 			} catch (e: IOException) {

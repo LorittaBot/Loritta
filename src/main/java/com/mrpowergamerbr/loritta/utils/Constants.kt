@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -46,6 +47,27 @@ object Constants {
 			"boqueteira",
 			"putona"
 	)
+
+	/**
+	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image
+	 * is valid or, if he doesn't provide any arguments to the command, explain how the command works.
+	 *
+	 * <pre>{@code
+	 * context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+	 * }</pre>
+	 */
+	val INVALID_IMAGE_REPLY: ((CommandContext) -> Unit) = { context ->
+		if (context.rawArgs.isEmpty()) {
+			context.explain()
+		} else {
+			context.reply(
+					LoriReply(
+							message = context.locale["NO_VALID_IMAGE"],
+							prefix = Constants.ERROR
+					)
+			)
+		}
+	}
 
 	// ===[ FONTS ]===
 	val OSWALD_REGULAR: Font by lazy {

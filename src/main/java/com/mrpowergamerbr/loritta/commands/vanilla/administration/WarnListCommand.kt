@@ -28,7 +28,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val user = LorittaUtils.getUserFromContext(context, 0)
+		val user = context.getUserAt(0)
 
 		if (user != null) {
 			val profile = context.config.getUserData(user.id)

@@ -34,7 +34,7 @@ object SeamCarver {
 	 * @param image to be carved and direction of the seam (vertical / horizontal).
 	 * @return carved image.
 	 */
-	fun carveSeam(image: BufferedImage?, direction: String): BufferedImage? {
+	fun carveSeam(image: BufferedImage?, direction: String): BufferedImage {
 		// We need to compute the energy table, find and remove a seam.
 		var newImage: BufferedImage? = null
 		val energyTable = computeEnergy(image!!)

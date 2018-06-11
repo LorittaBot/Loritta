@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.NSFWResponse
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
@@ -35,9 +34,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var userProfile = context.lorittaUser.profile
-
-		val link = LorittaUtils.getURLFromContext(context, 0, 1, 2048);
+		val link = context.getImageUrlAt(0, 1, 2048);
 
 		if (link != null) {
 			setAsBackground(link, context);
@@ -150,10 +147,8 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			println("* Usuário: ${context.userHandle.name} (${context.userHandle.id})")
 		}
 
-		var bufferedImage = LorittaUtils.downloadImage(link)
-		if (!LorittaUtils.isValidImage(context, bufferedImage)) {
-			return;
-		}
+		var bufferedImage = LorittaUtils.downloadImage(link) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
 		var needsEditing = false;
 		if (!(bufferedImage.width == 800 && bufferedImage.height == 600)) {
 			needsEditing = true;

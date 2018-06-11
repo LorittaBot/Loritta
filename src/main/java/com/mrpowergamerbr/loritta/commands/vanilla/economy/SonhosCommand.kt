@@ -12,7 +12,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var retrieveDreamsFromUser = LorittaUtils.getUserFromContext(context, 0) ?: context.userHandle
+		var retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
 			context.lorittaUser.profile

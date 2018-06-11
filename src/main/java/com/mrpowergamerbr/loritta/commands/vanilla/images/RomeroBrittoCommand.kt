@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.image.BufferedImage
 import java.io.File
@@ -29,15 +29,13 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0, 25, 256);
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return;
-		}
-		var template = ImageIO.read(File(Loritta.ASSETS + "romero_britto.png")); // Template
-		var image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
+		val contextImage = context.getImageAt(0, 25, 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var graphics = image.graphics;
-		var skewed = LorittaImage(contextImage);
+		val template = ImageIO.read(File(Loritta.ASSETS + "romero_britto.png")); // Template
+		val image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
+
+		val graphics = image.graphics;
+		val skewed = LorittaImage(contextImage);
 
 		skewed.resize(300, 300);
 

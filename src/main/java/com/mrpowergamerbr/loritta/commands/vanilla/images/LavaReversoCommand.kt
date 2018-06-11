@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -35,17 +35,10 @@ class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), Comman
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var contextImage = LorittaUtils.getImageFromContext(context, 0, 0);
-			var template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template
+			val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+			val template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template
 
-			if (contextImage == null) {
-				contextImage = LorittaUtils.getImageFromContext(context, 0);
-				if (!LorittaUtils.isValidImage(context, contextImage)) {
-					return;
-				}
-			} else {
-				context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1);
-			}
+			context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1);
 
 			if (context.rawArgs.isEmpty()) {
 				this.explain(context);

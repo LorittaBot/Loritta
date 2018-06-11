@@ -4,8 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.image.BufferedImage
@@ -31,10 +30,8 @@ class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepes
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val contextImage = LorittaUtils.getImageFromContext(context, 0)
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return
-		}
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
 		val template = ImageIO.read(File(Loritta.ASSETS + "pepedream.png")) // Template
 		val base = BufferedImage(400, 320, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH).toBufferedImage()

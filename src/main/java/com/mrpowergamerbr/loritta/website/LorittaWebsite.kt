@@ -29,7 +29,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val queryString = req.urlQueryString
 		HelloWebsite.logger.info("${req.trueIp}: ${req.path()}$queryString")
 	}
-	// Mostrar tempo que demorou para processar tal request
+	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString

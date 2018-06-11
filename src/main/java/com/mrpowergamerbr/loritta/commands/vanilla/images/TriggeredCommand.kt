@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -32,25 +32,22 @@ class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0)
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return
-		}
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val input = contextImage
 
 		val triggeredLabel = ImageIO.read(File(Loritta.ASSETS, "triggered.png"))
 		// scale
 
-		var subtractW = input.width / 16
-		var subtractH = input.height / 16
-		var inputWidth = input.width - subtractW
-		var inputHeight = input.height - subtractH
+		val subtractW = input.width / 16
+		val subtractH = input.height / 16
+		val inputWidth = input.width - subtractW
+		val inputHeight = input.height - subtractH
 
 		// ogWidth --- input.width
 		// ogHeight --- x
-		var a1 = triggeredLabel.height * inputWidth
-		var labelHeight = a1 / triggeredLabel.width
+		val a1 = triggeredLabel.height * inputWidth
+		val labelHeight = a1 / triggeredLabel.width
 
 		val scaledTriggeredLabel = triggeredLabel.getScaledInstance(inputWidth, labelHeight, BufferedImage.SCALE_SMOOTH)
 

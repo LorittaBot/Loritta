@@ -4,8 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.image.BufferedImage
 import java.io.File
@@ -27,13 +26,11 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 	override fun needsToUploadFiles() = true
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0, 25, 256);
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return;
-		}
-		var template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")); // Template
+		val contextImage = context.getImageAt(0, avatarSize = 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
+		val template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")); // Template
+
+		val scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 225, 85, null);
 
 		context.sendFile(template, "perfeito.png", context.getAsMention(true));

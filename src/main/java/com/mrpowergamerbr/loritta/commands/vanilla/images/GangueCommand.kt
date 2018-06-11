@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -31,26 +31,11 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val contextImage = LorittaUtils.getImageFromContext(context, 0);
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return;
-		}
-		val contextImage2 = LorittaUtils.getImageFromContext(context, 1);
-		if (!LorittaUtils.isValidImage(context, contextImage2)) {
-			return;
-		}
-		val contextImage3 = LorittaUtils.getImageFromContext(context, 2);
-		if (!LorittaUtils.isValidImage(context, contextImage3)) {
-			return;
-		}
-		val contextImage4 = LorittaUtils.getImageFromContext(context, 3);
-		if (!LorittaUtils.isValidImage(context, contextImage4)) {
-			return;
-		}
-		val contextImage5 = LorittaUtils.getImageFromContext(context, 4);
-		if (!LorittaUtils.isValidImage(context, contextImage5)) {
-			return;
-		}
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val contextImage3 = context.getImageAt(2) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val contextImage4 = context.getImageAt(3) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val contextImage5 = context.getImageAt(4) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png")); // Template
 		val overlay = ImageIO.read(File(Loritta.ASSETS + "cocielo/overlay.png")); // Overlay
 

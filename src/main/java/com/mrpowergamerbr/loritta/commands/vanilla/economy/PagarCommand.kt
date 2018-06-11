@@ -13,7 +13,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 			val howMuch = context.rawArgs.getOrNull(1)?.toDoubleOrNull()
 
 			if (user == null || context.userHandle == user) {

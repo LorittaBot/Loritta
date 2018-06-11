@@ -1,11 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonArray
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -18,13 +14,8 @@ import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.utils.profile.OrkutProfileCreator
 import net.dv8tion.jda.core.entities.User
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
-import java.net.SocketTimeoutException
 import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
@@ -156,14 +147,14 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
-		val contextUser = LorittaUtils.getUserFromContext(context, 0)
+		val contextUser = context.getUserAt(0)
 		val user = if (contextUser != null) contextUser else context.userHandle
 
 		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
 		}
 
-		if (userProfile.isBanned) {
+		if (contextUser != null && userProfile.isBanned) {
 			context.reply(
 					LoriReply(
 							"${contextUser.asMention} está **banido**",

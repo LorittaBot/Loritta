@@ -40,8 +40,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 		var user2AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 
-		val user1 = LorittaUtils.getUserFromContext(context, 0)
-		val user2 = LorittaUtils.getUserFromContext(context, 1)
+		val user1 = context.getUserAt(0)
+		val user2 = context.getUserAt(1)
 
 		if (user1 != null) {
 			user1Name = user1.name

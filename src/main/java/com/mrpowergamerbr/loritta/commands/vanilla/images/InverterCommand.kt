@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.util.*
@@ -29,12 +29,10 @@ class InverterCommand : AbstractCommand("invert", listOf("inverter"), category =
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val image = LorittaUtils.getImageFromContext(context, 0)
+		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		if (!LorittaUtils.isValidImage(context, image)) { return }
-
-		for (x in 0..image.width - 1) {
-			for (y in 0..image.height - 1) {
+		for (x in 0 until image.width) {
+			for (y in 0 until image.height) {
 				val rgba = image.getRGB(x, y)
 				var col = Color(rgba, true)
 				col = Color(

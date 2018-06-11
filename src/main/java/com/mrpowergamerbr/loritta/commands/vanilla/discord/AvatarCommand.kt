@@ -24,7 +24,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var getAvatar = LorittaUtils.getUserFromContext(context, 0)
+		var getAvatar = context.getUserAt(0)
 
 		if (getAvatar == null) {
 			getAvatar = context.userHandle

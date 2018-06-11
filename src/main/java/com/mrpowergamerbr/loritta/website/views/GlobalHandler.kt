@@ -41,8 +41,6 @@ object GlobalHandler {
 			""
 		}
 
-		logger.info("${req.header("X-Forwarded-For").value()}: ${req.path()}${queryString}")
-
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
 			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
 

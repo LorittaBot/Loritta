@@ -56,7 +56,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**
- * Classe principal da Loritta
+ * Loritta's main class, where everything (and anything) can happen!
+ *
+ * @author MrPowerGamerBR
  */
 class Loritta(config: LorittaConfig) {
 	// ===[ STATIC ]===
@@ -165,8 +167,8 @@ class Loritta(config: LorittaConfig) {
 				.setCorePoolSize(24)
 				.setBulkDeleteSplittingEnabled(false)
 				.setAudioSendFactory(NativeAudioSendFactory())
-		builder.addEventListener(discordListener)
-		builder.addEventListener(eventLogListener)
+				.addEventListener(discordListener)
+				.addEventListener(eventLogListener)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -356,10 +358,11 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Carrega um ServerConfig de uma guild
+	 * Loads the server configuration of a guild
 	 *
-	 * @param guildId
-	 * @return ServerConfig
+	 * @param guildId the guild's ID
+	 * @return        the server configuration
+	 * @see           ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
@@ -367,10 +370,11 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Carrega um LorittaProfile de um usuário
+	 * Loads the profile of an user
 	 *
-	 * @param userId
-	 * @return LorittaProfile
+	 * @param userId the user's ID
+	 * @return       the user profile
+	 * @see          LorittaProfile
 	 */
 	fun getLorittaProfileForUser(userId: String): LorittaProfile {
 		val userProfile = usersColl.find(Filters.eq("_id", userId)).first()
@@ -378,7 +382,9 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Cria o CommandManager
+	 * Initializes the CommandManager
+	 *
+	 * @see CommandManager
 	 */
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
@@ -386,12 +392,17 @@ class Loritta(config: LorittaConfig) {
 		commandManager = CommandManager()
 	}
 
+	/**
+	 * Loads the Fan Arts from the "fanarts.json" file
+	 */
 	fun loadFanArts() {
 		fanArts = GSON.fromJson(File("./fanarts.json").readText())
 	}
 
 	/**
-	 * Inicia os locales da Loritta
+	 * Initializes the available locales and adds missing translation strings to non-default languages
+	 *
+	 * @see BaseLocale
 	 */
 	fun loadLocales() {
 		val locales = mutableMapOf<String, BaseLocale>()
@@ -486,10 +497,24 @@ class Loritta(config: LorittaConfig) {
 		this.locales = locales
 	}
 
+	/**
+	 * Gets the BaseLocale from the ID, if the locale doesn't exist, the default locale ("default") will be retrieved
+	 *
+	 * @param localeId the ID of the locale
+	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
+	 * @see            BaseLocale
+	 */
 	fun getLocaleById(localeId: String): BaseLocale {
 		return locales.getOrDefault(localeId, locales.get("default"))!!
 	}
 
+	/**
+	 * Gets a premium key from the key's name, if it is valid
+	 *
+	 * @param name the key's name
+	 * @return     the premium key, or null, if the key doesn't exist of it is expired
+	 * @see        PremiumKey
+	 */
 	fun getPremiumKey(name: String?): PremiumKey? {
 		return premiumKeys.filter {
 			it.name == name
@@ -498,11 +523,21 @@ class Loritta(config: LorittaConfig) {
 		}.firstOrNull()
 	}
 
+	/**
+	 * Loads all available premium keys from the "premium-keys.json" file
+	 *
+	 * @see PremiumKey
+	 */
 	fun loadPremiumKeys() {
 		if (File("./premium-keys.json").exists())
 			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
 	}
 
+	/**
+	 * Saves all available premium keys
+	 *
+	 * @see PremiumKey
+	 */
 	fun savePremiumKeys() {
 		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
 	}

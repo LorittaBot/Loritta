@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
@@ -30,9 +30,7 @@ class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val image = LorittaUtils.getImageFromContext(context, 0)
-
-		if (!LorittaUtils.isValidImage(context, image)) { return }
+		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val rightSide = image.getSubimage(image.width / 2, 0, image.width / 2, image.height)
 

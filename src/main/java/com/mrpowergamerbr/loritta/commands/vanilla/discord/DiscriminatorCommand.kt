@@ -30,7 +30,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		var user = context.userHandle
 		var discriminator = user.discriminator
 
-		val userFromContext = LorittaUtils.getUserFromContext(context, 0)
+		val userFromContext = context.getUserAt(0)
 
 		if (userFromContext != null) {
 			user = userFromContext

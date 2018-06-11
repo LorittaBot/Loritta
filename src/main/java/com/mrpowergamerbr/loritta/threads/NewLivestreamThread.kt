@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLEncoder
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -124,7 +123,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val json = jsonObject(
 						"kind" to "web",
 						"events" to gson.toJsonTree(events),
-						"url" to Loritta.config.websiteUrl + "api/v1/mixer-webhook",
+						"url" to Loritta.config.websiteUrl + "api/v1/callbacks/mixer",
 						"secret" to Loritta.config.mixerWebhookSecret
 				)
 

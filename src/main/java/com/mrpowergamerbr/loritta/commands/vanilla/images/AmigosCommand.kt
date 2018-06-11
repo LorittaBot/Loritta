@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.core.entities.Member
@@ -25,15 +24,15 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val choosen = mutableListOf<Member>()
 
-		var contextImage = LorittaUtils.getImageFromContext(context, 0, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage2 = LorittaUtils.getImageFromContext(context, 1, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage3 = LorittaUtils.getImageFromContext(context, 2, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage4 = LorittaUtils.getImageFromContext(context, 3, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage5 = LorittaUtils.getImageFromContext(context, 4, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage6 = LorittaUtils.getImageFromContext(context, 5, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage7 = LorittaUtils.getImageFromContext(context, 6, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage8 = LorittaUtils.getImageFromContext(context, 7, 0, 128) ?: getRandomAvatar(context, choosen)
-		var contextImage9 = LorittaUtils.getImageFromContext(context, 8, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage = context.getImageAt(0, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage2 = context.getImageAt(1, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage3 = context.getImageAt(2, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage4 = context.getImageAt(3, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage5 = context.getImageAt(4, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage6 = context.getImageAt(5, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage7 = context.getImageAt(6, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage8 = context.getImageAt(7, 0, 128) ?: getRandomAvatar(context, choosen)
+		var contextImage9 = context.getImageAt(8, 0, 128) ?: getRandomAvatar(context, choosen)
 
 		contextImage = contextImage.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 		contextImage2 = contextImage2.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
