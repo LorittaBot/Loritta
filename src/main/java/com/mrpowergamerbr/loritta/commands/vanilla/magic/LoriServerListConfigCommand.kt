@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import org.apache.commons.lang3.RandomStringUtils
 
-class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}

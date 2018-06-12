@@ -5,11 +5,10 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
@@ -28,26 +27,19 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		val validLanguages = "\uD83C\uDDE7\uD83C\uDDF7 Português-Brasil\n<:loritta_quebrada:338679008210190336> Português-Funk\n\uD83C\uDDF5\uD83C\uDDF9 Português-Portugal\n\uD83C\uDDFA\uD83C\uDDF8 English-US\n\uD83C\uDDEA\uD83C\uDDF8 Español"
 		embed.setDescription(context.locale["LANGUAGE_INFO", validLanguages])
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
-		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").complete()
-		message.addReaction("loritta_quebrada:338679008210190336").complete()
-		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").complete()
-		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").complete()
-		message.addReaction("\uD83C\uDDEA\uD83C\uDDF8").complete()
-	}
 
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (context.userHandle.id == e.user.id) { // Somente quem executou o comando pode utilizar!
+		message.onReactionAddByAuthor(context) {
 			var localeId = "default"
-			if (e.reactionEmote.name == "loritta_quebrada") {
+			if (it.reactionEmote.name == "loritta_quebrada") {
 				localeId = "pt-funk"
 			}
-			if (e.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
+			if (it.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
 				localeId = "en-us"
 			}
-			if (e.reactionEmote.name == "\uD83C\uDDF5\uD83C\uDDF9") {
+			if (it.reactionEmote.name == "\uD83C\uDDF5\uD83C\uDDF9") {
 				localeId = "pt-pt"
 			}
-			if (e.reactionEmote.name == "\uD83C\uDDEA\uD83C\uDDF8") {
+			if (it.reactionEmote.name == "\uD83C\uDDEA\uD83C\uDDF8") {
 				localeId = "es-es"
 			}
 
@@ -58,7 +50,13 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
 			context.reply(newLocale["LANGUAGE_USING_LOCALE", localeId], "\uD83C\uDFA4")
-			msg.delete().complete()
+			message.delete().complete()
 		}
+
+		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").complete()
+		message.addReaction("loritta_quebrada:338679008210190336").complete()
+		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").complete()
+		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").complete()
+		message.addReaction("\uD83C\uDDEA\uD83C\uDDF8").complete()
 	}
 }

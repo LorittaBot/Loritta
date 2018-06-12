@@ -1,5 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
+/**
+ * Converts a ByteArray to a hexadecimal string
+ *
+ * @return the byte array in hexadecimal format
+ */
 fun ByteArray.bytesToHex(): String {
 	val hexString = StringBuffer()
 	for (i in this.indices) {

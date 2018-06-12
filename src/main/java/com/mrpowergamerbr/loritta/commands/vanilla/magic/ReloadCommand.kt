@@ -6,8 +6,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
@@ -16,15 +14,13 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.concurrent.thread
 
-class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}

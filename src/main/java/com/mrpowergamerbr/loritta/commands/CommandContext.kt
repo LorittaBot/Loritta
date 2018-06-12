@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -25,7 +26,7 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, var event: AbstractCommand.LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 	var locale = loritta.getLocaleById("default")
 
@@ -118,7 +119,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(message).complete()
-				LorittaLauncher.loritta.messageContextCache.put(sentMessage.id, this)
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
@@ -142,7 +142,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(embed).complete()
-				LorittaLauncher.loritta.messageContextCache.put(sentMessage.id, this)
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
@@ -247,7 +246,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).complete()
-				LorittaLauncher.loritta.messageContextCache[sentMessage.id] = this
 				inputStream.close()
 				return sentMessage
 			} else {
@@ -278,7 +276,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 
 			// Vamos tentar procurar pelo username + discriminator
 			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val split = link.split("#".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
 				if (split.size == 2) {
 					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()

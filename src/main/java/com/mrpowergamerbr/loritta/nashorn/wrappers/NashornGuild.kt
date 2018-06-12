@@ -61,7 +61,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 	@NashornCommand.NashornDocs()
 	fun play(url: String) {
 		if (serverConfig.musicConfig.isEnabled) {
-			loritta.loadAndPlayNoFeedback(guild, serverConfig, url)
+			loritta.audioManager.loadAndPlayNoFeedback(guild, serverConfig, url)
 		}
 	}
 

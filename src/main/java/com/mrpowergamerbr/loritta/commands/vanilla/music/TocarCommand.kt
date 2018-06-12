@@ -45,15 +45,15 @@ class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), Comma
 			val music = context.args.joinToString(" ")
 
 			if (music.equals("reset", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				loritta.musicManagers.remove(context.guild.idLong)
+				loritta.audioManager.musicManagers.remove(context.guild.idLong)
 				return
 			}
 
 			if (music.equals("limpar", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				loritta.getGuildAudioPlayer(context.guild).scheduler.queue.clear()
+				loritta.audioManager.getGuildAudioPlayer(context.guild).scheduler.queue.clear()
 				return
 			}
-			loritta.checkAndLoad(context, music)
+			loritta.audioManager.loadAndPlay(context, music)
 		} else {
 			context.explain()
 		}

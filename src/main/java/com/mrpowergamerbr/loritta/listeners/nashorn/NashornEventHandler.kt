@@ -9,6 +9,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import org.bson.types.ObjectId
 import java.util.*
 import java.util.concurrent.Executors
@@ -29,7 +30,7 @@ class NashornEventHandler {
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
-	fun handleMessageReceived(event: MessageReceivedEvent) {
+	fun handleMessageReceived(event: GuildMessageReceivedEvent) {
 		try {
 			if (!javaScript.contains("onMessageReceived"))
 				return
@@ -70,7 +71,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		executor.shutdownNow()
 	}
 
-	class NashornMessageReceivedEvent(private val event: MessageReceivedEvent) {
+	class NashornMessageReceivedEvent(private val event: GuildMessageReceivedEvent) {
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
 		}
@@ -84,7 +85,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		}
 
 		fun getTextChannel(): NashornTextChannel {
-			return NashornTextChannel(event.textChannel)
+			return NashornTextChannel(event.channel)
 		}
 
 		fun getMessageId(): String {

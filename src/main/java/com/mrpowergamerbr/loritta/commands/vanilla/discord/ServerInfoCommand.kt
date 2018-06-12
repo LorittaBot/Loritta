@@ -44,7 +44,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 
 		// Baseado no comando ?serverinfo do Dyno
 		embed.setThumbnail(guild.iconUrl) // Ícone da Guild
-		embed.setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
+		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
 		embed.addField("💻 ID", guild.id, true) // ID da Guild
 		embed.addField("👑 ${context.locale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild

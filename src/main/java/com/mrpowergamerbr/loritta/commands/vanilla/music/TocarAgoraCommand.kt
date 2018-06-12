@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.Permission
 
 class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -44,7 +43,7 @@ class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), Comma
 		}
 		if (context.args.isNotEmpty()) {
 			val music = context.args.joinToString(" ")
-			loritta.checkAndLoad(context, music, true)
+			loritta.audioManager.loadAndPlay(context, music, override = true)
 		} else {
 			context.explain()
 		}

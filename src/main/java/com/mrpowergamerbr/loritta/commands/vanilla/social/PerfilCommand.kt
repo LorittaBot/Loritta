@@ -9,10 +9,10 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
+import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
+import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import net.dv8tion.jda.core.entities.User
 import java.awt.image.BufferedImage
 import java.io.File

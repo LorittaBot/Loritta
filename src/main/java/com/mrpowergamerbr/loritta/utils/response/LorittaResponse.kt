@@ -1,9 +1,10 @@
-package net.pocketdreams.dreamchat.utils.bot
+package com.mrpowergamerbr.loritta.utils.response
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 
 interface LorittaResponse {
-	fun handleResponse(event: MessageReceivedEvent, message: String): Boolean
+	fun handleResponse(event: LorittaMessageEvent, message: String): Boolean
 
-	fun getResponse(event: MessageReceivedEvent, message: String): String?
+	fun getResponse(event: LorittaMessageEvent, message: String): String?
 }

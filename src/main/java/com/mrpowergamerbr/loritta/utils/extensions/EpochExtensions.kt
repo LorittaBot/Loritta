@@ -7,6 +7,12 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
+/**
+ * "Humanizes" the date
+ *
+ * @param locale the language that should be used to humanize the date
+ * @return       the humanized date
+ */
 fun OffsetDateTime.humanize(locale: BaseLocale): String {
 	val localeId = loritta.locales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
 	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
@@ -25,6 +31,12 @@ fun OffsetDateTime.humanize(locale: BaseLocale): String {
 	}
 }
 
+/**
+ * "Humanizes" the date
+ *
+ * @param locale the language that should be used to humanize the date
+ * @return       the humanized date
+ */
 fun Long.humanize(locale: BaseLocale): String {
 	return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale)
 }

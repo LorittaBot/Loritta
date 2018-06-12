@@ -5,6 +5,7 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
@@ -21,19 +22,19 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	port(4568) // Porta do website
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
-	assets("**", File(frontendFolder, "static/").toPath())
+	assets("/**", File(frontendFolder, "static/").toPath())
 
 	// Mostrar conexões realizadas ao website
 	before { req, res ->
 		req.set("start", System.currentTimeMillis())
 		val queryString = req.urlQueryString
-		HelloWebsite.logger.info("${req.trueIp}: ${req.path()}$queryString")
+		logger.info("${req.trueIp}: ${req.path()}$queryString")
 	}
 	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString
-		HelloWebsite.logger.info("${req.trueIp}: ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+		logger.info("${req.trueIp}: ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
 	}
 
 	ws("/lorisocket") { handler, ws ->
@@ -59,10 +60,10 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		WebSocketHandler.onSocketConnected(ws, session)
 	}
 	use(APIRoute())
-	get("**", { req, res ->
+	get("/**", { req, res ->
 		res.send(GlobalHandler.render(req, res))
 	})
-	post("**", { req, res ->
+	post("/**", { req, res ->
 		res.send(GlobalHandler.render(req, res))
 	})
 }) {
@@ -70,6 +71,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
+		val logger by logger()
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {

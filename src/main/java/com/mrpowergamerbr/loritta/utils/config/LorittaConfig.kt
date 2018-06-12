@@ -90,7 +90,7 @@ data class LorittaConfig(
 
 	class LorittaGameStatus(val name: String, val type: String)
 
-	class LorittaAvatarFanArt(val fileName: String, val artist: String)
+	class LorittaAvatarFanArt(val fileName: String, val artistId: String, val fancyName: String?)
 
 	class AuthenticationKey(val name: String, val description: String, val allowed: List<String>)
 }

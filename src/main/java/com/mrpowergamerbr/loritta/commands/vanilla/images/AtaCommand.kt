@@ -42,9 +42,9 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 				300F, 177F,
 				96F, 138F)
 
-		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null);
+		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null)
 		base.graphics.drawImage(template, 0, 0, null)
 
-		context.sendFile(base, "ata.png", context.getAsMention(true));
+		context.sendFile(base, "ata.png", context.getAsMention(true))
 	}
 }

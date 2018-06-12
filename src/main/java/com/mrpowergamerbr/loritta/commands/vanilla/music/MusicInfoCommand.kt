@@ -1,14 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 
 class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingnow", "musicinfo", "np"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -28,7 +25,7 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		if (manager.player.playingTrack == null || manager.scheduler.currentTrack == null) {
 			context.reply(
 					LoriReply(
@@ -56,9 +53,12 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 						}
 					}
 					if (it.reactionEmote.name == "⏩") {
-						loritta.skipTrack(context)
+						loritta.audioManager.skipTrack(context)
 					}
+					return@onReactionAddByAuthor
 				}
+
+				LorittaUtilsKotlin.handleMusicReaction(context, it, message)
 			}
 
 			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
@@ -80,9 +80,5 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 
 			message.addReaction("\uD83D\uDD22").complete()
 		}
-	}
-
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		LorittaUtilsKotlin.handleMusicReaction(context, e, msg)
 	}
 }

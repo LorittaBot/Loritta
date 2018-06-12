@@ -84,7 +84,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			val discordMessage = try {
 				MessageUtils.generateMessage(
 						message,
-						null,
+						listOf(context.guild, context.userHandle),
 						context.guild
 				)
 			} catch (e: Exception) {

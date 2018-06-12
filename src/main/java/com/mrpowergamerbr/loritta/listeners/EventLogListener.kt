@@ -57,7 +57,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BURPLE)
+			embed.setColor(Constants.DISCORD_BLURPLE)
 			embed.setImage("attachment://avatar.png")
 
 			val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
@@ -133,7 +133,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BURPLE)
+			embed.setColor(Constants.DISCORD_BLURPLE)
 			embed.setImage("attachment://avatar.png")
 			if (!handledUsernameChanges.containsKey(event.user.id)) {
 				// É necessário fazer isto já que todas as shards irão receber a notificação de username change

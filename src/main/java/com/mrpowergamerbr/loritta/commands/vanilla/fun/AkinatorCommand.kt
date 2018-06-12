@@ -1,26 +1,19 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.double
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import org.json.XML
 import java.awt.Color
+import kotlin.collections.set
 
 class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -57,7 +50,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val apiEndpoint = getApiEndpoint(context.config.localeId)
 		val response = HttpRequest.get("$apiEndpoint/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
-			.body()
+				.body()
 
 		val xmlJSONObj = XML.toJSONObject(response);
 
@@ -73,10 +66,10 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 		val stepInfo = jsonSession["PARAMETERS"]["STEP_INFORMATION"]
 
-		var question = stepInfo["QUESTION"].string
-		var progression = stepInfo["PROGRESSION"].double
-		var step = stepInfo["STEP"].int
-		var answers = stepInfo["ANSWERS"]["ANSWER"].array
+		val question = stepInfo["QUESTION"].string
+		val progression = stepInfo["PROGRESSION"].double
+		val step = stepInfo["STEP"].int
+		val answers = stepInfo["ANSWERS"]["ANSWER"].array
 
 		var text = "[`";
 		for (i in 0..100 step 10) {
@@ -108,35 +101,25 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 		val message = context.sendMessage(context.getAsMention(true), builder.build())
 
-		for (emote in Constants.INDEXES.subList(0, 5)) {
-			message.addReaction(emote).complete();
-		}
-	}
+		message.onReactionAddByAuthor(context) {
+			val apiEndpoint = getApiEndpoint(context.config.localeId)
 
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		val apiEndpoint = getApiEndpoint(context.config.localeId)
-		if (e.user == context.userHandle && e is MessageReactionAddEvent) {
-			e.reaction.removeReaction(context.userHandle).complete()
+			it.reaction.removeReaction(context.userHandle).complete()
 			if (context.metadata.contains("channel")) {
 				val channel = context.metadata["channel"] as Long
 				val session = context.metadata["session"] as Long
 				val signature = context.metadata["signature"] as Long
 				var step = context.metadata["step"] as Int
-				var answer = if (e.reactionEmote.name == "1⃣") {
-					0
-				} else if (e.reactionEmote.name == "2⃣") {
-					1
-				} else if (e.reactionEmote.name == "3⃣") {
-					2
-				} else if (e.reactionEmote.name == "4⃣") {
-					3
-				} else if (e.reactionEmote.name == "5⃣") {
-					4
-				} else {
-					0
+				val answer = when {
+					it.reactionEmote.name == "1⃣" -> 0
+					it.reactionEmote.name == "2⃣" -> 1
+					it.reactionEmote.name == "3⃣" -> 2
+					it.reactionEmote.name == "4⃣" -> 3
+					it.reactionEmote.name == "5⃣" -> 4
+					else -> 0
 				}
 
-				val response = if (e.reactionEmote.name == "⏪") {
+				val response = if (it.reactionEmote.name == "⏪") {
 					HttpRequest.get("$apiEndpoint/ws/cancel_answer.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step")
 							.body()
 				} else {
@@ -162,9 +145,9 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					context.metadata.remove("session")
 					context.metadata.remove("step")
 
-					msg.clearReactions().complete()
-					msg.editMessage(builder.build()).complete()
-					return
+					message.clearReactions().complete()
+					message.editMessage(builder.build()).complete()
+					return@onReactionAddByAuthor
 				}
 
 				if (jsonResult["COMPLETION"].string == "WARN - NO QUESTION") {
@@ -179,18 +162,18 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					context.metadata.remove("session")
 					context.metadata.remove("step")
 
-					msg.clearReactions().complete()
-					msg.editMessage(builder.build()).complete()
-					return
+					message.clearReactions().complete()
+					message.editMessage(builder.build()).complete()
+					return@onReactionAddByAuthor
 				}
 
 				try {
 					val jsonAnswer = jsonResult["PARAMETERS"]
 
-					var question = jsonAnswer["QUESTION"].string
-					var progression = jsonAnswer["PROGRESSION"].double
+					val question = jsonAnswer["QUESTION"].string
+					val progression = jsonAnswer["PROGRESSION"].double
 					step = jsonAnswer["STEP"].int
-					var answers = jsonAnswer["ANSWERS"]["ANSWER"].array
+					val answers = jsonAnswer["ANSWERS"]["ANSWER"].array
 
 					if (95 >= progression) {
 						var text = "[`";
@@ -221,15 +204,15 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						context.metadata["signature"] = signature
 						context.metadata["step"] = step
 
-						msg.editMessage(builder.build()).complete()
+						message.editMessage(builder.build()).complete()
 
-						if (msg.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
+						if (message.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
 							if (step > 0) {
-								msg.addReaction("⏪").complete()
+								message.addReaction("⏪").complete()
 							}
 						} else {
 							if (step == 0) {
-								msg.reactions.forEach {
+								message.reactions.forEach {
 									if (it.reactionEmote.name == "⏪") {
 										it.removeReaction(context.userHandle).complete()
 									}
@@ -259,13 +242,17 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						context.metadata.remove("session")
 						context.metadata.remove("step")
 
-						msg.clearReactions().complete()
-						msg.editMessage(builder.build()).complete()
+						message.clearReactions().complete()
+						message.editMessage(builder.build()).complete()
 					}
 				} catch (e: Exception) {
 					logger.error(response, e)
 				}
 			}
+		}
+
+		for (emote in Constants.INDEXES.subList(0, 5)) {
+			message.addReaction(emote).complete()
 		}
 	}
 }

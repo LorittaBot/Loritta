@@ -25,7 +25,7 @@ object Constants {
 			"9⃣")
 
 	// ===[ COLORS ]===
-	val DISCORD_BURPLE = Color(114, 137, 218)
+	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
 
@@ -52,9 +52,9 @@ object Constants {
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image
 	 * is valid or, if he doesn't provide any arguments to the command, explain how the command works.
 	 *
-	 * <pre>{@code
+	 * ```
 	 * context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-	 * }</pre>
+	 * ```
 	 */
 	val INVALID_IMAGE_REPLY: ((CommandContext) -> Unit) = { context ->
 		if (context.rawArgs.isEmpty()) {

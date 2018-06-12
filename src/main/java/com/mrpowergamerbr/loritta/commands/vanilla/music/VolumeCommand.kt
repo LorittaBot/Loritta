@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -44,7 +43,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 			return
 		}
 
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		if (context.args.isNotEmpty()) {
 			try {
 				val vol = Integer.valueOf(context.args[0])

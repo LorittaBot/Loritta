@@ -15,9 +15,7 @@ import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Icon
 import net.dv8tion.jda.core.entities.Message
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import javax.imageio.ImageIO
 
 class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
@@ -79,7 +77,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		val embed = EmbedBuilder().apply {
 			setTitle("<:osama:325332212255948802> ${context.locale["EMOJISEARCH_Title"]}")
 			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
-			setColor(Constants.DISCORD_BURPLE)
+			setColor(Constants.DISCORD_BLURPLE)
 			setImage("attachment://emotes.png")
 		}
 
@@ -104,7 +102,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 					setTitle("${emote.asMention} ${emote.name}")
 					setThumbnail(emote.imageUrl)
 					setDescription(context.locale["EMOJISEARCH_FoundAt", emote.guild.name] + "\n\n[Download](${emote.imageUrl})")
-					setColor(Constants.DISCORD_BURPLE)
+					setColor(Constants.DISCORD_BLURPLE)
 				}
 
 				val emoteInfo = context.sendMessage(embed.build())

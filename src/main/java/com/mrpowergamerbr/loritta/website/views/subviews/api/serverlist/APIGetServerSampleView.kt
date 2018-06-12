@@ -4,13 +4,15 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.mongodb.client.model.*
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.MediaType
@@ -154,7 +156,6 @@ class APIGetServerSampleView : NoVarsView() {
 			information["serverListConfig"].obj.remove("votes")
 			information["id"] = guild.id
 			information["iconUrl"] = guild.iconUrl?.replace("jpg", "png")
-			information["invite"] = "PLEASE REMOVE THIS KTXHBYE" // TODO: remover
 			information["name"] = guild.name
 			information["tagline"] = server.serverListConfig.tagline
 			information["description"] = server.serverListConfig.description

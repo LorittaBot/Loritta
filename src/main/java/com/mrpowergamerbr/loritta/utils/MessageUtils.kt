@@ -5,13 +5,13 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
@@ -108,38 +108,6 @@ object MessageUtils {
 					owner = source.owner.effectiveName
 				}
 			}
-
-			// Legacy
-			// TODO: remove
-			val source = sources.getOrNull(0)
-
-			if (source != null) {
-				if (source is GenericGuildMemberEvent) {
-					mentionUser = source.member.asMention
-					user = source.member.user.name
-					userDiscriminator = source.member.user.discriminator
-					userId = source.member.user.id
-					avatarUrl = source.member.user.effectiveAvatarUrl
-					nickname = source.member.effectiveName
-					guildName = source.guild.name
-					guildSize = source.guild.members.size.toString()
-					mentionOwner = source.guild.owner.asMention
-					owner = source.guild.owner.effectiveName
-				}
-
-				if (source is MessageReceivedEvent) {
-					mentionUser = source.member.asMention
-					user = source.member.user.name
-					userDiscriminator = source.member.user.discriminator
-					userId = source.member.user.id
-					avatarUrl = source.member.user.effectiveAvatarUrl
-					nickname = source.member.effectiveName
-					guildName = source.guild.name
-					guildSize = source.guild.members.size.toString()
-					mentionOwner = source.guild.owner.asMention
-					owner = source.guild.owner.effectiveName
-				}
-			}
 		}
 
 		var message = text
@@ -195,50 +163,106 @@ object MessageUtils {
 	}
 }
 
+/**
+ * When an user adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionAdd(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
 }
 
+/**
+ * When an user removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionRemove(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemove = function
 	return this
 }
 
+/**
+ * When the command executor adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionAddByAuthor(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
 
+/**
+ * When the command executor adds a reaction to this message
+ *
+ * @param userId   the user ID
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionAddByAuthor(userId: String, function: (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(null, userId) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
 
+/**
+ * When the command executor removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionRemoveByAuthor(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
 	return this
 }
 
-fun Message.onResponse(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When an user sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponse(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponse = function
 	return this
 }
 
-fun Message.onResponseByAuthor(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When the command executor sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponseByAuthor(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponseByAuthor = function
 	return this
 }
 
-fun Message.onMessageReceived(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When a message is received in any guild
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onMessageReceived(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this
 }
@@ -249,7 +273,7 @@ class MessageInteractionFunctions(val guild: String?, val originalAuthor: String
 	var onReactionRemove: ((MessageReactionRemoveEvent) -> Unit)? = null
 	var onReactionAddByAuthor: ((MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemoveByAuthor: ((MessageReactionRemoveEvent) -> Unit)? = null
-	var onResponse: ((MessageReceivedEvent) -> Unit)? = null
-	var onResponseByAuthor: ((MessageReceivedEvent) -> Unit)? = null
-	var onMessageReceived: ((MessageReceivedEvent) -> Unit)? = null
+	var onResponse: ((LorittaMessageEvent) -> Unit)? = null
+	var onResponseByAuthor: ((LorittaMessageEvent) -> Unit)? = null
+	var onMessageReceived: ((LorittaMessageEvent) -> Unit)? = null
 }

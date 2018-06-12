@@ -42,7 +42,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         val builder = EmbedBuilder()
         builder.apply {
             setAuthor(context.userHandle.name, null, context.userHandle.avatarUrl)
-            setColor(Constants.DISCORD_BURPLE)
+            setColor(Constants.DISCORD_BLURPLE)
             setTitle(locale["CHANNELINFO_ChannelInformation", channel.name])
             addField(locale["DASHBOARD_ChannelName"], channel.name, true)
             addField(locale["CHANNELINFO_ChannelId"], channel.id, true)

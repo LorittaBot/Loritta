@@ -7,11 +7,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.entities.PrivateChannel
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
@@ -95,7 +95,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.locale[cat.fancyTitle], null)
 		val conf = context.config
 
-		var color = when (cat) {
+		val color = when (cat) {
 			CommandCategory.DISCORD -> Color(121, 141, 207)
 			CommandCategory.SOCIAL -> Color(231, 150, 90)
 			CommandCategory.UNDERTALE -> Color(250, 250, 250)
@@ -130,11 +130,11 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					var toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
+					val toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
 					if ((description + toBeAdded).length > 2048) {
-						embed.setDescription(description);
-						embeds.add(embed.build());
-						embed = EmbedBuilder();
+						embed.setDescription(description)
+						embeds.add(embed.build())
+						embed = EmbedBuilder()
 						embed.setColor(color)
 						description = ""
 					}
@@ -203,7 +203,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			context.metadata["guildId"] = context.guild.id
 		}
 
-		loritta.messageContextCache[message.id] = context
+		message.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, message) })
 
 		for (category in categories) {
 			// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
@@ -213,13 +213,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		message.addReaction("\uD83D\uDD22").complete() // all categories
 	}
 
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.user.id != context.userHandle.id)
-			return
-
-		if (e !is MessageReactionAddEvent)
-			return
-
+	fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
 		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
 
 		msg.delete().complete()
@@ -263,7 +257,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
-		val entry = reactionEmotes.entries.firstOrNull { it.value ==  e.reactionEmote.name }
+		val entry = reactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
 		if (entry != null) {
 			// Algumas categorias possuem vários comandos, fazendo que seja necessário enviar vários embeds
 			val embeds = getCommandsFor(context, entry.key)
@@ -281,8 +275,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick
 			if (lastMessage != null) {
+				lastMessage.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, lastMessage) })
 				lastMessage.addReaction("\uD83D\uDD19").complete()
-				loritta.messageContextCache[lastMessage.id] = context
 			}
 		}
 	}

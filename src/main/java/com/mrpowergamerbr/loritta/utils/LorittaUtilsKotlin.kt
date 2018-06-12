@@ -9,12 +9,12 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -325,7 +325,7 @@ object LorittaUtilsKotlin {
 
 	@JvmStatic
 	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
-		val manager = loritta.getGuildAudioPlayer(guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack
 		val metaTrack = manager.scheduler.currentTrack
 		val embed = EmbedBuilder()
@@ -371,7 +371,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createPlaylistInfoEmbed(context: CommandContext): MessageEmbed {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
 		embed.setTitle("\uD83C\uDFB6 ${context.locale["MUSICINFO_INQUEUE"]}")
@@ -421,7 +421,7 @@ object LorittaUtilsKotlin {
 			val count = e.reaction.users.complete().filter { !it.isBot }.size
 			val conf = context.config
 
-			if (count > 0 && conf.musicConfig.voteToSkip && LorittaLauncher.loritta.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
+			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
 				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
 
 				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
@@ -438,7 +438,7 @@ object LorittaUtilsKotlin {
 					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
 
 					if (count >= required) {
-						loritta.skipTrack(context)
+						loritta.audioManager.skipTrack(context)
 					}
 				}
 			}
@@ -668,7 +668,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun manageAutoPlaylists() {
-		val musicManagers = LorittaLauncher.loritta.musicManagers.values.filter { it.player.playingTrack == null }
+		val musicManagers = loritta.audioManager.musicManagers.values.filter { it.player.playingTrack == null }
 
 		val serverConfigs = loritta.serversColl.find(
 				Filters.`in`("_id", musicManagers.map { it.scheduler.guild.id })
@@ -684,7 +684,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
-		val diff = System.currentTimeMillis() - LorittaLauncher.loritta.songThrottle.getOrDefault(guild.id, 0L)
+		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)
 
 		if (5000 > diff)
 			return  // bye
@@ -704,10 +704,10 @@ object LorittaUtilsKotlin {
 			val trackUrl = conf.musicConfig.urls[Loritta.RANDOM.nextInt(0, conf.musicConfig.urls.size)]
 
 			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-			LorittaLauncher.loritta.songThrottle.put(guild.id, System.currentTimeMillis())
+			loritta.audioManager.songThrottle.put(guild.id, System.currentTimeMillis())
 
 			// E agora carregue a música
-			LorittaLauncher.loritta.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
+			loritta.audioManager.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
 		}
 	}
 }

@@ -2,25 +2,20 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf()) {
+abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	companion object {
 		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 	}
@@ -52,8 +47,6 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		return true
 	}
 
-	open abstract fun run(context: CommandContext, locale: BaseLocale)
-
 	open fun getExtendedDescription(): String? {
 		return null
 	}
@@ -67,30 +60,21 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	/**
-	 * Retorna as permissões necessárias para o usuário poder utilizar este comando
+	 * Returns the required permissions needed for the user to use this command
 	 *
-	 * @return A lista de permissões necessárias
+	 * @return the required permissions list
 	 */
 	open fun getDiscordPermissions(): List<Permission> {
 		return listOf()
 	}
 
 	/**
-	 * Retorna as permissões necessárias para eu poder usar este comando
+	 * Returns the required permissions needed for me to use this command
 	 *
-	 * @return A lista de permissões necessárias
+	 * @return the required permissions list
 	 */
 	open fun getBotPermissions(): List<Permission> {
 		return listOf()
-	}
-
-	/**
-	 * Retorna se somente o dono do bot pode executar este comando
-
-	 * @return Se somente o dono do bot pode usar este comando
-	 */
-	open fun onlyOwner(): Boolean {
-		return false
 	}
 
 	/**
@@ -103,13 +87,23 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	/**
-	 * Retorna se o comando só funciona em uma instância de música
+	 * What the command should do when it is executed
+	 *
+	 * @param context the context of the command
+	 * @param locale  the language the command should use
 	 */
-	open fun onlyInMusicInstance(): Boolean {
-		return false
-	}
+	abstract fun run(context: CommandContext, locale: BaseLocale)
 
-	fun handle(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	/**
+	 * Checks if the command should be handled (if all conditions are valid, like labels, etc)
+	 *
+	 * @param ev          the event wrapped in a LorittaMessageEvent
+	 * @param conf        the server configuration
+	 * @param locale      the language of the server
+	 * @param lorittaUser the user that is executing this command
+	 * @return            if the command was handled or not
+	 */
+	fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val rawMessage = ev.message.contentRaw
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -361,6 +355,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		return false
 	}
 
+	/**
+	 * Sends an embed explaining what the command does
+	 *
+	 * @param context the context of the command
+	 */
 	fun explain(context: CommandContext) {
 		val conf = context.config
 		val ev = context.event
@@ -433,25 +432,4 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		}
 	}
 
-	@Deprecated(message = "message.onReactionAdd")
-	open fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {} // Quando alguém usa uma reaction na mensagem
-
-	@Deprecated(message = "message.onResponse")
-	open fun onCommandMessageReceivedFeedback(context: CommandContext, e: MessageReceivedEvent, msg: Message) {} // Quando uma mensagem é recebida
-
-	class LorittaMessageEvent(
-			val author: User,
-			val member: Member?,
-			val message: Message,
-			val messageId: String,
-			val guild: Guild?,
-			val channel: MessageChannel,
-			val textChannel: TextChannel?
-	) {
-		val jda: JDA get() = author.jda
-
-		fun isFromType(type: ChannelType): Boolean {
-			return this.channel.type == type
-		}
-	}
 }

@@ -8,13 +8,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 
-class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC) {
+class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Banir usuários de usar a Loritta"
-	}
-
-	override fun onlyOwner(): Boolean {
-		return true
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {

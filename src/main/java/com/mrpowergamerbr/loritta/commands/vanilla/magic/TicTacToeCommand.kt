@@ -1,21 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeRoom
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.lang3.RandomStringUtils
 
-class TicTacToeCommand : AbstractCommand("tictactoe", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class TicTacToeCommand : AbstractCommand("tictactoe", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
 	}

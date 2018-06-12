@@ -6,84 +6,63 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.awt.Color
 import java.util.concurrent.ExecutionException
+import java.util.jar.Attributes
+import java.util.jar.JarFile
 import javax.script.Invocable
+import javax.script.ScriptEngineManager
 
-class EvalKotlinCommand : AbstractCommand("evalkt", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
 
+class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evaulatekt", "evaluatekotlin"), category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
-		return "Executa códigos em Kotlin"
+		return "Executa códigos em JavaScript"
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var kotlinCode = context.args.joinToString(" ")
+		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
+		val path = this::class.java.protectionDomain.codeSource.location.path
+		val jar = JarFile(path)
+		val mf = jar.manifest
+		val mattr = mf.mainAttributes
+		// Yes, you SHOULD USE Attributes.Name.CLASS_PATH! Don't try using "Class-Path", it won't work!
+		val manifestClassPath = mattr[Attributes.Name.CLASS_PATH] as String
 
-		val packages = listOf(
-				"com.mrpowergamerbr.loritta.utils.locale.BaseLocale",
-				"com.mrpowergamerbr.loritta.commands.CommandContext",
-				"com.mrpowergamerbr.loritta.Loritta",
-				"java.lang.management",
-				"java.lang.annotation",
-				"java.io",
-				"java.nio.file",
-				"java.text",
-				"java.time",
-				"java.time.format",
-				"java.time.temporal",
-				"java.util.concurrent",
-				"java.util.concurrent.atomic",
-				"java.util.stream",
-				"java.net",
-				"javax.script",
-				"net.dv8tion.jda.core",
-				"net.dv8tion.jda.core.entities",
-				"net.dv8tion.jda.core.managers",
-				"net.dv8tion.jda.core.utils",
-				"net.dv8tion.jda.core.utils.cache",
-				"net.dv8tion.jda.core.requests",
-				"net.dv8tion.jda.core.exceptions",
-				"net.dv8tion.jda.core.hooks",
-				"net.dv8tion.jda.core.events.message",
-				"net.dv8tion.jda.core.events.message.react",
-				"kotlin.reflect",
-				"kotlin.reflect.jvm",
-				"kotlin.reflect.full",
-				"kotlin.system",
-				"kotlin.io",
-				"kotlin.concurrent",
-				"kotlin.coroutines.experimental",
-				"kotlin.streams",
-				"kotlin.properties"
-		)
+		// The format within the Class-Path attribute is different than the one expected by the property, so let's fix it!
+		// By the way, don't forget to append your original JAR at the end of the string!
+		val propClassPath = manifestClassPath.replace(" ", ":") + ":Loritta-0.0.1-SNAPSHOT.jar"
+
+		// Now we set it to our own classpath
+		System.setProperty("kotlin.script.classpath", propClassPath)
+		var kotlinCode = context.args.joinToString(" ")
 
 		// Agora vamos mudar um pouquinho o nosso código
 		kotlinCode = """
-fun loritta(context: CommandContext, locale: BaseLocale) {
-	$kotlinCode
-}"""
+			import com.mrpowergamerbr.loritta.Loritta
+			import com.mrpowergamerbr.loritta.LorittaLauncher
+			import com.mrpowergamerbr.loritta.commands.CommandContext
+			import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+			import com.mrpowergamerbr.loritta.utils.loritta
+			import com.mrpowergamerbr.loritta.utils.lorittaShards
+			import com.mrpowergamerbr.loritta.utils.save
+			import com.mrpowergamerbr.loritta.utils.Constants
+			import com.mrpowergamerbr.loritta.utils.LorittaImage
+			import com.mrpowergamerbr.loritta.utils.toBufferedImage
+			import java.awt.image.BufferedImage
+			import java.io.File
+			import javax.imageio.ImageIO
 
-		var strPackages = ""
-		for (packagee in packages) {
-			strPackages = "import $packagee\n"
-		}
+			fun loritta(context: CommandContext, locale: BaseLocale) {
+				$kotlinCode
+			}""".trimIndent()
 
-		kotlinCode = strPackages + kotlinCode
-
-		val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine // Iniciar o Kotlin Script Engine
+		val engine = ScriptEngineManager().getEngineByName("kotlin") // Iniciar o nashorn
 		try {
 			engine.eval(kotlinCode)
 			val invocable = engine as Invocable
-			val returnedValue = invocable.invokeFunction("loritta", context, locale) // Pegar o valor retornado pelo script
-
-			if (returnedValue != null) {
-				context.sendMessage(returnedValue.toString()) // Value of, já que nós não sabemos qual tipo esse objeto é
-			}
+			invocable.invokeFunction("loritta", context, locale) // Pegar o valor retornado pelo script
 		} catch (e: Exception) {
+			e.printStackTrace()
 			val builder = EmbedBuilder()
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 			var description = "Irineu, você não sabe e nem eu!"

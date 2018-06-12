@@ -54,7 +54,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			setTitle("<:discord:314003252830011395> $nickname", null)
-			setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
+			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
 			if (lorittaProfile.hidePreviousUsernames) {

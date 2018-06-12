@@ -64,7 +64,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 
 				val embed = EmbedBuilder()
 
-				embed.setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
+				embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 				embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 
 				embed.addField("💻 ID", id, true) // ID da Guild

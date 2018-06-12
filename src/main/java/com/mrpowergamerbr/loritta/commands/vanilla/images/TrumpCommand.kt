@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.gifs.TrumpGIF
+import com.mrpowergamerbr.loritta.gifs.TrumpGIF
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES) {

@@ -1,12 +1,8 @@
 package com.mrpowergamerbr.loritta.website
 
 import com.mitchellbosecke.pebble.PebbleEngine
-import com.mrpowergamerbr.loritta.utils.extensions.trueIp
-import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
-import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import org.jooby.Kooby
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
@@ -16,18 +12,12 @@ class HelloWebsite : Kooby({
 	port(4568) // Porta do website
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
-	before { req, res ->
-		req.set("start", System.currentTimeMillis())
-		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.path()}$queryString")
-	}
-	complete("*") { req, rsp, cause ->
-		val start = req.get<Long>("start")
-		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
-	}
-	use(UserRoute())
-	use(APIRoute())
+	get("**", { req, res ->
+		res.send("Hello World!")
+	})
+	post("**", { req, res ->
+		res.send("Hello World!")
+	})
 }) {
 	companion object {
 		lateinit var ENGINE: PebbleEngine

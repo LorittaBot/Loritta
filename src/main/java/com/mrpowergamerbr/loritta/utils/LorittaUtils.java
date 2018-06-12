@@ -155,7 +155,7 @@ public final class LorittaUtils {
 			bytes = IOUtils.toByteArray(is);
 		} catch (IOException e) {
 			e.printStackTrace();
-			//handle errors
+			//matches errors
 		} finally {
 			if (is != null) is.close();
 		}

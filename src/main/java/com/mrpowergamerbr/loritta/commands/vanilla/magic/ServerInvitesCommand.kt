@@ -6,11 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class ServerInvitesCommand : AbstractCommand("serverinvites", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class ServerInvitesCommand : AbstractCommand("serverinvites", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Pega os invites de um servidor a partir do ID dele"
 	}
