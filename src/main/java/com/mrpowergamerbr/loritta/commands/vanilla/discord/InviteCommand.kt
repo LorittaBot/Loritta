@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -14,7 +15,7 @@ class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot"
 
     override fun run(context: CommandContext, locale: BaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.locale["INVITE_INFO", "https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=bot&permissions=2080374975", "http://loritta.website/auth", "https://loritta.website/support"])
+                .setDescription(context.locale["INVITE_INFO", Loritta.config.addBotUrl, "https://loritta.website/auth", "https://loritta.website/support"])
                 .setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
                 .setColor(Color(0, 193, 223))
                 .build()

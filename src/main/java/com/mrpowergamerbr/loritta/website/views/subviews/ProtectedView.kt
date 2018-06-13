@@ -7,10 +7,10 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
@@ -32,6 +32,7 @@ abstract class ProtectedView : AbstractView() {
 					debug = false
 				}
 				auth.doTokenExchange()
+
 				req.session()["discordAuth"] = GSON.toJson(auth)
 				if (state.isSet) {
 					// state = base 64 encoded JSON
@@ -44,6 +45,15 @@ abstract class ProtectedView : AbstractView() {
 						return true
 					}
 				}
+
+				// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
+				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
+				val guildId = req.param("guild_id")
+				if (guildId.isSet) {
+					res.redirect("https://loritta.website/us/dashboard/configure/${guildId.value()}")
+					return true
+				}
+
 				res.redirect("https://loritta.website/dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true

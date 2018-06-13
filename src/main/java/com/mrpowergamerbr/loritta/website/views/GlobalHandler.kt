@@ -149,6 +149,7 @@ object GlobalHandler {
 
 		variables["isPatreon"] = loritta.isPatreon
 		variables["isDonator"] = loritta.isDonator
+		variables["addBotUrl"] = Loritta.config.addBotUrl
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
