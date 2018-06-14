@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import org.jooby.Request
 import org.jooby.Response

@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response

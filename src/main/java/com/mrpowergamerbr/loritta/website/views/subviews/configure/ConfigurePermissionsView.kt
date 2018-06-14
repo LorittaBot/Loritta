@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Role
 import org.jooby.Request

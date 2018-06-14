@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website
 
+@Deprecated(message = "Use LoriWebCode")
 object LoriWebCodes {
 	const val SUCCESS = 0 // sucesso
 	const val RATE_LIMITED = 1 // rate limited ao acessar a API

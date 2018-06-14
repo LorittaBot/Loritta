@@ -31,8 +31,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			try {
 				if (event.member == null) {
-					println("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
-					println("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
+					logger.error("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
+					logger.error("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
 					return@execute
 				}
 
@@ -171,7 +171,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** " + event.author.asMention + " ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
+						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
 						Thread.sleep(5000)
 						message.delete().queue()
 					}
@@ -188,12 +188,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 			val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, serverConfig, profile)
+			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
+			val locale = loritta.getLocaleById("default")
 
 			if (isUserStillBanned(profile))
 				return@execute
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
-				event.channel.sendMessage("Olá " + event.message.author.asMention + "! Em DMs você não precisa usar nenhum prefixo para falar comigo! Para ver o que eu posso fazer, use `ajuda`!").complete()
+				event.channel.sendMessage(locale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, locale["AJUDA_CommandName"]]).complete()
 				return@execute
 			}
 
@@ -209,7 +211,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 			// Comandos vanilla da Loritta
 			loritta.commandManager.commandMap.forEach { cmd ->
-				if (cmd.matches(lorittaMessageEvent, serverConfig, loritta.getLocaleById("default"), lorittaUser)) {
+				if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 					return@execute
 				}
 			}

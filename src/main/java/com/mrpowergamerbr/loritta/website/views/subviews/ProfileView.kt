@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Guild

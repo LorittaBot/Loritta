@@ -6,7 +6,7 @@ import com.mongodb.client.model.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response

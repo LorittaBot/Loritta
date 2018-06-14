@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
 

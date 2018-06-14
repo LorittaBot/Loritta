@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.oauth2
+package com.mrpowergamerbr.loritta.oauth2
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
@@ -10,6 +10,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
+import com.mrpowergamerbr.loritta.utils.logger
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
@@ -22,6 +23,7 @@ class TemmieDiscordAuth {
 		const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0"
 		val gson = Gson()
 		val jsonParser = JsonParser()
+		val logger by logger()
 	}
 
 	private var authCode: String
@@ -82,8 +84,10 @@ class TemmieDiscordAuth {
 
 		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
 
-		if (json.has("error"))
+		if (json.has("error")) {
+			logger.error("Erro ao tentar fazer refresh no token para ${clientId}: $body")
 			throw TokenExchangeException()
+		}
 
 		readTokenPayload(json)
 	}
@@ -100,8 +104,10 @@ class TemmieDiscordAuth {
 
 		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
 
-		if (json.has("error"))
+		if (json.has("error")) {
+			logger.error("Erro ao tentar fazer token exchange para ${clientId}: $body")
 			throw TokenExchangeException()
+		}
 
 		readTokenPayload(json)
 	}
@@ -152,8 +158,10 @@ class TemmieDiscordAuth {
 		checkStatusCode(response)
 
 		val body = response.body()
+
 		if (checkForRateLimit(jsonParser.parse(body)))
 			return getUserGuilds()
+
 		_println(body)
 		return gson.fromJson(body)
 	}
@@ -166,7 +174,7 @@ class TemmieDiscordAuth {
 	}
 
 	fun isValid(): Boolean {
-		return System.currentTimeMillis() > this.generatedIn!! + this.expiresIn!! * 1000
+		return System.currentTimeMillis() > (this.generatedIn!! + this.expiresIn!!) * 1000
 	}
 
 	private fun buildQuery(params: Map<String, Any>): String {
@@ -178,7 +186,7 @@ class TemmieDiscordAuth {
 			} catch (e: UnsupportedEncodingException) {
 			}
 
-			query[index] = key + "=" + value
+			query[index] = "$key=$value"
 		}
 
 		return query.joinToString("&")
@@ -191,9 +199,7 @@ class TemmieDiscordAuth {
 	}
 
 	class TokenExchangeException : RuntimeException()
-
 	class NotLoggedInException : RuntimeException()
-
 	class UnauthorizedException : RuntimeException()
 	class MethodNotAllowedException : RuntimeException()
 

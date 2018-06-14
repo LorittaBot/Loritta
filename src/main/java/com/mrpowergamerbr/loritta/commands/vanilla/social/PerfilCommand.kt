@@ -7,12 +7,12 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
 import java.awt.image.BufferedImage
 import java.io.File
@@ -20,7 +20,7 @@ import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
-		var userVotes: List<DiscordBotVote>? = null
+		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
 		fun getUserBadges(user: User): List<BufferedImage> {
@@ -229,9 +229,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	}
 
 	class DiscordBotVote(
-			val username: String,
-			val discriminator: String,
-			val id: String,
-			val avatar: String?
+			val id: String
 	)
 }

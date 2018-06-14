@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.APIGetServerSampleView
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.Request
 import org.jooby.Response
 

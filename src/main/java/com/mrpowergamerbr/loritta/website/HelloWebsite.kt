@@ -1,17 +1,19 @@
 package com.mrpowergamerbr.loritta.website
 
 import com.mitchellbosecke.pebble.PebbleEngine
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.logger
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
 import org.jooby.Kooby
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
+import java.io.File
 import kotlin.concurrent.thread
 
 class HelloWebsite : Kooby({
 	port(4568) // Porta do website
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
+	assets("/**", File("C:\\Users\\Whistler\\Documents\\IdeaProjects\\Loritta\\LorittaBot\\target").toPath())
 	get("**", { req, res ->
 		res.send("Hello World!")
 	})

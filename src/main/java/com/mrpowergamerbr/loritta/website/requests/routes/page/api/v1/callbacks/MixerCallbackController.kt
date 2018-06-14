@@ -1,16 +1,20 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.nullBool
+import com.github.salomonbrys.kotson.nullLong
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.LoriWebCode
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
+import org.jooby.Status
 import org.jooby.mvc.POST
 import org.jooby.mvc.Path
 import javax.crypto.Mac
@@ -21,14 +25,23 @@ class MixerCallbackController {
 	val logger by logger()
 
 	@POST
-	fun handle(req: Request, res: Response): String {
+	fun handle(req: Request, res: Response) {
 		res.type(MediaType.json)
 
 		val response = req.body().value()
 
 		logger.info("Recebi payload do Mixer! ${response}")
 
-		val originalSignature = req.header("Poker-Signature").value()
+		val originalSignatureHeader = req.header("Poker-Signature")
+
+		if (!originalSignatureHeader.isSet) {
+			res.status(Status.UNAUTHORIZED)
+			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Poker-Signature Header from Request")
+			res.send(payload.toString())
+			return
+		}
+
+		val originalSignature = originalSignatureHeader.value()
 
 		val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA384")
 		val mac = Mac.getInstance("HmacSHA384")
@@ -41,10 +54,10 @@ class MixerCallbackController {
 		logger.info("Sucesso?           : ${originalSignature == output}")
 
 		if (originalSignature != output) {
-			logger.error("Assinatura do Webhook recebido não é idêntica a nossa assinatura!!!")
-			return jsonObject(
-					"api:code" to LoriWebCodes.UNAUTHORIZED
-			).toString()
+			res.status(Status.UNAUTHORIZED)
+			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Poker-Signature Content from Request")
+			res.send(payload.toString())
+			return
 		}
 
 		val json = jsonParser.parse(response).obj
@@ -139,8 +152,7 @@ class MixerCallbackController {
 			}
 		}
 
-		return jsonObject(
-				"api:code" to LoriWebCodes.SUCCESS
-		).toString()
+		res.status(Status.NO_CONTENT)
+		res.send("")
 	}
 }

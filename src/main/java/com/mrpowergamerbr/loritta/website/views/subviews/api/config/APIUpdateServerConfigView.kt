@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.Autoro
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
