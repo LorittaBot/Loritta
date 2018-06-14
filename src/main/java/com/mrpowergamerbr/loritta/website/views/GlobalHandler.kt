@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.mrpowergamerbr.loritta.website.OptimizeAssets
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.views.subviews.*
 import com.mrpowergamerbr.loritta.website.views.subviews.api.*
@@ -64,7 +65,8 @@ object GlobalHandler {
 				"commandMap" to loritta.commandManager.commandMap,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
-				"clientId" to Loritta.config.clientId
+				"clientId" to Loritta.config.clientId,
+				"cssAssetVersion" to OptimizeAssets.cssAssetVersion
 		)
 
 		// TODO: Deprecated

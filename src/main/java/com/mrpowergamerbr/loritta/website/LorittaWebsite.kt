@@ -94,6 +94,8 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	}
 
 	init {
+		OptimizeAssets.optimizeCss()
+
 		WEBSITE_URL = websiteUrl
 		FOLDER = frontendFolder
 

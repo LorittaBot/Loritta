@@ -29,7 +29,8 @@ open class InitVariablesController {
 				"commandMap" to loritta.commandManager.commandMap,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
-				"clientId" to Loritta.config.clientId
+				"clientId" to Loritta.config.clientId,
+				"cssAssetVersion" to OptimizeAssets.cssAssetVersion
 		)
 
 		req.set("variables", variables)

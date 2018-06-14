@@ -31,6 +31,7 @@ import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
@@ -279,6 +280,7 @@ class Loritta(config: LorittaConfig) {
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
+		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
