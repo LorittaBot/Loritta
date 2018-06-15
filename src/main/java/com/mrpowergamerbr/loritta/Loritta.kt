@@ -33,6 +33,7 @@ import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import net.dv8tion.jda.core.AccountType
@@ -272,14 +273,13 @@ class Loritta(config: LorittaConfig) {
 
 		AminoRepostThread().start() // Iniciar Amino Repost Thread
 
-		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
-
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		NewRssFeedThread().start() // Iniciar Feed Rss
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
+		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 
