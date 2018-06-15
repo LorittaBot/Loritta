@@ -225,7 +225,7 @@ object GlobalHandler {
 		apiViews.add(APIGetSelfUserProfileView())
 		apiViews.add(APISaveSelfUserProfileView())
 		apiViews.add(APIBumpServerView())
-		apiViews.add(APILoriTransferBalanceView())
+		// apiViews.add(APILoriTransferBalanceView())
 		apiViews.add(APIMixerWebhookView())
 
 		views.add(HomeView())

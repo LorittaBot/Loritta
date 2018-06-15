@@ -59,7 +59,7 @@ class PubSubHubbubCallbackController {
 		val typeParam = req.param("type")
 		val type = typeParam.value()
 
-		if (type == "youtubevideoupdate") {
+		if (type == "ytvideo") {
 			val payload = Jsoup.parse(response, "", Parser.xmlParser());
 
 			val entries = payload.getElementsByTag("entry")
