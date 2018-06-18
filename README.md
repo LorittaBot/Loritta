@@ -4,11 +4,12 @@ Loritta
 <br>
 <img height="384" src="https://loritta.website/assets/img/loritta.png">
 <br>
-<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
-<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
+<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 <a href="https://loritta.website/support"><img src="https://img.shields.io/badge/discord-loritta-7289da.svg"></a>
 <a href="https://loritta.website/support"><img src="https://img.shields.io/badge/donate-loritta-yellow.svg"></a>
-<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
+<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
+<a href="https://www.codacy.com/app/MrPowerGamerBR/Loritta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LorittaBot/Loritta&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/9dab59af231f4d6e96fe6bab6abe93af"></a>
+<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
 </p>
 <p align="center">
 <a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
