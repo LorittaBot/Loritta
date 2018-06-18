@@ -1,10 +1,13 @@
-package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1
+package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.website.LoriAuthLevel
+import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jooby.MediaType
@@ -16,10 +19,12 @@ import org.jooby.mvc.Path
 import java.awt.Color
 
 @Path("/api/v1/economy/transfer-balance")
-class LoriTransferBalanceController : RequiresHeaderAuthController() {
+class LoriTransferBalanceController {
 	val logger by logger()
 
 	@POST
+	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
+	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response) {
 		// A Transfer Balance endpoint é algo especial, serve para transferir dinheiro para uma conta para a outra...
 		// Mas, para evitar pessoas abusando da API, a API pergunta para o usuário se ele quer realmente transferir os sonhos.

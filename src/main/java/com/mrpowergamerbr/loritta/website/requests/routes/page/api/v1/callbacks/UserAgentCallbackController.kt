@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
 import com.mrpowergamerbr.loritta.utils.logger
+import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -11,6 +12,7 @@ class UserAgentCallbackController {
 	val logger by logger()
 
 	@GET
+	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response): String {
 		return req.header("User-Agent").value()
 	}

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta
 
 import com.google.gson.GsonBuilder
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import java.io.File
 import java.io.IOException
@@ -16,6 +17,10 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
+		// https://bugs.openjdk.java.net/browse/JDK-7016595
+		// Nós precisamos ativar o PATCH manualmente
+		WebsiteUtils.allowMethods("PATCH")
+
 		val gson = GsonBuilder().setPrettyPrinting().create()
 		val file = File(System.getProperty("conf") ?: "./config.json")
 		var config: LorittaConfig? = null

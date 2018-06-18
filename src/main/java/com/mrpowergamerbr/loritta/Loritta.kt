@@ -156,7 +156,7 @@ class Loritta(config: LorittaConfig) {
 		GlobalHandler.generateViews()
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(24)
+				.setCorePoolSize(32)
 				.setBulkDeleteSplittingEnabled(false)
 				.setAudioSendFactory(NativeAudioSendFactory())
 				.addEventListener(discordListener)

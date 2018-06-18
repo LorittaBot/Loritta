@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.logger
+import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import org.jooby.MediaType
 import org.jooby.Request
@@ -20,6 +21,7 @@ class DiscordBotsCallbackController {
 	val logger by logger()
 
 	@POST
+	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response) {
 		res.type(MediaType.json)
 		val response = req.body().value()

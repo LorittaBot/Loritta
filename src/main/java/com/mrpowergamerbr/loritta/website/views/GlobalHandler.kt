@@ -36,6 +36,7 @@ object GlobalHandler {
 
 	@Deprecated(message = "Hacky, hacky, hacky!!!")
 	fun render(req: Request, res: Response): String {
+		res.header("Lori-Using-Deprecated-Handler", true)
 		val queryString = if (req.queryString().isPresent) {
 			"?" + req.queryString().get()
 		} else {

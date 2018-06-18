@@ -1,13 +1,16 @@
 package com.mrpowergamerbr.loritta.website
 
+import com.google.common.collect.Lists
 import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
+import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
 import org.jooby.Jooby
@@ -17,9 +20,11 @@ import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
 import java.io.File
 import java.io.StringWriter
+import java.util.*
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(4568) // Porta do website
+	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
 
@@ -27,13 +32,13 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	before { req, res ->
 		req.set("start", System.currentTimeMillis())
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.path()}$queryString")
+		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString")
 	}
 	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
 	}
 
 	ws("/lorisocket") { handler, ws ->
@@ -58,14 +63,84 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 		WebSocketHandler.onSocketConnected(ws, session)
 	}
+	use("*") { req, res, chain ->
+		req.route().attributes().forEach {
+			println(it)
+		}
+
+		val doNotLocaleRedirect = req.route().attributes().entries.any { it.key == "loriDoNotLocaleRedirect" } || req.route().path().startsWith("/api/v1/") // TODO: Remover esta verificação após toda a API ser migrada para MVC paths
+
+		if (!doNotLocaleRedirect) {
+			var localeId: String? = null
+
+			// TODO: Deprecated
+			val acceptLanguage = req.header("Accept-Language").value("en-US")
+			val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+			for (range in ranges) {
+				localeId = range.range.toLowerCase()
+				var bypassCheck = false
+				if (localeId == "pt-br" || localeId == "pt") {
+					localeId = "default"
+					bypassCheck = true
+				}
+				if (localeId == "en") {
+					localeId = "en-us"
+				}
+				// val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
+				if (bypassCheck /* || defaultLocale !== parsedLocale */) {
+					// lorittaLocale = parsedLocale
+				}
+			}
+
+			val languageCode2 = req.path().split("/").getOrNull(1)
+			val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
+			if (!hasLangCode) {
+				println("Missing language code! Let's redirect...")
+				// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
+				if (localeId != null) {
+					println("Locale ID exists...")
+					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
+						println("Redirecting!!!")
+						res.status(302) // temporary redirect / no page rank penalty (?)
+						if (localeId == "default") {
+							res.redirect("https://loritta.website/br${req.path()}${req.urlQueryString}")
+						}
+						if (localeId == "pt-pt") {
+							res.redirect("https://loritta.website/pt${req.path()}${req.urlQueryString}")
+						}
+						if (localeId == "es-es") {
+							res.redirect("https://loritta.website/es${req.path()}${req.urlQueryString}")
+						}
+						res.redirect("https://loritta.website/us${req.path()}${req.urlQueryString}")
+						res.send("Redirecting...")
+						return@use
+					}
+				}
+			}
+		}
+
+		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
+
+		if (requiresVariables != null)
+			WebsiteUtils.initializeVariables(req, res)
+
+		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
+
+		if (requiresAuth != null) {
+			if (!WebsiteUtils.checkHeaderAuth(req, res))
+				return@use
+		}
+		chain.next(req, res)
+	}
+
 	use(APIRoute())
-	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
-	get("/**", { req, res ->
+	use(UserRoute())
+	get("/**") { req, res ->
 		res.send(GlobalHandler.render(req, res))
-	})
-	post("/**", { req, res ->
+	}
+	post("/**") { req, res ->
 		res.send(GlobalHandler.render(req, res))
-	})
+	}
 }) {
 	companion object {
 		lateinit var ENGINE: PebbleEngine

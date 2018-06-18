@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
+import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import org.jooby.MediaType
 import org.jooby.Request
@@ -22,6 +23,7 @@ class PubSubHubbubCallbackController {
 	val logger by logger()
 
 	@POST
+	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response) {
 		res.type(MediaType.json)
 		val response = req.body().value()
