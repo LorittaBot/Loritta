@@ -64,10 +64,6 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		WebSocketHandler.onSocketConnected(ws, session)
 	}
 	use("*") { req, res, chain ->
-		req.route().attributes().forEach {
-			println(it)
-		}
-
 		val doNotLocaleRedirect = req.route().attributes().entries.any { it.key == "loriDoNotLocaleRedirect" } || req.route().path().startsWith("/api/v1/") // TODO: Remover esta verificação após toda a API ser migrada para MVC paths
 
 		if (!doNotLocaleRedirect) {
@@ -95,12 +91,9 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 			val languageCode2 = req.path().split("/").getOrNull(1)
 			val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
 			if (!hasLangCode) {
-				println("Missing language code! Let's redirect...")
 				// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 				if (localeId != null) {
-					println("Locale ID exists...")
 					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
-						println("Redirecting!!!")
 						res.status(302) // temporary redirect / no page rank penalty (?)
 						if (localeId == "default") {
 							res.redirect("https://loritta.website/br${req.path()}${req.urlQueryString}")

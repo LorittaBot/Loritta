@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -207,13 +208,15 @@ class LoriTransferBalanceController {
 					)
 			)
 			return
-		} catch (e: Exception) {
-			res.status(Status.BAD_REQUEST)
-			res.send(WebsiteUtils.createErrorPayload(
-					LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
-					"Member ${receiver} disabled direct messages"
-			))
-			return
+		} catch (e: ErrorResponseException) {
+			if (e.errorCode == 50007) {
+				res.status(Status.BAD_REQUEST)
+				res.send(WebsiteUtils.createErrorPayload(
+						LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
+						"Member ${member.user.id} disabled direct messages"
+				))
+				return
+			}
 		}
 	}
 }
