@@ -6,12 +6,13 @@ import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.livestreams.TwitchUtils
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLEncoder
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
@@ -157,128 +158,6 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		} catch (e: Exception) {
 			logger.error("Erro ao verificar livestreams do Mixer!", e)
 		}
-
-		logger.info("Verificando streams da Twitch... Pessoas que estão atualmente fazendo livestreams: ${isLivestreaming.joinToString(separator = ", ")}")
-
-		// IDs dos canais a serem verificados
-		var userLogins = mutableSetOf<String>()
-
-		val list = mutableListOf<ServerConfig>()
-
-		for (server in servers) {
-			val livestreamConfig = server.livestreamConfig
-
-			for (channel in livestreamConfig.channels) {
-				if (channel.channelUrl == null && !channel.channelUrl!!.startsWith("http") && (!channel.channelUrl!!.startsWith("http://twitch.tv") && !channel.channelUrl!!.startsWith("https://twitch.tv")))
-					continue
-
-				val userLogin = channel.channelUrl!!.split("/").last()
-				userLogins.add(userLogin)
-			}
-			list.add(server)
-		}
-
-		// Vamos criar uma "lista" de IDs para serem procurados (batching)
-		val batchs = mutableListOf<ArrayList<String>>()
-
-		var currentBatch = arrayListOf<String>()
-
-		for (userLogin in userLogins) {
-			if (currentBatch.size == 100) {
-				batchs.add(currentBatch)
-				currentBatch = arrayListOf<String>()
-			}
-			currentBatch.add(userLogin)
-		}
-
-		batchs.add(currentBatch)
-
-		val nowStreaming = mutableSetOf<String>()
-
-		// Agora iremos verificar os canais
-		batchs.forEach { userLogins ->
-			logger.info("Verificando batch (${userLogins.size}): ${userLogins.joinToString(separator = ", ")}")
-			try {
-				val livestreamsInfo = getLivestreamsInfo(userLogins)
-
-				for (livestreamInfo in livestreamsInfo) {
-					val userLogin = livestreamInfo.thumbnailUrl.substring(52 until livestreamInfo.thumbnailUrl.lastIndexOf('-')) // ouc
-					nowStreaming.add(userLogin)
-
-					if (isLivestreaming.contains(userLogin)) // Se o usuário já está fazendo livestream, não vamos querer saber a mesma coisa novamente, né?
-						continue
-
-					if (!gameInfoCache.containsKey(livestreamInfo.gameId)) {
-						val gameInfo = getGameInfo(livestreamInfo.gameId)
-
-						if (gameInfo != null) {
-							gameInfoCache[livestreamInfo.gameId] = gameInfo
-						}
-					}
-
-					val gameInfo = gameInfoCache[livestreamInfo.gameId]
-
-					val displayName = if (displayNameCache.containsKey(userLogin)) {
-						displayNameCache[userLogin]!!
-					} else {
-						val userDisplayName = getUserDisplayName(userLogin)
-						logger.info("User Display Name para \"${userLogin}\" é \"$userDisplayName\"")
-						val channelName = userDisplayName ?: continue
-						displayNameCache[userLogin] = channelName
-						channelName
-					}
-
-					for (server in list) {
-						val livestreamConfig = server.livestreamConfig
-
-						val channels = livestreamConfig.channels.filter {
-							val channelUserLogin = it.channelUrl!!.split("/").last()
-
-							userLogin == channelUserLogin
-						}
-
-						for (channel in channels) {
-							val guild = lorittaShards.getGuildById(server.guildId) ?: continue
-
-							val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
-
-							if (!textChannel.canTalk())
-								continue
-
-							var message = channel.videoSentMessage ?: "{link}";
-
-							if (message.isEmpty()) {
-								message = "{link}"
-							}
-
-							val customTokens = mapOf(
-									"game" to (gameInfo?.name ?: "???"),
-									"title" to livestreamInfo.title,
-									"streamer" to displayName,
-									"link" to "https://www.twitch.tv/$userLogin"
-							)
-
-							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
-						}
-					}
-				}
-			} catch (e: Exception) {
-				e.printStackTrace()
-			}
-			logger.info("Batch foi atualizada com sucesso!")
-			sleep(3000)
-		}
-
-		logger.info("Usuários fazendo livestream antes: ${isLivestreaming.joinToString(separator = ", ")}")
-		logger.info("Usuários fazendo livestream agora: ${nowStreaming.joinToString(separator = ", ")}")
-
-		isLivestreaming.clear()
-
-		nowStreaming.forEach {
-			isLivestreaming.add(it)
-		}
-
-		File(Loritta.FOLDER, "livestreaming.json").writeText(GSON.toJson(isLivestreaming))
 	}
 
 	companion object {
@@ -293,9 +172,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		val mixerUsernameToId = ConcurrentHashMap<String, Long>()
 
 		fun getUserDisplayName(userLogin: String): String? {
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}")
-					.header("Client-ID", Loritta.config.twitchClientId)
-					.body()
+			val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}").body()
 
 			val response = jsonParser.parse(payload).obj
 
@@ -316,37 +193,8 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			}
 		}
 
-		fun getLivestreamsInfo(userLogins: List<String>): List<LivestreamInfo> {
-			var query = ""
-			userLogins.forEach {
-				if (query.isEmpty()) {
-					query += "?user_login=${URLEncoder.encode(it.trim(), "UTF-8")}"
-				} else {
-					query += "&user_login=${URLEncoder.encode(it.trim(), "UTF-8")}"
-				}
-			}
-			val url = "https://api.twitch.tv/helix/streams$query"
-			val payload = HttpRequest.get(url)
-					.header("Client-ID", Loritta.config.twitchClientId)
-					.body()
-
-			val response = jsonParser.parse(payload).obj
-
-			try {
-				val data = response["data"].array
-
-				logger.info("getLivestreamsInfo payload contém ${data.size()} objetos!")
-
-				return GSON.fromJson(data)
-			} catch (e: IllegalStateException) {
-				logger.error("Estado inválido ao manipular payload de getLivestreamsInfo!", e)
-				throw e
-			}
-		}
-
 		fun getGameInfo(gameId: String): GameInfo? {
-			val payload = HttpRequest.get("https://api.twitch.tv/helix/games?id=$gameId")
-					.header("Client-ID", Loritta.config.twitchClientId)
+			val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/games?id=$gameId")
 					.body()
 
 			val response = jsonParser.parse(payload).obj

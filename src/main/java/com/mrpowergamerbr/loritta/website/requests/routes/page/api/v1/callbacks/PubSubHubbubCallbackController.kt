@@ -1,11 +1,18 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -41,15 +48,33 @@ class PubSubHubbubCallbackController {
 
 		val originalSignature = originalSignatureHeader.value()
 
-		val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
-		val mac = Mac.getInstance("HmacSHA1")
-		mac.init(signingKey)
-		val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
-		val output = "sha1=" + doneFinal.bytesToHex()
+		var output = if (originalSignature.startsWith("sha1=")) {
+			val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val mac = Mac.getInstance("HmacSHA1")
+			mac.init(signingKey)
+			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
+			val output = "sha1=" + doneFinal.bytesToHex()
 
-		logger.info("Assinatura Original: ${originalSignature}")
-		logger.info("Nossa Assinatura   : ${output}")
-		logger.info("Sucesso?           : ${originalSignature == output}")
+			logger.info("Assinatura Original: ${originalSignature}")
+			logger.info("Nossa Assinatura   : ${output}")
+			logger.info("Sucesso?           : ${originalSignature == output}")
+
+			output
+		} else if (originalSignature.startsWith("sha256=")) {
+			val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+			val mac = Mac.getInstance("HmacSHA256")
+			mac.init(signingKey)
+			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
+			val output = "sha256=" + doneFinal.bytesToHex()
+
+			logger.info("Assinatura Original: ${originalSignature}")
+			logger.info("Nossa Assinatura   : ${output}")
+			logger.info("Sucesso?           : ${originalSignature == output}")
+
+			output
+		} else {
+			throw NotImplementedError("${originalSignature} is not implemented yet!")
+		}
 
 		if (originalSignature != output) {
 			res.status(Status.UNAUTHORIZED)
@@ -73,7 +98,22 @@ class PubSubHubbubCallbackController {
 			val published =lastVideo.getElementsByTag("published").first().html()
 			val channelId =lastVideo.getElementsByTag("yt:channelId").first().html()
 
-			SocketServer.logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
+			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
+			val storedEpoch = CreateYouTubeWebhooksTask.lastNotified[channelId]
+
+			if (storedEpoch != null) {
+				// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
+				// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
+				// 2. Se o último vídeo foi enviado depois do último vídeo enviado
+				if (System.currentTimeMillis() > (60000 + storedEpoch) && storedEpoch > publishedEpoch) {
+					return
+				}
+			}
+
+			// Vamos agora atualizar o map
+			CreateYouTubeWebhooksTask.lastNotified[channelId] = publishedEpoch
+
+			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
 
 			val servers = loritta.serversColl.find(
 					Filters.eq("youTubeConfig.channels.channelId", channelId)
@@ -118,6 +158,79 @@ class PubSubHubbubCallbackController {
 				}
 			}
 		}
+
+		if (type == "twitchstream") {
+			val userLogin = req.param("userlogin").value()
+
+			val payload = jsonParser.parse(response)
+			val data = payload["data"].array
+
+			// Se for vazio, quer dizer que é um stream down
+			if (data.size() != 0) {
+				for (_obj in data) {
+					val obj = _obj.obj
+
+					val gameId = obj["game_id"].string
+					val title = obj["title"].string
+
+					val storedEpoch = CreateTwitchWebhooksTask.lastNotified[userLogin]
+
+					if (storedEpoch != null) {
+						// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
+						// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
+						// 2. Se o último vídeo foi enviado depois do último vídeo enviado
+						if (System.currentTimeMillis() > (60000 + storedEpoch)) {
+							return
+						}
+					}
+
+					logger.info("Recebi notificação de livestream (Twitch) $title ($gameId) de $userLogin")
+
+					val servers = loritta.serversColl.find(
+							Filters.gt("livestreamConfig.channels", listOf<Any>())
+					)
+
+					servers.iterator().use {
+						while (it.hasNext()) {
+							val server = it.next()
+							val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+							val livestreamConfig = server.livestreamConfig
+
+							for (channel in livestreamConfig.channels) {
+								if (channel.channelUrl == null)
+									continue
+								if (!channel.channelUrl!!.startsWith("http"))
+									continue
+								val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
+
+								if (!textChannel.canTalk())
+									continue
+
+								val storedUserLogin = channel.channelUrl!!.split("/").last()
+								if (storedUserLogin == userLogin) {
+									var message = channel.videoSentMessage ?: "{link}";
+
+									if (message.isEmpty()) {
+										message = "{link}"
+									}
+
+									val gameInfo = NewLivestreamThread.getGameInfo(gameId)
+
+									val customTokens = mapOf(
+											"game" to (gameInfo?.name ?: "???"),
+											"title" to title,
+											"link" to "https://www.twitch.tv/$userLogin"
+									)
+
+									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		res.status(Status.NO_CONTENT)
 		res.send("")
 	}
@@ -135,22 +248,7 @@ class PubSubHubbubCallbackController {
 			return
 		}
 
-		val hubVerifyTokenParam = req.param("hub.verify_token")
-
-		if (!hubVerifyTokenParam.isSet) {
-			logger.error("Recebi um request para ativar uma subscription, mas o request não possuia o hub.verify_token!")
-			res.status(Status.NOT_FOUND)
-			res.send("")
-		}
-
-		val hubVerifyToken = hubVerifyTokenParam.value()
-
-		if (hubVerifyToken != Loritta.config.mixerWebhookSecret) {
-			logger.error("Recebi um request para ativar uma subscription, mas o request não possui o nosso hub.verify_token! Token recebido: ${hubVerifyToken}")
-			res.status(Status.NOT_FOUND)
-			res.send("")
-		}
-
+		// Já que a Twitch não suporta verify tokens, nós apenas iremos ignorar os tokens de verificação
 		val hubChallenge = hubChallengeParam.value()
 
 		res.status(Status.OK)

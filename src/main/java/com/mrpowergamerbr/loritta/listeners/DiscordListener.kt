@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import java.util.concurrent.ThreadPoolExecutor
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	val logger by logger()
@@ -31,11 +30,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (DebugLog.cancelAllEvents)
 			return
-
-		if ((loritta.executor as ThreadPoolExecutor).activeCount >= 512) {
-			logger.error("Can't keep up! Is the server overloaded? onGenericMessageReaction")
-			return
-		}
 
 		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
 			val functions = loritta.messageInteractionCache[e.messageId]!!

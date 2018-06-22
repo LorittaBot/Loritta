@@ -1,11 +1,10 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.livestreams.TwitchUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import org.jooby.MediaType
 import org.jooby.Request
@@ -28,9 +27,7 @@ class APIGetTwitchInfoView : NoVarsView() {
 		val channelLink = req.param("channelLink").value()
 
 		val userLogin = channelLink.split("/").last()
-		val payload = HttpRequest.get("https://api.twitch.tv/helix/users?login=$userLogin")
-				.header("Client-ID", Loritta.config.twitchClientId)
-				.body()
+		val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/users?login=$userLogin").body()
 
 		val response = jsonParser.parse(payload).obj
 

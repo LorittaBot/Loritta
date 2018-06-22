@@ -12,9 +12,14 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask : Runnable {
+	companion object {
+		val lastNotified = ConcurrentHashMap<String, Long>()
+	}
+
 	val logger by logger()
 	var youtubeWebhooks: MutableList<YouTubeWebhook>? = null
 
@@ -54,7 +59,11 @@ class CreateYouTubeWebhooksTask : Runnable {
 				}
 			}
 
-			File("./youtube_channels.txt").writeText(channelIds.joinToString("\n"))
+			channelIds.forEach {
+				// Caso o channel ID não esteja na map de lastNotified, vamos salvar o tempo atual nela (para evitar que anuncie coisas "do passado")
+				if (!lastNotified.containsKey(it))
+					lastNotified[it] = System.currentTimeMillis()
+			}
 
 			val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
 			if (youtubeWebhooks == null && youtubeWebhookFile.exists()) {
@@ -90,92 +99,97 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			val tasks = notCreatedYetChannels.map {channelId ->
 				async {
-					// Iremos primeiro desregistrar todos os nossos testes marotos
-					HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "unsubscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.ok()
+					try {
+						// Iremos primeiro desregistrar todos os nossos testes marotos
+						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "unsubscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.ok()
 
 
-					HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtube",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "unsubscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.ok()
+						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtube",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "unsubscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.ok()
 
-					HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtubevideo",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "unsubscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.ok()
+						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtubevideo",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "unsubscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.ok()
 
-					HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtubevideoupdate",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "unsubscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.ok()
+						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=youtubevideoupdate",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "unsubscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.ok()
 
-					HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "unsubscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.ok()
+						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "unsubscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.ok()
 
-					// E agora realmente iremos criar!
-					val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(mapOf(
-									"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "subscribe",
-									"hub.secret" to Loritta.config.mixerWebhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to Loritta.config.mixerWebhookSecret
-							))
-							.code()
+						// E agora realmente iremos criar!
+						val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
+								.form(mapOf(
+										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
+										"hub.lease_seconds" to "",
+										"hub.mode" to "subscribe",
+										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+										"hub.verify" to "async",
+										"hub.verify_token" to Loritta.config.mixerWebhookSecret
+								))
+								.code()
 
-					if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
-						logger.error("Erro ao tentar criar Webhook de ${channelId}! Código: ${code}")
-						return@async null
+						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
+							logger.error("Erro ao tentar criar Webhook de ${channelId}! Código: ${code}")
+							return@async null
+						}
+
+						logger.info("Webhook de $channelId criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!")
+						return@async YouTubeWebhook(
+								channelId,
+								System.currentTimeMillis(),
+								432000
+						)
+					} catch (e: Exception) {
+						logger.error("Erro ao criar subscription no YouTube", e)
+						null
 					}
-
-					logger.info("Webhook de $channelId criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!")
-					return@async YouTubeWebhook(
-							channelId,
-							System.currentTimeMillis(),
-							432000
-					)
 				}
 			}
 

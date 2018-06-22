@@ -6,6 +6,7 @@ import java.awt.Color
 import java.awt.Font
 import java.io.File
 import java.io.FileInputStream
+import java.text.SimpleDateFormat
 
 /**
  * Constantes
@@ -28,6 +29,8 @@ object Constants {
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
+
+	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
 	// Palavras inapropariadas
 	val BAD_NICKNAME_WORDS = listOf(

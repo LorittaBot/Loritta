@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.listeners.MessageListener
 import com.mrpowergamerbr.loritta.listeners.VoiceChannelListener
+import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -280,6 +281,7 @@ class Loritta(config: LorittaConfig) {
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
 		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 
