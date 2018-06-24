@@ -153,14 +153,16 @@
             <version>6.0</version>
         </dependency>
         <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>lavaplayer</artifactId>
-            <version>1.3.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sedmelluq</groupId>
-            <artifactId>jda-nas</artifactId>
-            <version>1.0.6</version>
+            <groupId>com.github.Frederikam</groupId>
+            <artifactId>Lavalink</artifactId>
+            <version>fbc24237c1</version>
+            <exclusions>
+                <exclusion>
+                    <!-- Exclude the server module -->
+                    <groupId>com.github.Frederikam.Lavalink</groupId>
+                    <artifactId>Lavalink-Server</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

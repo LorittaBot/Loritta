@@ -4,19 +4,18 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.escapeMentions
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import lavalink.client.io.Lavalink
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
+import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -25,6 +24,7 @@ class AudioManager(val loritta: Loritta) {
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
+	val lavalink = Lavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.shards.first { shardId == it.shardInfo.shardId } })
 
 	init {
 		playerManager.frameBufferDuration = 1000
@@ -32,6 +32,8 @@ class AudioManager(val loritta: Loritta) {
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
+
+		lavalink.addNode(URI("ws://127.0.0.1:2334"), Loritta.config.mixerWebhookSecret)
 	}
 
 	/**
@@ -47,11 +49,9 @@ class AudioManager(val loritta: Loritta) {
 		var musicManager = musicManagers[guildId]
 
 		if (musicManager == null) {
-			musicManager = GuildMusicManager(guild, playerManager)
-			musicManagers.put(guildId, musicManager)
+			musicManager = GuildMusicManager(guild)
+			musicManagers[guildId] = musicManager
 		}
-
-		guild.audioManager.sendingHandler = musicManager.sendHandler
 
 		return musicManager
 	}
@@ -213,7 +213,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override     (optional) forces the song to be played
 	 */
 	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
-		if (musicManager.scheduler.queue.size > 100)
+		if (musicManager.scheduler.queue.size > 25)
 			return
 
 		val musicGuildId = conf.musicConfig.musicGuildId!!
@@ -227,7 +227,8 @@ class AudioManager(val loritta: Loritta) {
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
 		if (override) {
-			musicManager.player.startTrack(trackWrapper.track, false)
+			musicManager.player.stopTrack()
+			musicManager.player.playTrack(trackWrapper.track)
 		} else {
 			musicManager.scheduler.queue(trackWrapper, conf)
 		}
@@ -257,19 +258,20 @@ class AudioManager(val loritta: Loritta) {
 	 * @param audioManager the audio manager
 	 */
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
+		val link = loritta.audioManager.lavalink.getLink(audioManager.guild)
 		if (audioManager.isConnected && audioManager.connectedChannel.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
-			audioManager.closeAudioConnection(); // Desconecte do canal atual!
+			link.disconnect() // Desconecte do canal atual!
 		}
 
 		if (!audioManager.isAttemptingToConnect && audioManager.isConnected && !audioManager.guild.selfMember.voiceState.inVoiceChannel()) {
 			// Corrigir bug que simplesmente eu desconecto de um canal de voz magicamente
 
 			// Quando isto acontecer, nós iremos vazar, vlw flw
-			audioManager.closeAudioConnection()
+			link.disconnect()
 		}
 
 		val channel = audioManager.guild.getVoiceChannelById(id) ?: return
-		audioManager.openAudioConnection(channel)
+		link.connect(channel)
 	}
 
 	/**

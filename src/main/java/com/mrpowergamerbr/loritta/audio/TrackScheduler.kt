@@ -4,10 +4,11 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import lavalink.client.player.IPlayer
+import lavalink.client.player.LavalinkPlayer
+import lavalink.client.player.event.PlayerEventListenerAdapter
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import java.util.concurrent.BlockingQueue
@@ -19,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue
 /**
  * @param player The audio player this scheduler uses
  */
-class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdapter() {
+class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEventListenerAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
 	var currentTrack: AudioTrackWrapper? = null
 
@@ -27,7 +28,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		this.queue = LinkedBlockingQueue()
 	}
 
-	override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
+	override fun onTrackStart(player: IPlayer, track: AudioTrack) {
 		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
@@ -64,11 +65,13 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 				}
 			}
 		}
-		if (!player.startTrack(track.track, true)) {
+		if (player.playingTrack != null) {
 			queue.offer(track)
 		} else {
 			currentTrack = track
+			player.playTrack(track.track)
 		}
+		player.playTrack(track.track)
 	}
 
 	/**
@@ -78,7 +81,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
 		val audioTrackWrapper = queue.poll()
-		player.startTrack(audioTrackWrapper?.track, false)
+		player.playTrack(audioTrackWrapper.track)
 		this.currentTrack = audioTrackWrapper
 
 		loritta.executor.execute {
@@ -94,7 +97,7 @@ class TrackScheduler(val guild: Guild, val player: AudioPlayer) : AudioEventAdap
 		}
 	}
 
-	override fun onTrackEnd(player: AudioPlayer?, track: AudioTrack?, endReason: AudioTrackEndReason?) {
+	override fun onTrackEnd(player: IPlayer, track: AudioTrack?, endReason: AudioTrackEndReason?) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
 		if (endReason!!.mayStartNext) {
 			nextTrack()

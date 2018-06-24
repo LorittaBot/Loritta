@@ -21,10 +21,10 @@ class PararCommand : AbstractCommand("stop", listOf("parar"), CommandCategory.MU
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild) // vamos pegar o music manager da guild atual...
-		manager.player.destroy() // vamos cancelar o player
 		loritta.audioManager.musicManagers.remove(context.guild.idLong) // Remover o music manager da guild atual
-		context.guild.audioManager.closeAudioConnection() // desconectar do canal de voz
+		val link = loritta.audioManager.lavalink.getLink(context.guild)
+		link.disconnect()
+		link.destroy()
 
 		// e avisar que o batidão acabou!
 		context.reply(

@@ -105,7 +105,7 @@ class PubSubHubbubCallbackController {
 				// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
 				// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
 				// 2. Se o último vídeo foi enviado depois do último vídeo enviado
-				if (System.currentTimeMillis() > (60000 + storedEpoch) && storedEpoch > publishedEpoch) {
+				if (System.currentTimeMillis() >= (60000 + storedEpoch) && storedEpoch >= publishedEpoch) {
 					return
 				}
 			}

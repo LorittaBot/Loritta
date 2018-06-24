@@ -36,7 +36,6 @@ import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import org.bson.codecs.configuration.CodecRegistries
@@ -115,7 +114,7 @@ class Loritta(config: LorittaConfig) {
 	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
-	val audioManager = AudioManager(this)
+	val audioManager: AudioManager
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -155,15 +154,16 @@ class Loritta(config: LorittaConfig) {
 		loadFanArts()
 		loadPremiumKeys()
 		GlobalHandler.generateViews()
+		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(32)
 				.setBulkDeleteSplittingEnabled(false)
-				.setAudioSendFactory(NativeAudioSendFactory())
 				.addEventListener(discordListener)
 				.addEventListener(eventLogListener)
 				.addEventListener(messageListener)
 				.addEventListener(voiceChannelListener)
+				.addEventListener(audioManager.lavalink)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado

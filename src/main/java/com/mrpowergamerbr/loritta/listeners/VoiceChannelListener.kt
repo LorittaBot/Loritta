@@ -35,7 +35,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
 			if (mm.player.playingTrack != null && mm.player.isPaused) {
-				event.guild.audioManager.openAudioConnection(voiceChannel)
+				val link = loritta.audioManager.lavalink.getLink(event.guild)
+				link.connect(voiceChannel)
 				mm.player.isPaused = false
 			} else {
 				mm.player.isPaused = false
@@ -68,7 +69,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				mm.player.isPaused = true // Pausar música caso todos os usuários saiam
 			}
 
-			event.guild.audioManager.closeAudioConnection() // E desconectar do canal de voz
+			val link = loritta.audioManager.lavalink.getLink(event.guild)
+			link.disconnect() // E desconectar do canal de voz
 		}
 	}
 }
