@@ -3,11 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
+import java.util.regex.Pattern
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -28,29 +30,31 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			val channelId = context.rawArgs[0]
 
 			// Pegando canal de texto, via menções, ID ou nada
-			val channel = if (channelId.startsWith("<#") && channelId.endsWith(">")) {
-				try {
-					val ch = context.guild.getTextChannelById(channelId.substring(2, channelId.length - 1))
-					args = args.remove(0)
-					ch
-				} catch (e: Exception) {
-					null
+			val channel = if (args.size >= 2) {
+				if (channelId.startsWith("<#") && channelId.endsWith(">")) {
+					try {
+						val ch = context.guild.getTextChannelById(channelId.substring(2, channelId.length - 1))
+						args = args.remove(0)
+						ch
+					} catch (e: Exception) {
+						null
+					}
+				} else {
+					try {
+						val ch = context.guild.getTextChannelById(channelId)
+						args = args.remove(0)
+						ch
+					} catch (e: Exception) {
+						null
+					}
 				}
-			} else {
-				try {
-					val ch = context.guild.getTextChannelById(channelId)
-					args = args.remove(0)
-					ch
-				} catch (e: Exception) {
-					null
-				}
-			} ?: context.event.channel
+			} else { null } ?: context.event.channel
 
 			if (channel is TextChannel) { // Caso seja text channel...
 				if (!channel.canTalk()) {
 					context.reply(
 							LoriReply(
-									"Eu não tenho permissão para falar no ${channel.asMention}!",
+									locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -59,7 +63,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
 							LoriReply(
-									"Você não tem permissão para falar no ${channel.asMention}",
+									locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -68,7 +72,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 				if (context.config.blacklistedChannels.contains(channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
 							LoriReply(
-									"Comandos não podem ser utilizados no ${channel.asMention}!",
+									locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -77,6 +81,32 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			}
 
 			var message = args.joinToString(" ")
+
+			val inviteBlockerConfig = context.config.inviteBlockerConfig
+			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
+
+			if (checkInviteLinks) {
+				val whitelisted = mutableListOf<String>()
+				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
+
+				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
+					whitelisted.add(it)
+				}
+
+				val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(message)
+
+				var url = matcher.group()
+				if (url.contains("discord") && url.contains("gg")) {
+					url = "discord.gg" + matcher.group(1).replace(".", "")
+				}
+
+				val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
+
+				if (inviteId != null) { // INVITES DO DISCORD
+					if (inviteId != "attachments" && inviteId != "forums" && !whitelisted.contains(inviteId))
+						return // Tem convites válidos? Apenas ignore! A Lori irá aplicar as punições necessárias logo depois...
+				}
+			}
 
 			if (!context.isPrivateChannel && !context.handle.hasPermission(Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
@@ -99,7 +129,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
 						LoriReply(
-								"Mensagem enviada no ${channel.asMention} com sucesso!",
+								locale["SAY_MessageSuccessfullySent", channel.asMention],
 								"\uD83C\uDF89"
 						)
 				)

@@ -1,21 +1,33 @@
-Loritta
--------------
 <p align="center">
-<br>
 <img height="384" src="https://loritta.website/assets/img/loritta.png">
 <br>
 <a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
-<a href="https://loritta.website/support"><img src="https://img.shields.io/badge/discord-loritta-7289da.svg"></a>
-<a href="https://loritta.website/support"><img src="https://img.shields.io/badge/donate-loritta-yellow.svg"></a>
-<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
-<a href="https://www.codacy.com/app/MrPowerGamerBR/Loritta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LorittaBot/Loritta&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/9dab59af231f4d6e96fe6bab6abe93af"></a>
+<a href="https://perfectdreams.net/"><img src="https://perfectdreams.net/assets/img/perfectdreams_badge.png?v2"></a>
+<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-00CE44.svg"></a>
+<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
 <a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
 </p>
+<p align="center">
+<a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/badge/👍 Curtir-PerfectDreams 🎮-3B5998.svg?longCache=true"></a>
+<a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/twitter/follow/perfectdreamsmc.svg?style=social&label=Seguir%20PerfectDreams"></a>
+<a href="https://twitter.com/intent/user?screen_name=MrPowerGamerBR"><img src="https://img.shields.io/twitter/follow/mrpowergamerbr.svg?style=social&label=Seguir%20MrPowerGamerBR"></a>
+<a href="https://perfectdreams.net/loja"><img src="https://img.shields.io/badge/donate-perfectdreams-00CE44.svg"></a>
+</p>
+<h1 align="center">💁 Loritta 💁</h1>
 <p align="center">
 <a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
   <img src="https://discordbots.org/api/widget/297153970613387264.png?test=123456" alt="Discord Bots" />
 </a>
-  </p>
+ </p>
+<p align="center">
+<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
+<a href="https://www.codacy.com/app/MrPowerGamerBR/Loritta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LorittaBot/Loritta&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/9dab59af231f4d6e96fe6bab6abe93af"></a>
+<a href="https://github.com/LorittaBot/Loritta/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
+</p>
+<p align="center">
+<a href="https://github.com/LorittaBot/Loritta/stargazers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Stars"></a>
+<a href="https://github.com/LorittaBot/Loritta/watchers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Watch"></a>
+</p>
 
 Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, "Lori") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!
 
@@ -23,38 +35,39 @@ Eu tenho várias funções para entretenimento (como comandos engraçados e meme
 
 Um dos motivos que me fizeram me tornar o que eu sou hoje é a falta de bots brasileiros para o Discord, já que muitos servidores brasileiros no Discord usam bots "de baixa qualidade" em português ou usam bots que falam (na verdade escrevem) em inglês... e convenhamos, nenhuma dessas opções parece agradável para os usuários... e por isto que eu prometo mudar isto!
 
-## Como eu posso utilizar ela?
+## 🤔 Como adiciono ela ao meu servidor?
 
 Se você quiser usar a Loritta no seu servidor, você pode adicionar ela clicando [aqui](http://loritta.website/dashboard).
 
 Enquanto é possível fazer "self hosting" (hospedar você mesmo) ela, eu não irei dar suporte para quem quiser fazer isto para evitar pessoas criando "clones" e levando todo o crédito por terem criado o bot, eu dou suporte se você quer fazer "self hosting" para ajudar e contribuir para ela.
 
-## Suporte
+## 💁 Suporte
 
 Você pode obter suporte sobre a Loritta [clicando aqui](https://loritta.website/support)!
 
-## Como ajudar?
+## 🙋 Como ajudar?
 
 Existem vários repositórios [na nossa organização](https://github.com/LorittaBot) de várias partes da Loritta, caso você queria contribuir em outras partes da Loritta, clique nos links abaixo para ir no repositório deles.
 * [Loritta](https://github.com/LorittaBot/Loritta): Código-fonte da Loritta ("backend"), isto inclui toda a parte do bot em si (comandos, funcionalidades, etc) e a parte "backend" do website dela.
 * [LorittaLocales](https://github.com/LorittaBot/LorittaLocales): Arquivos de tradução da Loritta.
 * [LorittaWebsite](https://github.com/LorittaBot/LorittaWebsite): "Frontend" do website da Loritta, isto inclui imagens, CSS, HTML, etc do website dela.
-* [YouTubeVideoRelayClient](https://github.com/LorittaBot/YouTubeVideoRelayClient): Parte da Loritta que verifica e envia vídeos do YouTube para a Loritta.
+* [PerfectDreams](https://github.com/PerfectDreams): Servidor de Minecraft da Loritta!
 
-### Como doar
+### 💵 Como Doar?
 
 Mesmo que você não saiba programar, você pode ajudar no desenvolvimento da Loritta doando! https://loritta.website/donate
 
-### Como hospedar a Loritta
+### 🙌 Como Usar?
+#### 👨‍💻 Como Compilar?
 
-Você também pode hospedar a Loritta em algum lugar se você não quiser utilizar a versão pública dela, mas lembrando:
-
-* Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou.
-* Eu não irei ficar explicando como arrumar problemas na sua versão self hosted dela, você está por sua conta e risco.
+Você também pode hospedar a Loritta em algum lugar se você não quiser utilizar a versão pública dela, mas lembrando...
+* Nós deixamos o código-fonte de nossos projetos para que outras pessoas possam se inspirar e aprender com nossos projetos, o objetivo é que pessoas que são fãs da Loritta aprendam como ela funciona e, caso queiram, podem ajudar ela com bug fixes e novas funcionalidades.
+* Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou, lembre-se, a licença do projeto é [AGPL v3](https://github.com/LorittaBot/Loritta/LICENSE), você é **obrigado a deixar todas as suas alterações no projeto públicas**!
+* Eu não irei ficar explicando como arrumar problemas na sua versão self hosted dela, **você está por sua conta e risco**.
 * Eu irei dar suporte caso você queria hospedar ela para contribuir e ajudar ela.
 * Lembrando que ela precisa de várias API Keys para várias funcionalidades dela, caso você não coloque uma delas, talvez ela poderá ter funcionalidade reduzida ou talvez não irá funcionar corretamente!
 * Lembrando que eu não distribuo os "assets" dela (imagens, fontes, etc), ou seja, comandos que utilizam tais assets não irão funcionar corretamente.
-* Existem várias coisas "hard coded" nela, ou seja, você terá que editar o código-fonte dela e recompilar, afinal, eu nunca pensei que alguém ia usar hospedar a Loritta então você terá que fazer algumas modificações no código-fonte dela para funcionar. ;)
+* Existem várias coisas "hard coded" nela, ou seja, você terá que editar o código-fonte dela e recompilar, afinal, eu nunca pensei que alguém ia usar hospedar a Loritta então você terá que fazer algumas modificações no código-fonte dela para funcionar. 😉
 * Eu hospedo ela em uma máquina rodando CentOS 7, talvez ela não irá rodar corretamente em outros sistemas operacionais.
 * Você não pode utilizar o nome "Loritta" ou a personagem Loritta na sua versão self hosted.
 
@@ -71,7 +84,7 @@ Mas se você quiser mesmo hospedar a Loritta, siga os seguintes passos:
 9. Após iniciar, um arquivo chamado `config.json` será criado, abra ele com um editor de texto decente (como o Notepad++) e preencha todas as opções, a configuração já vem com alguns valores padrões e alguns destes valores padrões vem com explicações sobre para que ele serve e da onde ele surgiu.
 10. Após terminar de configurar, inicie a JAR novamente e, se tudo der certo, ela irá iniciar e você poderá usar os comandos dela! 🎉
 
-### Pull Requests
+#### 🔀 Pull Requests
 
 No seu Pull Request, você deverá seguir o meu estilo de código bonitinho que eu faço, é recomendado que você coloque comentários nas partes do seu código para que seja mais fácil na hora da leitura.
 
@@ -83,15 +96,7 @@ Você precisa pensar "será que alguém iria utilizar isto?", se você criar um 
 
 Funcionalidades (como comandos) relacionados a coisas NSFW **não serão** adicionadas na Loritta e seu Pull Request será negado, eu prefiro que as pessoas, ao olharem o avatar dela, pensem que ela é um bot que cria memes toscos do que um bot que fica mandando coisas NSFW no chat.
 
-## Licença
-
-O código-fonte da Loritta está licenciado sob a [GNU Affero General Public License v3.0](https://github.com/LorittaBot/Loritta/blob/master/LICENSE)
-
-A personagem Loritta é © MrPowerGamerBR & PerfectDreams — Todos os direitos reservados
-
-Ao utilizar a Loritta você aceita os [termos de uso dela](https://loritta.website/privacy).
-
-## Dependências
+## 📦 Dependências
 
 A Lori utiliza várias [dependências no código-fonte dela](https://github.com/LorittaBot/Loritta/blob/master/pom.xml), obrigado a todos os mantenedores das dependências! Sem vocês, talvez a Loritta não iria existir (ou teria várias funcionalidades reduzidas ou talvez até inexistentes!)
 
@@ -122,8 +127,20 @@ A Lori utiliza várias [dependências no código-fonte dela](https://github.com/
 | [JRakNet](https://github.com/JRakNet/JRakNet) | Whirvis |
 | [Kotson](https://github.com/SalomonBrys/Kotson) | SalomonBrys |
 
+## 📄 Licença
+
+O código-fonte da Loritta está licenciado sob a [GNU Affero General Public License v3.0](https://github.com/LorittaBot/Loritta/blob/master/LICENSE)
+
+A personagem Loritta é © MrPowerGamerBR & PerfectDreams — Todos os direitos reservados
+
+Ao utilizar a Loritta você aceita os [termos de uso dela](https://loritta.website/privacy).
+
 <hr>
 
-<p align="center"><img height="384" src="https://loritta.website/assets/img/loritta_star.png">
-  <br>
-  "Discord", "Discord App", and any associated logos are registered trademarks of Hammer & Chisel, inc.</p>
+<p align="center">
+<a href="https://perfectdreams.net/open-source">
+<img src="https://perfectdreams.net/assets/img/perfectdreams_opensource_iniciative_rounded.png">
+</a>
+</p>
+<br>
+<p align="center">"Discord", "Discord App", and any associated logos are registered trademarks of Hammer & Chisel, inc.</p>

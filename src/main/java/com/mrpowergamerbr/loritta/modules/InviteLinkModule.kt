@@ -9,17 +9,23 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class InviteLinkModule : MessageReceivedModule {
 	companion object {
-		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
+		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+		if (!serverConfig.inviteBlockerConfig.isEnabled)
+			return false
+
 		if (serverConfig.inviteBlockerConfig.whitelistedChannels.contains(event.channel.id))
 			return false
 
@@ -48,30 +54,43 @@ class InviteLinkModule : MessageReceivedModule {
 			whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
 			val callback = callback@ {
+				val jobs = mutableListOf<Deferred<Boolean>>()
+
 				while (matcher.find()) {
 					var url = matcher.group()
 					if (url.contains("discord") && url.contains("gg")) {
 						url = "discord.gg" + matcher.group(1).replace(".", "")
 					}
 
-					val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
+					jobs.add(
+						async {
+							val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
 
-					if (inviteId != null) { // INVITES DO DISCORD
-						if (inviteId == "attachments" || inviteId == "forums")
-							continue
+							if (inviteId != null) { // INVITES DO DISCORD
+								if (inviteId == "attachments" || inviteId == "forums")
+									return@async false
 
-						if (whitelisted.contains(inviteId))
-							continue
+								if (whitelisted.contains(inviteId))
+									return@async false
 
-						if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
-							message.delete().queue()
+								if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
+									message.delete().queue()
 
-						if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
-							val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild) ?: return@callback
+								if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+									val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild) ?: return@async false
 
-							message.textChannel.sendMessage(toBeSent).queue()
+									message.textChannel.sendMessage(toBeSent).queue()
+								}
+								return@async true
+							}
+							return@async false
+						}
+					)
 
-							return@callback
+					runBlocking {
+						jobs.forEach {
+							if (it.await()) // true = Sim, tinha um invite
+								return@forEach
 						}
 					}
 				}
@@ -82,7 +101,7 @@ class InviteLinkModule : MessageReceivedModule {
 			if (inviteBlockerConfig.whitelistServerInvites) {
 				if (!cachedInviteLinks.containsKey(guild.id)) {
 					if (guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-						guild.invites.queue({
+						guild.invites.queue {
 							val codes = it.map { it.code }
 							cachedInviteLinks.put(guild.id, codes)
 							codes.forEach {
@@ -91,7 +110,7 @@ class InviteLinkModule : MessageReceivedModule {
 							launch {
 								callback.invoke()
 							}
-						})
+						}
 						return false
 					}
 				} else {

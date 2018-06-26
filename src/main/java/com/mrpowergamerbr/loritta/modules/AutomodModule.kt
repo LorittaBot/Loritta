@@ -25,7 +25,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
 		if (automodCaps.isEnabled) {
-			val content = message.contentStripped.replace(" ", "")
+			val content = message.contentRaw.replace(" ", "")
 			val capsThreshold = automodCaps.capsThreshold
 
 			var length = content.length.toDouble()

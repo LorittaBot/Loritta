@@ -13,7 +13,7 @@ import java.net.URL
 
 class AminoConverterModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		return true
+		return serverConfig.aminoConfig.fixAminoImages
 	}
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
