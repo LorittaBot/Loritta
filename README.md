@@ -26,7 +26,7 @@
 </p>
 <p align="center">
 <a href="https://github.com/LorittaBot/Loritta/stargazers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Stars"></a>
-<a href="https://github.com/LorittaBot/Loritta/watchers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Watch"></a>
+<a href="https://github.com/LorittaBot/Loritta/watchers"><img src="https://img.shields.io/github/watchers/LorittaBot/Loritta.svg?style=social&label=Watch"></a>
 </p>
 
 Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, "Lori") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!
