@@ -98,7 +98,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.map {channelId ->
-				async {
+				async(loritta.coroutineDispatcher) {
 					try {
 						// Iremos primeiro desregistrar todos os nossos testes marotos
 						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")

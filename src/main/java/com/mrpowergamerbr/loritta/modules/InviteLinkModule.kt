@@ -4,10 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
@@ -63,7 +60,7 @@ class InviteLinkModule : MessageReceivedModule {
 					}
 
 					jobs.add(
-						async {
+						async(loritta.coroutineDispatcher) {
 							val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
 
 							if (inviteId != null) { // INVITES DO DISCORD
@@ -107,7 +104,7 @@ class InviteLinkModule : MessageReceivedModule {
 							codes.forEach {
 								whitelisted.add(it)
 							}
-							launch {
+							launch(loritta.coroutineDispatcher) {
 								callback.invoke()
 							}
 						}
@@ -120,7 +117,7 @@ class InviteLinkModule : MessageReceivedModule {
 				}
 			}
 
-			launch {
+			launch(loritta.coroutineDispatcher) {
 				callback.invoke()
 			}
 		}

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.logger
+import kotlinx.coroutines.experimental.delay
 import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -81,6 +82,23 @@ object TwitchUtils {
 			logger.info("Rate limit atingido! Nós iremos continuar daqui ${resetsAt}ms")
 			Thread.sleep(resetsAt)
 			return makeTwitchApiRequest(url, method, form)
+		}
+
+		return request
+	}
+
+	// Versão para ser utilizada com Kotlin Coroutines
+	suspend fun makeTwitchApiRequestSuspend(url: String, method: String = "GET", form: Map<String, String>? = null): HttpRequest {
+		val request = HttpRequest(url, method).userAgent(Constants.USER_AGENT).header("Client-ID", Loritta.config.twitchClientId)
+
+		if (form != null)
+			request.form(form)
+
+		if (request.code() == 429) { // too many requests
+			val resetsAt = (request.header("Ratelimit-Reset").toLong() * 1000) - System.currentTimeMillis()
+			logger.info("Rate limit atingido! Nós iremos continuar daqui ${resetsAt}ms")
+			delay(resetsAt)
+			return makeTwitchApiRequestSuspend(url, method, form)
 		}
 
 		return request

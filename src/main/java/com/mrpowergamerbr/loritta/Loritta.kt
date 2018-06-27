@@ -36,6 +36,7 @@ import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import org.bson.codecs.configuration.CodecRegistries
@@ -89,6 +90,7 @@ class Loritta(config: LorittaConfig) {
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	val socket = SocketServer(10699)
 	val executor = createThreadPool("Executor Thread %d") // Threads
+	val coroutineDispatcher = createThreadPool("Executor Thread %d").asCoroutineDispatcher() // Coroutine Dispatcher
 	val threadPool = Executors.newScheduledThreadPool(40)
 
 	fun createThreadPool(name: String): ExecutorService {

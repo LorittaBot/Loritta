@@ -64,7 +64,7 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
-			launch {
+			launch(loritta.coroutineDispatcher) {
 				try {
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")
 							.userAgent(Constants.USER_AGENT)

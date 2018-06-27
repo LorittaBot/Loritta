@@ -101,12 +101,12 @@ class CreateTwitchWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.filter { TwitchUtils.userLogin2Id[it] != null }.map { userLogin ->
-				async {
+				async(loritta.coroutineDispatcher) {
 					try {
 						val userId = TwitchUtils.userLogin2Id[userLogin]!!
 
 						// Iremos primeiro desregistrar todos os nossos testes marotos
-						TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
@@ -117,7 +117,7 @@ class CreateTwitchWebhooksTask : Runnable {
 								.ok()
 
 						// E agora realmente iremos criar!
-						val request = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						val request = TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
