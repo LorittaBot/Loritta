@@ -92,7 +92,7 @@ Caso o seu código possua texto, você é obrigado a utilizar o sistema de local
 
 O seu código não pode ser algo "gambiarra", meu código pode ter algumas gambiarras mas isto não significa que você também deve encher a Lori com mais gambiarras no seu Pull Request.
 
-Você precisa pensar "será que alguém iria utilizar isto?", se você criar um comando que só seja útil no seu servidor, provavelmente eu irei negar o seu Pull Request, se for algo apenas útil para o seu servidor, seria melhor você criar o comando utilizando a API de comandos em JavaScript da Loritta.
+Você precisa pensar "será que alguém iria utilizar isto?", se você criar um comando que só seja útil no seu servidor, provavelmente eu irei negar o seu Pull Request, se for algo apenas útil para o seu servidor, seria melhor você criar o comando utilizando a [API de comandos em JavaScript da Loritta](https://loritta.website/loriapi).
 
 Funcionalidades (como comandos) relacionados a coisas NSFW **não serão** adicionadas na Loritta e seu Pull Request será negado, eu prefiro que as pessoas, ao olharem o avatar dela, pensem que ela é um bot que cria memes toscos do que um bot que fica mandando coisas NSFW no chat.
 
@@ -143,4 +143,4 @@ Ao utilizar a Loritta você aceita os [termos de uso dela](https://loritta.websi
 </a>
 </p>
 <br>
-<p align="center">"Discord", "Discord App", and any associated logos are registered trademarks of Hammer & Chisel, inc.</p>
+<p align="center">"Discord", "DiscordApp" and any associated logos are registered trademarks of Discord Inc.</p>
