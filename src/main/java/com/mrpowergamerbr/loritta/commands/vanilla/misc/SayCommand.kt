@@ -95,16 +95,20 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 
 				val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(message)
 
-				var url = matcher.group()
-				if (url.contains("discord") && url.contains("gg")) {
-					url = "discord.gg" + matcher.group(1).replace(".", "")
-				}
+				while (matcher.find()) {
+					matcher.reset()
 
-				val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
+					var url = matcher.group()
+					if (url.contains("discord") && url.contains("gg")) {
+						url = "discord.gg" + matcher.group(1).replace(".", "")
+					}
 
-				if (inviteId != null) { // INVITES DO DISCORD
-					if (inviteId != "attachments" && inviteId != "forums" && !whitelisted.contains(inviteId))
-						return // Tem convites válidos? Apenas ignore! A Lori irá aplicar as punições necessárias logo depois...
+					val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
+
+					if (inviteId != null) { // INVITES DO DISCORD
+						if (inviteId != "attachments" && inviteId != "forums" && !whitelisted.contains(inviteId))
+							return // Tem convites válidos? Apenas ignore! A Lori irá aplicar as punições necessárias logo depois...
+					}
 				}
 			}
 

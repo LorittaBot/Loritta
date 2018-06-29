@@ -8,10 +8,10 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Guild
@@ -143,6 +143,10 @@ class APIGetServerSampleView : NoVarsView() {
 			val allServersSample = JsonArray()
 			for (server in serverConfigs.toList()) {
 				val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+
+				if (guild.owner == null) // Alguns servidores, por algum motivo, não possuem dono (como?)
+					continue // Por isto nós iremos ignorar tais servidores
+
 				allServersSample.add(transformToJsonObject(guild, server, userIdentification))
 			}
 			return allServersSample

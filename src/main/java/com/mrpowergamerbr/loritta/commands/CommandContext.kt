@@ -278,7 +278,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 			if (!this.isPrivateChannel && !link.isEmpty()) {
 				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
-				if (split.size == 2) {
+				if (split.size == 2 && split[0].isNotEmpty()) {
 					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
 					if (matchedMember.isPresent) {

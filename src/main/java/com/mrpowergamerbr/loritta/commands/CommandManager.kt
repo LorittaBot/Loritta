@@ -2,8 +2,6 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
-import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
@@ -177,8 +175,8 @@ class CommandManager {
 		commandMap.add(PokedexCommand())
 
 		// =======[ ANIME ]========
-		commandMap.add(MALAnimeCommand())
-		commandMap.add(MALMangaCommand())
+		// commandMap.add(MALAnimeCommand())
+		// commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())

@@ -96,7 +96,7 @@ object TwitchUtils {
 
 		if (request.code() == 429) { // too many requests
 			val resetsAt = (request.header("Ratelimit-Reset").toLong() * 1000) - System.currentTimeMillis()
-			logger.info("Rate limit atingido! Nós iremos continuar daqui ${resetsAt}ms")
+			logger.info("Rate limit atingido! (suspend) Nós iremos continuar daqui ${resetsAt}ms")
 			delay(resetsAt)
 			return makeTwitchApiRequestSuspend(url, method, form)
 		}

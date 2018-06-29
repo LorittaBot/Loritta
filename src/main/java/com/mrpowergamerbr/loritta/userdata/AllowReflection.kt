@@ -1,5 +1,5 @@
 package com.mrpowergamerbr.loritta.userdata
 
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class AllowReflection

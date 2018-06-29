@@ -1,30 +1,30 @@
 package com.mrpowergamerbr.loritta.userdata
 
 class JoinLeaveConfig {
-	// @AllowReflection
+	@AllowReflection
 	var isEnabled: Boolean = false
-	// @AllowReflection
+	@AllowReflection
 	var tellOnJoin: Boolean = true
-	// @AllowReflection
+	@AllowReflection
 	var tellOnLeave: Boolean = true
-	// @AllowReflection
+	@AllowReflection
 	var joinMessage: String = "\uD83D\uDC49 {@user} entrou no servidor!"
-	// @AllowReflection
+	@AllowReflection
 	var leaveMessage: String = "\uD83D\uDC48 {nickname} saiu do servidor!"
-	// @AllowReflection
+	@AllowReflection
 	var canalJoinId: String? = null
-	// @AllowReflection
+	@AllowReflection
 	var canalLeaveId: String? = null
-	// @AllowReflection
+	@AllowReflection
 	var tellOnPrivate: Boolean = false
-	// @AllowReflection
+	@AllowReflection
 	var joinPrivateMessage: String = "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!"
-	// @AllowReflection
+	@AllowReflection
 	var tellOnBan: Boolean = false
-	// @AllowReflection
+	@AllowReflection
 	var banMessage: String = ""
-	// @AllowReflection
+	@AllowReflection
 	var tellOnKick: Boolean = false
-	// @AllowReflection
+	@AllowReflection
 	var kickMessage: String = ""
 }

@@ -104,13 +104,14 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					val mixerWebhook = mixerWebhook!!
 					logger.info("Desativando webhook do Mixer antigo... ${mixerWebhook.hookId}")
 
-					HttpRequest.post("https://mixer.com/api/v1/hooks/${mixerWebhook.hookId}/deactivate")
+					val deactivatedBody = HttpRequest.post("https://mixer.com/api/v1/hooks/${mixerWebhook.hookId}/deactivate")
 							.acceptJson()
 							.header("Client-ID", Loritta.config.mixerClientId)
 							.header("Authorization", "Secret ${Loritta.config.mixerClientSecret}")
-							.ok()
+							.send("{}") // Como é um POST, nós precisamos enviar alguma coisa, caso contrário, irá dar erro
+							.body()
 
-					logger.info("Webhook do Mixer desativado com sucesso! ${mixerWebhook.hookId}")
+					logger.info("Webhook do Mixer desativado com sucesso! ${mixerWebhook.hookId} ${deactivatedBody}")
 				}
 
 				logger.info("Criando uma nova Webhook do Mixer!")
@@ -138,6 +139,10 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				logger.info("Recebido ao tentar criar uma Webhook: ${payload}")
 				val receivedJson = jsonParser.parse(payload).obj
 
+				if (receivedJson["errorCode"].nullInt == 4010) {
+					// Quer dizer que já estamos escutando por invites deste tipo... hmmmm...
+					return
+				}
 				val hookId = receivedJson["id"].string
 				val expiresAtString = receivedJson["expiresAt"].string
 				val expiresAt = System.currentTimeMillis() + 7776000000L

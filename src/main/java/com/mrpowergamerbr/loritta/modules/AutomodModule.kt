@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.Permission
 
 class AutomodModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -28,17 +29,17 @@ class AutomodModule : MessageReceivedModule {
 			val content = message.contentRaw.replace(" ", "")
 			val capsThreshold = automodCaps.capsThreshold
 
-			var length = content.length.toDouble()
+			val length = content.length.toDouble()
 			if (length >= automodCaps.lengthThreshold) {
-				var caps = content.count { it.isUpperCase() }.toDouble()
+				val caps = content.count { it.isUpperCase() }.toDouble()
 
-				var percentage = (caps / length) * 100
+				val percentage = (caps / length) * 100
 
 				if (percentage >= capsThreshold) {
 					if (automodCaps.deleteMessage)
 						message.delete().queue()
 
-					if (automodCaps.replyToUser) {
+					if (automodCaps.replyToUser && message.textChannel.canTalk()) {
 						val message = message.channel.sendMessage(
 								MessageUtils.generateMessage(automodCaps.replyMessage,
 										listOf(event.guild!!, event.member!!),
@@ -46,8 +47,8 @@ class AutomodModule : MessageReceivedModule {
 								)
 						).complete()
 
-						if (automodCaps.enableMessageTimeout) {
-							var delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
+						if (automodCaps.enableMessageTimeout && message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
+							val delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
 							Thread.sleep(delay.toLong())
 							message.delete().queue()
 						}

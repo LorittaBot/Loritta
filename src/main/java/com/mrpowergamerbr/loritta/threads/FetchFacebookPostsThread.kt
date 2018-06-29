@@ -20,7 +20,7 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 	fun fetchPosts() {
 		logger.info("Pegando posts do Facebook...")
 		try {
-			val pagePostsSAM = LorittaUtilsKotlin.getRandomPostsFromPage("samemes2")
+			val pagePostsSAM = LorittaUtilsKotlin.getRandomPostsFromPage("samemes2", 25)
 
 			loritta.southAmericaMemesPageCache.addAll(pagePostsSAM)
 

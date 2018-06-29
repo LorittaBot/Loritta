@@ -9,10 +9,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.WelcomerPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
 import net.dv8tion.jda.core.Permission
 import org.jooby.MediaType
 import org.jooby.Request
@@ -259,7 +256,8 @@ class UpdateServerConfigController {
 				"server_list" to ServerListPayload::class.java,
 				"moderation" to ModerationPayload::class.java,
 				"autorole" to AutorolePayload::class.java,
-				"welcomer" to WelcomerPayload::class.java
+				"welcomer" to WelcomerPayload::class.java,
+				"miscellaneous" to MiscellaneousPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

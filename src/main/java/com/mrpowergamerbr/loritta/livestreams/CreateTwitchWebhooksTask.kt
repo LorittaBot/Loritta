@@ -80,7 +80,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			logger.info("Existem ${userLogins.size} canais na Twitch que eu irei verificar! Atualmente existem ${twitchWebhooks!!.size} webhooks criadas!")
 
 			for (userLogin in userLogins) {
-				val webhook = twitchWebhooks!!.firstOrNull { it.channelId == userLogin }
+				val webhook = twitchWebhooks!!.firstOrNull { it.userLogin == userLogin }
 
 				if (webhook == null) {
 					notCreatedYetChannels.add(userLogin)
@@ -146,7 +146,7 @@ class CreateTwitchWebhooksTask : Runnable {
 				}
 			}
 
-			runBlocking {
+			runBlocking(loritta.coroutineDispatcher) {
 				tasks.onEach {
 					val webhook = it.await()
 

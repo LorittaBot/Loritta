@@ -448,9 +448,9 @@ object LorittaUtilsKotlin {
 	/**
 	 * Pega um post aleatório de uma página do Facebook
 	 */
-	fun getRandomPostsFromPage(page: String): List<FacebookPostWrapper> {
+	fun getRandomPostsFromPage(page: String, limit: Int = 5): List<FacebookPostWrapper> {
 		val response = HttpRequest
-				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}")
+				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}&limit=$limit")
 				.body()
 
 		val json = jsonParser.parse(response)

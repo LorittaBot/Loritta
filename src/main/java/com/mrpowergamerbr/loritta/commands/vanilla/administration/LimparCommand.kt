@@ -47,7 +47,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 				return
 			}
 
-			var aux = toClear
+			var aux = toClear + 1
 			var ignoredMessages = 0
 
 			while (aux > 0) {
