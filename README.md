@@ -22,7 +22,7 @@
 <p align="center">
 <a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
 <a href="https://www.codacy.com/app/MrPowerGamerBR/Loritta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LorittaBot/Loritta&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/9dab59af231f4d6e96fe6bab6abe93af"></a>
-<a href="https://github.com/LorittaBot/Loritta/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
+<a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
 </p>
 <p align="center">
 <a href="https://github.com/LorittaBot/Loritta/stargazers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Stars"></a>
@@ -62,7 +62,7 @@ Mesmo que você não saiba programar, você pode ajudar no desenvolvimento da Lo
 
 Você também pode hospedar a Loritta em algum lugar se você não quiser utilizar a versão pública dela, mas lembrando...
 * Nós deixamos o código-fonte de nossos projetos para que outras pessoas possam se inspirar e aprender com nossos projetos, o objetivo é que pessoas que são fãs da Loritta aprendam como ela funciona e, caso queiram, podem ajudar ela com bug fixes e novas funcionalidades.
-* Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou, lembre-se, a licença do projeto é [AGPL v3](https://github.com/LorittaBot/Loritta/LICENSE), você é **obrigado a deixar todas as suas alterações no projeto públicas**!
+* Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou, lembre-se, a licença do projeto é [AGPL v3](https://github.com/LorittaBot/Loritta/blob/master/LICENSE), você é **obrigado a deixar todas as suas alterações no projeto públicas**!
 * Eu não irei ficar explicando como arrumar problemas na sua versão self hosted dela, **você está por sua conta e risco**.
 * Eu irei dar suporte caso você queria hospedar ela para contribuir e ajudar ela.
 * Lembrando que ela precisa de várias API Keys para várias funcionalidades dela, caso você não coloque uma delas, talvez ela poderá ter funcionalidade reduzida ou talvez não irá funcionar corretamente!
