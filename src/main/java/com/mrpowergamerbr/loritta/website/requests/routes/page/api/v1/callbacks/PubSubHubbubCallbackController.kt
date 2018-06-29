@@ -159,7 +159,7 @@ class PubSubHubbubCallbackController {
 			}
 		}
 
-		if (type == "twitchstream") {
+		if (type == "twitch") {
 			val userLogin = req.param("userlogin").value()
 
 			val payload = jsonParser.parse(response)
