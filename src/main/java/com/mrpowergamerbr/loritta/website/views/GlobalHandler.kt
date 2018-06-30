@@ -235,7 +235,6 @@ object GlobalHandler {
 		views.add(LorigotchiView())
 		views.add(LoriPartnerView())
 		views.add(ServersView())
-		views.add(FanArtsView())
 		views.add(DonateView())
 		views.add(CommandsView())
 		views.add(DailyView())

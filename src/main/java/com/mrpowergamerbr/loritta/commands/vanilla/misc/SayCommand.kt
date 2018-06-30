@@ -96,8 +96,6 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 				val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(message)
 
 				while (matcher.find()) {
-					matcher.reset()
-
 					var url = matcher.group()
 					if (url.contains("discord") && url.contains("gg")) {
 						url = "discord.gg" + matcher.group(1).replace(".", "")

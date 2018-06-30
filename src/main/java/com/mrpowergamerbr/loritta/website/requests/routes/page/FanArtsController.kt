@@ -23,7 +23,8 @@ class FanArtsController {
 
 		val users = mutableMapOf<String, User?>()
 		loritta.fanArts.forEach {
-			users.put(it.artistId, lorittaShards.retrieveUserById(it.artistId))
+			if (it.artistId != null)
+				users[it.artistId] = lorittaShards.retrieveUserById(it.artistId)
 		}
 		variables["fanArtsUsers"] = users
 		res.send(evaluate("fan_arts.html", variables))

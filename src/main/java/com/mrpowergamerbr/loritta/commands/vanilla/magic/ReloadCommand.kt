@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.google.gson.Gson
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -16,6 +17,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import net.dv8tion.jda.core.entities.Guild
 import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.concurrent.thread
@@ -168,6 +170,74 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "queryuseless") {
+			val uselessServers = loritta.serversColl.find(
+					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)
+			)
+
+			val reallyUselessServers = mutableListOf<Guild>()
+
+			var str = ""
+
+			for (serverConfig in uselessServers) {
+				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
+
+				// AMINO
+				if (serverConfig.aminoConfig.fixAminoImages || serverConfig.aminoConfig.aminos.isNotEmpty())
+					continue
+
+				// INVITE BLOCKER
+				if (serverConfig.inviteBlockerConfig.isEnabled)
+					continue
+
+				// AUTOROLE
+				if (serverConfig.autoroleConfig.isEnabled)
+					continue
+
+				// EVENT LOG
+				if (serverConfig.eventLogConfig.isEnabled)
+					continue
+
+				// JOIN/LEAVE
+				if (serverConfig.joinLeaveConfig.isEnabled)
+					continue
+
+				// LIVESTREAM
+				if (serverConfig.livestreamConfig.channels.isNotEmpty())
+					continue
+
+				// MUSIC
+				if (serverConfig.musicConfig.isEnabled)
+					continue
+
+				// FEEDS
+				if (serverConfig.rssFeedConfig.feeds.isNotEmpty())
+					continue
+
+				// YOUTUBE
+				if (serverConfig.youTubeConfig.channels.isNotEmpty())
+					continue
+
+				reallyUselessServers.add(guild)
+			}
+
+			context.reply("Existem ${reallyUselessServers.size} servidores inúteis!")
+
+			if (context.rawArgs.getOrNull(1) == "leave") {
+				context.reply("...e eu irei sair de todos eles!")
+
+				for (guild in reallyUselessServers) {
+					guild.leave().queue()
+				}
+			} else {
+				for (guild in reallyUselessServers.sortedByDescending { it.members.size }) {
+					str += "[${guild.id}] ${guild.name} - ${guild.members.size} membros (${guild.members.count { it.user.isBot }} bots)\n"
+				}
+
+				File("/home/servers/loritta/useless-servers.txt").writeText(str)
+			}
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
