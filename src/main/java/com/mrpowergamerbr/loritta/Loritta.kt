@@ -107,7 +107,6 @@ class Loritta(config: LorittaConfig) {
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
-	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
@@ -328,7 +327,7 @@ class Loritta(config: LorittaConfig) {
 		val options = mongoBuilder
 				.maxConnectionIdleTime(10000)
 				.maxConnectionLifeTime(10000)
-				.connectionsPerHost(750)
+				.connectionsPerHost(1500)
 				.build()
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
