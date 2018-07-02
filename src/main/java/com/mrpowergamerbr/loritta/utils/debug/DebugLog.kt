@@ -82,7 +82,6 @@ object DebugLog {
 				println("ignoreIds.size: ${loritta.ignoreIds.size}")
 				println("userCooldown.size: ${loritta.userCooldown.size}")
 				println("southAmericaMemesPageCache.size: ${loritta.southAmericaMemesPageCache.size}")
-				println("southAmericaMemesGroupCache.size: ${loritta.southAmericaMemesGroupCache.size}")
 				println("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
 				println("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
