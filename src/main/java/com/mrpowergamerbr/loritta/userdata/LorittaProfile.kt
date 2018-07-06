@@ -38,6 +38,11 @@ class LorittaProfile @BsonCreator constructor(
 	var designsBought = mutableListOf<ProfileType>()
 	var editedShipEffects = mutableListOf<ShipEffect>()
 
+	var isDonator = false
+	var donatorPaid = 0.0
+	var donatedAt = 0L
+	var donationExpiresIn = 0L
+
     @BsonIgnore
     fun getCurrentLevel(): LorittaProfile.XpWrapper {
         return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)

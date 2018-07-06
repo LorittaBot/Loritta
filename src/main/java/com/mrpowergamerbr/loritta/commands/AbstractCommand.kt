@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.core.entities.ChannelType
 import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
@@ -186,6 +186,13 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
 					ev.channel.sendTyping().complete()
+				}
+
+				val profile = lorittaUser.profile
+				var cooldown = this.cooldown
+				val isDonator = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
+				if (isDonator && profile.donatorPaid >= 19.99) {
+					cooldown /= 2
 				}
 
 				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {

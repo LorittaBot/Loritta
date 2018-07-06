@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.io.File
@@ -101,7 +102,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.filter { TwitchUtils.userLogin2Id[it] != null }.map { userLogin ->
-				async(loritta.coroutineDispatcher) {
+				async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						val userId = TwitchUtils.userLogin2Id[userLogin]!!
 

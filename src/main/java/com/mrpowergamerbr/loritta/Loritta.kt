@@ -13,6 +13,7 @@ import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
+import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
@@ -158,13 +159,14 @@ class Loritta(config: LorittaConfig) {
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(32)
+				.setCorePoolSize(48)
 				.setBulkDeleteSplittingEnabled(false)
 				.addEventListener(discordListener)
 				.addEventListener(eventLogListener)
 				.addEventListener(messageListener)
 				.addEventListener(voiceChannelListener)
 				.addEventListener(audioManager.lavalink)
+				.setMaxReconnectDelay(3500)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -285,6 +287,7 @@ class Loritta(config: LorittaConfig) {
 		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 

@@ -6,9 +6,12 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -51,6 +54,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					}
 					context.metadata.put(i.toString(), item);
 				}
+
 				val embed = EmbedBuilder()
 				embed.setColor(Color(217, 66, 52))
 				embed.setDescription(format)

@@ -77,5 +77,31 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					)
 			)
 		}
+
+		if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
+			val user = lorittaShards.getUserById(arg1)!!
+			val userConfig = loritta.getLorittaProfileForUser(user.id)
+			val isDonator = arg2.toBoolean()
+
+			userConfig.isDonator = isDonator
+			userConfig.donatorPaid = arg3.toDouble()
+
+			val rawArgs = context.rawArgs.toMutableList()
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+
+			userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillis()
+			userConfig.donatedAt = System.currentTimeMillis()
+
+			loritta save userConfig
+
+			context.reply(
+					LoriReply(
+							"Usuário `${user.name}` foi marcado como doador até `${userConfig.donationExpiresIn.humanize(locale)}`"
+					)
+			)
+		}
 	}
 }

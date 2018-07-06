@@ -6,10 +6,10 @@ import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jooby.MediaType
@@ -142,12 +142,22 @@ class APILoriDailyRewardView : NoVarsView() {
 		}
 
 		val random = RANDOM.nextInt(0, 30)
-		val multiplier = when (random) {
+		var multiplier = when (random) {
 			in 8..14 -> 3
 			in 15..20 -> 4
 			in 21..25 -> 5
 			in 26..29 -> 6
 			else -> 2
+		}
+
+		val isDonator = lorittaProfile.isDonator && System.currentTimeMillis() > lorittaProfile.donationExpiresIn
+		if (isDonator) {
+			when {
+				lorittaProfile.donatorPaid >= 79.99 -> multiplier += 4
+				lorittaProfile.donatorPaid >= 59.99 -> multiplier += 3
+				lorittaProfile.donatorPaid >= 39.99 -> multiplier += 2
+				lorittaProfile.donatorPaid >= 19.99 -> multiplier += 1
+			}
 		}
 
 		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, (555 * multiplier) + 1) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams

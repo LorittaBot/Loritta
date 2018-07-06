@@ -19,6 +19,8 @@ object LorittaAnalytics {
 	 */
 	fun send(service: AnalyticProcessorService) {
 		val request = HttpRequest.post(service.endpoint.format(Loritta.config.clientId))
+				.connectTimeout(25000)
+				.readTimeout(25000)
 
 		when (service) {
 			DISCORD_BOTS -> request.authorization(Loritta.config.discordBotsKey)
