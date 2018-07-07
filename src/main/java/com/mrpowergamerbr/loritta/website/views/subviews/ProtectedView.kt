@@ -7,9 +7,9 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import org.jooby.Request
 import org.jooby.Response
@@ -28,7 +28,7 @@ abstract class ProtectedView : AbstractView() {
 				}
 			} else {
 				val code = req.param("code").value()
-				val auth = TemmieDiscordAuth(code, "https://loritta.website/dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
+				val auth = TemmieDiscordAuth(code, "${Loritta.config.websiteUrl}dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
 					debug = false
 				}
 				auth.doTokenExchange()
@@ -50,11 +50,11 @@ abstract class ProtectedView : AbstractView() {
 				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
 				val guildId = req.param("guild_id")
 				if (guildId.isSet) {
-					res.redirect("https://loritta.website/us/dashboard/configure/${guildId.value()}")
+					res.redirect("${Loritta.config.websiteUrl}dashboard/configure/${guildId.value()}")
 					return true
 				}
 
-				res.redirect("https://loritta.website/dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+				res.redirect("${Loritta.config.websiteUrl}dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true
 		}
