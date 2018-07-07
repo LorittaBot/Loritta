@@ -234,8 +234,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val modules = listOf(
 						ServerSupportModule(),
-						AutomodModule()
+						AutomodModule(),
+						InviteLinkModule()
 				)
+
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
 						event.member,
