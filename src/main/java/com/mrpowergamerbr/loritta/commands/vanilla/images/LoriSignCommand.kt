@@ -38,7 +38,7 @@ class LoriSignCommand : AbstractCommand("lorisign", listOf("lorittasign", "lorip
 		val transformed = LorittaImage(scaled)
 		transformed.setCorners(20f, 202f,
 				155f, 226f,
-				139f, 229f,
+				139f, 299f,
 				3f, 275f)
 
 		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null)
