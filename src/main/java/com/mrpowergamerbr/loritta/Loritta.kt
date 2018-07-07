@@ -335,7 +335,7 @@ class Loritta(config: LorittaConfig) {
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 
-		val db = mongo.getDatabase("loritta")
+		val db = mongo.getDatabase(Loritta.config.databaseName)
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
