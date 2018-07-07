@@ -31,7 +31,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 		val members = mutableListOf<NashornLorittaUser>()
 
 		guild.members.forEach {
-			members.add(NashornLorittaUser(it, serverConfig.getUserData(it.user.id, serverConfig)))
+			members.add(NashornLorittaUser(it, serverConfig.getUserData(it.user.id), serverConfig))
 		}
 
 		return members
