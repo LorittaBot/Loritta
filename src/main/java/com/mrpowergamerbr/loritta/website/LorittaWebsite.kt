@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
@@ -23,7 +24,7 @@ import java.io.StringWriter
 import java.util.*
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
-	port(4568) // Porta do website
+	port(Loritta.config.websitePort) // Porta do website
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby

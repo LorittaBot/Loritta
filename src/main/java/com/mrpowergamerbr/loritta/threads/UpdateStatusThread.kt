@@ -50,10 +50,12 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.shards.firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
-			if (firstInstance != null) {
-				revertedAvatar = true
-				firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+		if (Loritta.config.fanArtExtravaganza) {
+			if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
+				if (firstInstance != null) {
+					revertedAvatar = true
+					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+				}
 			}
 		}
 
