@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -182,7 +183,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
 										context.locale["FRASETOSCA_GABRIELA"],
 										context.getAsMention(true) + answer.answer.escapeMentions(),
-										"https://loritta.website/assets/img/gabriela_avatar.png"
+										"${Loritta.config.websiteUrl}assets/img/gabriela_avatar.png"
 								),
 								true,
 								{

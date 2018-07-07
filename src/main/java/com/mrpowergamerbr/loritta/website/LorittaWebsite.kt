@@ -97,15 +97,15 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 						res.status(302) // temporary redirect / no page rank penalty (?)
 						if (localeId == "default") {
-							res.redirect("https://loritta.website/br${req.path()}${req.urlQueryString}")
+							res.redirect("${Loritta.config.websiteUrl}br${req.path()}${req.urlQueryString}")
 						}
 						if (localeId == "pt-pt") {
-							res.redirect("https://loritta.website/pt${req.path()}${req.urlQueryString}")
+							res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${req.urlQueryString}")
 						}
 						if (localeId == "es-es") {
-							res.redirect("https://loritta.website/es${req.path()}${req.urlQueryString}")
+							res.redirect("${Loritta.config.websiteUrl}es${req.path()}${req.urlQueryString}")
 						}
-						res.redirect("https://loritta.website/us${req.path()}${req.urlQueryString}")
+						res.redirect("${Loritta.config.websiteUrl}us${req.path()}${req.urlQueryString}")
 						res.send("Redirecting...")
 						return@use
 					}

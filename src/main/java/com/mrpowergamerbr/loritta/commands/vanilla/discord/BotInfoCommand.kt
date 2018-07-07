@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -40,14 +41,14 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		sb.append(seconds)
 		sb.append("s")
 
-		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", "https://loritta.website/", "https://loritta.website/assets/img/loritta_gabizinha_v1.png")
-		embed.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
+		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", Loritta.config.websiteUrl, "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
+		embed.setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getGuildCount(), LorittaLauncher.loritta.lorittaShards.getUserCount(), sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size, lorittaShards.getChannelCount(), lorittaShards.getEmoteCount(), LorittaUtilsKotlin.executedCommands])
-		embed.addField("\uD83C\uDF80 ${context.locale["WEBSITE_DONATE"]}", "https://loritta.website/donate", true)
-		embed.addField("<:loritta:331179879582269451> ${context.locale["WEBSITE_ADD_ME"]}", "https://loritta.website/dashboard", true)
-		embed.addField("<:lori_ok_hand:426183783008698391> ${context.locale["WEBSITE_COMMANDS"]}", "https://loritta.website/commands", true)
-		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "https://loritta.website/support", true)
+		embed.addField("\uD83C\uDF80 ${context.locale["WEBSITE_DONATE"]}", "${Loritta.config.websiteUrl}donate", true)
+		embed.addField("<:loritta:331179879582269451> ${context.locale["WEBSITE_ADD_ME"]}", "${Loritta.config.websiteUrl}dashboard", true)
+		embed.addField("<:lori_ok_hand:426183783008698391> ${context.locale["WEBSITE_COMMANDS"]}", "${Loritta.config.websiteUrl}commands", true)
+		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		context.sendMessage(context.getAsMention(true), embed.build())

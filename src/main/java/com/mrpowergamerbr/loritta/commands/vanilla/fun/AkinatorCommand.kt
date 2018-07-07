@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -89,7 +90,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 		val builder = EmbedBuilder().apply {
 			setTitle("<:akinator:383613256939470849> Akinator (${context.handle.effectiveName})")
-			setThumbnail("https://loritta.website/assets/img/akinator_embed.png")
+			setThumbnail("${Loritta.config.websiteUrl}assets/img/akinator_embed.png")
 			setDescription(question + "\n\n$progression% $text\n\n$reactionInfo")
 			setColor(Color(20, 158, 255))
 		}

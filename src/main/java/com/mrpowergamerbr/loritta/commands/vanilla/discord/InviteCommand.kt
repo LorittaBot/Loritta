@@ -15,8 +15,8 @@ class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot"
 
     override fun run(context: CommandContext, locale: BaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.locale["INVITE_INFO", Loritta.config.addBotUrl, "https://loritta.website/auth", "https://loritta.website/support"])
-                .setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
+                .setDescription(context.locale["INVITE_INFO", Loritta.config.addBotUrl, "${Loritta.config.websiteUrl}auth", "${Loritta.config.websiteUrl}support"])
+                .setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Color(0, 193, 223))
                 .build()
 

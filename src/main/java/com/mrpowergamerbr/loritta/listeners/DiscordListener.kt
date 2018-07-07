@@ -138,7 +138,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 				if (!it.user.isBot && (it.hasPermission(Permission.MANAGE_SERVER) || it.hasPermission(Permission.ADMINISTRATOR))) {
 					// Envie via DM uma mensagem falando sobre a Loritta!
-					val message = locale["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, "https://loritta.website/", locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "https://loritta.website/donate"]
+					val message = locale["LORITTA_ADDED_ON_SERVER", it.asMention, event.guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
 
 					it.user.openPrivateChannel().queue({
 						it.sendMessage(message).queue()

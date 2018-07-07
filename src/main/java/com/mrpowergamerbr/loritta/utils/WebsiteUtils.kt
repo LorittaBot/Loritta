@@ -49,7 +49,7 @@ object WebsiteUtils {
 		val jsonObject = jsonObject(
 				"code" to code.errorId,
 				"reason" to code.fancyName,
-				"help" to "https://loritta.website/docs/api"
+				"help" to "${Loritta.config.websiteUrl}docs/api"
 		)
 
 		if (message != null) {
@@ -161,15 +161,15 @@ object WebsiteUtils {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("https://loritta.website/br${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("https://loritta.website/pt${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("https://loritta.website/es${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}es${req.path()}${queryString}")
 					}
-					res.redirect("https://loritta.website/us${req.path()}${queryString}")
+					res.redirect("${Loritta.config.websiteUrl}us${req.path()}${queryString}")
 					res.send("Redirecting...")
 					return
 				}

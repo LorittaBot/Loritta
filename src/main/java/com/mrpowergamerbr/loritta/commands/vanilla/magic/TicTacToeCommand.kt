@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -22,7 +23,7 @@ class TicTacToeCommand : AbstractCommand("tictactoe", category = CommandCategory
 
 		context.reply(
 				LoriReply(
-						"Sala criada com sucesso! https://loritta.website/tictactoe?r=${randomRoomId}"
+						"Sala criada com sucesso! ${Loritta.config.websiteUrl}tictactoe?r=${randomRoomId}"
 				)
 		)
 	}

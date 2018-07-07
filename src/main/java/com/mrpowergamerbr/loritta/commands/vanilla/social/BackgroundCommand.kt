@@ -48,7 +48,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			}
 			if (it.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png");
-				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
+				val imageUrl = if (file.exists()) "${Loritta.config.websiteUrl}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
 						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
