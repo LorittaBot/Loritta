@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Game
 
 data class LorittaConfig(
@@ -7,6 +8,7 @@ data class LorittaConfig(
 		val clientToken: String,
 		val clientId: String,
 		val clientSecret: String,
+		val userStatus: OnlineStatus,
 		val databaseName: String,
 		val youtubeKeys: List<String>,
 		val websiteApiKeys: List<AuthenticationKey>,

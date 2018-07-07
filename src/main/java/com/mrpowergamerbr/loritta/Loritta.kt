@@ -158,6 +158,7 @@ class Loritta(config: LorittaConfig) {
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
+				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(48)
 				.setBulkDeleteSplittingEnabled(false)
