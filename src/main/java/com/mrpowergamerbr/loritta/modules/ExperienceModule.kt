@@ -21,34 +21,26 @@ class ExperienceModule : MessageReceivedModule {
 		if (event.message.contentStripped.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.contentStripped.hashCode()) {
 			// Primeiro iremos verificar se a mensagem é "válida"
 			// 7 chars por millisegundo
-			var calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
+			val calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
 
-			var diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
+			val diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
 
 			if (diff > calculatedMessageSpeed * 1000) {
 				var nonRepeatedCharsMessage = event.message.contentStripped.replace(Regex("(.)\\1{1,}"), "$1")
 
 				if (nonRepeatedCharsMessage.length >= 12) {
-					var gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
+					val gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 					var globalGainedXp = gainedXp
 
-					val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
-
-					if (lorittaGuild != null) {
-						val xpBoost1 = lorittaGuild.getRoleById("436919257993969666") // Pagadores de Aluguel
-						val xpBoost2 = lorittaGuild.getRoleById("435856512787677214") // Contribuidor Inativo
-
-						if (event.member!!.roles.contains(xpBoost1)) {
-							var _gainedXp = gainedXp
-							_gainedXp = (_gainedXp * 1.25).toInt()
-							globalGainedXp = _gainedXp
-						}
-
-						if (event.member!!.roles.contains(xpBoost2)) {
-							var _gainedXp = gainedXp
-							_gainedXp = (_gainedXp * 1.5).toInt()
-							globalGainedXp = _gainedXp
+					val isDonator = lorittaProfile.isDonator && System.currentTimeMillis() > lorittaProfile.donationExpiresIn
+					if (isDonator) {
+						globalGainedXp = when {
+							lorittaProfile.donatorPaid >= 89.99 -> (globalGainedXp * 1.75).toInt()
+							lorittaProfile.donatorPaid >= 69.99 -> (globalGainedXp * 1.75).toInt()
+							lorittaProfile.donatorPaid >= 49.99 -> (globalGainedXp * 1.5).toInt()
+							lorittaProfile.donatorPaid >= 29.99 -> (globalGainedXp * 1.25).toInt()
+							else -> globalGainedXp
 						}
 					}
 

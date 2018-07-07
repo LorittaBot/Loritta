@@ -122,7 +122,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				for (eventHandler in serverConfig.nashornEventHandlers)
-					eventHandler.handleMessageReceived(event)
+					eventHandler.handleMessageReceived(event, serverConfig)
 
 				// emotes favoritos
 				event.message.emotes.forEach {

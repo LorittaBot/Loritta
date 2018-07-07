@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
@@ -24,8 +26,26 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
 			val inative = lorittaGuild.getMembersWithRoles(roleInative)
 
+			val lorittaProfiles = loritta.usersColl.find(
+					Filters.`in`(
+							"_id",
+							donators.map { it.user.id }
+					)
+			)
+
 			donators.forEach {
-				patrons += "<:lori_owo:417813932380520448> `${it.user.name}#${it.user.discriminator}`\n"
+				val lorittaProfile = lorittaProfiles.firstOrNull { profile -> it.user.id == profile.userId }
+				val isBold = if (lorittaProfile != null) {
+					lorittaProfile.donatorPaid >= 19.99
+				} else {
+					false
+				}
+
+				var name = "`${it.user.name}#${it.user.discriminator}`"
+				if (isBold) {
+					name = "**$name**"
+				}
+				patrons += "<:lori_owo:417813932380520448> $name\n"
 			}
 
 			patrons += "\uD83D\uDCB8"

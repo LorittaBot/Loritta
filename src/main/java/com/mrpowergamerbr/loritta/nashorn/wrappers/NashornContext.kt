@@ -20,7 +20,7 @@ class NashornContext(
 	var message: NashornMessage = NashornMessage(context.message)
 	private var sentMessages = 0 // Quantas mensagens foram enviadas, usado para não levar rate limit
 	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
-	var sender: NashornMember = NashornLorittaUser(context.handle, context.config.getUserData(context.userHandle.id))
+	var sender: NashornMember = NashornLorittaUser(context.handle, context.config.getUserData(context.userHandle.id, context.config))
 
 	val nashornGuild = NashornGuild(context.message.guild, context.config)
 
