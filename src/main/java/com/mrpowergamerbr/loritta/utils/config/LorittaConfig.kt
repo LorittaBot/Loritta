@@ -53,6 +53,7 @@ data class LorittaConfig(
 			"Token do Bot",
 			"Client ID do Bot",
 			"Client Secret do Bot",
+			OnlineStatus.ONLINE,
 			"Nome da Database no MongoDB",
 			listOf(),
 			listOf(),
