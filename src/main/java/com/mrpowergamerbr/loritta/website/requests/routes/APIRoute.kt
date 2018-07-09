@@ -19,5 +19,6 @@ class APIRoute : Jooby() {
 		use(LoriTransferBalanceController::class.java)
 		use(IpCallbackController::class.java)
 		use(UserAgentCallbackController::class.java)
+		use(UpdateAvailableCallbackController::class.java)
 	}
 }
