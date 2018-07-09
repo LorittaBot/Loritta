@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -70,13 +69,4 @@ class UpdateAvailableCallbackController {
 
 		return "{}"
 	}
-}
-
-fun main(args: Array<String>) {
-	val body = HttpRequest.get("https://canary.loritta.website/api/v1/callbacks/update-available")
-			.userAgent("hello world")
-			.authorization("c5KHPD3HVNEBmmw9")
-			.body()
-
-	println(body)
 }
