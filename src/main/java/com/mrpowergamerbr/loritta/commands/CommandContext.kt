@@ -89,7 +89,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	}
 
 	fun reply(vararg loriReplies: LoriReply): Message {
-		return reply(*loriReplies)
+		return reply(false, *loriReplies)
 	}
 
 	fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
