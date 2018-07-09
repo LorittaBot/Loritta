@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.logger
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
@@ -29,6 +31,14 @@ class UpdateAvailableCallbackController {
 			if (textChannel != null) {
 				val loriReplies = mutableListOf<LoriReply>()
 
+				val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/api/json")
+						.userAgent(Constants.USER_AGENT)
+						.body()
+
+				val payload = jsonParser.parse(body).obj
+
+				val items = payload["changeSet"]["items"].array
+
 				loriReplies.add(
 						LoriReply(
 								"Chegou novidades para mim \uD83D\uDCE6\uD83D\uDC40, deixa eu ir ver o que é!",
@@ -36,12 +46,23 @@ class UpdateAvailableCallbackController {
 						)
 				)
 
-				loriReplies.add(
-						LoriReply(
-								"Novidade: `${req.param("reason").value()}`",
-								"<a:revolving_think:417382964364836864>"
+				if (items.size() == 0) {
+					loriReplies.add(
+							LoriReply(
+									"Nada de novo (apenas um rebuild)... Mas mesmo assim eu irei dar uma voltinha para eu descansar um pouco!",
+									"<:lori_triste:370344565967814659>"
+							)
+					)
+				} else {
+					items.forEach {
+						loriReplies.add(
+								LoriReply(
+										"Novidade: `${it["msg"].string}`",
+										"<a:revolving_think:417382964364836864>"
+								)
 						)
-				)
+					}
+				}
 
 				loriReplies.add(
 						LoriReply(
