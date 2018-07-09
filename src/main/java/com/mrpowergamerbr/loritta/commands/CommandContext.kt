@@ -89,9 +89,18 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	}
 
 	fun reply(vararg loriReplies: LoriReply): Message {
+		return reply(*loriReplies)
+	}
+
+	fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
 		val message = StringBuilder()
+		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
+			message.append(getAsMention(false))
+			message.append("\n")
+		}
 		for (loriReply in loriReplies) {
-			message.append(loriReply.build(this) + "\n")
+			message.append(loriReply.build(this))
+			message.append("\n")
 		}
 		return sendMessage(message.toString())
 	}

@@ -12,7 +12,7 @@ import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["ENCODE_Description", listOf("md2", "md5", "sha1", "sha256¨", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`${it}`" })]
+		return locale["ENCODE_Description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -70,13 +70,16 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		}
 
 		context.reply(
+				true,
 				LoriReply(
 						"**${locale["ENCODE_OriginalText"]}:** `${text.stripCodeMarks()}`",
-						"\uD83D\uDCC4"
+						"\uD83D\uDCC4",
+						mentionUser = false
 				),
 				LoriReply(
 						"**${locale["ENCODE_EncodedText"]}:** `${encodedText.stripCodeMarks()}`",
-						"<:blobspy:465979979876794368>"
+						"<:blobspy:465979979876794368>",
+						mentionUser = false
 				)
 		)
 	}
