@@ -10,7 +10,10 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
@@ -50,6 +53,35 @@ abstract class ProtectedView : AbstractView() {
 				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
 				val guildId = req.param("guild_id")
 				if (guildId.isSet) {
+					val guild = lorittaShards.getGuildById(guildId.value())
+
+					if (guild != null) {
+						val serverConfig = loritta.getServerConfigForGuild(guild.id)
+
+						// Agora nós iremos pegar o locale do servidor
+						val locale = loritta.getLocaleById(serverConfig.localeId)
+
+						val userId = auth.getUserIdentification().id
+
+						val user = lorittaShards.retrieveUserById(userId)
+
+						if (user != null) {
+							val member = guild.getMember(user)
+
+							if (member != null) {
+								// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
+								if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
+									// Envie via DM uma mensagem falando sobre a Loritta!
+									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
+
+									user.openPrivateChannel().queue {
+										it.sendMessage(message).queue()
+									}
+								}
+							}
+						}
+					}
+
 					res.redirect("${Loritta.config.websiteUrl}dashboard/configure/${guildId.value()}")
 					return true
 				}
