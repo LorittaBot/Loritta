@@ -95,7 +95,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
-			message.append(getAsMention(false))
+			message.append(LoriReply().build(this))
 			message.append("\n")
 		}
 		for (loriReply in loriReplies) {
