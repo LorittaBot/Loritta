@@ -31,7 +31,7 @@ class UpdateAvailableCallbackController {
 			if (textChannel != null) {
 				val loriReplies = mutableListOf<LoriReply>()
 
-				val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/api/json")
+				val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastBuild/api/json")
 						.userAgent(Constants.USER_AGENT)
 						.body()
 
