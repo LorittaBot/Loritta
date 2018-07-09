@@ -23,17 +23,15 @@ class UpdateAvailableCallbackController {
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
 	fun handle(req: Request, res: Response): String {
-		val guild = lorittaShards.getGuildById("297732013006389252")
+		val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastBuild/api/json")
+				.userAgent(Constants.USER_AGENT)
+				.body()
 
-		if (guild != null) {
-			val textChannel = guild.getTextChannelById("297732013006389252")
+		run {
+			val textChannel = lorittaShards.getTextChannelById("297732013006389252")
 
 			if (textChannel != null) {
 				val loriReplies = mutableListOf<LoriReply>()
-
-				val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastBuild/api/json")
-						.userAgent(Constants.USER_AGENT)
-						.body()
 
 				val payload = jsonParser.parse(body).obj
 
@@ -67,6 +65,54 @@ class UpdateAvailableCallbackController {
 				loriReplies.add(
 						LoriReply(
 								"Daqui a pouco eu já estarei de volta! (e por favor não me xinguem <:notlikemeow:465884453726846987>)",
+								"<:lori_yum:414222275223617546>"
+						)
+				)
+
+				textChannel.sendMessage(
+						loriReplies.joinToString("\n", transform = { it.build() })
+				).complete()
+			}
+		}
+
+		run {
+			val textChannel = lorittaShards.getTextChannelById("420628148044955648")
+
+			if (textChannel != null) {
+				val loriReplies = mutableListOf<LoriReply>()
+
+				val payload = jsonParser.parse(body).obj
+
+				val items = payload["changeSet"]["items"].array
+
+				loriReplies.add(
+						LoriReply(
+								"Wow, a parcel with new features! \uD83D\uDCE6\uD83D\uDC40, let me check what is inside of it!",
+								"<:lori_owo:417813932380520448>"
+						)
+				)
+
+				if (items.size() == 0) {
+					loriReplies.add(
+							LoriReply(
+									"Nothing new (only a rebuild)... Anyway, I will be away from the keyboard to rest a bit!",
+									"<:lori_triste:370344565967814659>"
+							)
+					)
+				} else {
+					items.forEach {
+						loriReplies.add(
+								LoriReply(
+										"New: `${it["msg"].string}`",
+										"<a:revolving_think:417382964364836864>"
+								)
+						)
+					}
+				}
+
+				loriReplies.add(
+						LoriReply(
+								"I will be right back! (and please do not tell bad things about me <:notlikemeow:465884453726846987>)",
 								"<:lori_yum:414222275223617546>"
 						)
 				)
