@@ -37,7 +37,17 @@ class LoriReply(
 		}
 		if (mentionUser) {
 			send = send + user.asMention + " "
+		}
+		send += message
+		return send
+	}
 
+	fun build(): String {
+		var send = ""
+		if (prefix != null) {
+			send = prefix + " **|** "
+		} else if (hasPadding) {
+			send = Constants.LEFT_PADDING + " **|** "
 		}
 		send += message
 		return send
