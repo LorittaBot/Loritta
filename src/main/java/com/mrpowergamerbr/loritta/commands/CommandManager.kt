@@ -130,7 +130,6 @@ class CommandManager {
 		commandMap.add(PackageInfoCommand())
 		commandMap.add(IsUpCommand())
 		commandMap.add(KnowYourMemeCommand())
-		commandMap.add(Md5Command())
 		commandMap.add(AnagramaCommand())
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
