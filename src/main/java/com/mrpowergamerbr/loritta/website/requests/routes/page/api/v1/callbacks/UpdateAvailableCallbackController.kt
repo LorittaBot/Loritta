@@ -31,22 +31,22 @@ class UpdateAvailableCallbackController {
 
 				loriReplies.add(
 						LoriReply(
-								"Irei ir dar uma voltinha... Já volto!",
-								"<:lori_yum:414222275223617546>"
+								"Chegou novidades para mim \uD83D\uDCE6\uD83D\uDC40, deixa eu ir ver o que é!",
+								"<:lori_owo:417813932380520448>"
 						)
 				)
 
 				loriReplies.add(
 						LoriReply(
-								"Motivo: `${req.param("reason").value()}`",
+								"Novidade: `${req.param("reason").value()}`",
 								"<a:revolving_think:417382964364836864>"
 						)
 				)
 
 				loriReplies.add(
 						LoriReply(
-								"Daqui a pouco já estarei de volta! (e por favor não me xinguem <:notlikemeow:465884453726846987>)",
-								"<:lori_owo:417813932380520448>"
+								"Daqui a pouco eu já estarei de volta! (e por favor não me xinguem <:notlikemeow:465884453726846987>)",
+								"<:lori_yum:414222275223617546>"
 						)
 				)
 
