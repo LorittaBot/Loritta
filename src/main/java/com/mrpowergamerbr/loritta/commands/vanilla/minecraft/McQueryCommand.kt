@@ -17,7 +17,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 	}
 
 	override fun getUsage(): String {
-		return locale["MCQUERY_IP"]
+		return "IP do servidor"
 	}
 
 	override fun getExample(): List<String> {
