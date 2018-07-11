@@ -67,7 +67,8 @@ object GlobalHandler {
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
 				"clientId" to Loritta.config.clientId,
-				"cssAssetVersion" to OptimizeAssets.cssAssetVersion
+				"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
+				"environment" to Loritta.config.environment
 		)
 
 		// TODO: Deprecated
