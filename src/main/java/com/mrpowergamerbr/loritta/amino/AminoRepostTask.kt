@@ -75,6 +75,8 @@ class AminoRepostTask : Runnable {
 
 					val document = connection.parse()
 
+					File(Loritta.FOLDER, "amino_dump.txt").writeText(document.html())
+
 					val listItems = document.getElementsByClass("list-item")
 
 					var firstLink: String? = null
@@ -83,8 +85,6 @@ class AminoRepostTask : Runnable {
 
 					val lastLoadedUrl = storedLastIds.getOrDefault(communityId, null)
 
-					File(Loritta.FOLDER, "amino_dump.txt").writeText(connection.body())
-					
 					for (item in listItems) {
 						val postLink = item.getElementsByAttributeValue("data-vce", "rich-content")
 								.first { !it.attr("href").contains("/user/") }
