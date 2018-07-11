@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.threads
+package com.mrpowergamerbr.loritta.amino
 
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
+import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
@@ -15,26 +16,13 @@ import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
-class AminoRepostThread : Thread("Amino Repost Thread") {
+class AminoRepostTask : Runnable {
 	companion object {
 		var storedLastIds = ConcurrentHashMap<String, String>()
-		val logger = LoggerFactory.getLogger(AminoRepostThread::class.java)
+		val logger = LoggerFactory.getLogger(AminoRepostTask::class.java)
 	}
-
+	
 	override fun run() {
-		super.run()
-
-		while (true) {
-			try {
-				checkRepost()
-			} catch (e: Exception) {
-				logger.error("Erro ao verificar novos posts no Amino!", e)
-			}
-			Thread.sleep(10000)
-		}
-	}
-
-	fun checkRepost() {
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		val servers = loritta.serversColl.find(
 				Filters.gt("aminoConfig.aminos", listOf<Any>())
@@ -59,14 +47,16 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 						communityIds.add(matcher.group(1))
 					}
 				}
+
 				list.add(server)
 			}
 		}
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
-			launch(loritta.coroutineDispatcher) {
+			launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 				try {
+					logger.info("Verificando comunidade ${communityId}...")
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")
 							.userAgent(Constants.USER_AGENT)
 							.ignoreHttpErrors(true)
@@ -74,8 +64,10 @@ class AminoRepostThread : Thread("Amino Repost Thread") {
 
 					val statusCode = connection.statusCode()
 
-					if (statusCode != 200)
+					if (statusCode != 200) {
+						logger.error("Erro ao verificar comunidade $communityId, status code: ${statusCode}")
 						return@launch
+					}
 
 					val document = connection.parse()
 

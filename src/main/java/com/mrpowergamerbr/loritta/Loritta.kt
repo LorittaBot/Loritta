@@ -12,6 +12,7 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
@@ -276,14 +277,13 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		AminoRepostThread().start() // Iniciar Amino Repost Thread
-
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		NewRssFeedThread().start() // Iniciar Feed Rss
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
+		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
