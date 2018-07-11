@@ -7,11 +7,11 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.APIGetServerSampleView
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.evaluate
+import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.APIGetServerSampleView
 import org.jooby.Request
 import org.jooby.Response
 

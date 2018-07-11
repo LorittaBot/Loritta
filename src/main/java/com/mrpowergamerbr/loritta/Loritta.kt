@@ -329,8 +329,6 @@ class Loritta(config: LorittaConfig) {
 		}
 
 		val options = mongoBuilder
-				.maxConnectionIdleTime(10000)
-				.maxConnectionLifeTime(10000)
 				.connectionsPerHost(1500)
 				.build()
 
