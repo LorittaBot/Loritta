@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.amino
 
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -14,6 +15,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.awt.Color
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 class AminoRepostTask : Runnable {
@@ -73,7 +75,7 @@ class AminoRepostTask : Runnable {
 
 					val document = connection.parse()
 
-					val listItems = document.getElementsByClass("post-list")
+					val listItems = document.getElementsByClass("list-item")
 
 					var firstLink: String? = null
 
@@ -81,8 +83,12 @@ class AminoRepostTask : Runnable {
 
 					val lastLoadedUrl = storedLastIds.getOrDefault(communityId, null)
 
+					File(Loritta.FOLDER, "amino_dump.txt").writeText(connection.body())
+					
 					for (item in listItems) {
-						val postLink = item.getElementsByAttributeValue("data-vce", "rich-content").first { !it.attr("href").contains("/user/") }.attr("href")
+						val postLink = item.getElementsByAttributeValue("data-vce", "rich-content")
+								.first { !it.attr("href").contains("/user/") }
+								.attr("href")
 
 						try {
 							if (postLink.isEmpty())
