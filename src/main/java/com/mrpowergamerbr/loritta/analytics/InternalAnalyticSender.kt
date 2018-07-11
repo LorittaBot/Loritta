@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.analytics
 
-import com.mrpowergamerbr.loritta.threads.AminoRepostThread
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.utils.logger
@@ -43,7 +43,7 @@ class InternalAnalyticSender : Runnable {
 		LorittaAnalytics.logger.info("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 		LorittaAnalytics.logger.info("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 		LorittaAnalytics.logger.info("fanArts.size: ${loritta.fanArts.size}")
-		LorittaAnalytics.logger.info("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
+		LorittaAnalytics.logger.info("storedLastIds.size: ${AminoRepostTask.storedLastIds.size}")
 		LorittaAnalytics.logger.info("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 		LorittaAnalytics.logger.info("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 		LorittaAnalytics.logger.info("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")

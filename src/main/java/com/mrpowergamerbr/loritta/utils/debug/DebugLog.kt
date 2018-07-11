@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.threads.AminoRepostThread
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -86,7 +86,7 @@ object DebugLog {
 				println("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
-				println("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
+				println("storedLastIds.size: ${AminoRepostTask.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
