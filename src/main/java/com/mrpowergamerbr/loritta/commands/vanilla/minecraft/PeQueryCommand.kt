@@ -47,7 +47,7 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 				if (identifier == null) {
 					// Servidor offline
 					context.reply(
-							"Servidor não existe ou está offline!",
+							locale["MCQUERY_OFFLINE"],
 							Constants.ERROR
 					)
 					return
@@ -58,20 +58,20 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 					setTitle("<:minecraft_logo:412575161041289217> $hostname:$port", null)
 					setColor(Color(87, 132, 74))
 					addField("MOTD", bedrockIdentifier.serverName.replace("§[0-9a-fk-or]".toRegex(), ""), false)
-					addField("Versão", bedrockIdentifier.versionTag + " (${bedrockIdentifier.serverProtocol})", true)
+					addField(locale["MCQUERY_VERSION"], bedrockIdentifier.versionTag + " (${bedrockIdentifier.serverProtocol})", true)
 					addField("Players", "${bedrockIdentifier.onlinePlayerCount}/${bedrockIdentifier.maxPlayerCount}", true)
 					if (bedrockIdentifier.gamemode != null) {
 						addField("Gamemode", bedrockIdentifier.gamemode, true)
 					}
 					if (bedrockIdentifier.worldName != null) {
-						addField("Nome do Mundo", bedrockIdentifier.worldName, true)
+						addField(locale["MCQUERY_WORLD"], bedrockIdentifier.worldName, true)
 					}
 				}
 
 				context.sendMessage(embed.build())
 			} catch (e: UnknownHostException) {
 				context.reply(
-						"Servidor não existe ou está offline!",
+						locale["MCQUERY_OFFLINE"],
 						Constants.ERROR
 				)
 				// Quando o servidor não existe
