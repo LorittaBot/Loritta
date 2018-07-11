@@ -73,7 +73,7 @@ class AminoRepostTask : Runnable {
 
 					val document = connection.parse()
 
-					val listItems = document.getElementsByClass("list-item")
+					val listItems = document.getElementsByClass("post-list")
 
 					var firstLink: String? = null
 
