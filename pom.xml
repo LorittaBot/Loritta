@@ -136,6 +136,12 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-mongodb</artifactId>
             <version>1.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.mitchellbosecke</groupId>
