@@ -29,7 +29,7 @@ class AminoRepostTask : Runnable {
 		).iterator()
 
 		// IDs das comunidades a serem verificados
-		var communityIds = mutableSetOf<String>()
+		val communityIds = mutableSetOf<String>()
 		val list = mutableListOf<ServerConfig>()
 
 		val pattern = Regex("aminoapps\\.com/c/([A-z0-9\\-_]+)")
@@ -51,6 +51,8 @@ class AminoRepostTask : Runnable {
 				list.add(server)
 			}
 		}
+
+		logger.info("Existem ${communityIds.size} comunidades do Amino que eu irei verificar! Atualmente eu conheço ${storedLastIds.size} posts!")
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
