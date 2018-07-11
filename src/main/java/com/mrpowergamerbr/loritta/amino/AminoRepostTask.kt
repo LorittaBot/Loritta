@@ -21,7 +21,7 @@ class AminoRepostTask : Runnable {
 		var storedLastIds = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(AminoRepostTask::class.java)
 	}
-	
+
 	override fun run() {
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		val servers = loritta.serversColl.find(
@@ -67,7 +67,7 @@ class AminoRepostTask : Runnable {
 					val statusCode = connection.statusCode()
 
 					if (statusCode != 200) {
-						logger.error("Erro ao verificar comunidade $communityId, status code: ${statusCode}")
+						logger.error("Erro ao verificar comunidade $communityId, status code: $statusCode")
 						return@launch
 					}
 
@@ -79,7 +79,7 @@ class AminoRepostTask : Runnable {
 
 					val linksFound = mutableListOf<String>()
 
-					var lastLoadedUrl = storedLastIds.getOrDefault(communityId, null)
+					val lastLoadedUrl = storedLastIds.getOrDefault(communityId, null)
 
 					for (item in listItems) {
 						val postLink = item.getElementsByAttributeValue("data-vce", "rich-content").first { !it.attr("href").contains("/user/") }.attr("href")
@@ -105,10 +105,12 @@ class AminoRepostTask : Runnable {
 						}
 					}
 
-					if (firstLink == null)
+					if (firstLink == null) {
+						logger.error("Erro ao verificar comunidade $communityId, firstLink == null")
 						return@launch
+					}
 
-					storedLastIds.put(communityId, firstLink)
+					storedLastIds[communityId] = firstLink
 
 					val links = linksFound.reversed()
 
