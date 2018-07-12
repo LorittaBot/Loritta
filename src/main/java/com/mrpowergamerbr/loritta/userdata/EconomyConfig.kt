@@ -12,5 +12,5 @@ class EconomyConfig {
 	var economyNamePlural: String? = null
 	// Taxa de transferência de Sonhos -> Local
 	@AllowReflection
-	var exchangeRate: Float? = null
+	var exchangeRate: Double? = null
 }

@@ -16,6 +16,7 @@ class ConfigureEconomyController {
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_AUTH)
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
+		variables["saveType"] = "economy"
 		return evaluate("configure_economy.html", variables)
 	}
 }

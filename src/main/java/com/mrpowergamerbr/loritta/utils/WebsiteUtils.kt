@@ -287,7 +287,8 @@ object WebsiteUtils {
 			return false
 		}
 
-		val guildId = req.param("guildId").value()
+		// TODO: Permitir customizar da onde veio o guildId
+		val guildId = req.path().split("/")[3]
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
 		val server = lorittaShards.getGuildById(guildId)
@@ -319,7 +320,9 @@ object WebsiteUtils {
 			}
 		}
 
-		req.get<MutableMap<String, Any?>?>("variables")?.put("serverConfig", serverConfig)
+		req.get<MutableMap<String, Any?>>("variables").put("serverConfig", serverConfig)
+		req.get<MutableMap<String, Any?>>("variables").put("guild", server)
+
 		return true
 	}
 
