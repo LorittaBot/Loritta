@@ -257,7 +257,8 @@ class UpdateServerConfigController {
 				"moderation" to ModerationPayload::class.java,
 				"autorole" to AutorolePayload::class.java,
 				"welcomer" to WelcomerPayload::class.java,
-				"miscellaneous" to MiscellaneousPayload::class.java
+				"miscellaneous" to MiscellaneousPayload::class.java,
+				"economy" to EconomyPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

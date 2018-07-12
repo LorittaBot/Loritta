@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
+import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
@@ -121,14 +122,24 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 
 		if (requiresAuth != null) {
-			if (!WebsiteUtils.checkHeaderAuth(req, res))
+			val authLevel = requiresAuth.value
+
+			val allow = when (authLevel) {
+				LoriAuthLevel.API_KEY -> WebsiteUtils.checkHeaderAuth(req, res)
+				LoriAuthLevel.DISCORD_GUILD_AUTH -> WebsiteUtils.checkDiscordGuildAuth(req, res)
+				else -> throw UnsupportedOperationException("Unknown auth method: ${authLevel}")
+			}
+
+			if (!allow)
 				return@use
 		}
+
 		chain.next(req, res)
 	}
 
 	use(APIRoute())
 	use(UserRoute())
+	use(GuildRoute())
 	get("/**") { req, res ->
 		res.send(GlobalHandler.render(req, res))
 	}

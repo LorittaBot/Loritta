@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
+import net.dv8tion.jda.core.Permission
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -266,6 +267,60 @@ object WebsiteUtils {
 			)
 			return false
 		}
+	}
+
+	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
+		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
+		if (req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
+
+		if (userIdentification == null) { // Unauthorized (Discord)
+			res.status(Status.UNAUTHORIZED)
+			res.redirect("https://loritta.website/dashboard")
+			return false
+		}
+
+		val guildId = req.param("guildId").value()
+
+		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
+		val server = lorittaShards.getGuildById(guildId)
+		if (server == null) {
+			res.status(Status.BAD_REQUEST)
+			res.send("Guild $guildId doesn't exist or it isn't loaded yet")
+			return false
+		}
+
+		val id = userIdentification.id
+		if (id != Loritta.config.ownerId) {
+			val member = server.getMemberById(id)
+
+			if (member == null) {
+				res.status(Status.BAD_REQUEST)
+				res.send("Member $id is not in guild ${server.id}")
+				return false
+			}
+
+			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
+			val canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+
+			val canOpen = id == Loritta.config.ownerId || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
+
+			if (!canOpen) { // not authorized (perm side)
+				res.status(Status.FORBIDDEN)
+				res.send("User ${member.user.id} doesn't have permission to edit ${server.id}'s config")
+				return false
+			}
+		}
+
+		req.get<MutableMap<String, Any?>?>("variables")?.put("serverConfig", serverConfig)
+		return true
 	}
 
 	fun allowMethods(vararg methods: String) {
