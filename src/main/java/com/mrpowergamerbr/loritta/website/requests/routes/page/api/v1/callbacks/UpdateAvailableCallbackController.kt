@@ -27,15 +27,15 @@ class UpdateAvailableCallbackController {
 				.userAgent(Constants.USER_AGENT)
 				.body()
 
+		val payload = jsonParser.parse(body).obj
+
+		val items = payload["changeSet"]["items"].array
+
 		run {
 			val textChannel = lorittaShards.getTextChannelById("297732013006389252")
 
 			if (textChannel != null) {
 				val loriReplies = mutableListOf<LoriReply>()
-
-				val payload = jsonParser.parse(body).obj
-
-				val items = payload["changeSet"]["items"].array
 
 				loriReplies.add(
 						LoriReply(
@@ -55,7 +55,7 @@ class UpdateAvailableCallbackController {
 					items.forEach {
 						loriReplies.add(
 								LoriReply(
-										"Novidade: `${it["msg"].string}`",
+										"Novidade: `${it["comment"].string.stripNewLines()}`",
 										"<a:revolving_think:417382964364836864>"
 								)
 						)
@@ -81,10 +81,6 @@ class UpdateAvailableCallbackController {
 			if (textChannel != null) {
 				val loriReplies = mutableListOf<LoriReply>()
 
-				val payload = jsonParser.parse(body).obj
-
-				val items = payload["changeSet"]["items"].array
-
 				loriReplies.add(
 						LoriReply(
 								"Wow, a parcel with new features! \uD83D\uDCE6\uD83D\uDC40, let me check what is inside of it!",
@@ -103,7 +99,7 @@ class UpdateAvailableCallbackController {
 					items.forEach {
 						loriReplies.add(
 								LoriReply(
-										"New: `${it["msg"].string}`",
+										"New: `${it["comment"].string.stripNewLines()}`",
 										"<a:revolving_think:417382964364836864>"
 								)
 						)
