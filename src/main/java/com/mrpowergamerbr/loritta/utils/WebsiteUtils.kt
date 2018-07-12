@@ -283,11 +283,14 @@ object WebsiteUtils {
 
 		if (userIdentification == null) { // Unauthorized (Discord)
 			res.status(Status.UNAUTHORIZED)
-			res.redirect("https://loritta.website/dashboard")
+			val state = JsonObject()
+			state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+			res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 			return false
 		}
 
-		val guildId = req.param("guildId").value()
+		// TODO: Permitir customizar da onde veio o guildId
+		val guildId = req.path().split("/")[3]
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
 		val server = lorittaShards.getGuildById(guildId)
@@ -319,7 +322,95 @@ object WebsiteUtils {
 			}
 		}
 
-		req.get<MutableMap<String, Any?>?>("variables")?.put("serverConfig", serverConfig)
+		req.get<MutableMap<String, Any?>>("variables").put("serverConfig", serverConfig)
+		req.get<MutableMap<String, Any?>>("variables").put("guild", server)
+
+		return true
+	}
+
+	fun checkDiscordGuildRestAuth(req: Request, res: Response): Boolean {
+		res.type(MediaType.json)
+
+		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
+		if (req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
+
+		if (userIdentification == null) { // Unauthorized (Discord)
+			res.status(Status.UNAUTHORIZED)
+			res.send(
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNAUTHORIZED,
+							"Invalid Discord Authorization"
+					)
+			)
+			return false
+		}
+
+		// TODO: Permitir customizar da onde veio o guildId
+		val guildId = req.path().split("/")[4]
+
+		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
+		val server = lorittaShards.getGuildById(guildId)
+		if (server == null) {
+			res.status(Status.BAD_REQUEST)
+			res.send(
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNKNOWN_GUILD,
+							"Guild $guildId doesn't exist or it isn't loaded yet"
+					)
+			)
+			return false
+		}
+
+		val id = userIdentification.id
+		if (id != Loritta.config.ownerId) {
+			val member = server.getMemberById(id)
+
+			if (member == null) {
+				res.status(Status.BAD_REQUEST)
+				res.send(
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.MEMBER_NOT_IN_GUILD,
+								"Member $id is not in guild ${server.id}"
+						)
+				)
+				return false
+			}
+
+			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
+			val canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+
+			val canOpen = id == Loritta.config.ownerId || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
+
+			if (!canOpen) { // not authorized (perm side)
+				res.status(Status.FORBIDDEN)
+				res.send(
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.FORBIDDEN,
+								"User ${member.user.id} doesn't have permission to edit ${server.id}'s config"
+						)
+				)
+				return false
+			}
+		}
+
+		val variables = req.ifGet<MutableMap<String, Any?>>("variables")
+		if (variables.isPresent) {
+			variables.get()["serverConfig"] = serverConfig
+			variables.get()["guild"] = server
+		}
+
+		req.set("userIdentification", userIdentification)
+		req.set("serverConfig", serverConfig)
+		req.set("guild", server)
+
 		return true
 	}
 

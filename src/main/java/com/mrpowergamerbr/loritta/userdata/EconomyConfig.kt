@@ -12,5 +12,8 @@ class EconomyConfig {
 	var economyNamePlural: String? = null
 	// Taxa de transferência de Sonhos -> Local
 	@AllowReflection
-	var exchangeRate: Float? = null
+	var exchangeRate: Double? = null
+	// Itens que serão vendidos na loja do servidor
+	@AllowReflection
+	var storeItems = mutableListOf<StoreItem>()
 }

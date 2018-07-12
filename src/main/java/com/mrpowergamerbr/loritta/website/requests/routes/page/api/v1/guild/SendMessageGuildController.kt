@@ -1,17 +1,19 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 
 import com.github.salomonbrys.kotson.*
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Guild
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.Status
 import org.jooby.mvc.Body
+import org.jooby.mvc.Local
 import org.jooby.mvc.POST
 import org.jooby.mvc.Path
 
@@ -21,75 +23,9 @@ class SendMessageGuildController {
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
-	fun sendMessage(req: Request, res: Response, guildId: String, @Body rawMessage: String) {
+	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
+	fun sendMessage(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local guild: Guild, @Body rawMessage: String) {
 		res.type(MediaType.json)
-
-		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
-		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
-			try {
-				discordAuth.isReady(true)
-				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		}
-
-		if (userIdentification == null) { // Unauthorized (Discord)
-			res.status(Status.UNAUTHORIZED)
-			res.send(
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.UNAUTHORIZED,
-							"Invalid Discord Authorization"
-					)
-			)
-			return
-		}
-
-		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
-		val server = lorittaShards.getGuildById(guildId)
-		if (server == null) {
-			res.status(Status.BAD_REQUEST)
-			res.send(
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.UNKNOWN_GUILD,
-							"Guild $guildId doesn't exist or it isn't loaded yet"
-					)
-			)
-			return
-		}
-
-		val id = userIdentification.id
-		if (id != Loritta.config.ownerId) {
-			val member = server.getMemberById(id)
-
-			if (member == null) {
-				res.status(Status.BAD_REQUEST)
-				res.send(
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.MEMBER_NOT_IN_GUILD,
-								"Member $id is not in guild ${server.id}"
-						)
-				)
-				return
-			}
-
-			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
-			val canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-
-			val canOpen = id == Loritta.config.ownerId || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
-
-			if (!canOpen) { // not authorized (perm side)
-				res.status(Status.FORBIDDEN)
-				res.send(
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.FORBIDDEN,
-								"User ${member.user.id} doesn't have permission to edit ${server.id}'s config"
-						)
-				)
-				return
-			}
-		}
 
 		val json = jsonParser.parse(rawMessage).obj
 		val channelId = json["channelId"].nullString
@@ -97,7 +33,7 @@ class SendMessageGuildController {
 		val customTokens = json["customTokens"].nullObj
 		val sourceList = json["sources"].nullArray
 
-		val sources = mutableListOf<Any>(server)
+		val sources = mutableListOf<Any>(guild)
 
 		if (sourceList != null) {
 			for (element in sourceList) {
@@ -106,7 +42,7 @@ class SendMessageGuildController {
 				when (str) {
 					"user" -> sources.add(lorittaShards.getUserById(userIdentification.id)!!)
 					"member" -> {
-						val member = server.getMemberById(id)
+						val member = guild.getMemberById(userIdentification.id)
 
 						if (member != null)
 							sources.add(member)
@@ -122,7 +58,7 @@ class SendMessageGuildController {
 		}
 
 		val message = try {
-			MessageUtils.generateMessage(messageString, sources, server, tokens)
+			MessageUtils.generateMessage(messageString, sources, guild, tokens)
 		} catch (e: Exception) {
 			e.printStackTrace()
 			null
@@ -140,7 +76,7 @@ class SendMessageGuildController {
 		}
 
 		if (channelId != null) {
-			val channel = server.getTextChannelById(channelId)
+			val channel = guild.getTextChannelById(channelId)
 
 			if (channel == null) {
 				res.status(Status.BAD_REQUEST)

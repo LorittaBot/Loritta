@@ -89,7 +89,7 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.drawText("${userProfile.receivedReputations.size} reps", 562, 120, 800 - 6)
 
 		graphics.font = whitneyBold20
-		graphics.drawText(locale["PERFIL_ECONOMY"], 562, 492, 800 - 6)
+		graphics.drawText(locale["ECONOMY_NamePlural"], 562, 492, 800 - 6)
 		graphics.font = whitneySemiBold20
 		graphics.drawText("${userProfile.dreams}", 562, 511, 800 - 6)
 

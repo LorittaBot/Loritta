@@ -19,7 +19,9 @@ abstract class ConfigPayloadType(val type: String) {
 
 			field.isAccessible = true
 
+			println(value)
 			when {
+				value.isJsonNull -> field.set(type, null)
 				field.type.isAssignableFrom(Integer::class.java) -> field.setInt(type, value.int)
 				field.type.isAssignableFrom(Double::class.java) -> field.setDouble(type, value.double)
 				field.type.isAssignableFrom(Float::class.java) -> field.setFloat(type, value.float)
