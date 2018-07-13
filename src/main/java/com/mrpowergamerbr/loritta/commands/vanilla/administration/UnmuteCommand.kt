@@ -1,29 +1,23 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.exceptions.HierarchyException
-import java.awt.Color
-import java.time.Instant
-import kotlin.concurrent.thread
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["MUTE_DESCRIPTION"]
+		return locale["UNMUTE_DESCRIPTION"]
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
+		return listOf("159985870458322944");
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -54,313 +48,48 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 			val member = context.guild.getMember(user)
 
-			if (member == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserNotInThisServer"],
-								Constants.ERROR
-						)
-				)
-				return
+			if (member != null) {
+				val mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false).firstOrNull()
+
+				val thread = MuteCommand.roleRemovalThreads[member.guild.id + "#" + member.user.id]
+				thread?.interrupt()
+				MuteCommand.roleRemovalThreads.remove(member.guild.id + "#" + member.user.id)
+
+				if (mutedRoles != null) {
+					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).complete()
+				}
 			}
 
-			if (!context.guild.selfMember.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_RoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
-
-			if (!context.handle.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_PunisherRoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
-
-			val setHour = context.reply(
-					LoriReply(
-							locale["MUTE_SetHour"],
-							"⏰"
+			loritta.serversColl.updateOne(
+					Filters.and(
+							Filters.eq(
+									"_id", context.guild.id
+							),
+							Filters.eq(
+									"guildUserData.userId", context.userHandle.id
+							)
+					),
+					Updates.combine(
+							Updates.set(
+									"guildUserData.$.muted", false
+							),
+							Updates.set(
+									"guildUserData.$.temporaryMute", false
+							),
+							Updates.set(
+									"guildUserData.$.expiresIn", 0
+							)
 					)
 			)
 
-			fun punishUser(time: Long?) {
-				var rawArgs = context.rawArgs
-				rawArgs = rawArgs.remove(0) // remove o usuário
-
-				val reason = rawArgs.joinToString(" ")
-
-				var str = locale["BAN_ReadyToPunish", locale["MUTE_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
-
-				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-				if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-					str += " ${locale["BAN_SilentTip"]}"
-				}
-
-				val message = context.reply(
-						LoriReply(
-								message = str,
-								prefix = "⚠"
-						)
-				)
-
-				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
-
-						if (!isSilent) {
-							if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
-								try {
-									val embed = EmbedBuilder()
-
-									embed.setTimestamp(Instant.now())
-									embed.setColor(Color(221, 0, 0))
-
-									embed.setThumbnail(context.guild.iconUrl)
-									embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-									embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["MUTE_PunishAction"].toLowerCase(), context.guild.name]}!")
-									embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
-									embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
-
-									user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
-								} catch (e: Exception) {
-									e.printStackTrace()
-								}
-							}
-
-							if (context.config.moderationConfig.sendToPunishLog) {
-								val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
-
-								if (textChannel != null && textChannel.canTalk()) {
-									val message = MessageUtils.generateMessage(
-											context.config.moderationConfig.punishmentLogMessage,
-											null,
-											context.guild,
-											mutableMapOf(
-													"reason" to reason,
-													"punishment" to locale["MUTE_PunishAction"],
-													"staff" to context.userHandle.name,
-													"@staff" to context.userHandle.asMention,
-													"#staff" to context.userHandle.discriminator,
-													"staff-avatar-url" to context.userHandle.avatarUrl,
-													"user" to user.name,
-													"@user" to user.asMention,
-													"#user" to user.discriminator,
-													"user-avatar-url" to user.effectiveAvatarUrl,
-													"user-id" to user.id,
-													"staff-id" to context.userHandle.id
-											)
-									)
-
-									textChannel.sendMessage(message).complete()
-								}
-							}
-						}
-
-						message.delete().complete()
-
-						val result = muteUser(context, member, time)
-
-						if (!result) {
-							return@onReactionAddByAuthor
-						}
-						context.reply(
-								LoriReply(
-										locale["BAN_SuccessfullyPunished"],
-										"\uD83C\uDF89"
-								)
-						)
-					}
-				}
-
-				message.addReaction("✅").complete()
-				if (hasSilent) {
-					message.addReaction("\uD83D\uDE4A").complete()
-				}
-			}
-
-			setHour.onResponseByAuthor(context) {
-				setHour.delete().complete()
-				val time = it.message.contentDisplay.convertToEpochMillis()
-				punishUser(time)
-			}
-
-			setHour.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.name == "\uD83D\uDD04") {
-					setHour.delete().complete()
-					punishUser(null)
-				}
-			}
+			context.reply(
+					LoriReply(
+							locale["MUTE_MuteRemoved"],
+							"\uD83C\uDF89"
+					)
+			)
 		} else {
 			this.explain(context);
-		}
-	}
-
-	fun muteUser(context: CommandContext, member: Member, time: Long?): Boolean {
-		val delay = if (time != null) {
-			time - System.currentTimeMillis()
-		} else {
-			null
-		}
-
-		if (delay != null && 0 > delay) {
-			// :whatdog:
-			return false
-		}
-
-		// Vamos pegar se a nossa role existe
-		var mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false)
-		var mutedRole: Role? = null
-		if (mutedRoles.isEmpty()) {
-			// Se não existe, vamos criar ela!
-			mutedRole = context.guild.controller.createRole()
-					.setName(context.locale["MUTE_ROLE_NAME"])
-					.setColor(Color.BLACK)
-					.complete()
-		} else {
-			// Se existe, vamos carregar a atual
-			mutedRole = mutedRoles[0]
-		}
-
-		// E agora vamos pegar todos os canais de texto do servidor
-		for (textChannel in context.guild.textChannels) {
-			var permissionOverride = textChannel.getPermissionOverride(mutedRole)
-			if (permissionOverride == null) { // Se é null...
-				textChannel.createPermissionOverride(mutedRole)
-						.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-						.complete()
-			} else {
-				if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-					permissionOverride.manager
-							.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-							.complete()
-				}
-			}
-		}
-
-		// E... finalmente... iremos dar (ou remover) a role para o carinha
-		if (!context.guild.isMember(member.user)) {
-			context.reply(
-					LoriReply(
-							context.locale["BAN_UserNotInThisServer"],
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-
-		try {
-			val addRole = context.guild.controller.addSingleRoleToMember(member, mutedRole)
-
-			addRole.complete()
-
-			val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
-			val userData = serverConfig.getUserData(member.user.id)
-
-			userData.isMuted = true
-			if (time != null) {
-				userData.temporaryMute = true
-				userData.expiresIn = time
-			} else {
-				userData.temporaryMute = false
-			}
-
-			loritta save serverConfig
-			if (delay != null) {
-				spawnRoleRemovalThread(context.guild, context.locale, serverConfig, userData)
-			}
-		} catch (e: HierarchyException) {
-			context.reply(
-					LoriReply(
-							context.locale["BAN_RoleTooLow"],
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
-
-	companion object {
-		// Para guardar as threads, a key deverá ser...
-		// ID da guild#ID do usuário
-		// Exemplo:
-		// 297732013006389252#123170274651668480
-		val roleRemovalThreads = mutableMapOf<String, Thread>()
-
-		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, serverConfig: ServerConfig, userData: LorittaGuildUserData) {
-			val previousThread = roleRemovalThreads["${guild.id}#${userData.userId}"]
-			if (previousThread != null) {
-				roleRemovalThreads.remove("${guild.id}#${userData.userId}")
-				previousThread.interrupt() // lol nope
-			}
-
-			val member = guild.getMemberById(userData.userId)
-
-			// Vamos pegar se a nossa role existe
-			var mutedRoles = guild.getRolesByName(locale["MUTE_ROLE_NAME"], false)
-			if (member == null || mutedRoles.isEmpty()) {
-				logger.info("Removendo status de silenciado cargo silenciado de ${member.user.id} na guild ${guild.id}, motivo: Usuário não está no servidor ou cargo não existe mais!")
-				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
-				userData.temporaryMute = false
-				userData.isMuted = false
-				userData.expiresIn = 0
-
-				loritta save serverConfig
-			} else {
-				// Se existe, vamos carregar a atual
-				val mutedRole = mutedRoles[0]
-
-				val time = userData.expiresIn
-				val delay = time - System.currentTimeMillis()
-				if (0 > delay) {
-					logger.info("Removendo cargo silenciado de ${member.user.id} na guild ${guild.id}, motivo: Já expirou!")
-
-					// Tempo menor que 0 = já expirou!
-					userData.temporaryMute = false
-					userData.isMuted = false
-					userData.expiresIn = 0
-
-					loritta save serverConfig
-
-					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
-
-					removeRole.complete()
-					return
-				}
-
-				roleRemovalThreads.put("${guild.id}#${userData.userId}",
-						thread {
-							logger.info("Criado role removal thread de ${member.user.id} na guild ${guild.id}, irá expirar em ${time}")
-							try {
-								Thread.sleep(delay)
-
-								logger.info("Removendo cargo silenciado de ${member.user.id} na guild ${guild.id}")
-
-								val serverConfig = loritta.getServerConfigForGuild(serverConfig.guildId)
-								val userData = serverConfig.getUserData(userData.userId)
-								userData.temporaryMute = false
-								userData.isMuted = false
-								userData.expiresIn = 0
-
-								loritta save serverConfig
-
-								val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
-
-								removeRole.complete()
-							} catch (e: InterruptedException) {
-								logger.info("Role removal thread de ${member.user.id} na guild ${guild.id} foi cancelado!")
-							}
-						}
-				)
-			}
 		}
 	}
 }
