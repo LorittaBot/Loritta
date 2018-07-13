@@ -16,6 +16,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
+        <jda.version>3.6.0_375</jda.version>
     </properties>
 
     <repositories>
@@ -84,7 +85,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.6.0_375</version>
+            <version>${jda.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -320,6 +321,8 @@
                             <Commit-Hash>${commit.hash}</Commit-Hash>
                             <Git-Branch>${git.branch}</Git-Branch>
                             <Compiled-At>${compiled.at}</Compiled-At>
+                            <Kotlin-Version>${kotlin.version}</Kotlin-Version>
+                            <JDA-Version>${jda.version}</JDA-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
