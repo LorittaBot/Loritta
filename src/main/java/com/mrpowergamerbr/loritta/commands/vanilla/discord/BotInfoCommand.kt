@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.lang.management.ManagementFactory
@@ -59,7 +60,15 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
-		context.sendMessage(context.getAsMention(true), embed.build())
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
+
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.name == "abc") {
+				message.delete().complete()
+
+				showExtendedInfo(context, locale)
+			}
+		}
 	}
 
 	fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
@@ -75,10 +84,26 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
-		embed.addField("\uD83C\uDFD7 Build Number", "[#$buildNumber](https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/", true)
+		embed.addField("\uD83C\uDFD7 Build Number", "[#$buildNumber](https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/)", true)
 		embed.addField("<:github:467329174387032086> Commit", "[$commitHash](https://github.com/LorittaBot/Loritta/commit/$commitHash)", true)
 		embed.addField("<:github:467329174387032086> Git Branch", gitBranch, true)
 		embed.addField("⏰ Compiled At", compiledAt, true)
+
+		val mb = 1024 * 1024
+		val runtime = Runtime.getRuntime()
+		val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / mb
+		val freeMemory = runtime.freeMemory() / mb
+		val maxMemory = runtime.maxMemory() / mb
+		val totalMemory = runtime.totalMemory() / mb
+
+		val memory = """```diff
+			|+ Memória utilizada : $usedMemory MB
+			|- Memória disponível: $freeMemory MB
+			|+ Memória alocada   : $totalMemory MB
+			|- Memória total     : $maxMemory MB```""".trimMargin()
+
+		embed.addField("\uD83D\uDDA5 Memória", memory, true)
+		embed.addField("\uD83D\uDDA5 Thread Count", Thread.getAllStackTraces().keys.size.toString(), true)
 
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
