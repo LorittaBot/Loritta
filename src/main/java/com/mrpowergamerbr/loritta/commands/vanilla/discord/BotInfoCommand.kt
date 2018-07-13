@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -23,7 +24,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
-		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais") {
+		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais" || arg0 == "extendedinfo") {
 			showExtendedInfo(context, locale)
 			return
 		}
@@ -63,12 +64,14 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "abc") {
+			if (it.reactionEmote.name == "loritta") {
 				message.delete().complete()
 
 				showExtendedInfo(context, locale)
 			}
 		}
+
+		message.addReaction("loritta:331179879582269451").complete()
 	}
 
 	fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
@@ -81,13 +84,8 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val commitHash = mattr[Attributes.Name("Commit-Hash")] as String
 		val gitBranch = mattr[Attributes.Name("Git-Branch")] as String
 		val compiledAt = mattr[Attributes.Name("Compiled-At")] as String
-
-		val embed = EmbedBuilder()
-		embed.setColor(Color(0, 193, 223))
-		embed.addField("\uD83C\uDFD7 Build Number", "[#$buildNumber](https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/)", true)
-		embed.addField("<:github:467329174387032086> Commit", "[$commitHash](https://github.com/LorittaBot/Loritta/commit/$commitHash)", true)
-		embed.addField("<:github:467329174387032086> Git Branch", gitBranch, true)
-		embed.addField("⏰ Compiled At", compiledAt, true)
+		val kotlinVersion = mattr[Attributes.Name("Kotlin-Version")] as String
+		val jdaVersion = mattr[Attributes.Name("JDA-Version")] as String
 
 		val mb = 1024 * 1024
 		val runtime = Runtime.getRuntime()
@@ -96,15 +94,81 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
-		val memory = """```diff
-			|+ Memória utilizada : $usedMemory MB
-			|- Memória disponível: $freeMemory MB
-			|+ Memória alocada   : $totalMemory MB
-			|- Memória total     : $maxMemory MB```""".trimMargin()
-
-		embed.addField("\uD83D\uDDA5 Memória", memory, true)
-		embed.addField("\uD83D\uDDA5 Thread Count", Thread.getAllStackTraces().keys.size.toString(), true)
-
-		context.sendMessage(context.getAsMention(true), embed.build())
+		context.reply(
+				LoriReply(
+						forceMention = true,
+						prefix = "<:loritta:331179879582269451>"
+				),
+				LoriReply(
+						"**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
+						"\uD83C\uDFD7",
+						mentionUser = false
+				),
+				LoriReply(
+						"**Commit:** $commitHash",
+						"<:github:467329174387032086>",
+						mentionUser = false
+				),
+				LoriReply(
+						"**Git Branch:** $gitBranch",
+						"<:github:467329174387032086>",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_CompiledAt"]}:** $compiledAt",
+						"⏰",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_JavaVersion"]}:** ${System.getProperty("java.version")}",
+						"<:java:467443707160035329>",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_KotlinVersion"]}:** $kotlinVersion",
+						"<:kotlin:453714186925637642>",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_JDAVersion"]}:** $jdaVersion",
+						"<:jda:411518264267767818>",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_MemoryUsed"]}:** $usedMemory MB",
+						"\uD83D\uDCBB",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_MemoryAvailable"]}:** $freeMemory MB",
+						"\uD83D\uDCBB",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_MemoryAllocated"]}:** $totalMemory MB",
+						"\uD83D\uDCBB",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_MemoryTotal"]}:** $maxMemory MB",
+						"\uD83D\uDCBB",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_ThreadCount"]}:** ${Thread.getAllStackTraces().keys.size.toString()}",
+						"\uD83D\uDC4B",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_Environment"]}:** ${Loritta.config.environment.name}",
+						"\uD83C\uDF43",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["DASHBOARD_Love"]}:** ∞",
+						"<:blobheart:467447056374693889>",
+						mentionUser = false
+				)
+		)
 	}
 }
