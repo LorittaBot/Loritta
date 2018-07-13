@@ -12,6 +12,8 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
+import java.util.jar.Attributes
+import java.util.jar.JarFile
 
 class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -19,6 +21,12 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
+		val arg0 = context.rawArgs.getOrNull(0)
+		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais") {
+			showExtendedInfo(context, locale)
+			return
+		}
+
 		val embed = EmbedBuilder()
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
@@ -51,6 +59,27 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
+		context.sendMessage(context.getAsMention(true), embed.build())
+	}
+
+	fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
+		val path = this::class.java.protectionDomain.codeSource.location.path
+		val jar = JarFile(path)
+		val mf = jar.manifest
+		val mattr = mf.mainAttributes
+
+		val buildNumber = mattr[Attributes.Name("Build-Number")] as String
+		val commitHash = mattr[Attributes.Name("Commit-Hash")] as String
+		val gitBranch = mattr[Attributes.Name("Git-Branch")] as String
+		val compiledAt = mattr[Attributes.Name("Compiled-At")] as String
+
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.addField("\uD83C\uDFD7 Build Number", "[#$buildNumber](https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/", true)
+		embed.addField("<:github:467329174387032086> Commit", "[$commitHash](https://github.com/LorittaBot/Loritta/commit/$commitHash)", true)
+		embed.addField("<:github:467329174387032086> Git Branch", gitBranch, true)
+		embed.addField("⏰ Compiled At", compiledAt, true)
+
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
 }

@@ -12,6 +12,10 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <build.number>SNAPSHOT</build.number>
+        <commit.hash>Unknown</commit.hash>
+        <git.branch>Unknown</git.branch>
+        <compiled.at>Unknown</compiled.at>
     </properties>
 
     <repositories>
@@ -311,6 +315,12 @@
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>com.mrpowergamerbr.loritta.LorittaLauncher</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Build-Number>${build.number}</Build-Number>
+                            <Commit-Hash>${commit.hash}</Commit-Hash>
+                            <Git-Branch>${git.branch}</Git-Branch>
+                            <Compiled-At>${compiled.at}</Compiled-At>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
