@@ -603,8 +603,14 @@ object LorittaUtilsKotlin {
 		}
 	}
 
+	var stackTraceCount = 0
+	var stackTraceDelay = 0L
+
 	fun sendStackTrace(message: String, t: Throwable) {
 		if (t is MongoWaitQueueFullException) // I don't care!!! ~ Desativado para evitar floods de mensagens no #stacktraces ao recarregar a Loritta pelo JRebel
+			return
+
+		if (t is ErrorResponseException && t.errorCode == -1) // Ignorar socket timeouts (provavelmente é a shard do Discord que está morrendo)
 			return
 
 		val guild = lorittaShards.getGuildById("297732013006389252")
@@ -642,7 +648,19 @@ object LorittaUtilsKotlin {
 
 		messageBuilder.setEmbed(builder.build())
 
+		if ((System.currentTimeMillis() - stackTraceDelay) > 5000) {
+			stackTraceCount = 0
+			stackTraceDelay = System.currentTimeMillis()
+		}
+
+		if (stackTraceCount == 4) {
+			stackTraceCount++
+			logger.info("Ignorando exceptions devido ao grande número de exceptions recebidas em um curto período de tempo!")
+			return
+		}
+
 		textChannel.sendMessage(messageBuilder.build()).queue()
+		stackTraceCount++
 	}
 
 	var executedCommands = 0;
