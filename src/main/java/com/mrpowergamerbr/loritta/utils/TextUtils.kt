@@ -117,15 +117,16 @@ val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPat
 val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
 
 fun String.convertToEpochMillis(): Long {
+	val content = this.toLowerCase()
 	val calendar = Calendar.getInstance()
 
-	if (this.contains(":")) { // horário
-		val matcher = TIME_PATTERN.matcher(this)
+	if (content.contains(":")) { // horário
+		val matcher = TIME_PATTERN.matcher(content)
 
 		if (matcher.find()) { // Se encontrar...
 			val hour = matcher.group(2).toIntOrNull() ?: 0
 			val minute = matcher.group(3).toIntOrNull() ?: 0
-			var seconds = try {
+			val seconds = try {
 				matcher.group(5).toIntOrNull() ?: 0
 			} catch (e: IllegalStateException) {
 				0
@@ -153,8 +154,8 @@ fun String.convertToEpochMillis(): Long {
 		}
 	}
 
-	if (this.contains("/")) { // data
-		val matcher = DATE_PATTERN.matcher(this)
+	if (content.contains("/")) { // data
+		val matcher = DATE_PATTERN.matcher(content)
 
 		if (matcher.find()) { // Se encontrar...
 			val day = matcher.group(1).toIntOrNull() ?: 1
@@ -167,39 +168,39 @@ fun String.convertToEpochMillis(): Long {
 		}
 	}
 
-	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(this)
+	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(content)
 	if (yearsMatcher.find()) {
-		var addYears = yearsMatcher.group(1).toIntOrNull() ?: 0
+		val addYears = yearsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.YEAR] += addYears
 	}
-	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(this)
+	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(content)
 	if (monthMatcher.find()) {
-		var addMonths = monthMatcher.group(1).toIntOrNull() ?: 0
+		val addMonths = monthMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MONTH] += addMonths
 	}
-	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(this)
+	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(content)
 	if (weekMatcher.find()) {
-		var addWeeks = weekMatcher.group(1).toIntOrNull() ?: 0
+		val addWeeks = weekMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.WEEK_OF_YEAR] += addWeeks
 	}
-	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(this)
+	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(content)
 	if (dayMatcher.find()) {
-		var addDays = dayMatcher.group(1).toIntOrNull() ?: 0
+		val addDays = dayMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.DAY_OF_YEAR] += addDays
 	}
-	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(this)
+	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(content)
 	if (hourMatcher.find()) {
-		var addHours = hourMatcher.group(1).toIntOrNull() ?: 0
+		val addHours = hourMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.HOUR_OF_DAY] += addHours
 	}
-	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(this)
+	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(content)
 	if (minuteMatcher.find()) {
-		var addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
+		val addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MINUTE] += addMinutes
 	}
-	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(this)
+	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(content)
 	if (secondsMatcher.find()) {
-		var addSeconds = secondsMatcher.group(1).toIntOrNull() ?: 0
+		val addSeconds = secondsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.SECOND] += addSeconds
 	}
 
