@@ -111,6 +111,7 @@ class UpdateServerConfigController {
 
 	@PATCH
 	@LoriDoNotLocaleRedirect(true)
+	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
 	fun patchConfig(req: Request, res: Response, guildId: String, @Local guild: Guild, @Local serverConfig: ServerConfig, @Body rawConfig: String) {
 		res.type(MediaType.json)
 
