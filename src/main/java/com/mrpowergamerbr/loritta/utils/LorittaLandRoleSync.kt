@@ -60,7 +60,7 @@ class LorittaLandRoleSync : Runnable {
 
 	fun synchronizeRoles(fromGuild: Guild, toGuild: Guild, originalRoleId: String, giveRoleId: String) {
 		val originalRole = fromGuild.getRoleById(originalRoleId)
-		val giveRole = fromGuild.getRoleById(giveRoleId)
+		val giveRole = toGuild.getRoleById(giveRoleId)
 
 		val membersWithOriginalRole = fromGuild.getMembersWithRoles(originalRole)
 		val membersWithNewRole = toGuild.getMembersWithRoles(giveRole)
