@@ -49,6 +49,16 @@ class LorittaLandRoleSync : Runnable {
 					changed = true
 				}
 
+				if (originalRole.isHoisted != usRole.isHoisted) {
+					manager.setHoisted(true)
+					changed = true
+				}
+
+				if (originalRole.isMentionable != usRole.isMentionable) {
+					manager.setMentionable(true)
+					changed = true
+				}
+
 				if (changed) {
 					logger.info("Atualizando ${usRole.name}...")
 					manager.complete()
