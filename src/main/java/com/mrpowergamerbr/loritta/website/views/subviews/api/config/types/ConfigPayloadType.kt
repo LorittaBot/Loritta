@@ -12,14 +12,13 @@ abstract class ConfigPayloadType(val type: String) {
 
 	fun applyReflection(payload: JsonObject, type: Any) {
 		for ((key, value) in payload.entrySet()) {
-			val field = type::class.java.getDeclaredField(key) ?: continue
+			val field = try { type::class.java.getDeclaredField(key) } catch (e: NoSuchFieldException) { continue }
 
 			if (!field.isAnnotationPresent(AllowReflection::class.java))
 				continue
 
 			field.isAccessible = true
 
-			println(value)
 			when {
 				value.isJsonNull -> field.set(type, null)
 				field.type.isAssignableFrom(Integer::class.java) -> field.setInt(type, value.int)
