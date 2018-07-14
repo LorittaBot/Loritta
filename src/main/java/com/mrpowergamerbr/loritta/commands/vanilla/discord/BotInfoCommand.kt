@@ -80,6 +80,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val mf = jar.manifest
 		val mattr = mf.mainAttributes
 
+		val lorittaVersion = mattr[Attributes.Name("Loritta-Version")] as String
 		val buildNumber = mattr[Attributes.Name("Build-Number")] as String
 		val commitHash = mattr[Attributes.Name("Commit-Hash")] as String
 		val gitBranch = mattr[Attributes.Name("Git-Branch")] as String
@@ -100,8 +101,13 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						prefix = "<:loritta:331179879582269451>"
 				),
 				LoriReply(
-						"**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
+						"**${locale["BOTINFO_LorittaVersion"]}:** $lorittaVersion",
 						"\uD83C\uDFD7",
+						mentionUser = false
+				),
+				LoriReply(
+						"**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
+						"\uD83D\uDD16",
 						mentionUser = false
 				),
 				LoriReply(
