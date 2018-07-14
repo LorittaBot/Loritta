@@ -12,7 +12,6 @@ import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 
@@ -119,7 +118,6 @@ object MessageUtils {
 		message = message.replace("{@user}", mentionUser)
 		message = message.replace("{user}", user.escapeMentions())
 		message = message.replace("{user-id}", userId)
-		message = message.replace("{userAvatarUrl}", avatarUrl) // deprecated
 		message = message.replace("{user-avatar-url}", avatarUrl)
 		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname.escapeMentions())

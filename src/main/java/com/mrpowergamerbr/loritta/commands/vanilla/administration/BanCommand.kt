@@ -189,20 +189,15 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								context.config.moderationConfig.punishmentLogMessage,
-								null,
+								listOf(user),
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
 										"punishment" to locale["BAN_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"#staff" to context.userHandle.discriminator,
+										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.avatarUrl,
-										"user" to user.name,
-										"@user" to user.asMention,
-										"#user" to user.discriminator,
-										"user-avatar-url" to user.effectiveAvatarUrl,
-										"user-id" to user.id,
 										"staff-id" to context.userHandle.id
 								)
 						)
