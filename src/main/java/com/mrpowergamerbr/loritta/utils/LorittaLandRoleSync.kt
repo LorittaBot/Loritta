@@ -16,7 +16,7 @@ class LorittaLandRoleSync : Runnable {
 
 		for ((originalRoleId, usRoleId) in roleRemap) {
 			val originalRole = originalGuild.getRoleById(originalRoleId)
-			val usRole = usGuild.getRoleById(originalRoleId)
+			val usRole = usGuild.getRoleById(usRoleId)
 
 			val manager = usRole.manager
 			var changed = false
