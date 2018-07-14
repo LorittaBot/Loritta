@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
@@ -13,6 +14,8 @@ import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
 import org.jooby.mvc.Path
+import java.io.File
+import java.net.URL
 import kotlin.concurrent.thread
 
 @Path("/api/v1/callbacks/update-available")
@@ -118,6 +121,16 @@ class UpdateAvailableCallbackController {
 				).complete()
 			}
 		}
+
+
+		val artifacts = payload["artifacts"].array
+		val firstArtifact = artifacts.first()
+		val relativePath = firstArtifact["relativePath"].string
+
+		val byteArray = URL("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/artifact/${relativePath}")
+				.readBytes()
+
+		File(Loritta.FOLDER, "Loritta-Update.jar").writeBytes(byteArray)
 
 		logger.info("Recebi que um update está disponível no Jenkins! Irei reiniciar para aplicar as novas mudanças recebidas!!!")
 
