@@ -82,15 +82,10 @@
             <artifactId>caffeine</artifactId>
             <version>2.6.2</version>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
             <version>${jda.version}</version>
-        </dependency> -->
-        <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
-            <artifactId>JDA</artifactId>
-            <version>aabec729c1</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
