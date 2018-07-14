@@ -16,6 +16,10 @@ class LorittaLandRoleSync : Runnable {
 					"316363779518627842" to "420630427837923328", // Deusas Supremas
 					"301764115582681088" to "420630186061725696", // Loritta (Integration)
 					"351473717194522647" to "421325022951637015", // Guarda-Costas da Lori
+					"399301696892829706" to "421325387889377291", // Suporte
+					"341343754336337921" to "467750037812936704", // Desenhistas
+					"385579854336360449" to "467750852610752561", // Tradutores
+					"434512654292221952" to "467751141363548171", // Loritta Partner
 					"334734175531696128" to "420710241693466627" // Notificar Novidades
 			)
 
@@ -41,7 +45,7 @@ class LorittaLandRoleSync : Runnable {
 				}
 
 				if (originalRole.permissionsRaw != usRole.permissionsRaw) {
-					manager.setPermissions(usRole.permissionsRaw)
+					manager.setPermissions(originalRole.permissionsRaw)
 					changed = true
 				}
 
@@ -52,7 +56,11 @@ class LorittaLandRoleSync : Runnable {
 			}
 
 			// Give roles
-			synchronizeRoles(originalGuild, usGuild, "351473717194522647", "421325022951637015")
+			synchronizeRoles(originalGuild, usGuild, "351473717194522647", "421325022951637015") // Guarda-Costas
+			synchronizeRoles(originalGuild, usGuild, "399301696892829706", "421325387889377291") // Suporte
+			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
+			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
+			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 		} catch (e: Exception) {
 			logger.error("Erro ao sincronizar cargos!", e)
 		}
@@ -74,8 +82,10 @@ class LorittaLandRoleSync : Runnable {
 
 		for (member in membersWithOriginalRole) {
 			if (!membersWithNewRole.any { it.user.id == member.user.id }) {
-				logger.info("Adicionado cargo ${giveRole.id} para ${member.effectiveName} (${member.user.id})...")
-				toGuild.controller.addSingleRoleToMember(member, giveRole).complete()
+				val usMember = toGuild.getMember(member.user) ?: continue
+
+				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
+				toGuild.controller.addSingleRoleToMember(usMember, giveRole).complete()
 			}
 		}
 	}
