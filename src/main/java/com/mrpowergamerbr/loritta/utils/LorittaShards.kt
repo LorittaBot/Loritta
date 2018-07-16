@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.google.common.collect.Sets
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.managers.Presence
@@ -38,7 +37,7 @@ class LorittaShards {
     }
 
     fun getEmoteCount(): Int {
-        return shards.sumBy { it.emotes.size }
+        return shards.sumBy { it.emoteCache.size().toInt() }
     }
 
     fun getChannelCount(): Int {
@@ -46,16 +45,16 @@ class LorittaShards {
     }
 
     fun getTextChannelCount(): Int {
-        return shards.sumBy { it.textChannels.size }
+        return shards.sumBy { it.textChannelCache.size().toInt() }
     }
 
     fun getVoiceChannelCount(): Int {
-        return shards.sumBy { it.textChannels.size }
+        return shards.sumBy { it.textChannelCache.size().toInt() }
     }
 
     fun getUsers(): List<User> {
         // Pegar todas os users em todos os shards
-        val users = ArrayList<User>();
+        val users = ArrayList<User>()
 
         for (shard in shards) {
             users.addAll(shard.users)
@@ -63,12 +62,12 @@ class LorittaShards {
 
         val nonDuplicates = users.distinctBy { it.id }
 
-        return nonDuplicates;
+        return nonDuplicates
     }
 
     fun getUserById(id: String?): User? {
         for (shard in shards) {
-            var user = shard.getUserById(id);
+            val user = shard.getUserById(id);
             if (user != null) {
                 return user
             }
