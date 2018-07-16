@@ -373,6 +373,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val locale = context.locale
 
 		if (conf.explainOnCommandRun) {
+			context.userHandle.openPrivateChannel().complete()
 			val rawArguments = context.message.contentRaw.split(" ")
 			var commandLabel = rawArguments[0]
 			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {

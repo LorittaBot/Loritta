@@ -102,12 +102,12 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 				),
 				LoriReply(
 						"**${locale["BOTINFO_LorittaVersion"]}:** $lorittaVersion",
-						"\uD83C\uDFD7",
+						"\uD83D\uDD16",
 						mentionUser = false
 				),
 				LoriReply(
 						"**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
-						"\uD83D\uDD16",
+						"\uD83C\uDFD7",
 						mentionUser = false
 				),
 				LoriReply(
