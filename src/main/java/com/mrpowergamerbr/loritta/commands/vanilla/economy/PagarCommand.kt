@@ -14,6 +14,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		return locale["PAY_Description"]
 	}
 
+        override fun getUsage(): String {
+		return "usuário quantia"
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
 			var economySource = "global"
