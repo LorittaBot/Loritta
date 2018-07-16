@@ -137,6 +137,7 @@ class CommandManager {
 		commandMap.add(EmojiSearchCommand())
 		commandMap.add(ReceitasCommand())
 		commandMap.add(EncodeCommand())
+		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
