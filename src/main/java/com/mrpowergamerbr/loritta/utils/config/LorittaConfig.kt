@@ -47,6 +47,7 @@ data class LorittaConfig(
 		val apoiaSeCookies: String,
 		val recaptchaToken: String,
 		val pomfSpaceToken: String,
+		val vagalumeKey: String,
 		val fanArtExtravaganza: Boolean,
 		val fanArts: List<LorittaAvatarFanArt>,
 		val currentlyPlaying: List<LorittaGameStatus>) {
@@ -93,6 +94,7 @@ data class LorittaConfig(
 			"Cookie do apoia.se",
 			"Token do No Captcha reCAPTCHA",
 			"Token do pomf.space",
+			"Key do Vagalume",
 			true,
 			listOf<LorittaAvatarFanArt>(),
 			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
