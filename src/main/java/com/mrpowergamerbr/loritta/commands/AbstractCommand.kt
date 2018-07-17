@@ -133,6 +133,12 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 				val start = System.currentTimeMillis()
 
+				if (ev.message.isFromType(ChannelType.TEXT)) {
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - Processando...")
+				} else {
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - Processando...")
+				}
+
 				var locale = locale
 				if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 					when (ev.channel.id) {
