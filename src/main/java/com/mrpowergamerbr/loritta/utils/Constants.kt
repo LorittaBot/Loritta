@@ -102,4 +102,10 @@ object Constants {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
+
+	val JACKEY: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "jackeyfont.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
 }
