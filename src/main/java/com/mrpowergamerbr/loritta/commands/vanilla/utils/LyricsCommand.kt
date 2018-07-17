@@ -24,11 +24,20 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 	}
 
 	override fun getUsage(): String {
-		return "url conteúdo"
+		return "artista - nome da música"
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("she - Atomic")
+		return listOf(
+				"she - Atomic",
+				"she - Chiptune Memories",
+				"C418 - tsuki no koibumi",
+				"MC Hariel - Tá Fácil Dizer Que Me Ama",
+				"Jack Ü - Jungle Bae",
+				"Pusher - Clear",
+				"Sega - Sonic Boom",
+				"Macklemore & Ryan Lewis - White Walls"
+		)
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
@@ -52,7 +61,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			if (songInfo == null) {
 				context.reply(
 						LoriReply(
-								"Eu não consegui encontrar a música... Desculpe pela inconveniência",
+								"${locale["LYRICS_CouldntFind"]} ${locale["ERROR_SorryForTheInconvenience"]} \uD83D\uDE2D",
 								Constants.ERROR
 						)
 				)
@@ -66,8 +75,14 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			// Para ficar melhor para ver, nós iremos separar em colunas
 			val columns = divideLyricsInColumns(compactLyrics)
 
-			val lyricFont = Constants.VOLTER.deriveFont(18f)
-			val fallbackFont = Constants.JACKEY.deriveFont(18f)
+			val useHighResolution = 3 > columns.size // Para evitar OutOfMemoryExceptions, vamos fazer fallback de resolução
+			val fontSize = if (useHighResolution) 18f else 9f
+			val initialImageHeight = if (useHighResolution) 22 else 11
+			val blankHeight = if (useHighResolution) 6 else 3
+			val outlinePadding = if (useHighResolution) 2 else 1
+
+			val lyricFont = Constants.VOLTER.deriveFont(fontSize)
+			val fallbackFont = Constants.JACKEY.deriveFont(fontSize)
 
 			val c = Canvas() // Canvas funciona até em headless mode, e é um jeito para a gente conseguir pegar as font metrics da fonte!
 			val lyricFontMetrics = c.getFontMetrics(lyricFont)
@@ -80,11 +95,11 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 				imageWidth += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 4
 			}
 
-			var imageHeight = 22
+			var imageHeight = initialImageHeight
 
 			for (line in columns.sortedByDescending { it.size }[0]) { // Agora nós iremos pegar a coluna que tem mais letras
 				if (line.isBlank()) {
-					imageHeight += 6
+					imageHeight += blankHeight
 					continue
 				}
 				imageHeight += lyricFontMetrics.height
@@ -107,13 +122,13 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			graphics.font = lyricFont
 			graphics.color = Color.BLACK
 			var x = 2
-			var y = 22
+			var y = initialImageHeight
 
 			for (column in columns) {
 				val originalX = x
 				for (line in column) {
 					if (line.isBlank()) {
-						y += 6
+						y += blankHeight
 						continue
 					}
 
@@ -125,10 +140,10 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 							graphics.font = fallbackFont
 						}
 
-						graphics.drawString(ch.toString(), x - 2, y)
-						graphics.drawString(ch.toString(), x + 2, y)
-						graphics.drawString(ch.toString(), x, y + 2)
-						graphics.drawString(ch.toString(), x, y - 2)
+						graphics.drawString(ch.toString(), x - outlinePadding, y)
+						graphics.drawString(ch.toString(), x + outlinePadding, y)
+						graphics.drawString(ch.toString(), x, y + outlinePadding)
+						graphics.drawString(ch.toString(), x, y - outlinePadding)
 
 						graphics.color = Color.WHITE
 						graphics.drawString(ch.toString(), x, y)
@@ -141,7 +156,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 				val biggestString = column.maxBy { it.length }!!
 				x += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 2
-				y = 22
+				y = initialImageHeight
 			}
 
 			val embed = EmbedBuilder().apply {
@@ -153,8 +168,11 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			context.sendFile(
 					image,
 					"lyrics.png",
+					context.getAsMention(true),
 					embed.build()
 			)
+		} else {
+			context.explain()
 		}
 	}
 
