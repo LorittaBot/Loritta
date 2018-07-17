@@ -26,7 +26,9 @@ class UpdateAvailableCallbackController {
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
 	fun handle(req: Request, res: Response): String {
-		val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastBuild/api/json")
+		Thread.sleep(1000)
+
+		val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/api/json")
 				.userAgent(Constants.USER_AGENT)
 				.body()
 
@@ -127,7 +129,7 @@ class UpdateAvailableCallbackController {
 		val firstArtifact = artifacts.first()
 		val relativePath = firstArtifact["relativePath"].string
 
-		val byteArray = URL("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/artifact/${relativePath}")
+		val byteArray = URL("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/artifact/$relativePath")
 				.readBytes()
 
 		File(Loritta.FOLDER, "Loritta-Update.jar").writeBytes(byteArray)
