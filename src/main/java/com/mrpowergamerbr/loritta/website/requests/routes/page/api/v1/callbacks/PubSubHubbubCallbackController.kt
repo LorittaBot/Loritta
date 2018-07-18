@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
@@ -48,7 +47,7 @@ class PubSubHubbubCallbackController {
 
 		val originalSignature = originalSignatureHeader.value()
 
-		var output = if (originalSignature.startsWith("sha1=")) {
+		val output = if (originalSignature.startsWith("sha1=")) {
 			val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
 			val mac = Mac.getInstance("HmacSHA1")
 			mac.init(signingKey)
@@ -172,17 +171,6 @@ class PubSubHubbubCallbackController {
 
 					val gameId = obj["game_id"].string
 					val title = obj["title"].string
-
-					val storedEpoch = CreateTwitchWebhooksTask.lastNotified[userLogin]
-
-					if (storedEpoch != null) {
-						// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
-						// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
-						// 2. Se o último vídeo foi enviado depois do último vídeo enviado
-						if (System.currentTimeMillis() >= (60000 - storedEpoch)) {
-							return
-						}
-					}
 
 					logger.info("Recebi notificação de livestream (Twitch) $title ($gameId) de $userLogin")
 

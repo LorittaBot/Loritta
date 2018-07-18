@@ -9,14 +9,9 @@ import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateTwitchWebhooksTask : Runnable {
-	companion object {
-		val lastNotified = ConcurrentHashMap<String, Long>()
-	}
-
 	val logger by logger()
 	var twitchWebhooks: MutableList<TwitchWebhook>? = null
 
@@ -58,12 +53,6 @@ class CreateTwitchWebhooksTask : Runnable {
 					}
 					list.add(server)
 				}
-			}
-
-			userLogins.forEach {
-				// Caso o channel ID não esteja na map de lastNotified, vamos salvar o tempo atual nela (para evitar que anuncie coisas "do passado")
-				if (!lastNotified.containsKey(it))
-					lastNotified[it] = System.currentTimeMillis()
 			}
 
 			// Transformar todos os nossos user logins em user IDs, para que seja usado depois

@@ -30,7 +30,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		loritta.executor.execute {
 			try {
-				if (event.member == null) {
+				val member = event.member
+				if (member == null) {
 					logger.error("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
 					logger.error("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
 					return@execute
@@ -40,7 +41,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 				val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
+				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
 				lorittaProfile.isAfk = false
 				lorittaProfile.afkReason = null
@@ -49,15 +50,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
-					var response = locale["MENTION_RESPONSE", event.message.author.asMention, serverConfig.commandPrefix]
+					var response = locale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
 						// Usuário não pode usar comandos
 
 						// Qual é o cargo que não permite utilizar os meus comandos?
-						val roles = event.member.roles.toMutableList()
+						val roles = member.roles.toMutableList()
 
-						val everyone = event.member.guild.publicRole
+						val everyone = member.guild.publicRole
 						if (everyone != null) {
 							roles.add(everyone)
 						}
@@ -80,7 +81,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					} else {
 						if (serverConfig.blacklistedChannels.contains(event.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 							// Vamos pegar um canal que seja possível usar comandos
-							val useCommandsIn = event.guild.textChannels.firstOrNull { !serverConfig.blacklistedChannels.contains(it.id) && it.canTalk(event.member) }
+							val useCommandsIn = event.guild.textChannels.firstOrNull { !serverConfig.blacklistedChannels.contains(it.id) && it.canTalk(member) }
 
 							response = if (useCommandsIn != null) {
 								// Canal não bloqueado!
@@ -108,7 +109,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
-						event.member,
+						member,
 						event.message,
 						event.messageId,
 						event.guild,
