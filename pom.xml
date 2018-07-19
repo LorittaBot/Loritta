@@ -134,6 +134,11 @@
             <version>0.2</version>
         </dependency>
         <dependency>
+            <groupId>com.github.cslee00</groupId>
+            <artifactId>digitalascent-flogger-logback</artifactId>
+            <version>release~0.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby</artifactId>
             <version>1.4.1</version>
