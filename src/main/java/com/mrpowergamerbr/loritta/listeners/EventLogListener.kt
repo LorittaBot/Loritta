@@ -302,7 +302,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						return@execute
 
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.message.id)).first()
-					if (storedMessage != null) {
+					if (storedMessage != null && storedMessage.content != event.message.contentRaw) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
