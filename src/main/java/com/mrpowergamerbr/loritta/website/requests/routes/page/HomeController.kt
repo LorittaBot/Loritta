@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page
 
+import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
 import org.jooby.Request
@@ -10,6 +11,8 @@ import org.jooby.mvc.Path
 
 @Path("/:localeId")
 class HomeController {
+	val logger by logger()
+
 	@GET
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, chain: Route.Chain, localeId: String) {

@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.website
 
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.logger
 import java.io.File
 
 object OptimizeAssets {
-	val logger = FluentLogger.forEnclosingClass()
+	val logger by logger()
 	var cssAssetVersion = 0L
 
 	/**
@@ -76,6 +76,6 @@ object OptimizeAssets {
 		val myProcess = ProcessBuilder("node", *args.toTypedArray()).start()
 
 		myProcess.waitFor()
-		logger.atInfo().log("Arquivo CSS atualizado! (Versão atual: %s) - %s arquivos CSS foram juntados e otimizados!", cssAssetVersion, assetOrderList.size)
+		logger.info("Arquivo CSS atualizado! (Versão atual: ${cssAssetVersion}) - ${assetOrderList.size} arquivos CSS foram juntados e otimizados!")
 	}
 }

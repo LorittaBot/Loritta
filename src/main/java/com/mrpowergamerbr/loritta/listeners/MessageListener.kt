@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -20,7 +19,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.regex.Pattern
 
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
-	val logger = FluentLogger.forEnclosingClass()
+	val logger by logger()
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
@@ -33,7 +32,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val member = event.member
 				if (member == null) {
-					logger.atFine().log("Membro %s saiu do servidor antes de eu poder processar a mensagem!", event.author)
+					logger.error("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
+					logger.error("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
 					return@execute
 				}
 
@@ -178,7 +178,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 			} catch (e: Exception) {
-				logger.atSevere().withCause(e).log("[%s] Erro ao processar mensagem de %s (%s - %s)", event.guild.name, event.author.name, event.author.id, event.message.contentRaw)
+				logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
 				LorittaUtilsKotlin.sendStackTrace(event.message, e)
 			}
 		}
@@ -293,7 +293,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun isOwnerBanned(ownerProfile: LorittaProfile, guild: Guild): Boolean {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
 			if (ownerProfile.userId != Loritta.config.ownerId) { // E ele não é o dono do bot!
-				logger.atInfo().log("Eu estou saindo do servidor %s (%s) já que o dono %s está banido de me usar! ᕙ(⇀‸↼‶)ᕗ", guild.name, guild.id, ownerProfile.userId)
+				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}

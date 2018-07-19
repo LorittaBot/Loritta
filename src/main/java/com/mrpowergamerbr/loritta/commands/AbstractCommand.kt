@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
@@ -11,13 +10,14 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	companion object {
-		val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 	}
 
 	val cooldown = if (needsToUploadFiles()) 5000 else 2500
@@ -134,9 +134,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val start = System.currentTimeMillis()
 
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					logger.atInfo().log("(%s -> %s) %s#%s (%s): %s", ev.message.guild.name, ev.message.channel.name, ev.author.name, ev.author.discriminator, ev.author.id, ev.message.contentDisplay)
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - Processando...")
 				} else {
-					logger.atInfo().log("(Direct Message) %s#%s (%s): %s", ev.author.name, ev.author.discriminator, ev.author.id, ev.message.contentDisplay)
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - Processando...")
 				}
 
 				var locale = locale
@@ -348,13 +348,13 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					logger.atInfo().log("(%s -> %s) %s#%s (%s): %s - OK! Processado em %sms", ev.message.guild.name, ev.message.channel.name, ev.author.name, ev.author.discriminator, ev.author.id, ev.message.contentDisplay, end - start)
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
 				} else {
-					logger.atInfo().log("(Direct Message) %s#%s (%s): %s - OK! Processado em %sms", ev.author.name, ev.author.discriminator, ev.author.id, ev.message.contentDisplay, end - start)
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
 				}
 				return true
 			} catch (e: Exception) {
-				logger.atSevere().withCause(e).log("Exception ao executar comando %s", this.javaClass.simpleName)
+				logger.error("Exception ao executar comando ${this.javaClass.simpleName}", e)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado

@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
@@ -9,6 +8,7 @@ import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -22,9 +22,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
+	val logger by logger()
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		if (e.user.isBot) // Ignorar reactions de bots
@@ -42,7 +40,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						try {
 							functions.onReactionAdd!!.invoke(e)
 						} catch (e: Exception) {
-							logger.atSevere().withCause(e).log("Erro ao tentar processar onReactionAdd")
+							logger.error("Erro ao tentar processar onReactionAdd", e)
 						}
 					}
 				}
@@ -52,7 +50,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						try {
 							functions.onReactionAddByAuthor!!.invoke(e)
 						} catch (e: Exception) {
-							logger.atSevere().withCause(e).log("Erro ao tentar processar onReactionAddByAuthor")
+							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
 						}
 					}
 				}
@@ -64,7 +62,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						try {
 							functions.onReactionRemove!!.invoke(e)
 						} catch (e: Exception) {
-							logger.atSevere().withCause(e).log("Erro ao tentar processar onReactionRemove")
+							logger.error("Erro ao tentar processar onReactionRemove", e)
 						}
 					}
 				}
@@ -74,7 +72,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						try {
 							functions.onReactionRemoveByAuthor!!.invoke(e)
 						} catch (e: Exception) {
-							logger.atSevere().withCause(e).log("Erro ao tentar processar onReactionRemoveByAuthor")
+							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
 						}
 					}
 				}
@@ -91,7 +89,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						StarboardModule.handleStarboardReaction(e, conf)
 					}
 				} catch (exception: Exception) {
-					logger.atSevere().withCause(exception).log("[%s] Starboard %s", e.guild.name, e.member.user.name)
+					logger.error("[${e.guild.name}] Starboard ${e.member.user.name}", exception)
 					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 				}
 			}
@@ -167,7 +165,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						MuteCommand.spawnRoleRemovalThread(event.guild, loritta.getLocaleById(conf.localeId), conf, conf.getUserData(event.user.id))
 				}
 			} catch (e: Exception) {
-				logger.atSevere().withCause(e).log("[%s] Ao entrar no servidor %s", event.guild.name, event.user.name)
+				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
 			}
 		}
@@ -199,7 +197,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					WelcomeModule.handleLeave(event, conf)
 				}
 			} catch (e: Exception) {
-				logger.atSevere().withCause(e).log("[%s] Ao sair do servidor %s", event.guild.name, event.user.name)
+				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
 		}

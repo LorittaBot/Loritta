@@ -1,65 +1,61 @@
-package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
+package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.nullBool
-import com.github.salomonbrys.kotson.nullLong
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
-import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
-import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
-import org.jooby.Status
-import org.jooby.mvc.POST
-import org.jooby.mvc.Path
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-@Path("/api/v1/callbacks/mixer")
-class MixerCallbackController {
+class APIMixerWebhookView : NoVarsView() {
 	val logger by logger()
 
-	@POST
-	@LoriDoNotLocaleRedirect(true)
-	fun handle(req: Request, res: Response) {
+	override fun handleRender(req: Request, res: Response, path: String): Boolean {
+		return path.matches(Regex("^/api/v1/mixer-webhook"))
+	}
+
+	private fun bytesToHex(hash: ByteArray): String {
+		val hexString = StringBuffer()
+		for (i in hash.indices) {
+			val hex = Integer.toHexString(0xff and hash[i].toInt())
+			if (hex.length == 1) {
+				hexString.append('0')
+			}
+			hexString.append(hex)
+		}
+		return hexString.toString()
+	}
+
+	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 
 		val response = req.body().value()
 
 		logger.info("Recebi payload do Mixer! ${response}")
 
-		val originalSignatureHeader = req.header("Poker-Signature")
-
-		if (!originalSignatureHeader.isSet) {
-			res.status(Status.UNAUTHORIZED)
-			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Poker-Signature Header from Request")
-			res.send(payload.toString())
-			return
-		}
-
-		val originalSignature = originalSignatureHeader.value()
+		val originalSignature = req.header("Poker-Signature").value()
 
 		val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA384")
 		val mac = Mac.getInstance("HmacSHA384")
 		mac.init(signingKey)
 		val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
-		val output = "sha384=" + doneFinal.bytesToHex().toUpperCase()
+		val output = "sha384=" + bytesToHex(doneFinal).toUpperCase()
 
 		logger.info("Assinatura Original: ${originalSignature}")
 		logger.info("Nossa Assinatura   : ${output}")
 		logger.info("Sucesso?           : ${originalSignature == output}")
 
 		if (originalSignature != output) {
-			res.status(Status.UNAUTHORIZED)
-			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Poker-Signature Content from Request")
-			res.send(payload.toString())
-			return
+			logger.error("Assinatura do Webhook recebido não é idêntica a nossa assinatura!!!")
+			return jsonObject(
+					"api:code" to LoriWebCodes.UNAUTHORIZED
+			).toString()
 		}
 
 		val json = jsonParser.parse(response).obj
@@ -154,7 +150,8 @@ class MixerCallbackController {
 			}
 		}
 
-		res.status(Status.NO_CONTENT)
-		res.send("")
+		return jsonObject(
+				"api:code" to LoriWebCodes.SUCCESS
+		).toString()
 	}
 }

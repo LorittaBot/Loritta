@@ -36,7 +36,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
 			val requiredCount = quantity.toLong() * 250
-			logger.atInfo().log("%s irá comprar %s tickets por %s", context.userHandle.id, quantity, requiredCount)
+			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
 
 			synchronized(this) {
 				val lorittaProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
@@ -49,7 +49,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						RaffleThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 					}
 
-					logger.atInfo().log("%s comprou %s tickets por %s! (Antes ele possuia %s) sonhos!", context.userHandle.id, quantity, requiredCount, lorittaProfile.dreams + requiredCount)
+					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.dreams + requiredCount}) sonhos!")
 
 					loritta.raffleThread.save()
 

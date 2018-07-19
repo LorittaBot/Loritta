@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
@@ -21,9 +20,7 @@ import kotlin.concurrent.thread
 
 @Path("/api/v1/callbacks/update-available")
 class UpdateAvailableCallbackController {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
+	val logger by logger()
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)
@@ -137,8 +134,7 @@ class UpdateAvailableCallbackController {
 
 			File(Loritta.FOLDER, "Loritta-Update.jar").writeBytes(byteArray)
 
-			logger.atInfo().log("Recebi que um update está disponível no Jenkins! Irei reiniciar para aplicar as novas mudanças recebidas!")
-
+			logger.info("Recebi que um update está disponível no Jenkins! Irei reiniciar para aplicar as novas mudanças recebidas!!!")
 			loritta.website.stop()
 			lorittaShards.shards.forEach {
 				it.shutdownNow()

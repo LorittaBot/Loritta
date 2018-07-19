@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
@@ -9,14 +8,12 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import java.awt.Color
+import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
 
-class BomDiaECia {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
+class BomDiaECia() {
 	val thread: BomDiaECiaThread = BomDiaECiaThread()
+
 	init {
 		thread.start()
 	}
@@ -52,11 +49,13 @@ class BomDiaECia {
 
 	var currentText = randomTexts[0]
 
+	val logger by logger()
+
 	fun handleBomDiaECia(forced: Boolean) {
 		if (forced)
 			thread.interrupt()
 
-		logger.atInfo().log("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
+		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
 
 		val validTextChannels = getActiveTextChannels()
 

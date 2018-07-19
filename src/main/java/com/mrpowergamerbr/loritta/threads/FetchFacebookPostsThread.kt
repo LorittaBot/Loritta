@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
+import org.slf4j.LoggerFactory
 
 class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(FetchFacebookPostsThread::class.java)
 	}
 
 	override fun run() {
@@ -18,7 +18,7 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 	}
 
 	fun fetchPosts() {
-		logger.atInfo().log("Pegando posts do Facebook...")
+		logger.info("Pegando posts do Facebook...")
 		try {
 			val pagePostsSAM = LorittaUtilsKotlin.getRandomPostsFromPage("samemes2", 25)
 
@@ -28,7 +28,7 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 				loritta.southAmericaMemesPageCache = loritta.southAmericaMemesPageCache.subList(19, loritta.southAmericaMemesPageCache.size)
 			}
 		} catch (e: Exception) {
-			logger.atSevere().log("Erro ao pegar posts do Facebook!", e)
+			logger.error("Erro ao pegar posts do Facebook!", e)
 		}
 	}
 }

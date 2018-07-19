@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mongodb.MongoWaitQueueFullException
@@ -32,6 +31,8 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
 import org.jsoup.safety.Whitelist
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -42,6 +43,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
+
+fun <R : Any> R.logger(): Lazy<Logger> {
+	return lazy { LoggerFactory.getLogger(getClassName(this.javaClass)) }
+}
+fun <T : Any> getClassName(clazz: Class<T>): String {
+	return clazz.name.removeSuffix("\$Companion")
+}
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
@@ -214,7 +222,7 @@ enum class NSFWResponse {
 }
 
 object LorittaUtilsKotlin {
-	private val logger = FluentLogger.forEnclosingClass()
+	val logger by logger()
 
 	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
 		if (profile.isBanned) {
@@ -247,7 +255,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun getImageStatus(url: String): NSFWResponse {
-		val response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
+		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
 				.header("X-Mashape-Key", Loritta.config.mashapeKey)
 				.header("Accept", "application/json")
 				.acceptJson()
@@ -267,7 +275,7 @@ object LorittaUtilsKotlin {
 				return NSFWResponse.NSFW
 			}
 		} catch (e: Exception) {
-			logger.atWarning().log("Ignorando verificação de conteúdo NSFW %s - Causa: %s - Resposta %s", url, e.message, response)
+			logger.info("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
 			return NSFWResponse.EXCEPTION
 		}
 		return NSFWResponse.OK
@@ -306,7 +314,7 @@ object LorittaUtilsKotlin {
 				track.metadata.put("thumbnail", snippet["thumbnails"]["high"]["url"].string)
 				track.metadata.put("channelIcon", channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string)
 			} catch (e: Exception) {
-				logger.atSevere().withCause(e).log("Erro ao pegar informações sobre %s!", track.track)
+				logger.error("Erro ao pegar informações sobre ${track.track}!", e)
 			}
 		}
 	}
@@ -608,14 +616,14 @@ object LorittaUtilsKotlin {
 		val guild = lorittaShards.getGuildById("297732013006389252")
 
 		if (guild == null) {
-			logger.atSevere().log("Não foi possível enviar stacktrace: Guild inexistente!")
+			logger.error("Não foi possível enviar stacktrace: Guild inexistente!")
 			return
 		}
 
 		val textChannel = guild.getTextChannelById("336834673441243146")
 
 		if (textChannel == null) {
-			logger.atSevere().log("Não foi possível enviar stacktrace: Canal de texto inexistente!")
+			logger.error("Não foi possível enviar stacktrace: Canal de texto inexistente!")
 			return
 		}
 
@@ -647,7 +655,7 @@ object LorittaUtilsKotlin {
 
 		if (stackTraceCount == 4) {
 			stackTraceCount++
-			logger.atInfo().log("Ignorando exceptions devido ao grande número de exceptions recebidas em um curto período de tempo!")
+			logger.info("Ignorando exceptions devido ao grande número de exceptions recebidas em um curto período de tempo!")
 			return
 		}
 

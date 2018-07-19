@@ -64,7 +64,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						profile.dreams += randomPrize
 						loritta save profile
 
-						logger.atInfo().log("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")
+						logger.info("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")
 
 						context.reply(
 								LoriReply(

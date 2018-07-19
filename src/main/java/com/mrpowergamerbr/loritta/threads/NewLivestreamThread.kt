@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -11,6 +10,7 @@ import com.mrpowergamerbr.loritta.livestreams.TwitchUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
@@ -23,7 +23,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			try {
 				checkNewVideos()
 			} catch (e: Exception) {
-				logger.atSevere().log("Erro ao verificar novas streams do Twitch!", e)
+				logger.error("Erro ao verificar novas streams do Twitch!", e)
 			}
 			Thread.sleep(5000); // Só 5s de delay!
 		}
@@ -43,9 +43,9 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				Filters.gt("livestreamConfig.channels", listOf<Any>())
 		).toMutableList()
 
-		logger.atInfo().log("Criando webhooks de serviços de livestreams...")
+		logger.info("Criando webhooks de serviços de livestreams...")
 
-		logger.atInfo().log("Verificando webhooks do Mixer...")
+		logger.info("Verificando webhooks do Mixer...")
 		val channelNamePattern = Regex("mixer\\.com\\/([A-z0-9]+)").toPattern()
 
 		val channelIds = mutableSetOf<String>()
@@ -77,7 +77,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 								val channelId = jsonParser.parse(payload).obj["id"].nullLong
 
 								if (channelId != null) {
-									logger.atInfo().log("ID do canal de ${channelName} é ${channelId}!")
+									logger.info("ID do canal de ${channelName} é ${channelId}!")
 									channelId
 								} else {
 									-1
@@ -93,16 +93,16 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				}
 			}
 
-			logger.atInfo().log("Atualmente eu conheço ${channelIds.size} canais no Mixer!")
+			logger.info("Atualmente eu conheço ${channelIds.size} canais no Mixer!")
 
 			val sameValues = channelIds.equals(mixerWebhook?.channelIds)
 
 			if (!sameValues && channelIds.isNotEmpty()) {
-				logger.atInfo().log("O set não contém os mesmos valores! Nós iremos deletar a webhook atual e criar uma nova...")
+				logger.info("O set não contém os mesmos valores! Nós iremos deletar a webhook atual e criar uma nova...")
 
 				if (mixerWebhook != null) {
 					val mixerWebhook = mixerWebhook!!
-					logger.atInfo().log("Desativando webhook do Mixer antigo... ${mixerWebhook.hookId}")
+					logger.info("Desativando webhook do Mixer antigo... ${mixerWebhook.hookId}")
 
 					val deactivatedBody = HttpRequest.post("https://mixer.com/api/v1/hooks/${mixerWebhook.hookId}/deactivate")
 							.acceptJson()
@@ -111,10 +111,10 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 							.send("{}") // Como é um POST, nós precisamos enviar alguma coisa, caso contrário, irá dar erro
 							.body()
 
-					logger.atInfo().log("Webhook do Mixer desativado com sucesso! ${mixerWebhook.hookId} ${deactivatedBody}")
+					logger.info("Webhook do Mixer desativado com sucesso! ${mixerWebhook.hookId} ${deactivatedBody}")
 				}
 
-				logger.atInfo().log("Criando uma nova Webhook do Mixer!")
+				logger.info("Criando uma nova Webhook do Mixer!")
 
 				val events = mutableListOf<String>()
 
@@ -136,7 +136,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 						.send(json.toString())
 						.body()
 
-				logger.atInfo().log("Recebido ao tentar criar uma Webhook: ${payload}")
+				logger.info("Recebido ao tentar criar uma Webhook: ${payload}")
 				val receivedJson = jsonParser.parse(payload).obj
 
 				if (receivedJson["errorCode"].nullInt == 4010) {
@@ -154,14 +154,14 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 					this.channelIds.addAll(channelIds)
 				}
 
-				logger.atInfo().log("Nova Webhook do Mixer criada com sucesso!")
+				logger.info("Nova Webhook do Mixer criada com sucesso!")
 
 				mixerWebhookFile.writeText(
 						gson.toJson(mixerWebhook)
 				)
 			}
 		} catch (e: Exception) {
-			logger.atSevere().log("Erro ao verificar livestreams do Mixer!", e)
+			logger.error("Erro ao verificar livestreams do Mixer!", e)
 		}
 	}
 
@@ -169,7 +169,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		var isLivestreaming = mutableSetOf<String>()
 		val gameInfoCache = ConcurrentHashMap<String, GameInfo>()
 		val displayNameCache = ConcurrentHashMap<String, String>()
-		private val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(NewLivestreamThread::class.java)
 
 		// ===[ MIXER ]===
 		val isMixerLivestreaming = mutableSetOf<String>()
@@ -184,7 +184,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			try {
 				val data = response["data"].array
 
-				logger.atInfo().log("getUserDisplayName payload contém ${data.size()} objetos!")
+				logger.info("getUserDisplayName payload contém ${data.size()} objetos!")
 
 				if (data.size() == 0) {
 					return null
@@ -193,7 +193,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val channel = data[0].obj
 				return channel["display_name"].string
 			} catch (e: IllegalStateException) {
-				logger.atSevere().log("Estado inválido ao manipular payload de getUserDisplayName!", e)
+				logger.error("Estado inválido ao manipular payload de getUserDisplayName!", e)
 				return null
 			}
 		}

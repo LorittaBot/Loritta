@@ -1,14 +1,10 @@
 package com.mrpowergamerbr.loritta.livestreams
 
 import com.github.salomonbrys.kotson.fromJson
-import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
@@ -16,10 +12,7 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateTwitchWebhooksTask : Runnable {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
+	val logger by logger()
 	var twitchWebhooks: MutableList<TwitchWebhook>? = null
 
 	override fun run() {
@@ -34,7 +27,7 @@ class CreateTwitchWebhooksTask : Runnable {
 
 			val list = mutableListOf<ServerConfig>()
 
-			logger.atInfo().log("Verificando canais da Twitch de %s servidores...", servers.count())
+			logger.info("Verificando canais da Twitch de ${servers.count()} servidores...")
 
 			servers.iterator().use {
 				while (it.hasNext()) {
@@ -74,7 +67,7 @@ class CreateTwitchWebhooksTask : Runnable {
 
 			val notCreatedYetChannels = mutableListOf<String>()
 
-			logger.atInfo().log("Existem %s canais na Twitch que eu irei verificar! Atualmente existem %s webhooks criadas!", userLogins.size, twitchWebhooks!!.size)
+			logger.info("Existem ${userLogins.size} canais na Twitch que eu irei verificar! Atualmente existem ${twitchWebhooks!!.size} webhooks criadas!")
 
 			for (userLogin in userLogins) {
 				val webhook = twitchWebhooks!!.firstOrNull { it.userLogin == userLogin }
@@ -85,13 +78,13 @@ class CreateTwitchWebhooksTask : Runnable {
 				}
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
-					logger.atFine().log("Webhook de %s expirou! Nós iremos recriar ela...", userLogin)
+					logger.info("Webhook de ${userLogin} expirou! Nós iremos recriar ela...")
 					twitchWebhooks!!.remove(webhook)
 					notCreatedYetChannels.add(userLogin)
 				}
 			}
 
-			logger.atFine().log("Irei criar ${notCreatedYetChannels.size} webhooks para canais da Twitch!", notCreatedYetChannels.size)
+			logger.info("Irei criar ${notCreatedYetChannels.size} webhooks para canais da Twitch!")
 
 			val webhooksToBeCreatedCount = notCreatedYetChannels.size
 
@@ -125,11 +118,11 @@ class CreateTwitchWebhooksTask : Runnable {
 
 						val code = request.code()
 						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
-							logger.atSevere().log("Erro ao tentar criar Webhook de %s! Código: %s - %s", userLogin, code, request.body())
+							logger.error("Erro ao tentar criar Webhook de ${userLogin}! Código: ${code} - ${request.body()}")
 							return@async null
 						}
 
-						logger.atFine().log("Webhook de %s criada com sucesso! Atualmente %s/%s webhooks foram criadas!", webhookCount.incrementAndGet(), webhooksToBeCreatedCount)
+						logger.info("Webhook de $userLogin criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!")
 						return@async TwitchWebhook(
 								userId,
 								userLogin,
@@ -137,7 +130,7 @@ class CreateTwitchWebhooksTask : Runnable {
 								864000
 						)
 					} catch (e: Exception) {
-						logger.atSevere().withCause(e).log("Erro ao criar subscription na Twitch")
+						logger.error("Erro ao criar subscription na Twitch", e)
 						null
 					}
 				}
@@ -155,7 +148,7 @@ class CreateTwitchWebhooksTask : Runnable {
 				twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
 			}
 		} catch (e: Exception) {
-			logger.atSevere().withCause(e).log("Erro ao processar vídeos da Twitch")
+			logger.error("Erro ao processar vídeos da Twitch", e)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
@@ -11,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
@@ -25,7 +25,7 @@ class RaffleThread : Thread("Raffle Thread") {
 		var started: Long = System.currentTimeMillis()
 		// user ID + locale ID
 		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
-		private val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(RaffleThread::class.java)
 	}
 
 	override fun run() {
@@ -55,7 +55,12 @@ class RaffleThread : Thread("Raffle Thread") {
 		json["lastWinnerPrize"] = lastWinnerPrize
 		json["userIds"] = Loritta.GSON.toJsonTree(userIds)
 
-		logger.atFine().log("Salvando raffle.json\nIniciou às: %s\nÚltimo vencedor: %s\nPrémio de último vencedor: %s\nTickets: %s", started, lastWinnerId, lastWinnerPrize, userIds.size)
+		logger.info("""Salvando raffle.json...
+			|Iniciou às: $started
+			|Último vencedor: $lastWinnerId
+			|Prémio do último vencedor: $lastWinnerPrize
+			|Tickets: ${userIds.size}
+		""".trimMargin())
 
 		loteriaFile.writeText(json.toString())
 	}
@@ -73,7 +78,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			lastWinnerPrize = money
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(winnerId)
-			logger.atInfo().log("%s ganhou %s sonhos (antes ele possuia %s sonhos) na Rifa!", lastWinnerId, lastWinnerPrize, lorittaProfile.dreams)
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.dreams} sonhos) na Rifa!")
 
 			lorittaProfile.dreams += money
 			loritta save lorittaProfile

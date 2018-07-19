@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -19,10 +18,6 @@ import org.jooby.Response
 import java.util.*
 
 class APILoriDailyRewardView : NoVarsView() {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/economy/daily-reward"))
 	}
@@ -113,9 +108,9 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		val status = MiscUtils.verifyAccount(userIdentification, ip)
 
-		logger.atInfo().log("AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}")
-		logger.atInfo().log("Is verified? ${userIdentification.verified}")
-		logger.atInfo().log("Email ${userIdentification.email}")
+		Loritta.logger.info("AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}")
+		Loritta.logger.info("Is verified? ${userIdentification.verified}")
+		Loritta.logger.info("Email ${userIdentification.email}")
 
 		if (!status.canAccess) {
 			val payload = JsonObject()
@@ -179,7 +174,7 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		loritta save lorittaProfile
 
-		logger.atInfo().log("${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}")
+		Loritta.logger.info("${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}")
 
 		return payload.toString()
 	}

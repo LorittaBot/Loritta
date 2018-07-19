@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
+import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,7 +14,7 @@ import java.util.*
 class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 	companion object {
 		val lastItemTime = HashMap<String, RssFeedCheck>(); // HashMap usada para guardar a data do útimo item na RSS
-		private val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(NewRssFeedThread::class.java)
 	}
 
 	override fun run() {
@@ -24,7 +24,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 			try {
 				checkRssFeeds();
 			} catch (e: Exception) {
-				logger.atSevere().log("Erro ao verificar novas RSS feeds!", e)
+				logger.error("Erro ao verificar novas RSS feeds!", e)
 			}
 			Thread.sleep(10000); // Só 10s de delay!
 		}
@@ -35,7 +35,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 				Filters.gt("rssFeedConfig.feeds", listOf<Any>())
 		)
 
-		logger.atInfo().log("Verificando RSS feeds de ${servers.count()} servidores...")
+		logger.info("Verificando RSS feeds de ${servers.count()} servidores...")
 
 		try {
 			servers.iterator().use {
@@ -116,17 +116,17 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 										}
 									}
 								} catch (e: Exception) {
-									logger.atSevere().log("Erro ao atualizar RSS feed!", e)
+									logger.error("Erro ao atualizar RSS feed!", e)
 								}
 							}
 						}
 					} catch (e: Exception) {
-						logger.atSevere().log("Erro ao processar RSS feeds!", e)
+						logger.error("Erro ao processar RSS feeds!", e)
 					}
 				}
 			}
 		} catch (e: Exception) {
-			logger.atSevere().log("Erro ao pegar RSS feeds!", e)
+			logger.error("Erro ao pegar RSS feeds!", e)
 		}
 	}
 

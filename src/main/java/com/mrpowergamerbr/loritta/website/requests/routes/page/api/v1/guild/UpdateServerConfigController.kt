@@ -21,6 +21,8 @@ import org.jooby.mvc.*
 
 @Path("/api/v1/guild/:guildId/config")
 class UpdateServerConfigController {
+	val logger by logger()
+
 	@GET
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)

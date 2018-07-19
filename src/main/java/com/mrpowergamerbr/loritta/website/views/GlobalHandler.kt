@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.website.views
 
 import com.github.salomonbrys.kotson.fromJson
 import com.google.common.collect.Lists
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.*
 import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
 import org.jooby.Request
 import org.jooby.Response
+import org.slf4j.LoggerFactory
 import java.lang.management.ManagementFactory
 import java.text.MessageFormat
 import java.util.*
@@ -30,7 +31,8 @@ import java.util.concurrent.TimeUnit
 object GlobalHandler {
 	var views = mutableListOf<AbstractView>()
 	var apiViews = mutableListOf<NoVarsView>()
-	private val logger = FluentLogger.forEnclosingClass()
+
+	val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 
 	@Deprecated(message = "Hacky, hacky, hacky!!!")
 	fun render(req: Request, res: Response): String {
@@ -188,7 +190,7 @@ object GlobalHandler {
 			views.filter { it.handleRender(req, res, pathNoLanguageCode, variables) }
 					.forEach { return it.render(req, res, pathNoLanguageCode, variables) }
 		} catch (e: Exception) {
-			logger.atSevere().log("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
+			logger.error("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
 			throw e
 		}
 
@@ -226,6 +228,7 @@ object GlobalHandler {
 		apiViews.add(APISaveSelfUserProfileView())
 		apiViews.add(APIBumpServerView())
 		// apiViews.add(APILoriTransferBalanceView())
+		apiViews.add(APIMixerWebhookView())
 
 		views.add(HomeView())
 		views.add(TranslationView())

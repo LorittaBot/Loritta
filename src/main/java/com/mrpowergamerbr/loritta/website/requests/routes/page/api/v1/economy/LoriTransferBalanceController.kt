@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
@@ -21,9 +21,7 @@ import java.awt.Color
 
 @Path("/api/v1/economy/transfer-balance")
 class LoriTransferBalanceController {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
+	val logger by logger()
 
 	@POST
 	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
@@ -37,7 +35,7 @@ class LoriTransferBalanceController {
 		val json = JsonObject()
 
 		val receivedPayload = req.body().value()
-		logger.atInfo().log("Recebi pedido de transferência! ${receivedPayload}")
+		Loritta.logger.info("Recebi pedido de transferência! ${receivedPayload}")
 
 		val body = jsonParser.parse(receivedPayload).obj
 
@@ -115,7 +113,7 @@ class LoriTransferBalanceController {
 			return
 		}
 
-		logger.atInfo().log("Enviando requisição de transferências de sonhos ($quantity sonhos) para ${lorittaProfile.userId}, motivo: ${reason} - ID: ${guildId}")
+		Loritta.logger.info("Enviando requisição de transferências de sonhos ($quantity sonhos) para ${lorittaProfile.userId}, motivo: ${reason} - ID: ${guildId}")
 
 		val embed = EmbedBuilder()
 		embed.setTitle("Requisição de Transferência (${title})")
@@ -198,7 +196,7 @@ class LoriTransferBalanceController {
 					loritta save lorittaProfile
 					loritta save receiverProfile
 
-					logger.atInfo().log("${lorittaProfile.userId} teve $quantity sonhos (antes possuia $before sonhos) transferidos para ${receiverProfile.userId}. motivo: ${reason} - ID: ${guildId}")
+					Loritta.logger.info("${lorittaProfile.userId} teve $quantity sonhos (antes possuia $before sonhos) transferidos para ${receiverProfile.userId}. motivo: ${reason} - ID: ${guildId}")
 					return@onReactionAddByAuthor
 				}
 			}

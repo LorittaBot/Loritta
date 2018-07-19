@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.salomonbrys.kotson.set
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
@@ -12,10 +11,6 @@ import org.jooby.Status
 // Para evitar criações de objetos desncessários, nós podemos usar o NoVarsView, que não precisa de uma map com as variáveis para usar
 // Usado para a APIs do website da Loritta que não precisam de autenticação
 abstract class NoVarsRequireAuthView : NoVarsView() {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
 	override fun render(req: Request, res: Response, path: String): String {
 		val header = req.header("Lori-Authentication")
 		val auth = header.value("???")
@@ -25,11 +20,11 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 					(it.allowed.contains("*") || it.allowed.contains(path))
 		}.firstOrNull()
 
-		logger.atInfo().log("$auth está tentando acessar $path, utilizando key $validKey")
+		Loritta.logger.info("$auth está tentando acessar $path, utilizando key $validKey")
 		if (validKey != null) {
 			return renderProtected(req, res, path)
 		} else {
-			logger.atWarning().log("$auth foi rejeitado ao tentar acessar $path!")
+			Loritta.logger.info("$auth foi rejeitado ao tentar acessar $path!")
 			val response = JsonObject()
 			response["api:message"] = "UNAUTHORIZED"
 			response["api:code"] = LoriWebCodes.UNAUTHORIZED

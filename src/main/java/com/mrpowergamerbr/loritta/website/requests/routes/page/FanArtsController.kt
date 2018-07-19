@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page
 
+import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
@@ -12,6 +13,8 @@ import org.jooby.mvc.Path
 
 @Path("/:localeId/fanarts")
 class FanArtsController {
+	val logger by logger()
+
 	@GET
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response) {

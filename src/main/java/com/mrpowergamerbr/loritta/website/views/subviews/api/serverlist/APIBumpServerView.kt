@@ -1,26 +1,18 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist
 
 import com.github.salomonbrys.kotson.*
-import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 
 class APIBumpServerView : NoVarsView() {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/server-list/bump"))
 	}
@@ -111,7 +103,7 @@ class APIBumpServerView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["bumpedAt"] = serverConfig.serverListConfig.lastBump
 
-		logger.atInfo().log("${userIdentification.id} promoveu ${serverConfig.guildId}!")
+		Loritta.logger.info("${userIdentification.id} promoveu ${serverConfig.guildId}!")
 
 		return payload.toString()
 	}

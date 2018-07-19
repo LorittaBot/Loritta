@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.audio
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -21,10 +20,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AudioManager(val loritta: Loritta) {
-	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
-	}
-
 	var playerManager = DefaultAudioPlayerManager()
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
@@ -224,9 +219,9 @@ class AudioManager(val loritta: Loritta) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {
-			logger.atInfo().log("Force Playing %s - in guild %s (%s)", trackWrapper.track.info.title, guild.name, guild.id)
+			Loritta.logger.info("Force Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
 		} else {
-			logger.atInfo().log("Playing %s - in guild %s (%s)", trackWrapper.track.info.title, guild.name, guild.id)
+			Loritta.logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
 		}
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);

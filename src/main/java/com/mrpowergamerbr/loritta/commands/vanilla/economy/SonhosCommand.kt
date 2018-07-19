@@ -52,7 +52,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 						)
 				)
 			}
-			logger.atInfo().log("Usuário ${lorittaProfile.userId} possui ${lorittaProfile.dreams} sonhos!")
+			logger.info("Usuário ${lorittaProfile.userId} possui ${lorittaProfile.dreams} sonhos!")
 		} else {
 			if (context.config.economyConfig.isEnabled) {
 				val localProfile = context.config.getUserData(lorittaProfile.userId)
@@ -77,7 +77,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 						)
 				)
 			}
-			logger.atInfo().log("Usuário ${retrieveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
+			logger.info("Usuário ${retrieveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
 		}
 	}
 }

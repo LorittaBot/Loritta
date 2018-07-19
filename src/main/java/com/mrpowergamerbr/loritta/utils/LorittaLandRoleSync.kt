@@ -1,16 +1,16 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.google.common.flogger.FluentLogger
 import net.dv8tion.jda.core.entities.Guild
+import org.slf4j.LoggerFactory
 
 class LorittaLandRoleSync : Runnable {
 	companion object {
-		private val logger = FluentLogger.forEnclosingClass()
+		val logger = LoggerFactory.getLogger(LorittaLandRoleSync::class.java)
 	}
 
 	override fun run() {
 		try {
-			logger.atInfo().log("Sincronizando cargos da LorittaLand...")
+			logger.info("Sincronizando cargos da LorittaLand...")
 
 			val roleRemap = mutableMapOf(
 					"316363779518627842" to "420630427837923328", // Deusas Supremas
@@ -24,11 +24,11 @@ class LorittaLandRoleSync : Runnable {
 			)
 
 			val originalGuild = lorittaShards.getGuildById("297732013006389252") ?: run {
-				logger.atSevere().log("Erro ao sincronizar cargos! Servidor da Loritta (Original) não existe!")
+				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Original) não existe!")
 				return
 			}
 			val usGuild = lorittaShards.getGuildById("420626099257475072") ?: run {
-				logger.atSevere().log("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
+				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
 				return
 			}
 
@@ -60,7 +60,7 @@ class LorittaLandRoleSync : Runnable {
 				}
 
 				if (changed) {
-					logger.atInfo().log("Atualizando ${usRole.name}...")
+					logger.info("Atualizando ${usRole.name}...")
 					manager.complete()
 				}
 			}
@@ -72,7 +72,7 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 		} catch (e: Exception) {
-			logger.atSevere().log("Erro ao sincronizar cargos!", e)
+			logger.error("Erro ao sincronizar cargos!", e)
 		}
 	}
 
@@ -85,7 +85,7 @@ class LorittaLandRoleSync : Runnable {
 
 		for (member in membersWithNewRole) {
 			if (!membersWithOriginalRole.any { it.user.id == member.user.id }) {
-				logger.atInfo().log("Removendo cargo ${giveRole.id} de ${member.effectiveName} (${member.user.id})...")
+				logger.info("Removendo cargo  ${giveRole.id} de ${member.effectiveName} (${member.user.id})...")
 				toGuild.controller.removeSingleRoleFromMember(member, giveRole).complete()
 			}
 		}
@@ -94,7 +94,7 @@ class LorittaLandRoleSync : Runnable {
 			if (!membersWithNewRole.any { it.user.id == member.user.id }) {
 				val usMember = toGuild.getMember(member.user) ?: continue
 
-				logger.atInfo().log("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
+				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
 				toGuild.controller.addSingleRoleToMember(usMember, giveRole).complete()
 			}
 		}
