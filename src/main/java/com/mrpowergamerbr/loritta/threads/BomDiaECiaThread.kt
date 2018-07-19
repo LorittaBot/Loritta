@@ -1,15 +1,17 @@
 package com.mrpowergamerbr.loritta.threads
 
+import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.loritta
 
 /**
  * Thread para o Bom Dia & Cia
  */
 class BomDiaECiaThread : Thread("Bom Dia & Cia") {
-	val logger by logger()
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
 
 	override fun run() {
 		super.run()
@@ -28,7 +30,7 @@ class BomDiaECiaThread : Thread("Bom Dia & Cia") {
 		// Gerar um tempo aleatório entre 15 minutos e 30 minutos
 		val wait = Loritta.RANDOM.nextLong(900_000, 2_700_000)
 		val estimatedTime = wait + System.currentTimeMillis()
-		logger.info("Iremos esperar ${wait} até o próximo Funk do Yudi ${estimatedTime.humanize(loritta.getLocaleById("default"))}")
+		logger.atInfo().log("Iremos esperar %s até o próximo Funk do Yudi %s", wait, estimatedTime.humanize(loritta.getLocaleById("default")))
 		Thread.sleep(wait)
 		loritta.bomDiaECia.handleBomDiaECia(false)
 	}

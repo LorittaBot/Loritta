@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import org.jooby.MediaType
@@ -18,7 +18,9 @@ import org.jooby.mvc.Path
 
 @Path("/api/v1/callbacks/discord-bots")
 class DiscordBotsCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
@@ -26,11 +28,11 @@ class DiscordBotsCallbackController {
 		res.type(MediaType.json)
 		val response = req.body().value()
 
-		logger.info("Recebi payload do Discord Bots! ${response}")
+		logger.atInfo().log("Recebi payload do Discord Bots! %s", response)
 
 		val authorizationHeader = req.header("Authorization")
 		if (!authorizationHeader.isSet) {
-			logger.error("Header de Autorização do request não existe!")
+			logger.atWarning().log("Header de Autorização do request não existe!")
 			res.status(Status.UNAUTHORIZED)
 			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Authorization Header from Request")
 			res.send(payload.toString())
@@ -39,7 +41,7 @@ class DiscordBotsCallbackController {
 
 		val authorization = authorizationHeader.value()
 		if (authorization != Loritta.config.mixerWebhookSecret) {
-			logger.error("Header de Autorização do request não é igual ao nosso!")
+			logger.atWarning().log("Header de Autorização do request não é igual ao nosso!")
 			res.status(Status.UNAUTHORIZED)
 			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Authorization Content from Request")
 			res.send(payload.toString())

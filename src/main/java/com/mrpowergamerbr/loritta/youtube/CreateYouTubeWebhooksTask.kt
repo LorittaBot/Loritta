@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.youtube
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
+import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.CoroutineStart
@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask : Runnable {
 	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
 		val lastNotified = ConcurrentHashMap<String, Long>()
 	}
 
-	val logger by logger()
 	var youtubeWebhooks: MutableList<YouTubeWebhook>? = null
 
 	override fun run() {
@@ -36,7 +36,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			val list = mutableListOf<ServerConfig>()
 
-			logger.info("Verificando canais do YouTube de ${servers.count()} servidores...")
+			logger.atInfo().log("Verificando canais do YouTube de %s servidores...", servers.count())
 
 			servers.iterator().use {
 				while (it.hasNext()) {
@@ -75,7 +75,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			val notCreatedYetChannels = mutableListOf<String>()
 
-			logger.info("Existem ${channelIds.size} canais no YouTube que eu irei verificar! Atualmente existem ${youtubeWebhooks!!.size} webhooks criadas!")
+			logger.atInfo().log("Existem %s canais no YouTUbe que eu irei verificar! Atualmente existem %s webhooks criadas!", channelIds.size, youtubeWebhooks!!.size)
 
 			for (channelId in channelIds) {
 				val webhook = youtubeWebhooks!!.firstOrNull { it.channelId == channelId }
@@ -86,13 +86,13 @@ class CreateYouTubeWebhooksTask : Runnable {
 				}
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
-					logger.info("Webhook de ${channelId} expirou! Nós iremos recriar ela...")
+					logger.atFine().log("Webhook de %s expirou! Nós iremos recriar ela...", channelId)
 					youtubeWebhooks!!.remove(webhook)
 					notCreatedYetChannels.add(channelId)
 				}
 			}
 
-			logger.info("Irei criar ${notCreatedYetChannels.size} webhooks para canais no YouTube!")
+			logger.atInfo().log("Irei criar %s webhooks para canais no YouTube!", notCreatedYetChannels.size)
 
 			val webhooksToBeCreatedCount = notCreatedYetChannels.size
 
@@ -177,18 +177,18 @@ class CreateYouTubeWebhooksTask : Runnable {
 								.code()
 
 						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
-							logger.error("Erro ao tentar criar Webhook de ${channelId}! Código: ${code}")
+							logger.atSevere().log("Erro ao tentar criar Webhook de %s! Código: %s", channelId, code)
 							return@async null
 						}
 
-						logger.info("Webhook de $channelId criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!")
+						logger.atFine().log("Webhook de %s criada com sucesso! Atualmente %s/%s webhooks foram criadas!", channelId, webhookCount.incrementAndGet(), webhooksToBeCreatedCount)
 						return@async YouTubeWebhook(
 								channelId,
 								System.currentTimeMillis(),
 								432000
 						)
 					} catch (e: Exception) {
-						logger.error("Erro ao criar subscription no YouTube", e)
+						logger.atSevere().withCause(e).log("Erro ao criar subscription no YouTube")
 						null
 					}
 				}
@@ -206,7 +206,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 				youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
 			}
 		} catch (e: Exception) {
-			logger.error("Erro ao processar vídeos do YouTube", e)
+			logger.atSevere().withCause(e).log("Erro ao processar vídeos do YouTube")
 		}
 	}
 }

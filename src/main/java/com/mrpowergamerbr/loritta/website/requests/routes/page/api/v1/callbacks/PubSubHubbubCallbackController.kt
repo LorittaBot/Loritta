@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
@@ -26,7 +27,9 @@ import javax.crypto.spec.SecretKeySpec
 
 @Path("/api/v1/callbacks/pubsubhubbub")
 class PubSubHubbubCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
@@ -34,7 +37,7 @@ class PubSubHubbubCallbackController {
 		res.type(MediaType.json)
 		val response = req.body().value()
 
-		logger.info("Recebi payload do PubSubHubbub! ${response}")
+		logger.atInfo().log("Recebi payload do PubSubHubbub! %s", response)
 
 		val originalSignatureHeader = req.header("X-Hub-Signature")
 
@@ -54,10 +57,9 @@ class PubSubHubbubCallbackController {
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 			val output = "sha1=" + doneFinal.bytesToHex()
 
-			logger.info("Assinatura Original: ${originalSignature}")
-			logger.info("Nossa Assinatura   : ${output}")
-			logger.info("Sucesso?           : ${originalSignature == output}")
-
+			logger.atFine().log("Assinatura Original: %s", originalSignature)
+			logger.atFine().log("Nossa Assinatura   : %s", output)
+			logger.atFine().log("Sucesso?           : %s", originalSignature == output)
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
 			val signingKey = SecretKeySpec(Loritta.config.mixerWebhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
@@ -66,10 +68,9 @@ class PubSubHubbubCallbackController {
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 			val output = "sha256=" + doneFinal.bytesToHex()
 
-			logger.info("Assinatura Original: ${originalSignature}")
-			logger.info("Nossa Assinatura   : ${output}")
-			logger.info("Sucesso?           : ${originalSignature == output}")
-
+			logger.atFine().log("Assinatura Original: %s", originalSignature)
+			logger.atFine().log("Nossa Assinatura   : %s", output)
+			logger.atFine().log("Sucesso?           : %s", originalSignature == output)
 			output
 		} else {
 			throw NotImplementedError("${originalSignature} is not implemented yet!")
@@ -112,7 +113,7 @@ class PubSubHubbubCallbackController {
 			// Vamos agora atualizar o map
 			CreateYouTubeWebhooksTask.lastNotified[channelId] = publishedEpoch
 
-			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
+			logger.atInfo().log("Recebi notificação de vídeo %s (%s$videoId) de %s", lastVideoTitle, videoId, channelId)
 
 			val servers = loritta.serversColl.find(
 					Filters.eq("youTubeConfig.channels.channelId", channelId)
@@ -172,7 +173,7 @@ class PubSubHubbubCallbackController {
 					val gameId = obj["game_id"].string
 					val title = obj["title"].string
 
-					logger.info("Recebi notificação de livestream (Twitch) $title ($gameId) de $userLogin")
+					logger.atInfo().log("Recebi notificação de livestream (Twitch) %s (%s) de %s", title, gameId, userLogin)
 
 					val servers = loritta.serversColl.find(
 							Filters.gt("livestreamConfig.channels", listOf<Any>())
@@ -225,12 +226,12 @@ class PubSubHubbubCallbackController {
 
 	@GET
 	fun request(req: Request, res: Response) {
-		logger.info("Recebi um request para ativar subscription de um PubSubHubbub!")
+		logger.atInfo().log("Recebi um request para ativar subscription de um PubSubHubbub!")
 
 		val hubChallengeParam = req.param("hub.challenge")
 
 		if (!hubChallengeParam.isSet) {
-			logger.error("Recebi um request para ativar uma subscription, mas o request não possuia o hub.challenge!")
+			logger.atWarning().log("Recebi um request para ativar uma subscription, mas o request não possuia o hub.challenge!")
 			res.status(Status.NOT_FOUND)
 			res.send("")
 			return

@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
+import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -161,6 +162,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		// Exemplo:
 		// 297732013006389252#123170274651668480
 		val roleRemovalThreads = mutableMapOf<String, Thread>()
+		private val logger = FluentLogger.forEnclosingClass()
 
 		fun muteUser(context: CommandContext, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			if (!isSilent) {
@@ -324,12 +326,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		}
 
 		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, serverConfig: ServerConfig, userData: LorittaGuildUserData) {
-			logger.info("Criando role removal thread para usuário ${userData.userId} na guild ${guild.id}!")
+			logger.atInfo().log("Criando role removal thread para usuário %s na guild %s!", userData.userId, guild.id)
 
 			val previousThread = roleRemovalThreads["${guild.id}#${userData.userId}"]
 			if (previousThread != null) {
 				roleRemovalThreads.remove("${guild.id}#${userData.userId}")
-				logger.info("Interrompendo thread de ${userData.userId} na guild ${guild.id}! Criar outra removal thread enquanto uma já está ativa é feio!")
+				logger.atWarning().log("Interrompendo thread de %s na guild %s! Criar outra removal thread enquanto uma já está ativa é feio!", userData.userId, guild.id)
 				previousThread.interrupt() // lol nope
 			}
 
@@ -342,7 +344,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val time = userData.expiresIn
 			val delay = time - System.currentTimeMillis()
 			if (0 > delay) {
-				logger.info("Removendo cargo silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Já expirou!")
+				logger.atFine().log("Removendo cargo silenciado de %s na guild %s - Motivo: Já expirou!", userData.userId, guild.id)
 
 				// Tempo menor que 0 = já expirou!
 				userData.temporaryMute = false
@@ -360,15 +362,15 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			if (member == null) {
-				logger.info("Ignorando role removal de ${userData.userId} - Motivo: Ela não está mais no servidor!")
+				logger.atFine().log("Ignorando role removal de %s em %s - Motivo: Ela não está mais no servidor!", userData.userId, guild.id)
 				return
 			}
 
 			if (mutedRole == null || !member.roles.contains(mutedRole)) {
 				if (mutedRole == null) {
-					logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Cargo não existe mais!")
+					logger.atFine().log("Ignorando role removal de %s em %s - Motivo: Cargo não existe mais!", userData.userId, guild.id)
 				} else {
-					logger.info("Removendo status de silenciado de ${userData.userId} na guild ${guild.id} - Motivo: Usuário não possui mais o cargo!")
+					logger.atFine().log("Ignorando role removal de %s em %s - Motivo: Motivo: Usuário não possui mais o cargo!", userData.userId, guild.id)
 				}
 				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
 				userData.temporaryMute = false
@@ -380,11 +382,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				// Se existe, vamos carregar a atual
 				roleRemovalThreads.put("${guild.id}#${userData.userId}",
 						thread {
-							logger.info("Criado role removal thread de ${member.user.id} na guild ${guild.id}, irá expirar em ${time}")
+							logger.atInfo().log("Criado role removal thread de ${member.user.id} na guild ${guild.id}, irá expirar em ${time}")
 							try {
 								Thread.sleep(delay)
 
-								logger.info("Removendo cargo silenciado de ${member.user.id} na guild ${guild.id}")
+								logger.atInfo().log("Removendo cargo silenciado de ${member.user.id} na guild ${guild.id}")
 
 								val serverConfig = loritta.getServerConfigForGuild(serverConfig.guildId)
 								val userData = serverConfig.getUserData(userData.userId)
@@ -398,7 +400,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 								removeRole.complete()
 							} catch (e: InterruptedException) {
-								logger.info("Role removal thread de ${member.user.id} na guild ${guild.id} foi interrompida!")
+								logger.atInfo().log("Role removal thread de ${member.user.id} na guild ${guild.id} foi interrompida!")
 							}
 						}
 				)

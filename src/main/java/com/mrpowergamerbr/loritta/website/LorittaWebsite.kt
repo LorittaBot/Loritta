@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website
 
 import com.google.common.collect.Lists
+import com.google.common.flogger.FluentLogger
 import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.loader.FileLoader
@@ -9,7 +10,6 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
@@ -34,13 +34,13 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	before { req, res ->
 		req.set("start", System.currentTimeMillis())
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString")
+		logger.atInfo().log("%s: %s %s%s", req.trueIp, req.method(), req.path(), req.queryString())
 	}
 	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+		logger.atInfo().log("%s: %s %s%s - OK! Processado em %sms", req.trueIp, req.method(), req.path(), req.queryString(), System.currentTimeMillis() - start)
 	}
 
 	ws("/lorisocket") { handler, ws ->
@@ -152,7 +152,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
-		val logger by logger()
+		private val logger = FluentLogger.forEnclosingClass()
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {

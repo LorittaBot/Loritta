@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.threads
 
+import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import org.slf4j.LoggerFactory
 
 class MutedUsersThread : Thread("Muted Users Thread") {
 	companion object {
-		val logger = LoggerFactory.getLogger(MutedUsersThread::class.java)
+		private val logger = FluentLogger.forEnclosingClass()
 	}
 
 	override fun run() {
@@ -27,7 +27,7 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				Filters.eq("guildUserData.temporaryMute", true)
 		)
 
-		logger.info("Verificando usuários temporariamente silenciados de ${servers.count()} servidores... Removal threads ativas: ${MuteCommand.roleRemovalThreads.size}")
+		logger.atInfo().log("Verificando usuários temporariamente silenciados de ${servers.count()} servidores... Removal threads ativas: ${MuteCommand.roleRemovalThreads.size}")
 
 		servers.iterator().use {
 			while (it.hasNext()) {
@@ -35,14 +35,14 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				val guild = lorittaShards.getGuildById(next.guildId)
 
 				if (guild == null) {
-					logger.info("Guild \"${next.guildId}\" não existe ou está indisponível!")
+					logger.atInfo().log("Guild \"${next.guildId}\" não existe ou está indisponível!")
 					continue
 				}
 
 				val locale = loritta.getLocaleById(next.localeId)
 				next.guildUserData.filter { it.temporaryMute }.forEach {
 					if (!MuteCommand.roleRemovalThreads.containsKey("${guild.id}#${it.userId}")) {
-						logger.info("Adicionado removal thread pelo MutedUsersThread ~ Guild: ${next.guildId} - User: ${it.userId}")
+						logger.atInfo().log("Adicionado removal thread pelo MutedUsersThread ~ Guild: ${next.guildId} - User: ${it.userId}")
 						MuteCommand.spawnRoleRemovalThread(guild, locale, next, it)
 					}
 				}

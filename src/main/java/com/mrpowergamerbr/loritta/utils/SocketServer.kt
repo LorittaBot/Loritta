@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mongodb.client.model.Filters
 import kotlinx.coroutines.experimental.launch
-import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
@@ -16,7 +16,7 @@ import java.net.ServerSocket
 class SocketServer(val socketPort: Int) {
 	companion object {
 		val jsonParser = JsonParser()
-		val logger = LoggerFactory.getLogger(SocketServer::class.java)
+		private val logger = FluentLogger.forEnclosingClass()
 	}
 
 	fun start() {
@@ -29,7 +29,7 @@ class SocketServer(val socketPort: Int) {
 						val fromClient = BufferedReader(InputStreamReader(socket.getInputStream(), "UTF-8"))
 						val reply = fromClient.readLine()
 
-						logger.info(reply)
+						logger.atInfo().log(reply)
 
 						val jsonObject = jsonParser.parse(reply).obj
 
@@ -41,7 +41,7 @@ class SocketServer(val socketPort: Int) {
 								Filters.eq("youTubeConfig.channels.channelId", channelId)
 						).iterator()
 
-						logger.info("Recebi notificação de vídeo $title ($videoId) de $channelId")
+						logger.atInfo().log("Recebi notificação de vídeo $title ($videoId) de $channelId")
 
 						servers.use {
 							while (it.hasNext()) {

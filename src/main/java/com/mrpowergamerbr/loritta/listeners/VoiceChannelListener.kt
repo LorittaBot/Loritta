@@ -3,14 +3,11 @@ package com.mrpowergamerbr.loritta.listeners
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.logger
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 
 class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
-	val logger by logger()
-
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
 		if (DebugLog.cancelAllEvents)
 			return

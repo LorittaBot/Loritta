@@ -2,20 +2,20 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import org.json.XML
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 object MiscUtils {
-	val logger = LoggerFactory.getLogger(MiscUtils::class.java)
+	private val logger = FluentLogger.forEnclosingClass()
 
 	fun getResponseError(json: JsonObject): String? {
 		if (!json.has("error"))
@@ -111,7 +111,7 @@ object MiscUtils {
 
 			list.addAll(domainsArray.map { it.string })
 		} catch (e: Exception) {
-			logger.error("Erro ao tentar pegar email atual do mailto.space!", e)
+			logger.atSevere().log("Erro ao tentar pegar email atual do mailto.space!", e)
 		}
 
 		val matches = list.any { it == domain[1] }

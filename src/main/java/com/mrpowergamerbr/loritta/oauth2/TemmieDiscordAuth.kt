@@ -5,12 +5,12 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
-import com.mrpowergamerbr.loritta.utils.logger
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
@@ -23,14 +23,13 @@ class TemmieDiscordAuth {
 		const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0"
 		val gson = Gson()
 		val jsonParser = JsonParser()
-		val logger by logger()
+		private val logger = FluentLogger.forEnclosingClass()
 	}
 
 	private var authCode: String
 	private var redirectUri: String
 	private var clientId: String
 	private var clientSecret: String
-	var debug = false
 
 	var accessToken: String? = null
 	private var refreshToken: String? = null
@@ -80,12 +79,12 @@ class TemmieDiscordAuth {
 				.send(buildQuery(variables))
 
 		val body = response.body()
-		_println(body)
+		logger.atFiner().log(body)
 
 		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
 
 		if (json.has("error")) {
-			logger.error("Erro ao tentar fazer refresh no token para ${clientId}: $body")
+			logger.atWarning().log("Erro ao tentar fazer refresh no token para %s: %s", clientId, body)
 			throw TokenExchangeException()
 		}
 
@@ -93,19 +92,20 @@ class TemmieDiscordAuth {
 	}
 
 	private fun doTokenExchange(variables: Map<String, String>) {
-		_println(buildQuery(variables))
+		val urlVariables = buildQuery(variables)
+		logger.atFiner().log(urlVariables)
 		val response = HttpRequest.post(TOKEN_BASE_URL)
 				.header("User-Agent", USER_AGENT)
 				.header("Content-Type", "application/x-www-form-urlencoded")
-				.send(buildQuery(variables))
+				.send(urlVariables)
 
 		val body = response.body()
-		_println(body)
+		logger.atFiner().log(body)
 
 		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
 
 		if (json.has("error")) {
-			logger.error("Erro ao tentar fazer token exchange para ${clientId}: $body")
+			logger.atWarning().log("Erro ao tentar fazer token exchange para %s: %s", clientId, body)
 			throw TokenExchangeException()
 		}
 
@@ -162,7 +162,7 @@ class TemmieDiscordAuth {
 		if (checkForRateLimit(jsonParser.parse(body)))
 			return getUserGuilds()
 
-		_println(body)
+		logger.atFiner().log(body)
 		return gson.fromJson(body)
 	}
 
@@ -190,12 +190,6 @@ class TemmieDiscordAuth {
 		}
 
 		return query.joinToString("&")
-	}
-
-	fun _println(obj: Any?) {
-		if (debug) {
-			println(obj.toString())
-		}
 	}
 
 	class TokenExchangeException : RuntimeException()

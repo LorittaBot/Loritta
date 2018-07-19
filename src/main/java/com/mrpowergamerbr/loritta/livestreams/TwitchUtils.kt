@@ -4,18 +4,18 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.logger
 import kotlinx.coroutines.experimental.delay
 import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object TwitchUtils {
+	private val logger = FluentLogger.forEnclosingClass()
 	val userLogin2Id = ConcurrentHashMap<String, String>()
-	val logger by logger()
 
 	fun queryUserLogins(userLogins: List<String>) {
 		// Vamos criar uma "lista" de IDs para serem procurados (batching)
@@ -40,7 +40,7 @@ object TwitchUtils {
 			if (userLogins.isEmpty())
 				continue
 
-			logger.info("Pegando informações de usuários da Twitch: ${userLogins.joinToString(", ")}")
+			logger.atInfo().log("Pegando informações de usuários da Twitch: %s", userLogins.joinToString(", "))
 			var query = ""
 			userLogins.forEach {
 				if (query.isEmpty()) {
@@ -57,7 +57,8 @@ object TwitchUtils {
 
 			try {
 				val data = response["data"].array
-				logger.info("queryUserLogins payload contém ${data.size()} objetos!")
+				logger.atFiner().log("payload=%s", data)
+				logger.atFine().log("queryUserLogins payload contém ${data.size()} objetos!")
 
 				data.forEach {
 					val obj = it.obj
@@ -65,7 +66,7 @@ object TwitchUtils {
 					userLogin2Id[obj["login"].string] = obj["id"].string
 				}
 			} catch (e: IllegalStateException) {
-				logger.error("Estado inválido ao manipular payload de queryUserLogins! ${payload}", e)
+				logger.atSevere().withCause(e).log("Estado inválido ao manipular payload de queryUserLogins! %s", payload)
 				throw e
 			}
 		}
@@ -79,7 +80,7 @@ object TwitchUtils {
 
 		if (request.code() == 429) { // too many requests
 			val resetsAt = (request.header("Ratelimit-Reset").toLong() * 1000) - System.currentTimeMillis()
-			logger.info("Rate limit atingido! Nós iremos continuar daqui ${resetsAt}ms")
+			logger.atFine().log("Rate limit atingido! Nós iremos continuar daqui %sms", resetsAt)
 			Thread.sleep(resetsAt)
 			return makeTwitchApiRequest(url, method, form)
 		}
@@ -96,7 +97,7 @@ object TwitchUtils {
 
 		if (request.code() == 429) { // too many requests
 			val resetsAt = (request.header("Ratelimit-Reset").toLong() * 1000) - System.currentTimeMillis()
-			logger.info("Rate limit atingido! (suspend) Nós iremos continuar daqui ${resetsAt}ms")
+			logger.atFine().log("Rate limit atingido! (suspend) Nós iremos continuar daqui %sms", resetsAt)
 			delay(resetsAt)
 			return makeTwitchApiRequestSuspend(url, method, form)
 		}

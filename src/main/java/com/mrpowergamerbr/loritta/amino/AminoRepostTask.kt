@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.amino
 
+import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -12,14 +13,13 @@ import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageEmbed
 import org.jsoup.Jsoup
-import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
 class AminoRepostTask : Runnable {
 	companion object {
 		var storedLastIds = ConcurrentHashMap<String, String>()
-		val logger = LoggerFactory.getLogger(AminoRepostTask::class.java)
+		private val logger = FluentLogger.forEnclosingClass()
 	}
 
 	override fun run() {
@@ -52,13 +52,13 @@ class AminoRepostTask : Runnable {
 			}
 		}
 
-		logger.info("Existem ${communityIds.size} comunidades do Amino que eu irei verificar! Atualmente eu conheço ${storedLastIds.size} posts!")
+		logger.atInfo().log("Existem ${communityIds.size} comunidades do Amino que eu irei verificar! Atualmente eu conheço ${storedLastIds.size} posts!")
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
 			launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 				try {
-					logger.info("Verificando comunidade ${communityId}...")
+					logger.atInfo().log("Verificando comunidade ${communityId}...")
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")
 							.userAgent(Constants.USER_AGENT)
 							.ignoreHttpErrors(true)
@@ -67,7 +67,7 @@ class AminoRepostTask : Runnable {
 					val statusCode = connection.statusCode()
 
 					if (statusCode != 200) {
-						logger.error("Erro ao verificar comunidade $communityId, status code: $statusCode")
+						logger.atSevere().log("Erro ao verificar comunidade $communityId, status code: $statusCode")
 						return@launch
 					}
 
@@ -103,12 +103,12 @@ class AminoRepostTask : Runnable {
 
 							linksFound.add(postLink)
 						} catch (e: Exception) {
-							logger.error(postLink, e)
+							logger.atSevere().log(postLink, e)
 						}
 					}
 
 					if (firstLink == null) {
-						logger.error("Erro ao verificar comunidade $communityId, firstLink == null")
+						logger.atSevere().log("Erro ao verificar comunidade $communityId, firstLink == null")
 						return@launch
 					}
 
@@ -133,7 +133,7 @@ class AminoRepostTask : Runnable {
 							val richContent = titleDiv.getElementsByAttributeValue("data-vce", "post-content-body").first()
 
 							if (richContent == null) {
-								logger.error("Post não tem post-content-body! $link")
+								logger.atSevere().log("Post não tem post-content-body! $link")
 								continue
 							}
 
@@ -187,11 +187,11 @@ class AminoRepostTask : Runnable {
 								}
 							}
 						} catch (e: Exception) {
-							logger.error("Erro ao verificar post $link de $communityId", e)
+							logger.atSevere().log("Erro ao verificar post $link de $communityId", e)
 						}
 					}
 				} catch (e: Exception) {
-					logger.error(communityId, e)
+					logger.atSevere().log(communityId, e)
 				}
 			}
 		}

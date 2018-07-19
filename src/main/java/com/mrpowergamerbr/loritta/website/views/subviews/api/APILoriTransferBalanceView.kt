@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import net.dv8tion.jda.core.EmbedBuilder
@@ -12,6 +12,10 @@ import org.jooby.Response
 import java.awt.Color
 
 class APILoriTransferBalanceView : NoVarsRequireAuthView() {
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/economy/transfer-balance"))
 	}
@@ -23,7 +27,7 @@ class APILoriTransferBalanceView : NoVarsRequireAuthView() {
 		val json = JsonObject()
 
 		val receivedPayload = req.body().value()
-		Loritta.logger.info("Recebi pedido de transferência! ${receivedPayload}")
+		logger.atInfo().log("Recebi pedido de transferência! ${receivedPayload}")
 
 		val body = jsonParser.parse(receivedPayload).obj
 
@@ -82,7 +86,7 @@ class APILoriTransferBalanceView : NoVarsRequireAuthView() {
 			return json.toString()
 		}
 
-		Loritta.logger.info("Enviando requisição de transferências de sonhos ($quantity sonhos) para ${lorittaProfile.userId}, motivo: ${reason} - ID: ${guildId}")
+		logger.atInfo().log("Enviando requisição de transferências de sonhos ($quantity sonhos) para ${lorittaProfile.userId}, motivo: ${reason} - ID: ${guildId}")
 
 		val embed = EmbedBuilder()
 		embed.setTitle("Requisição de Transferência (${title})")
@@ -151,7 +155,7 @@ class APILoriTransferBalanceView : NoVarsRequireAuthView() {
 					loritta save lorittaProfile
 					loritta save receiverProfile
 
-					Loritta.logger.info("${lorittaProfile.userId} teve $quantity sonhos (antes possuia $before sonhos) transferidos para ${receiverProfile.userId}. motivo: ${reason} - ID: ${guildId}")
+					logger.atInfo().log("${lorittaProfile.userId} teve $quantity sonhos (antes possuia $before sonhos) transferidos para ${receiverProfile.userId}. motivo: ${reason} - ID: ${guildId}")
 					return@onReactionAddByAuthor
 				}
 			}

@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.google.common.flogger.FluentLogger
 import com.mrpowergamerbr.loritta.utils.f
 
 /**
@@ -9,12 +9,16 @@ import com.mrpowergamerbr.loritta.utils.f
  * Locales diferentes devem extender esta classe
  */
 open class BaseLocale {
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
+
 	@Transient
 	var strings = mutableMapOf<String, String>()
 
 	operator fun get(key: String, vararg arguments: Any?): String {
 		if (!strings.containsKey(key)) {
-			Loritta.logger.error("Missing translation key! $key")
+			logger.atWarning().log("Missing translation key! $key")
 			return key
 		}
 		return strings[key]!!.f(*arguments)

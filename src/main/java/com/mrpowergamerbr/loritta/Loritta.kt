@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.flogger.FluentLogger
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -86,7 +87,7 @@ class Loritta(config: LorittaConfig) {
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 
-		val logger = LoggerFactory.getLogger(Loritta::class.java)
+		private val logger = FluentLogger.forEnclosingClass()
 	}
 
 	// ===[ LORITTA ]===
@@ -209,7 +210,7 @@ class Loritta(config: LorittaConfig) {
 
 		generateDummyServerConfig()
 
-		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
+		logger.atInfo().log("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
@@ -217,16 +218,16 @@ class Loritta(config: LorittaConfig) {
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		for (idx in 0..generateShards) {
-			logger.info("Iniciando Shard $idx...")
+			logger.atInfo().log("Iniciando Shard $idx...")
 			val shard = builder
 					.useSharding(idx, Loritta.config.shards)
 					.buildAsync()
 
 			lorittaShards.shards.add(shard)
-			logger.info("Shard $idx iniciada com sucesso!")
+			logger.atInfo().log("Shard $idx iniciada com sucesso!")
 		}
 
-		logger.info("Sucesso! Iniciando Loritta (Website)...")
+		logger.atInfo().log("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
 			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
@@ -235,7 +236,7 @@ class Loritta(config: LorittaConfig) {
 			})
 		}
 
-		logger.info("Sucesso! Iniciando threads da Loritta...")
+		logger.atInfo().log("Sucesso! Iniciando threads da Loritta...")
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
@@ -272,7 +273,7 @@ class Loritta(config: LorittaConfig) {
 						this.isDonator = isDonator
 					}
 				} catch (e: Exception) {
-					logger.error("Erro ao atualizar informações aleatórias", e)
+					logger.atSevere().log("Erro ao atualizar informações aleatórias", e)
 				}
 				Thread.sleep(15000)
 			}
@@ -322,7 +323,7 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	fun initMongo() {
-		logger.info("Iniciando MongoDB...")
+		logger.atInfo().log("Iniciando MongoDB...")
 
 		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))

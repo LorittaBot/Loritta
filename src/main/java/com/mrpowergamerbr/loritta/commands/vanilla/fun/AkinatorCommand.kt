@@ -247,7 +247,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						message.editMessage(builder.build()).complete()
 					}
 				} catch (e: Exception) {
-					logger.error(response, e)
+					logger.atSevere().log(response, e)
 				}
 			}
 		}

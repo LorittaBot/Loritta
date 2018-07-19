@@ -2,15 +2,15 @@ package com.mrpowergamerbr.loritta.analytics
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOTS
 import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOT_LIST
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 
 object LorittaAnalytics {
-	val logger by logger()
+	private val logger = FluentLogger.forEnclosingClass()
 
 	/**
 	 * Sends analytics to the specified processor service
@@ -30,9 +30,9 @@ object LorittaAnalytics {
 		request.acceptJson().contentType("application/json")
 
 		val payload = createPayload(service).toString()
-		logger.info("Sending analytic data to ${service.name} - ${payload}")
+		logger.atInfo().log("Sending analytic data to %s - %s", service.name, payload)
 		request.send(payload)
-		logger.info("${service.name}: ${request.body()}")
+		logger.atFine().log("%s: %s", service.name, payload)
 	}
 
 	/**

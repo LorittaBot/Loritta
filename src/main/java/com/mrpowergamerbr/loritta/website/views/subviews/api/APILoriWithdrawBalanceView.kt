@@ -1,16 +1,20 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.salomonbrys.kotson.*
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jooby.Request
 import org.jooby.Response
 
 class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/economy/withdraw-balance"))
 	}
@@ -52,7 +56,7 @@ class APILoriWithdrawBalanceView : NoVarsRequireAuthView() {
 		json["balance"] = lorittaProfile.dreams
 		json["api:code"] = LoriWebCodes.SUCCESS
 
-		Loritta.logger.info("${lorittaProfile.userId} teve $quantity sonhos removidos (antes possuia $before sonhos), motivo: ${reason} - ID: ${guildId}")
+		logger.atInfo().log("${lorittaProfile.userId} teve $quantity sonhos removidos (antes possuia $before sonhos), motivo: ${reason} - ID: ${guildId}")
 		return json.toString()
 	}
 }

@@ -214,7 +214,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	}
 
 	fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
-		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
+		logger.atInfo().log("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
 
 		msg.delete().complete()
 

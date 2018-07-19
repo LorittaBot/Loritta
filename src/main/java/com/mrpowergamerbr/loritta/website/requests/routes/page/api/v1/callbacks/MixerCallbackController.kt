@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.nullBool
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.common.flogger.FluentLogger
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
@@ -23,7 +24,9 @@ import javax.crypto.spec.SecretKeySpec
 
 @Path("/api/v1/callbacks/mixer")
 class MixerCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = FluentLogger.forEnclosingClass()
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
@@ -32,7 +35,7 @@ class MixerCallbackController {
 
 		val response = req.body().value()
 
-		logger.info("Recebi payload do Mixer! ${response}")
+		logger.atInfo().log("Recebi payload do PubSubHubbub! %s", response)
 
 		val originalSignatureHeader = req.header("Poker-Signature")
 
@@ -51,9 +54,9 @@ class MixerCallbackController {
 		val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 		val output = "sha384=" + doneFinal.bytesToHex().toUpperCase()
 
-		logger.info("Assinatura Original: ${originalSignature}")
-		logger.info("Nossa Assinatura   : ${output}")
-		logger.info("Sucesso?           : ${originalSignature == output}")
+		logger.atFine().log("Assinatura Original: %s", originalSignature)
+		logger.atFine().log("Nossa Assinatura   : %s", output)
+		logger.atFine().log("Sucesso?           : %s", originalSignature == output)
 
 		if (originalSignature != output) {
 			res.status(Status.UNAUTHORIZED)
@@ -67,7 +70,7 @@ class MixerCallbackController {
 		val event = json["event"].string
 		val payload = json["payload"].obj
 
-		logger.info("Evento recebido: $event")
+		logger.atFine().log("Evento recebido: %s", event)
 
 		val channelId = event.split(":")[1]
 		val onlineStatus = payload["online"].nullBool
@@ -75,7 +78,7 @@ class MixerCallbackController {
 		if (onlineStatus != null) {
 			if (onlineStatus && !NewLivestreamThread.isMixerLivestreaming.contains(channelId)) {
 				NewLivestreamThread.isMixerLivestreaming.add(channelId)
-				logger.info("${channelId} está ao vivo! Vamos anunciar para todos os interessados...")
+				logger.atInfo().log("%s está ao vivo! Vamos anunciar para todos os interessados...", channelId)
 
 				// Anunciar para quem for necessário
 				val servers = loritta.serversColl.find(
@@ -111,7 +114,7 @@ class MixerCallbackController {
 								val channelId = jsonParser.parse(payload).obj["id"].nullLong
 
 								if (channelId != null) {
-									NewLivestreamThread.logger.info("ID do canal de ${channelName} é ${channelId}!")
+									logger.atFine().log("ID do canal de %s é %s!", channelName, channelId)
 									channelId
 								} else {
 									-1

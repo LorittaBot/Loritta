@@ -80,13 +80,13 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "fullwebsite" || arg0 == "full_website") {
-			logger.info("Parando o Jooby...")
+			logger.atInfo().log("Parando o Jooby...")
 			loritta.website.stop()
-			logger.info("Interrompendo a Thread do Website...")
+			logger.atInfo().log("Interrompendo a Thread do Website...")
 			loritta.websiteThread.interrupt()
-			logger.info("Iniciando instância do Website...")
+			logger.atInfo().log("Iniciando instância do Website...")
 			loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
-			logger.info("Iniciando website...")
+			logger.atInfo().log("Iniciando website...")
 			loritta.websiteThread = thread(true, name = "Website Thread") {
 				loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
 				org.jooby.run({

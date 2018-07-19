@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.google.common.collect.Lists
+import com.google.common.flogger.FluentLogger
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -28,6 +29,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object WebsiteUtils {
+	private val logger = FluentLogger.forEnclosingClass()
+
 	/**
 	 * Creates an JSON object wrapping the error object
 	 *
@@ -223,7 +226,7 @@ object WebsiteUtils {
 
 		val header = req.header("Authorization")
 		if (!header.isSet) {
-			Loritta.logger.info("Alguém tentou acessar $path, mas estava sem o header de Authorization!")
+			logger.atInfo().log("Alguém tentou acessar $path, mas estava sem o header de Authorization!")
 			res.status(Status.UNAUTHORIZED)
 			res.send(
 					WebsiteUtils.createErrorPayload(
@@ -241,12 +244,12 @@ object WebsiteUtils {
 			it.name == auth
 		}
 
-		Loritta.logger.info("$auth está tentando acessar $path, utilizando key $validKey")
+		logger.atInfo().log("$auth está tentando acessar $path, utilizando key $validKey")
 		if (validKey != null) {
 			if (validKey.allowed.contains("*") || validKey.allowed.contains(path)) {
 				return true
 			} else {
-				Loritta.logger.info("$auth foi rejeitado ao tentar acessar $path!")
+				logger.atInfo().log("$auth foi rejeitado ao tentar acessar $path!")
 				res.status(Status.FORBIDDEN)
 				res.send(
 						WebsiteUtils.createErrorPayload(
@@ -257,7 +260,7 @@ object WebsiteUtils {
 				return false
 			}
 		} else {
-			Loritta.logger.info("$auth foi rejeitado ao tentar acessar $path!")
+			logger.atInfo().log("$auth foi rejeitado ao tentar acessar $path!")
 			res.status(Status.UNAUTHORIZED)
 			res.send(
 					WebsiteUtils.createErrorPayload(
