@@ -6,6 +6,6 @@ class ParallaxClient(private val jda: JDA) {
 	val user: ParallaxUser = ParallaxUser(jda.selfUser)
 
 	override fun equals(other: Any?): Boolean {
-		return jda.equals(other)
+		return jda == other
 	}
 }

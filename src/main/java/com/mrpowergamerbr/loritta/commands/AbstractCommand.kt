@@ -22,7 +22,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	val cooldown: Int
 		get() = if (needsToUploadFiles()) 10000 else 5000
-	
+
 	var executedCount = 0
 
 	open fun getDescription(locale: BaseLocale): String {

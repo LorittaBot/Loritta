@@ -14,7 +14,7 @@ import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
 
-class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evaulatekt", "evaluatekotlin"), category = CommandCategory.MAGIC, onlyOwner = true) {
+class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em Kotlin"
 	}
