@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.f
  */
 open class BaseLocale {
 	companion object {
-		@JvmStatic
 		private val logger = FluentLogger.forEnclosingClass()
 	}
 
