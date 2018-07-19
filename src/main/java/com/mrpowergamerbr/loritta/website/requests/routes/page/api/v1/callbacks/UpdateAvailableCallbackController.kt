@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
+import mu.KotlinLogging
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -20,7 +21,9 @@ import kotlin.concurrent.thread
 
 @Path("/api/v1/callbacks/update-available")
 class UpdateAvailableCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)

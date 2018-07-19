@@ -40,12 +40,14 @@ import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import mu.KotlinLogging
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -86,7 +88,7 @@ class Loritta(config: LorittaConfig) {
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 
-		val logger = LoggerFactory.getLogger(Loritta::class.java)
+		private val logger = KotlinLogging.logger {}
 	}
 
 	// ===[ LORITTA ]===
@@ -209,6 +211,7 @@ class Loritta(config: LorittaConfig) {
 
 		generateDummyServerConfig()
 
+		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
@@ -442,7 +445,7 @@ class Loritta(config: LorittaConfig) {
 
 				// Usando Reflection TODO: Remover
 				for (field in locale::class.java.declaredFields) {
-					if (field.name == "strings") { continue }
+					if (field.name == "strings" || Modifier.isStatic(field.modifiers)) { continue }
 					field.isAccessible = true
 
 					val ogValue = field.get(defaultLocale)

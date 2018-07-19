@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -23,7 +24,9 @@ import javax.crypto.spec.SecretKeySpec
 
 @Path("/api/v1/callbacks/mixer")
 class MixerCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
@@ -32,7 +35,8 @@ class MixerCallbackController {
 
 		val response = req.body().value()
 
-		logger.info("Recebi payload do Mixer! ${response}")
+		logger.info { "Recebi payload do Mixer!" }
+		logger.trace { response }
 
 		val originalSignatureHeader = req.header("Poker-Signature")
 
@@ -51,9 +55,9 @@ class MixerCallbackController {
 		val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 		val output = "sha384=" + doneFinal.bytesToHex().toUpperCase()
 
-		logger.info("Assinatura Original: ${originalSignature}")
-		logger.info("Nossa Assinatura   : ${output}")
-		logger.info("Sucesso?           : ${originalSignature == output}")
+		logger.debug { "Assinatura Original: ${originalSignature}" }
+		logger.debug { "Nossa Assinatura   : ${output}" }
+		logger.debug { "Sucesso?           : ${originalSignature == output}" }
 
 		if (originalSignature != output) {
 			res.status(Status.UNAUTHORIZED)
@@ -67,7 +71,7 @@ class MixerCallbackController {
 		val event = json["event"].string
 		val payload = json["payload"].obj
 
-		logger.info("Evento recebido: $event")
+		logger.debug { "Evento recebido: $event" }
 
 		val channelId = event.split(":")[1]
 		val onlineStatus = payload["online"].nullBool

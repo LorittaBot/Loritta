@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Role
@@ -19,7 +20,9 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.regex.Pattern
 
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
-	val logger by logger()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
@@ -32,8 +35,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val member = event.member
 				if (member == null) {
-					logger.error("${event.author} tem a variável event.member == null no MessageReceivedEvent! (bug?)")
-					logger.error("${event.author} ainda está no servidor? ${event.guild.isMember(event.author)}")
+					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
 					return@execute
 				}
 

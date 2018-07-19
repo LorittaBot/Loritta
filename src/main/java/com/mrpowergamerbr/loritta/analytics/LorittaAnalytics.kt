@@ -6,11 +6,11 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOTS
 import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOT_LIST
-import com.mrpowergamerbr.loritta.utils.logger
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import mu.KotlinLogging
 
 object LorittaAnalytics {
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 
 	/**
 	 * Sends analytics to the specified processor service
@@ -30,9 +30,9 @@ object LorittaAnalytics {
 		request.acceptJson().contentType("application/json")
 
 		val payload = createPayload(service).toString()
-		logger.info("Sending analytic data to ${service.name} - ${payload}")
+		logger.info { "Sending analytic data to ${service.name} - ${payload}" }
 		request.send(payload)
-		logger.info("${service.name}: ${request.body()}")
+		logger.trace { "${service.name}: ${request.body()}" }
 	}
 
 	/**

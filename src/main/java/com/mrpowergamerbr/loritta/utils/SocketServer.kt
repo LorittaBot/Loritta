@@ -29,7 +29,7 @@ class SocketServer(val socketPort: Int) {
 						val fromClient = BufferedReader(InputStreamReader(socket.getInputStream(), "UTF-8"))
 						val reply = fromClient.readLine()
 
-						logger.info(reply)
+						logger.trace(reply)
 
 						val jsonObject = jsonParser.parse(reply).obj
 

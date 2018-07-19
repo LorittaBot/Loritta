@@ -4,15 +4,22 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
+import mu.KotlinLogging
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateTwitchWebhooksTask : Runnable {
-	val logger by logger()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	var twitchWebhooks: MutableList<TwitchWebhook>? = null
 
 	override fun run() {
@@ -78,7 +85,7 @@ class CreateTwitchWebhooksTask : Runnable {
 				}
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
-					logger.info("Webhook de ${userLogin} expirou! Nós iremos recriar ela...")
+					logger.debug { "Webhook de $userLogin expirou! Nós iremos recriar ela..." }
 					twitchWebhooks!!.remove(webhook)
 					notCreatedYetChannels.add(userLogin)
 				}
@@ -107,7 +114,7 @@ class CreateTwitchWebhooksTask : Runnable {
 								.ok()
 
 						// E agora realmente iremos criar!
-						val request = TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						val code = TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
@@ -115,14 +122,15 @@ class CreateTwitchWebhooksTask : Runnable {
 										"hub.secret" to Loritta.config.mixerWebhookSecret,
 										"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=$userId"
 								))
+								.code()
 
-						val code = request.code()
 						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
-							logger.error("Erro ao tentar criar Webhook de ${userLogin}! Código: ${code} - ${request.body()}")
+							logger.error { "Erro ao tentar criar Webhook de ${userLogin}! Código: ${code}" }
 							return@async null
 						}
 
-						logger.info("Webhook de $userLogin criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!")
+						logger.debug { "Webhook de $userLogin criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!" }
+
 						return@async TwitchWebhook(
 								userId,
 								userLogin,

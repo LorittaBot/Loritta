@@ -12,12 +12,17 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
 class APILoriDailyRewardView : NoVarsView() {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/economy/daily-reward"))
 	}
@@ -108,9 +113,9 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		val status = MiscUtils.verifyAccount(userIdentification, ip)
 
-		Loritta.logger.info("AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}")
-		Loritta.logger.info("Is verified? ${userIdentification.verified}")
-		Loritta.logger.info("Email ${userIdentification.email}")
+		logger.debug { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
+		logger.debug { "Is verified? ${userIdentification.verified}" }
+		logger.debug { "Email ${userIdentification.email}" }
 
 		if (!status.canAccess) {
 			val payload = JsonObject()
@@ -174,8 +179,7 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		loritta save lorittaProfile
 
-		Loritta.logger.info("${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}")
-
+		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}" }
 		return payload.toString()
 	}
 }

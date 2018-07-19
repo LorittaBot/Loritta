@@ -210,7 +210,6 @@ object GlobalHandler {
 		apiViews.add(APILoriGetBalanceView())
 		apiViews.add(APILoriGiveBalanceView())
 		apiViews.add(APILoriSetBalanceView())
-		apiViews.add(APILoriWithdrawBalanceView())
 		apiViews.add(APIGetServerSampleView())
 		apiViews.add(APIGetServerInformationView())
 		apiViews.add(APIVoteServerView())
@@ -227,8 +226,6 @@ object GlobalHandler {
 		apiViews.add(APIGetSelfUserProfileView())
 		apiViews.add(APISaveSelfUserProfileView())
 		apiViews.add(APIBumpServerView())
-		// apiViews.add(APILoriTransferBalanceView())
-		apiViews.add(APIMixerWebhookView())
 
 		views.add(HomeView())
 		views.add(TranslationView())

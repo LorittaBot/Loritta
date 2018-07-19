@@ -4,15 +4,23 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 
 class APIBumpServerView : NoVarsView() {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/server-list/bump"))
 	}
@@ -103,7 +111,7 @@ class APIBumpServerView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["bumpedAt"] = serverConfig.serverListConfig.lastBump
 
-		Loritta.logger.info("${userIdentification.id} promoveu ${serverConfig.guildId}!")
+		logger.info { "${userIdentification.id} promoveu ${serverConfig.guildId}!" }
 
 		return payload.toString()
 	}

@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -26,7 +27,9 @@ import javax.crypto.spec.SecretKeySpec
 
 @Path("/api/v1/callbacks/pubsubhubbub")
 class PubSubHubbubCallbackController {
-	val logger by logger()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
@@ -34,7 +37,8 @@ class PubSubHubbubCallbackController {
 		res.type(MediaType.json)
 		val response = req.body().value()
 
-		logger.info("Recebi payload do PubSubHubbub! ${response}")
+		logger.info { "Recebi payload do PubSubHubbub!" }
+		logger.trace { response }
 
 		val originalSignatureHeader = req.header("X-Hub-Signature")
 
@@ -54,9 +58,9 @@ class PubSubHubbubCallbackController {
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 			val output = "sha1=" + doneFinal.bytesToHex()
 
-			logger.info("Assinatura Original: ${originalSignature}")
-			logger.info("Nossa Assinatura   : ${output}")
-			logger.info("Sucesso?           : ${originalSignature == output}")
+			logger.debug { "Assinatura Original: ${originalSignature}" }
+			logger.debug { "Nossa Assinatura   : ${output}" }
+			logger.debug { "Sucesso?           : ${originalSignature == output}" }
 
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
@@ -66,9 +70,9 @@ class PubSubHubbubCallbackController {
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
 			val output = "sha256=" + doneFinal.bytesToHex()
 
-			logger.info("Assinatura Original: ${originalSignature}")
-			logger.info("Nossa Assinatura   : ${output}")
-			logger.info("Sucesso?           : ${originalSignature == output}")
+			logger.debug { "Assinatura Original: ${originalSignature}" }
+			logger.debug { "Nossa Assinatura   : ${output}" }
+			logger.debug { "Sucesso?           : ${originalSignature == output}" }
 
 			output
 		} else {
@@ -225,12 +229,12 @@ class PubSubHubbubCallbackController {
 
 	@GET
 	fun request(req: Request, res: Response) {
-		logger.info("Recebi um request para ativar subscription de um PubSubHubbub!")
-
 		val hubChallengeParam = req.param("hub.challenge")
 
+		logger.trace { "hubChallengeParam=$hubChallengeParam "}
+
 		if (!hubChallengeParam.isSet) {
-			logger.error("Recebi um request para ativar uma subscription, mas o request não possuia o hub.challenge!")
+			logger.error { "Recebi um request para ativar uma subscription, mas o request não possuia o hub.challenge!" }
 			res.status(Status.NOT_FOUND)
 			res.send("")
 			return

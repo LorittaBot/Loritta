@@ -13,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import lavalink.client.io.Lavalink
+import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import java.net.URI
@@ -25,6 +26,10 @@ class AudioManager(val loritta: Loritta) {
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
 	val lavalink = Lavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.shards.first { shardId == it.shardInfo.shardId } })
+
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	init {
 		playerManager.frameBufferDuration = 1000
@@ -219,9 +224,9 @@ class AudioManager(val loritta: Loritta) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {
-			Loritta.logger.info("Force Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
+			logger.info("Force Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
 		} else {
-			Loritta.logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
+			logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
 		}
 
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
