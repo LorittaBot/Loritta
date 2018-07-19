@@ -83,6 +83,7 @@ class CommandManager {
 		commandMap.add(DemonCommand())
 		commandMap.add(KnuxThrowCommand())
 		commandMap.add(LoriSignCommand())
+		commandMap.add(TextCraftCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
