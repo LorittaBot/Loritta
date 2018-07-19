@@ -47,6 +47,7 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -443,7 +444,7 @@ class Loritta(config: LorittaConfig) {
 
 				// Usando Reflection TODO: Remover
 				for (field in locale::class.java.declaredFields) {
-					if (field.name == "strings" || field.name == "logger") { continue }
+					if (field.name == "strings" || Modifier.isStatic(field.modifiers)) { continue }
 					field.isAccessible = true
 
 					val ogValue = field.get(defaultLocale)
