@@ -443,13 +443,13 @@ class Loritta(config: LorittaConfig) {
 
 				// Usando Reflection TODO: Remover
 				for (field in locale::class.java.declaredFields) {
-					if (field.name == "strings" || field.name == "logger") { continue }
+					if (field.name == "strings") { continue }
 					field.isAccessible = true
 
 					val ogValue = field.get(defaultLocale)
 					val changedValue = field.get(locale)
 
-					if (changedValue == null || ogValue == changedValue) {
+					if (changedValue == null || ogValue.equals(changedValue)) {
 						field.set(locale, ogValue)
 						jsonObject[field.name] = null
 						if (ogValue is List<*>) {
