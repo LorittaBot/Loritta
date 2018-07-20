@@ -24,23 +24,23 @@ class ParallaxEmbed {
 	fun toDiscordEmbed(safe: Boolean = false): MessageEmbed {
 		val embed = EmbedBuilder()
 
-		fun processString(text: String, maxSize: Int): String {
-			if (safe) {
+		fun processString(text: String?, maxSize: Int): String? {
+			if (safe && text != null) {
 				return text.substringIfNeeded(0 until maxSize)
 			}
 			return text
 		}
 
-		fun processImageUrl(url: String): String {
-			if (safe) {
+		fun processImageUrl(url: String?): String? {
+			if (safe && url != null) {
 				if (!url.isValidUrl())
 					return Constants.INVALID_IMAGE_URL
 			}
 			return url
 		}
 
-		fun processUrl(url: String): String? {
-			if (safe) {
+		fun processUrl(url: String?): String? {
+			if (safe && url != null) {
 				if (!url.isValidUrl())
 					return null
 			}
@@ -68,23 +68,23 @@ class ParallaxEmbed {
 		}
 
 		if (title != null) {
-			embed.setTitle(processString(title!!, 256), processUrl(url!!))
+			embed.setTitle(processString(title, 256), processUrl(url))
 		}
 
 		if (author != null) {
-			embed.setAuthor(processString(author!!.name!!, 256), processUrl(author!!.url!!), processImageUrl(author!!.iconUrl!!))
+			embed.setAuthor(processString(author!!.name, 256), processUrl(author!!.url), processImageUrl(author!!.iconUrl))
 		}
 
 		if (footer != null) {
-			embed.setFooter(processString(footer!!.text!!, 256), processImageUrl(footer!!.iconUrl!!))
+			embed.setFooter(processString(footer!!.text, 256), processImageUrl(footer!!.iconUrl))
 		}
 
 		if (image != null) {
-			embed.setImage(processImageUrl(image!!.url!!))
+			embed.setImage(processImageUrl(image!!.url))
 		}
 
 		if (thumbnail != null) {
-			embed.setThumbnail(processImageUrl(thumbnail!!.url!!))
+			embed.setThumbnail(processImageUrl(thumbnail!!.url))
 		}
 
 		if (fields != null) {
