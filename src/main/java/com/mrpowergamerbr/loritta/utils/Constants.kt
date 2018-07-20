@@ -32,6 +32,10 @@ object Constants {
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
+	val INVALID_IMAGE_URL: String by lazy {
+		Loritta.config.websiteUrl + "assets/img/oopsie_woopsie_invalid_image.png"
+	}
+
 	// Palavras inapropariadas
 	val BAD_NICKNAME_WORDS = listOf(
 			"puta",

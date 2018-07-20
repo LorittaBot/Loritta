@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext

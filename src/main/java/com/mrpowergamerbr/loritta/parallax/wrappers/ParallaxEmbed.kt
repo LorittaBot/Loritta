@@ -1,6 +1,9 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.google.gson.annotations.SerializedName
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageEmbed
 import java.awt.Color
@@ -18,8 +21,31 @@ class ParallaxEmbed {
 	var footer: ParallaxEmbedFooter? = null
 	var fields: MutableList<ParallaxEmbedField>? = null
 
-	fun toDiscordEmbed(): MessageEmbed {
+	fun toDiscordEmbed(safe: Boolean = false): MessageEmbed {
 		val embed = EmbedBuilder()
+
+		fun processString(text: String, maxSize: Int): String {
+			if (safe) {
+				return text.substringIfNeeded(0 until maxSize)
+			}
+			return text
+		}
+
+		fun processImageUrl(url: String): String {
+			if (safe) {
+				if (!url.isValidUrl())
+					return Constants.INVALID_IMAGE_URL
+			}
+			return url
+		}
+
+		fun processUrl(url: String): String? {
+			if (safe) {
+				if (!url.isValidUrl())
+					return null
+			}
+			return url
+		}
 
 		if (color != null) {
 			val red = color!! shr 16 and 0xFF
@@ -38,27 +64,27 @@ class ParallaxEmbed {
 		}
 
 		if (description != null) {
-			embed.setDescription(description)
+			embed.setDescription(processString(description!!, 2048))
 		}
 
 		if (title != null) {
-			embed.setTitle(title, url)
+			embed.setTitle(processString(title!!, 256), processUrl(url!!))
 		}
 
 		if (author != null) {
-			embed.setAuthor(author!!.name, author!!.url, author!!.iconUrl)
+			embed.setAuthor(processString(author!!.name!!, 256), processUrl(author!!.url!!), processImageUrl(author!!.iconUrl!!))
 		}
 
 		if (footer != null) {
-			embed.setFooter(footer!!.text, footer!!.iconUrl)
+			embed.setFooter(processString(footer!!.text!!, 256), processImageUrl(footer!!.iconUrl!!))
 		}
 
 		if (image != null) {
-			embed.setImage(image!!.url)
+			embed.setImage(processImageUrl(image!!.url!!))
 		}
 
 		if (thumbnail != null) {
-			embed.setThumbnail(thumbnail!!.url)
+			embed.setThumbnail(processImageUrl(thumbnail!!.url!!))
 		}
 
 		if (fields != null) {

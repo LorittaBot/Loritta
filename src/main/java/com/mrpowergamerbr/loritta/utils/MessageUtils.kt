@@ -16,7 +16,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 
 object MessageUtils {
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
 		val jsonObject = try {
 			jsonParser.parse(message).obj
 		} catch (ex: Exception) {
@@ -30,7 +30,7 @@ object MessageUtils {
 			val jsonEmbed = jsonObject["embed"].nullObj
 			if (jsonEmbed != null) {
 				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
+				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
 			}
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
