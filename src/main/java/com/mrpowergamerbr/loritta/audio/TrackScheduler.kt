@@ -84,7 +84,6 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 		if (audioTrackWrapper == null) {
 			// Caso seja null, quer dizer que não existe "próxima" música, então vamos parar a atual
 			currentTrack = null
-			player.stopTrack()
 
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(guild.id)

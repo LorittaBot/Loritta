@@ -178,7 +178,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param trackUrl the track URL
 	 */
 	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
-		val musicManager = getGuildAudioPlayer(guild);
+		val musicManager = getGuildAudioPlayer(guild)
 
 		if (playlistCache.contains(trackUrl)) {
 			val playlist = playlistCache[trackUrl]!!
