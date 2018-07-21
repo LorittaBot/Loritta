@@ -202,7 +202,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale["BAN_PunishAction"],
+										"punishment" to locale["KICK_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,

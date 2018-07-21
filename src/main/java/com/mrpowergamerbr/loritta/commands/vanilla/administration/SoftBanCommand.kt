@@ -180,7 +180,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale["BAN_PunishAction"],
+										"punishment" to locale["SOFTBAN_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,

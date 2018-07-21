@@ -144,7 +144,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 									context.guild,
 									mutableMapOf(
 											"reason" to reason,
-											"punishment" to locale["BAN_PunishAction"],
+											"punishment" to locale["WARN_PunishAction"],
 											"staff" to context.userHandle.name,
 											"@staff" to context.userHandle.asMention,
 											"staff-discriminator" to context.userHandle.discriminator,
