@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -67,11 +68,21 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 
 	@NashornCommand.NashornDocs()
 	fun ban(user: NashornUser, delDays: Int, reason: String) {
+		if (reason.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(guild.id)
+			return null!!
+		}
+
 		guild.controller.ban(user.user, delDays, reason).complete()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun kick(member: NashornMember, reason: String) {
+		if (reason.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(guild.id)
+			return null!!
+		}
+
 		guild.controller.kick(member.member, reason).complete()
 	}
 

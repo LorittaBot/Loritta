@@ -17,6 +17,14 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
+		val doNotStart = File("do_not_start").exists()
+		if (doNotStart) {
+			while (true) {
+				System.out.println("Falha de segurança detectada!")
+				Thread.sleep(120000)
+			}
+		}
+
 		// https://bugs.openjdk.java.net/browse/JDK-7016595
 		// Nós precisamos ativar o PATCH manualmente
 		WebsiteUtils.allowMethods("PATCH")
