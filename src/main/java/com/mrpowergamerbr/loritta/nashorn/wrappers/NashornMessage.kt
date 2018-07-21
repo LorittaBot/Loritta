@@ -30,11 +30,6 @@ class NashornMessage(private val message: Message) {
 	}
 
 	@NashornCommand.NashornDocs()
-	fun getAttachments(): MutableList<Message.Attachment> {
-		return message.attachments
-	}
-
-	@NashornCommand.NashornDocs()
 	fun getAuthor(): NashornUser {
 		return NashornUser(message.author)
 	}
