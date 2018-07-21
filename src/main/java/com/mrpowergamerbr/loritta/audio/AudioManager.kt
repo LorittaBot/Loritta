@@ -232,7 +232,9 @@ class AudioManager(val loritta: Loritta) {
 		connectToVoiceChannel(musicGuildId, guild.audioManager);
 
 		if (override) {
+			musicManager.scheduler.ignoreStopEvent = true
 			musicManager.player.stopTrack()
+			musicManager.scheduler.ignoreStopEvent = false
 			musicManager.player.playTrack(trackWrapper.track)
 		} else {
 			musicManager.scheduler.queue(trackWrapper, conf)
@@ -246,7 +248,7 @@ class AudioManager(val loritta: Loritta) {
 	 */
 	fun skipTrack(context: CommandContext) {
 		val musicManager = getGuildAudioPlayer(context.guild);
-		musicManager.scheduler.nextTrack();
+		musicManager.scheduler.nextTrack()
 
 		context.reply(
 				LoriReply(

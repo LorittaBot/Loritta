@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue
 class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEventListenerAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
 	var currentTrack: AudioTrackWrapper? = null
+	var ignoreStopEvent = false
 
 	init {
 		this.queue = LinkedBlockingQueue()
@@ -91,7 +92,9 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 
 				// Então quer dizer que nós iniciamos uma música vazia?
 				// Okay então, vamos pegar nossas próprias coisas
+				ignoreStopEvent = true
 				LorittaUtilsKotlin.startRandomSong(guild, serverConfig)
+				ignoreStopEvent = false
 			}
 			return
 		}
@@ -102,7 +105,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 
 	override fun onTrackEnd(player: IPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-		if (endReason.mayStartNext) {
+		if (endReason.mayStartNext && !ignoreStopEvent) {
 			nextTrack()
 		}
 	}
