@@ -34,14 +34,12 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
-			if (mm.player.playingTrack != null && mm.player.isPaused) {
-				val link = loritta.audioManager.lavalink.getLink(event.guild)
-				link.connect(voiceChannel)
-				mm.player.isPaused = false
-			} else {
-				mm.player.isPaused = false
+			val link = loritta.audioManager.lavalink.getLink(event.guild)
+			link.connect(voiceChannel)
+			mm.player.isPaused = false
+
+			if (mm.player.playingTrack == null)
 				LorittaUtilsKotlin.startRandomSong(event.guild, config)
-			}
 		}
 	}
 

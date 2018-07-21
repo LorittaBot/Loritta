@@ -665,42 +665,6 @@ object LorittaUtilsKotlin {
 
 	var executedCommands = 0;
 
-	fun startAutoPlaylist() {
-		val playlistMagic = {
-			// Agora iremos iniciar o playlist magic
-			while (true) {
-				try {
-					manageAutoPlaylists()
-				} catch (e: Exception) {
-				}
-
-				try {
-					Thread.sleep(2500)
-				} catch (e: InterruptedException) {
-					e.printStackTrace()
-				}
-
-			}
-		}
-		Thread(playlistMagic, "Playlist Magic").start() // Pronto!
-	}
-
-	fun manageAutoPlaylists() {
-		val musicManagers = loritta.audioManager.musicManagers.values.filter { it.player.playingTrack == null }
-
-		val serverConfigs = loritta.serversColl.find(
-				Filters.`in`("_id", musicManagers.map { it.scheduler.guild.id })
-		)
-
-		for (serverConfig in serverConfigs) {
-			startRandomSong(loritta.lorittaShards.getGuildById(serverConfig.guildId)!!, serverConfig)
-		}
-	}
-
-	fun startRandomSong(guild: Guild) {
-		startRandomSong(guild, LorittaLauncher.loritta.getServerConfigForGuild(guild.id))
-	}
-
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
 		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)
 

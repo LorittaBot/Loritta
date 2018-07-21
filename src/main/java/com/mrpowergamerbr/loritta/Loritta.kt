@@ -319,8 +319,6 @@ class Loritta(config: LorittaConfig) {
 		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
-
-		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 

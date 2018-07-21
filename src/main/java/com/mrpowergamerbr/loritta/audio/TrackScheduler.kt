@@ -23,7 +23,6 @@ import java.util.concurrent.LinkedBlockingQueue
 class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEventListenerAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
 	var currentTrack: AudioTrackWrapper? = null
-	var ignoreStopEvent = false
 
 	init {
 		this.queue = LinkedBlockingQueue()
@@ -57,16 +56,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
-		if (player.playingTrack != null) {
-			if (currentTrack != null) {
-				if (currentTrack!!.isAutoPlay) {
-					// Quem liga para músicas do autoplay? Cancele ela agora!
-					player.stopTrack()
-				}
-			}
-		}
-
-		if (player.playingTrack != null) {
+		if (player.playingTrack != null && currentTrack != null && !currentTrack!!.isAutoPlay) { // Quem liga para músicas do autoplay? Cancele ela agora!
 			queue.offer(track)
 		} else {
 			currentTrack = track
@@ -85,9 +75,8 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 		if (audioTrackWrapper == null) {
 			// Caso seja null, quer dizer que não existe "próxima" música, então vamos parar a atual
 			currentTrack = null
-			ignoreStopEvent = true
-			player.stopTrack()
-			ignoreStopEvent = false
+			if (player.playingTrack != null)
+				player.stopTrack()
 
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(guild.id)
@@ -95,20 +84,18 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 
 				// Então quer dizer que nós iniciamos uma música vazia?
 				// Okay então, vamos pegar nossas próprias coisas
-				ignoreStopEvent = true
 				LorittaUtilsKotlin.startRandomSong(guild, serverConfig)
-				ignoreStopEvent = false
 			}
 			return
 		}
 
-		player.playTrack(audioTrackWrapper.track)
 		this.currentTrack = audioTrackWrapper
+		player.playTrack(audioTrackWrapper.track)
 	}
 
 	override fun onTrackEnd(player: IPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-		if (endReason.mayStartNext && !ignoreStopEvent) {
+		if (endReason.mayStartNext) {
 			nextTrack()
 		}
 	}
