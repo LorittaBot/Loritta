@@ -189,7 +189,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								context.config.moderationConfig.punishmentLogMessage,
-								null,
+								listOf(user),
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
