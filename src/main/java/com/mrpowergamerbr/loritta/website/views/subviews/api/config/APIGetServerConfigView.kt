@@ -1,14 +1,20 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api.config
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
@@ -100,6 +106,14 @@ class APIGetServerConfigView : NoVarsView() {
 		}
 
 		serverConfigJson["roles"] = roles
+
+		val voteArray = serverConfigJson["serverListConfig"]["votes"].array
+		val newArray = JsonArray()
+		voteArray.forEach {
+			it["ip"] = null
+			it["email"] = null
+		}
+		serverConfigJson["serverListConfig"]["votes"] = newArray
 
 		return serverConfigJson.toString()
 	}
