@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2018.07.2.2</loritta.version>
+        <loritta.version>2018.07.3.0-SNAPSHOT</loritta.version>
         <kotlin.version>1.2.50</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
