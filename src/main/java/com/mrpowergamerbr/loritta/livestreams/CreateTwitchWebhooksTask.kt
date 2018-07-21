@@ -13,10 +13,12 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateTwitchWebhooksTask : Runnable {
 	companion object {
+		val lastNotified = ConcurrentHashMap<String, Long>()
 		private val logger = KotlinLogging.logger {}
 	}
 
