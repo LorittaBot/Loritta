@@ -5,6 +5,7 @@ import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -26,13 +27,15 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 
 			context.reply(
 					LoriReply(
-							"Você se divorciou!"
+							"Você se divorciou!",
+							"\uD83D\uDC94"
 					)
 			)
 		} else {
 			context.reply(
 					LoriReply(
-							"Você não está casado!"
+							"Você não está casado!",
+							Constants.ERROR
 					)
 			)
 		}

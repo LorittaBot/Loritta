@@ -34,6 +34,14 @@ object DateUtils {
 		return formatDateDiff(now, c, locale)
 	}
 
+	fun formatDateDiff(fromDate: Long, toDate: Long, locale: BaseLocale): String {
+		val c = GregorianCalendar()
+		c.timeInMillis = fromDate
+		val now = GregorianCalendar()
+		now.timeInMillis = toDate
+		return formatDateDiff(now, c, locale)
+	}
+
 	fun formatDateDiff(fromDate: Calendar, toDate: Calendar, locale: BaseLocale): String {
 		var future = false
 		if (toDate == fromDate) {

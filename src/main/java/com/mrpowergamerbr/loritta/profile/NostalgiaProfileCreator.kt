@@ -100,6 +100,24 @@ class NostalgiaProfileCreator : ProfileCreator {
 		graphics.font = whitneySemiBold20
 		graphics.drawText(userProfile.dreams.toString(), 159, 116  + shiftY, 800 - 6)
 
+		if (userProfile.marriedWith != null) {
+			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/nostalgia/marry.png"))
+			graphics.drawImage(marrySection, 0, 0, null)
+			val marriedWith = lorittaShards.getUserById(userProfile.marriedWith)
+
+			if (marriedWith != null) {
+				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
+				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
+				graphics.font = whitneySemiBold16
+				ImageUtils.drawCenteredString(graphics, "Casado com", Rectangle(545, 108, 256, 14), whitneySemiBold16)
+				graphics.font = whitneyMedium20
+				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
+				graphics.font = whitneySemiBold16
+				println("Casado as: " + userProfile.marriedAt)
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(userProfile.marriedAt ?: 0,System.currentTimeMillis(), locale), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
+			}
+		}
+
 		return base.makeRoundedCorners(15)
 	}
 }

@@ -28,41 +28,66 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
 			val splitCost = MARRIAGE_COST / 2
 
+			if (proposeTo.id == context.userHandle.id) {
+				context.reply(
+						LoriReply(
+								locale["MARRY_CantMarryYourself"],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			if (proposeTo.id == Loritta.config.clientId) {
+				context.reply(
+						LoriReply(
+								locale["MARRY_Loritta"],
+								"<:smol_lori_putassa:395010059157110785>"
+						)
+				)
+				return
+			}
+
 			if (context.lorittaUser.profile.marriedWith != null) {
 				// Não tem dinheiro suficiente!
 				context.reply(
 						LoriReply(
-								"Você já está casado com outra pessoa! Use `+divorciar` antes de se casar com outra pessoa!",
+								locale["MARRY_AlreadyMarried"],
 								Constants.ERROR
 						)
 				)
 				return
 			}
-			if (splitCost > context.lorittaUser.profile.dreams) {
-				// Não tem dinheiro suficiente!
-				context.reply(
-						LoriReply(
-								"Você não tem dinheiro suficiente para casar!",
-								Constants.ERROR
-						)
-				)
-				return
-			}
+
 			if (proposeToProfile.marriedWith != null) {
 				// Já está casado!
 				context.reply(
 						LoriReply(
-								"${proposeTo.asMention} já está casada com outra pessoa!",
+								locale["MARRY_AlreadyMarriedOther"],
 								Constants.ERROR
 						)
 				)
 				return
 			}
-			if (splitCost > proposeToProfile.dreams) {
+
+			if (splitCost > context.lorittaUser.profile.dreams) {
 				// Não tem dinheiro suficiente!
+				val diff = splitCost - context.lorittaUser.profile.dreams
 				context.reply(
 						LoriReply(
-								"${proposeTo.asMention} não tem dinheiro suficiente para casar!",
+								locale["MARRY_InsufficientFunds", diff],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			if (splitCost > proposeToProfile.dreams) {
+				// Não tem dinheiro suficiente!
+				val diff = splitCost - proposeToProfile.dreams
+				context.reply(
+						LoriReply(
+								locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
 								Constants.ERROR
 						)
 				)
@@ -72,11 +97,12 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			// Pedido enviado!
 			val replies = listOf(
 					LoriReply(
-							context.userHandle.asMention + " está pedindo " + proposeTo.asMention + " em casamento!",
+							proposeTo.asMention + " Você recebeu uma proposta de casamento de " + context.userHandle.asMention + "!",
 							"\uD83D\uDC8D"
 					),
 					LoriReply(
-							"Para aceitar, clique no \uD83D\uDC8D!"
+							"Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **10000 Sonhos**, e **200 Sonhos** todos os dias!",
+							"\uD83D\uDCB5"
 					)
 			)
 
@@ -90,46 +116,73 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
 					val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
 
+					if (proposeTo.id == context.userHandle.id) {
+						context.reply(
+								LoriReply(
+										locale["MARRY_CantMarryYourself"],
+										Constants.ERROR
+								)
+						)
+						return@onReactionAdd
+					}
+
+					if (proposeTo.id == Loritta.config.clientId) {
+						context.reply(
+								LoriReply(
+										locale["MARRY_Loritta"],
+										"<:smol_lori_putassa:395010059157110785>"
+								)
+						)
+						return@onReactionAdd
+					}
+
 					if (profile.marriedWith != null) {
 						// Não tem dinheiro suficiente!
 						context.reply(
 								LoriReply(
-										"Você já está casado com outra pessoa! Use `+divorciar` antes de se casar com outra pessoa!",
+										locale["MARRY_AlreadyMarried"],
 										Constants.ERROR
 								)
 						)
 						return@onReactionAdd
 					}
-					if (splitCost > profile.dreams) {
-						// Não tem dinheiro suficiente!
-						context.reply(
-								LoriReply(
-										"Você não tem dinheiro suficiente para casar!",
-										Constants.ERROR
-								)
-						)
-						return@onReactionAdd
-					}
+
 					if (proposeToProfile.marriedWith != null) {
 						// Já está casado!
 						context.reply(
 								LoriReply(
-										"${proposeTo.asMention} já está casada com outra pessoa!",
+										locale["MARRY_AlreadyMarriedOther"],
 										Constants.ERROR
 								)
 						)
 						return@onReactionAdd
 					}
-					if (splitCost > proposeToProfile.dreams) {
+
+					if (splitCost > profile.dreams) {
 						// Não tem dinheiro suficiente!
+						val diff = splitCost - profile.dreams
 						context.reply(
 								LoriReply(
-										"${proposeTo.asMention} não tem dinheiro suficiente para casar!",
+										locale["MARRY_InsufficientFunds", diff],
 										Constants.ERROR
 								)
 						)
 						return@onReactionAdd
 					}
+
+					if (splitCost > proposeToProfile.dreams) {
+						// Não tem dinheiro suficiente!
+						val diff = splitCost - proposeToProfile.dreams
+						context.reply(
+								LoriReply(
+										locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+										Constants.ERROR
+								)
+						)
+						return@onReactionAdd
+					}
+
+					val marriedAt = System.currentTimeMillis()
 
 					// Okay, tudo certo, vamos lá!
 					val bulk = listOf<WriteModel<Document>>(
@@ -142,11 +195,17 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 							),
 							UpdateOneModel<Document>(
 									Filters.eq("_id", context.userHandle.id),
-									Updates.set("marriedWith", proposeTo.id)
+									Updates.combine(
+											Updates.set("marriedWith", proposeTo.id),
+											Updates.set("marriedAt", marriedAt)
+									)
 							),
 							UpdateOneModel<Document>(
 									Filters.eq("_id", proposeTo.id),
-									Updates.set("marriedWith", context.userHandle.id)
+									Updates.combine(
+											Updates.set("marriedWith", context.userHandle.id),
+											Updates.set("marriedAt", marriedAt)
+									)
 							)
 					)
 
@@ -156,7 +215,8 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 					context.reply(
 							LoriReply(
-									"Vocês se casaram! Felicidades para vocês!"
+									"Vocês se casaram! Felicidades para vocês dois!",
+									"❤"
 							)
 					)
 				}

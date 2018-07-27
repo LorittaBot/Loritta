@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
@@ -23,7 +24,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: LorittaProfile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 
@@ -126,6 +127,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
 			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+			if (profile.marriedWith != null) badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
 			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
 			return badges
@@ -169,7 +171,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-		val badges = getUserBadges(user)
+		val badges = getUserBadges(user, userProfile)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 

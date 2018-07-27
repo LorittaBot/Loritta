@@ -4,11 +4,11 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
-import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.evaluate
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Guild
@@ -59,7 +59,7 @@ class ProfileView : AbstractView() {
 			return evaluate("profile_dashboard.html", variables)
 		}
 
-		variables["badgesBase64"] = PerfilCommand.getUserBadges(user).map {
+		variables["badgesBase64"] = PerfilCommand.getUserBadges(user, lorittaProfile).map {
 			val baos = ByteArrayOutputStream()
 			ImageIO.write(it, "png", baos)
 			Base64.getEncoder().encodeToString(baos.toByteArray())
