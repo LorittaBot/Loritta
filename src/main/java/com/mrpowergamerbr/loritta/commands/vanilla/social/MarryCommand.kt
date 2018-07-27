@@ -14,7 +14,7 @@ import org.bson.Document
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
-		val marriageCost = 30000
+		val MARRIAGE_COST = 20000
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
@@ -26,7 +26,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 		if (proposeTo != null) {
 			val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
-			val splitCost = marriageCost / 2
+			val splitCost = MARRIAGE_COST / 2
 
 			if (context.lorittaUser.profile.marriedWith != null) {
 				// Não tem dinheiro suficiente!

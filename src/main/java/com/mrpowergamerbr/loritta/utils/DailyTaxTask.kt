@@ -22,13 +22,13 @@ class DailyTaxTask : Runnable {
 		if (!force) {
 			val calendar = Calendar.getInstance()
 
-			if (19 == calendar[Calendar.HOUR_OF_DAY])
+			if (19 != calendar[Calendar.HOUR_OF_DAY])
 				return
 
 			if (lastDailyTax.exists()) {
 				val lastWas = lastDailyTax.readText().toLong()
 
-				if (System.currentTimeMillis() > 3_600_000 + lastWas) {
+				if (3_600_000 + lastWas > System.currentTimeMillis()) {
 					return
 				}
 			}
