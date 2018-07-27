@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2018.07.3.0-SNAPSHOT</loritta.version>
+        <loritta.version>2018.07.3.0</loritta.version>
         <kotlin.version>1.2.50</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,9 +84,9 @@
             <version>2.6.2</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>${jda.version}</version>
+            <version>87f6ea5cd3</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
