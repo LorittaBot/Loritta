@@ -4,11 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
-import java.awt.Image
-import java.awt.RenderingHints
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.text.DecimalFormat
@@ -424,8 +420,8 @@ object TretaNewsGenerator {
 	fun generate(guild: Guild, usr1: Member, usr2: Member): GeneratedTretaNews {
 		val randomYt = ArrayList(TretaNewsGenerator.randomYt)
 
-		val str1 = usr1.effectiveName
-		val str2 = usr2.effectiveName
+		val str1 = usr1.effectiveName.stripCodeMarks()
+		val str2 = usr2.effectiveName.stripCodeMarks()
 		randomYt.add(str1)
 		randomYt.add(str2)
 
