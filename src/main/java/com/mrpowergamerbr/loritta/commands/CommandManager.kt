@@ -150,6 +150,8 @@ class CommandManager {
 		commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(ChannelInfoCommand())
+		commandMap.add(AddEmojiCommand())
+		commandMap.add(RemoveEmojiCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
