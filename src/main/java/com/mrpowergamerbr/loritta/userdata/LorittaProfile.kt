@@ -43,6 +43,8 @@ class LorittaProfile @BsonCreator constructor(
 	var donatedAt = 0L
 	var donationExpiresIn = 0L
 
+    var marriedWith: String? = null
+
     @BsonIgnore
     fun getCurrentLevel(): LorittaProfile.XpWrapper {
         return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)

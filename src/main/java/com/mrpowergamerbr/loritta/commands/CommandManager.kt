@@ -117,6 +117,8 @@ class CommandManager {
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
 		commandMap.add(AfkCommand())
+		commandMap.add(MarryCommand())
+		commandMap.add(DivorceCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
