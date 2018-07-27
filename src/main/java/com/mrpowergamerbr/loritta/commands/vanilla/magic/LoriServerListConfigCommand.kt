@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -18,6 +20,23 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)
 		val arg3 = context.rawArgs.getOrNull(3)
+
+		if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
+			val user = context.getUserAt(2)!!
+			loritta.usersColl.updateOne(
+					Filters.eq("_id", user.id),
+					Updates.set(
+							"dreams",
+							arg1.toDouble()
+					)
+			)
+			context.reply(
+					LoriReply(
+							"Sonhos de ${user.asMention} foram editados com sucesso!"
+					)
+			)
+			return
+		}
 
 		if (arg0 == "set_sponsor" && arg1 != null && arg2 != null && arg3 != null) {
 			val guild = lorittaShards.getGuildById(arg1)!!

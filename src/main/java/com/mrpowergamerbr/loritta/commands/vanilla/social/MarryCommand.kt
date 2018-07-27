@@ -14,7 +14,7 @@ import org.bson.Document
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
-		val marriageCost = 40000
+		val marriageCost = 30000
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
