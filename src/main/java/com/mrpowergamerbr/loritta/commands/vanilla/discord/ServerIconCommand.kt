@@ -50,13 +50,13 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		var description = "**${context.locale["AVATAR_CLICKHERE", guild.iconUrl + "?size=2048"]}**"
+		val description = "**${context.locale["AVATAR_CLICKHERE", guild.iconUrl + "?size=2048"]}**"
 
 		embed.setDescription(description)
 		embed.setImage(guild.iconUrl) // Ícone da Guild
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
-		embed.setImage(if (!guild.iconUrl.endsWith(".gif")) "?size=2048" else "")
+		embed.setImage(guild.iconUrl + (if (!guild.iconUrl.endsWith(".gif")) "?size=2048" else ""))
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}
