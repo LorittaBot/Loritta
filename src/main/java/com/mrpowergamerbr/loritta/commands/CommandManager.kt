@@ -145,6 +145,7 @@ class CommandManager {
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
 		commandMap.add(AvatarCommand())
+		commandMap.add(ServerIconCommand())
 		commandMap.add(EmojiCommand())
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
