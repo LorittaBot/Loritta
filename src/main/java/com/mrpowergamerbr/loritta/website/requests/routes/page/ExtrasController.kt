@@ -13,6 +13,7 @@ class ExtrasController {
 	@GET
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
+		variables["extraType"] = "default"
 		res.send(evaluate("extras.html", variables))
 	}
 }
