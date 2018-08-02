@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.logger
@@ -124,6 +126,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			serverConfig.localeId = "default"
 		} else {
 			serverConfig.localeId = "en-us"
+		}
+
+		// Adicionar a permissão de DJ para alguns cargos
+		event.guild.roles.forEach {
+			if (it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER)) {
+				serverConfig.permissionsConfig.roles[it.id] = PermissionsConfig.PermissionRole().apply {
+					this.permissions.add(LorittaPermission.DJ)
+				}
+			}
 		}
 
 		// E depois iremos salvar a configuração do servidor

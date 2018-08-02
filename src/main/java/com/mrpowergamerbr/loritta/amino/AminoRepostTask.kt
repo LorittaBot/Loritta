@@ -126,7 +126,7 @@ class AminoRepostTask : Runnable {
 						try {
 							val titleDiv = post.getElementsByClass("main-post").first()
 
-							val title = titleDiv.getElementsByTag("header").first().getElementsByTag("h3").text()
+							val title = titleDiv.getElementsByTag("header").firstOrNull()?.getElementsByTag("h3")?.text() ?: "Amino Post"
 							val nickname = titleDiv.getElementsByClass("overflow-hidden").first().getElementsByClass("nickname").text()
 							val avatar = titleDiv.getElementsByTag("section").first().getElementsByClass("avatar").firstOrNull()?.attr("data-src")
 

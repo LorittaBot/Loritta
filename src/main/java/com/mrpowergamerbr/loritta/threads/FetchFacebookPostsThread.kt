@@ -24,7 +24,7 @@ class FetchFacebookPostsThread : Thread("Fetch Facebook Posts Thread") {
 
 			loritta.southAmericaMemesPageCache.addAll(pagePostsSAM)
 
-			if (loritta.southAmericaMemesPageCache.size > 20) {
+			if (loritta.southAmericaMemesPageCache.size > 60) {
 				loritta.southAmericaMemesPageCache = loritta.southAmericaMemesPageCache.subList(19, loritta.southAmericaMemesPageCache.size)
 			}
 		} catch (e: Exception) {

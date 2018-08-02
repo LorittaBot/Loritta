@@ -17,7 +17,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>3.7.1_386</jda.version>
+        <jda.version>3.7.1_387</jda.version>
     </properties>
 
     <repositories>
@@ -126,22 +126,22 @@
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-netty</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-lang-kotlin</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-mongodb</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mongodb</groupId>

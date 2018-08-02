@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -222,7 +223,7 @@ enum class NSFWResponse {
 }
 
 object LorittaUtilsKotlin {
-	val logger by logger()
+	val logger = KotlinLogging.logger {}
 
 	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
 		if (profile.isBanned) {
@@ -450,18 +451,23 @@ object LorittaUtilsKotlin {
 	 */
 	fun getRandomPostsFromPage(page: String, limit: Int = 5): List<FacebookPostWrapper> {
 		val response = HttpRequest
-				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}&limit=$limit")
+				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 500)}&limit=$limit")
 				.body()
 
-		val json = jsonParser.parse(response)
+		val json = jsonParser.parse(response).obj
 
-		var url: String? = null;
-		var description: String? = null;
+		var url: String?
+		var description: String?
 
 		val posts = mutableListOf<FacebookPostWrapper>()
 
+		if (json["data"].nullArray == null) {
+			logger.error("Page payload has null data! ${response}")
+			return listOf()
+		}
+
 		for (post in json["data"].array) {
-			var foundUrl = post["attachments"]["data"][0]["url"].string;
+			val foundUrl = post["attachments"]["data"][0]["url"].string;
 
 			if (!foundUrl.contains("video")) {
 				try { // Provavelmente não é o que nós queremos
