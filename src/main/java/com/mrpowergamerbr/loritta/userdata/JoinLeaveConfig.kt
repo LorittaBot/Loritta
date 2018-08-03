@@ -27,4 +27,8 @@ class JoinLeaveConfig {
 	var tellOnKick: Boolean = false
 	@AllowReflection
 	var kickMessage: String = ""
+	@AllowReflection
+	var deleteJoinMessagesAfter: Long? = null
+	@AllowReflection
+	var deleteLeaveMessagesAfter: Long? = null
 }

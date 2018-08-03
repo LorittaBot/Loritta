@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.audit.ActionType
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import java.util.concurrent.TimeUnit
 
 object WelcomeModule {
 	fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig) {
@@ -21,8 +22,12 @@ object WelcomeModule {
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
-						if (msg.isNotEmpty())
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild)).queue()
+						if (msg.isNotEmpty()) {
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild)).queue {
+								if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
+									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
+							}
+						}
 					} else {
 						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
@@ -35,9 +40,9 @@ object WelcomeModule {
 				val msg = joinLeaveConfig.joinPrivateMessage
 				try {
 					if (msg.isNotEmpty())
-						event.user.openPrivateChannel().queue({
+						event.user.openPrivateChannel().queue {
 							it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild)).queue() // Pronto!
-						})
+						}
 				} catch (e: ErrorResponseException) {
 					if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas
 						throw e
@@ -62,11 +67,14 @@ object WelcomeModule {
 						val customTokens = mutableMapOf<String, String>()
 
 						val callback: (String, Map<String, String>) -> Unit = { msg, customTokens ->
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)).queue()
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)).queue {
+								if (serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
+									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!, TimeUnit.SECONDS)
+							}
 						}
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							guild.auditLogs.queue({ auditLogs ->
+							guild.auditLogs.queue { auditLogs ->
 								if (auditLogs.isNotEmpty()) {
 									val entry = guild.auditLogs.complete().firstOrNull { it.targetId == event.user.id }
 
@@ -96,7 +104,7 @@ object WelcomeModule {
 									}
 									callback.invoke(msg, customTokens)
 								}
-							})
+							}
 							return
 						}
 
