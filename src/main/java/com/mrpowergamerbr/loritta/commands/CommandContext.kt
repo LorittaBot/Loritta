@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 /**
@@ -128,6 +129,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(message).complete()
+				if (config.deleteMessagesAfter != null)
+					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
@@ -151,6 +154,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(embed).complete()
+				if (config.deleteMessagesAfter != null)
+					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
@@ -256,6 +261,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).complete()
 				inputStream.close()
+				if (config.deleteMessagesAfter != null)
+					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return sentMessage
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)

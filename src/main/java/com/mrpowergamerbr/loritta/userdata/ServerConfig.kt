@@ -32,6 +32,7 @@ class ServerConfig @BsonCreator constructor(
 	var warnOnUnknownCommand = false
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
 	var warnIfBlacklisted = false
+	var deleteMessagesAfter: Long? = null
 	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)! <:blobBlush:357977010771066890>"
 	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 
