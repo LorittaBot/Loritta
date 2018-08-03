@@ -6,6 +6,6 @@ import net.dv8tion.jda.core.entities.Guild
 
 class MiscellaneousPayload : ConfigPayloadType("miscellaneous") {
 	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
-		applyReflection(payload, serverConfig.joinLeaveConfig)
+		applyReflection(payload, serverConfig.miscellaneousConfig)
 	}
 }

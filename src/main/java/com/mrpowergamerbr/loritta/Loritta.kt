@@ -137,6 +137,7 @@ class Loritta(config: LorittaConfig) {
 
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
+	var blacklistedServers = mutableListOf<Pair<String, String>>()
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
@@ -159,6 +160,7 @@ class Loritta(config: LorittaConfig) {
 		resetYouTubeKeys()
 		loadFanArts()
 		loadPremiumKeys()
+		loadBlacklistedServers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
@@ -523,6 +525,14 @@ class Loritta(config: LorittaConfig) {
 	fun loadPremiumKeys() {
 		if (File("./premium-keys.json").exists())
 			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
+	}
+
+	/**
+	 * Loads the blacklisted server list from the "blacklisted-servers.json" file
+	 */
+	fun loadBlacklistedServers() {
+		if (File("./blacklisted-servers.json").exists())
+			premiumKeys = GSON.fromJson(File("./blacklisted-servers.json").readText())
 	}
 
 	/**

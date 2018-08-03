@@ -51,6 +51,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (isOwnerBanned(ownerProfile, event.guild))
 					return@execute
 
+				if (isGuildBanned(event.guild))
+					return@execute
+
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
 					var response = locale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
@@ -296,6 +299,23 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
 			if (ownerProfile.userId != Loritta.config.ownerId) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
+				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				return true
+			}
+		}
+		return false
+	}
+
+	/**
+	 * Checks if the guild is blacklisted and, if yes, makes me quit the server
+	 *
+	 * @param guild        the guild
+	 * @return if the owner of the guild is banned
+	 */
+	fun isGuildBanned(guild: Guild): Boolean {
+		if (loritta.blacklistedServers.any { it.first == guild.id }) { // Se o servidor está banido...
+			if (guild.owner.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
+				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
