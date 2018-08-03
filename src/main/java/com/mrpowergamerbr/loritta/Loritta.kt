@@ -130,6 +130,7 @@ class Loritta(config: LorittaConfig) {
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
+	var channelListener = ChannelListener(this)
 	var builder: JDABuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -172,6 +173,7 @@ class Loritta(config: LorittaConfig) {
 				.addEventListener(eventLogListener)
 				.addEventListener(messageListener)
 				.addEventListener(voiceChannelListener)
+				.addEventListener(channelListener)
 				.addEventListener(audioManager.lavalink)
 				.setMaxReconnectDelay(3500)
 	}
