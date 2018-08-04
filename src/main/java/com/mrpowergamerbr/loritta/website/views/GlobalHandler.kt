@@ -230,7 +230,6 @@ object GlobalHandler {
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
-		views.add(LorigotchiView())
 		views.add(LoriPartnerView())
 		views.add(ServersView())
 		views.add(DonateView())

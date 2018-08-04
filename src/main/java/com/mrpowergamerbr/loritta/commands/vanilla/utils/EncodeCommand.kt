@@ -55,7 +55,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 			"rot13" -> rot13(text)
 			"uuid" -> UUID.nameUUIDFromBytes(text.toByteArray(Charsets.UTF_8)).toString()
 			"base64" -> {
-				val b64 = Base64.getEncoder().encode("Test".toByteArray(Charsets.UTF_8))
+				val b64 = Base64.getEncoder().encode(text.toByteArray(Charsets.UTF_8))
 				String(b64)
 			}
 			else -> null
