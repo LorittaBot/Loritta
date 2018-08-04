@@ -11,7 +11,7 @@ class ChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				val config = loritta.getServerConfigForGuild(event.guild.id)
 
 				if (config.miscellaneousConfig.enableQuirky) {
-					event.channel.sendMessage("First!").queue()
+					event.channel.sendMessage("First! <:lori_owo:417813932380520448>").queue()
 				}
 			}
 		}
