@@ -17,7 +17,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>3.7.1_387</jda.version>
+        <jda.version>3.7.1_388</jda.version>
     </properties>
 
     <repositories>

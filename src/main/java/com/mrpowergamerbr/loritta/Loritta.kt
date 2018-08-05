@@ -224,7 +224,7 @@ class Loritta(config: LorittaConfig) {
 			logger.info("Iniciando Shard $idx...")
 			val shard = builder
 					.useSharding(idx, Loritta.config.shards)
-					.buildAsync()
+					.build()
 
 			lorittaShards.shards.add(shard)
 			logger.info("Shard $idx iniciada com sucesso!")
