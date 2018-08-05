@@ -72,7 +72,7 @@ abstract class ProtectedView : AbstractView() {
 								// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 								if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
 									// Verificar coisas antes de adicionar a Lori
-									val blacklistedReason = loritta.blacklistedServers.firstOrNull { guild.id == it.first }?.second
+									val blacklistedReason = loritta.blacklistedServers.entries.firstOrNull { guild.id == it.key }?.value
 									if (blacklistedReason != null) { // Servidor blacklisted
 										// Envie via DM uma mensagem falando sobre a Loritta!
 										val message = locale["LORITTA_BlacklistedServer", blacklistedReason]

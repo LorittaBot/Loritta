@@ -317,7 +317,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @return if the owner of the guild is banned
 	 */
 	fun isGuildBanned(guild: Guild): Boolean {
-		if (loritta.blacklistedServers.any { it.first == guild.id }) { // Se o servidor está banido...
+		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
 			if (guild.owner.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ

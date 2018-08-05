@@ -169,7 +169,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				val punishments = config.moderationConfig.punishmentActions.filter { it.warnCount == warnCount }
 
 				for (punishment in punishments) {
-					if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context, locale, user, reason, isSilent, punishment.customMetadata1)
+					if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN) SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK) KickCommand.kick(context, locale, member, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE) {
