@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
+import java.net.InetAddress
 import java.net.ServerSocket
 
 class SocketServer(val socketPort: Int) {
@@ -22,7 +23,7 @@ class SocketServer(val socketPort: Int) {
 	}
 
 	fun start() {
-		val listener = ServerSocket(socketPort)
+		val listener = ServerSocket(socketPort, 0, InetAddress.getLoopbackAddress())
 		try {
 			while (true) {
 				val socket = listener.accept()
