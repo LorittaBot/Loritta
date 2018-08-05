@@ -91,7 +91,7 @@ class Loritta(config: LorittaConfig) {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val socket = SocketServer(Loritta.config.socketPort)
+	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
 	val coroutineDispatcher = createThreadPool("Executor Thread %d").asCoroutineDispatcher() // Coroutine Dispatcher
 	val threadPool = Executors.newScheduledThreadPool(40)
@@ -215,6 +215,8 @@ class Loritta(config: LorittaConfig) {
 
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
+
+		socket = SocketServer(Loritta.config.socketPort)
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
