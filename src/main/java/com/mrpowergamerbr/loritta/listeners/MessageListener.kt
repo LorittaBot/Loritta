@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import mu.KotlinLogging
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Role
@@ -55,6 +56,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
+					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
+						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+
 					var response = locale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
