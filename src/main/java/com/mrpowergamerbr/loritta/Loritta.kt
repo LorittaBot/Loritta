@@ -91,7 +91,7 @@ class Loritta(config: LorittaConfig) {
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val socket = SocketServer(10699)
+	val socket = SocketServer(Loritta.config.socketPort)
 	val executor = createThreadPool("Executor Thread %d") // Threads
 	val coroutineDispatcher = createThreadPool("Executor Thread %d").asCoroutineDispatcher() // Coroutine Dispatcher
 	val threadPool = Executors.newScheduledThreadPool(40)
