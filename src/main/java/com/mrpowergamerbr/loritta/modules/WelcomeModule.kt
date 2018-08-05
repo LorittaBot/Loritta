@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 object WelcomeModule {
 	fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig) {
-		if (event.user.id != Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
+		if (event.user.id == Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
 			return
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
@@ -57,7 +57,7 @@ object WelcomeModule {
 	}
 
 	fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig) {
-		if (event.user.id != Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
+		if (event.user.id == Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
 			return
 
 		Thread.sleep(500) // esperar 0.5ms antes de avisar
