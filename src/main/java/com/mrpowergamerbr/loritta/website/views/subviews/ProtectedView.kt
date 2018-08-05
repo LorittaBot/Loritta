@@ -71,6 +71,37 @@ abstract class ProtectedView : AbstractView() {
 							if (member != null) {
 								// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 								if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
+									// Verificar coisas antes de adicionar a Lori
+									val blacklistedReason = loritta.blacklistedServers.firstOrNull { guild.id == it.first }?.second
+									if (blacklistedReason != null) { // Servidor blacklisted
+										// Envie via DM uma mensagem falando sobre a Loritta!
+										val message = locale["LORITTA_BlacklistedServer", blacklistedReason]
+
+										user.openPrivateChannel().queue {
+											it.sendMessage(message).queue({
+												guild.leave().queue()
+											}, {
+												guild.leave().queue()
+											})
+										}
+										return false
+									}
+
+									val profile = loritta.getLorittaProfileForUser(guild.owner.user.id)
+									if (profile.isBanned) { // Dono blacklisted
+										// Envie via DM uma mensagem falando sobre a Loritta!
+										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner.user.asMention, profile.banReason ?: "???"]
+
+										user.openPrivateChannel().queue {
+											it.sendMessage(message).queue({
+												guild.leave().queue()
+											}, {
+												guild.leave().queue()
+											})
+										}
+										return false
+									}
+
 									// Envie via DM uma mensagem falando sobre a Loritta!
 									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
 
