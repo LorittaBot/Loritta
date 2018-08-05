@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import net.dv8tion.jda.core.Permission
@@ -12,6 +13,9 @@ import java.util.concurrent.TimeUnit
 
 object WelcomeModule {
 	fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig) {
+		if (event.user.id != Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
+			return
+
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 			val guild = event.guild
@@ -53,6 +57,9 @@ object WelcomeModule {
 	}
 
 	fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig) {
+		if (event.user.id != Constants.REVENGE_TAKEDOWN_ID) // Ignorar ID do RevengeTakedown
+			return
+
 		Thread.sleep(500) // esperar 0.5ms antes de avisar
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 		if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
