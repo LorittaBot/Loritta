@@ -42,7 +42,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 		if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
 			val userId = arg1
-			val guildId = arg2
+			var guildId = arg2
+			if (guildId == "null")
+				guildId = null
 
 			val rawArgs = context.rawArgs.toMutableList()
 			rawArgs.removeAt(0)

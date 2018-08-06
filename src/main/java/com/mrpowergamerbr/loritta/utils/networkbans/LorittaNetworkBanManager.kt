@@ -45,18 +45,22 @@ class LorittaNetworkBanManager {
 		).toMutableList()
 
 		for (serverConfig in serverConfigs) {
-			val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
-			logger.info("Banindo ${user.id} em ${guild.id}...")
-			BanCommand.ban(
-					serverConfig,
-					guild,
-					guild.selfMember.user,
-					loritta.getLocaleById(serverConfig.localeId),
-					user,
-					reason,
-					false,
-					7
-			)
+			try {
+				val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
+				logger.info("Banindo ${user.id} em ${guild.id}...")
+				BanCommand.ban(
+						serverConfig,
+						guild,
+						guild.selfMember.user,
+						loritta.getLocaleById(serverConfig.localeId),
+						user,
+						reason,
+						false,
+						7
+				)
+			} catch (e: Exception) {
+				logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
+			}
 		}
 	}
 
