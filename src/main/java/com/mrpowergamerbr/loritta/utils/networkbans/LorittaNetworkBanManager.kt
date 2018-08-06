@@ -4,10 +4,13 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
+import net.dv8tion.jda.core.entities.User
 import java.io.File
+import kotlin.concurrent.fixedRateTimer
 
 class LorittaNetworkBanManager {
 	companion object {
@@ -16,17 +19,19 @@ class LorittaNetworkBanManager {
 
 	private var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 
-	fun addBanEntry(entry: NetworkBanEntry) {
-		val userId = entry.id
-		val user = lorittaShards.getUserById(entry.id) ?: run {
-			logger.error("$userId não é um usuário válido!")
-			return
+	init {
+		fixedRateTimer(period = 300000L) {
+			logger.info("Verificando ${networkBannedUsers.size} usuários banidos...")
+
+			for (entry in networkBannedUsers) {
+				val user = lorittaShards.getUserById(entry.id) ?: continue
+
+				punishUser(user, createBanReason(entry))
+			}
 		}
+	}
 
-		networkBannedUsers.add(entry)
-
-		saveNetworkBannedUsers()
-
+	fun punishUser(user: User, reason: String) {
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
 
 		if (mutualGuilds.isEmpty())
@@ -41,18 +46,46 @@ class LorittaNetworkBanManager {
 
 		for (serverConfig in serverConfigs) {
 			val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
-			logger.info("Banindo ${entry.id} em ${guild.id}...")
+			logger.info("Banindo ${user.id} em ${guild.id}...")
 			BanCommand.ban(
 					serverConfig,
 					guild,
 					guild.selfMember.user,
 					loritta.getLocaleById(serverConfig.localeId),
 					user,
-					entry.reason,
+					reason,
 					false,
 					7
 			)
 		}
+	}
+
+	fun createBanReason(entry: NetworkBanEntry): String {
+		var reason = entry.reason
+
+		if (entry.guildId != null) {
+			val guild = lorittaShards.getGuildById(entry.guildId)
+
+			if (guild != null) {
+				reason += "(Punido em ${guild.name.escapeMentions()}) "
+			}
+		}
+
+		return reason
+	}
+
+	fun addBanEntry(entry: NetworkBanEntry) {
+		val userId = entry.id
+		val user = lorittaShards.getUserById(entry.id) ?: run {
+			logger.error("$userId não é um usuário válido!")
+			return
+		}
+
+		networkBannedUsers.add(entry)
+
+		saveNetworkBannedUsers()
+
+		punishUser(user, createBanReason(entry))
 	}
 
 	fun getNetworkBanEntry(id: String): NetworkBanEntry? {

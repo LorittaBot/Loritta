@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.socket
 
+import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
@@ -59,7 +60,7 @@ class SocketServer(val socketPort: Int) {
 								}
 							}
 							UpdateType.ADD_NETWORK_BAN -> {
-								val entry = NetworkBanEntry(jsonObject["userId"].string, NetworkBanType.valueOf(jsonObject["banType"].string), jsonObject["reason"].string)
+								val entry = NetworkBanEntry(jsonObject["userId"].string, jsonObject["guildId"].nullString, NetworkBanType.valueOf(jsonObject["banType"].string), jsonObject["reason"].string)
 								loritta.networkBanManager.addBanEntry(entry)
 							}
 						}
