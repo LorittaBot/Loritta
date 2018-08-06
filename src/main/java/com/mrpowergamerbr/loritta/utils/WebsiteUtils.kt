@@ -481,18 +481,6 @@ object WebsiteUtils {
 			roles.add(json)
 		}
 
-		val members = JsonArray()
-		for (member in guild.members) {
-			val json = JsonObject()
-
-			json["id"] = member.user.id
-			json["name"] = member.user.name
-			json["discriminator"] = member.user.discriminator
-			json["avatar"] = member.user.avatarUrl
-
-			members.add(json)
-		}
-
 		val emotes = JsonArray()
 		for (emote in guild.emotes) {
 			val json = JsonObject()
@@ -504,7 +492,6 @@ object WebsiteUtils {
 		}
 
 		serverConfigJson["roles"] = roles
-		serverConfigJson["members"] = members
 		serverConfigJson["emotes"] = emotes
 		serverConfigJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
 
@@ -521,6 +508,7 @@ object WebsiteUtils {
 		}
 
 		serverConfigJson["guildName"] = guild.name
+		serverConfigJson["memberCount"] = guild.members.size
 
 		// Filtrar informações
 		val voteArray = serverConfigJson["serverListConfig"]["votes"].array
