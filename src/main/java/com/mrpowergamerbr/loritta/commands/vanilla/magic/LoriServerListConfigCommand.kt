@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import org.apache.commons.lang3.RandomStringUtils
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -36,6 +38,32 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					)
 			)
 			return
+		}
+
+		if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
+			val userId = arg1
+			val guildId = arg2
+
+			val rawArgs = context.rawArgs.toMutableList()
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+
+			loritta.networkBanManager.addBanEntry(
+					NetworkBanEntry(
+							userId,
+							guildId,
+							NetworkBanType.valueOf(arg3),
+							rawArgs.joinToString(" ")
+					)
+			)
+
+			context.reply(
+					LoriReply(
+							"Usuário banido na Loritta Bans Network!"
+					)
+			)
 		}
 
 		if (arg0 == "set_sponsor" && arg1 != null && arg2 != null && arg3 != null) {
