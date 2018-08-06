@@ -18,13 +18,14 @@ abstract class ConfigPayloadType(val type: String) {
 				continue
 
 			field.isAccessible = true
-
+			
 			when {
 				value.isJsonNull -> field.set(type, null)
 				field.type.isAssignableFrom(Integer::class.java) -> field.setInt(type, value.int)
 				field.type.isAssignableFrom(Double::class.java) -> field.setDouble(type, value.double)
 				field.type.isAssignableFrom(Float::class.java) -> field.setFloat(type, value.float)
 				field.type.isAssignableFrom(Boolean::class.java) -> field.setBoolean(type, value.bool)
+				field.type.isAssignableFrom(Long::class.java) -> field.setLong(type, value.long)
 				else -> {
 					field.set(type, gson.fromJson(value))
 				}
