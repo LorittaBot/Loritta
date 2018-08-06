@@ -25,6 +25,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 	}
 
+	val warnedBadLoadedGuilds = mutableSetOf<String>()
+
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
@@ -37,6 +39,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val member = event.member
 				if (member == null) {
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
+					return@execute
+				}
+
+				if (event.guild.owner == null && !warnedBadLoadedGuilds.contains(event.guild.id)) {
+					warnedBadLoadedGuilds.add(event.guild.id)
+					logger.warn { "Guild ${event.guild.id} não foi iniciada corretamente, owner == null!" }
 					return@execute
 				}
 

@@ -15,9 +15,14 @@ class ServerInvitesCommand : AbstractCommand("serverinvites", category = Command
 		val serverId = context.args[0]
 
 		var list = ""
-		for (invite in LorittaLauncher.loritta.lorittaShards.getGuildById(serverId)!!.invites.complete()) {
+		var idx = 0
+		for (invite in LorittaLauncher.loritta.lorittaShards.getGuildById(serverId)!!.invites.complete().sortedByDescending { it.uses }) {
+			if (idx == 5)
+				break
 			list += "https://discord.gg/" + invite.code + " (" + invite.uses + "/" + invite.maxUses + ") (Criado por " + invite.inviter.name + "#" + invite.inviter.discriminator + ")\n"
+			idx++
 		}
+
 		context.sendMessage(context.getAsMention(true) + "\n" + list)
 	}
 }
