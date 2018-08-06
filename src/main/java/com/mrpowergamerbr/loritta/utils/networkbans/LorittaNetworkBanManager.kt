@@ -20,6 +20,8 @@ class LorittaNetworkBanManager {
 	private var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 
 	init {
+		loadNetworkBannedUsers()
+
 		fixedRateTimer(period = 300000L) {
 			logger.info("Verificando ${networkBannedUsers.size} usuários banidos...")
 

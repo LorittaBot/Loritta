@@ -162,7 +162,6 @@ class Loritta(config: LorittaConfig) {
 		loadFanArts()
 		loadPremiumKeys()
 		loadBlacklistedServers()
-		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
