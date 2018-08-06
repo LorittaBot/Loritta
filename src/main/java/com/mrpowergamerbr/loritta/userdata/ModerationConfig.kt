@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.userdata
 
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonProperty
-import org.bson.codecs.pojo.annotations.BsonIgnore
 
 class ModerationConfig {
 	var sendPunishmentViaDm: Boolean = false

@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
-class JoinLeaveConfig {
+class WelcomerConfig {
 	@AllowReflection
 	var isEnabled: Boolean = false
 	@AllowReflection

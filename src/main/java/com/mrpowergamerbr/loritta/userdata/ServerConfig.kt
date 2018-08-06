@@ -38,7 +38,7 @@ class ServerConfig @BsonCreator constructor(
 
 	var nashornEventHandlers = ArrayList<NashornEventHandler>()
 
-	var joinLeaveConfig = JoinLeaveConfig()
+	var joinLeaveConfig = WelcomerConfig()
 	var musicConfig = MusicConfig()
 	var aminoConfig = AminoConfig()
 	var youTubeConfig = YouTubeConfig()
