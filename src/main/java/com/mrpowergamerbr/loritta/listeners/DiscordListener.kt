@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
@@ -150,6 +151,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
+
+				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
+					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
+					BanCommand.ban(
+							conf,
+							event.guild,
+							event.guild.selfMember.user,
+							com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(conf.localeId),
+							event.user,
+							entry.reason,
+							false,
+							7
+					)
+					return@execute
+				}
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberJoin(event)

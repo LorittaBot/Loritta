@@ -30,6 +30,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -137,6 +138,7 @@ class Loritta(config: LorittaConfig) {
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
+	val networkBanManager = LorittaNetworkBanManager()
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
@@ -160,6 +162,7 @@ class Loritta(config: LorittaConfig) {
 		loadFanArts()
 		loadPremiumKeys()
 		loadBlacklistedServers()
+		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
@@ -530,19 +533,19 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Loads the blacklisted server list from the "blacklisted-servers.json" file
-	 */
-	fun loadBlacklistedServers() {
-		if (File("./blacklisted-servers.json").exists())
-			premiumKeys = GSON.fromJson(File("./blacklisted-servers.json").readText())
-	}
-
-	/**
 	 * Saves all available premium keys
 	 *
 	 * @see PremiumKey
 	 */
 	fun savePremiumKeys() {
 		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
+	}
+
+	/**
+	 * Loads the blacklisted server list from the "blacklisted-servers.json" file
+	 */
+	fun loadBlacklistedServers() {
+		if (File("./blacklisted_servers.json").exists())
+			blacklistedServers = GSON.fromJson(File("./blacklisted_servers.json").readText())
 	}
 }

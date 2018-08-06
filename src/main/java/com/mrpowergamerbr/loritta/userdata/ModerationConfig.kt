@@ -4,12 +4,20 @@ import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonProperty
 
 class ModerationConfig {
+	@AllowReflection
 	var sendPunishmentViaDm: Boolean = false
+	@AllowReflection
 	var sendToPunishLog: Boolean = false
+	@AllowReflection
 	var punishmentLogChannelId: String? = null
-	var punishmentLogMessage: String = "**Usuário punido:** {user}#{#user}**Punido por** {@staff}\n**Motivo:** {reason}"
+	@AllowReflection
+	var punishmentLogMessage: String = "**Usuário punido:** {user}#{user-discriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"
+	@AllowReflection
 	var punishmentActions = mutableListOf<WarnAction>()
+	@AllowReflection
 	var warnExpiresIn: Long? = null
+	@AllowReflection
+	var useLorittaBansNetwork = false
 
 	class WarnAction @BsonCreator constructor(
 			@BsonProperty("warnCount")

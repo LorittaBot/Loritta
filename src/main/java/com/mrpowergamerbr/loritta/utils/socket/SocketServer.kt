@@ -8,6 +8,8 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
@@ -55,6 +57,10 @@ class SocketServer(val socketPort: Int) {
 											7
 									)
 								}
+							}
+							UpdateType.ADD_NETWORK_BAN -> {
+								val entry = NetworkBanEntry(jsonObject["userId"].string, NetworkBanType.valueOf(jsonObject["banType"].string), jsonObject["reason"].string)
+								loritta.networkBanManager.addBanEntry(entry)
 							}
 						}
 
