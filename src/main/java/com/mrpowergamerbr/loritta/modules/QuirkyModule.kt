@@ -17,7 +17,7 @@ class QuirkyModule : MessageReceivedModule {
 		// uwu u are sooo quirky
 		val message = event.message
 
-		val random = RANDOM.nextInt(0, 200)
+		val random = RANDOM.nextInt(0, 250)
 
 		when (random) {
 			0 -> message.addReaction("ata:339904769139146755").queue()

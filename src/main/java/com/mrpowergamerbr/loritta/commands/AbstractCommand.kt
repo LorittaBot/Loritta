@@ -164,13 +164,12 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && this !is LigarCommand)) {
 						if (conf.warnIfBlacklisted) {
 							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
-								var message = conf.blacklistWarning
-								MessageUtils.generateMessage(
+								val generatedMessage = MessageUtils.generateMessage(
 										conf.blacklistWarning,
 										listOf(ev.member, ev.textChannel),
 										ev.guild
 								)
-								ev.textChannel.sendMessage(message).complete()
+								ev.textChannel.sendMessage(generatedMessage).complete()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
