@@ -82,6 +82,11 @@ class LorittaNetworkBanManager {
 			return
 		}
 
+		if (getNetworkBanEntry(userId) != null) {
+			logger.warn("$userId já está banido na Loritta Network!")
+			return
+		}
+
 		networkBannedUsers.add(entry)
 
 		saveNetworkBannedUsers()
@@ -96,6 +101,7 @@ class LorittaNetworkBanManager {
 	fun loadNetworkBannedUsers() {
 		if (File("./network_banned_users.json").exists()) {
 			networkBannedUsers = Loritta.GSON.fromJson(File("./network_banned_users.json").readText())
+			networkBannedUsers = networkBannedUsers.distinctBy { it.id }.toMutableList()
 			logger.info { "Carregado ${networkBannedUsers.size} usuários banidos da Loritta Network!" }
 		}
 	}
