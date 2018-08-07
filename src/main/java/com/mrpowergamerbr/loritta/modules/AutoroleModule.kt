@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.modules
 import com.mrpowergamerbr.loritta.userdata.AutoroleConfig
 import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
+import java.util.concurrent.TimeUnit
 
 object AutoroleModule {
 	fun giveRoles(event: GuildMemberJoinEvent, autoroleConfig: AutoroleConfig) {
@@ -22,9 +23,15 @@ object AutoroleModule {
 
 		if (roles.isNotEmpty()) {
 			if (roles.size == 1) {
-				event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
+				if (autoroleConfig.giveRolesAfter != null)
+					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
+				else
+					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
 			} else {
-				event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
+				if (autoroleConfig.giveRolesAfter != null)
+					event.guild.controller.addRolesToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
+				else
+					event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
 			}
 		}
 	}
