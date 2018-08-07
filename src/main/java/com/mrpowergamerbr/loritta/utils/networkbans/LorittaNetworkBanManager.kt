@@ -39,6 +39,9 @@ class LorittaNetworkBanManager {
 		for (serverConfig in serverConfigs) {
 			try {
 				val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
+				if (!guild.isMember(user))
+					continue
+				
 				logger.info("Banindo ${user.id} em ${guild.id}...")
 				BanCommand.ban(
 						serverConfig,
