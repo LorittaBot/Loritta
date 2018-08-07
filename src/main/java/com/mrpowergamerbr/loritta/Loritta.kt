@@ -30,6 +30,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -220,7 +221,6 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		socket = SocketServer(Loritta.config.socketPort)
-		networkBanManager.initTimer()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
@@ -304,6 +304,7 @@ class Loritta(config: LorittaConfig) {
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 5L, TimeUnit.MINUTES)
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 

@@ -10,26 +10,13 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.User
 import java.io.File
-import kotlin.concurrent.fixedRateTimer
 
 class LorittaNetworkBanManager {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	private var networkBannedUsers = mutableListOf<NetworkBanEntry>()
-
-	fun initTimer() {
-		fixedRateTimer(period = 300000L) {
-			logger.info("Verificando ${networkBannedUsers.size} usuários banidos...")
-
-			for (entry in networkBannedUsers) {
-				val user = lorittaShards.getUserById(entry.id) ?: continue
-
-				punishUser(user, createBanReason(entry))
-			}
-		}
-	}
+	var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 
 	fun punishUser(user: User, reason: String) {
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
