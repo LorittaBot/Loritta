@@ -163,7 +163,6 @@ class Loritta(config: LorittaConfig) {
 		loadPremiumKeys()
 		loadBlacklistedServers()
 		networkBanManager.loadNetworkBannedUsers()
-		networkBanManager.initTimer()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
@@ -221,6 +220,7 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		socket = SocketServer(Loritta.config.socketPort)
+		networkBanManager.initTimer()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
