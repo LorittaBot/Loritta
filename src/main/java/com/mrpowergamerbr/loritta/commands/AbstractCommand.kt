@@ -309,7 +309,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 					if (nickname != null) {
 						// #LoritaTambémTemSentimentos
-						val hasBadNickname = MiscUtils.hasInappropriateWords(lowerCaseNickname)
+						val hasBadNickname = MiscUtils.hasInappropriateWords(nickname)
 
 						if (hasBadNickname) {
 							context.reply(
