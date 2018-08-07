@@ -304,7 +304,7 @@ class Loritta(config: LorittaConfig) {
 		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 5L, TimeUnit.MINUTES)
+		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
 
 		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 

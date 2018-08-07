@@ -56,7 +56,7 @@ class LorittaNetworkBanManager {
 		}
 	}
 
-	fun createBanReason(entry: NetworkBanEntry): String {
+	fun createBanReason(entry: NetworkBanEntry, relayedBan: Boolean): String {
 		var reason = entry.reason
 
 		if (entry.guildId != null) {
@@ -65,6 +65,10 @@ class LorittaNetworkBanManager {
 			if (guild != null) {
 				reason += "(Punido em ${guild.name.escapeMentions()}) "
 			}
+		}
+
+		if (relayedBan) {
+			reason += "[Loritta's Bans Network] "
 		}
 
 		return reason
@@ -82,7 +86,7 @@ class LorittaNetworkBanManager {
 
 		saveNetworkBannedUsers()
 
-		punishUser(user, createBanReason(entry))
+		punishUser(user, createBanReason(entry, true))
 	}
 
 	fun getNetworkBanEntry(id: String): NetworkBanEntry? {
