@@ -49,6 +49,36 @@ class ExtrasViewerController {
 
 					variables["tableContents"] = html
 				}
+				if (extraType == "network-bans") {
+					var html = ""
+					for (entry in loritta.networkBanManager.networkBannedUsers) {
+						val userId = entry.id
+						val banReason = entry.reason
+						val user = try {
+							lorittaShards.getUserById(userId)
+						} catch (e: Exception) {
+							null
+						}
+
+						val guildName = if (entry.guildId != null) {
+							lorittaShards.getGuildById(entry.guildId)?.name ?: entry.guildId
+						} else {
+							"✘"
+						}
+
+						html += """
+							<tr>
+							<td>${user?.id ?: userId}</td>
+							<td>${if (user != null) "${user.name}#${user.discriminator}" else "???"}</td>
+							<td>$guildName</td>
+							<td>${entry.type}</td>
+							<td>$banReason</td>
+							</tr>
+						""".trimIndent()
+					}
+
+					variables["tableContents"] = html
+				}
 				return res.send(evaluate("extras/$extraType.html", variables))
 			}
 		}
