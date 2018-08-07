@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.User
 import java.io.File
 
@@ -19,7 +20,11 @@ class LorittaNetworkBanManager {
 	var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 
 	fun punishUser(user: User, reason: String) {
-		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val mutualGuilds = lorittaShards.getMutualGuilds(user).filter {
+			val member = it.getMember(user) ?: return@filter false
+			// Apenas pegue servidores que ela realmente pode banir o infrator
+			it.selfMember.hasPermission(Permission.BAN_MEMBERS) && it.selfMember.canInteract(member)
+		}
 
 		if (mutualGuilds.isEmpty())
 			return
@@ -27,7 +32,7 @@ class LorittaNetworkBanManager {
 		val serverConfigs = loritta.serversColl.find(
 				Filters.and(
 						Filters.`in`("_id", mutualGuilds.map { it.id }),
-						Filters.eq("moderationConfig.useLorittaBansNetwork")
+						Filters.eq("moderationConfig.useLorittaBansNetwork", true)
 				)
 		).toMutableList()
 
