@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -7,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
+import java.nio.file.Paths
 import java.util.concurrent.ExecutionException
 import java.util.jar.Attributes
 import java.util.jar.JarFile
@@ -30,7 +32,9 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 
 		// The format within the Class-Path attribute is different than the one expected by the property, so let's fix it!
 		// By the way, don't forget to append your original JAR at the end of the string!
-		val propClassPath = manifestClassPath.replace(" ", ":") + ":Loritta-0.0.1-SNAPSHOT.jar"
+		val clazz = LorittaLauncher::class.java
+		val protectionDomain = clazz.protectionDomain
+		val propClassPath = manifestClassPath.replace(" ", ":") + ":${Paths.get(protectionDomain.codeSource.location.toURI()).fileName}"
 
 		// Now we set it to our own classpath
 		System.setProperty("kotlin.script.classpath", propClassPath)
