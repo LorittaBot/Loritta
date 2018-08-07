@@ -53,7 +53,10 @@ object Constants {
 			"ruim",
 			"boquete",
 			"boqueteira",
-			"putona"
+			"putona",
+			"viada",
+			"vadia",
+			"putiane"
 	)
 
 	/**
