@@ -168,6 +168,18 @@ object MiscUtils {
 		return AccountCheckResult.SUCCESS
 	}
 
+	fun hasInappropriateWords(string: String): Boolean {
+		val lowerCaseNickname = string.toLowerCase()
+				.replace("4", "a")
+				.replace("@", "a")
+				.replace("1", "i")
+				.replace("0", "o")
+
+		return Constants.BAD_NICKNAME_WORDS.any {
+			lowerCaseNickname.contains(it)
+		}
+	}
+
 	enum class AccountCheckResult(val canAccess: Boolean) {
 		SUCCESS(true),
 		NOT_VERIFIED(false),

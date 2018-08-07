@@ -309,15 +309,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 					if (nickname != null) {
 						// #LoritaTambémTemSentimentos
-						val lowerCaseNickname = nickname.toLowerCase()
-								.replace("4", "a")
-								.replace("@", "a")
-								.replace("1", "i")
-								.replace("0", "o")
-
-						val hasBadNickname = Constants.BAD_NICKNAME_WORDS.any {
-							lowerCaseNickname.contains(it)
-						}
+						val hasBadNickname = MiscUtils.hasInappropriateWords(lowerCaseNickname)
 
 						if (hasBadNickname) {
 							context.reply(

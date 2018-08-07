@@ -8,11 +8,8 @@ import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.logger
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
@@ -161,6 +158,20 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(conf.localeId),
 							event.user,
 							entry.reason,
+							false,
+							7
+					)
+					return@execute
+				}
+
+				if (conf.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
+					BanCommand.ban(
+							conf,
+							event.guild,
+							event.guild.selfMember.user,
+							com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(conf.localeId),
+							event.user,
+							"Sim, eu também tenho sentimentos. (Usar nomes inapropriados que ofendem outros usuários!)",
 							false,
 							7
 					)
