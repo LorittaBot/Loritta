@@ -19,9 +19,7 @@ class LorittaNetworkBanManager {
 
 	private var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 
-	init {
-		loadNetworkBannedUsers()
-
+	fun initTimer() {
 		fixedRateTimer(period = 300000L) {
 			logger.info("Verificando ${networkBannedUsers.size} usuários banidos...")
 
@@ -100,8 +98,10 @@ class LorittaNetworkBanManager {
 	}
 
 	fun loadNetworkBannedUsers() {
-		if (File("./network_banned_users.json").exists())
+		if (File("./network_banned_users.json").exists()) {
 			networkBannedUsers = Loritta.GSON.fromJson(File("./network_banned_users.json").readText())
+			logger.info { "Carregado ${networkBannedUsers.size} usuários banidos da Loritta Network!" }
+		}
 	}
 
 	fun saveNetworkBannedUsers() {
