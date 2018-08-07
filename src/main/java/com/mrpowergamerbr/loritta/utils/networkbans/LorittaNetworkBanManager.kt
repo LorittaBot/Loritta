@@ -70,7 +70,7 @@ class LorittaNetworkBanManager {
 			val guild = lorittaShards.getGuildById(entry.guildId)
 
 			if (guild != null) {
-				reason = "$reason (Punido em ${guild.name.escapeMentions()})"
+				reason = "$reason (Encontrado em ${guild.name.escapeMentions()})"
 			}
 		}
 
