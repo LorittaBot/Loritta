@@ -121,7 +121,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						ExperienceModule(),
 						AminoConverterModule(),
 						AFKModule(),
-						BomDiaECiaModule()
+						BomDiaECiaModule(),
+						QuirkyModule()
 				)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
@@ -352,5 +353,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 		return false
+	}
+
+	fun handleQuirkyStuff() {
+
 	}
 }
