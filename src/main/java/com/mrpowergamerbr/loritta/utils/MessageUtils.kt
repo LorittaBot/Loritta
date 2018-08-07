@@ -8,10 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 
@@ -82,6 +79,9 @@ object MessageUtils {
 		var mentionOwner = ""
 		var owner = ""
 
+		val tokens = mutableMapOf<String, String?>()
+		tokens.putAll(customTokens)
+
 		if (sources != null) {
 			for (source in sources) {
 				if (source is User) {
@@ -106,12 +106,17 @@ object MessageUtils {
 					mentionOwner = source.owner.asMention
 					owner = source.owner.effectiveName
 				}
+				if (source is TextChannel) {
+					tokens["channel"] = source.name
+					tokens["@channel"] = source.asMention
+					tokens["channel-id"] = source.id
+				}
 			}
 		}
 
 		var message = text
 
-		for ((token, value) in customTokens) {
+		for ((token, value) in tokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 		}
 

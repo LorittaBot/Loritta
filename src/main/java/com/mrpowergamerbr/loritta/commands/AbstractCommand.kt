@@ -165,15 +165,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 						if (conf.warnIfBlacklisted) {
 							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								var message = conf.blacklistWarning
-								message = message.replace("{@user}", ev.member.asMention)
-								message = message.replace("{user}", ev.member.user.name)
-								message = message.replace("{nickname}", ev.member.effectiveName)
-								message = message.replace("{guild}", ev.guild.name)
-								message = message.replace("{guildsize}", ev.guild.members.size.toString())
-								message = message.replace("{@owner}", ev.guild.owner.asMention)
-								message = message.replace("{owner}", ev.guild.owner.effectiveName)
-								message = message.replace("{@channel}", ev.textChannel.asMention)
-								message = message.replace("{channel}", ev.textChannel.name)
+								MessageUtils.generateMessage(
+										conf.blacklistWarning,
+										listOf(ev.member, ev.textChannel),
+										ev.guild
+								)
 								ev.textChannel.sendMessage(message).complete()
 							}
 						}
