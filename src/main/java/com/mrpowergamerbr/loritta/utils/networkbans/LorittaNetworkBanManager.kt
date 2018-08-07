@@ -59,16 +59,16 @@ class LorittaNetworkBanManager {
 	fun createBanReason(entry: NetworkBanEntry, relayedBan: Boolean): String {
 		var reason = entry.reason
 
+		if (relayedBan) {
+			reason = "[Loritta's Bans Network] $reason"
+		}
+
 		if (entry.guildId != null) {
 			val guild = lorittaShards.getGuildById(entry.guildId)
 
 			if (guild != null) {
-				reason += "(Punido em ${guild.name.escapeMentions()}) "
+				reason = "$reason (Punido em ${guild.name.escapeMentions()})"
 			}
-		}
-
-		if (relayedBan) {
-			reason += "[Loritta's Bans Network] "
 		}
 
 		return reason
