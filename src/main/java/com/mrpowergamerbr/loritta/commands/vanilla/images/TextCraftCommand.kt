@@ -16,7 +16,7 @@ import javax.imageio.ImageIO
 
 class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["TEXTCRAFT_Description", TextCraftFont.values().joinToString(", ")]
+		return locale["TEXTCRAFT_Description", TextCraftFont.values().joinToString(", ", transform = { it.internalName })]
 	}
 
 	override fun getExample(): List<String> {
