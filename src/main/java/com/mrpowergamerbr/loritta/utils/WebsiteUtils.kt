@@ -454,6 +454,7 @@ object WebsiteUtils {
 			json["id"] = textChannel.id
 			json["canTalk"] = textChannel.canTalk()
 			json["name"] = textChannel.name
+			json["topic"] = textChannel.topic
 
 			textChannels.add(json)
 		}
