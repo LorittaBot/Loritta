@@ -14,7 +14,15 @@ object CounterUtils {
 			counter += emote
 		}
 
-		return counter.padStart(padding, '-').replace("-", list[0])
+		val paddingCount = 5 - count.toString().length
+
+		if (paddingCount > 0) {
+			for (i in 0 until paddingCount) {
+				counter = list[0] + counter
+			}
+		}
+
+		return counter
 	}
 
 	fun getEmojis(theme: CounterThemeName): List<String> {
