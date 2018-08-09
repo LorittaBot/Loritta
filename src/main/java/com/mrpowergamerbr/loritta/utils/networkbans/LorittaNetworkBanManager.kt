@@ -80,7 +80,7 @@ class LorittaNetworkBanManager {
 	fun addBanEntry(entry: NetworkBanEntry) {
 		val userId = entry.id
 		logger.info { "Adicionando $userId na lista de usuários banidos na Loritta Network..." }
-		val user = lorittaShards.getUserById(entry.id) ?: run {
+		val user = lorittaShards.retrieveUserById(entry.id) ?: run {
 			logger.error("$userId não é um usuário válido!")
 			return
 		}
