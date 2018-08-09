@@ -5,7 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
 
 class TextChannelConfig @BsonCreator constructor(
-		@BsonProperty("_id")
+		@BsonProperty("id")
 		@get:[BsonIgnore]
 		val id: String?
 ) {
