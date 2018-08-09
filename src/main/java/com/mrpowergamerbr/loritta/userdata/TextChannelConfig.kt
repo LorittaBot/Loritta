@@ -15,5 +15,5 @@ class TextChannelConfig @BsonCreator constructor(
 	@AllowReflection
 	var automodConfig = AutomodConfig()
 	@AllowReflection
-	var memberCountConfig: MemberCounterConfig? = null
+	var memberCounterConfig: MemberCounterConfig? = null
 }

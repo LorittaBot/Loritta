@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemeName
 import net.dv8tion.jda.core.entities.Guild
 
@@ -25,7 +26,13 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 			} else {
 				// val textChannelConfig = TextChannelConfig(id)
 				// serverConfig.textChannelConfigs.add(textChannelConfig)
-				serverConfig.getTextChannelConfig(id)
+				if (serverConfig.hasTextChannelConfig(id)) {
+					serverConfig.getTextChannelConfig(id)
+				} else {
+					val textChannelConfig = TextChannelConfig(id)
+					serverConfig.textChannelConfigs.add(textChannelConfig)
+					textChannelConfig
+				}
 			}
 
 			val obj = entry.obj
@@ -33,10 +40,12 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 				val memberCounterConfig = obj["memberCountConfig"].obj
 				val topic = memberCounterConfig["topic"].string
 
-				config.memberCountConfig = MemberCounterConfig(
+				config.memberCounterConfig = MemberCounterConfig(
 						topic,
 						CounterThemeName.DEFAULT
 				)
+			} else {
+				config.memberCounterConfig = null
 			}
 			// applyReflection(entry.obj, config)
 		}

@@ -249,7 +249,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig) {
 		for (textChannel in guild.textChannels) {
-			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCountConfig ?: continue
+			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
 			textChannel.manager.setTopic(formattedTopic).queue()
 		}
