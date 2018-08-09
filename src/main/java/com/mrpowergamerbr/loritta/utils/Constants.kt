@@ -15,7 +15,6 @@ object Constants {
 	const val ERROR = "<:error:412585701054611458>"
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
 	const val LEFT_PADDING = "\uD83D\uDD39"
-	const val REVENGE_TAKEDOWN_ID = "475727732957904896"
 	val INDEXES = listOf("1⃣",
 			"2⃣",
 			"3⃣",
