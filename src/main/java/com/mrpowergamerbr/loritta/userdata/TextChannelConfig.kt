@@ -7,7 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty
 class TextChannelConfig @BsonCreator constructor(
 		@BsonProperty("_id")
 		@get:[BsonIgnore]
-		val id: String
+		val id: String?
 ) {
 	// Unused
 	@AllowReflection
