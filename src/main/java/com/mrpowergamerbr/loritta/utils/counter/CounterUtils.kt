@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.utils.counter
 
-import com.mrpowergamerbr.loritta.utils.Constants
-
 object CounterUtils {
 	fun generatePrettyCounter(count: Int, theme: CounterThemeName, padding: Int = 5): String {
 		return generatePrettyCounter(count, getEmojis(theme), padding)
@@ -16,7 +14,7 @@ object CounterUtils {
 			counter += emote
 		}
 
-		return counter.padStart(padding, '-').replace("-", Constants.INDEXES[0])
+		return counter.padStart(padding, '-').replace("-", list[0])
 	}
 
 	fun getEmojis(theme: CounterThemeName): List<String> {
