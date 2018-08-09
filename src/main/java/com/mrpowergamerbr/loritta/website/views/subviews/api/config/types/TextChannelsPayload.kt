@@ -10,7 +10,6 @@ import net.dv8tion.jda.core.entities.Guild
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
 	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
-		// serverConfig.textChannelConfigs.clear()
 		// por enquanto não iremos apagar as configurações atuais
 		// para não limpar as coisas de anti spam
 		val entries = payload["entries"].array
@@ -20,12 +19,8 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 
 			val config = if (id == "default") {
 				// Config default
-				// val textChannelConfig = TextChannelConfig("default")
-				// serverConfig.defaultTextChannelConfig = textChannelConfig
 				serverConfig.defaultTextChannelConfig
 			} else {
-				// val textChannelConfig = TextChannelConfig(id)
-				// serverConfig.textChannelConfigs.add(textChannelConfig)
 				if (serverConfig.hasTextChannelConfig(id)) {
 					serverConfig.getTextChannelConfig(id)
 				} else {
@@ -44,6 +39,12 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 						topic,
 						CounterThemeName.DEFAULT
 				)
+
+				for (textChannel in guild.textChannels) {
+					val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
+					val formattedTopic = memberCountConfig.getFormattedTopic(guild)
+					textChannel.manager.setTopic(formattedTopic).queue()
+				}
 			} else {
 				config.memberCounterConfig = null
 			}
