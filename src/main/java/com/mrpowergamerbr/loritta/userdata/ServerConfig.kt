@@ -5,9 +5,11 @@ import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.dv8tion.jda.core.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
+import org.jetbrains.kotlin.serialization.js.DynamicTypeDeserializer.id
 import java.util.*
 
 class ServerConfig @BsonCreator constructor(
@@ -75,8 +77,16 @@ class ServerConfig @BsonCreator constructor(
 		return userData
 	}
 
+	fun getTextChannelConfig(textChannel: TextChannel): TextChannelConfig {
+		return getTextChannelConfig(textChannel.id)
+	}
+
 	fun getTextChannelConfig(id: String): TextChannelConfig {
 		return textChannelConfigs.firstOrNull { it.id == id } ?: defaultTextChannelConfig
+	}
+
+	fun hasTextChannelConfig(textChannel: TextChannel): Boolean {
+		return hasTextChannelConfig(textChannel.id)
 	}
 
 	fun hasTextChannelConfig(id: String): Boolean {

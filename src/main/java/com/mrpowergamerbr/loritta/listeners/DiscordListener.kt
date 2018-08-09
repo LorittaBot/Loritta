@@ -8,10 +8,12 @@ import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
@@ -149,6 +151,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
+				updateTextChannelsTopic(event.guild, conf)
+
 				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
 					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
 					BanCommand.ban(
@@ -227,6 +231,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
+				updateTextChannelsTopic(event.guild, conf)
+
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberLeave(event)
 				}
@@ -238,6 +244,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
+		}
+	}
+
+	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig) {
+		for (textChannel in guild.textChannels) {
+			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCountConfig ?: continue
+			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
+			textChannel.manager.setTopic(formattedTopic).queue()
 		}
 	}
 }
