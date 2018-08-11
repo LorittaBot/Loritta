@@ -17,7 +17,6 @@ import net.dv8tion.jda.core.entities.Message
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.bson.types.ObjectId
-import java.util.regex.Pattern
 
 class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
@@ -112,15 +111,16 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 			perguntas.addAll(split)
 
-			if (webhook?.url == null) {
+			val url = webhook?.url ?: run {
 				context.reply(
 						LoriReply(
 								"Infelizmente eu não consigo criar webhooks neste servidor... desculpa! \uD83D\uDE2D",
 								Constants.ERROR
 						)
 				)
+				return
 			}
-			val discordWebhook = DiscordWebhook(webhook.url)
+			val discordWebhook = DiscordWebhook(url)
 
 			val documents = loritta.gabrielaMessagesColl.find(
 					Filters.`in`("questionWords", perguntas)
