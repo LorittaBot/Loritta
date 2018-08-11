@@ -67,6 +67,8 @@ class APIGetRssFeedTitleView : NoVarsView() {
 				description = jsoup.select("feed entry description").first().text()
 			} else if (jsoup.select("feed entry content").isNotEmpty()) {
 				description = jsoup.select("feed entry content").first().text()
+			} else if (jsoup.select("feed entry summary").isNotEmpty()) {
+				description = jsoup.select("feed entry summary").first().text()
 			}
 		} else if (jsoup.select("rdf|RDF").attr("xmlns") == "http://purl.org/rss/1.0/") {
 			// RDF Feed (usada pela Steam)
