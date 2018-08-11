@@ -12,6 +12,7 @@ class MemberCounterConfig @BsonCreator constructor(
 		@BsonProperty("theme")
 		var theme: CounterThemeName
 ) {
+	var padding: Int = 5
 	var emojis: List<String> = mutableListOf()
 
 	fun getFormattedTopic(guild: Guild): String {
@@ -23,6 +24,6 @@ class MemberCounterConfig @BsonCreator constructor(
 
 		return topic.replace("{guildsize}", guild.members.size.toString())
 				.replace("{guild-size}", guild.members.size.toString())
-				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.members.size, emojis))
+				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.members.size, emojis, padding))
 	}
 }

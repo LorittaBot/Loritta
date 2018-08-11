@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
+import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.MediaType
 import org.jooby.Request
@@ -21,7 +22,7 @@ import org.jooby.mvc.*
 
 @Path("/api/v1/guild/:guildId/config")
 class UpdateServerConfigController {
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)

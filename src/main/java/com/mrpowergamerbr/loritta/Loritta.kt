@@ -111,8 +111,6 @@ class Loritta(config: LorittaConfig) {
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
-	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
-
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<ServerConfig>
@@ -169,7 +167,7 @@ class Loritta(config: LorittaConfig) {
 		builder = JDABuilder(AccountType.BOT)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(128)
+				.setCorePoolSize(256)
 				.setBulkDeleteSplittingEnabled(false)
 				.addEventListener(discordListener)
 				.addEventListener(eventLogListener)
@@ -177,7 +175,6 @@ class Loritta(config: LorittaConfig) {
 				.addEventListener(voiceChannelListener)
 				.addEventListener(channelListener)
 				.addEventListener(audioManager.lavalink)
-				.setMaxReconnectDelay(3500)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -305,8 +302,6 @@ class Loritta(config: LorittaConfig) {
 		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
-
-		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
 		RemindersThread().start()
 

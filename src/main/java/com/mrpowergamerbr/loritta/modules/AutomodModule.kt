@@ -47,7 +47,7 @@ class AutomodModule : MessageReceivedModule {
 								)
 						).complete()
 
-						if (automodCaps.enableMessageTimeout && message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
+						if (automodCaps.enableMessageTimeout && message.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
 							val delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
 							Thread.sleep(delay.toLong())
 							message.delete().queue()

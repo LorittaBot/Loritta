@@ -153,8 +153,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			message = message.replace("%ship%", "`$shipName`")
 			texto += "$message"
 
-			var avatar1Old = LorittaUtils.downloadImage(user1AvatarUrl + "?size=128")
-			var avatar2Old = LorittaUtils.downloadImage(user2AvatarUrl + "?size=128")
+			var avatar1Old = LorittaUtils.downloadImage("$user1AvatarUrl?size=128")
+			var avatar2Old = LorittaUtils.downloadImage("$user2AvatarUrl?size=128")
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old

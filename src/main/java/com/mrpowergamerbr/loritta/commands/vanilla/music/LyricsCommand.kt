@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.utils
+package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
@@ -18,9 +18,9 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.UTILS) {
+class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("LYRICS_Description")
+		return locale["LYRICS_Description"]
 	}
 
 	override fun getUsage(): String {

@@ -2,11 +2,15 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.MediaType
 import org.jooby.Request
@@ -19,7 +23,7 @@ import org.jooby.mvc.Path
 
 @Path("/api/v1/guild/:guildId/send-message")
 class SendMessageGuildController {
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)

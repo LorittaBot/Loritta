@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.website
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.logger
+import mu.KotlinLogging
 import java.io.File
 
 object OptimizeAssets {
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 	var cssAssetVersion = 0L
 
 	/**

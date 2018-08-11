@@ -10,7 +10,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
-import com.mrpowergamerbr.loritta.utils.logger
+import mu.KotlinLogging
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
@@ -23,7 +23,7 @@ class TemmieDiscordAuth {
 		const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0"
 		val gson = Gson()
 		val jsonParser = JsonParser()
-		val logger by logger()
+		private val logger = KotlinLogging.logger {}
 	}
 
 	private var authCode: String

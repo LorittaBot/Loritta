@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
+import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
@@ -49,7 +50,7 @@ class BomDiaECia() {
 
 	var currentText = randomTexts[0]
 
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 
 	fun handleBomDiaECia(forced: Boolean) {
 		if (forced)

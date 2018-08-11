@@ -32,8 +32,6 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
 import org.jsoup.safety.Whitelist
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -44,13 +42,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
-
-fun <R : Any> R.logger(): Lazy<Logger> {
-	return lazy { LoggerFactory.getLogger(getClassName(this.javaClass)) }
-}
-fun <T : Any> getClassName(clazz: Class<T>): String {
-	return clazz.name.removeSuffix("\$Companion")
-}
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)

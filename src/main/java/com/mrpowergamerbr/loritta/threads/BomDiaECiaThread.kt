@@ -2,14 +2,14 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.logger
+import mu.KotlinLogging
 import com.mrpowergamerbr.loritta.utils.loritta
 
 /**
  * Thread para o Bom Dia & Cia
  */
 class BomDiaECiaThread : Thread("Bom Dia & Cia") {
-	val logger by logger()
+	private val logger = KotlinLogging.logger {}
 
 	override fun run() {
 		super.run()

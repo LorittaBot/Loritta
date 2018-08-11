@@ -212,7 +212,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {
 					// Verificar se a Loritta possui todas as permissões necessárias
-					var botPermissions = ArrayList<Permission>(getBotPermissions())
+					val botPermissions = ArrayList<Permission>(getBotPermissions())
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
 					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
 					botPermissions.add(Permission.MESSAGE_ADD_REACTION)
@@ -228,11 +228,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				}
 
 				if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
-					var missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
+					val missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						var required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
+						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
 						var message = locale["LORIPERMISSION_MissingPermissions", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
@@ -278,7 +278,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				}
 
 				if (requiresMusicEnabled()) {
-					if (!context.config.musicConfig.isEnabled) {
+					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) locale["DJ_LORITTA_HOW_TO_ENABLE", "${Loritta.config.websiteUrl}dashboard"] else "")
 						return true

@@ -112,7 +112,15 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 			perguntas.addAll(split)
 
-			val discordWebhook = DiscordWebhook(webhook!!.url)
+			if (webhook?.url == null) {
+				context.reply(
+						LoriReply(
+								"Infelizmente eu não consigo criar webhooks neste servidor... desculpa! \uD83D\uDE2D",
+								Constants.ERROR
+						)
+				)
+			}
+			val discordWebhook = DiscordWebhook(webhook.url)
 
 			val documents = loritta.gabrielaMessagesColl.find(
 					Filters.`in`("questionWords", perguntas)

@@ -67,7 +67,7 @@ public final class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url, int timeout) {
-		return downloadImage(url, timeout, 10000000);
+		return downloadImage(url, timeout, 20000000);
 	}
 
 	public static BufferedImage downloadImage(String url, int timeout, int maxSize) {

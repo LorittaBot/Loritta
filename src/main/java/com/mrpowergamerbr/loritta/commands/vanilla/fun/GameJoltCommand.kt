@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
@@ -31,7 +32,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		if (context.args.isNotEmpty()) {
 			val embed = EmbedBuilder()
 			val query = context.args.joinToString(" ")
-			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=$query")
+			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=${query.encodeToUrl()}")
 					.body()
 
 			val json = Loritta.JSON_PARSER.parse(response).obj

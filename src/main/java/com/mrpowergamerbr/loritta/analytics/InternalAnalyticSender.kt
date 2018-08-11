@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.analytics
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
-import com.mrpowergamerbr.loritta.utils.logger
+import mu.KotlinLogging
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor
  */
 class InternalAnalyticSender : Runnable {
 	companion object {
-		private val logger by logger()
+		private val logger = KotlinLogging.logger {}
 	}
 
 	override fun run() {
@@ -37,7 +37,6 @@ class InternalAnalyticSender : Runnable {
 		logger.debug("locales.size: ${loritta.locales.size}")
 		logger.debug("ignoreIds.size: ${loritta.ignoreIds.size}")
 		logger.debug("userCooldown.size: ${loritta.userCooldown.size}")
-		logger.debug("southAmericaMemesPageCache.size: ${loritta.southAmericaMemesPageCache.size}")
 		logger.debug("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
 		logger.debug("Total Track Queue: ${loritta.audioManager.musicManagers.values.sumBy { it.scheduler.queue.size }}")
 		logger.debug("songThrottle.size: ${loritta.audioManager.songThrottle.size}")

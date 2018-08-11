@@ -4,7 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.core.entities.Member
@@ -64,14 +66,14 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 	}
 
 	fun getRandomAvatar(context: CommandContext, choosen: MutableList<Member>): BufferedImage {
-		var list = context.guild.members.toMutableList()
+		val list = context.guild.members.toMutableList()
 		list.removeAll(choosen)
 
-		var userAvatar: String? = null;
+		var userAvatar: String? = null
 		while (userAvatar == null) {
 			if (list.isEmpty()) { // omg, lista vazia!
 				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-				userAvatar = context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)].user.effectiveAvatarUrl
+				userAvatar = context.guild.members.getRandom().user.effectiveAvatarUrl
 				break
 			}
 			val member = list[Loritta.RANDOM.nextInt(list.size)]
@@ -82,11 +84,6 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 				choosen.add(member)
 		}
 
-		val newImage = LorittaUtils.downloadImage(userAvatar)
-		if (newImage != null) {
-			return newImage;
-		} else {
-			throw RuntimeException("Image is null")
-		}
+		return LorittaUtils.downloadImage(userAvatar) ?: Constants.IMAGE_FALLBACK
 	}
 }
