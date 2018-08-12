@@ -33,7 +33,7 @@ object MiscUtils {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
 			var newUrl = url.removePrefix(".").removeSuffix(".")
 			val bitlyUrl = temmie.expand(url)
-			if (!bitlyUrl!!.contains("NOT_FOUND")) {
+			if (!bitlyUrl!!.contains("NOT_FOUND") && !bitlyUrl.contains("RATE_LIMIT_EXCEEDED")) {
 				newUrl = bitlyUrl!!
 			}
 			val httpRequest = HttpRequest.get(newUrl)
