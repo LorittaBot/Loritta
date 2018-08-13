@@ -17,7 +17,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>3.7.1_388</jda.version>
+        <jda.version>3.7.1_392</jda.version>
     </properties>
 
     <repositories>
@@ -84,9 +84,9 @@
             <version>2.6.2</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>${jda.version}</version>
+            <version>experimental~guild-setup-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

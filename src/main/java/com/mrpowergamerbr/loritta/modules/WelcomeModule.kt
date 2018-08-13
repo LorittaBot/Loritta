@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
+import net.dv8tion.jda.core.entities.Invite
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
@@ -17,6 +18,15 @@ object WelcomeModule {
 			return
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
+		val verifyInvites = false
+
+		if (verifyInvites) {
+			val oldInvites = event.guild.invites.complete()
+			val newInvites = event.guild.invites.complete()
+
+			val joinedViaInvite: Invite? = null
+
+		}
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 			val guild = event.guild
 
