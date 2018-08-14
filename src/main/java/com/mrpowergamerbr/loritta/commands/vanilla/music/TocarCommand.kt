@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.Permission
 
 class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -43,16 +42,7 @@ class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), Comma
 		}
 		if (context.args.isNotEmpty()) {
 			val music = context.args.joinToString(" ")
-
-			if (music.equals("reset", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				loritta.audioManager.musicManagers.remove(context.guild.idLong)
-				return
-			}
-
-			if (music.equals("limpar", ignoreCase = true) && context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-				loritta.audioManager.getGuildAudioPlayer(context.guild).scheduler.queue.clear()
-				return
-			}
+			
 			loritta.audioManager.loadAndPlay(context, music)
 		} else {
 			context.explain()
