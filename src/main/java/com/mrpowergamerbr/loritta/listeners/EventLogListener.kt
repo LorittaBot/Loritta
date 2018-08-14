@@ -151,7 +151,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val usernameChange = handledUsernameChanges[event.user.id]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
 
-			if (usernameChange.username != null && usernameChange.oldDiscriminator != null) {
+			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
 				loritta.executor.execute {
 					sendUsernameChange(event, usernameChange)
 				}
@@ -209,7 +209,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 						continue
 
-					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${usernameChange.username}#${usernameChange.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
+					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${usernameChange.oldName}#${usernameChange.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
 					embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 					textChannel.sendMessage(embed.build()).complete()
