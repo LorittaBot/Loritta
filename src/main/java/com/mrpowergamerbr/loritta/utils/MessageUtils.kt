@@ -124,7 +124,7 @@ object MessageUtils {
 		message = message.replace("{user}", user.escapeMentions())
 		message = message.replace("{user-id}", userId)
 		message = message.replace("{user-avatar-url}", avatarUrl)
-		message = message.replace("{user-oldDiscriminator}", userDiscriminator)
+		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname.escapeMentions())
 		message = message.replace("{guild}", guildName.escapeMentions())
 		message = message.replace("{guildsize}", guildSize)

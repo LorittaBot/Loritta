@@ -40,7 +40,7 @@ class TestMessageView : ConfigureView() {
 
 		customTokens.put("@user", "<@${userIdentification.id}>")
 		customTokens.put("user", userIdentification.username)
-		customTokens.put("user-oldDiscriminator", userIdentification.discriminator)
+		customTokens.put("user-discriminator", userIdentification.discriminator)
 		customTokens.put("user-id", userIdentification.id)
 		customTokens.put("userAvatarUrl", "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userIdentification.avatar}.png")
 		customTokens.put("nickname", nickname)

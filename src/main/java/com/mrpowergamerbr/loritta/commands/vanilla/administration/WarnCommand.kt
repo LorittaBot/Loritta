@@ -147,7 +147,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 											"punishment" to locale["WARN_PunishAction"],
 											"staff" to context.userHandle.name,
 											"@staff" to context.userHandle.asMention,
-											"staff-oldDiscriminator" to context.userHandle.discriminator,
+											"staff-discriminator" to context.userHandle.discriminator,
 											"staff-avatar-url" to context.userHandle.avatarUrl,
 											"staff-id" to context.userHandle.id
 									)

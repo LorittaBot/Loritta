@@ -290,7 +290,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 				}
 			}
 
-			// Vamos tentar procurar pelo username + oldDiscriminator
+			// Vamos tentar procurar pelo username + discriminator
 			if (!this.isPrivateChannel && !link.isEmpty()) {
 				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 

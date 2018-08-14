@@ -196,7 +196,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 										"punishment" to locale["MUTE_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"staff-oldDiscriminator" to context.userHandle.discriminator,
+										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.avatarUrl,
 										"staff-id" to context.userHandle.id
 								)
