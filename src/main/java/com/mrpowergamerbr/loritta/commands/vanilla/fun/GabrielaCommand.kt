@@ -343,7 +343,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						}
 					}
 
-					val linkRemover = "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)".toRegex()
+					val linkRemover = Constants.URL_PATTERN.toRegex()
 
 					val answer = GabrielaAnswer(deveResponder.replace(linkRemover, ""), it.author.id)
 

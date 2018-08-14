@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
-import java.util.regex.Pattern
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -93,7 +92,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 					whitelisted.add(it)
 				}
 
-				val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(message)
+				val matcher = Constants.URL_PATTERN.matcher(message)
 
 				while (matcher.find()) {
 					var url = matcher.group()

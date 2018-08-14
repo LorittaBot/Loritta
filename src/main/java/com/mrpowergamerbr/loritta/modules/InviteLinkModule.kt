@@ -12,7 +12,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
+import java.util.regex.Matcher
 
 class InviteLinkModule : MessageReceivedModule {
 	companion object {
@@ -41,48 +41,66 @@ class InviteLinkModule : MessageReceivedModule {
 				.replace("\u200B", "")
 				.replace("\\", "")
 
-		val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(content)
+		val validMatchers = mutableListOf<Matcher>()
+		val contentMatcher = getMatcherIfHasInviteLink(content)
+		if (contentMatcher != null)
+			validMatchers.add(contentMatcher)
+
+		val embeds = message.embeds
+		for (embed in embeds) {
+			val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
+			if (descriptionMatcher != null)
+				validMatchers.add(descriptionMatcher)
+
+			for (field in embed.fields) {
+				val fieldMatcher = getMatcherIfHasInviteLink(field.value)
+				if (fieldMatcher != null)
+					validMatchers.add(fieldMatcher)
+			}
+		}
 
 		// Se existe algum link na mensagem...
-		if (matcher.find()) {
-			matcher.reset()
-
+		if (validMatchers.isNotEmpty()) {
 			val whitelisted = mutableListOf<String>()
 			whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
 			val callback = callback@ {
 				val jobs = mutableListOf<Deferred<Boolean>>()
 
-				while (matcher.find()) {
-					var url = matcher.group()
-					if (url.contains("discord") && url.contains("gg")) {
-						url = "discord.gg" + matcher.group(1).replace(".", "")
-					}
-
-					jobs.add(
-						async(loritta.coroutineDispatcher) {
-							val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
-
-							if (inviteId != null) { // INVITES DO DISCORD
-								if (inviteId == "attachments" || inviteId == "forums")
-									return@async false
-
-								if (whitelisted.contains(inviteId))
-									return@async false
-
-								if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
-									message.delete().queue()
-
-								if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
-									val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild) ?: return@async false
-
-									message.textChannel.sendMessage(toBeSent).queue()
-								}
-								return@async true
-							}
-							return@async false
+				for (matcher in validMatchers) {
+					while (matcher.find()) {
+						var url = matcher.group()
+						if (url.contains("discord") && url.contains("gg")) {
+							url = "discord.gg" + matcher.group(1).replace(".", "")
 						}
-					)
+
+						jobs.add(
+								async(loritta.coroutineDispatcher) {
+									val inviteId = MiscUtils.getInviteId("http://$url")
+											?: MiscUtils.getInviteId("https://$url")
+
+									if (inviteId != null) { // INVITES DO DISCORD
+										if (inviteId == "attachments" || inviteId == "forums")
+											return@async false
+
+										if (whitelisted.contains(inviteId))
+											return@async false
+
+										if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
+											message.delete().queue()
+
+										if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+											val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
+													?: return@async false
+
+											message.textChannel.sendMessage(toBeSent).queue()
+										}
+										return@async true
+									}
+									return@async false
+								}
+						)
+					}
 
 					runBlocking {
 						jobs.forEach {
@@ -123,5 +141,19 @@ class InviteLinkModule : MessageReceivedModule {
 		}
 
 		return false
+	}
+
+	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+		if (content.isNullOrBlank())
+			return null
+
+		val pattern = Constants.URL_PATTERN
+		val matcher = pattern.matcher(content)
+		if (matcher.find()) {
+			matcher.reset()
+			return matcher
+		} else {
+			return null
+		}
 	}
 }

@@ -25,7 +25,7 @@ class AFKModule : MessageReceivedModule {
 				var reason = lorittaProfile.afkReason
 
 				if (reason != null) {
-					val matcher = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)").matcher(reason
+					val matcher = Constants.URL_PATTERN.matcher(reason
 							.replace("\u200B", "")
 							.replace("\\", ""))
 
