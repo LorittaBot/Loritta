@@ -1,12 +1,13 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
-import net.dv8tion.jda.core.entities.Invite
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
@@ -18,15 +19,10 @@ object WelcomeModule {
 			return
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
-		val verifyInvites = false
+		val tokens = mapOf(
+				"humanized-date" to event.member.joinDate.humanize(loritta.getLocaleById(serverConfig.localeId))
+		)
 
-		if (verifyInvites) {
-			val oldInvites = event.guild.invites.complete()
-			val newInvites = event.guild.invites.complete()
-
-			val joinedViaInvite: Invite? = null
-
-		}
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 			val guild = event.guild
 
@@ -37,7 +33,7 @@ object WelcomeModule {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty()) {
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild)).queue {
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)).queue {
 								if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
 									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
 							}
@@ -55,7 +51,7 @@ object WelcomeModule {
 				try {
 					if (msg.isNotEmpty())
 						event.user.openPrivateChannel().queue {
-							it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild)).queue() // Pronto!
+							it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)).queue() // Pronto!
 						}
 				} catch (e: ErrorResponseException) {
 					if (e.errorResponse.code != 50007) { // Usuário tem as DMs desativadas

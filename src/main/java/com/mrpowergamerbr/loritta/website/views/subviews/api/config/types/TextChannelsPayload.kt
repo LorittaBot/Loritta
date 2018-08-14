@@ -14,6 +14,7 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 		// para não limpar as coisas de anti spam
 		val entries = payload["entries"].array
 
+		serverConfig.textChannelConfigs.clear() // oof anti spam is broken
 		for (entry in entries) {
 			val id = entry["id"].nullString ?: continue
 
