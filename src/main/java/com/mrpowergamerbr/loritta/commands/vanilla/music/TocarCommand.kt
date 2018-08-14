@@ -42,7 +42,7 @@ class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), Comma
 		}
 		if (context.args.isNotEmpty()) {
 			val music = context.args.joinToString(" ")
-			
+
 			loritta.audioManager.loadAndPlay(context, music)
 		} else {
 			context.explain()

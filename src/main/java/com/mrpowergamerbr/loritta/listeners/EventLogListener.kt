@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.events.guild.GuildUnbanEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
@@ -35,13 +36,17 @@ import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.apache.commons.io.IOUtils
 import org.bson.Document
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.nio.charset.Charset
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
@@ -411,6 +416,66 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						textChannel.sendMessage(embed.build()).complete()
 
 						loritta.storedMessagesColl.deleteOne(Filters.eq("_id", event.messageId))
+						return@execute
+					}
+				}
+			}
+		}
+	}
+
+	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
+		loritta.executor.execute {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+			val locale = loritta.getLocaleById(config.localeId)
+			val eventLogConfig = config.eventLogConfig
+
+			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
+
+				if (textChannel != null && textChannel.canTalk()) {
+					val storedMessages = loritta.storedMessagesColl.find(Filters.`in`("_id", event.messageIds)).toMutableList()
+					if (storedMessages.isNotEmpty()) {
+						val embed = EmbedBuilder()
+						embed.setTimestamp(Instant.now())
+						embed.setColor(Color(221, 0, 0))
+						embed.setAuthor(storedMessages.first().authorName, null, null)
+
+						val lines = mutableListOf<String>()
+
+						for (message in storedMessages) {
+							val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
+							gmt.timeInMillis = message.dateCreated
+							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId())
+
+							val dayOfMonth = String.format("%02d", creationTime.dayOfMonth)
+							val month = String.format("%02d", creationTime.monthValue)
+							val year = creationTime.year
+
+							val hour = String.format("%02d", creationTime.hour)
+							val minute = String.format("%02d", creationTime.minute)
+
+							val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.authorId}) ${message.authorName}: ${message.content}"
+							lines.add(line)
+						}
+
+						val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
+
+						val deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED"]}"
+
+						embed.setDescription(deletedMessage)
+
+						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).complete()
+
+						loritta.storedMessagesColl.deleteMany(Filters.`in`("_id", event.messageIds))
 						return@execute
 					}
 				}
