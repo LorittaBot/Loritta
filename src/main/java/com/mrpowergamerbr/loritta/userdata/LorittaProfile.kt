@@ -63,7 +63,7 @@ class LorittaProfile @BsonCreator constructor(
 
     class XpWrapper @BsonCreator constructor(@BsonProperty("currentLevel") val currentLevel: Int, @BsonProperty("expLeft") val expLeft: Long)
 
-    class UsernameChange @BsonCreator constructor(@BsonProperty("changedAt") val changedAt: Long = 0L, @BsonProperty("username") val username: String, @BsonProperty("oldDiscriminator") val discriminator: String)
+    class UsernameChange @BsonCreator constructor(@BsonProperty("changedAt") val changedAt: Long = 0L, @BsonProperty("username") val username: String, @BsonProperty("discriminator") val discriminator: String)
 
     class SpinnerScore @BsonCreator constructor(@BsonProperty("emoji") val emoji: String, @BsonProperty("forTime") val forTime: Long)
 

@@ -46,10 +46,10 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
-	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<String, UsernameChange>().asMap()
+	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<String, UserMetaHolder>().asMap()
 	private val logger = KotlinLogging.logger {}
 
-	class UsernameChange(var oldName: String?, var oldDiscriminator: String?)
+	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
 
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
@@ -127,7 +127,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (!handledUsernameChanges.containsKey(event.user.id)) {
-			handledUsernameChanges[event.user.id] = UsernameChange(event.oldName, null)
+			handledUsernameChanges[event.user.id] = UserMetaHolder(event.oldName, null)
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.id]!!
 			usernameChange.oldName = event.oldName
@@ -146,7 +146,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (!handledUsernameChanges.containsKey(event.user.id)) {
-			handledUsernameChanges[event.user.id] = UsernameChange(null, event.oldDiscriminator)
+			handledUsernameChanges[event.user.id] = UserMetaHolder(null, event.oldDiscriminator)
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.id]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
@@ -160,7 +160,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	fun sendUsernameChange(event: GenericUserUpdateEvent<String>, usernameChange: UsernameChange) {
+	fun sendUsernameChange(event: GenericUserUpdateEvent<String>, usernameChange: UserMetaHolder) {
 		val embed = EmbedBuilder()
 		embed.setTimestamp(Instant.now())
 		embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
