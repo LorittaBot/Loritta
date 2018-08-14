@@ -272,7 +272,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	}
 
 	/**
-	 * Gets an user from the argument index via mentions, username#discriminator, effective name, username and user ID
+	 * Gets an user from the argument index via mentions, username#oldDiscriminator, effective name, username and user ID
 	 *
 	 * @param argument the argument index on the rawArgs array
 	 * @return         the user object or null, if nothing was found
@@ -290,7 +290,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 				}
 			}
 
-			// Vamos tentar procurar pelo username + discriminator
+			// Vamos tentar procurar pelo username + oldDiscriminator
 			if (!this.isPrivateChannel && !link.isEmpty()) {
 				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 

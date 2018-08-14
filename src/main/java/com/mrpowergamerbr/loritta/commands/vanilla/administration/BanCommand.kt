@@ -198,7 +198,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 										"punishment" to locale["BAN_PunishAction"],
 										"staff" to punisher.name,
 										"@staff" to punisher.asMention,
-										"staff-discriminator" to punisher.discriminator,
+										"staff-oldDiscriminator" to punisher.discriminator,
 										"staff-avatar-url" to punisher.avatarUrl,
 										"staff-id" to punisher.id
 								)

@@ -503,7 +503,7 @@ object WebsiteUtils {
 			val selfUser = jsonObject(
 					"id" to userIdentification.id,
 					"name" to user.name,
-					"discriminator" to user.discriminator,
+					"oldDiscriminator" to user.discriminator,
 					"avatar" to user.effectiveAvatarUrl
 			)
 			serverConfigJson["selfUser"] = selfUser

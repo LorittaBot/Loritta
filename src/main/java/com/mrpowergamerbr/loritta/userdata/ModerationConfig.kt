@@ -11,7 +11,7 @@ class ModerationConfig {
 	@AllowReflection
 	var punishmentLogChannelId: String? = null
 	@AllowReflection
-	var punishmentLogMessage: String = "**Usuário punido:** {user}#{user-discriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"
+	var punishmentLogMessage: String = "**Usuário punido:** {user}#{user-oldDiscriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"
 	@AllowReflection
 	var punishmentActions = mutableListOf<WarnAction>()
 	@AllowReflection

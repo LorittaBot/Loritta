@@ -72,7 +72,7 @@ class UpdateServerConfigController {
 
 			json["id"] = member.user.id
 			json["name"] = member.user.name
-			json["discriminator"] = member.user.discriminator
+			json["oldDiscriminator"] = member.user.discriminator
 			json["avatar"] = member.user.avatarUrl
 
 			members.add(json)
@@ -99,7 +99,7 @@ class UpdateServerConfigController {
 			val selfUser = jsonObject(
 					"id" to userIdentification.id,
 					"name" to user.name,
-					"discriminator" to user.discriminator,
+					"oldDiscriminator" to user.discriminator,
 					"avatar" to user.effectiveAvatarUrl
 			)
 			serverConfigJson["selfUser"] = selfUser

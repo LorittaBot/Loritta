@@ -183,7 +183,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 										"punishment" to locale["SOFTBAN_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"staff-discriminator" to context.userHandle.discriminator,
+										"staff-oldDiscriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.avatarUrl,
 										"staff-id" to context.userHandle.id
 								)

@@ -167,7 +167,7 @@ class TicTacToeRoom {
 			if (user != null) {
 				roomAsJson["player1Metadata"] = jsonObject(
 						"username" to user.name,
-						"discriminator" to user.discriminator,
+						"oldDiscriminator" to user.discriminator,
 						"avatarUrl" to user.effectiveAvatarUrl
 				)
 			}
@@ -179,7 +179,7 @@ class TicTacToeRoom {
 			if (user != null) {
 				roomAsJson["player2Metadata"] = jsonObject(
 						"username" to user.name,
-						"discriminator" to user.discriminator,
+						"oldDiscriminator" to user.discriminator,
 						"avatarUrl" to user.effectiveAvatarUrl
 				)
 			}

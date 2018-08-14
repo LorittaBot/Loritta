@@ -89,7 +89,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 
 				if (inviter != null) {
 					val username = inviter["username"].string
-					val discriminator = inviter["discriminator"].string
+					val discriminator = inviter["oldDiscriminator"].string
 					val id = inviter["id"].string
 
 					embed.addField("\uD83D\uDC4B ${locale["INVITEINFO_WhoInvited"]}", "`$username#$discriminator` ($id)", true)

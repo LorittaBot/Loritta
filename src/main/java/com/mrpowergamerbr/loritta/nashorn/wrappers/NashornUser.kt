@@ -12,7 +12,7 @@ open class NashornUser(internal val user: User) {
 	@NashornCommand.NashornDocs("Retorna o nome do usuário.",
 			"",
 """
-reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getDiscriminator() + " 👀");
+reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getOldDiscriminator() + " 👀");
 """)
 	fun getName(): String {
 		return user.name
@@ -21,7 +21,7 @@ reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().g
 	@NashornCommand.NashornDocs("Retorna o discriminador do usuário.",
 			"",
 			"""
-reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getDiscriminator() + " 👀");
+reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().getOldDiscriminator() + " 👀");
 """)
 	fun getDiscriminator(): String {
 		return user.discriminator
