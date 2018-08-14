@@ -294,7 +294,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if (randomValue == 25 || randomValue == 75) {
+				} else if ((randomValue == 25 || randomValue == 75) && !isDonator) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
