@@ -43,7 +43,6 @@ import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
-import net.dv8tion.jda.core.utils.cache.CacheFlag
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
