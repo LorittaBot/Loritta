@@ -469,7 +469,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
-						val deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED"]}"
+						val deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_BulkDeleted"]}"
 
 						embed.setDescription(deletedMessage)
 
