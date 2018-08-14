@@ -84,9 +84,9 @@
             <version>2.6.2</version>
         </dependency>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>experimental~guild-setup-SNAPSHOT</version>
+            <version>${jda.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

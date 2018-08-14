@@ -170,7 +170,7 @@ class Loritta(config: LorittaConfig) {
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(16)
 				.setBulkDeleteSplittingEnabled(false)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
+				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListener(discordListener)
 				.addEventListener(eventLogListener)
 				.addEventListener(messageListener)
