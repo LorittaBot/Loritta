@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent
@@ -31,7 +32,6 @@ import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
-import net.dv8tion.jda.core.events.user.update.GenericUserUpdateEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
@@ -51,8 +51,17 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
-	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<String, UserMetaHolder>().asMap()
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
+			.removalListener { k1: String?, v1: UserMetaHolder?, removalCause ->
+				if (k1 != null && v1 != null) {
+					val user = lorittaShards.getUserById(k1) ?: return@removalListener
+					sendUsernameChange(user, v1)
+				}
+			}
+			.build<String, UserMetaHolder>().asMap()
 
 	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
 
@@ -138,8 +147,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			usernameChange.oldName = event.oldName
 
 			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+				handledUsernameChanges[event.user.id] = null
 				loritta.executor.execute {
-					sendUsernameChange(event, usernameChange)
+					sendUsernameChange(event.user, usernameChange)
 				}
 			}
 		}
@@ -156,37 +166,39 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			usernameChange.oldDiscriminator = event.oldDiscriminator
 
 			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+				handledUsernameChanges[event.user.id] = null
 				loritta.executor.execute {
-					sendUsernameChange(event, usernameChange)
+					sendUsernameChange(event.user, usernameChange)
 				}
 			}
 		}
 	}
 
-	fun sendUsernameChange(event: GenericUserUpdateEvent<String>, usernameChange: UserMetaHolder) {
+	fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
+		val oldName = usernameChange.oldName ?: user.name
+		val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
+		val newName = user.name
+		val newDiscriminator = user.discriminator
 		val embed = EmbedBuilder()
 		embed.setTimestamp(Instant.now())
-		embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+		embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
 		embed.setColor(Constants.DISCORD_BLURPLE)
 
-		// É necessário fazer isto já que todas as shards irão receber a notificação de username change
-		val newName = event.user.name
-		val newDiscriminator = event.user.discriminator
 		val changedAt = System.currentTimeMillis()
 
 		val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
 
-		val profile = loritta.getLorittaProfileForUser(event.user.id)
+		val profile = loritta.getLorittaProfileForUser(user.id)
 
 		if (profile.usernameChanges.isEmpty()) {
-			profile.usernameChanges.add((LorittaProfile.UsernameChange(event.user.creationTime.toEpochSecond() * 1000, event.user.name, event.user.discriminator)))
+			profile.usernameChanges.add((LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator)))
 		}
 
 		profile.usernameChanges.add(changeWrapper)
 
 		loritta save profile
 
-		val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+		val guilds = lorittaShards.getMutualGuilds(user)
 
 		loritta.serversColl.find(
 				Filters.and(
@@ -211,8 +223,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 						continue
 
-					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${usernameChange.oldName}#${usernameChange.oldDiscriminator}", "${event.user.name}#${event.user.discriminator}"]}")
-					embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
+					embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
 
 					textChannel.sendMessage(embed.build()).complete()
 				}
