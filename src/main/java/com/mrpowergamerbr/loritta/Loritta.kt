@@ -288,13 +288,12 @@ class Loritta(config: LorittaConfig) {
 
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
-		NewRssFeedThread().start() // Iniciar Feed Rss
-
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
 		if (Loritta.config.environment == EnvironmentType.CANARY)
 			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)

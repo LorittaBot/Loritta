@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.analytics
 
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
-import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
-import mu.KotlinLogging
+import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import mu.KotlinLogging
 import java.util.concurrent.ThreadPoolExecutor
 
 /**
@@ -42,11 +42,11 @@ class InternalAnalyticSender : Runnable {
 		logger.debug("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 		logger.debug("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 		logger.debug("fanArts.size: ${loritta.fanArts.size}")
-		logger.debug("storedLastIds.size: ${AminoRepostTask.storedLastIds.size}")
+		logger.debug("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
 		logger.debug("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 		logger.debug("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 		logger.debug("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
-		logger.debug("lastItemTime.size: ${NewRssFeedThread.lastItemTime.size}")
+		logger.debug("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries}")
 		logger.debug("YouTube's Last Notified: ${CreateYouTubeWebhooksTask.lastNotified.size}")
 		logger.debug("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 		logger.debug("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")

@@ -4,7 +4,7 @@ import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
-import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
+import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import java.util.concurrent.ThreadPoolExecutor
@@ -85,11 +85,11 @@ object DebugLog {
 				println("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
-				println("storedLastIds.size: ${AminoRepostTask.storedLastIds.size}")
+				println("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
-				println("lastItemTime.size: ${NewRssFeedThread.lastItemTime.size}")
+				println("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
