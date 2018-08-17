@@ -170,6 +170,11 @@
             <version>6.0</version>
         </dependency>
         <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.11.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.Frederikam</groupId>
             <artifactId>Lavalink</artifactId>
             <version>fbc24237c1</version>
