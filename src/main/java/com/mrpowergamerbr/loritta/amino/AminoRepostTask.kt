@@ -148,10 +148,10 @@ class AminoRepostTask : Runnable {
 									else
 										false
 								}) {
-									val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
+									val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 
 									val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId)
-											?: return@launch
+											?: continue
 
 									if (!textChannel.canTalk())
 										continue
