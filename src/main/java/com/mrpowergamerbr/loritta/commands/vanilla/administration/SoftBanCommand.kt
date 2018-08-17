@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -196,6 +197,21 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 
 			context.guild.controller.ban(member, days, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
 					.complete()
+
+            val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
+            val userData = serverConfig.getUserData(member.user.id)
+
+            val punishment = LorittaGuildUserData.PunishmentWrapper(
+                    LorittaGuildUserData.PunishmentType.SOFT_BAN,
+                    context.userHandle.id,
+                    reason,
+                    System.currentTimeMillis()
+            )
+
+            userData.punishments.add(punishment)
+
+            loritta save serverConfig
+
 			context.guild.controller.unban(user).complete()
 		}
 	}
