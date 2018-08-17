@@ -167,7 +167,7 @@ class Loritta(config: LorittaConfig) {
 		builder = JDABuilder(AccountType.BOT)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(32)
+				.setCorePoolSize(64)
 				.setBulkDeleteSplittingEnabled(false)
 				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListener(discordListener)
@@ -216,7 +216,6 @@ class Loritta(config: LorittaConfig) {
 		generateDummyServerConfig()
 
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
-		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
 
 		socket = SocketServer(Loritta.config.socketPort)
 
