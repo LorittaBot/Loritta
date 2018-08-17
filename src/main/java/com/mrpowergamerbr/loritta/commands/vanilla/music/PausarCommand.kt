@@ -1,13 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.Permission
+import com.mrpowergamerbr.loritta.utils.loritta
 
 class PausarCommand : AbstractCommand("pause", listOf("pausar"), CommandCategory.MUSIC, listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -23,7 +22,7 @@ class PausarCommand : AbstractCommand("pause", listOf("pausar"), CommandCategory
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.isPaused) {
 			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_ALREADY_PAUSED", context.config.commandPrefix))

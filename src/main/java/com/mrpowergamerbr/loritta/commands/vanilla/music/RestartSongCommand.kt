@@ -1,18 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.audio.GuildMusicManager
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import com.mrpowergamerbr.loritta.utils.loritta
 
 class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusica", "restarttrack", "reiniciarmusic", "reiniciarmúsica"), CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -28,7 +24,7 @@ class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusic
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.playingTrack != null) {
 			skip(context, locale, manager)

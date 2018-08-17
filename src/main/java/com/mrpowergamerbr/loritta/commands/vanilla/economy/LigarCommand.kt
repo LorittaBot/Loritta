@@ -59,7 +59,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 
 						loritta.bomDiaECia.available = false
 
-						val randomPrize = RANDOM.nextInt(100, 601)
+						val randomPrize = RANDOM.nextInt(150, 376)
 
 						profile.dreams += randomPrize
 						loritta save profile

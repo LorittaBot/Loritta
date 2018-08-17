@@ -1,10 +1,10 @@
 package com.mrpowergamerbr.loritta.userdata
 
+import com.mrpowergamerbr.loritta.profile.ProfileType
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
-import java.time.LocalDate
 import java.util.*
 
 /**
@@ -34,6 +34,17 @@ class LorittaProfile @BsonCreator constructor(
     var usedEmotes = mutableMapOf<String, Int>()
     var receivedDailyAt = 0L
     var ip: String? = null
+    var activeDesign = ProfileType.DEFAULT
+	var designsBought = mutableListOf<ProfileType>()
+	var editedShipEffects = mutableListOf<ShipEffect>()
+
+	var isDonator = false
+	var donatorPaid = 0.0
+	var donatedAt = 0L
+	var donationExpiresIn = 0L
+
+    var marriedWith: String? = null
+	var marriedAt: Long? = null
 
     @BsonIgnore
     fun getCurrentLevel(): LorittaProfile.XpWrapper {
@@ -55,4 +66,6 @@ class LorittaProfile @BsonCreator constructor(
     class UsernameChange @BsonCreator constructor(@BsonProperty("changedAt") val changedAt: Long = 0L, @BsonProperty("username") val username: String, @BsonProperty("discriminator") val discriminator: String)
 
     class SpinnerScore @BsonCreator constructor(@BsonProperty("emoji") val emoji: String, @BsonProperty("forTime") val forTime: Long)
+
+	class ShipEffect @BsonCreator constructor(@BsonProperty("userId") val userId: String, @BsonProperty("editedTo") val editedTo: Int, @BsonProperty("createdAt") val createdAt: Long)
 }

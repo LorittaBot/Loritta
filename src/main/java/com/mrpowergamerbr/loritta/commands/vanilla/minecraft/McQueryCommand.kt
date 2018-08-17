@@ -55,7 +55,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 
 				builder.addField("MOTD", response.motd, false)
 				builder.addField("Players", response.playersOnline.toString() + "/" + response.playersMax, true)
-				builder.addField("Versão", response.versionName + " (${response.versionProtocol})", true)
+				builder.addField(locale["MCQUERY_VERSION"], response.versionName + " (${response.versionProtocol})", true)
 
 				builder.setThumbnail("https://mcapi.ca/query/$hostname:$port/icon") // E agora o server-icon do servidor
 

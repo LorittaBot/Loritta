@@ -1,58 +1,36 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.google.gson.Gson
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.core.entities.Guild
 import org.apache.commons.io.FileUtils
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.pojo.PojoCodecProvider
 import java.io.File
+import kotlin.concurrent.thread
 
-class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.isNotEmpty() && context.args[0] == "dump_threads") {
-			var threadCount = 0
-			val threadSet = Thread.getAllStackTraces().keys
-			for (t in threadSet) {
-				if (t.threadGroup === Thread.currentThread().threadGroup) {
-					File(Loritta.FOLDER, "thread_dump.txt").appendText("Thread :" + t + ":" + "state:" + t.state + "\n")
-					++threadCount
-				}
-			}
-			context.reply(
-					LoriReply(
-							message = "Threads dumpadas com sucesso! Número de threads: " + threadCount
-					)
-			)
-			return
-		}
-		if (context.args.isNotEmpty() && context.args[0] == "setindex") {
+		val arg0 = context.rawArgs.getOrNull(0)
+
+		if (arg0 == "setindex") {
 			UpdateStatusThread.skipToIndex = context.args[1].toInt()
 			context.reply(
 					LoriReply(
@@ -61,7 +39,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "fan_arts") {
+		if (arg0 == "fan_arts" || arg0 == "fanarts") {
 			loritta.loadFanArts()
 			context.reply(
 					LoriReply(
@@ -70,7 +48,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "locales") {
+		if (arg0 == "locales") {
 			loritta.loadLocales()
 			context.reply(
 					LoriReply(
@@ -79,7 +57,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "commands") {
+
+		if (arg0 == "commands") {
 			val oldCommandCount = loritta.commandManager.commandMap.size
 			LorittaLauncher.loritta.loadCommandManager()
 			context.reply(
@@ -89,7 +68,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "website") {
+
+		if (arg0 == "website") {
 			GlobalHandler.generateViews()
 			context.reply(
 					LoriReply(
@@ -98,7 +78,30 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "mongo") {
+
+		if (arg0 == "fullwebsite" || arg0 == "full_website") {
+			logger.info("Parando o Jooby...")
+			loritta.website.stop()
+			logger.info("Interrompendo a Thread do Website...")
+			loritta.websiteThread.interrupt()
+			logger.info("Iniciando instância do Website...")
+			loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
+			logger.info("Iniciando website...")
+			loritta.websiteThread = thread(true, name = "Website Thread") {
+				loritta.website = LorittaWebsite(Loritta.config.websiteUrl, Loritta.config.frontendFolder)
+				org.jooby.run({
+					loritta.website
+				})
+			}
+			context.reply(
+					LoriReply(
+							"Full website reload completado!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "mongo") {
 			loritta.initMongo()
 			context.reply(
 					LoriReply(
@@ -107,7 +110,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "savekeys") {
+		if (arg0 == "savekeys") {
 			loritta.savePremiumKeys()
 			context.reply(
 					LoriReply(
@@ -116,7 +119,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (context.args.isNotEmpty() && context.args[0] == "loadkeys") {
+		if (arg0 == "loadkeys") {
 			loritta.loadPremiumKeys()
 			context.reply(
 					LoriReply(
@@ -125,8 +128,17 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
+		if (arg0 == "loadblacklist") {
+			loritta.loadBlacklistedServers()
+			context.reply(
+					LoriReply(
+							"Servidores Blacklisted carregados!"
+					)
+			)
+			return
+		}
 
-		if (context.args.isNotEmpty() && context.args[0] == "exportdate") {
+		if (arg0 == "exportdate") {
 			val dates = mutableMapOf<String, Int>()
 
 			val file = File("./date_export.txt")
@@ -155,6 +167,86 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "config") {
+			val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
+			val config = Gson().fromJson(json, LorittaConfig::class.java)
+			Loritta.config = config
+			context.reply(
+					LoriReply(
+							"Config recarregada!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "queryuseless") {
+			val uselessServers = loritta.serversColl.find(
+					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)
+			)
+
+			val reallyUselessServers = mutableListOf<Guild>()
+
+			var str = ""
+
+			for (serverConfig in uselessServers) {
+				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
+
+				// AMINO
+				if (serverConfig.aminoConfig.fixAminoImages || serverConfig.aminoConfig.aminos.isNotEmpty())
+					continue
+
+				// INVITE BLOCKER
+				if (serverConfig.inviteBlockerConfig.isEnabled)
+					continue
+
+				// AUTOROLE
+				if (serverConfig.autoroleConfig.isEnabled)
+					continue
+
+				// EVENT LOG
+				if (serverConfig.eventLogConfig.isEnabled)
+					continue
+
+				// JOIN/LEAVE
+				if (serverConfig.joinLeaveConfig.isEnabled)
+					continue
+
+				// LIVESTREAM
+				if (serverConfig.livestreamConfig.channels.isNotEmpty())
+					continue
+
+				// MUSIC
+				if (serverConfig.musicConfig.isEnabled)
+					continue
+
+				// FEEDS
+				if (serverConfig.rssFeedConfig.feeds.isNotEmpty())
+					continue
+
+				// YOUTUBE
+				if (serverConfig.youTubeConfig.channels.isNotEmpty())
+					continue
+
+				reallyUselessServers.add(guild)
+			}
+
+			context.reply("Existem ${reallyUselessServers.size} servidores inúteis!")
+
+			if (context.rawArgs.getOrNull(1) == "leave") {
+				context.reply("...e eu irei sair de todos eles!")
+
+				for (guild in reallyUselessServers) {
+					guild.leave().queue()
+				}
+			} else {
+				for (guild in reallyUselessServers.sortedByDescending { it.members.size }) {
+					str += "[${guild.id}] ${guild.name} - ${guild.members.size} membros (${guild.members.count { it.user.isBot }} bots)\n"
+				}
+
+				File("/home/servers/loritta/useless-servers.txt").writeText(str)
+			}
+			return
+		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
 		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")

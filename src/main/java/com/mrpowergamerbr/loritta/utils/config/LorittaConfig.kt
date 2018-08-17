@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Game
 
 data class LorittaConfig(
@@ -7,10 +8,15 @@ data class LorittaConfig(
 		val clientToken: String,
 		val clientId: String,
 		val clientSecret: String,
+		val userStatus: OnlineStatus,
+		val databaseName: String,
+		val environment: EnvironmentType,
 		val youtubeKeys: List<String>,
 		val websiteApiKeys: List<AuthenticationKey>,
 		val ownerId: String,
 		val websiteUrl: String,
+		val websitePort: Int,
+		val socketPort: Int,
 		val lorittaFolder: String,
 		val assetsFolder: String,
 		val tempFolder: String,
@@ -36,9 +42,14 @@ data class LorittaConfig(
 		val patreonAccessToken: String,
 		val patreonRefreshToken: String,
 		val twitchClientId: String,
+		val mixerClientId: String,
+		val mixerClientSecret: String,
+		val mixerWebhookSecret: String,
 		val apoiaSeCookies: String,
 		val recaptchaToken: String,
 		val pomfSpaceToken: String,
+		val vagalumeKey: String,
+		val ghostIds: List<String>,
 		val fanArtExtravaganza: Boolean,
 		val fanArts: List<LorittaAvatarFanArt>,
 		val currentlyPlaying: List<LorittaGameStatus>) {
@@ -46,10 +57,15 @@ data class LorittaConfig(
 			"Token do Bot",
 			"Client ID do Bot",
 			"Client Secret do Bot",
+			OnlineStatus.ONLINE,
+			"Nome da Database no MongoDB",
+			EnvironmentType.PRODUCTION,
 			listOf(),
 			listOf(),
 			"ID do dono do bot, usado para alguns comandos \"especiais\"",
 			"Website do Bot",
+			4568,
+			10699,
 			"Pasta da Loritta (normalmente a pasta \"root\", ou seja, a mesma pasta aonde fica a JAR)",
 			"Pasta de assets da Loritta (imagens, fontes, etc)",
 			"Pasta temporária da Loritta",
@@ -75,16 +91,21 @@ data class LorittaConfig(
 			"Access Token do Patreon",
 			"Refresh Token do Patreon",
 			"Client ID do Twitch",
+			"Client ID do Mixer",
+			"Client Secret do Mixer",
+			"Webhook Secret do Mixer, utilizado para codificar Webhooks",
 			"Cookie do apoia.se",
 			"Token do No Captcha reCAPTCHA",
 			"Token do pomf.space",
+			"Key do Vagalume",
+			listOf<String>(),
 			true,
 			listOf<LorittaAvatarFanArt>(),
 			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
 
 	class LorittaGameStatus(val name: String, val type: String)
 
-	class LorittaAvatarFanArt(val fileName: String, val artist: String)
+	class LorittaAvatarFanArt(val fileName: String, val artistId: String, val fancyName: String?)
 
 	class AuthenticationKey(val name: String, val description: String, val allowed: List<String>)
 }

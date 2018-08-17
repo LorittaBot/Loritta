@@ -35,8 +35,8 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var user1: User? = LorittaUtils.getUserFromContext(context, 0)
-		var user2: User? =  LorittaUtils.getUserFromContext(context, 1)
+		var user1: User? = context.getUserAt(0)
+		var user2: User? =  context.getUserAt(1)
 
 		if (user1 == null) {
 			var member1 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]

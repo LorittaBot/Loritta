@@ -2,9 +2,9 @@ package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.threads.AminoRepostThread
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
-import com.mrpowergamerbr.loritta.threads.NewRssFeedThread
+import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import java.util.concurrent.ThreadPoolExecutor
@@ -77,22 +77,19 @@ object DebugLog {
 				println("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
 				println("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
 				println("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
-				println("messageContextCache.size: ${loritta.messageContextCache.size}")
 				println("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 				println("locales.size: ${loritta.locales.size}")
 				println("ignoreIds.size: ${loritta.ignoreIds.size}")
 				println("userCooldown.size: ${loritta.userCooldown.size}")
-				println("southAmericaMemesPageCache.size: ${loritta.southAmericaMemesPageCache.size}")
-				println("southAmericaMemesGroupCache.size: ${loritta.southAmericaMemesGroupCache.size}")
-				println("musicManagers.size: ${loritta.musicManagers.size}")
-				println("songThrottle.size: ${loritta.songThrottle.size}")
+				println("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
+				println("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 				println("fanArts.size: ${loritta.fanArts.size}")
-				println("storedLastIds.size: ${AminoRepostThread.storedLastIds.size}")
+				println("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
 				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
-				println("lastItemTime.size: ${NewRssFeedThread.lastItemTime.size}")
+				println("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")

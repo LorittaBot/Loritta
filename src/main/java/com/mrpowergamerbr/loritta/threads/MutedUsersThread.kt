@@ -4,11 +4,11 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 
 class MutedUsersThread : Thread("Muted Users Thread") {
 	companion object {
-		val logger = LoggerFactory.getLogger(MutedUsersThread::class.java)
+		private val logger = KotlinLogging.logger {}
 	}
 
 	override fun run() {
@@ -35,13 +35,13 @@ class MutedUsersThread : Thread("Muted Users Thread") {
 				val guild = lorittaShards.getGuildById(next.guildId)
 
 				if (guild == null) {
-					logger.info("Guild \"${next.guildId}\" não existe ou está indisponível!")
+					logger.debug { "Guild \"${next.guildId}\" não existe ou está indisponível!" }
 					continue
 				}
 
 				val locale = loritta.getLocaleById(next.localeId)
 				next.guildUserData.filter { it.temporaryMute }.forEach {
-					if (!MuteCommand.roleRemovalThreads.containsKey("${guild.id}#${it.userId}")) {
+					if (!MuteCommand.roleRemovalThreads.containsKey("${guild.id}#${it.userId}") && guild.getMemberById(it.userId) != null) {
 						logger.info("Adicionado removal thread pelo MutedUsersThread ~ Guild: ${next.guildId} - User: ${it.userId}")
 						MuteCommand.spawnRoleRemovalThread(guild, locale, next, it)
 					}

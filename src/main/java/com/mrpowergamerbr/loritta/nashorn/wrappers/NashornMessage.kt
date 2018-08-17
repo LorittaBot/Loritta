@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
@@ -27,11 +28,6 @@ class NashornMessage(private val message: Message) {
 	@NashornCommand.NashornDocs()
 	fun getId(): String {
 		return message.id
-	}
-
-	@NashornCommand.NashornDocs()
-	fun getAttachments(): MutableList<Message.Attachment> {
-		return message.attachments
 	}
 
 	@NashornCommand.NashornDocs()
@@ -92,6 +88,11 @@ class NashornMessage(private val message: Message) {
 
 	@NashornCommand.NashornDocs(arguments = "mensagem")
 	fun editMessage(texto: String) {
+		if (texto.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(null)
+			return null!!
+		}
+
 		message.editMessage(texto).complete()
 	}
 

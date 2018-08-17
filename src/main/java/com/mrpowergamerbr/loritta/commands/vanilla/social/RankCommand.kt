@@ -5,14 +5,8 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
-import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
@@ -68,7 +62,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		val serverIconUrl = if (context.guild.iconUrl != null) {
 			context.guild.iconUrl.replace("jpg", "png")
 		} else {
-			"https://loritta.website/assets/img/unknown.png"
+			"${Loritta.config.websiteUrl}assets/img/unknown.png"
 		}
 
 		val serverIcon = LorittaUtils.downloadImage(serverIconUrl).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
@@ -127,7 +121,8 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
+				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl)
+						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
 				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
 				val avatarGraphics = editedAvatar.graphics as Graphics2D

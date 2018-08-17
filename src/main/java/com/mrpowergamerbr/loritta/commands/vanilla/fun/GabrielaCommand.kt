@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
@@ -16,7 +17,6 @@ import net.dv8tion.jda.core.entities.Message
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.bson.types.ObjectId
-import java.util.regex.Pattern
 
 class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
@@ -24,6 +24,10 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 	override fun getExample(): List<String> = listOf("Como vai você?")
 
 	override fun hasCommandFeedback(): Boolean = false
+
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val corretores = mapOf(
@@ -107,7 +111,16 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 			perguntas.addAll(split)
 
-			val discordWebhook = DiscordWebhook(webhook!!.url)
+			val url = webhook?.url ?: run {
+				context.reply(
+						LoriReply(
+								"Infelizmente eu não consigo criar webhooks neste servidor... desculpa! \uD83D\uDE2D",
+								Constants.ERROR
+						)
+				)
+				return
+			}
+			val discordWebhook = DiscordWebhook(url)
 
 			val documents = loritta.gabrielaMessagesColl.find(
 					Filters.`in`("questionWords", perguntas)
@@ -178,7 +191,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
 										context.locale["FRASETOSCA_GABRIELA"],
 										context.getAsMention(true) + answer.answer.escapeMentions(),
-										"https://loritta.website/assets/img/gabriela_avatar.png"
+										"${Loritta.config.websiteUrl}assets/img/gabriela_avatar.png"
 								),
 								true,
 								{
@@ -330,7 +343,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						}
 					}
 
-					val linkRemover = "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)".toRegex()
+					val linkRemover = Constants.URL_PATTERN.toRegex()
 
 					val answer = GabrielaAnswer(deveResponder.replace(linkRemover, ""), it.author.id)
 

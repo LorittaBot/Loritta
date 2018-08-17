@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
@@ -39,8 +40,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 		var user2AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 
-		val user1 = LorittaUtils.getUserFromContext(context, 0)
-		val user2 = LorittaUtils.getUserFromContext(context, 1)
+		val user1 = context.getUserAt(0)
+		val user2 = context.getUserAt(1)
 
 		if (user1 != null) {
 			user1Name = user1.name
@@ -79,6 +80,18 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
+				val loriProfile1 = loritta.getLorittaProfileForUser(user1.id)
+				val loriProfile2 = loritta.getLorittaProfileForUser(user2.id)
+
+				val editedShipEffect1 = loriProfile1.editedShipEffects.firstOrNull { it.userId == user2.id }
+				val editedShipEffect2 = loriProfile2.editedShipEffects.firstOrNull { it.userId == user1.id }
+
+				if (editedShipEffect1 != null) {
+					percentage = editedShipEffect1.editedTo
+				} else if (editedShipEffect2 != null) {
+					percentage = editedShipEffect2.editedTo
+				}
+
 				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
 					if ((user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {
 						percentage = random.nextInt(0, 51)
@@ -140,8 +153,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			message = message.replace("%ship%", "`$shipName`")
 			texto += "$message"
 
-			var avatar1Old = LorittaUtils.downloadImage(user1AvatarUrl + "?size=128")
-			var avatar2Old = LorittaUtils.downloadImage(user2AvatarUrl + "?size=128")
+			var avatar1Old = LorittaUtils.downloadImage("$user1AvatarUrl?size=128")
+			var avatar2Old = LorittaUtils.downloadImage("$user2AvatarUrl?size=128")
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old

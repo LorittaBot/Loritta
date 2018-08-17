@@ -29,7 +29,6 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		context.handle
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]
 

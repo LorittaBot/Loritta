@@ -4,10 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Color
 import java.awt.Toolkit
@@ -26,34 +26,34 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 		return listOf("@Loritta");
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0);
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return;
-		}
-		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")); // Template
-		var image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
+	override fun needsToUploadFiles() = true
 
-		var graphics = image.graphics;
-		var skewed = LorittaImage(contextImage);
+	override fun run(context: CommandContext, locale: BaseLocale) {
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
+		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")); // Template
+		val image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
+
+		val graphics = image.graphics;
+		val skewed = LorittaImage(contextImage);
 
 		skewed.resize(202, 202);
 
 		// Vamos baixar o avatar do usuário
-		var avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
+		val avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
 
 		// Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
-		var dominantImage = ImageUtils.toBufferedImage(avatar.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING));
-		var dominantColor = dominantImage.getRGB(0, 0);
+		val dominantImage = ImageUtils.toBufferedImage(avatar.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING));
+		val dominantColor = dominantImage.getRGB(0, 0);
 
-		var red = (dominantColor shr 16) and 0xFF;
-		var green = (dominantColor shr 8) and 0xFF;
-		var blue = dominantColor and 0xFF;
+		val red = (dominantColor shr 16) and 0xFF;
+		val green = (dominantColor shr 8) and 0xFF;
+		val blue = dominantColor and 0xFF;
 
 		// Aplicar nosso filtro
-		var colorFilter = MagentaDominantSwapFilter(red, green, blue)
+		val colorFilter = MagentaDominantSwapFilter(red, green, blue)
 
-		var newTemplate = FilteredImageSource(template.source, colorFilter);
+		val newTemplate = FilteredImageSource(template.source, colorFilter);
 		template = ImageUtils.toBufferedImage(Toolkit.getDefaultToolkit().createImage(newTemplate));
 
 		skewed.width = 240; // Aumentar o tamanho da imagem para manipular ela

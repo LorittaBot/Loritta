@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.io.ByteArrayOutputStream
@@ -21,13 +21,11 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = LorittaUtils.getImageFromContext(context, 0);
-		if (!LorittaUtils.isValidImage(context, contextImage)) {
-			return;
-		}
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
 		ByteArrayOutputStream().use {
 			ImageIO.write(contextImage, "png", it)
-			var json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}""";
+			val json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}""";
 			val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVisionKey}&alt=json")
 					.contentType("application/json")
 					.header("Content-Length", json.toByteArray().size)

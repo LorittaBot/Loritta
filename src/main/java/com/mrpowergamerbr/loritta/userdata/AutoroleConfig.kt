@@ -6,6 +6,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty
 class AutoroleConfig {
 	var isEnabled: Boolean = false
 	var roles: MutableList<String> = mutableListOf<String>()
+	var giveRolesAfter: Long? = null
 	var rolesVoteRewards = mutableListOf<RoleVoteReward>()
 
 	class RoleVoteReward @BsonCreator constructor(

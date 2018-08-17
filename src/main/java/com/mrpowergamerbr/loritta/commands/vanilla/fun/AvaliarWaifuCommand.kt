@@ -24,7 +24,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var waifu = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 			if (user != null) {
 				waifu = user.name
 			}

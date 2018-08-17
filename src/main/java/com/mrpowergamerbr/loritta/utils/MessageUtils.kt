@@ -1,28 +1,19 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 
 object MessageUtils {
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()): Message? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
 		val jsonObject = try {
 			jsonParser.parse(message).obj
 		} catch (ex: Exception) {
@@ -33,8 +24,11 @@ object MessageUtils {
 		if (jsonObject != null) {
 			// alterar tokens
 			handleJsonTokenReplacer(jsonObject, sources, guild, customTokens)
-			val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-			messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed())
+			val jsonEmbed = jsonObject["embed"].nullObj
+			if (jsonEmbed != null) {
+				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
+				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
+			}
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
 			messageBuilder.append(replaceTokens(message, sources, guild, customTokens).substringIfNeeded())
@@ -85,6 +79,9 @@ object MessageUtils {
 		var mentionOwner = ""
 		var owner = ""
 
+		val tokens = mutableMapOf<String, String?>()
+		tokens.putAll(customTokens)
+
 		if (sources != null) {
 			for (source in sources) {
 				if (source is User) {
@@ -109,51 +106,23 @@ object MessageUtils {
 					mentionOwner = source.owner.asMention
 					owner = source.owner.effectiveName
 				}
-			}
-
-			// Legacy
-			// TODO: remove
-			val source = sources.getOrNull(0)
-
-			if (source != null) {
-				if (source is GenericGuildMemberEvent) {
-					mentionUser = source.member.asMention
-					user = source.member.user.name
-					userDiscriminator = source.member.user.discriminator
-					userId = source.member.user.id
-					avatarUrl = source.member.user.effectiveAvatarUrl
-					nickname = source.member.effectiveName
-					guildName = source.guild.name
-					guildSize = source.guild.members.size.toString()
-					mentionOwner = source.guild.owner.asMention
-					owner = source.guild.owner.effectiveName
-				}
-
-				if (source is MessageReceivedEvent) {
-					mentionUser = source.member.asMention
-					user = source.member.user.name
-					userDiscriminator = source.member.user.discriminator
-					userId = source.member.user.id
-					avatarUrl = source.member.user.effectiveAvatarUrl
-					nickname = source.member.effectiveName
-					guildName = source.guild.name
-					guildSize = source.guild.members.size.toString()
-					mentionOwner = source.guild.owner.asMention
-					owner = source.guild.owner.effectiveName
+				if (source is TextChannel) {
+					tokens["channel"] = source.name
+					tokens["@channel"] = source.asMention
+					tokens["channel-id"] = source.id
 				}
 			}
 		}
 
 		var message = text
 
-		for ((token, value) in customTokens) {
+		for ((token, value) in tokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 		}
 
 		message = message.replace("{@user}", mentionUser)
 		message = message.replace("{user}", user.escapeMentions())
 		message = message.replace("{user-id}", userId)
-		message = message.replace("{userAvatarUrl}", avatarUrl) // deprecated
 		message = message.replace("{user-avatar-url}", avatarUrl)
 		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname.escapeMentions())
@@ -197,54 +166,117 @@ object MessageUtils {
 	}
 }
 
+/**
+ * When an user adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionAdd(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
 }
 
+/**
+ * When an user removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionRemove(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemove = function
 	return this
 }
 
+/**
+ * When the command executor adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionAddByAuthor(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
 
+/**
+ * When the command executor adds a reaction to this message
+ *
+ * @param userId   the user ID
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionAddByAuthor(userId: String, function: (MessageReactionAddEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(null, userId) }
+	functions.onReactionAddByAuthor = function
+	return this
+}
+
+/**
+ * When the command executor removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
 fun Message.onReactionRemoveByAuthor(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
 	return this
 }
 
-fun Message.onResponse(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When an user sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponse(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponse = function
 	return this
 }
 
-fun Message.onResponseByAuthor(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When the command executor sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponseByAuthor(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponseByAuthor = function
 	return this
 }
 
-fun Message.onMessageReceived(context: CommandContext, function: (MessageReceivedEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild.id, context.userHandle.id) }
+/**
+ * When a message is received in any guild
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onMessageReceived(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this
 }
 
-class MessageInteractionFunctions(val guild: String, val originalAuthor: String) {
+class MessageInteractionFunctions(val guild: String?, val originalAuthor: String) {
+	// Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
 	var onReactionAdd: ((MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemove: ((MessageReactionRemoveEvent) -> Unit)? = null
 	var onReactionAddByAuthor: ((MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemoveByAuthor: ((MessageReactionRemoveEvent) -> Unit)? = null
-	var onResponse: ((MessageReceivedEvent) -> Unit)? = null
-	var onResponseByAuthor: ((MessageReceivedEvent) -> Unit)? = null
-	var onMessageReceived: ((MessageReceivedEvent) -> Unit)? = null
+	var onResponse: ((LorittaMessageEvent) -> Unit)? = null
+	var onResponseByAuthor: ((LorittaMessageEvent) -> Unit)? = null
+	var onMessageReceived: ((LorittaMessageEvent) -> Unit)? = null
 }

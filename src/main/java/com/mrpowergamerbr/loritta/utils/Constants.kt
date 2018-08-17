@@ -1,10 +1,14 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.awt.Color
 import java.awt.Font
 import java.io.File
 import java.io.FileInputStream
+import java.text.SimpleDateFormat
+import java.util.regex.Pattern
+import javax.imageio.ImageIO
 
 /**
  * Constantes
@@ -24,9 +28,17 @@ object Constants {
 			"9⃣")
 
 	// ===[ COLORS ]===
-	val DISCORD_BURPLE = Color(114, 137, 218)
+	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
+	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
+	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
+
+	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+
+	val INVALID_IMAGE_URL: String by lazy {
+		Loritta.config.websiteUrl + "assets/img/oopsie_woopsie_invalid_image.png"
+	}
 
 	// Palavras inapropariadas
 	val BAD_NICKNAME_WORDS = listOf(
@@ -44,8 +56,32 @@ object Constants {
 			"ruim",
 			"boquete",
 			"boqueteira",
-			"putona"
+			"putona",
+			"viada",
+			"vadia",
+			"putiane"
 	)
+
+	/**
+	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image
+	 * is valid or, if he doesn't provide any arguments to the command, explain how the command works.
+	 *
+	 * ```
+	 * context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+	 * ```
+	 */
+	val INVALID_IMAGE_REPLY: ((CommandContext) -> Unit) = { context ->
+		if (context.rawArgs.isEmpty()) {
+			context.explain()
+		} else {
+			context.reply(
+					LoriReply(
+							message = context.locale["NO_VALID_IMAGE"],
+							prefix = Constants.ERROR
+					)
+			)
+		}
+	}
 
 	// ===[ FONTS ]===
 	val OSWALD_REGULAR: Font by lazy {
@@ -74,6 +110,12 @@ object Constants {
 
 	val VOLTER: Font by lazy {
 		FileInputStream(File(Loritta.ASSETS + "Volter__28Goldfish_29.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val JACKEY: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "jackeyfont.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}

@@ -38,7 +38,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 			val hour = String.format("%02d", message.creationTime.hour)
 			val minute = String.format("%02d", message.creationTime.minute)
 
-			var line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.author.id}) ${message.author.name}#${message.author.discriminator}: ${message.contentRaw}"
+			val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.author.id}) ${message.author.name}#${message.author.discriminator}: ${message.contentRaw}"
 			lines.add(line)
 		}
 

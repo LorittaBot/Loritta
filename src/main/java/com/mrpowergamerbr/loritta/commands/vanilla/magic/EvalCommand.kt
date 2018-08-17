@@ -11,11 +11,7 @@ import java.util.concurrent.ExecutionException
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
-class EvalCommand : AbstractCommand("eval", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class EvalCommand : AbstractCommand("evaljs", listOf("evaljavascript", "evaluatejs", "evaluatejavascript"), category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em JavaScript"
 	}

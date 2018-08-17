@@ -3,13 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.ModerationConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import java.awt.Color
-import java.time.Instant
 
 class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "modlog", "modlogs"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -29,7 +27,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val user = LorittaUtils.getUserFromContext(context, 0)
+		val user = context.getUserAt(0)
 
 		if (user != null) {
 			val profile = context.config.getUserData(user.id)
@@ -43,7 +41,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 			}
 
 			val embed = EmbedBuilder().apply {
-				setColor(Constants.DISCORD_BURPLE)
+				setColor(Constants.DISCORD_BLURPLE)
 			}
 
 			profile.warns.forEach {

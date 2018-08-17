@@ -3,12 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaFanArt
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
@@ -17,7 +13,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var list = loritta.fanArts.shuffled()
+		val list = loritta.fanArts.shuffled()
 
 		sendFanArtEmbed(context, locale, list, 0)
 	}
@@ -27,12 +23,21 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 		val embed = EmbedBuilder().apply {
 			setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
 
-			val user = lorittaShards.retriveUserById(fanArt.artistId)!!
+			val user = lorittaShards.retrieveUserById(fanArt.artistId)
 
-			val displayName = fanArt.fancyName ?: user.name
-			val discord = user.name + "#" + user.discriminator
+			val displayName = fanArt.fancyName ?: user?.name
 
-			setDescription(locale["FANARTS_EmbedDescription", displayName, discord])
+			var info = ""
+
+			if (user != null) {
+				info += user.name + "#" + user.discriminator + "\n"
+			}
+
+			if (fanArt.additionalInfo != null) {
+				info += fanArt.additionalInfo + "\n"
+			}
+
+			setDescription(locale["FANARTS_EmbedDescription", displayName, info])
 			setImage("https://loritta.website/assets/img/fanarts/${fanArt.fileName}")
 			setColor(Constants.LORITTA_AQUA)
 		}

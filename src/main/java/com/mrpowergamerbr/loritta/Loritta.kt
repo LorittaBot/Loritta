@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
-import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -12,47 +12,52 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
+import com.mrpowergamerbr.loritta.analytics.AnalyticSender
+import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
+import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.listeners.EventLogListener
+import com.mrpowergamerbr.loritta.listeners.*
+import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
-import com.mrpowergamerbr.loritta.utils.music.GuildMusicManager
+import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
+import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
+import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
+import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import mu.KotlinLogging
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.managers.AudioManager
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**
- * Classe principal da Loritta
+ * Loritta's main class, where everything (and anything) can happen!
+ *
+ * @author MrPowerGamerBR
  */
 class Loritta(config: LorittaConfig) {
 	// ===[ STATIC ]===
@@ -83,13 +88,15 @@ class Loritta(config: LorittaConfig) {
 		@JvmStatic
 		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 
-		val logger = LoggerFactory.getLogger(Loritta::class.java)
+		private val logger = KotlinLogging.logger {}
 	}
 
 	// ===[ LORITTA ]===
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val socket = SocketServer(10699)
+	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
+	val coroutineDispatcher = createThreadPool("Executor Thread %d").asCoroutineDispatcher() // Coroutine Dispatcher
+	val threadPool = Executors.newScheduledThreadPool(40)
 
 	fun createThreadPool(name: String): ExecutorService {
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
@@ -97,16 +104,12 @@ class Loritta(config: LorittaConfig) {
 
 	lateinit var commandManager: CommandManager // Nosso command manager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
-	var messageContextCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, CommandContext>().asMap()
-	var messageInteractionCache = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
+	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
 	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
-	val userCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
-	val apiCooldown = CacheBuilder.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
-
-	var southAmericaMemesPageCache = mutableListOf<FacebookPostWrapper>()
-	var southAmericaMemesGroupCache = mutableListOf<FacebookPostWrapper>()
+	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
+	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
@@ -115,10 +118,7 @@ class Loritta(config: LorittaConfig) {
 	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
-	// ===[ MÚSICA ]===
-	lateinit var playerManager: AudioPlayerManager
-	lateinit var musicManagers: MutableMap<Long, GuildMusicManager>
-	var songThrottle = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
+	val audioManager: AudioManager
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
@@ -126,6 +126,9 @@ class Loritta(config: LorittaConfig) {
 	var fanArts = mutableListOf<LorittaFanArt>()
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
+	var messageListener = MessageListener(this)
+	var voiceChannelListener = VoiceChannelListener(this)
+	var channelListener = ChannelListener(this)
 	var builder: JDABuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -133,11 +136,16 @@ class Loritta(config: LorittaConfig) {
 
 	var ticTacToeServer = TicTacToeServer()
 	var premiumKeys = mutableListOf<PremiumKey>()
+	var blacklistedServers = mutableMapOf<String, String>()
+	val networkBanManager = LorittaNetworkBanManager()
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
 	var userCount = 0
 	var guildCount = 0
+
+	lateinit var website: LorittaWebsite
+	lateinit var websiteThread: Thread
 
 	init {
 		FOLDER = config.lorittaFolder
@@ -152,14 +160,22 @@ class Loritta(config: LorittaConfig) {
 		resetYouTubeKeys()
 		loadFanArts()
 		loadPremiumKeys()
+		loadBlacklistedServers()
+		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
+		audioManager = AudioManager(this)
 		builder = JDABuilder(AccountType.BOT)
+				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
 				.setCorePoolSize(64)
 				.setBulkDeleteSplittingEnabled(false)
-				.setAudioSendFactory(NativeAudioSendFactory())
-		builder.addEventListener(discordListener)
-		builder.addEventListener(eventLogListener)
+				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
+				.addEventListener(discordListener)
+				.addEventListener(eventLogListener)
+				.addEventListener(messageListener)
+				.addEventListener(voiceChannelListener)
+				.addEventListener(channelListener)
+				.addEventListener(audioManager.lavalink)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -199,7 +215,9 @@ class Loritta(config: LorittaConfig) {
 
 		generateDummyServerConfig()
 
-		logger.info("Sucesso! Iniciando Loritta (Discord Bot)...") // Agora iremos iniciar o bot
+		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
+
+		socket = SocketServer(Loritta.config.socketPort)
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
@@ -210,7 +228,7 @@ class Loritta(config: LorittaConfig) {
 			logger.info("Iniciando Shard $idx...")
 			val shard = builder
 					.useSharding(idx, Loritta.config.shards)
-					.buildAsync()
+					.build()
 
 			lorittaShards.shards.add(shard)
 			logger.info("Shard $idx iniciada com sucesso!")
@@ -218,8 +236,11 @@ class Loritta(config: LorittaConfig) {
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
-		val website = thread(true, name = "Website Thread") {
-			org.jooby.run({ com.mrpowergamerbr.loritta.frontend.LorittaWebsite(config.websiteUrl, config.frontendFolder) })
+		websiteThread = thread(true, name = "Website Thread") {
+			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			org.jooby.run({
+				website
+			})
 		}
 
 		logger.info("Sucesso! Iniciando threads da Loritta...")
@@ -243,7 +264,7 @@ class Loritta(config: LorittaConfig) {
 
 					if (lorittaGuild != null) {
 						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-						val roleDonators = lorittaGuild.getRoleById("334711262262853642") // Doadores
+						val roleDonators = lorittaGuild.getRoleById("435856512787677214") // Doadores
 
 						val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
 						val donators = lorittaGuild.getMembersWithRoles(roleDonators)
@@ -265,19 +286,21 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		AminoRepostThread().start() // Iniciar Amino Repost Thread
-
-		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
-
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
-
-		NewRssFeedThread().start() // Iniciar Feed Rss
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-		DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
-
-		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
 
 		RemindersThread().start()
 
@@ -300,21 +323,6 @@ class Loritta(config: LorittaConfig) {
 		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
-
-		musicManagers = CacheBuilder.newBuilder().maximumSize(1000L).expireAfterAccess(5L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
-		playerManager = DefaultAudioPlayerManager()
-
-		AudioSourceManagers.registerRemoteSources(playerManager)
-		AudioSourceManagers.registerLocalSource(playerManager)
-
-		// As vezes, a Loritta fica sem nenhum executor disponível para carregar músicas
-		// Isto aumenta os executors que ela pode usar para... tocar música!
-		val trackInfoExecutorServiceField = playerManager::class.java.getDeclaredField("trackInfoExecutorService")
-		trackInfoExecutorServiceField.isAccessible = true
-		val trackInfoExecutorService = trackInfoExecutorServiceField.get(playerManager) as ThreadPoolExecutor
-		trackInfoExecutorService.maximumPoolSize = 100
-
-		LorittaUtilsKotlin.startAutoPlaylist()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
@@ -329,14 +337,12 @@ class Loritta(config: LorittaConfig) {
 		}
 
 		val options = mongoBuilder
-				.maxConnectionIdleTime(10000)
-				.maxConnectionLifeTime(10000)
-				.connectionsPerHost(750)
+				.connectionsPerHost(1500)
 				.build()
 
 		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
 
-		val db = mongo.getDatabase("loritta")
+		val db = mongo.getDatabase(Loritta.config.databaseName)
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
@@ -347,10 +353,11 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Carrega um ServerConfig de uma guild
+	 * Loads the server configuration of a guild
 	 *
-	 * @param guildId
-	 * @return ServerConfig
+	 * @param guildId the guild's ID
+	 * @return        the server configuration
+	 * @see           ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
@@ -358,10 +365,11 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Carrega um LorittaProfile de um usuário
+	 * Loads the profile of an user
 	 *
-	 * @param userId
-	 * @return LorittaProfile
+	 * @param userId the user's ID
+	 * @return       the user profile
+	 * @see          LorittaProfile
 	 */
 	fun getLorittaProfileForUser(userId: String): LorittaProfile {
 		val userProfile = usersColl.find(Filters.eq("_id", userId)).first()
@@ -369,7 +377,9 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
-	 * Cria o CommandManager
+	 * Initializes the CommandManager
+	 *
+	 * @see CommandManager
 	 */
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
@@ -377,12 +387,17 @@ class Loritta(config: LorittaConfig) {
 		commandManager = CommandManager()
 	}
 
+	/**
+	 * Loads the Fan Arts from the "fanarts.json" file
+	 */
 	fun loadFanArts() {
 		fanArts = GSON.fromJson(File("./fanarts.json").readText())
 	}
 
 	/**
-	 * Inicia os locales da Loritta
+	 * Initializes the available locales and adds missing translation strings to non-default languages
+	 *
+	 * @see BaseLocale
 	 */
 	fun loadLocales() {
 		val locales = mutableMapOf<String, BaseLocale>()
@@ -432,7 +447,7 @@ class Loritta(config: LorittaConfig) {
 
 				// Usando Reflection TODO: Remover
 				for (field in locale::class.java.declaredFields) {
-					if (field.name == "strings") { continue }
+					if (field.name == "strings" || Modifier.isStatic(field.modifiers)) { continue }
 					field.isAccessible = true
 
 					val ogValue = field.get(defaultLocale)
@@ -477,10 +492,24 @@ class Loritta(config: LorittaConfig) {
 		this.locales = locales
 	}
 
+	/**
+	 * Gets the BaseLocale from the ID, if the locale doesn't exist, the default locale ("default") will be retrieved
+	 *
+	 * @param localeId the ID of the locale
+	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
+	 * @see            BaseLocale
+	 */
 	fun getLocaleById(localeId: String): BaseLocale {
-		return locales.getOrDefault(localeId, locales.get("default"))!!
+		return locales.getOrDefault(localeId, locales["default"]!!)
 	}
 
+	/**
+	 * Gets a premium key from the key's name, if it is valid
+	 *
+	 * @param name the key's name
+	 * @return     the premium key, or null, if the key doesn't exist of it is expired
+	 * @see        PremiumKey
+	 */
 	fun getPremiumKey(name: String?): PremiumKey? {
 		return premiumKeys.filter {
 			it.name == name
@@ -489,232 +518,30 @@ class Loritta(config: LorittaConfig) {
 		}.firstOrNull()
 	}
 
+	/**
+	 * Loads all available premium keys from the "premium-keys.json" file
+	 *
+	 * @see PremiumKey
+	 */
 	fun loadPremiumKeys() {
 		if (File("./premium-keys.json").exists())
 			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
 	}
 
+	/**
+	 * Saves all available premium keys
+	 *
+	 * @see PremiumKey
+	 */
 	fun savePremiumKeys() {
 		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
 	}
 
-	@Synchronized
-	fun getGuildAudioPlayer(guild: Guild): GuildMusicManager {
-		val guildId = java.lang.Long.parseLong(guild.getId())
-		var musicManager = musicManagers[guildId]
-
-		if (musicManager == null) {
-			musicManager = GuildMusicManager(guild, playerManager)
-			musicManagers.put(guildId, musicManager)
-		}
-
-		guild.audioManager.sendingHandler = musicManager.sendHandler
-
-		return musicManager
-	}
-
-	fun checkAndLoad(context: CommandContext, trackUrl: String, override: Boolean = false): Boolean {
-		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
-			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			val channel = context.guild.getVoiceChannelById(context.config.musicConfig.musicGuildId)
-
-			if (channel != null) {
-				context.reply(
-						LoriReply(
-								context.locale["TOCAR_NOTINCHANNEL", channel.name.stripCodeMarks()],
-								Constants.ERROR
-						)
-				)
-			} else {
-				context.reply(
-						LoriReply(
-								context.locale["TOCAR_InvalidChannel"],
-								Constants.ERROR
-						)
-				)
-			}
-			return false
-		}
-		loadAndPlay(context, trackUrl, override)
-		return true
-	}
-
-	val playlistCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-
-	fun loadAndPlay(context: CommandContext, trackUrl: String, override: Boolean = false) {
-		loadAndPlay(context, trackUrl, false, override);
-	}
-
-	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean, override: Boolean = false) {
-		val channel = context.event.channel
-		val guild = context.guild
-		val musicConfig = context.config.musicConfig
-		val musicManager = getGuildAudioPlayer(guild);
-
-		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
-		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
-
-		if (playlistCache.containsKey(trackUrl)) {
-			playPlaylist(context, musicManager, playlistCache[trackUrl]!!, override)
-			return
-		}
-
-		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
-			override fun trackLoaded(track: AudioTrack) {
-				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
-					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
-						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue();
-						return;
-					}
-				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
-
-				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
-			}
-
-			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist
-				playPlaylist(context, musicManager, playlist, override)
-			}
-
-			override fun noMatches() {
-				if (!alreadyChecked) {
-					// Ok, não encontramos NADA relacionado a essa música
-					// Então vamos pesquisar!
-					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
-
-					if (items.isNotEmpty()) {
-						loadAndPlay(context, items[0].id.videoId, true, override)
-						return;
-					}
-				}
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue();
-			}
-
-			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_ERROR", exception.message]).queue();
-			}
-		})
-	}
-
-	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist, override: Boolean = false) {
-		val channel = context.event.channel
-		val musicConfig = context.config.musicConfig
-
-		if (!musicConfig.allowPlaylists && !override) { // Se esta guild NÃO aceita playlists
-			var track = playlist.selectedTrack
-
-			if (track == null) {
-				track = playlist.tracks[0]
-			}
-
-			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
-
-			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override)
-		} else { // Mas se ela aceita...
-			var ignored = 0;
-			for (track in playlist.tracks) {
-				if (musicConfig.hasMaxSecondRestriction) {
-					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						ignored++;
-						continue;
-					}
-				}
-
-				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override);
-			}
-
-			if (ignored == 0) {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED", playlist.tracks.size]).queue()
-			} else {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED_IGNORED", playlist.tracks.size, ignored]).queue()
-			}
-		}
-	}
-
-	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
-		val musicManager = getGuildAudioPlayer(guild);
-
-		if (playlistCache.contains(trackUrl)) {
-			val playlist = playlistCache[trackUrl]!!
-			loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
-			return
-		}
-
-		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
-			override fun trackLoaded(track: AudioTrack) {
-				play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
-			}
-
-			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist
-				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
-			}
-
-			override fun noMatches() {
-			}
-
-			override fun loadFailed(exception: FriendlyException) {
-			}
-		})
-	}
-
-	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
-		play(context.guild, context.config, musicManager, trackWrapper, override)
-	}
-
-	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
-		if (musicManager.scheduler.queue.size >= 100)
-			return
-
-		val musicGuildId = conf.musicConfig.musicGuildId!!
-
-		if (override) {
-			logger.info("Force Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
-		} else {
-			logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
-		}
-
-		connectToVoiceChannel(musicGuildId, guild.audioManager);
-
-		if (override) {
-			musicManager.player.startTrack(trackWrapper.track, false)
-		} else {
-			musicManager.scheduler.queue(trackWrapper, conf)
-		}
-
-		LorittaUtilsKotlin.fillTrackMetadata(trackWrapper)
-	}
-
-	fun skipTrack(context: CommandContext) {
-		val musicManager = getGuildAudioPlayer(context.guild);
-		musicManager.scheduler.nextTrack();
-
-		context.reply(
-				LoriReply(
-						context.locale["PULAR_MUSICSKIPPED"],
-						"\uD83E\uDD39"
-				)
-		)
-	}
-
-	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
-		if (audioManager.isConnected && audioManager.connectedChannel.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
-			audioManager.closeAudioConnection(); // Desconecte do canal atual!
-		}
-
-		if (!audioManager.isAttemptingToConnect && audioManager.isConnected && !audioManager.guild.selfMember.voiceState.inVoiceChannel()) {
-			// Corrigir bug que simplesmente eu desconecto de um canal de voz magicamente
-
-			// Quando isto acontecer, nós iremos vazar, vlw flw
-			audioManager.closeAudioConnection()
-		}
-
-		val channels = audioManager.guild.voiceChannels.filter{ it.id == id }
-
-		if (channels.isNotEmpty()) {
-			audioManager.openAudioConnection(channels[0])
-		}
+	/**
+	 * Loads the blacklisted server list from the "blacklisted-servers.json" file
+	 */
+	fun loadBlacklistedServers() {
+		if (File("./blacklisted_servers.json").exists())
+			blacklistedServers = GSON.fromJson(File("./blacklisted_servers.json").readText())
 	}
 }

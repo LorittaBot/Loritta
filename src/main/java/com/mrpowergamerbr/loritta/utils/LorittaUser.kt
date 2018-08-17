@@ -57,7 +57,7 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Loritt
      */
     override fun canUseCommand(context: CommandContext): Boolean {
         // A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
-        if (context.cmd.onlyOwner() && member.user.id != Loritta.config.ownerId) {
+        if (context.cmd.onlyOwner && member.user.id != Loritta.config.ownerId) {
             return false;
         }
 

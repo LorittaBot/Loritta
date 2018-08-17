@@ -38,7 +38,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 
 			if (user == null) {
 				context.reply(
@@ -189,20 +189,15 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								context.config.moderationConfig.punishmentLogMessage,
-								null,
+								listOf(user),
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
 										"punishment" to locale["MUTE_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"#staff" to context.userHandle.discriminator,
+										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.avatarUrl,
-										"user" to user.name,
-										"@user" to user.asMention,
-										"#user" to user.discriminator,
-										"user-avatar-url" to user.effectiveAvatarUrl,
-										"user-id" to user.id,
 										"staff-id" to context.userHandle.id
 								)
 						)
@@ -303,6 +298,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 				loritta save serverConfig
 				if (delay != null) {
+					// Ao enviar um role change, iremos esperar alguns segundos para ver se o mute foi realmente "aplicado"
+					for (x in 0..9) {
+						if (member.roles.contains(mutedRole))
+							break
+						Thread.sleep(100)
+					}
 					spawnRoleRemovalThread(context.guild, context.locale, serverConfig, userData)
 				}
 			} catch (e: HierarchyException) {

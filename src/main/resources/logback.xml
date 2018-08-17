@@ -2,34 +2,6 @@
     <timestamp key="byDay" datePattern="yyyyMMdd'T'HHmmss"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <withJansi>true</withJansi>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>DEBUG</level>
-            <onMatch>ACCEPT</onMatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>TRACE</level>
-            <onMatch>ACCEPT</onMatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>DENY</onMatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>DENY</onMatch>
-        </filter>
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <encoder>
-            <pattern>%yellow([%d{HH:mm:ss.SSS}]) [%magenta(%thread)/%highlight(%level)] %cyan(%logger{10}): %msg%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
-        <withJansi>true</withJansi>
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
@@ -41,13 +13,12 @@
         <file> log-${byDay}.txt </file>
         <append>true</append>
         <encoder>
-            <pattern>[%d{HH:mm:ss.SSS}] [%thread/%-5level]: %msg%n</pattern>
+            <pattern>[%d{HH:mm:ss.SSS}] [%thread/%level]: %msg%n</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="STDERR"/>
         <appender-ref ref="FILE"/>
     </root>
 </configuration>

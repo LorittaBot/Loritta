@@ -1,14 +1,13 @@
 package com.mrpowergamerbr.loritta.listeners.nashorn
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMember
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornMessage
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornTextChannel
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornUser
+import com.mrpowergamerbr.loritta.nashorn.wrappers.*
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import org.bson.types.ObjectId
 import java.util.*
 import java.util.concurrent.Executors
@@ -29,12 +28,12 @@ class NashornEventHandler {
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
-	fun handleMessageReceived(event: MessageReceivedEvent) {
+	fun handleMessageReceived(event: GuildMessageReceivedEvent, serverConfig: ServerConfig) {
 		try {
 			if (!javaScript.contains("onMessageReceived"))
 				return
 
-			run("onMessageReceived", NashornMessageReceivedEvent(event))
+			run("onMessageReceived", NashornMessageReceivedEvent(event, serverConfig))
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
@@ -70,7 +69,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		executor.shutdownNow()
 	}
 
-	class NashornMessageReceivedEvent(private val event: MessageReceivedEvent) {
+	class NashornMessageReceivedEvent(private val event: GuildMessageReceivedEvent, private val serverConfig: ServerConfig) {
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
 		}
@@ -84,7 +83,11 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		}
 
 		fun getTextChannel(): NashornTextChannel {
-			return NashornTextChannel(event.textChannel)
+			return NashornTextChannel(event.channel)
+		}
+
+		fun getGuild(): NashornGuild {
+			return NashornGuild(event.guild, serverConfig)
 		}
 
 		fun getMessageId(): String {

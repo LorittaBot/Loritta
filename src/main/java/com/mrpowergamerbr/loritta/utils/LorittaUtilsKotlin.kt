@@ -1,89 +1,40 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mongodb.MongoWaitQueueFullException
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.ReplaceOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.music.AudioTrackWrapper
+import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.MiscUtil
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.apache.commons.lang3.time.DateUtils
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import org.jsoup.nodes.Entities
-import org.jsoup.parser.Parser
-import org.jsoup.safety.Whitelist
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.StringReader
 import java.net.URLEncoder
-import java.text.DateFormatSymbols
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
-
-fun <R : Any> R.logger(): Lazy<Logger> {
-	return lazy { LoggerFactory.getLogger(getClassName(this.javaClass)) }
-}
-fun <T : Any> getClassName(clazz: Class<T>): String {
-	return clazz.name.removeSuffix("\$Companion")
-}
-
-fun OffsetDateTime.humanize(locale: BaseLocale): String {
-	val localeId = loritta.locales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
-	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols().months
-
-	return if (localeId == "en-us") {
-		val fancy = when (this.dayOfMonth) {
-			1 -> "st"
-			2 -> "nd"
-			3 -> "rd"
-			else -> "th"
-		}
-		"${this.dayOfMonth}${fancy} of ${months[this.month.value - 1]}, ${fixedOffset.year} at ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
-	} else {
-		"${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
-	}
-}
-
-fun Long.humanize(locale: BaseLocale): String {
-    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale)
-}
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
@@ -214,7 +165,7 @@ val jsonParser get() = Loritta.JSON_PARSER
  * Salva um objeto usando o Datastore do MongoDB
  */
 infix fun <T> Loritta.save(obj: T) {
-	val updateOptions = UpdateOptions().upsert(true)
+	val updateOptions = ReplaceOptions().upsert(true)
 	if (obj is ServerConfig) {
 		loritta.serversColl.replaceOne(
 				Filters.eq("_id", obj.guildId),
@@ -256,7 +207,7 @@ enum class NSFWResponse {
 }
 
 object LorittaUtilsKotlin {
-	val logger by logger()
+	val logger = KotlinLogging.logger {}
 
 	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
 		if (profile.isBanned) {
@@ -348,7 +299,7 @@ object LorittaUtilsKotlin {
 				track.metadata.put("thumbnail", snippet["thumbnails"]["high"]["url"].string)
 				track.metadata.put("channelIcon", channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string)
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error("Erro ao pegar informações sobre ${track.track}!", e)
 			}
 		}
 	}
@@ -359,7 +310,7 @@ object LorittaUtilsKotlin {
 
 	@JvmStatic
 	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
-		val manager = loritta.getGuildAudioPlayer(guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack
 		val metaTrack = manager.scheduler.currentTrack
 		val embed = EmbedBuilder()
@@ -405,7 +356,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createPlaylistInfoEmbed(context: CommandContext): MessageEmbed {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild)
+		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
 		embed.setTitle("\uD83C\uDFB6 ${context.locale["MUSICINFO_INQUEUE"]}")
@@ -455,7 +406,7 @@ object LorittaUtilsKotlin {
 			val count = e.reaction.users.complete().filter { !it.isBot }.size
 			val conf = context.config
 
-			if (count > 0 && conf.musicConfig.voteToSkip && LorittaLauncher.loritta.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
+			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
 				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
 
 				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
@@ -472,7 +423,7 @@ object LorittaUtilsKotlin {
 					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
 
 					if (count >= required) {
-						loritta.skipTrack(context)
+						loritta.audioManager.skipTrack(context)
 					}
 				}
 			}
@@ -482,20 +433,25 @@ object LorittaUtilsKotlin {
 	/**
 	 * Pega um post aleatório de uma página do Facebook
 	 */
-	fun getRandomPostsFromPage(page: String): List<FacebookPostWrapper> {
+	fun getRandomPostsFromPage(page: String, limit: Int = 5): List<FacebookPostWrapper> {
 		val response = HttpRequest
-				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}")
+				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 500)}&limit=$limit")
 				.body()
 
-		val json = jsonParser.parse(response)
+		val json = jsonParser.parse(response).obj
 
-		var url: String? = null;
-		var description: String? = null;
+		var url: String?
+		var description: String?
 
 		val posts = mutableListOf<FacebookPostWrapper>()
 
+		if (json["data"].nullArray == null) {
+			logger.error("Page payload has null data! ${response}")
+			return listOf()
+		}
+
 		for (post in json["data"].array) {
-			var foundUrl = post["attachments"]["data"][0]["url"].string;
+			val foundUrl = post["attachments"]["data"][0]["url"].string;
 
 			if (!foundUrl.contains("video")) {
 				try { // Provavelmente não é o que nós queremos
@@ -535,100 +491,6 @@ object LorittaUtilsKotlin {
 		return posts
 	}
 
-	@JvmStatic
-	fun getLastPostFromFeed(feedUrl: String): FeedEntry? {
-		try {
-			try {
-				val rssFeed = HttpRequest.get(feedUrl)
-						.header("Cache-Control", "max-age=0, no-cache") // Nunca pegar o cache
-						.useCaches(false) // Também não usar cache
-						.userAgent(Constants.USER_AGENT)
-						.body();
-
-				// Parsear a nossa RSS feed
-				val jsoup = Jsoup.parse(rssFeed, "", Parser.xmlParser())
-
-				var title: String? = null
-				var link: String? = null
-				var entryItem: Element? = null
-				var dateRss: String? = null
-				var description: String? = null;
-				var rssCalendar: Calendar? = null
-
-				if (jsoup.select("feed").attr("xmlns") == "http://www.w3.org/2005/Atom") {
-					// Atom Feed
-					title = jsoup.select("feed entry title").first().text()
-					link = jsoup.select("feed entry link").first().attr("href")
-					entryItem = jsoup.select("feed entry").first()
-					if (jsoup.select("feed entry published").isNotEmpty()) {
-						dateRss = jsoup.select("feed entry published").first().text();
-					} else if (jsoup.select("feed entry updated").isNotEmpty()) {
-						dateRss = jsoup.select("feed entry updated").first().text();
-					}
-					rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
-					// Enquanto a maioria das feeds RSS colocam title e link... a maioria não coloca a descrição corretamente
-					// Então vamos verificar de duas maneiras
-					if (jsoup.select("feed entry description").isNotEmpty()) {
-						description = jsoup.select("feed entry description").first().text()
-					} else if (jsoup.select("feed entry content").isNotEmpty()) {
-						description = jsoup.select("feed entry content").first().text()
-					}
-				} else if (jsoup.select("rdf|RDF").attr("xmlns") == "http://purl.org/rss/1.0/") {
-					// RDF Feed (usada pela Steam)
-					title = jsoup.select("item title").first().text()
-					link = jsoup.select("item link").first().text()
-					entryItem = jsoup.select("item").first()
-					dateRss = jsoup.select("item pubDate").first().text();
-					val sdf = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
-					val date = sdf.parse(dateRss)
-					rssCalendar = DateUtils.toCalendar(date)
-					if (!jsoup.select("item description").isEmpty()) {
-						description = jsoup.select("item description").first().text()
-					}
-				} else if (jsoup.select("channel").isNotEmpty()) {
-					// Provavelemente é uma feed RSS então :)
-					title = jsoup.select("channel item title").first().text()
-					link = jsoup.select("channel item link").first().text()
-					entryItem = jsoup.select("channel item").first()
-					dateRss = jsoup.select("channel item pubDate").first().text();
-					val sdf = if (!dateRss.matches(Regex("[0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+"))) {
-						if (dateRss[3] == ',') {
-							SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-						} else {
-							SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-						}
-					} else { // Algumas rss feeds usam este estilo de data (bug?)
-						SimpleDateFormat("dd/mm/yyyy HH:mm:ss", Locale.ENGLISH)
-					}
-					val date = sdf.parse(dateRss)
-					rssCalendar = DateUtils.toCalendar(date)
-					if (!jsoup.select("channel item description").isEmpty()) {
-						description = jsoup.select("channel item description").first().text()
-					}
-				} else {
-					// Faço a mínima ideia do que seja isto.
-					return null;
-				}
-
-				if (dateRss == null) {
-					return null;
-				}
-
-				if (description != null) {
-					description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
-				}
-
-				return FeedEntry(title, link, rssCalendar, description, entryItem)
-			} catch (urlEx: HttpRequest.HttpRequestException) {
-				return null
-			} // Ignorar silenciosamente...
-		} catch (e: Exception) {
-			println(feedUrl)
-			e.printStackTrace()
-			return null
-		}
-	}
-
 	fun sendStackTrace(message: Message, t: Throwable) {
 		if (message.isFromType(ChannelType.TEXT)) {
 			sendStackTrace("[`${message.guild.name.stripCodeMarks()}` -> `${message.channel.name.stripCodeMarks()}`] **${message.author.name.stripCodeMarks()}**: `${message.contentRaw.stripCodeMarks()}`", t)
@@ -637,8 +499,14 @@ object LorittaUtilsKotlin {
 		}
 	}
 
+	var stackTraceCount = 0
+	var stackTraceDelay = 0L
+
 	fun sendStackTrace(message: String, t: Throwable) {
 		if (t is MongoWaitQueueFullException) // I don't care!!! ~ Desativado para evitar floods de mensagens no #stacktraces ao recarregar a Loritta pelo JRebel
+			return
+
+		if (t is ErrorResponseException && t.errorCode == -1) // Ignorar socket timeouts (provavelmente é a shard do Discord que está morrendo)
 			return
 
 		val guild = lorittaShards.getGuildById("297732013006389252")
@@ -676,49 +544,25 @@ object LorittaUtilsKotlin {
 
 		messageBuilder.setEmbed(builder.build())
 
+		if ((System.currentTimeMillis() - stackTraceDelay) > 5000) {
+			stackTraceCount = 0
+			stackTraceDelay = System.currentTimeMillis()
+		}
+
+		if (stackTraceCount == 4) {
+			stackTraceCount++
+			logger.info("Ignorando exceptions devido ao grande número de exceptions recebidas em um curto período de tempo!")
+			return
+		}
+
 		textChannel.sendMessage(messageBuilder.build()).queue()
+		stackTraceCount++
 	}
 
 	var executedCommands = 0;
 
-	fun startAutoPlaylist() {
-		val playlistMagic = {
-			// Agora iremos iniciar o playlist magic
-			while (true) {
-				try {
-					manageAutoPlaylists()
-				} catch (e: Exception) {
-				}
-
-				try {
-					Thread.sleep(2500)
-				} catch (e: InterruptedException) {
-					e.printStackTrace()
-				}
-
-			}
-		}
-		Thread(playlistMagic, "Playlist Magic").start() // Pronto!
-	}
-
-	fun manageAutoPlaylists() {
-		val musicManagers = LorittaLauncher.loritta.musicManagers.values.filter { it.player.playingTrack == null }
-
-		val serverConfigs = loritta.serversColl.find(
-				Filters.`in`("_id", musicManagers.map { it.scheduler.guild.id })
-		)
-
-		for (serverConfig in serverConfigs) {
-			startRandomSong(loritta.lorittaShards.getGuildById(serverConfig.guildId)!!, serverConfig)
-		}
-	}
-
-	fun startRandomSong(guild: Guild) {
-		startRandomSong(guild, LorittaLauncher.loritta.getServerConfigForGuild(guild.id))
-	}
-
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
-		val diff = System.currentTimeMillis() - LorittaLauncher.loritta.songThrottle.getOrDefault(guild.id, 0L)
+		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)
 
 		if (5000 > diff)
 			return  // bye
@@ -738,10 +582,10 @@ object LorittaUtilsKotlin {
 			val trackUrl = conf.musicConfig.urls[Loritta.RANDOM.nextInt(0, conf.musicConfig.urls.size)]
 
 			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-			LorittaLauncher.loritta.songThrottle.put(guild.id, System.currentTimeMillis())
+			loritta.audioManager.songThrottle.put(guild.id, System.currentTimeMillis())
 
 			// E agora carregue a música
-			LorittaLauncher.loritta.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
+			loritta.audioManager.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
 		}
 	}
 }

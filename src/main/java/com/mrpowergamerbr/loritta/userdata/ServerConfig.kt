@@ -5,9 +5,11 @@ import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.dv8tion.jda.core.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
+import org.jetbrains.kotlin.serialization.js.DynamicTypeDeserializer.id
 import java.util.*
 
 class ServerConfig @BsonCreator constructor(
@@ -17,8 +19,7 @@ class ServerConfig @BsonCreator constructor(
 ) {
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
-	var debugOptions = DebugOptions()
-	var deleteMessageAfterCommand: Boolean = false // Deletar mensagem do comando após executar ele?
+	var deleteMessageAfterCommand = false // Deletar mensagem do comando após executar ele?
 	var localeId = "default"
 
 	var commandOptions = HashMap<String, CommandOptions>() // Command Options
@@ -33,12 +34,13 @@ class ServerConfig @BsonCreator constructor(
 	var warnOnUnknownCommand = false
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
 	var warnIfBlacklisted = false
+	var deleteMessagesAfter: Long? = null
 	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)! <:blobBlush:357977010771066890>"
 	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 
 	var nashornEventHandlers = ArrayList<NashornEventHandler>()
 
-	var joinLeaveConfig = JoinLeaveConfig()
+	var joinLeaveConfig = WelcomerConfig()
 	var musicConfig = MusicConfig()
 	var aminoConfig = AminoConfig()
 	var youTubeConfig = YouTubeConfig()
@@ -51,6 +53,7 @@ class ServerConfig @BsonCreator constructor(
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
 	var serverListConfig = ServerListConfig()
+	var economyConfig = EconomyConfig()
 	var miscellaneousConfig = MiscellaneousConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado
 	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
@@ -58,6 +61,7 @@ class ServerConfig @BsonCreator constructor(
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 	var guildUserData = mutableListOf<LorittaGuildUserData>()
 
+	var lastCommandReceivedAt = 0L
 	var apiKey: String? = null
 	var premiumKey: String? = null
 
@@ -73,17 +77,21 @@ class ServerConfig @BsonCreator constructor(
 		return userData
 	}
 
+	fun getTextChannelConfig(textChannel: TextChannel): TextChannelConfig {
+		return getTextChannelConfig(textChannel.id)
+	}
+
 	fun getTextChannelConfig(id: String): TextChannelConfig {
 		return textChannelConfigs.firstOrNull { it.id == id } ?: defaultTextChannelConfig
+	}
+
+	fun hasTextChannelConfig(textChannel: TextChannel): Boolean {
+		return hasTextChannelConfig(textChannel.id)
 	}
 
 	fun hasTextChannelConfig(id: String): Boolean {
 		return textChannelConfigs.firstOrNull { it.id == id } != null
 	}
-
-	// var temporaryBans = HashMap<String, Long>()
-
-	// var giveaways = ArrayList<Giveaway>()
 
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
 		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
@@ -100,10 +108,6 @@ class ServerConfig @BsonCreator constructor(
 		} else {
 			return CommandOptions()
 		}
-	}
-
-	class DebugOptions : CommandOptions() {
-		var enableAllModules: Boolean = false // Caso ativado, TODAS as modules estarão ativadas
 	}
 
 	class StarboardMessage @BsonCreator constructor(@BsonProperty("embedId") val embedId: String, @BsonProperty("messageId") val messageId: String)

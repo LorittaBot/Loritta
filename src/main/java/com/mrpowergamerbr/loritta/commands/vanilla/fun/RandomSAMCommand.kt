@@ -1,13 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.getRandom
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
+import org.jsoup.Jsoup
 
 class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamericamemes", "rsam", "rsouthamericamemes"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -19,24 +22,16 @@ class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamerica
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val source = "página"
+		// TODO: Migrar para a API do Twitter após o Twitter remover a suspensão da minha conta @mrpowergamerbr
+		val response = HttpRequest.get("https://twitter.com/i/profiles/show/SoutAmericMemes/timeline/tweets?include_available_features=1&include_entities=1&max_position=${RANDOM.nextLong(1020000000000000000, 1029183800219463680)}&reset_error_state=false")
+				.body()
 
-		if (loritta.southAmericaMemesPageCache.isEmpty()) {
-			context.reply(
-					LoriReply(
-							"Atualmente eu não tenho nenhum post da página da South America Memes para te mostrar... tente mais tarde!",
-							Constants.ERROR
+		val payload = jsonParser.parse(response)
 
-					)
-			)
-			return
-		}
-		val post = loritta.southAmericaMemesPageCache[Loritta.RANDOM.nextInt(loritta.southAmericaMemesPageCache.size)]
+		val itemsHtml = payload["items_html"].string
+		val document = Jsoup.parse(itemsHtml)
+		val photoUrl = document.getElementsByClass("js-adaptive-photo").getRandom().attr("data-image-url")
 
-		if (post != null) {
-			context.sendMessage("<:sam:383614103853203456> **|** " + context.getAsMention(true) + "Cópia não comédia! (Fonte: *$source do South America Memes*) ${post.url} `${post.description}`")
-		} else {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Não consegui encontrar nenhum meme na página do South America Memes...")
-		}
+		context.sendMessage("<:sam:383614103853203456> **|** " + context.getAsMention(true) + "Cópia não comédia! $photoUrl")
 	}
 }

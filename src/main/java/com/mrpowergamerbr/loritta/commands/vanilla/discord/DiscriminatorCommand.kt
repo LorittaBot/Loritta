@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
@@ -30,7 +29,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		var user = context.userHandle
 		var discriminator = user.discriminator
 
-		val userFromContext = LorittaUtils.getUserFromContext(context, 0)
+		val userFromContext = context.getUserAt(0)
 
 		if (userFromContext != null) {
 			user = userFromContext
@@ -58,7 +57,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 
 	fun sendDiscriminatorEmbed(context: CommandContext, locale: BaseLocale, user: User, discriminator: String, users: List<User>, page: Int) {
 		val embed = EmbedBuilder().apply {
-			setColor(Constants.DISCORD_BURPLE)
+			setColor(Constants.DISCORD_BLURPLE)
 			setTitle("\uD83D\uDC81 ${locale["DISCRIM_UsersWithDiscriminator", discriminator]}")
 			var description = locale["DISCRIM_EmbedDescription", users.size, discriminator, context.userHandle.discriminator]
 

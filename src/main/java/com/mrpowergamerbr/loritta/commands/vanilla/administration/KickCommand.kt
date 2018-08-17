@@ -36,7 +36,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 
 			if (user == null) {
 				context.reply(
@@ -198,20 +198,15 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								context.config.moderationConfig.punishmentLogMessage,
-								null,
+								listOf(user),
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
 										"punishment" to locale["KICK_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"#staff" to context.userHandle.discriminator,
+										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.avatarUrl,
-										"user" to user.name,
-										"@user" to user.asMention,
-										"#user" to user.discriminator,
-										"user-avatar-url" to user.effectiveAvatarUrl,
-										"user-id" to user.id,
 										"staff-id" to context.userHandle.id
 								)
 						)

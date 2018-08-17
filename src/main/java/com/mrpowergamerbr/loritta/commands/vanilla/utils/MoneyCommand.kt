@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.double
-import com.github.salomonbrys.kotson.keys
-import com.github.salomonbrys.kotson.nullDouble
-import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -41,15 +38,17 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			val from = context.strippedArgs[0].toUpperCase()
 			val to = context.strippedArgs[1].toUpperCase()
 
+			val freeCurrencyConverterRequest = HttpRequest.get("http://free.currencyconverterapi.com/api/v5/convert?q=${from}_${to}")
+			val currencyConverterJson = jsonParser.parse(freeCurrencyConverterRequest.body()).obj
+
+			val foundInCurrencyConverter = currencyConverterJson["query"].nullObj?.get("count").nullInt ?: 0 > 0
+
 			var value: Double? = null
-			val fixerCurrencies = jsonParser.parse(HttpRequest.get("http://api.fixer.io/latest?base=USD").acceptJson().body()).obj
-			val validCurrencies = fixerCurrencies["rates"].obj.keys()
-			val fixerConverted = jsonParser.parse(HttpRequest.get("http://api.fixer.io/latest?base=" + from).acceptJson().body()).obj
 
 			if (from == to) { // :rolling_eyes:
 				value = 1.0
 			} else {
-				if (fixerConverted.has("error") || !validCurrencies.contains(to)) {
+				if (!foundInCurrencyConverter) {
 					// Se tem erro, vamos tentar converter usando crypto, iremos pegar em USD e no "to"
 					val crypto = jsonParser.parse(HttpRequest.get("https://min-api.cryptocompare.com/data/price?fsym=$from&tsyms=USD,$to").body()).obj
 
@@ -57,32 +56,33 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 						// damn
 						context.reply(
 								LoriReply(
-										message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, validCurrencies.joinToString(transform = { "`$it`" })),
+										message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, listOf("USD").joinToString(transform = { "`$it`" })),
 										prefix = Constants.ERROR
 								)
 						)
 						return
 					}
+
 					val valueInUSD = crypto["USD"].double
 					val valueInCustom = crypto[to].nullDouble
 
-					value = valueInUSD
+					value = valueInCustom
 
-					if (!validCurrencies.contains(to) && valueInCustom != null) {
+					/* if (!validCurrencies.contains(to) && valueInCustom != null) {
 						value = valueInCustom
 					} else if (to != "USD") {
 						val rate = fixerCurrencies["rates"].obj[to].double
 
 						value = valueInUSD * rate
-					}
+					} */
 				} else {
-					// we use fixer now bois
-					value = fixerConverted["rates"].obj[to].nullDouble
+					// we use currency converter api now bois
+					value = currencyConverterJson["results"]["${from}_${to}"]["val"].double
 
 					if (value == null) {
 						context.reply(
 								LoriReply(
-										message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, validCurrencies.joinToString(transform = { "`$it`" })),
+										message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, listOf("USD").joinToString(transform = { "`$it`" })),
 										prefix = Constants.ERROR
 								)
 						)
@@ -96,7 +96,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 			context.reply(
 					LoriReply(
-							message = locale["MONEY_CONVERTED", multiply, from, to, df.format(value * multiply)],
+							message = locale["MONEY_CONVERTED", multiply, from, to, df.format(value!! * multiply)],
 							prefix = "\uD83D\uDCB5"
 					)
 			)

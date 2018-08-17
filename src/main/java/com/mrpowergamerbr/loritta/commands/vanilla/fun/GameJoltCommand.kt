@@ -11,11 +11,11 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.*
 
@@ -32,7 +32,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		if (context.args.isNotEmpty()) {
 			val embed = EmbedBuilder()
 			val query = context.args.joinToString(" ")
-			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=$query")
+			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=${query.encodeToUrl()}")
 					.body()
 
 			val json = Loritta.JSON_PARSER.parse(response).obj
@@ -57,36 +57,31 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			embed.setColor(Color(47, 127, 111))
 			embed.setDescription(format)
 			embed.setTitle("<:gamejolt:362325764181590017> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
-			var mensagem = context.sendMessage(context.getAsMention(true), embed.build())
+			val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
+
+			mensagem.onReactionAddByAuthor(context) {
+				val game: JsonObject
+				when {
+					it.reactionEmote.name == "1⃣" -> game = context.metadata["0"] as JsonObject
+					it.reactionEmote.name == "2⃣" -> game = context.metadata["1"] as JsonObject
+					it.reactionEmote.name == "3⃣" -> game = context.metadata["2"] as JsonObject
+					it.reactionEmote.name == "4⃣" -> game = context.metadata["3"] as JsonObject
+					else -> game = context.metadata["4"] as JsonObject
+				}
+
+				// Criar novo embed!
+				mensagem.editMessage(createResourceEmbed(context, game).build()).complete()
+
+				// Remover todos os reactions
+				mensagem.clearReactions().complete();
+			}
+
 			// Adicionar os reactions
 			for (i in 0 until Math.min(5, games.size())) {
 				mensagem.addReaction(Constants.INDEXES[i]).complete();
 			}
 		} else {
 			context.explain()
-		}
-	}
-
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.user == context.userHandle) { // Somente quem executou o comando pode interagir!
-			var game: JsonObject;
-			if (e.reactionEmote.name == "1⃣") {
-				game = context.metadata["0"] as JsonObject
-			} else if (e.reactionEmote.name == "2⃣") {
-				game = context.metadata["1"] as JsonObject
-			} else if (e.reactionEmote.name == "3⃣") {
-				game = context.metadata["2"] as JsonObject
-			} else if (e.reactionEmote.name == "4⃣") {
-				game = context.metadata["3"] as JsonObject
-			} else {
-				game = context.metadata["4"] as JsonObject
-			}
-
-			// Criar novo embed!
-			msg.editMessage(createResourceEmbed(context, game).build()).complete();
-
-			// Remover todos os reactions
-			msg.clearReactions().complete();
 		}
 	}
 

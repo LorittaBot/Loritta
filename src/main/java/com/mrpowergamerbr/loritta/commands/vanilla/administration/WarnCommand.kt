@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -37,7 +35,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 
 			if (user == null) {
 				context.reply(
@@ -142,20 +140,15 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						if (textChannel != null && textChannel.canTalk()) {
 							val message = MessageUtils.generateMessage(
 									context.config.moderationConfig.punishmentLogMessage,
-									null,
+									listOf(user),
 									context.guild,
 									mutableMapOf(
 											"reason" to reason,
 											"punishment" to locale["WARN_PunishAction"],
 											"staff" to context.userHandle.name,
 											"@staff" to context.userHandle.asMention,
-											"#staff" to context.userHandle.discriminator,
+											"staff-discriminator" to context.userHandle.discriminator,
 											"staff-avatar-url" to context.userHandle.avatarUrl,
-											"user" to user.name,
-											"@user" to user.asMention,
-											"#user" to user.discriminator,
-											"user-avatar-url" to user.effectiveAvatarUrl,
-											"user-id" to user.id,
 											"staff-id" to context.userHandle.id
 									)
 							)
@@ -176,7 +169,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				val punishments = config.moderationConfig.punishmentActions.filter { it.warnCount == warnCount }
 
 				for (punishment in punishments) {
-					if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context, locale, user, reason, isSilent, punishment.customMetadata1)
+					if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN) SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK) KickCommand.kick(context, locale, member, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE) {

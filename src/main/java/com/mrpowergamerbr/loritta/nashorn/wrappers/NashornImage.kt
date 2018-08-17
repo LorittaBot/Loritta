@@ -1,10 +1,11 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-
-import java.awt.*
+import java.awt.Color
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 
 /**
@@ -29,11 +30,21 @@ class NashornImage {
 
 	@NashornCommand.NashornDocs(arguments = "texto, x, y")
 	fun write(texto: String, x: Int, y: Int): NashornImage {
+		if (texto.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(null)
+			return null!!
+		}
+
 		return write(texto, Color(0, 0, 0), x, y)
 	}
 
 	@NashornCommand.NashornDocs(arguments = "texto, cor, x, y")
 	fun write(texto: String, cor: Color, x: Int, y: Int): NashornImage {
+		if (texto.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(null)
+			return null!!
+		}
+
 		graphics!!.color = cor
 		ImageUtils.drawTextWrap(texto, x, y, 9999, 9999, graphics.fontMetrics, graphics)
 		return this

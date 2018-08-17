@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.humanize
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 
@@ -42,7 +42,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         val builder = EmbedBuilder()
         builder.apply {
             setAuthor(context.userHandle.name, null, context.userHandle.avatarUrl)
-            setColor(Constants.DISCORD_BURPLE)
+            setColor(Constants.DISCORD_BLURPLE)
             setTitle(locale["CHANNELINFO_ChannelInformation", channel.name])
             addField(locale["DASHBOARD_ChannelName"], channel.name, true)
             addField(locale["CHANNELINFO_ChannelId"], channel.id, true)

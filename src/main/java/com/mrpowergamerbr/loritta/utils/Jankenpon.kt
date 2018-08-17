@@ -27,7 +27,7 @@ enum class Jankenpon(var lang: String, var emoji: String, var wins: String, var 
 	companion object {
 		fun getFromLangString(str: String, locale: BaseLocale): Jankenpon? {
 			for (janken in Jankenpon.values()) {
-				if (locale[str] == str) {
+				if (str == locale[janken.lang]) {
 					return janken
 				}
 			}

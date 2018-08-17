@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.awt.Image
 import java.io.File
@@ -37,28 +37,14 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 		val graph = bi.graphics
 
 		run {
-			val avatarImg = LorittaUtils.getImageFromContext(context, 0)
-
-			if (!LorittaUtils.isValidImage(context, avatarImg)) {
-				return
-			}
-
-			var image: Image = avatarImg;
-
-			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			val avatarImg = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+			val image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
 			graph.drawImage(image, 150, 0, null)
 		}
 
 		run {
-			var avatarImg = LorittaUtils.getImageFromContext(context, 1)
-
-			if (!LorittaUtils.isValidImage(context, avatarImg)) {
-				return
-			}
-
-			var image: Image = avatarImg;
-
-			image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
+			val avatarImg = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+			val image = avatarImg.getScaledInstance(150, 150, Image.SCALE_SMOOTH)
 			graph.drawImage(image, 150, 150, null)
 		}
 

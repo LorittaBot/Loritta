@@ -1,12 +1,14 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import mu.KotlinLogging
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
@@ -17,10 +19,23 @@ import javax.imageio.ImageIO
 class NashornContext(
 		private val context: CommandContext // Context original, jamais poderá ser usado pelo script!
 ) {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+
+		fun securityViolation(guildId: String?) {
+			try {
+				throw IllegalArgumentException("Deu ruim!")
+			} catch (e: Exception) {
+				logger.error(e) { "Descobriram como pegar o meu token usando JavaScript na guild $guildId!!!" }
+			}
+			File("do_not_start").writeText("")
+			System.exit(0)
+		}
+	}
 	var message: NashornMessage = NashornMessage(context.message)
 	private var sentMessages = 0 // Quantas mensagens foram enviadas, usado para não levar rate limit
 	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
-	var sender: NashornMember = NashornLorittaUser(context.handle, context.config.getUserData(context.userHandle.id))
+	var sender: NashornMember = NashornLorittaUser(context.handle, context.config.getUserData(context.userHandle.id), context.config)
 
 	val nashornGuild = NashornGuild(context.message.guild, context.config)
 
@@ -39,6 +54,11 @@ reply("Olá, eu me chamo Loritta!");
 				lastMessageSent = 0L
 				sentMessages = 0
 			}
+		}
+
+		if (mensagem.contains(Loritta.config.clientToken, true)) {
+			securityViolation(context.guild.id)
+			return null!!
 		}
 
 		sentMessages++
@@ -61,6 +81,11 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 				lastMessageSent = 0L
 				sentMessages = 0
 			}
+		}
+
+		if (mensagem.contains(Loritta.config.clientToken, true)) {
+			securityViolation(context.guild.id)
+			return null!!
 		}
 
 		sentMessages++
@@ -92,7 +117,6 @@ sendImage(imagem, "😄");
 		lastMessageSent = System.currentTimeMillis()
 
 		// Reflection, já que nós não podemos acessar o BufferedImage
-
 		val field = imagem.javaClass.getDeclaredField("bufferedImage")
 		field.isAccessible = true
 		val bufferedImage = field.get(imagem) as BufferedImage
@@ -100,6 +124,11 @@ sendImage(imagem, "😄");
 		val os = ByteArrayOutputStream()
 		ImageIO.write(bufferedImage, "png", os)
 		val `is` = ByteArrayInputStream(os.toByteArray())
+
+		if (mensagem.contains(Loritta.config.clientToken, true)) {
+			securityViolation(context.guild.id)
+			return null!!
+		}
 
 		val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
 		`is`.close()
@@ -176,7 +205,7 @@ imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
 	fun getImageFromContext(argumento: Int): NashornImage? {
-		val bufferedImage = LorittaUtils.getImageFromContext(context, argumento)
+		val bufferedImage = context.getImageAt(argumento)
 
 		if (bufferedImage != null) {
 			return NashornImage(bufferedImage)

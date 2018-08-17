@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -22,10 +21,10 @@ class PararCommand : AbstractCommand("stop", listOf("parar"), CommandCategory.MU
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val manager = LorittaLauncher.loritta.getGuildAudioPlayer(context.guild) // vamos pegar o music manager da guild atual...
-		manager.player.destroy() // vamos cancelar o player
-		loritta.musicManagers.remove(context.guild.idLong) // Remover o music manager da guild atual
-		context.guild.audioManager.closeAudioConnection() // desconectar do canal de voz
+		loritta.audioManager.musicManagers.remove(context.guild.idLong) // Remover o music manager da guild atual
+		val link = loritta.audioManager.lavalink.getLink(context.guild)
+		link.disconnect()
+		link.destroy()
 
 		// e avisar que o batidão acabou!
 		context.reply(

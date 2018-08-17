@@ -22,6 +22,10 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		return false
 	}
 
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")

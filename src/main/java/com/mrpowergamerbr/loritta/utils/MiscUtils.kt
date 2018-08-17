@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import org.json.XML
 import org.slf4j.LoggerFactory
@@ -33,7 +33,7 @@ object MiscUtils {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
 			var newUrl = url.removePrefix(".").removeSuffix(".")
 			val bitlyUrl = temmie.expand(url)
-			if (!bitlyUrl!!.contains("NOT_FOUND")) {
+			if (!bitlyUrl!!.contains("NOT_FOUND") && !bitlyUrl.contains("RATE_LIMIT_EXCEEDED")) {
 				newUrl = bitlyUrl!!
 			}
 			val httpRequest = HttpRequest.get(newUrl)
@@ -63,13 +63,13 @@ object MiscUtils {
 		}
 	}
 
-	fun optimizeGIF(file: File) {
+	fun optimizeGIF(file: File, lossy: Int = 200) {
 		val processBuilder = ProcessBuilder(
 				File(Loritta.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
 				"-i",
 				file.toString(),
 				"-O3",
-				"--lossy=200",
+				"--lossy=$lossy",
 				"--colors",
 				"256",
 				"-o",
@@ -166,6 +166,18 @@ object MiscUtils {
 			return AccountCheckResult.OVH_HOSTNAME
 
 		return AccountCheckResult.SUCCESS
+	}
+
+	fun hasInappropriateWords(string: String): Boolean {
+		val lowerCaseNickname = string.toLowerCase()
+				.replace("4", "a")
+				.replace("@", "a")
+				.replace("1", "i")
+				.replace("0", "o")
+
+		return Constants.BAD_NICKNAME_WORDS.any {
+			lowerCaseNickname.contains(it)
+		}
 	}
 
 	enum class AccountCheckResult(val canAccess: Boolean) {

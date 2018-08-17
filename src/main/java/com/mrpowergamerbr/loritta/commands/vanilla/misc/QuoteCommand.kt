@@ -17,7 +17,7 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.util.*
 
-class QuoteCommand : AbstractCommand("quote", listOf("mencionar"), CommandCategory.DISCORD) {
+class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "r", "reply"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("MENCIONAR_DESCRIPTION")
 	}

@@ -42,7 +42,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
-				val user = LorittaUtils.getUserFromContext(context, 0)
+				val user = context.getUserAt(0)
 				var rawArgs = context.rawArgs
 				rawArgs = rawArgs.remove(0) // remove o usuário
 
@@ -176,20 +176,15 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								context.config.moderationConfig.punishmentLogMessage,
-								null,
+								listOf(user),
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
 										"punishment" to locale["SOFTBAN_PunishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
-										"#staff" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"user" to user.name,
-										"@user" to user.asMention,
-										"#user" to user.discriminator,
-										"user-avatar-url" to user.avatarUrl,
-										"user-id" to user.id,
+										"staff-discriminator" to context.userHandle.discriminator,
+										"staff-avatar-url" to context.userHandle.avatarUrl,
 										"staff-id" to context.userHandle.id
 								)
 						)

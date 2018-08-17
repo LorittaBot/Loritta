@@ -3,10 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
 import java.awt.Color
@@ -35,7 +37,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = LorittaUtils.getUserFromContext(context, 0)
+			val user = context.getUserAt(0)
 
 			if (user == null) {
 				context.reply(
@@ -114,7 +116,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			}
 
 			val banCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				ban(context, locale, user, reason, isSilent, delDays)
+				ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.complete()
 
@@ -162,19 +164,19 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	}
 
 	companion object {
-		fun ban(context: CommandContext, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+		fun ban(serverConfig: ServerConfig, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
-				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (serverConfig.moderationConfig.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
 						val embed = EmbedBuilder()
 
 						embed.setTimestamp(Instant.now())
 						embed.setColor(Color(221, 0, 0))
 
-						embed.setThumbnail(context.guild.iconUrl)
-						embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["BAN_PunishAction"].toLowerCase(), context.guild.name]}!")
-						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
+						embed.setThumbnail(guild.iconUrl)
+						embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
+						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["BAN_PunishAction"].toLowerCase(), guild.name]}!")
+						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
 						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
@@ -183,27 +185,22 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 					}
 				}
 
-				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+				if (serverConfig.moderationConfig.sendToPunishLog) {
+					val textChannel = guild.getTextChannelById(serverConfig.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.config.moderationConfig.punishmentLogMessage,
-								null,
-								context.guild,
+								serverConfig.moderationConfig.punishmentLogMessage,
+								listOf(user),
+								guild,
 								mutableMapOf(
 										"reason" to reason,
 										"punishment" to locale["BAN_PunishAction"],
-										"staff" to context.userHandle.name,
-										"@staff" to context.userHandle.asMention,
-										"#staff" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.avatarUrl,
-										"user" to user.name,
-										"@user" to user.asMention,
-										"#user" to user.discriminator,
-										"user-avatar-url" to user.effectiveAvatarUrl,
-										"user-id" to user.id,
-										"staff-id" to context.userHandle.id
+										"staff" to punisher.name,
+										"@staff" to punisher.asMention,
+										"staff-discriminator" to punisher.discriminator,
+										"staff-avatar-url" to punisher.avatarUrl,
+										"staff-id" to punisher.id
 								)
 						)
 
@@ -212,7 +209,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				}
 			}
 
-			context.guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+			guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
 					.complete()
 		}
 	}

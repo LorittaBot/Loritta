@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.google.common.cache.CacheBuilder
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
@@ -11,10 +11,12 @@ import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import com.mrpowergamerbr.loritta.utils.save
+import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audit.ActionType
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent
@@ -26,24 +28,42 @@ import net.dv8tion.jda.core.events.guild.GuildUnbanEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
+import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.apache.commons.io.IOUtils
 import org.bson.Document
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.nio.charset.Charset
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
-	val handledUsernameChanges = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100).build<Any, Any>().asMap()
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
+			.removalListener { k1: String?, v1: UserMetaHolder?, removalCause ->
+				if (k1 != null && v1 != null) {
+					val user = lorittaShards.getUserById(k1) ?: return@removalListener
+					sendUsernameChange(user, v1)
+				}
+			}
+			.build<String, UserMetaHolder>().asMap()
+
+	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
 
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
@@ -53,7 +73,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BURPLE)
+			embed.setColor(Constants.DISCORD_BLURPLE)
 			embed.setImage("attachment://avatar.png")
 
 			val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
@@ -120,62 +140,93 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
-			val embed = EmbedBuilder()
-			embed.setTimestamp(Instant.now())
-			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BURPLE)
-			embed.setImage("attachment://avatar.png")
-			if (!handledUsernameChanges.containsKey(event.user.id)) {
-				// É necessário fazer isto já que todas as shards irão receber a notificação de username change
-				handledUsernameChanges.put(event.user.id, System.currentTimeMillis())
-				val newName = event.user.name
-				val newDiscriminator = event.user.discriminator
-				val changedAt = System.currentTimeMillis()
+		if (!handledUsernameChanges.containsKey(event.user.id)) {
+			handledUsernameChanges[event.user.id] = UserMetaHolder(event.oldName, null)
+		} else {
+			val usernameChange = handledUsernameChanges[event.user.id]!!
+			usernameChange.oldName = event.oldName
 
-				val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
-
-				val profile = loritta.getLorittaProfileForUser(event.user.id)
-
-				if (profile.usernameChanges.isEmpty()) {
-					profile.usernameChanges.add((LorittaProfile.UsernameChange(event.user.creationTime.toEpochSecond() * 1000, event.user.name, event.user.discriminator)))
+			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+				handledUsernameChanges[event.user.id] = null
+				loritta.executor.execute {
+					sendUsernameChange(event.user, usernameChange)
 				}
-
-				profile.usernameChanges.add(changeWrapper)
-
-				loritta save profile
 			}
+		}
+	}
 
-			val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+	override fun onUserUpdateDiscriminator(event: UserUpdateDiscriminatorEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
 
-			loritta.serversColl.find(
-					Filters.and(
-							Filters.eq("eventLogConfig.usernameChanges", true),
-							Filters.eq("eventLogConfig.enabled", true),
-							Filters.`in`("_id", guilds.map { it.id })
-					)
-			).iterator().use {
-				while (it.hasNext()) {
-					val config = it.next()
-					val locale = loritta.getLocaleById(config.localeId)
+		if (!handledUsernameChanges.containsKey(event.user.id)) {
+			handledUsernameChanges[event.user.id] = UserMetaHolder(null, event.oldDiscriminator)
+		} else {
+			val usernameChange = handledUsernameChanges[event.user.id]!!
+			usernameChange.oldDiscriminator = event.oldDiscriminator
 
-					val guild = guilds.first { it.id == config.guildId }
+			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+				handledUsernameChanges[event.user.id] = null
+				loritta.executor.execute {
+					sendUsernameChange(event.user, usernameChange)
+				}
+			}
+		}
+	}
 
-					val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+	fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
+		val oldName = usernameChange.oldName ?: user.name
+		val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
+		val newName = user.name
+		val newDiscriminator = user.discriminator
+		val embed = EmbedBuilder()
+		embed.setTimestamp(Instant.now())
+		embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
+		embed.setColor(Constants.DISCORD_BLURPLE)
 
-					if (textChannel != null && textChannel.canTalk()) {
-						if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-							continue
-						if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-							continue
-						if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-							continue
+		val changedAt = System.currentTimeMillis()
 
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", event.user.asMention, "${event.oldName}#${event.oldValue}", "${event.user.name}#${event.user.discriminator}"]}")
-						embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+		val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
 
-						textChannel.sendMessage(embed.build()).complete()
-					}
+		val profile = loritta.getLorittaProfileForUser(user.id)
+
+		if (profile.usernameChanges.isEmpty()) {
+			profile.usernameChanges.add((LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator)))
+		}
+
+		profile.usernameChanges.add(changeWrapper)
+
+		loritta save profile
+
+		val guilds = lorittaShards.getMutualGuilds(user)
+
+		loritta.serversColl.find(
+				Filters.and(
+						Filters.eq("eventLogConfig.usernameChanges", true),
+						Filters.eq("eventLogConfig.enabled", true),
+						Filters.`in`("_id", guilds.map { it.id })
+				)
+		).iterator().use {
+			while (it.hasNext()) {
+				val config = it.next()
+				val locale = loritta.getLocaleById(config.localeId)
+
+				val guild = guilds.first { it.id == config.guildId }
+
+				val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+
+				if (textChannel != null && textChannel.canTalk()) {
+					if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+						continue
+					if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+						continue
+					if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+						continue
+
+					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
+					embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
+
+					textChannel.sendMessage(embed.build()).complete()
 				}
 			}
 		}
@@ -303,7 +354,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						return@execute
 
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.message.id)).first()
-					if (storedMessage != null) {
+					if (storedMessage != null && storedMessage.content != event.message.contentRaw) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
@@ -374,6 +425,66 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						textChannel.sendMessage(embed.build()).complete()
 
 						loritta.storedMessagesColl.deleteOne(Filters.eq("_id", event.messageId))
+						return@execute
+					}
+				}
+			}
+		}
+	}
+
+	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
+		if (DebugLog.cancelAllEvents)
+			return
+
+		loritta.executor.execute {
+			val config = loritta.getServerConfigForGuild(event.guild.id)
+			val locale = loritta.getLocaleById(config.localeId)
+			val eventLogConfig = config.eventLogConfig
+
+			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return@execute
+				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					return@execute
+
+				if (textChannel != null && textChannel.canTalk()) {
+					val storedMessages = loritta.storedMessagesColl.find(Filters.`in`("_id", event.messageIds)).toMutableList()
+					if (storedMessages.isNotEmpty()) {
+						val embed = EmbedBuilder()
+						embed.setTimestamp(Instant.now())
+						embed.setColor(Color(221, 0, 0))
+						embed.setAuthor(storedMessages.first().authorName, null, null)
+
+						val lines = mutableListOf<String>()
+
+						for (message in storedMessages) {
+							val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
+							gmt.timeInMillis = message.dateCreated
+							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId())
+
+							val dayOfMonth = String.format("%02d", creationTime.dayOfMonth)
+							val month = String.format("%02d", creationTime.monthValue)
+							val year = creationTime.year
+
+							val hour = String.format("%02d", creationTime.hour)
+							val minute = String.format("%02d", creationTime.minute)
+
+							val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.authorId}) ${message.authorName}: ${message.content}"
+							lines.add(line)
+						}
+
+						val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
+
+						val deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_BulkDeleted"]}"
+
+						embed.setDescription(deletedMessage)
+
+						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).complete()
+
+						loritta.storedMessagesColl.deleteMany(Filters.`in`("_id", event.messageIds))
 						return@execute
 					}
 				}

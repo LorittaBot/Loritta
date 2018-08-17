@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Emote
@@ -21,7 +22,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var user = LorittaUtils.getUserFromContext(context, 0)
+		var user = context.getUserAt(0)
 
 		if (user == null) {
 			if (context.args.getOrNull(0) != null) {
@@ -53,7 +54,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			setTitle("<:discord:314003252830011395> $nickname", null)
-			setColor(Constants.DISCORD_BURPLE) // Cor do embed (Cor padrão do Discord)
+			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
 			if (lorittaProfile.hidePreviousUsernames) {

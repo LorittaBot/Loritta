@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.response.responses
 
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 
 class LoriMandarComandosResponse : RegExResponse() {
@@ -11,7 +11,7 @@ class LoriMandarComandosResponse : RegExResponse() {
 		patterns.add("\\?".toPattern(Pattern.CASE_INSENSITIVE))
 	}
 
-	override fun getResponse(event: MessageReceivedEvent, message: String): String? {
+	override fun getResponse(event: LorittaMessageEvent, message: String): String? {
 		val replies = listOf(
 				LoriReply(
 						"**Vamos ir por partes...**",

@@ -1,38 +1,30 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonArray
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
+import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
+import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.MSNProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.utils.profile.OrkutProfileCreator
 import net.dv8tion.jda.core.entities.User
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
-import java.net.SocketTimeoutException
 import javax.imageio.ImageIO
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
-		var userVotes: List<DiscordBotVote>? = null
+		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: LorittaProfile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 
@@ -135,6 +127,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
 			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+			if (profile.marriedWith != null) badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
 			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
 			return badges
@@ -156,14 +149,14 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
-		val contextUser = LorittaUtils.getUserFromContext(context, 0)
+		val contextUser = context.getUserAt(0)
 		val user = if (contextUser != null) contextUser else context.userHandle
 
 		if (contextUser != null) {
 			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
 		}
 
-		if (userProfile.isBanned) {
+		if (contextUser != null && userProfile.isBanned) {
 			context.reply(
 					LoriReply(
 							"${contextUser.asMention} está **banido**",
@@ -178,7 +171,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-		val badges = getUserBadges(user)
+		val badges = getUserBadges(user, userProfile)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
@@ -238,9 +231,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	}
 
 	class DiscordBotVote(
-			val username: String,
-			val discriminator: String,
-			val id: String,
-			val avatar: String?
+			val id: String
 	)
 }

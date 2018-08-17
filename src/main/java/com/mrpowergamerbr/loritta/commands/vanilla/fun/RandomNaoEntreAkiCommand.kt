@@ -41,7 +41,16 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 			return
 		}
 
-		val post = json["data"].array[0]
+		val post = json["data"].array.firstOrNull { it.obj["images"].array.size() != 0 } ?: run {
+			context.reply(
+					LoriReply(
+							"Atualmente eu não tenho nenhum post do Não Entre Aki para te mostrar... tente mais tarde!",
+							Constants.ERROR
+
+					)
+			)
+			return
+		}
 		val image = post["images"].array[0]["url"].string
 		val title = post["title"].string
 		val author = post["user"]["nick"].string

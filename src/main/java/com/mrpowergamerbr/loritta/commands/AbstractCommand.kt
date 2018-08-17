@@ -2,30 +2,27 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import org.apache.commons.lang3.exception.ExceptionUtils
+import net.dv8tion.jda.core.entities.ChannelType
 import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 
-open abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf()) {
+abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	companion object {
 		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 	}
 
-	val cooldown = if (needsToUploadFiles()) 5000 else 2500
+	val cooldown: Int
+		get() = if (needsToUploadFiles()) 10000 else 5000
+
 	var executedCount = 0
 
 	open fun getDescription(locale: BaseLocale): String {
@@ -52,8 +49,6 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		return true
 	}
 
-	open abstract fun run(context: CommandContext, locale: BaseLocale)
-
 	open fun getExtendedDescription(): String? {
 		return null
 	}
@@ -67,30 +62,21 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	/**
-	 * Retorna as permissões necessárias para o usuário poder utilizar este comando
+	 * Returns the required permissions needed for the user to use this command
 	 *
-	 * @return A lista de permissões necessárias
+	 * @return the required permissions list
 	 */
 	open fun getDiscordPermissions(): List<Permission> {
 		return listOf()
 	}
 
 	/**
-	 * Retorna as permissões necessárias para eu poder usar este comando
+	 * Returns the required permissions needed for me to use this command
 	 *
-	 * @return A lista de permissões necessárias
+	 * @return the required permissions list
 	 */
 	open fun getBotPermissions(): List<Permission> {
 		return listOf()
-	}
-
-	/**
-	 * Retorna se somente o dono do bot pode executar este comando
-
-	 * @return Se somente o dono do bot pode usar este comando
-	 */
-	open fun onlyOwner(): Boolean {
-		return false
 	}
 
 	/**
@@ -103,13 +89,23 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 	}
 
 	/**
-	 * Retorna se o comando só funciona em uma instância de música
+	 * What the command should do when it is executed
+	 *
+	 * @param context the context of the command
+	 * @param locale  the language the command should use
 	 */
-	open fun onlyInMusicInstance(): Boolean {
-		return false
-	}
+	abstract fun run(context: CommandContext, locale: BaseLocale)
 
-	fun handle(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	/**
+	 * Checks if the command should be handled (if all conditions are valid, like labels, etc)
+	 *
+	 * @param ev          the event wrapped in a LorittaMessageEvent
+	 * @param conf        the server configuration
+	 * @param locale      the language of the server
+	 * @param lorittaUser the user that is executing this command
+	 * @return            if the command was handled or not
+	 */
+	fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val rawMessage = ev.message.contentRaw
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -139,6 +135,12 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 				val start = System.currentTimeMillis()
 
+				if (ev.message.isFromType(ChannelType.TEXT)) {
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
+				} else {
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
+				}
+
 				var locale = locale
 				if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 					when (ev.channel.id) {
@@ -150,6 +152,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					}
 				}
 
+				conf.lastCommandReceivedAt = System.currentTimeMillis()
+				loritta save conf
+
 				if (conf != loritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
 					return true
@@ -159,17 +164,12 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && this !is LigarCommand)) {
 						if (conf.warnIfBlacklisted) {
 							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
-								var message = conf.blacklistWarning
-								message = message.replace("{@user}", ev.member.asMention)
-								message = message.replace("{user}", ev.member.user.name)
-								message = message.replace("{nickname}", ev.member.effectiveName)
-								message = message.replace("{guild}", ev.guild.name)
-								message = message.replace("{guildsize}", ev.guild.members.size.toString())
-								message = message.replace("{@owner}", ev.guild.owner.asMention)
-								message = message.replace("{owner}", ev.guild.owner.effectiveName)
-								message = message.replace("{@channel}", ev.textChannel.asMention)
-								message = message.replace("{channel}", ev.textChannel.name)
-								ev.textChannel.sendMessage(message).complete()
+								val generatedMessage = MessageUtils.generateMessage(
+										conf.blacklistWarning,
+										listOf(ev.member, ev.textChannel),
+										ev.guild
+								)
+								ev.textChannel.sendMessage(generatedMessage).complete()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -191,6 +191,13 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 					ev.channel.sendTyping().complete()
 				}
 
+				val profile = lorittaUser.profile
+				var cooldown = this.cooldown
+				val isDonator = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
+				if (isDonator && profile.donatorPaid >= 19.99) {
+					cooldown /= 2
+				}
+
 				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
 					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").complete()
@@ -205,7 +212,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {
 					// Verificar se a Loritta possui todas as permissões necessárias
-					var botPermissions = ArrayList<Permission>(getBotPermissions())
+					val botPermissions = ArrayList<Permission>(getBotPermissions())
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
 					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
 					botPermissions.add(Permission.MESSAGE_ADD_REACTION)
@@ -221,11 +228,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 
 				if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
-					var missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
+					val missingPermissions = lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						var required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
+						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
 						var message = locale["LORIPERMISSION_MissingPermissions", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
@@ -271,9 +278,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				}
 
 				if (requiresMusicEnabled()) {
-					if (!context.config.musicConfig.isEnabled) {
+					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) locale["DJ_LORITTA_HOW_TO_ENABLE", "https://loritta.website/dashboard"] else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) locale["DJ_LORITTA_HOW_TO_ENABLE", "${Loritta.config.websiteUrl}dashboard"] else "")
 						return true
 					}
 				}
@@ -283,11 +290,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 				if (randomValue == 0) {
 					context.reply(
 							LoriReply(
-									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta>"],
+									locale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta/vote>"],
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if (randomValue == 50) {
+				} else if ((randomValue == 25 || randomValue == 75) && !isDonator) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
@@ -301,15 +308,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 					if (nickname != null) {
 						// #LoritaTambémTemSentimentos
-						val lowerCaseNickname = nickname.toLowerCase()
-								.replace("4", "a")
-								.replace("@", "a")
-								.replace("1", "i")
-								.replace("0", "o")
-
-						val hasBadNickname = Constants.BAD_NICKNAME_WORDS.any {
-							lowerCaseNickname.contains(it)
-						}
+						val hasBadNickname = MiscUtils.hasInappropriateWords(nickname)
 
 						if (hasBadNickname) {
 							context.reply(
@@ -338,9 +337,9 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
 				} else {
-					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Finshed in ${end - start}ms")
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
 				}
 				return true
 			} catch (e: Exception) {
@@ -358,6 +357,11 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		return false
 	}
 
+	/**
+	 * Sends an embed explaining what the command does
+	 *
+	 * @param context the context of the command
+	 */
 	fun explain(context: CommandContext) {
 		val conf = context.config
 		val ev = context.event
@@ -419,7 +423,7 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(context.locale[this.category.fancyTitle], "https://loritta.website/assets/img/loritta_gabizinha_v1.png") // Adicionar quem executou o comando
+			embed.setFooter(context.locale[this.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {
@@ -430,25 +434,4 @@ open abstract class AbstractCommand(open val label: String, var aliases: List<St
 		}
 	}
 
-	@Deprecated(message = "message.onReactionAdd")
-	open fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {} // Quando alguém usa uma reaction na mensagem
-
-	@Deprecated(message = "message.onResponse")
-	open fun onCommandMessageReceivedFeedback(context: CommandContext, e: MessageReceivedEvent, msg: Message) {} // Quando uma mensagem é recebida
-
-	class LorittaMessageEvent(
-			val author: User,
-			val member: Member?,
-			val message: Message,
-			val messageId: String,
-			val guild: Guild?,
-			val channel: MessageChannel,
-			val textChannel: TextChannel?
-	) {
-		val jda: JDA get() = author.jda
-
-		fun isFromType(type: ChannelType): Boolean {
-			return this.channel.type == type
-		}
-	}
 }

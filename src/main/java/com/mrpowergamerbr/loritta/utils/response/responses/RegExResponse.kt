@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.response.responses
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import net.pocketdreams.dreamchat.utils.bot.LorittaResponse
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.utils.response.LorittaResponse
 import java.util.regex.Pattern
 
 open class RegExResponse : LorittaResponse {
@@ -9,7 +9,7 @@ open class RegExResponse : LorittaResponse {
 	val patterns = mutableListOf<Pattern>()
 	var response: String = "???"
 
-	override fun handleResponse(event: MessageReceivedEvent, message: String): Boolean {
+	override fun handleResponse(event: LorittaMessageEvent, message: String): Boolean {
 		for (pattern in patterns) {
 			val matcher = pattern.matcher(message)
 
@@ -19,11 +19,11 @@ open class RegExResponse : LorittaResponse {
 		return postHandleResponse(event, message)
 	}
 
-	open fun postHandleResponse(event: MessageReceivedEvent, message: String): Boolean {
+	open fun postHandleResponse(event: LorittaMessageEvent, message: String): Boolean {
 		return true
 	}
 
-	override fun getResponse(event: MessageReceivedEvent, message: String): String? {
+	override fun getResponse(event: LorittaMessageEvent, message: String): String? {
 		var reply = response
 		reply = reply.replace("{@mention}", event.author.asMention)
 		// reply = reply.replace("{displayName}", event.player.displayName)

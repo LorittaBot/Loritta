@@ -1,17 +1,13 @@
 package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
-import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.HojeCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
-import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALAnimeCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.anime.MALMangaCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.SayCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
@@ -66,7 +62,6 @@ class CommandManager {
 		commandMap.add(AtaCommand())
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
-		commandMap.add(HojeCommand())
 		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
@@ -85,12 +80,12 @@ class CommandManager {
 		commandMap.add(PepeDreamCommand())
 		commandMap.add(SwingCommand())
 		commandMap.add(DemonCommand())
-		// commandMap.add(LicencaCommand())
+		commandMap.add(KnuxThrowCommand())
+		commandMap.add(LoriSignCommand())
+		commandMap.add(TextCraftCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(SimsimiCommand())
-		// commandMap.add(TamagotchiCommand())
-		// commandMap.add(GiveawayCommand())
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
@@ -121,6 +116,8 @@ class CommandManager {
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
 		commandMap.add(AfkCommand())
+		commandMap.add(MarryCommand())
+		commandMap.add(DivorceCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
@@ -135,19 +132,19 @@ class CommandManager {
 		commandMap.add(PackageInfoCommand())
 		commandMap.add(IsUpCommand())
 		commandMap.add(KnowYourMemeCommand())
-		commandMap.add(Md5Command())
 		commandMap.add(AnagramaCommand())
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		// commandMap.add(GoogleCommand())
 		commandMap.add(EmojiSearchCommand())
-		// commandMap.add(UnicodeCommand())
 		commandMap.add(ReceitasCommand())
+		commandMap.add(EncodeCommand())
+		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(BotInfoCommand())
 		commandMap.add(AvatarCommand())
+		commandMap.add(ServerIconCommand())
 		commandMap.add(EmojiCommand())
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
@@ -155,6 +152,9 @@ class CommandManager {
 		commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(ChannelInfoCommand())
+		commandMap.add(AddEmojiCommand())
+		commandMap.add(RemoveEmojiCommand())
+		commandMap.add(UserInvitesCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
@@ -183,14 +183,15 @@ class CommandManager {
 		commandMap.add(PokedexCommand())
 
 		// =======[ ANIME ]========
-		commandMap.add(MALAnimeCommand())
-		commandMap.add(MALMangaCommand())
+		// commandMap.add(MALAnimeCommand())
+		// commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
 		commandMap.add(SoftBanCommand())
 		commandMap.add(MuteCommand())
+		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
 		commandMap.add(TempRoleCommand())
@@ -208,6 +209,8 @@ class CommandManager {
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())
 		commandMap.add(LoriServerListConfigCommand())
+		commandMap.add(TicTacToeCommand())
+		commandMap.add(EvalKotlinCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
@@ -231,6 +234,7 @@ class CommandManager {
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
 		commandMap.add(SonhosTopCommand())
+		commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)

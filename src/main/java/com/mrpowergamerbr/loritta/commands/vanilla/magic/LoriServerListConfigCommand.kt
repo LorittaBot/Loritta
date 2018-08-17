@@ -1,34 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.google.gson.Gson
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.frontend.views.GlobalHandler
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import org.apache.commons.io.FileUtils
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
+import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import org.apache.commons.lang3.RandomStringUtils
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.pojo.PojoCodecProvider
-import java.io.File
 
-class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
-	override fun onlyOwner(): Boolean {
-		return true
-	}
-
+class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}
@@ -38,6 +22,51 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)
 		val arg3 = context.rawArgs.getOrNull(3)
+
+		if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
+			val user = context.getUserAt(2)!!
+			loritta.usersColl.updateOne(
+					Filters.eq("_id", user.id),
+					Updates.set(
+							"dreams",
+							arg1.toDouble()
+					)
+			)
+			context.reply(
+					LoriReply(
+							"Sonhos de ${user.asMention} foram editados com sucesso!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
+			val userId = arg1
+			var guildId = arg2
+			if (guildId == "null")
+				guildId = null
+
+			val rawArgs = context.rawArgs.toMutableList()
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+
+			loritta.networkBanManager.addBanEntry(
+					NetworkBanEntry(
+							userId,
+							guildId,
+							NetworkBanType.valueOf(arg3),
+							rawArgs.joinToString(" ")
+					)
+			)
+
+			context.reply(
+					LoriReply(
+							"Usuário banido na Loritta Bans Network!"
+					)
+			)
+		}
 
 		if (arg0 == "set_sponsor" && arg1 != null && arg2 != null && arg3 != null) {
 			val guild = lorittaShards.getGuildById(arg1)!!
@@ -94,6 +123,32 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			context.reply(
 					LoriReply(
 							"Key gerada! `${premiumKey.name}`"
+					)
+			)
+		}
+
+		if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
+			val user = lorittaShards.getUserById(arg1)!!
+			val userConfig = loritta.getLorittaProfileForUser(user.id)
+			val isDonator = arg2.toBoolean()
+
+			userConfig.isDonator = isDonator
+			userConfig.donatorPaid = arg3.toDouble()
+
+			val rawArgs = context.rawArgs.toMutableList()
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+			rawArgs.removeAt(0)
+
+			userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillis()
+			userConfig.donatedAt = System.currentTimeMillis()
+
+			loritta save userConfig
+
+			context.reply(
+					LoriReply(
+							"Usuário `${user.name}` foi marcado como doador até `${userConfig.donationExpiresIn.humanize(locale)}`"
 					)
 			)
 		}

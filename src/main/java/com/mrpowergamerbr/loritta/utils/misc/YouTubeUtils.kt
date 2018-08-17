@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils
+package com.mrpowergamerbr.loritta.utils.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.SearchResponse

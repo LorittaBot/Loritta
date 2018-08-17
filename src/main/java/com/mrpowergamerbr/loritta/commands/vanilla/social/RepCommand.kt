@@ -27,7 +27,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
-		val user = LorittaUtils.getUserFromContext(context, 0)
+		val user = context.getUserAt(0)
 
 		if (user != null) {
 			if (user == context.userHandle) {

@@ -1,24 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.double
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant
@@ -75,7 +68,25 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 					}
 					embed.setDescription(format);
 					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
-					var mensagem = context.sendMessage(context.getAsMention(true), embed.build());
+					val mensagem = context.sendMessage(context.getAsMention(true), embed.build());
+
+					mensagem.onReactionAddByAuthor(context) {
+						val resourceId: String;
+						when {
+							it.reactionEmote.name == "1⃣" -> resourceId = context.metadata.get("0") as String
+							it.reactionEmote.name == "2⃣" -> resourceId = context.metadata.get("1") as String
+							it.reactionEmote.name == "3⃣" -> resourceId = context.metadata.get("2") as String
+							it.reactionEmote.name == "4⃣" -> resourceId = context.metadata.get("3") as String
+							else -> resourceId = context.metadata.get("4") as String
+						}
+
+						// Criar novo embed!
+						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).complete();
+
+						// Remover todos os reactions
+						mensagem.clearReactions().complete();
+					}
+
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
 						mensagem.addReaction(Constants.INDEXES[i]).complete();
@@ -84,29 +95,6 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 			}
 		} else {
 			this.explain(context);
-		}
-	}
-
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.user == context.userHandle) { // Somente quem executou o comando pode interagir!
-			var resourceId: String;
-			if (e.reactionEmote.name == "1⃣") {
-				resourceId = context.metadata.get("0") as String
-			} else if (e.reactionEmote.name == "2⃣") {
-				resourceId = context.metadata.get("1") as String
-			} else if (e.reactionEmote.name == "3⃣") {
-				resourceId = context.metadata.get("2") as String
-			} else if (e.reactionEmote.name == "4⃣") {
-				resourceId = context.metadata.get("3") as String
-			} else {
-				resourceId = context.metadata.get("4") as String
-			}
-
-			// Criar novo embed!
-			msg.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).complete();
-
-			// Remover todos os reactions
-			msg.clearReactions().complete();
 		}
 	}
 

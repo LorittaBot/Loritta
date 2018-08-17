@@ -50,10 +50,12 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.shards.firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
-			if (firstInstance != null) {
-				revertedAvatar = true
-				firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+		if (Loritta.config.fanArtExtravaganza) {
+			if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
+				if (firstInstance != null) {
+					revertedAvatar = true
+					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+				}
 			}
 		}
 
@@ -68,7 +70,16 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
-				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+				val artist = lorittaShards.getUserById(fanArt.artistId)
+
+				val displayName = if (fanArt.fancyName != null) {
+					fanArt.fancyName
+				} else if (artist != null) {
+					artist.name + "#" + artist.discriminator
+				} else {
+					"¯\\_(ツ)_/¯"
+				}
+				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 				lastUpdate = System.currentTimeMillis()
 			}
 
@@ -81,8 +92,18 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val fanArt = Loritta.config.fanArts[currentIndex]
 
 				if (firstInstance != null) {
+					val artist = lorittaShards.getUserById(fanArt.artistId)
+
+					val displayName = if (fanArt.fancyName != null) {
+						fanArt.fancyName
+					} else if (artist != null) {
+						artist.name + "#" + artist.discriminator
+					} else {
+						"¯\\_(ツ)_/¯"
+					}
+
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
 
 					currentFanArt = fanArt
 					currentIndex++

@@ -4,17 +4,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.NSFWResponse
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.msgFormat
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
@@ -35,45 +29,38 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var userProfile = context.lorittaUser.profile
-
-		val link = LorittaUtils.getURLFromContext(context, 0, 1, 2048);
+		val link = context.getImageUrlAt(0, 1, 2048);
 
 		if (link != null) {
 			setAsBackground(link, context);
 			return;
 		}
-		var embed = getFirstPageEmbed(context)
+		val embed = getFirstPageEmbed(context)
 		val message = context.sendMessage(embed);
 
-		message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
-		message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
-	}
-
-	override fun onCommandReactionFeedback(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.user == context.userHandle) { // Somente o usuário que executou o comando pode interagir com o comando!
-			if (e.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
-				msg.editMessage(getFirstPageEmbed(context)).complete();
-				msg.clearReactions().complete()
-				msg.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
-				msg.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
-				return;
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
+				message.editMessage(getFirstPageEmbed(context)).complete();
+				message.clearReactions().complete()
+				message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
+				message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
+				return@onReactionAddByAuthor
 			}
-			if (e.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
+			if (it.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png");
-				val imageUrl = if (file.exists()) "http://loritta.website/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
+				val imageUrl = if (file.exists()) "${Loritta.config.websiteUrl}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png";
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
 						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
-				msg.editMessage(builder.build()).complete();
-				msg.clearReactions().complete()
-				msg.addReaction("\uD83D\uDE4B").complete(); // Para voltar para a "página inicial"
-				msg.addReaction("\uD83D\uDED2").complete(); // Para ir para os "templates"
-				return;
+				message.editMessage(builder.build()).complete()
+				message.clearReactions().complete()
+				message.addReaction("\uD83D\uDE4B").complete() // Para voltar para a "página inicial"
+				message.addReaction("\uD83D\uDED2").complete() // Para ir para os "templates"
+				return@onReactionAddByAuthor
 			}
-			if (e.reactionEmote.name == "\uD83D\uDED2" || e.reactionEmote.name == "⬅" || e.reactionEmote.name == "➡" || e.reactionEmote.name == "✅") { // Se é o carrinho de super mercado...
+			if (it.reactionEmote.name == "\uD83D\uDED2" || it.reactionEmote.name == "⬅" || it.reactionEmote.name == "➡" || it.reactionEmote.name == "✅") { // Se é o carrinho de super mercado...
 				val templates = listOf("https://loritta.website/assets/img/templates/dreemurrs.png",
 						"https://loritta.website/assets/img/templates/chaves_sexta.png",
 						"https://loritta.website/assets/img/templates/rodrigo_noriaki.png",
@@ -85,10 +72,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						"https://loritta.website/assets/img/templates/gotta_go_fast.png")
 				var index = context.metadata.getOrDefault("templateIdx", 0) as Int;
 
-				if (e.reactionEmote.name == "⬅") {
+				if (it.reactionEmote.name == "⬅") {
 					index -= 1;
 				}
-				if (e.reactionEmote.name == "➡") {
+				if (it.reactionEmote.name == "➡") {
 					index += 1;
 				}
 
@@ -98,10 +85,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 				var currentUrl = templates[index];
 
-				if (e.reactionEmote.name == "✅") {
-					msg.delete().complete()
+				if (it.reactionEmote.name == "✅") {
+					message.delete().complete()
 					setAsBackground(currentUrl, context)
-					return;
+					return@onReactionAddByAuthor
 				}
 				context.metadata.put("templateIdx", index)
 				var builder = EmbedBuilder()
@@ -110,18 +97,20 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
-				msg.editMessage(builder.build()).complete();
-				msg.clearReactions().complete()
-				msg.addReaction("✅").complete();
-				msg.addReaction("\uD83D\uDE4B").complete(); // Para voltar para a "página inicial"
+				message.editMessage(builder.build()).complete();
+				message.clearReactions().complete()
+				message.addReaction("✅").complete();
+				message.addReaction("\uD83D\uDE4B").complete(); // Para voltar para a "página inicial"
 				if (index > 0) {
-					msg.addReaction("⬅").complete();
+					message.addReaction("⬅").complete();
 				}
 				if (templates.size > index + 1) {
-					msg.addReaction("➡").complete();
+					message.addReaction("➡").complete();
 				}
 			}
 		}
+		message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
+		message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
 	}
 
 	fun setAsBackground(link0: String, context: CommandContext) {
@@ -150,10 +139,8 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			println("* Usuário: ${context.userHandle.name} (${context.userHandle.id})")
 		}
 
-		var bufferedImage = LorittaUtils.downloadImage(link)
-		if (!LorittaUtils.isValidImage(context, bufferedImage)) {
-			return;
-		}
+		var bufferedImage = LorittaUtils.downloadImage(link) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
 		var needsEditing = false;
 		if (!(bufferedImage.width == 800 && bufferedImage.height == 600)) {
 			needsEditing = true;

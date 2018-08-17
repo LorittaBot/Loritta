@@ -28,7 +28,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val user = LorittaUtils.getUserFromContext(context, 0)
+		val user = context.getUserAt(0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()
 

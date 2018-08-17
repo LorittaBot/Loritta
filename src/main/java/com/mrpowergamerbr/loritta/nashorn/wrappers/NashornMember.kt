@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Game
@@ -115,6 +116,11 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 	@NashornCommand.NashornDocs("Altera o nome de um usuário",
 			"novoNickname")
 	fun setNickname(nickname: String) {
+		if (nickname.contains(Loritta.config.clientToken, true)) {
+			NashornContext.securityViolation(null)
+			return null!!
+		}
+
 		member.guild.controller.setNickname(member, nickname).complete()
 	}
 }
