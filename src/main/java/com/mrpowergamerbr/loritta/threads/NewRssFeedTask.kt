@@ -70,10 +70,9 @@ class NewRssFeedTask : Runnable {
 								// avisar a todos que desejam receber a novidade
 								for (server in list) {
 									for (feedInfo in server.rssFeedConfig.feeds.filter { rssFeedLink  == it.feedUrl }) {
-										val guild = lorittaShards.getGuildById(server.guildId) ?: return@launch
+										val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 
-										val textChannel = guild.getTextChannelById(feedInfo.repostToChannelId)
-												?: return@launch
+										val textChannel = guild.getTextChannelById(feedInfo.repostToChannelId) ?: continue
 
 										if (!textChannel.canTalk())
 											continue
