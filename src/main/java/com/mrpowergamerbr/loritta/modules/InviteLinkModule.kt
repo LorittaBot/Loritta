@@ -52,6 +52,26 @@ class InviteLinkModule : MessageReceivedModule {
 			if (descriptionMatcher != null)
 				validMatchers.add(descriptionMatcher)
 
+			val titleMatcher = getMatcherIfHasInviteLink(embed.title)
+			if (titleMatcher != null)
+				validMatchers.add(titleMatcher)
+
+			val urlMatcher = getMatcherIfHasInviteLink(embed.url)
+			if (urlMatcher != null)
+				validMatchers.add(urlMatcher)
+
+			val footerMatcher = getMatcherIfHasInviteLink(embed.footer?.text)
+			if (footerMatcher != null)
+				validMatchers.add(footerMatcher)
+
+			val authorNameMatcher = getMatcherIfHasInviteLink(embed.author?.name)
+			if (authorNameMatcher != null)
+				validMatchers.add(authorNameMatcher)
+
+			val authorUrlMatcher = getMatcherIfHasInviteLink(embed.author?.url)
+			if (authorUrlMatcher != null)
+				validMatchers.add(authorUrlMatcher)
+
 			for (field in embed.fields) {
 				val fieldMatcher = getMatcherIfHasInviteLink(field.value)
 				if (fieldMatcher != null)
