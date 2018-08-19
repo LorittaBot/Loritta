@@ -175,7 +175,7 @@
             <version>1.11.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.Frederikam</groupId>
+            <groupId>com.github.FredBoat</groupId>
             <artifactId>Lavalink-Client</artifactId>
             <version>0807d5b2d3</version>
         </dependency>
