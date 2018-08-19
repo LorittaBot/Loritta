@@ -12,20 +12,20 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import lavalink.client.io.Lavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
+import lavalink.client.io.jda.JdaLavalink
 
 class AudioManager(val loritta: Loritta) {
 	var playerManager = DefaultAudioPlayerManager()
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = Lavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.shards.first { shardId == it.shardInfo.shardId } })
+	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.shards.first { shardId == it.shardInfo.shardId } })
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
