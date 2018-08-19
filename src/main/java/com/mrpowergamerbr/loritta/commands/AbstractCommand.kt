@@ -187,10 +187,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					return true
 				}
 
-				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
-					ev.channel.sendTyping().complete()
-				}
-
 				val profile = lorittaUser.profile
 				var cooldown = this.cooldown
 				val isDonator = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
@@ -208,6 +204,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				LorittaUtilsKotlin.executedCommands++
 				executedCount++
+
+				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
+					ev.channel.sendTyping().complete()
+				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {

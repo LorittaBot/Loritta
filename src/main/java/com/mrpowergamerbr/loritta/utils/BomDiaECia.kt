@@ -3,16 +3,52 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
+import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import java.awt.Color
-import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
 
 class BomDiaECia() {
+	companion object {
+		val randomTexts = listOf(
+				"amo o yudi!",
+				"amo o yudi",
+				"amo a priscilla!",
+				"amo a priscilla",
+				"amo o yudi e a priscilla!",
+				"amo o yudi e a priscilla",
+				"bts? eu só conheço o sbt!",
+				"preisteicho dois!",
+				"preisteicho treis!",
+				"preisteicho!",
+				"playstation dois!",
+				"playstation treis!",
+				"playstation!",
+				"é o funk do yudi que vai dar preisteicho dois!",
+				"é o funk do yudi que vai dar preisteicho 2!",
+				"é o funk do yudi que vai dar preisteicho 3!",
+				"é o funk do yudi que vai dar preisteicho treis!",
+				"é o funk do yudi que vai dar playstation dois!",
+				"é o funk do yudi que vai dar playstation 2!",
+				"é o funk do yudi que vai dar playstation 3!",
+				"é o funk do yudi que vai dar playstation treis!",
+				"não quero ganhar um jogo da vida!",
+				"alôoooo, cê tá me escutando?"
+		)
+		val randomImages by lazy {
+			listOf(
+					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia.jpg",
+					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-2.jpg",
+					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-3.jpg",
+					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-4.jpg"
+			)
+		}
+	}
+
 	val thread: BomDiaECiaThread = BomDiaECiaThread()
 
 	init {
@@ -21,32 +57,6 @@ class BomDiaECia() {
 
 	var activeTextChannels = ConcurrentHashMap<String, YudiTextChannelInfo>()
 	var available = false
-
-	var randomTexts = mutableListOf(
-			"amo o yudi!",
-			"amo o yudi",
-			"amo a priscilla!",
-			"amo a priscilla",
-			"amo o yudi e a priscilla!",
-			"amo o yudi e a priscilla",
-			"bts? eu só conheço o sbt!",
-			"preisteicho dois!",
-			"preisteicho treis!",
-			"preisteicho!",
-			"playstation dois!",
-			"playstation treis!",
-			"playstation!",
-			"é o funk do yudi que vai dar preisteicho dois!",
-			"é o funk do yudi que vai dar preisteicho 2!",
-			"é o funk do yudi que vai dar preisteicho 3!",
-			"é o funk do yudi que vai dar preisteicho treis!",
-			"é o funk do yudi que vai dar playstation dois!",
-			"é o funk do yudi que vai dar playstation 2!",
-			"é o funk do yudi que vai dar playstation 3!",
-			"é o funk do yudi que vai dar playstation treis!",
-			"não quero ganhar um jogo da vida!",
-			"alôoooo, cê tá me escutando?"
-	)
 
 	var currentText = randomTexts[0]
 
@@ -82,7 +92,7 @@ class BomDiaECia() {
 			val embed = EmbedBuilder()
 			embed.setTitle("<:sbt:447560158344904704> Bom Dia & Cia")
 			embed.setDescription("Você aí de casa querendo prêmios agora, neste instante? Então ligue para o Bom Dia & Cia! Corra que apenas a primeira pessoa que ligar irá ganhar prêmios! (Cada tentativa de ligação custa **75 Sonhos**!) `+ligar 4002-8922 ${obfuscatedText}`")
-			embed.setImage("${Loritta.config.websiteUrl}assets/img/bom-dia-cia.jpg")
+			embed.setImage(randomImages.getRandom())
 			embed.setColor(Color(74, 39, 138))
 
 			embedsForLocales[localeId] = embed.build()
@@ -128,7 +138,7 @@ class BomDiaECia() {
 			val textChannel = lorittaShards.getTextChannelById(it.key)
 
 			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-				if (it.value.users.size >= 10 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
+				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
 					val serverConfig = loritta.getServerConfigForGuild(textChannel.guild.id)
 
 					if (serverConfig.miscellaneousConfig.enableBomDiaECia) {

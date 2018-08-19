@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.SyndFeedInput
+import jdk.internal.org.xml.sax.SAXParseException
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -106,6 +107,9 @@ class NewRssFeedTask : Runnable {
 
 					storedLastEntries[rssFeedLink] = entries.map { it.link }.toMutableSet()
 				} catch (e: Exception) {
+					if (e is SAXParseException) // Ignorar erros de parse (de pessoas que colocam links que não são RSS feeds)
+						return@launch
+
 					logger.error(rssFeedLink, e)
 				}
 			}
