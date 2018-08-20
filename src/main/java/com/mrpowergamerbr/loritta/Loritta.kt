@@ -167,7 +167,7 @@ class Loritta(config: LorittaConfig) {
 		builder = JDABuilder(AccountType.BOT)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(128)
+				.setCorePoolSize(16)
 				.setBulkDeleteSplittingEnabled(false)
 				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListener(discordListener)
