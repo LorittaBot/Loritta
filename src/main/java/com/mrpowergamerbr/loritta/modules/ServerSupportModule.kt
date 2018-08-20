@@ -33,7 +33,7 @@ class ServerSupportModule : MessageReceivedModule {
 
 		responses.forEach {
 			if (it.handleResponse(event, content))
-				event.channel.sendMessage(it.getResponse(event, content)).complete()
+				event.channel.sendMessage(it.getResponse(event, content)).queue()
 		}
 
 		return false

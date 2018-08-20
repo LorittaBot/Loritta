@@ -26,12 +26,12 @@ object AutoroleModule {
 				if (autoroleConfig.giveRolesAfter != null)
 					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
 				else
-					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").complete()
+					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").queue()
 			} else {
 				if (autoroleConfig.giveRolesAfter != null)
 					event.guild.controller.addRolesToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
 				else
-					event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").complete()
+					event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").queue()
 			}
 		}
 	}

@@ -19,12 +19,12 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun addRole(role: NashornRole) {
-		member.guild.controller.addRolesToMember(member, role.role).complete()
+		member.guild.controller.addRolesToMember(member, role.role).queue()
 	}
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun removeRole(role: NashornRole) {
-		member.guild.controller.removeRolesFromMember(member, role.role).complete()
+		member.guild.controller.removeRolesFromMember(member, role.role).queue()
 	}
 
 	@NashornCommand.NashornDocs()
@@ -121,6 +121,6 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 			return null!!
 		}
 
-		member.guild.controller.setNickname(member, nickname).complete()
+		member.guild.controller.setNickname(member, nickname).queue()
 	}
 }

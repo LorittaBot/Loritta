@@ -127,7 +127,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 								val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-								textChannel.sendFile(bais, "avatar.png", message.build()).complete()
+								textChannel.sendFile(bais, "avatar.png", message.build()).queue()
 							}
 						}
 					}
@@ -226,7 +226,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
 					embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
 
-					textChannel.sendMessage(embed.build()).complete()
+					textChannel.sendMessage(embed.build()).queue()
 				}
 			}
 		}
@@ -260,31 +260,31 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
 						embed.setDescription("\uD83C\uDF1F ${locale["EVENTLOG_CHANNEL_CREATED", event.channel.asMention]}")
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
 					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_NAME_UPDATED", event.channel.asMention, event.oldName, event.channel.name]}")
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_TOPIC_UPDATED", event.channel.asMention, event.oldTopic, event.channel.topic]}")
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
 					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_POSITION_UPDATED", event.channel.asMention, event.oldPosition, event.channel.position]}")
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
 						embed.setDescription("\uD83D\uDEAE ${locale["EVENTLOG_CHANNEL_DELETED", event.channel.name]}")
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
 				}
@@ -364,7 +364,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setDescription("\uD83D\uDCDD ${locale.get("EVENTLOG_MESSAGE_EDITED", event.member.asMention, storedMessage.content, event.message.contentRaw, event.message.textChannel.asMention)}")
 						embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 
 						storedMessage.content = event.message.contentRaw
 
@@ -422,7 +422,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendMessage(embed.build()).complete()
+						textChannel.sendMessage(embed.build()).queue()
 
 						loritta.storedMessagesColl.deleteOne(Filters.eq("_id", event.messageId))
 						return@execute
@@ -482,7 +482,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).complete()
+						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
 
 						loritta.storedMessagesColl.deleteMany(Filters.`in`("_id", event.messageIds))
 						return@execute
@@ -522,7 +522,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["EVENTLOG_JoinedVoiceChannel", event.member.asMention, event.channelJoined.name]}**")
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
-				textChannel.sendMessage(embed.build()).complete()
+				textChannel.sendMessage(embed.build()).queue()
 				return@execute
 			}
 		}
@@ -556,7 +556,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["EVENTLOG_LeftVoiceChannel", event.member.asMention, event.channelLeft.name]}**")
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
-				textChannel.sendMessage(embed.build()).complete()
+				textChannel.sendMessage(embed.build()).queue()
 				return@execute
 			}
 		}
@@ -622,7 +622,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription(message)
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-				textChannel.sendMessage(embed.build()).complete()
+				textChannel.sendMessage(embed.build()).queue()
 				return@execute
 			}
 		}
@@ -679,7 +679,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription(message)
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-				textChannel.sendMessage(embed.build()).complete()
+				textChannel.sendMessage(embed.build()).queue()
 				return@execute
 			}
 		}
@@ -717,7 +717,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NicknameChanged", oldNickname, newNickname]}")
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
-				textChannel.sendMessage(embed.build()).complete()
+				textChannel.sendMessage(embed.build()).queue()
 				return@execute
 			}
 		}

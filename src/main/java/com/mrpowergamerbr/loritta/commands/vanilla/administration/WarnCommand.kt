@@ -128,7 +128,9 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 							embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
 							embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-							user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+							user.openPrivateChannel().queue {
+								it.sendMessage(embed.build()).queue()
+							}
 						} catch (e: Exception) {
 							e.printStackTrace()
 						}
@@ -153,7 +155,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 									)
 							)
 
-							textChannel.sendMessage(message).complete()
+							textChannel.sendMessage(message).queue()
 						}
 					}
 				}
@@ -188,7 +190,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				loritta save config
 
-				message?.delete()?.complete()
+				message?.delete()?.queue()
 
 				context.reply(
 						LoriReply(
@@ -224,9 +226,9 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").complete()
+			message.addReaction("✅").queue()
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").complete()
+				message.addReaction("\uD83D\uDE4A").queue()
 			}
 		} else {
 			this.explain(context);

@@ -74,7 +74,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 					return
 				}
 
-				context.event.textChannel!!.deleteMessagesByIds(toDelete).complete()
+				context.event.textChannel!!.deleteMessagesByIds(toDelete).queue()
 			}
 
 			if (ignoredMessages == 0) {

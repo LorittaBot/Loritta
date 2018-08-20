@@ -227,7 +227,7 @@ class PubSubHubbubCallbackController {
 											"link" to "https://www.twitch.tv/$userLogin"
 									)
 
-									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
+									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
 								}
 							}
 						}

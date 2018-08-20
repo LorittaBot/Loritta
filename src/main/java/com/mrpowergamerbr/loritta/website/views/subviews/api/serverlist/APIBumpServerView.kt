@@ -103,7 +103,7 @@ class APIBumpServerView : NoVarsView() {
 				)
 
 				if (message != null)
-					textChannel.sendMessage(message).complete()
+					textChannel.sendMessage(message).queue()
 			}
 		}
 

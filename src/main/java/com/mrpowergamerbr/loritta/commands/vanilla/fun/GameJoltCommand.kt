@@ -61,24 +61,24 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 
 			mensagem.onReactionAddByAuthor(context) {
 				val game: JsonObject
-				when {
-					it.reactionEmote.name == "1⃣" -> game = context.metadata["0"] as JsonObject
-					it.reactionEmote.name == "2⃣" -> game = context.metadata["1"] as JsonObject
-					it.reactionEmote.name == "3⃣" -> game = context.metadata["2"] as JsonObject
-					it.reactionEmote.name == "4⃣" -> game = context.metadata["3"] as JsonObject
-					else -> game = context.metadata["4"] as JsonObject
+				game = when {
+					it.reactionEmote.name == "1⃣" -> context.metadata["0"] as JsonObject
+					it.reactionEmote.name == "2⃣" -> context.metadata["1"] as JsonObject
+					it.reactionEmote.name == "3⃣" -> context.metadata["2"] as JsonObject
+					it.reactionEmote.name == "4⃣" -> context.metadata["3"] as JsonObject
+					else -> context.metadata["4"] as JsonObject
 				}
 
 				// Criar novo embed!
-				mensagem.editMessage(createResourceEmbed(context, game).build()).complete()
-
-				// Remover todos os reactions
-				mensagem.clearReactions().complete();
+				mensagem.editMessage(createResourceEmbed(context, game).build()).queue {
+					// Remover todos os reactions
+					mensagem.clearReactions().queue()
+				}
 			}
 
 			// Adicionar os reactions
 			for (i in 0 until Math.min(5, games.size())) {
-				mensagem.addReaction(Constants.INDEXES[i]).complete();
+				mensagem.addReaction(Constants.INDEXES[i]).queue()
 			}
 		} else {
 			context.explain()

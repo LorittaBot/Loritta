@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
@@ -82,11 +82,13 @@ class TestMessageView : ConfigureView() {
 				return response.toString()
 			}
 
-			textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
+			textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
 			response["success"] = true
 		} else {
 			try {
-				member.user.openPrivateChannel().complete().sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).complete()
+				member.user.openPrivateChannel().queue {
+					it.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
+				}
 			} catch (e: Exception) {
 				response["error"] = "Sua DM está desativada"
 			}

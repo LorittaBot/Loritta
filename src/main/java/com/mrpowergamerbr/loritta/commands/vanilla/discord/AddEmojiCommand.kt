@@ -36,14 +36,14 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
 				os.use { inputStream ->
-					val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).complete()
-
-					context.reply(
-							LoriReply(
-									context.locale["EMOJISEARCH_AddSuccess"],
-									emote.asMention
-							)
-					)
+					context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).queue {
+						context.reply(
+								LoriReply(
+										context.locale["EMOJISEARCH_AddSuccess"],
+										it.asMention
+								)
+						)
+					}
 				}
 			}
 		} catch (e: Exception) {

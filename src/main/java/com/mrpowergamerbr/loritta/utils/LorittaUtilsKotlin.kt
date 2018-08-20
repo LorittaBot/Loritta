@@ -214,15 +214,12 @@ object LorittaUtilsKotlin {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.id)
 
 			// Se um usuário está banido...
-			try {
-				context.userHandle
-						.openPrivateChannel()
-						.complete()
-						.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
-			} catch (e: ErrorResponseException) {
-				// Usuário tem as DMs desativadas
-				context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).complete()
-			}
+			context.userHandle
+					.openPrivateChannel()
+					.queue (
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).queue() }
+					)
 			return true
 		}
 		return false
@@ -381,49 +378,63 @@ object LorittaUtilsKotlin {
 		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
 			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
 				if (e.reactionEmote.name == "\uD83D\uDD22") {
-					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).complete()
-					msg.reactions.forEach {
-						if (it.reactionEmote.name != "\uD83E\uDD26") {
-							it.removeReaction().complete()
+					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).queue {
+						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
+						for (reaction in filteredReactions) {
+							if (msg.reactions.indexOf(reaction) == (filteredReactions.size - 1)) {
+								reaction.removeReaction().queue {
+									e.reaction.removeReaction(e.user).queue {
+										msg.addReaction("\uD83D\uDCBF").queue()
+									}
+								}
+							} else {
+								reaction.removeReaction().queue()
+							}
 						}
 					}
-					e.reaction.removeReaction(e.user).complete()
-					msg.addReaction("\uD83D\uDCBF").complete();
-				} else if (e.reactionEmote.name == "\uD83D\uDCBF") {
-					val embed = LorittaUtilsKotlin.createTrackInfoEmbed(context)
-					msg.reactions.forEach {
-						if (it.reactionEmote.name != "\uD83E\uDD26") {
-							it.removeReaction().complete()
+				} else if (e.reactionEmote.name == "\uD83E\uDD26") {
+					msg.editMessage(LorittaUtilsKotlin.createTrackInfoEmbed(context)).queue {
+						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
+						for (reaction in filteredReactions) {
+							if (msg.reactions.indexOf(reaction) == (filteredReactions.size - 1)) {
+								reaction.removeReaction().queue {
+									e.reaction.removeReaction(e.user).queue {
+										msg.addReaction("\uD83D\uDD22").queue()
+									}
+								}
+							} else {
+								reaction.removeReaction().queue()
+							}
 						}
 					}
-					e.reaction.removeReaction(e.user).queue()
-					msg.editMessage(embed).complete()
-					msg.addReaction("\uD83D\uDD22").queue();
 				}
 			}
 		} else { // Se for facepalm...
 			val atw = context.metadata.get("currentTrack") as AudioTrackWrapper
-			val count = e.reaction.users.complete().filter { !it.isBot }.size
-			val conf = context.config
+			e.reaction.users.queue { list ->
+				val count = list.count { !it.isBot }
 
-			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
-				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
+				val conf = context.config
 
-				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
-					return
-				}
+				if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
+					val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
 
-				if (e.member.voiceState.channel !== vc) {
-					e.reaction.removeReaction(e.user).complete()
-					return
-				}
+					if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
+						return@queue
+					}
 
-				if (vc != null) {
-					val inChannel = vc.members.filter{ !it.user.isBot }.size
-					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
+					if (e.member.voiceState.channel !== vc) {
+						e.reaction.removeReaction(e.user).queue()
+						return@queue
+					}
 
-					if (count >= required) {
-						loritta.audioManager.skipTrack(context)
+					if (vc != null) {
+						val inChannel = vc.members.filter { !it.user.isBot }.size
+						val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
+
+						if (count >= required) {
+							loritta.audioManager.skipTrack(context)
+						}
 					}
 				}
 			}

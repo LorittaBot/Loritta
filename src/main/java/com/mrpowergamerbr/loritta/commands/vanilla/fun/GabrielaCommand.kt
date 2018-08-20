@@ -193,17 +193,16 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 										context.getAsMention(true) + answer.answer.escapeMentions(),
 										"${Loritta.config.websiteUrl}assets/img/gabriela_avatar.png"
 								),
-								true,
-								{
-									val messageId = it["id"].string
-									val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
-									val message = context.message.textChannel.getMessageById(messageId).complete()
-
-									if (message != null) {
-										learnGabriela(pergunta, message, context, functions, true, document, answer)
-									}
+								true
+						) {
+							val messageId = it["id"].string
+							val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+							context.message.textChannel.getMessageById(messageId).queue { message ->
+								if (message != null) {
+									learnGabriela(pergunta, message, context, functions, true, document, answer)
 								}
-						)
+							}
+						}
 						return
 					}
 				}
@@ -214,17 +213,16 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 							context.getAsMention(true) + locale["FRASETOSCA_DontKnow"],
 							"https://loritta.website/assets/img/gabriela_avatar.png"
 					),
-					true,
-					{
-						val messageId = it["id"].string
-						val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
-						val message = context.message.textChannel.getMessageById(messageId).complete()
-
-						if (message != null) {
-							learnGabriela(pergunta, message, context, functions)
-						}
+					true
+			) {
+				val messageId = it["id"].string
+				val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+				context.message.textChannel.getMessageById(messageId).queue { message ->
+					if (message != null) {
+						learnGabriela(pergunta, message, context, functions)
 					}
-			)
+				}
+			}
 		} else {
 			context.explain()
 		}
@@ -367,10 +365,10 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			}
 		}
 
-		message.addReaction("\uD83D\uDCA1").complete()
+		message.addReaction("\uD83D\uDCA1").queue()
 		if (allowUpvoteDownvote) {
-			message.addReaction("\uD83D\uDC4D").complete()
-			message.addReaction("\uD83D\uDC4E").complete()
+			message.addReaction("\uD83D\uDC4D").queue()
+			message.addReaction("\uD83D\uDC4E").queue()
 		}
 	}
 }

@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
@@ -110,7 +111,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 
-					event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").complete()
+					event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
 				}
 
 				val modules = listOf(
@@ -190,9 +191,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").complete()
-						Thread.sleep(5000)
-						message.delete().queue()
+						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").queue {
+							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
+						}
 					}
 				}
 			} catch (e: Exception) {
@@ -214,7 +215,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				return@execute
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
-				event.channel.sendMessage(locale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, locale["AJUDA_CommandName"]]).complete()
+				event.channel.sendMessage(locale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, locale["AJUDA_CommandName"]]).queue()
 				return@execute
 			}
 
@@ -312,7 +313,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
 			if (ownerProfile.userId != Loritta.config.ownerId) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
-				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
 		}
@@ -329,7 +330,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
 			if (guild.owner.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
-				guild.leave().complete() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
 		}

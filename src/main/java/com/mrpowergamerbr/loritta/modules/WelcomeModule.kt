@@ -89,33 +89,35 @@ object WelcomeModule {
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 							guild.auditLogs.queue { auditLogs ->
 								if (auditLogs.isNotEmpty()) {
-									val entry = guild.auditLogs.complete().firstOrNull { it.targetId == event.user.id }
+									val entry = guild.auditLogs.queue { entries ->
+										val entry = entries.firstOrNull { it.targetId == event.user.id }
 
-									if (entry != null) {
-										if (entry.targetId == event.user.id) {
-											if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-												if (joinLeaveConfig.kickMessage.isNotEmpty()) {
-													msg = joinLeaveConfig.kickMessage
-													customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-													customTokens["@staff"] = entry.user?.asMention ?: "???"
-													customTokens["staff"] = entry.user?.name ?: "???"
-													callback.invoke(msg, customTokens)
-													return@queue
+										if (entry != null) {
+											if (entry.targetId == event.user.id) {
+												if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
+													if (joinLeaveConfig.kickMessage.isNotEmpty()) {
+														msg = joinLeaveConfig.kickMessage
+														customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+														customTokens["@staff"] = entry.user?.asMention ?: "???"
+														customTokens["staff"] = entry.user?.name ?: "???"
+														callback.invoke(msg, customTokens)
+														return@queue
+													}
 												}
-											}
-											if (entry.type == ActionType.BAN) {
-												if (joinLeaveConfig.banMessage.isNotEmpty()) {
-													msg = joinLeaveConfig.banMessage
-													customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-													customTokens["@staff"] = entry.user?.asMention ?: "???"
-													customTokens["staff"] = entry.user?.name ?: "???"
-													callback.invoke(msg, customTokens)
-													return@queue
+												if (entry.type == ActionType.BAN) {
+													if (joinLeaveConfig.banMessage.isNotEmpty()) {
+														msg = joinLeaveConfig.banMessage
+														customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
+														customTokens["@staff"] = entry.user?.asMention ?: "???"
+														customTokens["staff"] = entry.user?.name ?: "???"
+														callback.invoke(msg, customTokens)
+														return@queue
+													}
 												}
 											}
 										}
+										callback.invoke(msg, customTokens)
 									}
-									callback.invoke(msg, customTokens)
 								}
 							}
 							return

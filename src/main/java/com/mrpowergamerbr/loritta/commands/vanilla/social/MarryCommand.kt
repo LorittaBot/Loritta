@@ -111,7 +111,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 			message.onReactionAdd(context) {
 				if (it.reactionEmote.name == "\uD83D\uDC8D" && it.member.user.id == proposeTo.id) {
-					message.delete().complete()
+					message.delete().queue()
 
 					val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
 					val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
@@ -222,7 +222,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				}
 			}
 
-			message.addReaction("\uD83D\uDC8D").complete()
+			message.addReaction("\uD83D\uDC8D").queue()
 		} else {
 			context.explain()
 		}
