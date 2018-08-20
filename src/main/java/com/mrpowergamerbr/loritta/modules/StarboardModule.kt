@@ -1,8 +1,14 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import java.awt.Color
 
 object StarboardModule {
 	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
@@ -14,8 +20,6 @@ object StarboardModule {
 			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY))
 				return
 
-			// TODO: Refazer o sistema de starboard usando queues()
-			/*
 			val msg = e.textChannel.getMessageById(e.messageId).complete()
 			if (msg != null) {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
@@ -69,12 +73,12 @@ object StarboardModule {
 
 					if (starboardMessage != null) {
 						if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que 0
-							starboardMessage.delete().complete()
+							starboardMessage.delete().queue()
 							serverConfig.starboardEmbedMessages.removeIf { it.embedId == starboardMessage!!.id }
 							loritta save serverConfig
 							return
 						}
-						starboardMessage.editMessage(starCountMessage.build()).complete()
+						starboardMessage.editMessage(starCountMessage.build()).queue()
 					} else if (count >= starboardConfig.requiredStars) {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}
@@ -84,7 +88,6 @@ object StarboardModule {
 					}
 				}
 			}
-			*/
 		}
 	}
 }
