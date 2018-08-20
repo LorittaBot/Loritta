@@ -124,7 +124,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 
 						SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 
-						message.delete().complete()
+						message.delete().queue()
 
 						context.reply(
 								LoriReply(
@@ -136,9 +136,9 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					return@onReactionAddByAuthor
 				}
 
-				message.addReaction("✅").complete()
+				message.addReaction("✅").queue()
 				if (hasSilent) {
-					message.addReaction("\uD83D\uDE4A").complete()
+					message.addReaction("\uD83D\uDE4A").queue()
 				}
 			} catch (e: Exception) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_NO_PERM"])
@@ -164,7 +164,9 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+						user.openPrivateChannel().queue {
+							it.sendMessage(embed.build()).queue()
+						}
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -189,14 +191,14 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 								)
 						)
 
-						textChannel.sendMessage(message).complete()
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}
 
 			context.guild.controller.ban(member, days, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
-					.complete()
-			context.guild.controller.unban(user).complete()
+					.queue()
+			context.guild.controller.unban(user).queue()
 		}
 	}
 }

@@ -88,7 +88,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 
 			val image = message.attachments.first()
 
-			message.editMessage(str + " " + locale["MCMOLETOM_UploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>").complete()
+			message.editMessage(str + " " + locale["MCMOLETOM_UploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>").queue()
 		} else {
 			context.reply(
 					LoriReply(

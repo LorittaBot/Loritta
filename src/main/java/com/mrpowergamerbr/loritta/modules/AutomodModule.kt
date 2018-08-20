@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
+import java.util.concurrent.TimeUnit
 
 class AutomodModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -40,17 +41,16 @@ class AutomodModule : MessageReceivedModule {
 						message.delete().queue()
 
 					if (automodCaps.replyToUser && message.textChannel.canTalk()) {
-						val message = message.channel.sendMessage(
+						message.channel.sendMessage(
 								MessageUtils.generateMessage(automodCaps.replyMessage,
 										listOf(event.guild!!, event.member!!),
 										event.guild
 								)
-						).complete()
-
-						if (automodCaps.enableMessageTimeout && message.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
-							val delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
-							Thread.sleep(delay.toLong())
-							message.delete().queue()
+						).queue {
+							if (automodCaps.enableMessageTimeout && it.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
+								val delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
+								it.delete().queueAfter(delay.toLong(), TimeUnit.MILLISECONDS)
+							}
 						}
 					}
 
@@ -59,7 +59,7 @@ class AutomodModule : MessageReceivedModule {
 			}
 		}
 
-		if (automodSelfEmbed.isEnabled) {
+		/* if (automodSelfEmbed.isEnabled) {
 			if (message.embeds.isNotEmpty()) {
 				if (automodSelfEmbed.deleteMessage)
 					message.delete().queue()
@@ -74,7 +74,7 @@ class AutomodModule : MessageReceivedModule {
 					}
 				}
 			}
-		}
+		} */
 		return false
 	}
 }

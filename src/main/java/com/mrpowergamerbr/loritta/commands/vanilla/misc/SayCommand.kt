@@ -123,9 +123,9 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			}
 
 			if (discordMessage != null)
-				channel.sendMessage(discordMessage).complete()
+				channel.sendMessage(discordMessage).queue()
 			else
-				channel.sendMessage(message).complete()
+				channel.sendMessage(message).queue()
 
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(

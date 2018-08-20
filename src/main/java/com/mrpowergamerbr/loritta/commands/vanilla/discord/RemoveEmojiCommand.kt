@@ -30,7 +30,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 
 		context.message.emotes.forEach {
 			if (it.guild == context.guild) {
-				it.delete().complete()
+				it.delete().queue()
 				deletedEmotes++
 			}
 		}

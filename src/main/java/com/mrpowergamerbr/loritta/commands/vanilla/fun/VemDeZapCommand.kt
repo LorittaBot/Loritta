@@ -491,17 +491,17 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 					context.sendMessage("${context.getAsMention(true)} $output")
 				}
 
-				levelMessage.addReaction("1⃣").complete()
-				levelMessage.addReaction("2⃣").complete()
-				levelMessage.addReaction("3⃣").complete()
-				levelMessage.addReaction("4⃣").complete()
-				levelMessage.addReaction("5⃣").complete()
+				levelMessage.addReaction("1⃣").queue()
+				levelMessage.addReaction("2⃣").queue()
+				levelMessage.addReaction("3⃣").queue()
+				levelMessage.addReaction("4⃣").queue()
+				levelMessage.addReaction("5⃣").queue()
 			}
-			message.addReaction("\uD83D\uDE0A").complete()
-			message.addReaction("\uD83D\uDE21").complete()
-			message.addReaction("\uD83D\uDE0F").complete()
-			message.addReaction("\uD83D\uDE22").complete()
-			message.addReaction("\uD83E\uDD12").complete()
+			message.addReaction("\uD83D\uDE0A").queue()
+			message.addReaction("\uD83D\uDE21").queue()
+			message.addReaction("\uD83D\uDE0F").queue()
+			message.addReaction("\uD83D\uDE22").queue()
+			message.addReaction("\uD83E\uDD12").queue()
 		} else {
 			context.explain()
 		}

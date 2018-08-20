@@ -108,7 +108,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				val emoteInfo = context.sendMessage(embed.build())
 
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
-					emoteInfo.addReaction("wumplus:388417805126467594").complete()
+					emoteInfo.addReaction("wumplus:388417805126467594").queue()
 
 					emoteInfo.onReactionAddByAuthor(context) {
 						if (it.reactionEmote.name == "wumplus") {
@@ -118,14 +118,14 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
 
 									os.use { inputStream ->
-										val emote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).complete()
-
-										context.reply(
-												LoriReply(
-														context.locale["EMOJISEARCH_AddSuccess"],
-														emote.asMention
-												)
-										)
+										context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).queue {
+											context.reply(
+													LoriReply(
+															context.locale["EMOJISEARCH_AddSuccess"],
+															emote.asMention
+													)
+											)
+										}
 									}
 								}
 							} catch (e: Exception) {
@@ -150,15 +150,15 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 
 		for ((index, emote) in Constants.INDEXES.withIndex()) {
 			if (queriedEmotes.size > index) {
-				message.addReaction(emote).complete()
+				message.addReaction(emote).queue()
 			}
 		}
 
 		if (page > 0) {
-			message.addReaction("⏪").complete()
+			message.addReaction("⏪").queue()
 		}
 		if (queriedEmotes.size >= 9) {
-			message.addReaction("⏩").complete()
+			message.addReaction("⏩").queue()
 		}
 
 		return message

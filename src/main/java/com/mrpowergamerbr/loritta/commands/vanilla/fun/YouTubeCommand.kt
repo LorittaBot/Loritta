@@ -80,125 +80,124 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					var item: YouTubeItem = context.metadata[idx.toString()] as YouTubeItem
 
 					// Remover todos os reactions
-					mensagem.clearReactions().complete();
+					mensagem.clearReactions().queue {
+						if (item.id.kind == "youtube#video") { // Se é um vídeo...
+							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
+							val parser = JsonParser();
+							val json = parser.parse(response).asJsonObject;
+							val jsonItem = json["items"][0]
+							val snippet = jsonItem["snippet"].obj
+							val statistics = jsonItem["statistics"].obj
 
-					if (item.id.kind == "youtube#video") { // Se é um vídeo...
-						val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
-						val parser = JsonParser();
-						val json = parser.parse(response).asJsonObject;
-						val jsonItem = json["items"][0]
-						val snippet = jsonItem["snippet"].obj
-						val statistics = jsonItem["statistics"].obj
+							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
+							var channelJson = parser.parse(channelResponse).obj;
 
-						var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
-						var channelJson = parser.parse(channelResponse).obj;
+							val viewCount = statistics["viewCount"].string
+							val likeCount = statistics["likeCount"].nullString ?: "???"
+							val dislikeCount = statistics["dislikeCount"].nullString ?: "???"
+							val commentCount = if (statistics.has("commentCount")) {
+								statistics["commentCount"].string
+							} else {
+								"Comentários desativados"
+							}
 
-						val viewCount = statistics["viewCount"].string
-						val likeCount = statistics["likeCount"].nullString ?: "???"
-						val dislikeCount = statistics["dislikeCount"].nullString  ?: "???"
-						val commentCount = if (statistics.has("commentCount")) {
-							statistics["commentCount"].string
+							val thumbnail = snippet["thumbnails"]["high"]["url"].string
+							val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
+
+							var embed = EmbedBuilder()
+							embed.setTitle("<:youtube:314349922885566475> ${item.snippet.title}", "https://youtu.be/${item.id.videoId}")
+							embed.setDescription(item.snippet.description)
+							embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
+
+							embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
+							embed.addField("\uD83D\uDE0D ${context.locale["MUSICINFO_LIKES"]}", likeCount, true)
+							embed.addField("\uD83D\uDE20 ${context.locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
+							embed.addField("\uD83D\uDCAC ${context.locale["MUSICINFO_COMMENTS"]}", commentCount, true)
+							embed.setThumbnail(thumbnail)
+							embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
+
+							embed.setColor(Color(217, 66, 52));
+
+							// Criar novo embed!
+							mensagem.editMessage(embed.build()).queue();
+
+							context.metadata.put("currentItem", item);
+
+							if (context.config.musicConfig.isEnabled) {
+								// Se o sistema de músicas está ativado...
+								mensagem.addReaction("▶").queue(); // Vamos colocar um ícone para tocar!
+							}
 						} else {
-							"Comentários desativados"
+							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
+							var channelJson = jsonParser.parse(channelResponse).obj
+
+							var embed = EmbedBuilder()
+
+							val entry = channelJson["items"][0]
+
+							val title = entry["snippet"]["title"].string
+							val description = entry["snippet"]["description"].string
+							val channelIcon = entry["snippet"]["thumbnails"]["high"]["url"].string
+							val viewCount = entry["statistics"]["viewCount"].string
+							val subscriberCount = entry["statistics"]["subscriberCount"].string
+							val videoCount = entry["statistics"]["videoCount"].string
+							val uploadsPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("uploads")) {
+								entry["contentDetails"]["relatedPlaylists"]["uploads"].string
+							} else {
+								null
+							}
+							val likesPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("likes")) {
+								entry["contentDetails"]["relatedPlaylists"]["likes"].string
+							} else {
+								null
+							}
+
+							var lastUploadedVideoName: String? = null
+							var lastUploadedVideoId: String? = null
+
+							var lastLikedVideoName: String? = null
+							var lastLikedVideoId: String? = null
+
+							if (uploadsPlaylistId != null) {
+								var uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								var uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
+
+								lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
+								lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+							}
+
+							if (likesPlaylistId != null) {
+								var likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								var likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
+
+								lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
+								lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+							}
+
+							embed.setTitle(title, "https://youtube.com/channel/${item.snippet.channelId}")
+							embed.setThumbnail(channelIcon)
+							embed.setDescription(description)
+							embed.setColor(Color(217, 66, 52))
+							embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
+							embed.addField("\uD83D\uDC3E ${context.locale["YOUTUBE_Subscribers"]}", subscriberCount, true)
+							embed.addField("\uD83C\uDFA5 ${context.locale["YOUTUBE_Videos"]}", videoCount, true)
+
+							if (lastUploadedVideoName != null)
+								embed.addField("\uD83D\uDCE5 ${context.locale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
+							if (lastLikedVideoName != null)
+								embed.addField("<:twitt_starstruck:352216844603752450> ${context.locale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
+
+							embed.addField("⛓ Link", "https://youtube.com/channel/${item.snippet.channelId}", true)
+							// Criar novo embed!
+							mensagem.editMessage(embed.build()).queue()
 						}
+					}
 
-						val thumbnail = snippet["thumbnails"]["high"]["url"].string
-						val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
-
-						var embed = EmbedBuilder()
-						embed.setTitle("<:youtube:314349922885566475> ${item.snippet.title}", "https://youtu.be/${item.id.videoId}")
-						embed.setDescription(item.snippet.description)
-						embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
-
-						embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
-						embed.addField("\uD83D\uDE0D ${context.locale["MUSICINFO_LIKES"]}", likeCount, true)
-						embed.addField("\uD83D\uDE20 ${context.locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
-						embed.addField("\uD83D\uDCAC ${context.locale["MUSICINFO_COMMENTS"]}", commentCount, true)
-						embed.setThumbnail(thumbnail)
-						embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
-
-						embed.setColor(Color(217, 66, 52));
-
-						// Criar novo embed!
-						mensagem.editMessage(embed.build()).complete();
-
-						context.metadata.put("currentItem", item);
-
-						if (context.config.musicConfig.isEnabled) {
-							// Se o sistema de músicas está ativado...
-							mensagem.addReaction("▶").complete(); // Vamos colocar um ícone para tocar!
-						}
-					} else {
-						var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
-						var channelJson = jsonParser.parse(channelResponse).obj
-
-						var embed = EmbedBuilder()
-
-						val entry = channelJson["items"][0]
-
-						val title = entry["snippet"]["title"].string
-						val description = entry["snippet"]["description"].string
-						val channelIcon = entry["snippet"]["thumbnails"]["high"]["url"].string
-						val viewCount = entry["statistics"]["viewCount"].string
-						val subscriberCount = entry["statistics"]["subscriberCount"].string
-						val videoCount = entry["statistics"]["videoCount"].string
-						val uploadsPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("uploads")) {
-							entry["contentDetails"]["relatedPlaylists"]["uploads"].string
-						} else {
-							null
-						}
-						val likesPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("likes")) {
-							entry["contentDetails"]["relatedPlaylists"]["likes"].string
-						} else {
-							null
-						}
-
-						var lastUploadedVideoName: String? = null
-						var lastUploadedVideoId: String? = null
-
-						var lastLikedVideoName: String? = null
-						var lastLikedVideoId: String? = null
-
-						if (uploadsPlaylistId != null) {
-							var uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-							var uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
-
-							lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
-							lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
-						}
-
-						if (likesPlaylistId != null) {
-							var likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-							var likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
-
-							lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
-							lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
-						}
-
-						embed.setTitle(title, "https://youtube.com/channel/${item.snippet.channelId}")
-						embed.setThumbnail(channelIcon)
-						embed.setDescription(description)
-						embed.setColor(Color(217, 66, 52))
-						embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
-						embed.addField("\uD83D\uDC3E ${context.locale["YOUTUBE_Subscribers"]}", subscriberCount, true)
-						embed.addField("\uD83C\uDFA5 ${context.locale["YOUTUBE_Videos"]}", videoCount, true)
-
-						if (lastUploadedVideoName != null)
-							embed.addField("\uD83D\uDCE5 ${context.locale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
-						if (lastLikedVideoName != null)
-							embed.addField("<:twitt_starstruck:352216844603752450> ${context.locale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
-
-						embed.addField("⛓ Link", "https://youtube.com/channel/${item.snippet.channelId}", true)
-						// Criar novo embed!
-						mensagem.editMessage(embed.build()).complete()
+					// Adicionar os reactions
+					for (i in 0 until Math.min(10, items.size)) {
+						mensagem.addReaction(Constants.INDEXES[i]).queue()
 					}
 				}
-
-				// Adicionar os reactions
-				for (i in 0 until Math.min(10, items.size)) {
-					mensagem.addReaction(Constants.INDEXES[i]).complete();
-				}
-				return;
 			} else {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["YOUTUBE_COULDNT_FIND", query])
 			}

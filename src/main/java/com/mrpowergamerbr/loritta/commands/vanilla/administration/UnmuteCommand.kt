@@ -56,7 +56,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				MuteCommand.roleRemovalThreads.remove(member.guild.id + "#" + member.user.id)
 
 				if (mutedRoles != null) {
-					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).complete()
+					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).queue()
 				}
 			}
 

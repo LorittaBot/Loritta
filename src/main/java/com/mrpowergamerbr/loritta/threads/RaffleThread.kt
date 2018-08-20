@@ -96,7 +96,9 @@ class RaffleThread : Thread("Raffle Thread") {
 					embed.setDescription("${locale["RAFFLE_YouEarned", lastWinnerPrize]} \uD83E\uDD11")
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
-					user.openPrivateChannel().complete().sendFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png", message).complete()
+					user.openPrivateChannel().queue {
+						it.sendFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png", message).queue()
+					}
 				} catch (e: Exception) {}
 			}
 			started = System.currentTimeMillis()

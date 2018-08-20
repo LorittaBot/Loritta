@@ -7,8 +7,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import java.util.regex.Pattern
+import java.util.concurrent.TimeUnit
 
 class AFKModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -45,7 +44,7 @@ class AFKModule : MessageReceivedModule {
 
 		if (afkMembers.isNotEmpty()) {
 			if (afkMembers.size == 1) {
-				val message = event.channel.sendMessage(
+				event.channel.sendMessage(
 						LoriReply(
 								message = locale["AFK_UserIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
 									" **" + locale["HACKBAN_REASON"] + "** » `${afkMembers[0].second}`"
@@ -54,12 +53,8 @@ class AFKModule : MessageReceivedModule {
 								},
 								prefix = "\uD83D\uDE34"
 						).build(event.author)
-				).complete()
-
-				loritta.executor.execute {
-					Thread.sleep(5000)
-
-					message.delete().complete()
+				).queue {
+					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}
 			} else {
 				val replies = mutableListOf<LoriReply>()
@@ -77,14 +72,10 @@ class AFKModule : MessageReceivedModule {
 							)
 					)
 				}
-				val message = event.channel.sendMessage(
+				event.channel.sendMessage(
 						replies.map { it.build(event.author) }.joinToString("\n")
-				).complete()
-
-				loritta.executor.execute {
-					Thread.sleep(5000)
-
-					message.delete().complete()
+				).queue {
+					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}
 			}
 		}

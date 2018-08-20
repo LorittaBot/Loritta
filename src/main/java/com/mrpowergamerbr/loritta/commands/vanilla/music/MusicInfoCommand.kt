@@ -62,23 +62,23 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 			}
 
 			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
-				message.addReaction("⏪").complete()
-				message.addReaction("⏯").complete()
-				message.addReaction("⏩").complete()
+				message.addReaction("⏪").queue()
+				message.addReaction("⏯").queue()
+				message.addReaction("⏩").queue()
 			}
 
 			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
-				message.addReaction("⏯").complete()
+				message.addReaction("⏯").queue()
 			}
 
 			if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
-				message.addReaction("⏩").complete()
+				message.addReaction("⏩").queue()
 			}
 
 			if (context.config.musicConfig.voteToSkip)
-				message.addReaction("\uD83E\uDD26").complete()
+				message.addReaction("\uD83E\uDD26").queue()
 
-			message.addReaction("\uD83D\uDD22").complete()
+			message.addReaction("\uD83D\uDD22").queue()
 		}
 	}
 }

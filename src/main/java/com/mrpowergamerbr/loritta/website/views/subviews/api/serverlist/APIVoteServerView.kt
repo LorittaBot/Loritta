@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import net.dv8tion.jda.core.entities.Role
 import org.jooby.MediaType
 import org.jooby.Request
@@ -170,7 +170,7 @@ class APIVoteServerView : NoVarsView() {
 				)
 
 				if (message != null)
-					textChannel.sendMessage(message).complete()
+					textChannel.sendMessage(message).queue()
 			}
 		}
 
@@ -191,9 +191,9 @@ class APIVoteServerView : NoVarsView() {
 
 		if (roles.isNotEmpty()) {
 			if (roles.size == 1) {
-				guild.controller.addSingleRoleToMember(member, roles[0]).reason("Autorole").complete()
+				guild.controller.addSingleRoleToMember(member, roles[0]).reason("Autorole").queue()
 			} else {
-				guild.controller.addRolesToMember(member, roles).reason("Autorole").complete()
+				guild.controller.addRolesToMember(member, roles).reason("Autorole").queue()
 			}
 		}
 

@@ -1,15 +1,11 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.UpdateOneModel
-import com.mongodb.client.model.UpdateOptions
-import com.mongodb.client.model.WriteModel
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import com.mrpowergamerbr.loritta.utils.save
-import org.bson.Document
 
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
@@ -56,7 +52,7 @@ class RemindersThread : Thread("Reminders Thread") {
 							if (!textChannel.canTalk())
 								continue
 
-							textChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").complete();
+							textChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").queue()
 						}
 					}
 				}

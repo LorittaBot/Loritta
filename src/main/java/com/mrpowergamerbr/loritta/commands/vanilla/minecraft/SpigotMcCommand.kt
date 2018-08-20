@@ -81,15 +81,15 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 						}
 
 						// Criar novo embed!
-						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).complete();
+						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).queue();
 
 						// Remover todos os reactions
-						mensagem.clearReactions().complete();
+						mensagem.clearReactions().queue();
 					}
 
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
-						mensagem.addReaction(Constants.INDEXES[i]).complete();
+						mensagem.addReaction(Constants.INDEXES[i]).queue();
 					}
 				}
 			}

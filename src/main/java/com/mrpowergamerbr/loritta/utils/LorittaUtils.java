@@ -40,11 +40,15 @@ public final class LorittaUtils {
 				if (!member.getUser().isBot() && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
 					try {
 						BaseLocale locale = LorittaLauncher.loritta.getLocaleById(serverConf.getLocaleId());
-						member.getUser().openPrivateChannel().complete().sendMessage(locale.get("LORITTA_HeyIDontHavePermission", textChannel.getAsMention(), guild.getName())).complete();
+						member.getUser().openPrivateChannel().queue(channel -> {
+							channel.sendMessage(locale.get("LORITTA_HeyIDontHavePermission", textChannel.getAsMention(), guild.getName())).queue();
+						});
 					} catch (ErrorResponseException e){
-						if (e.getErrorResponse().getCode() == 50007) { // Usuário tem as DMs desativadas
+						// Usuário tem as DMs desativadas
+						if (e.getErrorResponse().getCode() == 50007) {
 							continue;
 						}
+						e.printStackTrace();
 					}
 				}
 			}

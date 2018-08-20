@@ -42,7 +42,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 					)
 			)
 
-			reply.onResponseByAuthor(context, {
+			reply.onResponseByAuthor(context) {
 				loritta.messageInteractionCache.remove(reply.id)
 				reply.delete().queue()
 				val inMillis = it.message.contentDisplay.convertToEpochMillis()
@@ -62,9 +62,9 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
 				val minutes = String.format("%02d", calendar[Calendar.MINUTE])
 				context.sendMessage(context.getAsMention(true) + locale["LEMBRAR_SUCCESS", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes])
-			})
+			}
 
-			reply.onReactionAddByAuthor(context, {
+			reply.onReactionAddByAuthor(context) {
 				loritta.messageInteractionCache.remove(reply.id)
 				reply.delete().queue()
 				context.reply(
@@ -73,9 +73,9 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 								prefix = "\uD83D\uDDD1"
 						)
 				)
-			})
+			}
 
-			reply.addReaction("\uD83D\uDE45").complete()
+			reply.addReaction("\uD83D\uDE45").queue()
 		} else {
 			this.explain(context);
 		}
@@ -96,12 +96,12 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "➡") {
-				message.delete().complete()
+				message.delete().queue()
 				handleReminderList(context, page + 1, locale)
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.name == "⬅") {
-				message.delete().complete()
+				message.delete().queue()
 				handleReminderList(context, page - 1, locale)
 				return@onReactionAddByAuthor
 			}
@@ -136,11 +136,11 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embed.setColor(Color(255, 179, 43))
 
-			message.clearReactions().complete()
-			message.editMessage(embed.build()).complete()
+			message.clearReactions().queue()
+			message.editMessage(embed.build()).queue()
 
 			message.onReactionAddByAuthor(context) {
-				message.delete().complete()
+				message.delete().queue()
 				reminders.remove(reminder)
 				loritta.usersColl.updateOne(Filters.eq("_id", context.userHandle.id), Document("\$set", Document("reminders", reminders)))
 
@@ -153,19 +153,19 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("\uD83D\uDDD1").complete()
+			message.addReaction("\uD83D\uDDD1").queue()
 			return@onReactionAddByAuthor
 		}
 
 		if (page != 0)
-			message.addReaction("⬅").complete()
+			message.addReaction("⬅").queue()
 
 		for ((idx, _) in visReminders.withIndex()) {
-			message.addReaction(Constants.INDEXES[idx]).complete()
+			message.addReaction(Constants.INDEXES[idx]).queue()
 		}
 
 		if (((page + 1) * 9) in 0..reminders.size) {
-			message.addReaction("➡").complete()
+			message.addReaction("➡").queue()
 		}
 	}
 }

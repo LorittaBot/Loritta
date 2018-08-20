@@ -352,7 +352,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				if (spinner.threadId != Thread.currentThread().id) {
 					return@thread
 				}
-				msg.delete().complete()
+				msg.delete().queue()
 
 				context.reply(
 						LoriReply(

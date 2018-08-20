@@ -93,37 +93,37 @@ class NashornMessage(private val message: Message) {
 			return null!!
 		}
 
-		message.editMessage(texto).complete()
+		message.editMessage(texto).queue()
 	}
 
 	@NashornCommand.NashornDocs(arguments = "reação")
 	fun addReaction(texto: String) {
 		val emotes = message.guild.getEmotesByName(texto, false)
 		if (!emotes.isEmpty()) {
-			message.addReaction(emotes[0]).complete()
+			message.addReaction(emotes[0]).queue()
 		} else {
-			message.addReaction(texto).complete()
+			message.addReaction(texto).queue()
 		}
 	}
 
 	@NashornCommand.NashornDocs()
 	fun clearReactions() {
-		message.clearReactions().complete()
+		message.clearReactions().queue()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun delete() {
-		message.delete().complete()
+		message.delete().queue()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun pin() {
-		message.pin().complete()
+		message.pin().queue()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun unpin() {
-		message.unpin().complete()
+		message.unpin().queue()
 	}
 
 	@NashornCommand.NashornDocs()

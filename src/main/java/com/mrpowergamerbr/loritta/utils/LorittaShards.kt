@@ -72,11 +72,11 @@ class LorittaShards {
                 return user
             }
         }
-        return null;
+        return null
     }
 
     fun retrieveUserById(id: String?): User? {
-        return getUserById(id) ?: shards.first().retrieveUserById(id).complete()
+        return getUserById(id) /* ?: shards.first().retrieveUserById(id).complete() */
     }
 
     fun getMutualGuilds(user: User): List<Guild> {

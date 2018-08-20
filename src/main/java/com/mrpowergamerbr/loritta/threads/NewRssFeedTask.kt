@@ -98,7 +98,7 @@ class NewRssFeedTask : Runnable {
 
 										val generatedMessage = MessageUtils.generateMessage(message, null, guild, customTokens) ?: continue
 
-										textChannel.sendMessage(generatedMessage).complete() // Envie a mensagem
+										textChannel.sendMessage(generatedMessage).queue() // Envie a mensagem
 									}
 								}
 							}

@@ -42,8 +42,8 @@ class AminoConverterModule : MessageReceivedModule {
 
 				val extension = if (isGif) "gif" else "png"
 
-				event.textChannel.sendFile(byteArray.inputStream(), "amino.$extension", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).complete()
-				event.message.delete().complete()
+				event.textChannel.sendFile(byteArray.inputStream(), "amino.$extension", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).queue()
+				event.message.delete().queue()
 			}
 		}
 
