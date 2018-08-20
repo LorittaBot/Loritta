@@ -40,6 +40,7 @@ class InviteLinkModule : MessageReceivedModule {
 		val content = message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")
+		                .toLowerCase()
 
 		val validMatchers = mutableListOf<Matcher>()
 		val contentMatcher = getMatcherIfHasInviteLink(content)
