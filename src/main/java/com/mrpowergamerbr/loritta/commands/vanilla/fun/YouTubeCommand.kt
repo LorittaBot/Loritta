@@ -192,11 +192,11 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							mensagem.editMessage(embed.build()).queue()
 						}
 					}
+				}
 
-					// Adicionar os reactions
-					for (i in 0 until Math.min(10, items.size)) {
-						mensagem.addReaction(Constants.INDEXES[i]).queue()
-					}
+				// Adicionar os reactions
+				for (i in 0 until Math.min(10, items.size)) {
+					mensagem.addReaction(Constants.INDEXES[i]).queue()
 				}
 			} else {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["YOUTUBE_COULDNT_FIND", query])
