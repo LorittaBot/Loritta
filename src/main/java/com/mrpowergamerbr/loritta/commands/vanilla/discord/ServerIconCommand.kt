@@ -56,7 +56,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		embed.setImage(guild.iconUrl) // Ícone da Guild
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
-		embed.setImage(guild.iconUrl + (if (!guild.iconUrl.endsWith(".gif")) "?size=2048" else ""))
+		embed.setImage(guild.iconUrl.replace("jpg", "png") + (if (!guild.iconUrl.endsWith(".gif")) "?size=2048" else ""))
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}
