@@ -105,6 +105,8 @@ object MessageUtils {
 					guildSize = source.members.size.toString()
 					mentionOwner = source.owner.asMention
 					owner = source.owner.effectiveName
+					tokens["guild-icon-url"] = source.iconUrl
+					tokens["lsl-url"] = "${Loritta.config.websiteUrl}s/${source.id}"
 				}
 				if (source is TextChannel) {
 					tokens["channel"] = source.name
