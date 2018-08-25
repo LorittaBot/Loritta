@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Game
 
 data class LorittaConfig(
 		val mongoDbIp: String,
+		val lavalinkIp: String,
 		val shards: Int,
 		val clientToken: String,
 		val clientId: String,
@@ -55,6 +56,7 @@ data class LorittaConfig(
 		val fanArts: List<LorittaAvatarFanArt>,
 		val currentlyPlaying: List<LorittaGameStatus>) {
 	constructor() : this("10.0.0.3",
+			"10.0.0.22",
 			20,
 			"Token do Bot",
 			"Client ID do Bot",

@@ -38,7 +38,7 @@ class AudioManager(val loritta: Loritta) {
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
 
-		lavalink.addNode(URI("ws://127.0.0.1:2334"), Loritta.config.mixerWebhookSecret)
+		lavalink.addNode(URI("ws://${Loritta.config.lavalinkIp}:2334"), Loritta.config.mixerWebhookSecret)
 	}
 
 	/**
