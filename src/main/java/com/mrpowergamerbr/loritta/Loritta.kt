@@ -340,7 +340,7 @@ class Loritta(config: LorittaConfig) {
 				.connectionsPerHost(1500)
 				.build()
 
-		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
+		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
 
 		val db = mongo.getDatabase(Loritta.config.databaseName)
 
