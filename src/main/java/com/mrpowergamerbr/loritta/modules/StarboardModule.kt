@@ -1,8 +1,14 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
+import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import java.awt.Color
 
 object StarboardModule {
 	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
@@ -15,7 +21,6 @@ object StarboardModule {
 				return
 
 			// TODO: Refazer o sistema de starboard usando queues()
-			/*
 			val msg = e.textChannel.getMessageById(e.messageId).complete()
 			if (msg != null) {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
@@ -84,7 +89,6 @@ object StarboardModule {
 					}
 				}
 			}
-			*/
 		}
 	}
 }
