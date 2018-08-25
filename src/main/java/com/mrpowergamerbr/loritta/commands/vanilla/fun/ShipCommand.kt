@@ -97,13 +97,6 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 						percentage = random.nextInt(0, 51)
 					}
 				}
-
-				if (user1.id == "377571754698080256" || user2.id == "377571754698080256") {
-					if (user1.id == Loritta.config.ownerId || user2.id == Loritta.config.ownerId) {
-						percentage = 100
-						shipName = "Leethaay"
-					}
-				}
 			}
 
 			var friendzone: String
