@@ -61,7 +61,7 @@ class LorittaLandRoleSync : Runnable {
 
 				if (changed) {
 					logger.info("Atualizando ${usRole.name}...")
-					manager.complete()
+					manager.queue()
 				}
 			}
 
@@ -86,7 +86,7 @@ class LorittaLandRoleSync : Runnable {
 		for (member in membersWithNewRole) {
 			if (!membersWithOriginalRole.any { it.user.id == member.user.id }) {
 				logger.info("Removendo cargo  ${giveRole.id} de ${member.effectiveName} (${member.user.id})...")
-				toGuild.controller.removeSingleRoleFromMember(member, giveRole).complete()
+				toGuild.controller.removeSingleRoleFromMember(member, giveRole).queue()
 			}
 		}
 
@@ -95,7 +95,7 @@ class LorittaLandRoleSync : Runnable {
 				val usMember = toGuild.getMember(member.user) ?: continue
 
 				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
-				toGuild.controller.addSingleRoleToMember(usMember, giveRole).complete()
+				toGuild.controller.addSingleRoleToMember(usMember, giveRole).queue()
 			}
 		}
 	}

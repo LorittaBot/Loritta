@@ -50,13 +50,13 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
 			context.reply(newLocale["LANGUAGE_USING_LOCALE", localeId], "\uD83C\uDFA4")
-			message.delete().complete()
+			message.delete().queue()
 		}
 
-		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").complete()
-		message.addReaction("loritta_quebrada:338679008210190336").complete()
-		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").complete()
-		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").complete()
-		message.addReaction("\uD83C\uDDEA\uD83C\uDDF8").complete()
+		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").queue()
+		message.addReaction("loritta_quebrada:338679008210190336").queue()
+		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").queue()
+		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").queue()
+		message.addReaction("\uD83C\uDDEA\uD83C\uDDF8").queue()
 	}
 }

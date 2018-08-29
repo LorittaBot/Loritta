@@ -118,7 +118,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			val banCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
-				message?.delete()?.complete()
+				message?.delete()?.queue()
 
 				context.reply(
 						LoriReply(
@@ -154,9 +154,9 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").complete()
+			message.addReaction("✅").queue()
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").complete()
+				message.addReaction("\uD83D\uDE4A").queue()
 			}
 		} else {
 			this.explain(context);
@@ -179,7 +179,9 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+						user.openPrivateChannel().queue {
+							it.sendMessage(embed.build()).queue()
+						}
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -204,13 +206,12 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 								)
 						)
 
-						textChannel.sendMessage(message).complete()
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}
 
-			guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
-					.complete()
+			guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}").queue()
 
 			val userData = serverConfig.getUserData(user.id)
 

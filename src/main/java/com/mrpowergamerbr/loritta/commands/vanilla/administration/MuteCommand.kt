@@ -113,7 +113,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
 						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
-						message.delete().complete()
+						message.delete().queue()
 
 						val result = muteUser(context, member, time, locale, user, reason, isSilent)
 
@@ -130,26 +130,26 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 				}
 
-				message.addReaction("✅").complete()
+				message.addReaction("✅").queue()
 				if (hasSilent) {
-					message.addReaction("\uD83D\uDE4A").complete()
+					message.addReaction("\uD83D\uDE4A").queue()
 				}
 			}
 
 			setHour.onResponseByAuthor(context) {
-				setHour.delete().complete()
+				setHour.delete().queue()
 				val time = it.message.contentDisplay.convertToEpochMillis()
 				punishUser(time)
 			}
 
 			setHour.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.name == "\uD83D\uDD04") {
-					setHour.delete().complete()
+					setHour.delete().queue()
 					punishUser(null)
 				}
 			}
 
-			setHour.addReaction("\uD83D\uDD04").complete()
+			setHour.addReaction("\uD83D\uDD04").queue()
 		} else {
 			this.explain(context);
 		}
@@ -177,7 +177,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+						user.openPrivateChannel().complete().sendMessage(embed.build()).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -202,7 +202,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 								)
 						)
 
-						textChannel.sendMessage(message).complete()
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}
@@ -247,12 +247,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					if (permissionOverride == null) { // Se é null...
 						textChannel.createPermissionOverride(mutedRole)
 								.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-								.complete()
+								.queue()
 					} else {
 						if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
 							permissionOverride.manager
 									.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-									.complete()
+									.queue()
 						}
 					}
 				} else {
@@ -283,7 +283,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			try {
 				val addRole = context.guild.controller.addSingleRoleToMember(member, mutedRole)
 
-				addRole.complete()
+				addRole.queue()
 
 				val serverConfig = loritta.getServerConfigForGuild(context.guild.id)
 				val userData = serverConfig.getUserData(member.user.id)
@@ -358,7 +358,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				if (mutedRole != null && member != null) {
 					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
 
-					removeRole.complete()
+					removeRole.queue()
 				}
 				return
 			}
@@ -400,7 +400,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 								val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
 
-								removeRole.complete()
+								removeRole.queue()
 							} catch (e: InterruptedException) {
 								logger.info("Role removal thread de ${member.user.id} na guild ${guild.id} foi interrompida!")
 							}

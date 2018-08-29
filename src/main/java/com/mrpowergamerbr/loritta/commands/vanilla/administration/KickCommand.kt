@@ -126,7 +126,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 			val kickCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				kick(context, locale, member, user, reason, isSilent)
 
-				message?.delete()?.complete()
+				message?.delete()?.queue()
 
 				context.reply(
 						LoriReply(
@@ -162,9 +162,9 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").complete()
+			message.addReaction("✅").queue()
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").complete()
+				message.addReaction("\uD83D\uDE4A").queue()
 			}
 		} else {
 			this.explain(context);
@@ -187,7 +187,9 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-						user.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+						user.openPrivateChannel().queue {
+							it.sendMessage(embed.build()).queue()
+						}
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -212,13 +214,12 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								)
 						)
 
-						textChannel.sendMessage(message).complete()
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}
 
-			context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
-					.complete()
+			context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}").queue()
 
 			val config = loritta.getServerConfigForGuild(context.guild.id)
 

@@ -69,6 +69,6 @@ class NashornRole(internal val role: Role) {
 			"",
 			"wow")
 	fun delete() {
-		role.delete().complete()
+		role.delete().queue()
 	}
 }

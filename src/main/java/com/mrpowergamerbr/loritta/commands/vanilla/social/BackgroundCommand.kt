@@ -40,10 +40,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
-				message.editMessage(getFirstPageEmbed(context)).complete();
-				message.clearReactions().complete()
-				message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
-				message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
+				message.editMessage(getFirstPageEmbed(context)).queue();
+				message.clearReactions().queue()
+				message.addReaction("\uD83D\uDDBC").queue() // Quadro - Para ver seu background atual
+				message.addReaction("\uD83D\uDED2").queue() // Carrinho de supermercado - Para procurar novos backgrounds
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
@@ -54,10 +54,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
-				message.editMessage(builder.build()).complete()
-				message.clearReactions().complete()
-				message.addReaction("\uD83D\uDE4B").complete() // Para voltar para a "página inicial"
-				message.addReaction("\uD83D\uDED2").complete() // Para ir para os "templates"
+				message.editMessage(builder.build()).queue()
+				message.clearReactions().queue()
+				message.addReaction("\uD83D\uDE4B").queue() // Para voltar para a "página inicial"
+				message.addReaction("\uD83D\uDED2").queue() // Para ir para os "templates"
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.name == "\uD83D\uDED2" || it.reactionEmote.name == "⬅" || it.reactionEmote.name == "➡" || it.reactionEmote.name == "✅") { // Se é o carrinho de super mercado...
@@ -86,7 +86,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				var currentUrl = templates[index];
 
 				if (it.reactionEmote.name == "✅") {
-					message.delete().complete()
+					message.delete().queue()
 					setAsBackground(currentUrl, context)
 					return@onReactionAddByAuthor
 				}
@@ -97,20 +97,20 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
-				message.editMessage(builder.build()).complete();
-				message.clearReactions().complete()
-				message.addReaction("✅").complete();
-				message.addReaction("\uD83D\uDE4B").complete(); // Para voltar para a "página inicial"
+				message.editMessage(builder.build()).queue();
+				message.clearReactions().queue()
+				message.addReaction("✅").queue();
+				message.addReaction("\uD83D\uDE4B").queue(); // Para voltar para a "página inicial"
 				if (index > 0) {
-					message.addReaction("⬅").complete();
+					message.addReaction("⬅").queue();
 				}
 				if (templates.size > index + 1) {
-					message.addReaction("➡").complete();
+					message.addReaction("➡").queue();
 				}
 			}
 		}
-		message.addReaction("\uD83D\uDDBC").complete() // Quadro - Para ver seu background atual
-		message.addReaction("\uD83D\uDED2").complete() // Carrinho de supermercado - Para procurar novos backgrounds
+		message.addReaction("\uD83D\uDDBC").queue() // Quadro - Para ver seu background atual
+		message.addReaction("\uD83D\uDED2").queue() // Carrinho de supermercado - Para procurar novos backgrounds
 	}
 
 	fun setAsBackground(link0: String, context: CommandContext) {
@@ -126,12 +126,12 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		val status = LorittaUtilsKotlin.getImageStatus(link)
 
 		if (status == NSFWResponse.ERROR) {
-			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BACKGROUND_INVALID_IMAGE"]).complete()
+			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BACKGROUND_INVALID_IMAGE"]).queue()
 			return
 		}
 
 		if (status == NSFWResponse.NSFW) {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale["NSFW_IMAGE", context.asMention]).complete()
+			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale["NSFW_IMAGE", context.asMention]).queue()
 			return
 		}
 

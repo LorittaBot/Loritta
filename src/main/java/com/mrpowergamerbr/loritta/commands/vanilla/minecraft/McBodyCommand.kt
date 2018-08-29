@@ -45,13 +45,6 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 			}
 
 			val bufferedImage = LorittaUtils.downloadImage("https://crafatar.com/renders/body/$uuid?size=128&overlay")
-			val builder = EmbedBuilder()
-
-			builder.setColor(Color.DARK_GRAY)
-			builder.setImage("attachment://avatar.png")
-
-			builder.setTitle("<:minecraft_logo:412575161041289217> ${context.locale.get("MCBODY_BODY_DE", nickname)}")
-
 			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()

@@ -13,7 +13,6 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.entities.PrivateChannel
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.awt.Color
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
@@ -22,11 +21,9 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		try {
-			val privateChannel = context.userHandle.openPrivateChannel().complete()
-
+		context.userHandle.openPrivateChannel().queue({ privateChannel ->
 			if (!context.isPrivateChannel) {
-				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").complete()
+				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").queue()
 			}
 
 			val description = context.locale[
@@ -54,22 +51,16 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
 					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
 
-			privateChannel.sendMessage(builder.build()).complete()
-			privateChannel.sendMessage(pleaseDonate.build()).complete()
+			privateChannel.sendMessage(builder.build()).queue()
+			privateChannel.sendMessage(pleaseDonate.build()).queue()
 
 			// TODO: Remover verificação após ter a lista traduzida
 			if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
-				privateChannel.sendMessage(discordServerList.build()).complete()
+				privateChannel.sendMessage(discordServerList.build()).queue()
 			}
 
 			sendInfoBox(context, privateChannel)
-		} catch (e: ErrorResponseException) {
-			if (e.errorResponse.code == 50007) { // Usuário tem as DMs desativadas
-				context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).complete()
-				return
-			}
-			throw e
-		}
+		}, { context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).queue() })
 	}
 
 	fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
@@ -198,25 +189,26 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			setColor(Color(0, 193, 223))
 		}
 
-		val message = privateChannel.sendMessage(embed.build()).complete()
-		if (!context.metadata.containsKey("guildId") && !context.isPrivateChannel) {
-			context.metadata["guildId"] = context.guild.id
-		}
+		privateChannel.sendMessage(embed.build()).queue { message ->
+			if (!context.metadata.containsKey("guildId") && !context.isPrivateChannel) {
+				context.metadata["guildId"] = context.guild.id
+			}
 
-		message.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, message) })
+			message.onReactionAddByAuthor(context) { getCommandReactionCallback(context, it, message) }
 
-		for (category in categories) {
-			// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
-			val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
-			message.addReaction(reactionEmote).complete()
+			for (category in categories) {
+				// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
+				val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
+				message.addReaction(reactionEmote).queue()
+			}
+			message.addReaction("\uD83D\uDD22").queue() // all categories
 		}
-		message.addReaction("\uD83D\uDD22").complete() // all categories
 	}
 
 	fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
 		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
 
-		msg.delete().complete()
+		msg.delete().queue()
 
 		if (context.metadata["deleteMessagesOnClick"] != null) {
 			val deleteMessagesOnClick = context.metadata["deleteMessagesOnClick"]!! as List<String>
@@ -276,7 +268,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick
 			if (lastMessage != null) {
 				lastMessage.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, lastMessage) })
-				lastMessage.addReaction("\uD83D\uDD19").complete()
+				lastMessage.addReaction("\uD83D\uDD19").queue()
 			}
 		}
 	}

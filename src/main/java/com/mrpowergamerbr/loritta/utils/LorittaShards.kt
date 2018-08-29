@@ -72,7 +72,7 @@ class LorittaShards {
                 return user
             }
         }
-        return null;
+        return null
     }
 
     fun retrieveUserById(id: String?): User? {

@@ -30,8 +30,8 @@ class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCateg
 			message.onReactionAddByAuthor(context) {
 				LorittaUtilsKotlin.handleMusicReaction(context, it, message)
 			}
-			message.addReaction("\uD83E\uDD26").complete()
-			message.addReaction("\uD83D\uDCBF").complete()
+			message.addReaction("\uD83E\uDD26").queue()
+			message.addReaction("\uD83D\uDCBF").queue()
 		}
 	}
 }

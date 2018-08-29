@@ -80,16 +80,16 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		var allowForward = false
 		var allowBack = false
 		if (page != 0) {
-			message.addReaction("⏪").complete()
+			message.addReaction("⏪").queue()
 			allowBack = true
 		}
 		if (users.size > 10 * (page + 1)) {
-			message.addReaction("⏩").complete()
+			message.addReaction("⏩").queue()
 			allowForward = true
 		}
 
 		message.onReactionAddByAuthor(context) {
-			message.delete().complete()
+			message.delete().queue()
 
 			if (allowForward && it.reactionEmote.name == "⏩") {
 				sendDiscriminatorEmbed(context, locale, user, discriminator, users, page + 1)

@@ -169,7 +169,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 										listOf(ev.member, ev.textChannel),
 										ev.guild
 								)
-								ev.textChannel.sendMessage(generatedMessage).complete()
+								ev.textChannel.sendMessage(generatedMessage).queue()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -187,10 +187,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					return true
 				}
 
-				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
-					ev.channel.sendTyping().complete()
-				}
-
 				val profile = lorittaUser.profile
 				var cooldown = this.cooldown
 				val isDonator = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
@@ -200,7 +196,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
-					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").complete()
+					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").queue()
 					return true
 				}
 
@@ -208,6 +204,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				LorittaUtilsKotlin.executedCommands++
 				executedCount++
+
+				if (hasCommandFeedback() && !conf.commandOutputInPrivate) {
+					ev.channel.sendTyping().queue()
+				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
 				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {
@@ -222,7 +222,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
 						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}"] + "`" })
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").complete()
+						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").queue()
 						return true
 					}
 				}
@@ -238,7 +238,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
 							message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.websiteUrl]}"
 						}
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").complete()
+						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
 						return true
 					}
 				}
@@ -326,10 +326,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val cmdOpti = context.config.getCommandOptionsFor(this)
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
-						ev.message.textChannel.getMessageById(ev.messageId).queue({
+						ev.message.textChannel.getMessageById(ev.messageId).queue {
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-							it.delete().complete()
-						})
+							it.delete().queue()
+						}
 					}
 				}
 
@@ -350,7 +350,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
 
 				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk())
-					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]).complete()
+					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]).queue()
 				return true
 			}
 		}
@@ -427,7 +427,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {
-				ev.author.openPrivateChannel().complete().sendMessage(embed.build()).complete()
+				ev.author.openPrivateChannel().queue {
+					it.sendMessage(embed.build()).queue()
+				}
 			} else {
 				context.sendMessage(context.getAsMention(true), embed.build())
 			}

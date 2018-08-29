@@ -20,6 +20,7 @@ object StarboardModule {
 			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY))
 				return
 
+			// TODO: Refazer o sistema de starboard usando queues()
 			val msg = e.textChannel.getMessageById(e.messageId).complete()
 			if (msg != null) {
 				val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
@@ -73,12 +74,12 @@ object StarboardModule {
 
 					if (starboardMessage != null) {
 						if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que 0
-							starboardMessage.delete().complete()
+							starboardMessage.delete().queue()
 							serverConfig.starboardEmbedMessages.removeIf { it.embedId == starboardMessage!!.id }
 							loritta save serverConfig
 							return
 						}
-						starboardMessage.editMessage(starCountMessage.build()).complete()
+						starboardMessage.editMessage(starCountMessage.build()).queue()
 					} else if (count >= starboardConfig.requiredStars) {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}

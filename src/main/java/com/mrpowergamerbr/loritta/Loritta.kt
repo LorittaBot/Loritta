@@ -167,7 +167,7 @@ class Loritta(config: LorittaConfig) {
 		builder = JDABuilder(AccountType.BOT)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(64)
+				.setCorePoolSize(16)
 				.setBulkDeleteSplittingEnabled(false)
 				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListener(discordListener)
@@ -340,7 +340,7 @@ class Loritta(config: LorittaConfig) {
 				.connectionsPerHost(1500)
 				.build()
 
-		mongo = MongoClient("127.0.0.1:27017", options) // Hora de iniciar o MongoClient
+		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
 
 		val db = mongo.getDatabase(Loritta.config.databaseName)
 

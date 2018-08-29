@@ -53,7 +53,9 @@ class DailyTaxTask : Runnable {
 					val user = lorittaShards.getUserById(document.userId) ?: continue
 
 					try {
-						user.openPrivateChannel().complete().sendMessage("Atenção! Você precisa ter no mínimo 100 Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo 100 Sonhos todos os dias para conseguir manter ele!").complete()
+						user.openPrivateChannel().queue {
+							it.sendMessage("Atenção! Você precisa ter no mínimo 100 Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo 100 Sonhos todos os dias para conseguir manter ele!").queue()
+						}
 					} catch (e: Exception) {}
 				}
 				return
@@ -87,13 +89,17 @@ class DailyTaxTask : Runnable {
 
 				if (user != null) {
 					try {
-						user.openPrivateChannel().complete().sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").complete()
+						user.openPrivateChannel().queue {
+							it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+						}
 					} catch (e: Exception) {}
 				}
 
 				if (marriedWith != null) {
 					try {
-						marriedWith.openPrivateChannel().complete().sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").complete()
+						marriedWith.openPrivateChannel().queue {
+							it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+						}
 					} catch (e: Exception) {}
 				}
 

@@ -73,7 +73,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 			return null!!
 		}
 
-		guild.controller.ban(user.user, delDays, reason).complete()
+		guild.controller.ban(user.user, delDays, reason).queue()
 	}
 
 	@NashornCommand.NashornDocs()
@@ -83,11 +83,11 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 			return null!!
 		}
 
-		guild.controller.kick(member.member, reason).complete()
+		guild.controller.kick(member.member, reason).queue()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun unban(id: String) {
-		guild.controller.unban(id).complete()
+		guild.controller.unban(id).queue()
 	}
 }

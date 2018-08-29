@@ -183,7 +183,7 @@ class AminoRepostTask : Runnable {
 
 										setFooter(communityId, null)
 									}
-									textChannel.sendMessage(embed.build()).complete()
+									textChannel.sendMessage(embed.build()).queue()
 								}
 							}
 						} catch (e: Exception) {

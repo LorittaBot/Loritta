@@ -92,7 +92,7 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
-						message.delete().complete()
+						message.delete().queue()
 
 						val userProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
 
@@ -156,7 +156,7 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 					}
 				}
 
-				message.addReaction("✅").complete()
+				message.addReaction("✅").queue()
 			}
 		} else {
 			context.reply(

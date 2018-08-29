@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
@@ -17,6 +18,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import java.util.*
 
 class CommandManager {
@@ -154,7 +156,8 @@ class CommandManager {
 		commandMap.add(ChannelInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
-		commandMap.add(UserInvitesCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(UserInvitesCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
@@ -194,7 +197,8 @@ class CommandManager {
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
-		commandMap.add(TempRoleCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
 		commandMap.add(WarnCommand())
@@ -235,7 +239,8 @@ class CommandManager {
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
 		commandMap.add(SonhosTopCommand())
-		commandMap.add(ExchangeCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)

@@ -65,13 +65,13 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "loritta") {
-				message.delete().complete()
+				message.delete().queue()
 
 				showExtendedInfo(context, locale)
 			}
 		}
 
-		message.addReaction("loritta:331179879582269451").complete()
+		message.addReaction("loritta:331179879582269451").queue()
 	}
 
 	fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {

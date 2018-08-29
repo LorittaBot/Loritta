@@ -21,7 +21,7 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 
 	@NashornCommand.NashornDocs()
 	fun setTopic(name: String) {
-		textChannel.manager.setTopic(name).complete()
+		textChannel.manager.setTopic(name).queue()
 	}
 
 	@NashornCommand.NashornDocs()

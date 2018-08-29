@@ -40,7 +40,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 				}
 				if (msg != null) {
 					if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
-						context.message.delete().complete() // ok, vamos deletar a msg original
+						context.message.delete().queue() // ok, vamos deletar a msg original
 					}
 
 					val args = context.rawArgs.toMutableList()

@@ -105,7 +105,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		message.onReactionAddByAuthor(context) {
 			val apiEndpoint = getApiEndpoint(context.config.localeId)
 
-			it.reaction.removeReaction(context.userHandle).complete()
+			it.reaction.removeReaction(context.userHandle).queue()
 			if (context.metadata.contains("channel")) {
 				val channel = context.metadata["channel"] as Long
 				val session = context.metadata["session"] as Long
@@ -146,8 +146,8 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					context.metadata.remove("session")
 					context.metadata.remove("step")
 
-					message.clearReactions().complete()
-					message.editMessage(builder.build()).complete()
+					message.clearReactions().queue()
+					message.editMessage(builder.build()).queue()
 					return@onReactionAddByAuthor
 				}
 
@@ -163,8 +163,8 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					context.metadata.remove("session")
 					context.metadata.remove("step")
 
-					message.clearReactions().complete()
-					message.editMessage(builder.build()).complete()
+					message.clearReactions().queue()
+					message.editMessage(builder.build()).queue()
 					return@onReactionAddByAuthor
 				}
 
@@ -205,17 +205,17 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						context.metadata["signature"] = signature
 						context.metadata["step"] = step
 
-						message.editMessage(builder.build()).complete()
+						message.editMessage(builder.build()).queue()
 
 						if (message.reactions.filter { it.reactionEmote.name == "⏪" }.count() == 0) {
 							if (step > 0) {
-								message.addReaction("⏪").complete()
+								message.addReaction("⏪").queue()
 							}
 						} else {
 							if (step == 0) {
 								message.reactions.forEach {
 									if (it.reactionEmote.name == "⏪") {
-										it.removeReaction(context.userHandle).complete()
+										it.removeReaction(context.userHandle).queue()
 									}
 								}
 							}
@@ -243,8 +243,8 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						context.metadata.remove("session")
 						context.metadata.remove("step")
 
-						message.clearReactions().complete()
-						message.editMessage(builder.build()).complete()
+						message.clearReactions().queue()
+						message.editMessage(builder.build()).queue()
 					}
 				} catch (e: Exception) {
 					logger.error(response, e)
@@ -253,7 +253,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		}
 
 		for (emote in Constants.INDEXES.subList(0, 5)) {
-			message.addReaction(emote).complete()
+			message.addReaction(emote).queue()
 		}
 	}
 }

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.config
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.rometools.rome.io.ParsingFeedException
 import com.rometools.rome.io.SyndFeedInput
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.launch
@@ -97,7 +98,7 @@ class NewRssFeedTask : Runnable {
 
 										val generatedMessage = MessageUtils.generateMessage(message, null, guild, customTokens) ?: continue
 
-										textChannel.sendMessage(generatedMessage).complete() // Envie a mensagem
+										textChannel.sendMessage(generatedMessage).queue() // Envie a mensagem
 									}
 								}
 							}
@@ -106,6 +107,9 @@ class NewRssFeedTask : Runnable {
 
 					storedLastEntries[rssFeedLink] = entries.map { it.link }.toMutableSet()
 				} catch (e: Exception) {
+					if (e is ParsingFeedException) // Ignorar erros de parse (de pessoas que colocam links que não são RSS feeds)
+						return@launch
+
 					logger.error(rssFeedLink, e)
 				}
 			}

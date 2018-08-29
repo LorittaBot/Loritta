@@ -47,16 +47,16 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 		var allowForward = false
 		var allowBack = false
 		if (item != 0) {
-			message.addReaction("⏪").complete()
+			message.addReaction("⏪").queue()
 			allowBack = true
 		}
 		if (list.size > item + 1) {
-			message.addReaction("⏩").complete()
+			message.addReaction("⏩").queue()
 			allowForward = true
 		}
 
 		message.onReactionAddByAuthor(context) {
-			message.delete().complete()
+			message.delete().queue()
 
 			if (allowForward && it.reactionEmote.name == "⏩") {
 				sendFanArtEmbed(context, locale, list, item + 1)
