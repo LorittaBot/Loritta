@@ -51,7 +51,6 @@ class ServerConfig @BsonCreator constructor(
 	var inviteBlockerConfig = InviteBlockerConfig()
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
-	var serverListConfig = ServerListConfig()
 	var economyConfig = EconomyConfig()
 	var miscellaneousConfig = MiscellaneousConfig()
 	var slowModeChannels = HashMap<String, Int>() // Canais com SlowMode ativado

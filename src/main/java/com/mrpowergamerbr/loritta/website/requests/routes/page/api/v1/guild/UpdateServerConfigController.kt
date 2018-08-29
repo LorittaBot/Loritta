@@ -130,7 +130,6 @@ class UpdateServerConfigController {
 		val config = payload["config"].obj
 
 		val payloadHandlers = mapOf(
-				"server_list" to ServerListPayload::class.java,
 				"moderation" to ModerationPayload::class.java,
 				"autorole" to AutorolePayload::class.java,
 				"welcomer" to WelcomerPayload::class.java,

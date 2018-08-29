@@ -44,20 +44,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					.setTitle("<:lori_triste:370344565967814659> ${locale["AJUDA_DonationTitle"]}")
 					.setDescription(locale["AJUDA_PleaseDonate"])
 
-			val discordServerList = EmbedBuilder()
-					.setColor(Color(0, 121, 183))
-					.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
-					.setAuthor("Loritta")
-					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
-					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
-
 			privateChannel.sendMessage(builder.build()).queue()
 			privateChannel.sendMessage(pleaseDonate.build()).queue()
-
-			// TODO: Remover verificação após ter a lista traduzida
-			if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
-				privateChannel.sendMessage(discordServerList.build()).queue()
-			}
 
 			sendInfoBox(context, privateChannel)
 		}, { context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).queue() })
