@@ -45,7 +45,6 @@ class ServerConfig @BsonCreator constructor(
 	var aminoConfig = AminoConfig()
 	var youTubeConfig = YouTubeConfig()
 	var livestreamConfig = LivestreamConfig()
-	var starboardConfig = StarboardConfig()
 	var rssFeedConfig = RssFeedConfig()
 	var eventLogConfig = EventLogConfig()
 	var autoroleConfig = AutoroleConfig()

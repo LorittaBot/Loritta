@@ -41,7 +41,6 @@ class ConfigureServerView : ConfigureView() {
 					"autorole" -> serverConfig.autoroleConfig
 					"permissions" -> serverConfig.permissionsConfig
 					"welcomer" -> serverConfig.joinLeaveConfig
-					"starboard" -> serverConfig.starboardConfig
 					"music" -> serverConfig.musicConfig
 					"amino" -> serverConfig.aminoConfig
 					"youtube" -> serverConfig.youTubeConfig

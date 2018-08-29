@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
-import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -81,22 +80,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
 						}
 					}
-				}
-			}
-		}
-
-		loritta.executor.execute {
-			if (e.isFromType(ChannelType.TEXT)) {
-				try {
-					val conf = loritta.getServerConfigForGuild(e.guild.id)
-
-					// Sistema de Starboard
-					if (conf.starboardConfig.isEnabled) {
-						StarboardModule.handleStarboardReaction(e, conf)
-					}
-				} catch (exception: Exception) {
-					logger.error("[${e.guild.name}] Starboard ${e.member.user.name}", exception)
-					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
 				}
 			}
 		}
