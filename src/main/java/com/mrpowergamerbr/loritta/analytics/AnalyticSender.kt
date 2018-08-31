@@ -7,5 +7,6 @@ class AnalyticSender : Runnable {
 	override fun run() {
 		LorittaAnalytics.send(AnalyticProcessorService.DISCORD_BOTS)
 		LorittaAnalytics.send(AnalyticProcessorService.DISCORD_BOT_LIST)
+		LorittaAnalytics.send(AnalyticProcessorService.VESPERTINE_BOT_LIST)
 	}
 }

@@ -6,4 +6,5 @@ package com.mrpowergamerbr.loritta.analytics
 enum class AnalyticProcessorService(val endpoint: String) {
 	DISCORD_BOTS("https://bots.discord.pw/api/bots/%s/stats"),
 	DISCORD_BOT_LIST("https://discordbots.org/api/bots/%s/stats"),
+	VESPERTINE_BOT_LIST("https://bots.perfectdreams.net/api/v1/bot/%s/stats")
 }

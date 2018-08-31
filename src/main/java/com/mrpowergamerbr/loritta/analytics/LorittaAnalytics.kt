@@ -4,8 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOTS
-import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOT_LIST
+import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.*
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 
@@ -25,6 +24,7 @@ object LorittaAnalytics {
 		when (service) {
 			DISCORD_BOTS -> request.authorization(Loritta.config.discordBotsKey)
 			DISCORD_BOT_LIST -> request.authorization(Loritta.config.discordBotsOrgKey)
+			VESPERTINE_BOT_LIST -> request.authorization(Loritta.config.vespertineBotListKey)
 		}
 
 		request.acceptJson().contentType("application/json")
@@ -48,6 +48,11 @@ object LorittaAnalytics {
 			DISCORD_BOTS, DISCORD_BOT_LIST -> {
 				return jsonObject(
 						"server_count" to lorittaShards.getGuildCount()
+				)
+			}
+			VESPERTINE_BOT_LIST -> {
+				return jsonObject(
+						"guildCount" to lorittaShards.getGuilds()
 				)
 			}
 			else -> throw UnsupportedAnalyticServiceException()
