@@ -197,7 +197,7 @@
         <dependency>
             <groupId>com.github.FredBoat</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>0807d5b2d3</version>
+            <version>484c5eda96</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
