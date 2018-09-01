@@ -14,6 +14,7 @@ class DailyTaxTask : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		const val MARRIAGE_DAILY_TAX = 100
+		var alreadySentDMs = false
 	}
 
 	override fun run() {
@@ -58,12 +59,21 @@ class DailyTaxTask : Runnable {
 						}
 					} catch (e: Exception) {}
 				}
+				alreadySentDMs = true
 				return
 			}
+			alreadySentDMs = false
 
 			logger.info("Executando a taxa diária!")
 
 			// MARRY
+			val documents = loritta.usersColl.find(
+					Filters.and(
+							Filters.exists("marriedWith"),
+							Filters.lt("dreams", MARRIAGE_DAILY_TAX)
+					)
+			).toMutableList()
+
 			loritta.usersColl.updateMany(
 					Filters.and(
 							Filters.exists("marriedWith"),
@@ -72,16 +82,8 @@ class DailyTaxTask : Runnable {
 					Updates.inc("dreams", -MARRIAGE_DAILY_TAX)
 			)
 
-			val documents = loritta.usersColl.find(
-					Filters.and(
-							Filters.exists("marriedWith"),
-							Filters.lt("dreams", MARRIAGE_DAILY_TAX)
-					)
-			).toMutableList()
-
 			// Okay, tudo certo, vamos lá!
-			val bulk = mutableListOf<WriteModel<Document>>(
-			)
+			val bulk = mutableListOf<WriteModel<Document>>()
 
 			for (document in documents) {
 				val marriedWith = lorittaShards.getUserById(document.marriedWith)
@@ -117,9 +119,11 @@ class DailyTaxTask : Runnable {
 				)
 			}
 
-			loritta.mongo.getDatabase(Loritta.config.databaseName).getCollection("users").bulkWrite(
-					bulk
-			)
+			if (bulk.isNotEmpty()) {
+				loritta.mongo.getDatabase(Loritta.config.databaseName).getCollection("users").bulkWrite(
+						bulk
+				)
+			}
 
 			lastDailyTax.writeText(
 					System.currentTimeMillis().toString()
