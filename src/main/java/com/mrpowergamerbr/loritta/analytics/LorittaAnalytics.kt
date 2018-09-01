@@ -52,7 +52,7 @@ object LorittaAnalytics {
 			}
 			VESPERTINE_BOT_LIST -> {
 				return jsonObject(
-						"guildCount" to lorittaShards.getGuilds()
+						"guildCount" to lorittaShards.getGuildCount()
 				)
 			}
 			else -> throw UnsupportedAnalyticServiceException()
