@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
 import net.dv8tion.jda.core.entities.Guild
@@ -16,7 +17,7 @@ abstract class ConfigureView : ProtectedView() {
 	}
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val userIdentification = discordAuth.getUserIdentification()
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
 		val split = path.split("/");
 		if (4 > split.size) {
 			return "Servidor não encontrado!"

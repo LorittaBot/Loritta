@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import org.jooby.Request
 import org.jooby.Response
 
@@ -16,7 +17,8 @@ class DashboardView : ProtectedView() {
 	}
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val lorittaProfile = loritta.getLorittaProfileForUser(discordAuth.getUserIdentification().id)
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val lorittaProfile = loritta.getLorittaProfileForUser(userIdentification.id)
 
 		variables["lorittaProfile"] = lorittaProfile
 

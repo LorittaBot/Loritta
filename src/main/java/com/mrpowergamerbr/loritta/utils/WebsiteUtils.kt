@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -218,6 +219,8 @@ object WebsiteUtils {
 				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 				variables["discordAuth"] = discordAuth
 				variables["userIdentification"] = userIdentification
+				req.set("discordAuth", discordAuth)
+				req.set("userIdentification", userIdentification)
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}
@@ -277,16 +280,7 @@ object WebsiteUtils {
 	}
 
 	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
-		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
-		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
-			try {
-				discordAuth.isReady(true)
-				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		}
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
 
 		if (userIdentification == null) { // Unauthorized (Discord)
 			res.status(Status.UNAUTHORIZED)
@@ -338,17 +332,7 @@ object WebsiteUtils {
 
 	fun checkDiscordGuildRestAuth(req: Request, res: Response): Boolean {
 		res.type(MediaType.json)
-
-		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
-		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
-			try {
-				discordAuth.isReady(true)
-				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		}
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
 
 		if (userIdentification == null) { // Unauthorized (Discord)
 			res.status(Status.UNAUTHORIZED)

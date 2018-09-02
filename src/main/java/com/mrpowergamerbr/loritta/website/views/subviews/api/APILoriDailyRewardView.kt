@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
@@ -30,16 +31,7 @@ class APILoriDailyRewardView : NoVarsView() {
 	override fun render(req: Request, res: Response, path: String): String {
 		res.type(MediaType.json)
 		val recaptcha = req.param("recaptcha").value()
-		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
-		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
-			try {
-				discordAuth.isReady(true)
-				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		}
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
 
 		if (userIdentification == null) {
 			val payload = JsonObject()
