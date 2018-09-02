@@ -1,113 +1,100 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Game
 
-data class LorittaConfig(
+class LorittaConfig(
+		@JsonProperty("mongodb-ip")
 		val mongoDbIp: String,
+		@JsonProperty("lavalink-ip")
 		val lavalinkIp: String,
+		@JsonProperty("shards")
 		val shards: Int,
+		@JsonProperty("client-token")
 		val clientToken: String,
+		@JsonProperty("client-id")
 		val clientId: String,
+		@JsonProperty("client-secret")
 		val clientSecret: String,
+		@JsonProperty("user-status")
 		val userStatus: OnlineStatus,
+		@JsonProperty("database-name")
 		val databaseName: String,
+		@JsonProperty("environment")
 		val environment: EnvironmentType,
+		@JsonProperty("youtube-keys")
 		val youtubeKeys: List<String>,
+		@JsonProperty("website-api-keys")
 		val websiteApiKeys: List<AuthenticationKey>,
+		@JsonProperty("owner-id")
 		val ownerId: String,
+		@JsonProperty("website-url")
 		val websiteUrl: String,
+		@JsonProperty("website-port")
 		val websitePort: Int,
+		@JsonProperty("socket-port")
 		val socketPort: Int,
+		@JsonProperty("loritta-folder")
 		val lorittaFolder: String,
+		@JsonProperty("assets-folder")
 		val assetsFolder: String,
+		@JsonProperty("temp-folder")
 		val tempFolder: String,
+		@JsonProperty("locales-folder")
 		val localesFolder: String,
+		@JsonProperty("frontend-folder")
 		val frontendFolder: String,
+		@JsonProperty("authorization-url")
 		val authorizationUrl: String,
+		@JsonProperty("add-bot-url")
 		val addBotUrl: String,
+		@JsonProperty("mercadopago-client-id")
 		val mercadoPagoClientId: String,
+		@JsonProperty("mercadopago-client-token")
 		val mercadoPagoClientToken: String,
+		@JsonProperty("mashape-key")
 		val mashapeKey: String,
+		@JsonProperty("discord-bots-key")
 		val discordBotsKey: String,
+		@JsonProperty("discord-bot-list-key")
 		val discordBotsOrgKey: String,
+		@JsonProperty("vespertine-bot-list-key")
 		val vespertineBotListKey: String,
+		@JsonProperty("open-weather-map-key")
 		val openWeatherMapKey: String,
+		@JsonProperty("amino-email")
 		val aminoEmail: String,
+		@JsonProperty("amino-password")
 		val aminoPassword: String,
+		@JsonProperty("amino-device-id")
 		val aminoDeviceId: String,
+		@JsonProperty("facebook-key")
 		val facebookToken: String,
+		@JsonProperty("google-vision-key")
 		val googleVisionKey: String,
-		val simsimiKey: String,
-		val myAnimeListAuth: String,
-		val patreonClientId: String,
-		val patreonClientSecret: String,
-		val patreonAccessToken: String,
-		val patreonRefreshToken: String,
+		@JsonProperty("twitch-client-id")
 		val twitchClientId: String,
+		@JsonProperty("mixer-client-id")
 		val mixerClientId: String,
+		@JsonProperty("mixer-client-secret")
 		val mixerClientSecret: String,
+		@JsonProperty("mixer-webhook-secret")
 		val mixerWebhookSecret: String,
-		val apoiaSeCookies: String,
+		@JsonProperty("recaptcha-token")
 		val recaptchaToken: String,
+		@JsonProperty("pomf-space-token")
 		val pomfSpaceToken: String,
+		@JsonProperty("vagalume-key")
 		val vagalumeKey: String,
+		@JsonProperty("ghost-ids")
 		val ghostIds: List<String>,
+		@JsonProperty("fan-art-extravaganza")
 		val fanArtExtravaganza: Boolean,
+		@JsonProperty("fan-arts")
 		val fanArts: List<LorittaAvatarFanArt>,
+		@JsonProperty("currently-playing")
 		val currentlyPlaying: List<LorittaGameStatus>) {
-	constructor() : this("10.0.0.3",
-			"10.0.0.22",
-			20,
-			"Token do Bot",
-			"Client ID do Bot",
-			"Client Secret do Bot",
-			OnlineStatus.ONLINE,
-			"Nome da Database no MongoDB",
-			EnvironmentType.PRODUCTION,
-			listOf(),
-			listOf(),
-			"ID do dono do bot, usado para alguns comandos \"especiais\"",
-			"Website do Bot",
-			4568,
-			10699,
-			"Pasta da Loritta (normalmente a pasta \"root\", ou seja, a mesma pasta aonde fica a JAR)",
-			"Pasta de assets da Loritta (imagens, fontes, etc)",
-			"Pasta temporária da Loritta",
-			"Pasta de locales (traduções) da Loritta",
-			"Pasta da frontend do Bot",
-			"URL para autorização no painel, usado para pedir o OAuth2 code do usuário",
-			"URL para adicionar a Loritta",
-			"Client ID do MercadoPago",
-			"Client Token do MercadoPago",
-			"Key do Mashape",
-			"Key do Discord Bots",
-			"Key do Discord Bots (discordbots.org)",
-			"Key do Vespertine's Bot List",
-			"Key do Open Weather Map",
-			"Email de uma conta do Amino",
-			"Senha de uma conta do Amino",
-			"Device ID de uma conta do Amino",
-			"Token da API do Facebook",
-			"Key do Google Vision",
-			"Key do Simsimi",
-			"Autenticação do MyAnimeList",
-			"Client ID do Patreon",
-			"Client Secret do Patreon",
-			"Access Token do Patreon",
-			"Refresh Token do Patreon",
-			"Client ID do Twitch",
-			"Client ID do Mixer",
-			"Client Secret do Mixer",
-			"Webhook Secret do Mixer, utilizado para codificar Webhooks",
-			"Cookie do apoia.se",
-			"Token do No Captcha reCAPTCHA",
-			"Token do pomf.space",
-			"Key do Vagalume",
-			listOf<String>(),
-			true,
-			listOf<LorittaAvatarFanArt>(),
-			listOf(LorittaGameStatus("Shantae: Half-Genie Hero", Game.GameType.DEFAULT.name)))
 
 	class LorittaGameStatus(val name: String, val type: String)
 

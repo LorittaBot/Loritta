@@ -240,7 +240,6 @@ object GlobalHandler {
 		views.add(TermsOfServiceView())
 		views.add(ProfileView())
 		views.add(TicTacToeView())
-		views.add(PatreonCallbackView())
 		views.add(AuthPathRedirectView())
 
 		views.add(ConfigureServerView())
