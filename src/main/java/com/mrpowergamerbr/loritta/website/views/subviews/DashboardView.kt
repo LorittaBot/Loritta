@@ -2,11 +2,10 @@ package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import org.jooby.Request
 import org.jooby.Response
 

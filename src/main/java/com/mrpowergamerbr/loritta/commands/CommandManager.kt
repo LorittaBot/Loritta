@@ -130,7 +130,6 @@ class CommandManager {
 		commandMap.add(LembrarCommand())
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())
-		commandMap.add(AminoCommand())
 		commandMap.add(PackageInfoCommand())
 		commandMap.add(IsUpCommand())
 		commandMap.add(KnowYourMemeCommand())

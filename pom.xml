@@ -210,17 +210,6 @@
             <version>2.10.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.MrPowerGamerBR</groupId>
-            <artifactId>AminoREAPI</artifactId>
-            <version>d0948f37e9</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.github.salomonbrys.kotson</groupId>
             <artifactId>kotson</artifactId>
             <version>2.5.0</version>
