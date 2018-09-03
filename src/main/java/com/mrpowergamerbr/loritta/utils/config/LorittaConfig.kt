@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Game
 
 class LorittaConfig(
 		@JsonProperty("mongodb-ip")

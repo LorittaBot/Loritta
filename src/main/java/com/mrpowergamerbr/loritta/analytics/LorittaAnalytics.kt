@@ -33,6 +33,7 @@ object LorittaAnalytics {
 		logger.info { "Sending analytic data to ${service.name} - ${payload}" }
 		request.send(payload)
 		logger.trace { "${service.name}: ${request.body()}" }
+		request.ok()
 	}
 
 	/**
