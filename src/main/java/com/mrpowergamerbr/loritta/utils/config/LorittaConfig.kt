@@ -63,12 +63,6 @@ class LorittaConfig(
 		val vespertineBotListKey: String,
 		@JsonProperty("open-weather-map-key")
 		val openWeatherMapKey: String,
-		@JsonProperty("amino-email")
-		val aminoEmail: String,
-		@JsonProperty("amino-password")
-		val aminoPassword: String,
-		@JsonProperty("amino-device-id")
-		val aminoDeviceId: String,
 		@JsonProperty("facebook-key")
 		val facebookToken: String,
 		@JsonProperty("google-vision-key")
@@ -96,9 +90,27 @@ class LorittaConfig(
 		@JsonProperty("currently-playing")
 		val currentlyPlaying: List<LorittaGameStatus>) {
 
-	class LorittaGameStatus(val name: String, val type: String)
+	class LorittaGameStatus(
+			@JsonProperty("name")
+			val name: String,
+			@JsonProperty("type")
+			val type: String
+	)
 
-	class LorittaAvatarFanArt(val fileName: String, val artistId: String, val fancyName: String?)
+	class LorittaAvatarFanArt(
+			@JsonProperty("file-name")
+			val fileName: String,
+			@JsonProperty("artist-id")
+			val artistId: String,
+			@JsonProperty("fancy-name")
+			val fancyName: String?
+	)
 
-	class AuthenticationKey(val name: String, val description: String, val allowed: List<String>)
+	class AuthenticationKey(
+			@JsonProperty("name")
+			val name: String,
+			@JsonProperty("description")
+			val description: String,
+			@JsonProperty("allowed")
+			val allowed: List<String>)
 }
