@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.listeners
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import mu.KotlinLogging
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
@@ -32,6 +33,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			if (voiceChannel.members.contains(event.guild.selfMember))
 				return@execute
 
+			EventLog.onVoiceJoin(config, event.member, event.channelJoined)
+
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
 			val link = loritta.audioManager.lavalink.getLink(event.guild)
@@ -60,6 +63,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
 				return@execute
+
+			EventLog.onVoiceLeave(config, event.member, event.channelLeft)
 
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 

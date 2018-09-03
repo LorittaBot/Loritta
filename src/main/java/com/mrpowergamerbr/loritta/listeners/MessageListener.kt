@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -64,6 +65,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (isGuildBanned(event.guild))
 					return@execute
 
+				EventLog.onMessageReceived(serverConfig, event.message)
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
 					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
