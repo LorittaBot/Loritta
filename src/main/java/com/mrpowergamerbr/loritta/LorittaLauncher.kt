@@ -34,7 +34,7 @@ object LorittaLauncher {
 		WebsiteUtils.allowMethods("PATCH")
 
 		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
-		val file = File(System.getProperty("conf") ?: "./config.json")
+		val file = File(System.getProperty("conf") ?: "./config.yml")
 		var config: LorittaConfig? = null
 
 		if (file.exists()) {
