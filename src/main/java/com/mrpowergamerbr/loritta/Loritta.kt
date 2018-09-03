@@ -215,12 +215,20 @@ class Loritta(config: LorittaConfig) {
 
 		generateDummyServerConfig()
 
-		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
+		logger.info("Sucesso! Iniciando Loritta (Website)...")
+
+		websiteThread = thread(true, name = "Website Thread") {
+			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			org.jooby.run({
+				website
+			})
+		}
+
+		logger.info("Sucesso! Iniciando threads da Loritta...")
+
+		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
 		socket = SocketServer(Loritta.config.socketPort)
-
-		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
-		val generateShards = Loritta.config.shards - 1
 
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
@@ -262,6 +270,11 @@ class Loritta(config: LorittaConfig) {
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
+		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
+		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
+
+		val generateShards = Loritta.config.shards - 1
+
 		for (idx in 0..generateShards) {
 			logger.info("Iniciando Shard $idx...")
 			val shard = builder
@@ -271,19 +284,6 @@ class Loritta(config: LorittaConfig) {
 			lorittaShards.shards.add(shard)
 			logger.info("Shard $idx iniciada com sucesso!")
 		}
-
-		logger.info("Sucesso! Iniciando Loritta (Website)...")
-
-		websiteThread = thread(true, name = "Website Thread") {
-			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
-			org.jooby.run({
-				website
-			})
-		}
-
-		logger.info("Sucesso! Iniciando threads da Loritta...")
-
-		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
 		thread {
 			socket.start()
