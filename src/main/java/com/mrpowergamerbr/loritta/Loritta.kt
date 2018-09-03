@@ -222,6 +222,44 @@ class Loritta(config: LorittaConfig) {
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		val generateShards = Loritta.config.shards - 1
 
+		NewLivestreamThread().start() // Iniciar New Livestream Thread
+
+		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
+
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
+		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
+
+		RemindersThread().start()
+
+		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
+
+		bomDiaECia = BomDiaECia()
+
+		val raffleFile = File(FOLDER, "raffle.json")
+
+		if (raffleFile.exists()) {
+			val json = JSON_PARSER.parse(raffleFile.readText())
+
+			RaffleThread.started = json["started"].long
+			RaffleThread.lastWinnerId = json["lastWinnerId"].string
+			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].int
+			RaffleThread.userIds = GSON.fromJson(json["userIds"])
+		}
+
+		raffleThread = RaffleThread()
+		raffleThread.start()
+
+		DebugLog.startCommandListenerThread()
+		
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		for (idx in 0..generateShards) {
@@ -286,43 +324,6 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		NewLivestreamThread().start() // Iniciar New Livestream Thread
-
-		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
-
-		if (Loritta.config.environment == EnvironmentType.CANARY)
-			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
-
-		RemindersThread().start()
-
-		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
-
-		bomDiaECia = BomDiaECia()
-
-		val raffleFile = File(FOLDER, "raffle.json")
-
-		if (raffleFile.exists()) {
-			val json = JSON_PARSER.parse(raffleFile.readText())
-
-			RaffleThread.started = json["started"].long
-			RaffleThread.lastWinnerId = json["lastWinnerId"].string
-			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].int
-			RaffleThread.userIds = GSON.fromJson(json["userIds"])
-		}
-
-		raffleThread = RaffleThread()
-		raffleThread.start()
-
-		DebugLog.startCommandListenerThread()
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
