@@ -259,7 +259,7 @@ class Loritta(config: LorittaConfig) {
 		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
-		
+
 		loadCommandManager() // Inicie todos os comandos da Loritta
 
 		for (idx in 0..generateShards) {

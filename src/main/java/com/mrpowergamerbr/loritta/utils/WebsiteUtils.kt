@@ -94,6 +94,7 @@ object WebsiteUtils {
 
 		val variables = mutableMapOf(
 				"discordAuth" to null,
+				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
 				"guildCount" to loritta.guildCount,
 				"userCount" to loritta.userCount,
