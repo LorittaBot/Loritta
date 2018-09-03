@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.google.gson.Gson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -168,9 +171,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "config") {
-			val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
-			val config = Gson().fromJson(json, LorittaConfig::class.java)
-			Loritta.config = config
+			val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+			val file = File(System.getProperty("conf") ?: "./config.yml")
+			Loritta.config = mapper.readValue(file.readText(), LorittaConfig::class.java)
 			context.reply(
 					LoriReply(
 							"Config recarregada!"
@@ -249,9 +252,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 		val oldCommandCount = loritta.commandManager.commandMap.size
 
-		val json = FileUtils.readFileToString(File("./config.json"), "UTF-8")
-		val config = Gson().fromJson(json, LorittaConfig::class.java)
-		Loritta.config = config
+		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+		val file = File(System.getProperty("conf") ?: "./config.yml")
+		Loritta.config = mapper.readValue(file.readText(), LorittaConfig::class.java)
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
