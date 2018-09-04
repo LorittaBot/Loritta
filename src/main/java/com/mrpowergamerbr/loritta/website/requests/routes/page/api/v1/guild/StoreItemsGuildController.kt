@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -31,7 +30,16 @@ class StoreItemsGuildController {
 
 		val uniqueId = itemPayload["uuid"].string
 
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
+		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
+		if (req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
 
 		if (userIdentification == null) { // Unauthorized (Discord)
 			res.status(Status.UNAUTHORIZED)

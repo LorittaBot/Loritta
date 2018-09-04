@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
@@ -33,7 +32,7 @@ class TestMessageView : ConfigureView() {
 			textChannelId = receivedPayload["textChannelId"].string
 
 		var message = content
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val userIdentification = discordAuth.getUserIdentification()
 		val member = guild.getMemberById(userIdentification.id)
 		val nickname = member.effectiveName
 

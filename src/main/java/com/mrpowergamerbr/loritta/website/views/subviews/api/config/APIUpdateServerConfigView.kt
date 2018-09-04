@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.Modera
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
@@ -21,7 +20,16 @@ class APIUpdateServerConfigView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String): String {
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
+		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
+		if (req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
 
 		if (userIdentification == null) { // Unauthozied (Discord)
 			val payload = JsonObject()

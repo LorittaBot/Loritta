@@ -182,8 +182,6 @@ object GlobalHandler {
 				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 				variables["discordAuth"] = discordAuth
 				variables["userIdentification"] = userIdentification
-				req.set("discordAuth", discordAuth)
-				req.set("userIdentification", userIdentification)
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}
