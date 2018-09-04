@@ -255,12 +255,15 @@ class Loritta(config: LorittaConfig) {
 		val raffleFile = File(FOLDER, "raffle.json")
 
 		if (raffleFile.exists()) {
-			val json = JSON_PARSER.parse(raffleFile.readText())
+			val json = JSON_PARSER.parse(raffleFile.readText()).obj
 
 			RaffleThread.started = json["started"].long
-			RaffleThread.lastWinnerId = json["lastWinnerId"].string
-			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].int
-			RaffleThread.userIds = GSON.fromJson(json["userIds"])
+			RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
+			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
+			val userIdArray = json["userIds"].nullArray
+
+			if (userIdArray != null)
+				RaffleThread.userIds = GSON.fromJson(userIdArray)
 		}
 
 		raffleThread = RaffleThread()
