@@ -33,6 +33,25 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
+		if (arg0 == "shard") {
+			val shardId = context.rawArgs.getOrNull(1)!!.toInt()
+			val shard = lorittaShards.shards.first { it.shardInfo.shardId == shardId }
+
+			shard.shutdownNow()
+
+			lorittaShards.shards.remove(shard)
+
+			val shard2 = loritta.builder
+					.useSharding(shardId, Loritta.config.shards)
+					.build()
+
+			lorittaShards.shards.add(shard2)
+			context.reply(
+					LoriReply(
+							message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
+					)
+			)
+		}
 		if (arg0 == "setindex") {
 			UpdateStatusThread.skipToIndex = context.args[1].toInt()
 			context.reply(
