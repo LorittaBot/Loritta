@@ -32,7 +32,7 @@ class TestMessageView : ConfigureView() {
 			textChannelId = receivedPayload["textChannelId"].string
 
 		var message = content
-		val userIdentification = discordAuth.getUserIdentification()
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
 		val member = guild.getMemberById(userIdentification.id)
 		val nickname = member.effectiveName
 

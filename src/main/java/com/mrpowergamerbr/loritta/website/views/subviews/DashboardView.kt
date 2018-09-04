@@ -16,7 +16,8 @@ class DashboardView : ProtectedView() {
 	}
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val lorittaProfile = loritta.getLorittaProfileForUser(discordAuth.getUserIdentification().id)
+		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val lorittaProfile = loritta.getLorittaProfileForUser(userIdentification.id)
 
 		variables["lorittaProfile"] = lorittaProfile
 
