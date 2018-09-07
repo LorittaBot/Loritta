@@ -47,7 +47,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
             addField(locale["DASHBOARD_ChannelName"], channel.name, true)
             addField(locale["CHANNELINFO_ChannelId"], channel.id, true)
             addField(locale["SERVERINFO_CREATED_IN"], channel.creationTime.humanize(locale), true)
-            addField(locale["CHANNELINFO_Topic"], if (channel.topic != null) channel.topic else locale["CHANNELINFO_Undefined"], true)
+            addField(locale["CHANNELINFO_Topic"], if (channel.topic != null || channel.topic.isNotBlank()) channel.topic else locale["CHANNELINFO_Undefined"], true)
             addField(locale["CHANNELINFO_NsfwEnabled"], if (channel.isNSFW) locale["LORITTA_Yes"] else locale["LORITTA_No"], true)
         }
 
