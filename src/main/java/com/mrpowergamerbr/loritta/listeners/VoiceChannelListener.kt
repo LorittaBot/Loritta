@@ -19,6 +19,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
+			EventLog.onVoiceJoin(config, event.member, event.channelJoined)
+
 			if (!config.musicConfig.isEnabled)
 				return@execute
 
@@ -32,8 +34,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			if (voiceChannel.members.contains(event.guild.selfMember))
 				return@execute
-
-			EventLog.onVoiceJoin(config, event.member, event.channelJoined)
 
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
@@ -53,6 +53,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
+			EventLog.onVoiceLeave(config, event.member, event.channelLeft)
+			
 			if (!config.musicConfig.isEnabled)
 				return@execute
 
@@ -63,8 +65,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
 				return@execute
-
-			EventLog.onVoiceLeave(config, event.member, event.channelLeft)
 
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
