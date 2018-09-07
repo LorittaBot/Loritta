@@ -17,6 +17,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		loritta.executor.execute {
+			// Carregar a configuração do servidor
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			EventLog.onVoiceJoin(config, event.member, event.channelJoined)
@@ -29,19 +30,16 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
 
-			if (voiceChannel.members.isEmpty())
+			if (voiceChannel.members.isEmpty()) // Whoops, demorou demais!
 				return@execute
 
-			if (voiceChannel.members.contains(event.guild.selfMember))
+			if (voiceChannel.members.contains(event.guild.selfMember)) // Mas... fui eu mesmo que entrei!
 				return@execute
 
 			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
 
-			val link = loritta.audioManager.lavalink.getLink(event.guild)
-			link.connect(voiceChannel)
-			mm.player.isPaused = false
-
-			if (mm.player.playingTrack == null)
+			// Se não está tocando nada e o sistema de músicas aleatórias está ativado, toque uma!
+			if (mm.player.playingTrack == null && config.musicConfig.autoPlayWhenEmpty && config.musicConfig.urls.isNotEmpty())
 				LorittaUtilsKotlin.startRandomSong(event.guild, config)
 		}
 	}
@@ -54,7 +52,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 
 			EventLog.onVoiceLeave(config, event.member, event.channelLeft)
-			
+
 			if (!config.musicConfig.isEnabled)
 				return@execute
 
