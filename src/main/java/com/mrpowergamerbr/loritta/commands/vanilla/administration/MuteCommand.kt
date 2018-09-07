@@ -296,6 +296,15 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					userData.temporaryMute = false
 				}
 
+				val punishment = LorittaGuildUserData.PunishmentWrapper(
+                        LorittaGuildUserData.PunishmentType.MUTE,
+                        context.userHandle.id,
+                        reason,
+                        System.currentTimeMillis()
+                )
+
+				userData.punishments.add(punishment)
+
 				loritta save serverConfig
 				if (delay != null) {
 					// Ao enviar um role change, iremos esperar alguns segundos para ver se o mute foi realmente "aplicado"

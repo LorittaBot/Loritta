@@ -203,6 +203,7 @@ class CommandManager {
 		commandMap.add(WarnCommand())
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
+        commandMap.add(PunishmentListCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())

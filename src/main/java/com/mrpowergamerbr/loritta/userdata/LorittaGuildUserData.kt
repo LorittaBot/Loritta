@@ -15,6 +15,12 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") val 
 	var warns = mutableListOf<ModerationConfig.Warn>()
 	var money = 0.0 // Dinheiro do usuário, caso a economia local do servidor esteja ativada
 
+	var punishments = mutableListOf<PunishmentWrapper>()
+
+	class PunishmentWrapper @BsonCreator constructor(@BsonProperty("punishmentType") val punishmentType: PunishmentType, @BsonProperty("author") val author: String, @BsonProperty("reason") val reason: String, @BsonProperty("punishmentTimestamp") val punishmentTimestamp: Long)
+
+	enum class PunishmentType { BAN, KICK, MUTE, SOFT_BAN, WARN }
+
 	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {
 		return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)

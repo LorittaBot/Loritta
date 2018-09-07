@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -218,8 +219,22 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				}
 			}
 
-			context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
-					.queue()
+			context.guild.controller.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}").queue()
+
+			val config = loritta.getServerConfigForGuild(context.guild.id)
+
+			val userData = config.getUserData(user.id)
+
+			val punishment = LorittaGuildUserData.PunishmentWrapper(
+                    LorittaGuildUserData.PunishmentType.KICK,
+                    context.userHandle.id,
+                    reason,
+                    System.currentTimeMillis()
+            )
+
+			userData.punishments.add(punishment)
+
+			loritta save config
 		}
 	}
 }
