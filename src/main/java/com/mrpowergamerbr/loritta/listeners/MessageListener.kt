@@ -254,6 +254,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
+				EventLog.onMessageUpdate(serverConfig, locale, event.message)
+
 				val modules = listOf(
 						ServerSupportModule(),
 						AutomodModule(),
