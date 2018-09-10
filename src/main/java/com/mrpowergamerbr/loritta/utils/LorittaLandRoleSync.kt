@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mongodb.client.model.Filters
 import net.dv8tion.jda.core.entities.Guild
 import org.slf4j.LoggerFactory
 
@@ -71,6 +72,33 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
 			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
+
+			// Apply donators roles
+			val donators = loritta.usersColl.find(Filters.eq("donator", true)).map { Pair(it, originalGuild.getMemberById(it.userId)) }
+
+			for ((profile, member) in donators) {
+				val isDonationStillValid = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
+				val donatorRole = originalGuild.getRoleById("364201981016801281")
+				val inactiveRole = originalGuild.getRoleById("364201981016801281")
+				val roles = member.roles.toMutableList()
+
+				if (isDonationStillValid) {
+					if (!roles.contains(donatorRole))
+						roles.add(donatorRole)
+
+					if (roles.contains(inactiveRole))
+						roles.remove(inactiveRole)
+				} else {
+					if (roles.contains(donatorRole))
+						roles.remove(donatorRole)
+
+					if (!roles.contains(inactiveRole))
+						roles.add(inactiveRole)
+				}
+
+				if (!(roles.containsAll(member.roles) && member.roles.containsAll(member.roles))) // Novos cargos foram adicionados
+					member.guild.controller.modifyMemberRoles(member, roles).queue()
+			}
 		} catch (e: Exception) {
 			logger.error("Erro ao sincronizar cargos!", e)
 		}
