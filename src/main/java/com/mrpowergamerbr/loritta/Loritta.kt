@@ -234,7 +234,7 @@ class Loritta(config: LorittaConfig) {
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
 			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
 		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
