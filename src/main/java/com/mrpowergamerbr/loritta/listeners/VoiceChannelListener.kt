@@ -41,6 +41,11 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			// Se não está tocando nada e o sistema de músicas aleatórias está ativado, toque uma!
 			if (mm.player.playingTrack == null && config.musicConfig.autoPlayWhenEmpty && config.musicConfig.urls.isNotEmpty())
 				LorittaUtilsKotlin.startRandomSong(event.guild, config)
+			else if (mm.player.playingTrack != null && !voiceChannel.members.contains(event.guild.selfMember)) {
+				mm.player.isPaused = false
+				val link = loritta.audioManager.lavalink.getLink(event.guild)
+				link.connect(voiceChannel)
+			}
 		}
 	}
 
