@@ -74,7 +74,7 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 
 			// Apply donators roles
-			val donators = loritta.usersColl.find(Filters.eq("donator", true)).map { Pair(it, originalGuild.getMemberById(it.userId)) }
+			val donators = loritta.usersColl.find(Filters.eq("donator", true)).mapNotNull { Pair(it, originalGuild.getMemberById(it.userId)) }
 
 			for ((profile, member) in donators) {
 				val isDonationStillValid = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
