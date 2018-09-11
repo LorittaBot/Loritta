@@ -33,7 +33,7 @@ class ExperienceModule : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					val isDonator = lorittaProfile.isDonator && System.currentTimeMillis() > lorittaProfile.donationExpiresIn
+					val isDonator = lorittaProfile.isDonator && lorittaProfile.donationExpiresIn > System.currentTimeMillis()
 					if (isDonator) {
 						globalGainedXp = when {
 							lorittaProfile.donatorPaid >= 89.99 -> (globalGainedXp * 1.75).toInt()

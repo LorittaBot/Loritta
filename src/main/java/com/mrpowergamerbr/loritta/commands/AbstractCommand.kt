@@ -189,7 +189,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 				val profile = lorittaUser.profile
 				var cooldown = this.cooldown
-				val isDonator = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
+				val isDonator = profile.isDonator && profile.donationExpiresIn > System.currentTimeMillis()
 				if (isDonator && profile.donatorPaid >= 19.99) {
 					cooldown /= 2
 				}

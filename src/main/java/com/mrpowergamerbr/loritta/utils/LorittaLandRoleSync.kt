@@ -77,7 +77,7 @@ class LorittaLandRoleSync : Runnable {
 			val donators = loritta.usersColl.find(Filters.eq("donator", true)).mapNotNull { Pair(it, originalGuild.getMemberById(it.userId)) }
 
 			for ((profile, member) in donators) {
-				val isDonationStillValid = profile.isDonator && System.currentTimeMillis() > profile.donationExpiresIn
+				val isDonationStillValid = profile.isDonator && profile.donationExpiresIn > System.currentTimeMillis()
 				val donatorRole = originalGuild.getRoleById("364201981016801281")
 				val inactiveRole = originalGuild.getRoleById("364201981016801281")
 				val roles = member.roles.toMutableList()
