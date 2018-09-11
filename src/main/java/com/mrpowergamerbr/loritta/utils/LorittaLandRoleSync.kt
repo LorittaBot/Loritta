@@ -102,7 +102,7 @@ class LorittaLandRoleSync : Runnable {
 						roles.add(inactiveRole)
 				}
 
-				if (!(roles.containsAll(member.roles) && member.roles.containsAll(member.roles))) // Novos cargos foram adicionados
+				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) // Novos cargos foram adicionados
 					member.guild.controller.modifyMemberRoles(member, roles).queue()
 			}
 		} catch (e: Exception) {
