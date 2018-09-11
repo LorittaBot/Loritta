@@ -4,23 +4,18 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
 
 object PomfUtils {
-	const val POMF_URL = "https://pomf.space/upload.php"
+	const val POMF_URL = "https://coka.la/upload.php"
 
 	fun uploadFile(array: ByteArray): String? {
-		return uploadFile("https://pomf.space/upload.php", "mirror.png", array)
+		return uploadFile(POMF_URL, "mirror.png", array)
 	}
 
 	fun uploadFile(array: ByteArray, fileName: String): String? {
-		return uploadFile("https://pomf.space/upload.php", fileName, array)
+		return uploadFile(POMF_URL, fileName, array)
 	}
 
 	fun uploadFile(url: String, fileName: String, array: ByteArray): String? {
@@ -31,7 +26,7 @@ object PomfUtils {
 						RequestBody.create(MediaType.parse("image/png"), array))
 				.build()
 		val request = Request.Builder().url(url)
-				.header("token", Loritta.config.pomfSpaceToken)
+				// .header("token", Loritta.config.pomfSpaceToken)
 				.post(formBody).build()
 		val response = client.newCall(request).execute()
 
