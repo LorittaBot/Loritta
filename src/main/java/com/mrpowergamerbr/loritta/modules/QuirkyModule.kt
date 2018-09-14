@@ -39,14 +39,6 @@ class QuirkyModule : MessageReceivedModule {
 			14 -> message.addReaction("idai:334709223588102144").queue()
 		}
 
-		if (random in 0 until 75 && message.contentRaw.contains("sparklypower", true)) {
-			event.channel.sendMessage(when (random) {
-				in 0 until 25 -> "${event.author.asMention} sabia que o dono do SparklyPower foi quem me criou? <:wow:432531424671694849>"
-				in 25 until 50 -> "${event.author.asMention} melhor servidor que eu já conheci... <:lori_triste:370344565967814659> Pelo ou menos o PerfectDreams está por vir, que é um servidor que é parecido com o SparklyPower (e é do mesmo criador!), mas ainda não tá pronto... mas quem sabe em breve https://perfectdreams.net/ <:lori_owo:417813932380520448>"
-				else -> "${event.author.asMention} #sdds SparklyPower <:lori_triste:370344565967814659>"
-			}).queue()
-		}
-
 		if ((event.message.contentRaw.contains("esta é uma mensagem do criador", true) && event.message.contentRaw.contains("se tornou muito lenta", true) && event.message.contentRaw.contains("que não enviarem essa mensagem dentro de duas semanas", true)) || (event.message.contentRaw.contains("deve fechar", true) && event.message.contentRaw.contains("Vamos enviar esta mensagem para ver se os membros", true) && event.message.contentRaw.contains("isto é de acordo com o criador", true)))
 			event.channel.sendMessage("${event.author.asMention} agora me diga... porque você acha que o Discord ia avisar algo importante assim com uma CORRENTE? Isso daí é fake, se isso fosse verdade, o Discord iria colocar um aviso nas redes sociais e ao iniciar o Discord, apenas ignore tais mensagens... e por favor, pare de espalhar \uD83D\uDD17 correntes \uD83D\uDD17, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>").queue()
 
