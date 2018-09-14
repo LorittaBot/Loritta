@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -23,7 +25,13 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 			profile.isAfk = false
 			profile.afkReason = null
 
-			loritta save profile
+			loritta.usersColl.updateOne(
+					Filters.eq("_id", profile.userId),
+					Updates.combine(
+							Updates.set("afk", false),
+							Updates.unset("afkReason")
+					)
+			)
 
 			context.reply(
 					LoriReply(
@@ -42,7 +50,13 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			profile.isAfk = true
 
-			loritta save profile
+			loritta.usersColl.updateOne(
+					Filters.eq("_id", profile.userId),
+					Updates.combine(
+							Updates.set("afk", true),
+							Updates.set("afkReason", profile.afkReason)
+					)
+			)
 
 			context.reply(
 					LoriReply(

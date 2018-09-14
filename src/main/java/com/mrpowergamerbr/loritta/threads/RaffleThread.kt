@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -81,7 +83,11 @@ class RaffleThread : Thread("Raffle Thread") {
 			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.dreams} sonhos) na Rifa!")
 
 			lorittaProfile.dreams += money
-			loritta save lorittaProfile
+			loritta.usersColl.updateOne(
+					Filters.eq("_id", lorittaProfile.userId),
+					Updates.inc("dreams", money)
+			)
+
 			userIds.clear()
 
 			val locale = loritta.getLocaleById(winner.second)

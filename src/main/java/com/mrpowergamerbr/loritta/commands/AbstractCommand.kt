@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.commands
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
@@ -153,7 +155,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				}
 
 				conf.lastCommandReceivedAt = System.currentTimeMillis()
-				loritta save conf
+				loritta.serversColl.updateOne(
+						Filters.eq("_id", conf.guildId),
+						Updates.set("lastCommandReceivedAt", conf.lastCommandReceivedAt)
+				)
 
 				if (conf != loritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
