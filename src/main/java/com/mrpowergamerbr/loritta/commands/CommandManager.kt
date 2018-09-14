@@ -200,6 +200,7 @@ class CommandManager {
 			commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
+		commandMap.add(UnbanCommand())
 		commandMap.add(WarnCommand())
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
