@@ -53,7 +53,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val gameName = gameDocument.getElementsByClass("game-name").text()
 			val gameAuthor = gameDocument.getElementsByClass("game-creator")[0].getElementsByClass("text-name").text()
 			val gameDescription = gameDocument.getElementsByClass("game-description")[0].text()
-			val favoriteCount = gameDocument.getElementsByClass("favoriteCount")[0].attr("title")
+			val favoriteCount = gameDocument.getElementsByClass("game-favorite-count")[0].text()
 			val thumbnail = gameDocument.getElementsByClass("carousel-thumb").firstOrNull()
 
 			if (thumbnail != null) {
