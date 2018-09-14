@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.livestreams
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
@@ -13,12 +14,12 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateTwitchWebhooksTask : Runnable {
 	companion object {
-		val lastNotified = ConcurrentHashMap<String, Long>()
+		val lastNotified = Caffeine.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
 		private val logger = KotlinLogging.logger {}
 	}
 

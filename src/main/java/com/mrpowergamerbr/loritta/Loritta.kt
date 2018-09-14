@@ -112,7 +112,7 @@ class Loritta(config: LorittaConfig) {
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
-	var ignoreIds = mutableListOf<String>() // IDs para serem ignorados nesta sessão
+	var ignoreIds = mutableSetOf<String>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 

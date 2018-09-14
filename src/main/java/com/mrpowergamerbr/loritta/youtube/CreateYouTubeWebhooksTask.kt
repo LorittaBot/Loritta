@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.youtube
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
@@ -13,12 +14,12 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask : Runnable {
 	companion object {
-		val lastNotified = ConcurrentHashMap<String, Long>()
+		val lastNotified = Caffeine.newBuilder().expireAfterAccess(5L, TimeUnit.MINUTES).build<String, Long>().asMap()
 		private val logger = KotlinLogging.logger {}
 	}
 
@@ -58,12 +59,6 @@ class CreateYouTubeWebhooksTask : Runnable {
 					}
 					list.add(server)
 				}
-			}
-
-			channelIds.forEach {
-				// Caso o channel ID não esteja na map de lastNotified, vamos salvar o tempo atual nela (para evitar que anuncie coisas "do passado")
-				if (!lastNotified.containsKey(it))
-					lastNotified[it] = System.currentTimeMillis()
 			}
 
 			val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
