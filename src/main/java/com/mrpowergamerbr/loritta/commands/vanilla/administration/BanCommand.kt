@@ -81,7 +81,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			val pipedReason = reason.split("|")
 
 			var usingPipedArgs = false
-			var skipConfirmation = false
+			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
 			var delDays = 7
 
 			if (pipedReason.size > 1) {

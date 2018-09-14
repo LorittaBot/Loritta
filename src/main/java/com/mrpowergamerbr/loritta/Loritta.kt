@@ -12,6 +12,8 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
+import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
@@ -21,6 +23,7 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
+import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -43,8 +46,10 @@ import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
+import net.dv8tion.jda.core.entities.Guild
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
+import org.bson.conversions.Bson
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.reflect.Modifier
@@ -366,6 +371,43 @@ class Loritta(config: LorittaConfig) {
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
 		return serverConfig ?: ServerConfig(guildId)
+	}
+
+	fun updateServerConfig(guild: Guild, updates: List<Bson>): UpdateResult {
+		return serversColl.updateOne(
+				Filters.eq("_id", guild.id),
+				Updates.combine(updates)
+		)
+	}
+
+	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, update: Bson): UpdateResult {
+		return updateLorittaGuildUserData(serverConfig, userId, listOf(update))
+	}
+
+	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, updates: List<Bson>): UpdateResult {
+		val hasUserData = serverConfig.hasUserData(userId)
+		if (!hasUserData) {
+			serversColl.updateOne(
+					Filters.and(
+							Filters.eq("_id", serverConfig.guildId),
+							Filters.exists("guildUserData.userId", false)
+					),
+					Updates.push(
+							"guildUserData",
+							LorittaGuildUserData(userId)
+					)
+			)
+		}
+
+		return serversColl.updateOne(
+				Filters.and(
+				Filters.eq("_id", serverConfig.guildId),
+						Filters.eq("guildUserData.userId", userId)
+				),
+				Updates.combine(
+						updates
+				)
+		)
 	}
 
 	/**

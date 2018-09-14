@@ -9,13 +9,12 @@ import net.dv8tion.jda.core.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
-import org.jetbrains.kotlin.serialization.js.DynamicTypeDeserializer.id
 import java.util.*
 
 class ServerConfig @BsonCreator constructor(
-	@BsonProperty("_id")
-	@get:[BsonIgnore]
-	val guildId: String // Guild ID
+		@BsonProperty("_id")
+		@get:[BsonIgnore]
+		val guildId: String // Guild ID
 ) {
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
@@ -64,6 +63,10 @@ class ServerConfig @BsonCreator constructor(
 	var lastCommandReceivedAt = 0L
 	var apiKey: String? = null
 	var premiumKey: String? = null
+
+	fun hasUserData(id: String): Boolean {
+		return guildUserData.any { it.userId == id }
+	}
 
 	fun getUserData(id: String): LorittaGuildUserData {
 		var userData = guildUserData.firstOrNull { it.userId == id }

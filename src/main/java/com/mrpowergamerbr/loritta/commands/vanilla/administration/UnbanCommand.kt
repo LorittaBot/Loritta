@@ -78,7 +78,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 			val pipedReason = reason.split("|")
 
 			var usingPipedArgs = false
-			var skipConfirmation = false
+			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
 
 			if (pipedReason.size > 1) {
 				val pipedArgs=  pipedReason.toMutableList()

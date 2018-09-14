@@ -14,6 +14,7 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") val 
 	var expiresIn: Long = 0L
 	var warns = mutableListOf<ModerationConfig.Warn>()
 	var money = 0.0 // Dinheiro do usuário, caso a economia local do servidor esteja ativada
+	var quickPunishment = false
 
 	@BsonIgnore
 	fun getCurrentLevel(): LorittaProfile.XpWrapper {

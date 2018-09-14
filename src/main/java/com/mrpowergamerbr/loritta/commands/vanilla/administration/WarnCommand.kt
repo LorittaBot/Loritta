@@ -79,7 +79,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 			val pipedReason = reason.split("|")
 
 			var usingPipedArgs = false
-			var skipConfirmation = false
+			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
 			var delDays = 0
 
 			if (pipedReason.size > 1) {
