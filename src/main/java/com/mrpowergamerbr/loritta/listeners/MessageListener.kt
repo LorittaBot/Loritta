@@ -115,8 +115,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
-
-					event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+					if (event.channel.canTalk()) {
+						event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+					} else {
+						event.author.openPrivateChannel().queue {
+							it.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+						}
+					}
 				}
 
 				val modules = listOf(
