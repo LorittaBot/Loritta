@@ -13,6 +13,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
@@ -66,10 +67,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				EventLog.onMessageReceived(serverConfig, event.message)
-				if (isMentioningOnlyMe(event.message.contentRaw)) {
+
+				if (isMentioningMe(event.message))
 					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 
+				if (isMentioningOnlyMe(event.message.contentRaw)) {
 					var response = locale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
@@ -305,6 +308,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @returns if the message is mentioning only me
 	 */
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${Loritta.config.clientId}>"
+
+	/**
+	 * Checks if the message mentions me
+	 *
+	 * @param contentRaw the message
+	 * @returns if the message is mentioning me
+	 */
+	fun isMentioningMe(message: Message): Boolean = message.isMentioned(message.guild.selfMember)
 
 	/**
 	 * Checks if the owner of the guild is banned and, if true, makes me quit the server
