@@ -34,7 +34,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 			loritta.updateLorittaGuildUserData(
 					context.config,
 					context.userHandle.id,
-					Updates.set("quickPunishment", false)
+					Updates.set("guildUserData.$.quickPunishment", false)
 			)
 		} else {
 			context.reply(
@@ -46,7 +46,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 			loritta.updateLorittaGuildUserData(
 					context.config,
 					context.userHandle.id,
-					Updates.set("quickPunishment", true)
+					Updates.set("guildUserData.$.quickPunishment", true)
 			)
 		}
 	}

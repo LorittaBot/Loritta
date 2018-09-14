@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.common.collect.Lists
 import com.google.gson.Gson
