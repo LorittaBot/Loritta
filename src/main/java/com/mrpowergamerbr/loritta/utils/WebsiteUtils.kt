@@ -528,10 +528,3 @@ object WebsiteUtils {
 		return serverConfigJson
 	}
 }
-
-fun main(args: Array<String>) {
-	val acc = HttpRequest.get("https://twitter.com/i/profiles/show/SoutAmericMemes/timeline/tweets?include_available_features=1&include_entities=1&max_position=1026183800219463680&reset_error_state=false")
-			.body()
-
-	println(acc)
-}
