@@ -84,9 +84,9 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			val description = jsoup.select("p[itemprop = description]")[0];
 
 			val type = description.getElementsByTag("span")[0]
-			val what = description.getElementsByTag("span")[1]
+			val what = description.getElementsByTag("span").getOrNull(1)
 			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else "";
-			var frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
+			val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
 				jsoup.getElementsByClass("frase")[0]
 			} else {
 				null
@@ -97,15 +97,17 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			embed.setFooter(etim, null);
 
 			embed.setTitle("📙 Significado de ${context.args[0]}")
-			embed.setDescription("*${type.text()}*\n\n**${what.text()}**");
+			embed.setDescription("*${type.text()}*")
+			if (what != null)
+				embed.appendDescription("\n\n**${what.text()}**")
 
 			if (jsoup.getElementsByClass("sinonimos").size > 0) {
-				var sinonimos = jsoup.getElementsByClass("sinonimos")[0];
+				val sinonimos = jsoup.getElementsByClass("sinonimos")[0];
 
 				embed.addField("🙂 Sinônimos", sinonimos.text(), false);
 			}
 			if (jsoup.getElementsByClass("sinonimos").size > 1) {
-				var antonimos = jsoup.getElementsByClass("sinonimos")[1];
+				val antonimos = jsoup.getElementsByClass("sinonimos")[1];
 
 				embed.addField("🙁 Antônimos", antonimos.text(), false);
 			}

@@ -32,7 +32,7 @@ object WelcomeModule {
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
-						if (msg.isNotEmpty()) {
+						if (msg.isNotEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)).queue {
 								if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
 									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
@@ -49,7 +49,7 @@ object WelcomeModule {
 			if (!event.user.isBot) { // Mas antes precisamos verificar se o usuário que entrou não é um bot!
 				val msg = joinLeaveConfig.joinPrivateMessage
 				try {
-					if (msg.isNotEmpty())
+					if (msg.isNotEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 						event.user.openPrivateChannel().queue {
 							it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)).queue() // Pronto!
 						}
