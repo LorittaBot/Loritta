@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.google.gson.Gson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -21,7 +20,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.core.entities.Guild
-import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -51,6 +49,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 							message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
 					)
 			)
+			return
 		}
 		if (arg0 == "setindex") {
 			UpdateStatusThread.skipToIndex = context.args[1].toInt()
