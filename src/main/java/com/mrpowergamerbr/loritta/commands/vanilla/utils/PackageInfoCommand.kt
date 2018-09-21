@@ -110,7 +110,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 		var str = "";
 		for (update in encRes.locations) {
-			str += "+ " + update.date.replace(":", "/") + " - " + update.time + " - ${update.location}\n"
+			str += "+ " + update.date.replace("-", "/") + " - " + update.time + " - ${update.location}\n"
 			str += "- " + update.state + "\n\n";
 		}
 
