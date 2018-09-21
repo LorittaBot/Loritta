@@ -11,13 +11,14 @@ import com.mrpowergamerbr.loritta.utils.response.responses.*
 
 class ServerSupportModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		return event.channel.id == "398987569485971466" && Loritta.config.environment == EnvironmentType.PRODUCTION
+		return event.channel.id == "398987569485971466" && Loritta.config.environment == EnvironmentType.CANARY
 	}
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val content = event.message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")
+				.toLowerCase()
 
 		val responses = listOf(
 				LoriOfflineResponse(),
@@ -28,7 +29,8 @@ class ServerSupportModule : MessageReceivedModule {
 				LimparPlaylistResponse(),
 				AddEmotesResponse(),
 				SendFanArtsResponse(),
-				LoriMandarComandosResponse()
+				LoriMandarComandosResponse(),
+				HelpMeResponse()
 		)
 
 		responses.forEach {

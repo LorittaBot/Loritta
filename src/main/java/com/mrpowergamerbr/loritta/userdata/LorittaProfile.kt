@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.profile.ProfileType
+import com.mrpowergamerbr.loritta.utils.Gender
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
@@ -37,6 +38,7 @@ class LorittaProfile @BsonCreator constructor(
     var activeDesign = ProfileType.DEFAULT
 	var designsBought = mutableListOf<ProfileType>()
 	var editedShipEffects = mutableListOf<ShipEffect>()
+    var gender = Gender.UNKNOWN
 
 	var isDonator = false
 	var donatorPaid = 0.0

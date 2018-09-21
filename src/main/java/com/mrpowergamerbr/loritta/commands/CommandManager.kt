@@ -121,6 +121,9 @@ class CommandManager {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 
+		// =======[ ACTIONS ]======
+		commandMap.add(HugCommand())
+
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
 		commandMap.add(EncurtarCommand())

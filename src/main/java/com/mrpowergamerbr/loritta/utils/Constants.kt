@@ -27,6 +27,14 @@ object Constants {
 			"8⃣",
 			"9⃣")
 
+	// Folder names used for the action commands
+	const val ACTION_BOTH = "both"
+	const val ACTION_FEMALE_AND_FEMALE = "female_x_female"
+	const val ACTION_FEMALE_AND_MALE = "female_x_male"
+	const val ACTION_GENERIC = "generic"
+	const val ACTION_MALE_AND_FEMALE = "male_x_female"
+	const val ACTION_MALE_AND_MALE = "male_x_male"
+
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
