@@ -4,11 +4,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.dv8tion.jda.core.entities.User
 import java.io.File
 
@@ -39,23 +41,37 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				return
 			}
 
-			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
-			val other = lorittaProfile.gender
+			fun runAction(user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
+				val userProfile = userProfile ?: loritta.getLorittaProfileForUser(user.id)
+				val receiverProfile = receiverProfile ?: loritta.getLorittaProfileForUser(receiver.id)
 
-			val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-			val folderNames = context.lorittaUser.profile.gender.getValidActionFolderNames(other)
+				val other = receiverProfile.gender
 
-			val files = folderNames.flatMap {
-				File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+				val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
+				val folderNames = userProfile.gender.getValidActionFolderNames(other)
+
+				val files = folderNames.flatMap {
+					File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+				}
+
+				val randomImage = files.getRandom()
+
+				val message = context.sendFile(
+						randomImage,
+						"action.gif",
+						"${getEmoji()} **|** " + getResponse(locale, context.userHandle, user)
+				)
+
+				message.addReaction("reverse:492845304438194176").queue()
+
+				message.onReactionAdd(context) {
+					if (it.reactionEmote.name == "reverse:492845304438194176" && it.user == user) {
+						runAction(context.userHandle, null, receiver, userProfile)
+					}
+				}
 			}
 
-			val randomImage = files.getRandom()
-
-			context.sendFile(
-					randomImage,
-					"action.gif",
-					"${getEmoji()} **|** " + getResponse(locale, context.userHandle, user)
-			)
+			runAction(context.userHandle, context.lorittaUser.profile, user, null)
 		} else {
 			context.explain()
 		}
