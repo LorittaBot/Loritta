@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Icon
-import java.io.ByteArrayOutputStream
 
 class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), CommandCategory.DISCORD) {
 	override fun getUsage(): String {
@@ -32,19 +31,24 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		val imageUrl = context.getImageUrlAt(1, 0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		try {
-			ByteArrayOutputStream().use { os ->
-				val os = LorittaUtils.downloadFile(imageUrl, 5000)
+			val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
-				os.use { inputStream ->
-					context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).queue {
-						context.reply(
-								LoriReply(
-										context.locale["EMOJISEARCH_AddSuccess"],
-										it.asMention
-								)
-						)
-					}
-				}
+			os.use { inputStream ->
+				context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).queue({
+					context.reply(
+							LoriReply(
+									context.locale["EMOJISEARCH_AddSuccess"],
+									it.asMention
+							)
+					)
+				}, {
+					context.reply(
+							LoriReply(
+									context.locale["EMOJISEARCH_AddError"],
+									Constants.ERROR
+							)
+					)
+				})
 			}
 		} catch (e: Exception) {
 			context.reply(

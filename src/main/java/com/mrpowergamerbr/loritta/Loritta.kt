@@ -390,7 +390,7 @@ class Loritta(config: LorittaConfig) {
 			serversColl.updateOne(
 					Filters.and(
 							Filters.eq("_id", serverConfig.guildId),
-							Filters.exists("guildUserData.userId", false)
+							Filters.ne("guildUserData.userId", userId)
 					),
 					Updates.push(
 							"guildUserData",
