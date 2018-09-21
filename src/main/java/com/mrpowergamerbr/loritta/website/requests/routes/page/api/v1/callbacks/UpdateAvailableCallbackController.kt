@@ -30,7 +30,7 @@ class UpdateAvailableCallbackController {
 	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
 	fun handle(req: Request, res: Response): String {
 		thread {
-			Thread.sleep(1000)
+			Thread.sleep(5000)
 			val body = HttpRequest.get("https://jenkins.perfectdreams.net/job/Loritta/lastSuccessfulBuild/api/json")
 					.userAgent(Constants.USER_AGENT)
 					.body()
