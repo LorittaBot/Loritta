@@ -15,7 +15,7 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
     }
 
     override fun run(context: CommandContext, locale: BaseLocale) {
-        var body = HttpRequest.get("https://use.gameapis.net/mc/extra/status").body();
+        var body = HttpRequest.get("https://api.c2g.space/minecraft/status").body();
 
         var builder = EmbedBuilder()
                 .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
@@ -23,10 +23,12 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
 
         var json = jsonParser.parse(body);
         for (section in json.asJsonObject.entrySet()) {
-            var status = section.value.asJsonObject.get("status").asString;
-            var prefix = if (section.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
-            var emoji = if (status == "Online") "✅" else "❌";
-            builder.addField(prefix + section.key, "${emoji} ${status}", true)
+            var status = section.value.asJsonObject.get("online").asString;
+            var url = section.value.asJsonObject.get("url").asString;
+            var prefix = if (url.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
+            var emoji = if (status == "false") "❌" else "✅";
+            var endpointStatus = if (status == "false") "Offline" else status;
+            builder.addField(prefix + url, "${emoji} (${endpointStatus})", true)
         }
 
         context.sendMessage(builder.build());
