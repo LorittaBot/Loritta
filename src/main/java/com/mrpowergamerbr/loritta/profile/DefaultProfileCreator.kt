@@ -20,10 +20,10 @@ class DefaultProfileCreator : ProfileCreator {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
-		val graphics = base.graphics as java.awt.Graphics2D;
+		val graphics = base.graphics as java.awt.Graphics2D
 		graphics.setRenderingHint(
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
 
@@ -32,13 +32,13 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(115), 6, 6, null)
 
-		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
+		val whitneyMedium = FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneySemiBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 

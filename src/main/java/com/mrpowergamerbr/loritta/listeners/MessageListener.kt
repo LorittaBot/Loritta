@@ -31,6 +31,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	val warnedBadLoadedGuilds = mutableSetOf<String>()
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+		if (event.guild.id != "268353819409252352")
+			return
+
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
@@ -158,8 +161,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				event.message.emotes.forEach {
 					lorittaProfile.usedEmotes.put(it.id, lorittaProfile.usedEmotes.getOrDefault(it.id, 0) + 1)
 				}
-
-				loritta save lorittaProfile
 
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 					return@execute

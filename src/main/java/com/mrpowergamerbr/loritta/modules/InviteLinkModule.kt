@@ -40,7 +40,7 @@ class InviteLinkModule : MessageReceivedModule {
 		val content = message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")
-		                .toLowerCase()
+				.toLowerCase()
 
 		val validMatchers = mutableListOf<Matcher>()
 		val contentMatcher = getMatcherIfHasInviteLink(content)
@@ -171,6 +171,13 @@ class InviteLinkModule : MessageReceivedModule {
 		val pattern = Constants.URL_PATTERN
 		val matcher = pattern.matcher(content)
 		if (matcher.find()) {
+			val domain = matcher.group(1)
+			val tld = matcher.group(2)
+			if (domain == "youtu" && tld == "be")
+				return null
+			if (domain == "youtube" && tld == "com")
+				return null
+
 			matcher.reset()
 			return matcher
 		} else {
