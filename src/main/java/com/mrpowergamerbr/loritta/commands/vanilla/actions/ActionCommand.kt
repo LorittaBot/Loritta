@@ -65,8 +65,8 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				message.addReaction("reverse:492845304438194176").queue()
 
 				message.onReactionAdd(context) {
-					if (it.reactionEmote.name == "reverse:492845304438194176" && it.user == user) {
-						runAction(context.userHandle, null, receiver, userProfile)
+					if (it.reactionEmote.name == "reverse:492845304438194176" && it.user.id == receiver.id) {
+						runAction(context.userHandle, null, receiver, receiverProfile)
 					}
 				}
 			}
