@@ -121,6 +121,7 @@ class CommandManager {
 		commandMap.add(AfkCommand())
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
+		commandMap.add(GenderCommand())
 
 		// =======[ ACTIONS ]======
 		commandMap.add(HugCommand())

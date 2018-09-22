@@ -23,6 +23,10 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return "<usuário>"
 	}
 
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
 	override fun getExample(): List<String> {
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
@@ -59,14 +63,14 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				val message = context.sendFile(
 						randomImage,
 						"action.gif",
-						"${getEmoji()} **|** " + getResponse(locale, context.userHandle, user)
+						"${getEmoji()} **|** " + getResponse(locale, user, receiver)
 				)
 
 				message.addReaction("reverse:492845304438194176").queue()
 
 				message.onReactionAdd(context) {
-					if (it.reactionEmote.name == "reverse:492845304438194176" && it.user.id == receiver.id) {
-						runAction(context.userHandle, null, receiver, receiverProfile)
+					if (it.reactionEmote.id == "492845304438194176" && it.user.id == receiver.id) {
+						runAction(receiver, receiverProfile, user, null)
 					}
 				}
 			}
