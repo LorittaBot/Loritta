@@ -67,7 +67,8 @@ object Constants {
 			"putona",
 			"viada",
 			"vadia",
-			"putiane"
+			"putiane",
+			"fdp"
 	)
 
 	/**
