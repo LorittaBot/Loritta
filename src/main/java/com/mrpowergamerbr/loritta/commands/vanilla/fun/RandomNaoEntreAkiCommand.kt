@@ -31,7 +31,7 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 			)
 			return
 		}
-		
+
 		val body = HttpRequest.get("http://www.naoentreaki.com.br/api/v1/posts/destaques/?order=semana&allowNsfw=false&limit=1&skip=${RANDOM.nextInt(0, 100000)}&random=true")
 				.userAgent(Constants.USER_AGENT)
 				.body()

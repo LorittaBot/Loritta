@@ -31,9 +31,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	val warnedBadLoadedGuilds = mutableSetOf<String>()
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		if (event.guild.id != "268353819409252352")
-			return
-
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
