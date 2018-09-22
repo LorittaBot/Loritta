@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Gender
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -13,13 +14,13 @@ import net.dv8tion.jda.core.EmbedBuilder
 
 class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["GENDER_Description"];
+		return locale["GENDER_Description"]
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()
-				.setTitle("Então... você é o que?")
-				.setDescription("Estou curiosa... você é o que? Um homem ou uma mulher... ou talvez nenhum dos dois!\n\nEu quero saber para que eu possa melhorar as minhas respostas á você, como nos comandos de ações! Atualmente você é um belo de um ${context.lorittaUser.profile.gender}")
+				.setTitle(locale["GENDER_WhatAreYou"])
+				.setDescription(locale["GENDER_WhyShouldYouSelect"])
 				.build()
 
 
@@ -37,13 +38,23 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 				)
 
 				context.reply(
-
+						LoriReply(
+								locale["GENDER_SuccessfullyChanged"],
+								"\uD83C\uDF89"
+						)
 				)
 			}
 			if (it.reactionEmote.id == "384048518337265665") {
 				loritta.usersColl.updateOne(
 						Filters.eq("_id", context.userHandle.id),
 						Updates.set("gender", Gender.FEMALE.name)
+				)
+
+				context.reply(
+						LoriReply(
+								locale["GENDER_SuccessfullyChanged"],
+								"\uD83C\uDF89"
+						)
 				)
 			}
 		}

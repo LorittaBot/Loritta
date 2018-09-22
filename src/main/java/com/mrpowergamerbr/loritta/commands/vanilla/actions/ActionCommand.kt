@@ -52,7 +52,9 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				val other = receiverProfile.gender
 
 				val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-				val folderNames = userProfile.gender.getValidActionFolderNames(other)
+				val folderNames = userProfile.gender.getValidActionFolderNames(other).toMutableList()
+				if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+					folderNames.remove("generic")
 
 				val files = folderNames.flatMap {
 					File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
