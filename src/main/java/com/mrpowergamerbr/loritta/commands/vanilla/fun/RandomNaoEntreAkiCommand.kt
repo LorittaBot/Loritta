@@ -22,8 +22,16 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val source = "página"
-
+		if (!context.isPrivateChannel && !context.message.textChannel.isNSFW) {
+			context.reply(
+					LoriReply(
+							"A equipe do Não Entre Aki não sabe moderar o conteúdo do próprio website deles e, por isto agora o comando de memes aleatórios do Não Entre Aki só pode ser executado em canais NSFW, desculpe a inconveniência. \uD83D\uDE2D",
+							Constants.ERROR
+					)
+			)
+			return
+		}
+		
 		val body = HttpRequest.get("http://www.naoentreaki.com.br/api/v1/posts/destaques/?order=semana&allowNsfw=false&limit=1&skip=${RANDOM.nextInt(0, 100000)}&random=true")
 				.userAgent(Constants.USER_AGENT)
 				.body()
