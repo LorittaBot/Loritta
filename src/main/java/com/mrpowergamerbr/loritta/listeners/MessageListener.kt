@@ -62,9 +62,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
-				lorittaProfile.isAfk = false
-				lorittaProfile.afkReason = null
-
 				if (lorittaProfile.isAfk) {
 					loritta.usersColl.updateOne(
 							Filters.eq("_id", member.user.id),
@@ -74,6 +71,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							)
 					)
 				}
+				
+				lorittaProfile.isAfk = false
+				lorittaProfile.afkReason = null
 
 				if (isOwnerBanned(ownerProfile, event.guild))
 					return@execute
