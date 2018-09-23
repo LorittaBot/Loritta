@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.audio
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.ignoreRequest
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
@@ -29,6 +30,9 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 	}
 
 	override fun onTrackStart(player: IPlayer, track: AudioTrack) {
+		if (ignoreRequest())
+			return
+
 		loritta.executor.execute {
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
@@ -77,6 +81,9 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 			currentTrack = null
 			if (player.playingTrack != null)
 				player.stopTrack()
+
+			if (ignoreRequest())
+				return
 
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(guild.id)

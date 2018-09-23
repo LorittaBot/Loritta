@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -37,6 +39,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (ignoreRequest())
+			return
+
 		loritta.executor.execute {
 			try {
 				val member = event.member
@@ -59,6 +64,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				lorittaProfile.isAfk = false
 				lorittaProfile.afkReason = null
+
+				if (lorittaProfile.isAfk) {
+					loritta.usersColl.updateOne(
+							Filters.eq("_id", member.user.id),
+							Updates.combine(
+									Updates.set("afk", false),
+									Updates.set("afkReason", null)
+							)
+					)
+				}
 
 				if (isOwnerBanned(ownerProfile, event.guild))
 					return@execute
@@ -212,6 +227,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
+		if (ignoreRequest())
+			return
+
 		loritta.executor.execute {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 			val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
@@ -254,6 +272,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
+			if (ignoreRequest())
+				return
+
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)

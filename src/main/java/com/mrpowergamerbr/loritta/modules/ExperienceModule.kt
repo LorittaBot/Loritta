@@ -67,7 +67,7 @@ class ExperienceModule : MessageReceivedModule {
 		}
 
 		lorittaProfile.lastMessageSent = System.currentTimeMillis()
-		profileUpdates.add(Updates.inc("lastMessageSent", lorittaProfile.lastMessageSent))
+		profileUpdates.add(Updates.set("lastMessageSent", lorittaProfile.lastMessageSent))
 
 		loritta.usersColl.updateOne(
 				Filters.eq("_id", lorittaProfile.userId),

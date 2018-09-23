@@ -9,11 +9,8 @@ import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.save
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -42,6 +39,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
+					if (ignoreRequest())
+						return
+
 					loritta.executor.execute {
 						try {
 							functions.onReactionAdd!!.invoke(e)
@@ -52,6 +52,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
+					if (ignoreRequest())
+						return
+
 					loritta.executor.execute {
 						try {
 							functions.onReactionAddByAuthor!!.invoke(e)
@@ -64,6 +67,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
+					if (ignoreRequest())
+						return
+
 					loritta.executor.execute {
 						try {
 							functions.onReactionRemove!!.invoke(e)
@@ -74,6 +80,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
+					if (ignoreRequest())
+						return
+
 					loritta.executor.execute {
 						try {
 							functions.onReactionRemoveByAuthor!!.invoke(e)
@@ -84,6 +93,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		}
+
+		if (ignoreRequest())
+			return
 
 		loritta.executor.execute {
 			if (e.isFromType(ChannelType.TEXT)) {
@@ -112,6 +124,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 		toRemove.forEach { MuteCommand.roleRemovalThreads.remove(it) }
+
+		if (ignoreRequest())
+			return
 
 		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
@@ -149,6 +164,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {
@@ -226,6 +244,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (thread != null)
 			thread.interrupt()
 		MuteCommand.roleRemovalThreads.remove(event.guild.id + "#" + event.member.user.id)
+
+		if (ignoreRequest())
+			return
 
 		loritta.executor.execute {
 			try {
