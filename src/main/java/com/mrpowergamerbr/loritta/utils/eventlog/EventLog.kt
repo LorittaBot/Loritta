@@ -76,7 +76,7 @@ object EventLog {
 						return
 
 					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", message.id)).first()
-					if (storedMessage != null && storedMessage.content != message.contentRaw) {
+					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdit) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 

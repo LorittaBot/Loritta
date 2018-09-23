@@ -71,7 +71,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							)
 					)
 				}
-				
+
 				lorittaProfile.isAfk = false
 				lorittaProfile.afkReason = null
 
