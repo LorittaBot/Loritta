@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import okhttp3.*
 
 object PomfUtils {
-	const val POMF_URL = "https://coka.la/upload.php"
+	const val POMF_URL = "https://mixtape.moe/upload.php"
 
 	fun uploadFile(array: ByteArray): String? {
 		return uploadFile(POMF_URL, "mirror.png", array)

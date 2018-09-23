@@ -171,11 +171,10 @@ class InviteLinkModule : MessageReceivedModule {
 		val pattern = Constants.URL_PATTERN
 		val matcher = pattern.matcher(content)
 		if (matcher.find()) {
-			val domain = matcher.group(1)
-			val tld = matcher.group(2)
-			if (domain == "youtu" && tld == "be")
-				return null
-			if (domain == "youtube" && tld == "com")
+			val everything = matcher.group(0)
+			val afterSlash = matcher.group(1)
+			val uri = everything.replace(afterSlash, "")
+			if (uri == "youtube.com" || uri == "youtu.be")
 				return null
 
 			matcher.reset()
