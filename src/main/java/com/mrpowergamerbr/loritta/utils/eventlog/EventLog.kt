@@ -87,11 +87,10 @@ object EventLog {
 						embed.setFooter(locale["EVENTLOG_USER_ID", message.member.user.id], null)
 
 						textChannel.sendMessage(embed.build()).queue()
-
-						storedMessage.content = message.contentRaw
-
-						loritta save storedMessage
 					}
+					storedMessage.content = message.contentRaw
+
+					loritta save storedMessage
 				}
 			}
 		} catch (e: Exception) {
