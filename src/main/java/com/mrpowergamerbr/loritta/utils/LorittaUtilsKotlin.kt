@@ -62,9 +62,9 @@ fun ignoreRequest(): Boolean {
 	if (isOnCooldown)
 		return true
 
-	if (activeCount > 500) {
-		LorittaUtilsKotlin.logger.warn { "Muitos requests em um curto período de tempo!!!" }
+	if (activeCount > 2000) {
 		ignoreRequestCooldown = System.currentTimeMillis()
+		LorittaUtilsKotlin.logger.warn { "Muitos requests em um curto período de tempo!!!" }
 		return true
 	}
 
