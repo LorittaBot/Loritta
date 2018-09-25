@@ -55,13 +55,7 @@ class ExperienceModule : MessageReceivedModule {
 
 					val userData = serverConfig.getUserData(event.member!!.user.id)
 					userData.xp = userData.xp + gainedXp
-					loritta.serversColl.updateOne(
-							Filters.and(
-									Filters.eq("_id", serverConfig.guildId),
-									Filters.eq("guildUserData.userId", userData.userId)
-							),
-							Updates.inc("guildUserData.$.xp", gainedXp)
-					)
+					loritta.updateLorittaGuildUserData(serverConfig, userData.userId, Updates.inc("guildUserData.$.xp", gainedXp))
 				}
 			}
 		}
