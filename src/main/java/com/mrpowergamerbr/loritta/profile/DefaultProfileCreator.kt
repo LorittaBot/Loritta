@@ -62,14 +62,12 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		val position = loritta.usersColl.find(Filters.gt("xp", userProfile.xp)).count() + 1
-
 		val guildIcon = LorittaUtils.downloadImage(guild?.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png").getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 562, 21, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("#$position / ${userProfile.xp} XP", 562, 39, 800 - 6)
+		graphics.drawText("${userProfile.xp} XP", 562, 39, 800 - 6)
 
 		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == userProfile.userId } + 1
 		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == userProfile.userId }

@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.profile
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -74,14 +73,12 @@ class NostalgiaProfileCreator : ProfileCreator {
 
 		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 522, 800 - 6, 600, graphics.fontMetrics, graphics)
 
-		val position = loritta.usersColl.find(Filters.gt("xp", userProfile.xp)).count() + 1
-
 		val shiftY = 42
 
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 159, 21 + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("#$position / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
+		graphics.drawText("${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
 
 		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == userProfile.userId } + 1
 		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == userProfile.userId }

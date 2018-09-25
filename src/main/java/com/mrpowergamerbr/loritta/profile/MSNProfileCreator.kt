@@ -1,10 +1,11 @@
 package com.mrpowergamerbr.loritta.profile
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
@@ -96,14 +97,12 @@ class MSNProfileCreator : ProfileCreator {
 		ImageUtils.drawTextWrapSpaces("${user.name} diz", 267, 302, 768, 1000, graphics.fontMetrics, graphics)
 		ImageUtils.drawTextWrapSpaces(/* "Olá, meu nome é ${user.name}! Atualmente eu tenho ${userProfile.dreams} Sonhos, já recebi ${userProfile.receivedReputations.size} reputações, estou em #$position (${userProfile.xp} XP) no rank global e estou em #$localPosition (${xpLocal?.xp} XP) no rank do ${guild.name}!\n\n${userProfile.aboutMe}" */ aboutMe, 297, 326, 768, 1000, graphics.fontMetrics, graphics)
 
-		val position = loritta.usersColl.find(Filters.gt("xp", userProfile.xp)).count() + 1
-
 		val shiftY = 291
 
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 4, 21 + shiftY, 244)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("#$position / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
+		graphics.drawText("${userProfile.xp} XP", 4, 39  + shiftY, 244)
 
 		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == userProfile.userId } + 1
 		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == userProfile.userId }
