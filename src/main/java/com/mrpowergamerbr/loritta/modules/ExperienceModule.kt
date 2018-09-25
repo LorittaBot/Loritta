@@ -55,7 +55,8 @@ class ExperienceModule : MessageReceivedModule {
 
 					val userData = serverConfig.getUserData(event.member!!.user.id)
 					userData.xp = userData.xp + gainedXp
-					loritta.updateLorittaGuildUserData(serverConfig, userData.userId, Updates.inc("guildUserData.$.xp", gainedXp))
+					loritta save serverConfig
+					// loritta.updateLorittaGuildUserData(serverConfig, userData.userId, Updates.inc("guildUserData.$.xp", gainedXp))
 				}
 			}
 		}
