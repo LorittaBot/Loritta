@@ -160,7 +160,6 @@
             <artifactId>pebble</artifactId>
             <version>3.0.4</version>
         </dependency>
-
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
@@ -199,7 +198,7 @@
         <dependency>
             <groupId>com.github.FredBoat</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>484c5eda96</version>
+            <version>125b074065</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
