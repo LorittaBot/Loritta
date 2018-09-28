@@ -180,19 +180,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (isUserStillBanned(lorittaProfile))
 					return@execute
 
-				// Primeiro os comandos vanilla da Loritta(tm)
-				loritta.commandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
-					if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@execute
-					}
-				}
-
-				// E depois os comandos usando JavaScript (Nashorn)
-				serverConfig.nashornCommands.forEach { cmd ->
-					if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@execute
-					}
-				}
+				// Executar comandos
+				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+					return@execute
 
 				loritta.messageInteractionCache.values.forEach {
 					if (it.onMessageReceived != null)
@@ -256,11 +246,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			)
 
 			// Comandos vanilla da Loritta
-			loritta.commandManager.commandMap.forEach { cmd ->
-				if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-					return@execute
-				}
-			}
+			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+				return@execute
 		}
 	}
 
@@ -304,19 +291,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						return@execute
 				}
 
-				// Primeiro os comandos vanilla da Loritta(tm)
-				loritta.commandManager.commandMap.filter{ !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }.forEach { cmd ->
-					if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@execute
-					}
-				}
-
-				// E depois os comandos usando JavaScript (Nashorn)
-				serverConfig.nashornCommands.forEach { cmd ->
-					if (cmd.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@execute
-					}
-				}
+				// Executar comandos
+				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+					return@execute
 			}
 		}
 	}
