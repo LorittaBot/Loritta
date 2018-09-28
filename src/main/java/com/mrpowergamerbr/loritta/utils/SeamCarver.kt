@@ -56,6 +56,18 @@ object SeamCarver {
 	private fun computeEnergy(image: BufferedImage): Array<DoubleArray> {
 		val width = image.width
 		val height = image.height
+		val colors = Array(width) { IntArray(height) }
+
+		// Fazer cache de valores para evitar getRGBs desnecessários
+		fun getColor(x: Int, y: Int): Int {
+			if (colors[x][y] != 0)
+				return colors[x][y]
+
+			val rgb = image.getRGB(x, y)
+			colors[x][y] = rgb
+			return rgb
+		}
+
 		val energyTable = Array(width) { DoubleArray(height) }
 
 		// Loop over every pixel in the image and compute its energy.
@@ -68,30 +80,30 @@ object SeamCarver {
 
 				if (x == 0) {
 					// leftmost column
-					x1Pixel = image.getRGB(x, y)
-					x2Pixel = image.getRGB(x + 1, y)
+					x1Pixel = getColor(x, y)
+					x2Pixel = getColor(x + 1, y)
 				} else if (x == width - 1) {
 					// rightmost column
-					x1Pixel = image.getRGB(x - 1, y)
-					x2Pixel = image.getRGB(x, y)
+					x1Pixel = getColor(x - 1, y)
+					x2Pixel = getColor(x, y)
 				} else {
 					// middle columns
-					x1Pixel = image.getRGB(x - 1, y)
-					x2Pixel = image.getRGB(x + 1, y)
+					x1Pixel = getColor(x - 1, y)
+					x2Pixel = getColor(x + 1, y)
 				}
 
 				if (y == 0) {
 					// bottom row
-					y1Pixel = image.getRGB(x, y)
-					y2Pixel = image.getRGB(x, y + 1)
+					y1Pixel = getColor(x, y)
+					y2Pixel = getColor(x, y + 1)
 				} else if (y == height - 1) {
 					// top row
-					y1Pixel = image.getRGB(x, y - 1)
-					y2Pixel = image.getRGB(x, y)
+					y1Pixel = getColor(x, y - 1)
+					y2Pixel = getColor(x, y)
 				} else {
 					// middle rows
-					y1Pixel = image.getRGB(x, y - 1)
-					y2Pixel = image.getRGB(x, y + 1)
+					y1Pixel = getColor(x, y - 1)
+					y2Pixel = getColor(x, y + 1)
 				}
 
 				// we now have all the pixels we need, so we find the

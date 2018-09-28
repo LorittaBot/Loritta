@@ -298,7 +298,7 @@ class CommandManager {
 	 */
 	fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
-		
+
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(command)
 		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
