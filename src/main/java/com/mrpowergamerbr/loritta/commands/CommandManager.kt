@@ -267,7 +267,6 @@ class CommandManager {
 	}
 
 	fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
-		val message = ev.message.contentDisplay
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -298,6 +297,8 @@ class CommandManager {
 	 * @return            if the command was handled or not
 	 */
 	fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+		val message = ev.message.contentDisplay
+		
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(command)
 		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
