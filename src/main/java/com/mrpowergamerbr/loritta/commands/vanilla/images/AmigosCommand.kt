@@ -15,6 +15,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", "myfriends"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AMIGOS_DESCRIPTION"]
 	}
@@ -47,7 +51,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		contextImage9 = contextImage9.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
 		val finalImage = BufferedImage(384, 384, BufferedImage.TYPE_INT_ARGB)
-		val graphics = finalImage.graphics;
+		val graphics = finalImage.graphics
 
 		graphics.drawImage(contextImage, 0, 0, null)
 		graphics.drawImage(contextImage2, 128, 0, null)
@@ -59,8 +63,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		graphics.drawImage(contextImage8, 128, 256, null)
 		graphics.drawImage(contextImage9, 256, 256, null)
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "thx.png"))
-		graphics.drawImage(template, 0, 0, null)
+		graphics.drawImage(TEMPLATE, 0, 0, null)
 
 		context.sendFile(finalImage, "thx.png", context.getAsMention(true));
 	}

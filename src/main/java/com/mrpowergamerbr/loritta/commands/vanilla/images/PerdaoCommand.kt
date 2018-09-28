@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -11,6 +10,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "perdao.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["PERDAO_DESCRIPTION"]
 	}
@@ -30,14 +33,12 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "perdao.png")); // Template
-
 		// RULE OF THREE!!11!
 		// larguraOriginal - larguraDoContextImage
 		// alturaOriginal - X
-		val newHeight = (contextImage.width * template.height) / template.width
+		val newHeight = (contextImage.width * TEMPLATE.height) / TEMPLATE.width
 
-		val scaledTemplate = template.getScaledInstance(contextImage.width, Math.max(newHeight, 1), BufferedImage.SCALE_SMOOTH)
+		val scaledTemplate = TEMPLATE.getScaledInstance(contextImage.width, Math.max(newHeight, 1), BufferedImage.SCALE_SMOOTH)
 		contextImage.graphics.drawImage(scaledTemplate, 0, contextImage.height - scaledTemplate.getHeight(null), null);
 
 		context.sendFile(contextImage, "perdao.png", context.getAsMention(true));

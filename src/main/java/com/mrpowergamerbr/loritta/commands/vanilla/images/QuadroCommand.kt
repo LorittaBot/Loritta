@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -12,6 +11,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "wolverine.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["QUADRO_DESCRIPTION"]
 	}
@@ -31,13 +34,12 @@ class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), Co
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "wolverine.png")); // Template
 		val image = BufferedImage(206, 300, BufferedImage.TYPE_INT_ARGB)
 
-		val graphics = image.graphics;
-		val skewed = LorittaImage(contextImage);
+		val graphics = image.graphics
+		val skewed = LorittaImage(contextImage)
 
-		skewed.resize(206, 300);
+		skewed.resize(206, 300)
 
 		// skew image
 		skewed.setCorners(
@@ -52,7 +54,7 @@ class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), Co
 
 		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
 
-		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
+		graphics.drawImage(TEMPLATE, 0, 0, null); // Desenhe o template por cima!
 
 		context.sendFile(image, "quadro.png", context.getAsMention(true));
 	}

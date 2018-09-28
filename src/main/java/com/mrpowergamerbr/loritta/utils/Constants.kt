@@ -43,6 +43,7 @@ object Constants {
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }
 
 	val INVALID_IMAGE_URL: String by lazy {
 		Loritta.config.websiteUrl + "assets/img/oopsie_woopsie_invalid_image.png"

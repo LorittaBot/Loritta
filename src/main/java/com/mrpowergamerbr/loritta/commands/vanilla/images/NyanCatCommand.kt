@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import org.apache.commons.lang3.StringUtils
@@ -13,6 +14,18 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES) {
+	companion object {
+		val CAT_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_left_v2.png")) }
+		val CAT_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_right_v2.png")) }
+		val CAT_MIDDLE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_middle_v2.png")) }
+
+		val DOG_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_left.png")) }
+		val DOG_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_right.png")) }
+		val DOG_MIDDLE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_middle.png")) }
+
+		val DOG_EARS by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("NYANCAT_DESCRIPTION")
 	}
@@ -39,19 +52,19 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		}
 
 		val catLeft = if (!isDog) {
-			ImageIO.read(File(Loritta.ASSETS + "cat_left_v2.png"))
+			CAT_LEFT
 		} else {
-			ImageIO.read(File(Loritta.ASSETS + "dog_left.png"))
+			DOG_LEFT
 		}
 		val catRight = if (!isDog) {
-			ImageIO.read(File(Loritta.ASSETS + "cat_right_v2.png"))
+			CAT_RIGHT
 		} else {
-			ImageIO.read(File(Loritta.ASSETS + "dog_right.png"))
+			DOG_RIGHT
 		}
 		val catMiddle = if (!isDog) {
-			ImageIO.read(File(Loritta.ASSETS + "cat_middle_v2.png"))
+			CAT_MIDDLE
 		} else {
-			ImageIO.read(File(Loritta.ASSETS + "dog_middle.png"))
+			DOG_MIDDLE
 		}
 
 		val bi = BufferedImage(catLeft.getWidth(null) + catRight.getWidth(null) + catMiddle.getWidth(null) * times, catLeft.getHeight(null), BufferedImage.TYPE_INT_ARGB)
@@ -108,9 +121,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		bi.graphics.drawImage(catRight, x, 0, null)
 
 		if (isDog) { // Desenhar as orelhas do dog
-			val dogEars = ImageIO.read(File(Loritta.ASSETS + "dog_ears.png"))
-
-			bi.graphics.drawImage(dogEars, bi.width - 21, 5, null)
+			bi.graphics.drawImage(DOG_EARS, bi.width - 21, 5, null)
 		}
 
 		context.sendFile(ImageUtils.toBufferedImage(bi.getScaledInstance(bi.width * 4, bi.height * 4, BufferedImage.SCALE_AREA_AVERAGING)), "nyan_cat.png", context.getAsMention(true))

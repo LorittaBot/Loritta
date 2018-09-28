@@ -14,6 +14,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cocielo/overlay.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["GANGUE_DESCRIPTION"]
 	}
@@ -36,7 +40,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		val contextImage3 = context.getImageAt(2) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage4 = context.getImageAt(3) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage5 = context.getImageAt(4) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png")); // Template
+		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png"))
 		val overlay = ImageIO.read(File(Loritta.ASSETS + "cocielo/overlay.png")); // Overlay
 
 		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
@@ -57,14 +61,14 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 
 		// Porque nós precisamos rotacionar
 		val rotated = LorittaImage(scaled5)
-		rotated.rotate(335.0);
+		rotated.rotate(335.0)
 
-		template.graphics.drawImage(scaled, 216, 80, null);
-		template.graphics.drawImage(scaled2, 142, 87, null);
-		template.graphics.drawImage(scaled3, 345, 80, null);
-		template.graphics.drawImage(scaled4, 28, 141, null);
-		template.graphics.drawImage(rotated.bufferedImage, 290, -5, null);
-		template.graphics.drawImage(overlay, 0, 0, null);
-		context.sendFile(template, "gangue.png", context.getAsMention(true));
+		template.graphics.drawImage(scaled, 216, 80, null)
+		template.graphics.drawImage(scaled2, 142, 87, null)
+		template.graphics.drawImage(scaled3, 345, 80, null)
+		template.graphics.drawImage(scaled4, 28, 141, null)
+		template.graphics.drawImage(rotated.bufferedImage, 290, -5, null)
+		template.graphics.drawImage(TEMPLATE_OVERLAY, 0, 0, null)
+		context.sendFile(template, "gangue.png", context.getAsMention(true))
 	}
 }

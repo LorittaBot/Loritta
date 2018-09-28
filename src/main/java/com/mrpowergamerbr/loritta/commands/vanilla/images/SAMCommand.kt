@@ -11,6 +11,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class SAMCommand : AbstractCommand("sam", listOf("southamericamemes"), CommandCategory.IMAGES) {
+	companion object {
+		val SAM_LOGO by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "selo_sam.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SAM_DESCRIPTION"]
 	}
@@ -36,10 +40,8 @@ class SAMCommand : AbstractCommand("sam", listOf("southamericamemes"), CommandCa
 
 		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var seloSouthAmericaMemes: Image = ImageIO.read(File(Loritta.ASSETS + "selo_sam.png"))
-
 		val height = (image.height / div).toInt() // Baseando na altura
-		seloSouthAmericaMemes = seloSouthAmericaMemes.getScaledInstance(height, height, Image.SCALE_SMOOTH)
+		val seloSouthAmericaMemes = SAM_LOGO.getScaledInstance(height, height, Image.SCALE_SMOOTH)
 
 		val x = Loritta.RANDOM.nextInt(0, Math.max(1, image.width - seloSouthAmericaMemes.getWidth(null)))
 		val y = Loritta.RANDOM.nextInt(0, Math.max(1, image.height - seloSouthAmericaMemes.getHeight(null)))

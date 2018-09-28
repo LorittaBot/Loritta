@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -13,6 +12,9 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "ata.png")) }
+	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("ATA_DESCRIPTION")
@@ -32,7 +34,6 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = ImageIO.read(File(Loritta.ASSETS + "ata.png")); // Template
 		val base = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(300, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
@@ -43,7 +44,7 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 				96F, 138F)
 
 		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null)
-		base.graphics.drawImage(template, 0, 0, null)
+		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
 		context.sendFile(base, "ata.png", context.getAsMention(true))
 	}

@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -12,6 +11,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "painting"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "romero_britto.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["ROMEROBRITTO_DESCRIPTION"];
 	}
@@ -31,7 +34,6 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0, 25, 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "romero_britto.png")); // Template
 		val image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 
 		val graphics = image.graphics;
@@ -52,7 +54,7 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 
 		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
 
-		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
+		graphics.drawImage(TEMPLATE, 0, 0, null); // Desenhe o template por cima!
 
 		context.sendFile(image, "romero_britto.png", context.getAsMention(true));
 	}

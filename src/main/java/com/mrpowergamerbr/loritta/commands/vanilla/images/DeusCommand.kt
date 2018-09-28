@@ -28,12 +28,12 @@ class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGE
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		var template = ImageIO.read(File(Loritta.ASSETS + "deus.png")); // Template
+		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val template = ImageIO.read(File(Loritta.ASSETS + "deus.png")) // Template
 
-		var scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
-		template.graphics.drawImage(scaled, 1, 1, null);
+		val scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
+		template.graphics.drawImage(scaled, 1, 1, null)
 
-		context.sendFile(template, "deus.png", context.getAsMention(true));
+		context.sendFile(template, "deus.png", context.getAsMention(true))
 	}
 }

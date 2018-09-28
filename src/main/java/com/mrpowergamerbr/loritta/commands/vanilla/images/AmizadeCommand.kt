@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -16,6 +17,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "amizade_overlay.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("AMIZADE_DESCRIPTION")
 	}
@@ -53,8 +58,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			graphics.drawImage(avatar2.getScaledInstance(111, 120, BufferedImage.SCALE_SMOOTH), 289, 180, null)
 
 			// E colocar o overlay da imagem
-			val overlay = ImageIO.read(File(Loritta.ASSETS + "amizade_overlay.png")); // Template
-			graphics.drawImage(overlay, 0, 0, null)
+			graphics.drawImage(TEMPLATE_OVERLAY, 0, 0, null)
 
 			var font = graphics.font.deriveFont(21F)
 			graphics.font = font

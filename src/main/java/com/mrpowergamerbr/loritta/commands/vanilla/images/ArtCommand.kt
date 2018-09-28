@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -13,17 +12,20 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class ArtCommand : AbstractCommand("art", listOf("arte"), category = CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "art.png")) }
+	}
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.get("ART_Description")
 	}
 
 	override fun getExample(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -32,7 +34,6 @@ class ArtCommand : AbstractCommand("art", listOf("arte"), category = CommandCate
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = ImageIO.read(File(Loritta.ASSETS + "art.png")) // Template
 		val base = BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(400, 400, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
@@ -43,7 +44,7 @@ class ArtCommand : AbstractCommand("art", listOf("arte"), category = CommandCate
 				13f, 369f)
 
 		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null);
-		base.graphics.drawImage(template, 0, 0, null)
+		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
 		context.sendFile(base, "art.png", context.getAsMention(true));
 	}

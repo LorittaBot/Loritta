@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -11,6 +10,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class SustoCommand : AbstractCommand("fright", listOf("susto"), CommandCategory.IMAGES) {
+	companion object {
+		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "loritta_susto.png")) }
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["SUSTO_Description"]
 	}
@@ -33,8 +36,7 @@ class SustoCommand : AbstractCommand("fright", listOf("susto"), CommandCategory.
 		val base = BufferedImage(191, 300, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(84, 63, BufferedImage.SCALE_SMOOTH)
 		base.graphics.drawImage(scaled, 61, 138, null);
-		val template = ImageIO.read(File(Loritta.ASSETS + "loritta_susto.png")); // Template
-		base.graphics.drawImage(template, 0, 0, null)
+		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
 		context.sendFile(base, "loritta_susto.png", context.getAsMention(true));
 	}
