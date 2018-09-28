@@ -1,20 +1,24 @@
 package com.mrpowergamerbr.loritta.website
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.Lists
 import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
+import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
+import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
+import com.mitchellbosecke.pebble.template.PebbleTemplate
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
-import mu.KotlinLogging
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
+import mu.KotlinLogging
 import org.jooby.Jooby
 import org.jooby.Kooby
 import org.jooby.internal.SessionManager
@@ -153,6 +157,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
 		private val logger = KotlinLogging.logger {}
+		val templateCache = Caffeine.newBuilder().build<String, PebbleTemplate>().asMap()
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
@@ -182,7 +187,13 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 		val fl = FileLoader()
 		fl.prefix = frontendFolder
-		ENGINE = PebbleEngine.Builder().cacheActive(false).strictVariables(true).loader(fl).build()
+		ENGINE = PebbleEngine.Builder().cacheActive(true) // Deixar o cache ativo ajuda na performance ao usar "extends" em templates (e não ao carregar templates de arquivos!)
+				.templateCache(CaffeineTemplateCache()) // Utilizar o cache do Caffeine em vez do padrão usando ConcurrentMapTemplateCache
+				.tagCache(CaffeineTagCache()) // Cache para tags de {% cache %} do Pebble
+				.allowGetClass(true)
+				.strictVariables(true)
+				.loader(fl)
+				.build()
 	}
 
 	enum class UserPermissionLevel {
@@ -191,8 +202,9 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 }
 
 fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
-	// variables["websiteUrl"] = WEBSITE_URL
 	val writer = StringWriter()
-	LorittaWebsite.ENGINE.getTemplate(file).evaluate(writer, variables)
+	// Para evitar hits ao disco, vamos fazer cache dos templates do Pebble
+	val template = LorittaWebsite.templateCache.getOrPut(file) { LorittaWebsite.ENGINE.getTemplate(file) }
+	template.evaluate(writer, variables)
 	return writer.toString()
 }
