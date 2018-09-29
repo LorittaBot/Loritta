@@ -34,7 +34,6 @@ import java.io.StringReader
 import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 fun Image.toBufferedImage() : BufferedImage {
@@ -51,24 +50,6 @@ fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY
 
 fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
-}
-
-var ignoreRequestCooldown = 0L
-
-fun ignoreRequest(): Boolean {
-	val activeCount = (loritta.executor as ThreadPoolExecutor).activeCount
-	val isOnCooldown = 7500 >= System.currentTimeMillis() - ignoreRequestCooldown
-
-	if (isOnCooldown)
-		return true
-
-	if (activeCount > 2000) {
-		ignoreRequestCooldown = System.currentTimeMillis()
-		LorittaUtilsKotlin.logger.warn { "Muitos requests em um curto período de tempo!!!" }
-		return true
-	}
-
-	return false
 }
 
 val User.patreon: Boolean

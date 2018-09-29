@@ -39,9 +39,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			try {
 				val member = event.member
@@ -217,9 +214,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 			val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
@@ -259,9 +253,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
-			if (ignoreRequest())
-				return
-
 			loritta.executor.execute {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)

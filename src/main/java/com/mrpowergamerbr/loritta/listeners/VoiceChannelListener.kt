@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
-import com.mrpowergamerbr.loritta.utils.ignoreRequest
 import mu.KotlinLogging
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
@@ -14,13 +13,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	private val logger = KotlinLogging.logger {}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-		if (ignoreRequest())
-			return
-
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {
@@ -58,9 +51,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {

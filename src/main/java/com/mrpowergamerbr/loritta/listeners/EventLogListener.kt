@@ -58,9 +58,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -132,9 +129,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		if (!handledUsernameChanges.containsKey(event.user.id)) {
 			handledUsernameChanges[event.user.id] = UserMetaHolder(event.oldName, null)
 		} else {
@@ -152,9 +146,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onUserUpdateDiscriminator(event: UserUpdateDiscriminatorEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		if (!handledUsernameChanges.containsKey(event.user.id)) {
@@ -235,9 +226,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
@@ -298,9 +286,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
@@ -355,9 +340,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {
@@ -418,9 +400,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildBan(event: GuildBanEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {
@@ -489,9 +468,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (ignoreRequest())
-			return
-
 		loritta.executor.execute {
 			// Fazer relay de unbans
 			if (event.guild.id == "297732013006389252") {
@@ -547,9 +523,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (ignoreRequest())
 			return
 
 		loritta.executor.execute {
