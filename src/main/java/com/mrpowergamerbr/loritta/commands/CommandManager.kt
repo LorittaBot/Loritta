@@ -540,9 +540,13 @@ class CommandManager {
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
+				var reply = "\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]
+
+				if (!e.message.isNullOrEmpty())
+					reply + " ${e.message!!.escapeMentions()}"
 
 				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk())
-					ev.channel.sendMessage("\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]).queue()
+					ev.channel.sendMessage(reply).queue()
 				return true
 			}
 		}

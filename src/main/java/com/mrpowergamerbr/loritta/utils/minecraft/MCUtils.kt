@@ -35,7 +35,7 @@ object MCUtils {
 
 		if (!connection.success())
 			return null
-		
+
 		val profile = connection.body()
 		val array = jsonParser.parse(profile).array
 
