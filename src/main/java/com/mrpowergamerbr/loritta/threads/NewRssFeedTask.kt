@@ -51,6 +51,8 @@ class NewRssFeedTask : Runnable {
 				try {
 					logger.info("Verificando link $rssFeedLink...")
 					val request = HttpRequest.get(rssFeedLink)
+							.connectTimeout(15000)
+							.readTimeout(15000)
 							.userAgent(Constants.USER_AGENT)
 
 					val statusCode = request.code()
