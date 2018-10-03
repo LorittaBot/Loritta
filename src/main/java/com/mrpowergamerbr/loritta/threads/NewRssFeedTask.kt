@@ -8,16 +8,18 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
 import com.rometools.rome.io.SyndFeedInput
-import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 class NewRssFeedTask : Runnable {
 	companion object {
 		var storedLastEntries = ConcurrentHashMap<String, MutableSet<String>>()
 		val logger = LoggerFactory.getLogger(AminoRepostTask::class.java)
+		val coroutineDispatcher = Executors.newScheduledThreadPool(64).asCoroutineDispatcher()
 	}
 
 	override fun run() {
@@ -47,7 +49,7 @@ class NewRssFeedTask : Runnable {
 
 		// Agora iremos verificar os canais
 		val deferred = rssFeedLinks.map { rssFeedLink ->
-			launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
+			launch(coroutineDispatcher) {
 				try {
 					logger.info("Verificando link $rssFeedLink...")
 					val request = HttpRequest.get(rssFeedLink)
