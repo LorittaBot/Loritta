@@ -5,6 +5,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.utils.extensions.success
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * Classe de utilidades relacionadas ao Minecraft (como UUID query)
  */
 object MCUtils {
-	val username2uuid = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
+	val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
 	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
 
 	fun getUniqueId(player: String): String? {
@@ -28,11 +29,14 @@ object MCUtils {
 		val payload = JsonArray()
 		payload.add(player)
 
-		val profile = HttpRequest.post("https://api.mojang.com/profiles/minecraft")
+		val connection = HttpRequest.post("https://api.mojang.com/profiles/minecraft")
 				.contentType("application/json")
 				.send(payload.toString())
-				.body()
 
+		if (!connection.success())
+			return null
+		
+		val profile = connection.body()
 		val array = jsonParser.parse(profile).array
 
 		array.forEach {
@@ -48,17 +52,16 @@ object MCUtils {
 	}
 
 	fun getUserProfile(uuid: String): MCTextures? {
-		if (uuid2profile.contains(uuid)) {
+		if (uuid2profile.contains(uuid))
 			return uuid2profile[uuid]
-		}
 
-		// val proxy = getProxy()
-		// println("Using proxy $proxy")
-		val rawJson = HttpRequest.get("https://sessionserver.mojang.com/session/minecraft/profile/$uuid")
-				// .useProxy(proxy.first, proxy.second)
+		val connection = HttpRequest.get("https://sessionserver.mojang.com/session/minecraft/profile/$uuid")
 				.contentType("application/json")
-				.body()
 
+		if (!connection.success())
+			return null
+
+		val rawJson = connection.body()
 		val profile = jsonParser.parse(rawJson).obj
 
 		val textureValue = profile["properties"].array.firstOrNull { it["name"].nullString == "textures" }
