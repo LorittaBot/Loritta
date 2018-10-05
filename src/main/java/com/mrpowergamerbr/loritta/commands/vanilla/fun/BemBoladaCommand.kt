@@ -192,7 +192,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 				"Por que o bombeiro não gosta de andar?\n\nPorque ele socorre.",
 				"Por que a aranha precisa de você?\n\nPorque é uma \"araqui need you\".",
 				"Quantos graus tem um leão morto?\n\n360 graus, porque é uma ex-fera.",
-				"Qual a maior palavra que existe no volabulário português?\n\nArroz, porque começa com A e termina com Z.",
+				"Qual a maior palavra que existe no vocabulário português?\n\nArroz, porque começa com A e termina com Z.",
 				"No avião havia 4 romanos e 1 americano. Qual o nome da aeromoça?\n\nIvone.",
 				"Por que a cobra queria uma escova?\n\nPorque ela cansou de Serpente.",
 				"Qual a diferença entre o pastor… (Essa vai dar bosta)",
