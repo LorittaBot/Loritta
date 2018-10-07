@@ -19,11 +19,11 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MESSAGE_MANAGE)
+		return listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_CHANNEL)
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MESSAGE_MANAGE)
+		return listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_CHANNEL)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -41,12 +41,19 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 
 			if (0 >= seconds) {
 				context.config.slowModeChannels.remove(context.event.textChannel!!.id)
+				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
+					context.message.textChannel.manager.setSlowmode(0).queue()
+
 				loritta save context.config
 
 				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
+
 			context.config.slowModeChannels[context.event.textChannel!!.id] = seconds
+			if (seconds in 0..120 && context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
+				context.message.textChannel.manager.setSlowmode(seconds).queue()
+
 			loritta save context.config
 
 			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
