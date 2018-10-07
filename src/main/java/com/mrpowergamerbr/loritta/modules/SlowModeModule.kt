@@ -30,6 +30,11 @@ class SlowModeModule : MessageReceivedModule {
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val delay = serverConfig.slowModeChannels[event.channel.id]!!
+
+		if (delay in 0..120 && event.textChannel!!.slowmode != delay && event.guild!!.selfMember.hasPermission(event.textChannel, Permission.MANAGE_CHANNEL)) {
+			event.textChannel.manager.setSlowmode(delay).queue()
+		}
+
 		val key = event.channel.id + "-" + event.author.name
 		val lastMessageSent = slowModeDelay.getOrDefault(key, 0L)
 

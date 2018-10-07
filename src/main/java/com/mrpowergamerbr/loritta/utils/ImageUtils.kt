@@ -329,7 +329,7 @@ object ImageUtils {
 						graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
 						currentX += width
 					}
-					
+
 					continue
 				}
 				graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
