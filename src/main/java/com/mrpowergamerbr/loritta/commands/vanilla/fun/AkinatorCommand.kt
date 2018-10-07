@@ -100,7 +100,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		context.metadata["signature"] = signature
 		context.metadata["step"] = step
 
-		val message = context.sendMessage(context.getAsMention(true), builder.build())
+		val message = context.sendMessageComplete(context.getAsMention(true), builder.build())
 
 		message.onReactionAddByAuthor(context) {
 			val apiEndpoint = getApiEndpoint(context.config.localeId)

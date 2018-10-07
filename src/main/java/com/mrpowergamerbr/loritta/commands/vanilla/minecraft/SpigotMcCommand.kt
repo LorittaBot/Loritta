@@ -68,7 +68,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 					}
 					embed.setDescription(format);
 					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
-					val mensagem = context.sendMessage(context.getAsMention(true), embed.build());
+					val mensagem = context.sendMessageComplete(context.getAsMention(true), embed.build());
 
 					mensagem.onReactionAddByAuthor(context) {
 						val resourceId: String;

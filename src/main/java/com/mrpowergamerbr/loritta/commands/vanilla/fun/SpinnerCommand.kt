@@ -1,24 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mongodb.BasicDBObject
-import com.mongodb.client.model.*
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Aggregates.*
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Projections
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
-import com.mrpowergamerbr.loritta.utils.save
-import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import org.bson.BSONObject
 import org.bson.Document
 import java.awt.Color
 import java.awt.Font
@@ -332,7 +324,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 			lowerBound = temp
 		}
 
-		val msg = context.reply(
+		val msg = context.replyComplete(
 				LoriReply(
 						message = context.locale["SPINNER_SPINNING"],
 						prefix = spinnerEmoji
@@ -344,7 +336,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		)
 
 		val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
-			Thread.sleep((time * 1000).toLong());
+			Thread.sleep((time * 1000).toLong())
 
 			if (spinningSpinners.contains(context.userHandle.id)) {
 				val spinner = spinningSpinners[context.userHandle.id]!!

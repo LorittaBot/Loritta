@@ -75,7 +75,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 			setDescription(description)
 		}
 
-		val message = context.sendMessage(embed.build())
+		val message = context.sendMessageComplete(embed.build())
 
 		var allowForward = false
 		var allowBack = false

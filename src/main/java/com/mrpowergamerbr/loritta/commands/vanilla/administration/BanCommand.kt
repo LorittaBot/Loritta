@@ -140,7 +140,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.reply(
+			val message = context.replyComplete(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

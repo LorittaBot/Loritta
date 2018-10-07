@@ -147,7 +147,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.reply(
+			val message = context.replyComplete(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

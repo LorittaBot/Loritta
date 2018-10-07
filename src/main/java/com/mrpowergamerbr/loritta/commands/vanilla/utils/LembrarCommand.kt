@@ -35,7 +35,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				return
 			}
 
-			val reply = context.reply(
+			val reply = context.replyComplete(
 					LoriReply(
 							message = locale["LEMBRAR_SetHour"],
 							prefix = "⏰"
@@ -92,7 +92,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.reason}\n")
 		}
 
-		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "➡") {

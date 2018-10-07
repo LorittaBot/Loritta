@@ -284,7 +284,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		functions.onReactionAddByAuthor = {
 			// ENSINAR
 			if (it.reactionEmote.name == "\uD83D\uDCA1") {
-				val ask = context.reply(
+				val ask = context.replyComplete(
 						LoriReply(
 								context.locale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],
 								"\uD83E\uDD14"

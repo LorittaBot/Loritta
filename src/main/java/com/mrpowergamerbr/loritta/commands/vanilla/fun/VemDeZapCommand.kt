@@ -349,7 +349,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 			val input = context.args.joinToString(" ").escapeMentions()
 
-			val message = context.reply(
+			val message = context.replyComplete(
 					LoriReply(
 							locale["VEMDEZAP_WhatIsTheMood"],
 							"\uD83E\uDD14"
@@ -393,7 +393,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 				message.delete().queue()
 
-				val levelMessage = context.reply(
+				val levelMessage = context.replyComplete(
 						LoriReply(
 								locale["VEMDEZAP_WhatIsTheLevel"],
 								"\uD83E\uDD14"

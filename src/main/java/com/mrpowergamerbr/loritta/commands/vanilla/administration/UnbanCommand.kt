@@ -122,7 +122,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.reply(
+			val message = context.replyComplete(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

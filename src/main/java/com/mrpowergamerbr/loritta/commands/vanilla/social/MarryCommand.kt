@@ -107,7 +107,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			)
 
 			val response = replies.joinToString("\n", transform = { it.build() })
-			val message = context.sendMessage(response)
+			val message = context.sendMessageComplete(response)
 
 			message.onReactionAdd(context) {
 				if (it.reactionEmote.name == "\uD83D\uDC8D" && it.member.user.id == proposeTo.id) {

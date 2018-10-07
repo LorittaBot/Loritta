@@ -63,7 +63,7 @@ reply("Olá, eu me chamo Loritta!");
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
-		return NashornMessage(context.sendMessage(context.getAsMention(true) + mensagem))
+		return NashornMessage(context.sendMessageComplete(context.getAsMention(true) + mensagem))
 	}
 
 	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual.",
@@ -90,7 +90,7 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
-		return NashornMessage(context.sendMessage(mensagem))
+		return NashornMessage(context.sendMessageComplete(mensagem))
 	}
 
 	@Throws(NoSuchFieldException::class, IllegalAccessException::class, IOException::class)
@@ -130,7 +130,7 @@ sendImage(imagem, "😄");
 			return null!!
 		}
 
-		val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
+		val message = NashornMessage(context.sendFileComplete(`is`, "Loritta-NashornCommand.png", mensagem))
 		`is`.close()
 		`os`.close()
 		return message

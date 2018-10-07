@@ -42,7 +42,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 			setColor(Constants.LORITTA_AQUA)
 		}
 
-		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
 
 		var allowForward = false
 		var allowBack = false

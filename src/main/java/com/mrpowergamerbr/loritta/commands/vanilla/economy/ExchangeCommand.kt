@@ -78,7 +78,7 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 					return
 				}
 
-				val message = context.reply(
+				val message = context.replyComplete(
 						LoriReply(
 								"Você está prestes a câmbiar **${howMuch} Sonhos** para **${howMuch * context.config.economyConfig.exchangeRate!!} ${context.config.economyConfig.economyNamePlural}**! Para confirmar, clique em ✅",
 								"\uD83D\uDCB8"
