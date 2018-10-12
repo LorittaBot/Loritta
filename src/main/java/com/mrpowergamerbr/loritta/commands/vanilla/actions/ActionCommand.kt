@@ -62,7 +62,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 
 				val randomImage = files.getRandom()
 
-				val message = context.sendFile(
+				val message = context.sendFileComplete(
 						randomImage,
 						"action.gif",
 						"${getEmoji()} **|** " + getResponse(locale, user, receiver)

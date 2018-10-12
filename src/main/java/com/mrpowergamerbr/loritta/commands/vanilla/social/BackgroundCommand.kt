@@ -36,7 +36,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			return;
 		}
 		val embed = getFirstPageEmbed(context)
-		val message = context.sendMessage(embed);
+		val message = context.sendMessageComplete(embed);
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
@@ -115,7 +115,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 	fun setAsBackground(link0: String, context: CommandContext) {
 		var link = link0
-		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
+		var mensagem = context.sendMessageComplete("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
 
 		val params = getQueryParameters(link)
 

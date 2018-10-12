@@ -80,20 +80,20 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	}
 
 	@JvmOverloads
-	fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
+	fun reply(message: String, prefix: String? = null, forceMention: Boolean = false) {
 		var send = ""
 		if (prefix != null) {
 			send = "$prefix **|** "
 		}
 		send = send + (if (forceMention) userHandle.asMention + " " else getAsMention(true)) + message
-		return sendMessage(send)
+		sendMessage(send)
 	}
 
-	fun reply(vararg loriReplies: LoriReply): Message {
-		return reply(false, *loriReplies)
+	fun reply(vararg loriReplies: LoriReply) {
+		reply(false, *loriReplies)
 	}
 
-	fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
+	fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply) {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
 			message.append(LoriReply().build(this))
@@ -103,35 +103,37 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 			message.append(loriReply.build(this))
 			message.append("\n")
 		}
-		return sendMessage(message.toString())
+		sendMessage(message.toString())
 	}
 
-	fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message {
+	fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply) {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")
 		}
-		return sendFile(image, fileName, message.toString())
+		sendFile(image, fileName, message.toString())
 	}
 
-	fun sendMessage(message: String): Message {
-		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
+	fun sendMessage(message: String) {
+		sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
 	}
 
-	fun sendMessage(message: Message): Message {
+	fun sendMessage(message: Message) {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
 		if (privateReply || cmd is AjudaCommand) {
-			return lorittaUser.user.openPrivateChannel().complete().sendMessage(message).complete()
+			lorittaUser.user.openPrivateChannel().queue {
+				it.sendMessage(message).queue()
+			}
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(message).complete()
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
+				event.channel.sendMessage(message).queue {
+					if (config.deleteMessagesAfter != null)
+						it.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+				}
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -139,24 +141,26 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		}
 	}
 
-	fun sendMessage(message: String, embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+	fun sendMessage(message: String, embed: MessageEmbed) {
+		sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
 	}
 
-	fun sendMessage(embed: MessageEmbed): Message {
+	fun sendMessage(embed: MessageEmbed) {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
 		if (privateReply || cmd is AjudaCommand) {
-			return lorittaUser.user.openPrivateChannel().complete().sendMessage(embed).complete()
+			lorittaUser.user.openPrivateChannel().queue {
+				it.sendMessage(embed).queue()
+			}
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(embed).complete()
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
+				event.channel.sendMessage(embed).queue {
+					if (config.deleteMessagesAfter != null)
+						it.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+				}
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -189,25 +193,25 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		}
 	}
 
-	fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
+	fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null) {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.setEmbed(embed)
-		return sendFile(file, name, builder.build())
+		sendFile(file, name, builder.build())
 	}
 
-	fun sendFile(file: File, name: String, message: Message): Message {
+	fun sendFile(file: File, name: String, message: Message) {
 		val inputStream = file.inputStream()
-		return sendFile(inputStream, name, message)
+		sendFile(inputStream, name, message)
 	}
 
-	fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): Message {
-		return sendFile(image, name, "", embed)
+	fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed) {
+		sendFile(image, name, "", embed)
 	}
 
-	fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
+	fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null) {
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
@@ -216,7 +220,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		return sendFile(image, name, builder.build())
 	}
 
-	fun sendFile(image: BufferedImage, name: String, message: Message): Message {
+	fun sendFile(image: BufferedImage, name: String, message: Message) {
 		val outputStream = ByteArrayOutputStream()
 		outputStream.use {
 			ImageIO.write(image, "png", it)
@@ -227,18 +231,18 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		return sendFile(inputStream, name, message)
 	}
 
-	fun sendFile(inputStream: InputStream, name: String, message: String): Message {
+	fun sendFile(inputStream: InputStream, name: String, message: String) {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
+	fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed) {
 		return sendFile(inputStream, name, "", embed)
 	}
 
-	fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
+	fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null) {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
@@ -247,7 +251,220 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
+	fun sendFile(inputStream: InputStream, name: String, message: Message) {
+		var privateReply = lorittaUser.config.commandOutputInPrivate
+		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
+		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+			privateReply = cmdOptions.commandOutputInPrivate
+		}
+		if (privateReply || cmd is AjudaCommand) {
+			lorittaUser.user.openPrivateChannel().queue {
+				it.sendFile(inputStream, name, message).queue {
+					inputStream.close()
+				}
+			}
+		} else {
+			if (isPrivateChannel || event.textChannel!!.canTalk()) {
+				event.channel.sendFile(inputStream, name, message).queue {
+					inputStream.close()
+
+					if (config.deleteMessagesAfter != null)
+						it.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+				}
+			} else {
+				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+				throw RuntimeException("Sem permissão para enviar uma mensagem!")
+			}
+		}
+	}
+
+	@JvmOverloads
+	@Deprecated(message = "Don't use complete")
+	fun replyComplete(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
+		var send = ""
+		if (prefix != null) {
+			send = "$prefix **|** "
+		}
+		send = send + (if (forceMention) userHandle.asMention + " " else getAsMention(true)) + message
+		return sendMessageComplete(send)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun replyComplete(vararg loriReplies: LoriReply): Message {
+		return replyComplete(false, *loriReplies)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun replyComplete(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
+		val message = StringBuilder()
+		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
+			message.append(LoriReply().build(this))
+			message.append("\n")
+		}
+		for (loriReply in loriReplies) {
+			message.append(loriReply.build(this))
+			message.append("\n")
+		}
+		return sendMessageComplete(message.toString())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun replyComplete(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message {
+		val message = StringBuilder()
+		for (loriReply in loriReplies) {
+			message.append(loriReply.build(this) + "\n")
+		}
+		return sendFileComplete(image, fileName, message.toString())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendMessageComplete(message: String): Message {
+		return sendMessageComplete(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendMessageComplete(message: Message): Message {
+		var privateReply = lorittaUser.config.commandOutputInPrivate
+		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
+		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+			privateReply = cmdOptions.commandOutputInPrivate
+		}
+		if (privateReply || cmd is AjudaCommand) {
+			return lorittaUser.user.openPrivateChannel().complete().sendMessage(message).complete()
+		} else {
+			if (isPrivateChannel || event.textChannel!!.canTalk()) {
+				val sentMessage = event.channel.sendMessage(message).complete()
+				if (config.deleteMessagesAfter != null)
+					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+				return sentMessage
+			} else {
+				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+				throw RuntimeException("Sem permissão para enviar uma mensagem!")
+			}
+		}
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendMessageComplete(message: String, embed: MessageEmbed): Message {
+		return sendMessageComplete(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendMessageComplete(embed: MessageEmbed): Message {
+		var privateReply = lorittaUser.config.commandOutputInPrivate
+		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
+		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+			privateReply = cmdOptions.commandOutputInPrivate
+		}
+		if (privateReply || cmd is AjudaCommand) {
+			return lorittaUser.user.openPrivateChannel().complete().sendMessage(embed).complete()
+		} else {
+			if (isPrivateChannel || event.textChannel!!.canTalk()) {
+				val sentMessage = event.channel.sendMessage(embed).complete()
+				if (config.deleteMessagesAfter != null)
+					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+				return sentMessage
+			} else {
+				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+				throw RuntimeException("Sem permissão para enviar uma mensagem!")
+			}
+		}
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendMessageComplete(webhook: TemmieWebhook?, message: DiscordMessage) {
+		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
+			webhook.sendMessage(message)
+		} else { // Se não, iremos usar embeds mesmo...
+			val builder = EmbedBuilder()
+			builder.setAuthor(message.username, null, message.avatarUrl)
+			builder.setDescription(message.content)
+			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
+
+			for (embed in message.embeds) {
+				builder.setImage(if (embed.image != null) embed.image.url else null)
+				if (embed.title != null) {
+					builder.setTitle(builder.descriptionBuilder.toString() + "\n\n**" + embed.title + "**")
+				}
+				if (embed.description != null) {
+					builder.setDescription(builder.descriptionBuilder.toString() + "\n\n" + embed.description)
+				}
+				if (embed.thumbnail != null) {
+					builder.setThumbnail(embed.thumbnail.url)
+				}
+			}
+			sendMessageComplete(builder.build())
+		}
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
+		// Corrigir erro ao construir uma mensagem vazia
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
+		return sendFileComplete(file, name, builder.build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(file: File, name: String, message: Message): Message {
+		val inputStream = file.inputStream()
+		return sendFileComplete(inputStream, name, message)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(image: BufferedImage, name: String, embed: MessageEmbed): Message {
+		return sendFileComplete(image, name, "", embed)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
+
+		return sendFileComplete(image, name, builder.build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(image: BufferedImage, name: String, message: Message): Message {
+		val outputStream = ByteArrayOutputStream()
+		outputStream.use {
+			ImageIO.write(image, "png", it)
+		}
+
+		val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+
+		return sendFileComplete(inputStream, name, message)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(inputStream: InputStream, name: String, message: String): Message {
+		// Corrigir erro ao construir uma mensagem vazia
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		return sendFileComplete(inputStream, name, builder.build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
+		return sendFileComplete(inputStream, name, "", embed)
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
+		// Corrigir erro ao construir uma mensagem vazia
+		val builder = MessageBuilder()
+		builder.append(if (message.isEmpty()) " " else message)
+		if (embed != null)
+			builder.setEmbed(embed)
+		return sendFileComplete(inputStream, name, builder.build())
+	}
+
+	@Deprecated(message = "Don't use complete")
+	fun sendFileComplete(inputStream: InputStream, name: String, message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {

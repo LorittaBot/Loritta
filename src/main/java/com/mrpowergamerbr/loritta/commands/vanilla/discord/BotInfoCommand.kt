@@ -61,7 +61,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
-		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "loritta") {

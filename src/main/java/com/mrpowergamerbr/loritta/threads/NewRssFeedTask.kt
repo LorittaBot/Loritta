@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.threads
 import com.github.kevinsawicki.http.HttpRequest
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta.Companion.config
-import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
@@ -11,15 +10,15 @@ import com.rometools.rome.io.SyndFeedInput
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 class NewRssFeedTask : Runnable {
 	companion object {
 		var storedLastEntries = ConcurrentHashMap<String, MutableSet<String>>()
-		val logger = LoggerFactory.getLogger(AminoRepostTask::class.java)
-		val coroutineDispatcher = Executors.newScheduledThreadPool(64).asCoroutineDispatcher()
+		private val logger = KotlinLogging.logger {}
+		val coroutineDispatcher = Executors.newScheduledThreadPool(2).asCoroutineDispatcher()
 	}
 
 	override fun run() {
@@ -51,7 +50,7 @@ class NewRssFeedTask : Runnable {
 		val deferred = rssFeedLinks.map { rssFeedLink ->
 			launch(coroutineDispatcher) {
 				try {
-					logger.info("Verificando link $rssFeedLink...")
+					logger.info { "Verificando link $rssFeedLink..." }
 					val request = HttpRequest.get(rssFeedLink)
 							.connectTimeout(15000)
 							.readTimeout(15000)

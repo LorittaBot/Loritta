@@ -265,7 +265,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				if (lastMessage != null)
 					deleteMessagesOnClick.add(lastMessage.id)
 
-				lastMessage = context.sendMessage(embed)
+				lastMessage = context.sendMessageComplete(embed)
 			}
 
 			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick

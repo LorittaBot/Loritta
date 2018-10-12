@@ -82,7 +82,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val setHour = context.reply(
+			val setHour = context.replyComplete(
 					LoriReply(
 							locale["MUTE_SetHour"],
 							"⏰"
@@ -102,7 +102,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					str += " ${locale["BAN_SilentTip"]}"
 				}
 
-				val message = context.reply(
+				val message = context.replyComplete(
 						LoriReply(
 								message = str,
 								prefix = "⚠"

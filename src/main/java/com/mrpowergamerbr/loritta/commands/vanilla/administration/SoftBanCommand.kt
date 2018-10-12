@@ -111,7 +111,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					str += " ${locale["BAN_SilentTip"]}"
 				}
 
-				val message = context.reply(
+				val message = context.replyComplete(
 						LoriReply(
 								message = str,
 								prefix = "⚠"

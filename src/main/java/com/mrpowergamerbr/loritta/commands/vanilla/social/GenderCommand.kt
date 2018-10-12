@@ -24,7 +24,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 				.build()
 
 
-		val message = context.sendMessage(embed)
+		val message = context.sendMessageComplete(embed)
 
 		message.addReaction("male:384048518853296128").queue()
 		message.addReaction("female:384048518337265665").queue()

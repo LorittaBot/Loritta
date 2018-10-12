@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.whirvis.jraknet.RakNet
 import com.whirvis.jraknet.identifier.MinecraftIdentifier
-import com.whirvis.jraknet.util.RakNetUtils
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.net.UnknownHostException
@@ -42,7 +42,7 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 			}
 
 			try {
-				val identifier = RakNetUtils.getServerIdentifier(ip, port)
+				val identifier = RakNet.getServerIdentifier(ip, port)
 
 				if (identifier == null) {
 					// Servidor offline

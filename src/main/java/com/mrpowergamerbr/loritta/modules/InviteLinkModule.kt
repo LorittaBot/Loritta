@@ -6,10 +6,13 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -96,7 +99,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 
 						jobs.add(
-								async(loritta.coroutineDispatcher) {
+								GlobalScope.async(loritta.oldCoroutineDispatcher) {
 									val inviteId = MiscUtils.getInviteId("http://$url")
 											?: MiscUtils.getInviteId("https://$url")
 
@@ -143,7 +146,7 @@ class InviteLinkModule : MessageReceivedModule {
 							codes.forEach {
 								whitelisted.add(it)
 							}
-							launch(loritta.coroutineDispatcher) {
+							launch(loritta.oldCoroutineDispatcher) {
 								callback.invoke()
 							}
 						}
@@ -156,7 +159,7 @@ class InviteLinkModule : MessageReceivedModule {
 				}
 			}
 
-			launch(loritta.coroutineDispatcher) {
+			launch(loritta.oldCoroutineDispatcher) {
 				callback.invoke()
 			}
 		}

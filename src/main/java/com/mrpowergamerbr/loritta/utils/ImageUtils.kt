@@ -1,17 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
-import java.awt.AlphaComposite
-import java.awt.Color
-import java.awt.Font
-import java.awt.FontMetrics
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.Image
-import java.awt.Paint
-import java.awt.Rectangle
-import java.awt.RenderingHints
+import com.google.common.cache.CacheBuilder
+import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
+import java.util.concurrent.TimeUnit
 
 fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 	var currentX = x // X atual
@@ -42,14 +35,13 @@ fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 		idx++
 		val width = fontMetrics.charWidth(c) // Width do char (normalmente é 16)
 		if (!this.font.canDisplay(c)) {
-			try {
-				// Talvez seja um emoji!
-				val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(textToBeDrawn.codePointAt(idx - 1)).substring(2) + ".png"
-				val emoteImage = LorittaUtils.downloadImage(imageUrl)
+			// Talvez seja um emoji!
+			val emoteImage = ImageUtils.getTwitterEmoji(textToBeDrawn, idx)
+			if (emoteImage != null) {
 				this.drawImage(emoteImage.getScaledInstance(this.font.size, this.font.size, BufferedImage.SCALE_SMOOTH), currentX, currentY - this.font.size + 1, null)
 				currentX += fontMetrics.maxAdvance
-			} catch (e: Exception) {
 			}
+
 			continue
 		}
 		this.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
@@ -58,6 +50,22 @@ fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 }
 
 object ImageUtils {
+	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, BufferedImage?>().asMap()
+
+	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
+		try {
+			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
+			if (emotes.containsKey(imageUrl))
+				return emotes[imageUrl]
+
+			val emoteImage = LorittaUtils.downloadImage(imageUrl)
+			emotes[imageUrl] = emoteImage
+			return emoteImage
+		} catch (e: Exception) {
+			return null
+		}
+	}
+
 	/**
 	 * Escreve um texto em um Graphics, fazendo wrap caso necessário
 	 * @param text Texto
@@ -84,15 +92,11 @@ object ImageUtils {
 				currentY += lineHeight
 			}
 			if (!graphics.font.canDisplay(c)) {
-				try {
-					// Talvez seja um emoji!
-					val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png"
-					val emoteImage = LorittaUtils.downloadImage(imageUrl)
+				val emoteImage = getTwitterEmoji(text, idx)
+				if (emoteImage != null) {
 					graphics.drawImage(emoteImage.getScaledInstance(graphics.font.size, graphics.font.size, BufferedImage.SCALE_SMOOTH), currentX, currentY - graphics.font.size + 1, null)
 					currentX += fontMetrics.maxAdvance
-				} catch (e: Exception) {
 				}
-
 				continue
 			}
 			graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
@@ -120,13 +124,12 @@ object ImageUtils {
 			if (font.canDisplay(c)) {
 				graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
 			} else {
-				try {
-					// Talvez seja um emoji!
-					val emoteImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png")
+				// Talvez seja um emoji!
+				val emoteImage = getTwitterEmoji(text, idx)
+				if (emoteImage != null) {
 					graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
 					currentX += width
 					continue
-				} catch (e: Exception) {
 				}
 
 				if (temp.graphics.font.canDisplay(c)) {
@@ -232,13 +235,11 @@ object ImageUtils {
 			idx++
 			val width = graphics.fontMetrics.charWidth(c) // Width do char (normalmente é 16)
 			if (!graphics.font.canDisplay(c)) {
-				try {
-					// Talvez seja um emoji!
-					val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(idx - 1)).substring(2) + ".png"
-					val emoteImage = LorittaUtils.downloadImage(imageUrl)
+				// Talvez seja um emoji!
+				val emoteImage = getTwitterEmoji(text, idx)
+				if (emoteImage != null) {
 					graphics.drawImage(emoteImage.getScaledInstance(graphics.font.size, graphics.font.size, BufferedImage.SCALE_SMOOTH), x, y - graphics.font.size + 1, null)
 					x += graphics.fontMetrics.maxAdvance
-				} catch (e: Exception) {
 				}
 
 				continue
@@ -322,13 +323,11 @@ object ImageUtils {
 				}
 				width = fontMetrics.charWidth(c)
 				if (!graphics.font.canDisplay(c)) {
-					try {
-						// Talvez seja um emoji!
-						val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(str.codePointAt(idx - 1)).substring(2) + ".png"
-						val emoteImage = LorittaUtils.downloadImage(imageUrl)
+					// Talvez seja um emoji!
+					val emoteImage = getTwitterEmoji(str, idx)
+					if (emoteImage != null) {
 						graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
 						currentX += width
-					} catch (e: Exception) {
 					}
 
 					continue

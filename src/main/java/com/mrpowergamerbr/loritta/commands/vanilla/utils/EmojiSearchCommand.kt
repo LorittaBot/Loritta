@@ -3,12 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Emote
@@ -81,7 +77,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			setImage("attachment://emotes.png")
 		}
 
-		val message = context.sendFile(emotesPreview, "emotes.png", embed.build())
+		val message = context.sendFileComplete(emotesPreview, "emotes.png", embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			var index = -1
@@ -105,7 +101,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 					setColor(Constants.DISCORD_BLURPLE)
 				}
 
-				val emoteInfo = context.sendMessage(embed.build())
+				val emoteInfo = context.sendMessageComplete(embed.build())
 
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
 					emoteInfo.addReaction("wumplus:388417805126467594").queue()

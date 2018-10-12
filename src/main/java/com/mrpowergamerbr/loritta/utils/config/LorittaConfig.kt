@@ -20,6 +20,14 @@ class LorittaConfig(
 		val userStatus: OnlineStatus,
 		@JsonProperty("database-name")
 		val databaseName: String,
+		@JsonProperty("postgresql-ip")
+		val postgreSqlIp: String,
+		@JsonProperty("postgresql-port")
+		val postgreSqlPort: String,
+		@JsonProperty("postgresql-user")
+		val postgreSqlUser: String,
+		@JsonProperty("postgresql-password")
+		val postgreSqlPassword: String,
 		@JsonProperty("environment")
 		val environment: EnvironmentType,
 		@JsonProperty("youtube-keys")

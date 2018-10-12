@@ -59,7 +59,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				embed.setColor(Color(217, 66, 52))
 				embed.setDescription(format)
 				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
-				val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
+				val mensagem = context.sendMessageComplete(context.getAsMention(true), embed.build())
 
 				mensagem.onReactionAddByAuthor(context) {
 					if (context.metadata.contains("currentItem")) {

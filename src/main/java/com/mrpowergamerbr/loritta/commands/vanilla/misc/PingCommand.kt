@@ -4,12 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.EmbedBuilder
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String {
@@ -68,7 +66,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				context.sendMessage("```${str}```")
 			}
 		} else {
-			val message = context.reply(
+			val message = context.replyComplete(
 					LoriReply(
 							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
 							prefix = "\uD83C\uDFD3"
