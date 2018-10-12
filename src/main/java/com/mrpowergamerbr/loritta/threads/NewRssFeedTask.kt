@@ -7,9 +7,10 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
 import com.rometools.rome.io.SyndFeedInput
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors
 class NewRssFeedTask : Runnable {
 	companion object {
 		var storedLastEntries = ConcurrentHashMap<String, MutableSet<String>>()
+		var ignoreUrls = ConcurrentHashMap<String, Long>()
 		private val logger = KotlinLogging.logger {}
 		val coroutineDispatcher = Executors.newScheduledThreadPool(1).asCoroutineDispatcher()
 	}
@@ -36,8 +38,20 @@ class NewRssFeedTask : Runnable {
 				val rssFeedConfig = server.rssFeedConfig
 
 				for (feed in rssFeedConfig.feeds) {
-					if (feed.feedUrl != null)
+					if (feed.feedUrl != null) {
+						if (ignoreUrls.contains(feed.feedUrl)) {
+							val diff = System.currentTimeMillis() - ignoreUrls[feed.feedUrl!!]!!
+
+							if (1_800_000 > diff) {
+								continue
+							} else {
+								logger.info("A feed ${feed.feedUrl} será verificada novamente já que o cooldown de 30 minutos já terminou")
+								ignoreUrls.remove(feed.feedUrl!!)
+							}
+						}
+
 						rssFeedLinks.add(feed.feedUrl!!)
+					}
 				}
 
 				list.add(server)
@@ -48,7 +62,7 @@ class NewRssFeedTask : Runnable {
 
 		// Agora iremos verificar os canais
 		val deferred = rssFeedLinks.map { rssFeedLink ->
-			launch(coroutineDispatcher) {
+			GlobalScope.launch(coroutineDispatcher) {
 				try {
 					logger.info { "Verificando link $rssFeedLink..." }
 					val request = HttpRequest.get(rssFeedLink)
@@ -110,6 +124,9 @@ class NewRssFeedTask : Runnable {
 
 					storedLastEntries[rssFeedLink] = entries.map { it.link }.toMutableSet()
 				} catch (e: Exception) {
+					ignoreUrls[rssFeedLink] = System.currentTimeMillis()
+					logger.warn("Ignorando link $rssFeedLink devido a falha ao pegar as informações da feed")
+
 					if (e is ParsingFeedException) // Ignorar erros de parse (de pessoas que colocam links que não são RSS feeds)
 						return@launch
 
