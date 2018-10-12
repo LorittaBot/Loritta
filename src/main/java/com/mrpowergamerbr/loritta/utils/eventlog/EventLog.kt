@@ -105,8 +105,6 @@ object EventLog {
 							storedMessage.content = message.contentRaw
 						}
 					}
-
-					loritta save storedMessage
 				}
 			}
 		} catch (e: Exception) {
