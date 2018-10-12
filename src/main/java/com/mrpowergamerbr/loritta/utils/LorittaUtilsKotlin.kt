@@ -13,7 +13,6 @@ import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
@@ -177,14 +176,6 @@ infix fun <T> Loritta.save(obj: T) {
 	if (obj is LorittaProfile) {
 		loritta.usersColl.replaceOne(
 				Filters.eq("_id", obj.userId),
-				obj,
-				updateOptions
-		)
-		return
-	}
-	if (obj is StoredMessage) {
-		loritta.storedMessagesColl.replaceOne(
-				Filters.eq("_id", obj.messageId),
 				obj,
 				updateOptions
 		)

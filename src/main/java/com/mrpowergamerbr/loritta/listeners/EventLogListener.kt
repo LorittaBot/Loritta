@@ -3,9 +3,15 @@ package com.mrpowergamerbr.loritta.listeners
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.StoredMessage
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.save
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -28,6 +34,8 @@ import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import org.apache.commons.io.IOUtils
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -301,14 +309,19 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", event.messageId)).first()
+					val storedMessage = transaction(Databases.loritta) {
+						StoredMessage.findById(event.messageIdLong)
+					}
+
 					if (storedMessage != null) {
+						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@execute
+
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 
 						embed.setColor(Color(221, 0, 0))
 
-						embed.setAuthor(storedMessage.authorName, null, null)
+						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
 						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
@@ -316,21 +329,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val auditEntry = event.guild.auditLogs.complete().firstOrNull()
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
-								if (auditEntry.targetId == storedMessage.authorId) {
+								if (auditEntry.targetIdLong == storedMessage.authorId) {
 									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user?.asMention ?: "???"] + "\n"
 								}
 							}
 						}
 
-						if (storedMessage.attachments != null && storedMessage.attachments.isNotEmpty()) {
-							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + storedMessage.attachments.joinToString(separator = "\n")
+						if (storedMessage.storedAttachments.isNotEmpty()) {
+							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
 						}
 
 						embed.setDescription(deletedMessage)
 
 						textChannel.sendMessage(embed.build()).queue()
 
-						loritta.storedMessagesColl.deleteOne(Filters.eq("_id", event.messageId))
+						transaction(Databases.loritta) {
+							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
+						}
 						return@execute
 					}
 				}
@@ -357,18 +372,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@execute
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessages = loritta.storedMessagesColl.find(Filters.`in`("_id", event.messageIds)).toMutableList()
+					val storedMessages = transaction(Databases.loritta) {
+						StoredMessage.find { StoredMessages.id inList event.messageIds.map { it.toLong() } }.toMutableList()
+					}
 					if (storedMessages.isNotEmpty()) {
+						val user = lorittaShards.retrieveUserById(storedMessages.first().authorId.toString())
+								?: return@execute
+
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 						embed.setColor(Color(221, 0, 0))
-						embed.setAuthor(storedMessages.first().authorName, null, null)
+						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
 							val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
-							gmt.timeInMillis = message.dateCreated
+							gmt.timeInMillis = message.createdAt
 							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId())
 
 							val dayOfMonth = String.format("%02d", creationTime.dayOfMonth)
@@ -378,7 +398,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val hour = String.format("%02d", creationTime.hour)
 							val minute = String.format("%02d", creationTime.minute)
 
-							val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.authorId}) ${message.authorName}: ${message.content}"
+							val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.authorId}) ${user.name}#${user.discriminator}: ${message.content}"
 							lines.add(line)
 						}
 
@@ -390,7 +410,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
 
-						loritta.storedMessagesColl.deleteMany(Filters.`in`("_id", event.messageIds))
+						transaction(Databases.loritta) {
+							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
+						}
 						return@execute
 					}
 				}

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.eventlog
 
-import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.dao.StoredMessage
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -13,7 +14,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.VoiceChannel
-import org.bson.Document
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.net.URL
 import java.time.Instant
@@ -32,7 +33,15 @@ object EventLog {
 					attachments.add(it.url)
 				}
 
-				loritta save StoredMessage(message.id, message.author.name + "#" + message.author.discriminator, message.contentRaw, message.author.id, message.channel.id, attachments)
+				val storedMessage = transaction(Databases.loritta) {
+					StoredMessage.new(message.idLong) {
+						authorId = message.author.idLong
+						channelId = message.channel.idLong
+						content = message.contentRaw
+						createdAt = System.currentTimeMillis()
+						storedAttachments = attachments.toTypedArray()
+					}
+				}
 
 				// Agora nós iremos fazer reupload dos attachments para o pomf
 				val reuploadedAttachments = mutableListOf<String>()
@@ -50,10 +59,9 @@ object EventLog {
 
 				if (reuploadedAttachments.isNotEmpty()) {
 					// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
-					loritta.storedMessagesColl.updateOne(
-							Filters.eq("_id", message.id),
-							Document("\$set", Document("attachments", reuploadedAttachments))
-					)
+					transaction(Databases.loritta) {
+						storedMessage.storedAttachments = reuploadedAttachments.toTypedArray()
+					}
 				}
 			}
 		} catch (e: Exception) {
@@ -75,7 +83,10 @@ object EventLog {
 					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 						return
 
-					val storedMessage = loritta.storedMessagesColl.find(Filters.eq("_id", message.id)).first()
+					val storedMessage = transaction(Databases.loritta) {
+						StoredMessage.findById(message.idLong)
+					}
+
 					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdit) {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -88,7 +99,12 @@ object EventLog {
 
 						textChannel.sendMessage(embed.build()).queue()
 					}
-					storedMessage.content = message.contentRaw
+
+					if (storedMessage != null) {
+						transaction(Databases.loritta) {
+							storedMessage.content = message.contentRaw
+						}
+					}
 
 					loritta save storedMessage
 				}

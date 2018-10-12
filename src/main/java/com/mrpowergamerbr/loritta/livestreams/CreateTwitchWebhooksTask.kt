@@ -9,9 +9,10 @@ import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -101,7 +102,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.filter { TwitchUtils.userLogin2Id[it] != null }.map { userLogin ->
-				async(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
+				GlobalScope.async(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						val userId = TwitchUtils.userLogin2Id[userLogin]!!
 

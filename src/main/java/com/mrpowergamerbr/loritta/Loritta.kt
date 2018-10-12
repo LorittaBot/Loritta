@@ -19,8 +19,11 @@ import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
+import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
@@ -30,7 +33,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.eventlog.StoredMessage
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
@@ -50,6 +52,8 @@ import net.dv8tion.jda.core.entities.Guild
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.bson.conversions.Bson
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.reflect.Modifier
@@ -123,7 +127,6 @@ class Loritta(config: LorittaConfig) {
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<ServerConfig>
 	lateinit var usersColl: MongoCollection<LorittaProfile>
-	lateinit var storedMessagesColl: MongoCollection<StoredMessage>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
@@ -220,6 +223,7 @@ class Loritta(config: LorittaConfig) {
 		rootLogger.level = Level.OFF
 
 		initMongo()
+		initPostgreSql()
 
 		generateDummyServerConfig()
 
@@ -338,6 +342,14 @@ class Loritta(config: LorittaConfig) {
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
+	fun initPostgreSql() {
+		logger.info("Iniciando PostgreSQL...")
+
+		transaction(Databases.loritta) {
+			SchemaUtils.createMissingTablesAndColumns(StoredMessages)
+		}
+	}
+
 	fun initMongo() {
 		logger.info("Iniciando MongoDB...")
 
@@ -360,7 +372,6 @@ class Loritta(config: LorittaConfig) {
 
 		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
 		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
-		storedMessagesColl = dbCodec.getCollection("storedmessages", StoredMessage::class.java)
 		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
