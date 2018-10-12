@@ -96,7 +96,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 
 						jobs.add(
-								async(loritta.coroutineDispatcher) {
+								async(loritta.oldCoroutineDispatcher) {
 									val inviteId = MiscUtils.getInviteId("http://$url")
 											?: MiscUtils.getInviteId("https://$url")
 
@@ -143,7 +143,7 @@ class InviteLinkModule : MessageReceivedModule {
 							codes.forEach {
 								whitelisted.add(it)
 							}
-							launch(loritta.coroutineDispatcher) {
+							launch(loritta.oldCoroutineDispatcher) {
 								callback.invoke()
 							}
 						}
@@ -156,7 +156,7 @@ class InviteLinkModule : MessageReceivedModule {
 				}
 			}
 
-			launch(loritta.coroutineDispatcher) {
+			launch(loritta.oldCoroutineDispatcher) {
 				callback.invoke()
 			}
 		}

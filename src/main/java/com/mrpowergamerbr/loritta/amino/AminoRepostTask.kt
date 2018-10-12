@@ -56,7 +56,7 @@ class AminoRepostTask : Runnable {
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
-			launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
+			launch(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
 				try {
 					logger.info("Verificando comunidade ${communityId}...")
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")

@@ -101,7 +101,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.filter { TwitchUtils.userLogin2Id[it] != null }.map { userLogin ->
-				async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
+				async(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						val userId = TwitchUtils.userLogin2Id[userLogin]!!
 
@@ -147,7 +147,7 @@ class CreateTwitchWebhooksTask : Runnable {
 				}
 			}
 
-			runBlocking(loritta.coroutineDispatcher) {
+			runBlocking(loritta.oldCoroutineDispatcher) {
 				tasks.onEach {
 					val webhook = it.await()
 

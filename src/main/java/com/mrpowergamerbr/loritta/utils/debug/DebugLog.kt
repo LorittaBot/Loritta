@@ -94,6 +94,8 @@ object DebugLog {
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
+				println("oldCorotuineExecutor: ${(loritta.oldCoroutineExecutor as ThreadPoolExecutor).activeCount}")
+				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}
 			"mongo" -> {

@@ -11,6 +11,8 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -39,18 +41,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
 				if (member == null) {
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
-					return@execute
+					return@launch
 				}
 
 				if (event.guild.owner == null && !warnedBadLoadedGuilds.contains(event.guild.id)) {
 					warnedBadLoadedGuilds.add(event.guild.id)
 					logger.warn { "Guild ${event.guild.id} não foi iniciada corretamente, owner == null!" }
-					return@execute
+					return@launch
 				}
 
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
@@ -73,10 +75,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				lorittaProfile.afkReason = null
 
 				if (isOwnerBanned(ownerProfile, event.guild))
-					return@execute
+					return@launch
 
 				if (isGuildBanned(event.guild))
-					return@execute
+					return@launch
 
 				EventLog.onMessageReceived(serverConfig, event.message)
 
@@ -160,7 +162,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				for (module in modules) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
-						return@execute
+						return@launch
 				}
 
 				for (eventHandler in serverConfig.nashornEventHandlers)
@@ -172,14 +174,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
-					return@execute
+					return@launch
 
 				if (isUserStillBanned(lorittaProfile))
-					return@execute
+					return@launch
 
 				// Executar comandos
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
-					return@execute
+					return@launch
 
 				loritta.messageInteractionCache.values.forEach {
 					if (it.onMessageReceived != null)
@@ -214,7 +216,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 			val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, serverConfig, profile)
@@ -222,11 +224,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val locale = loritta.getLocaleById("default")
 
 			if (isUserStillBanned(profile))
-				return@execute
+				return@launch
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
 				event.channel.sendMessage(locale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, locale["AJUDA_CommandName"]]).queue()
-				return@execute
+				return@launch
 			}
 
 			val lorittaMessageEvent = LorittaMessageEvent(
@@ -241,7 +243,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 			// Comandos vanilla da Loritta
 			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
-				return@execute
+				return@launch
 		}
 	}
 
@@ -253,7 +255,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
-			loritta.executor.execute {
+			GlobalScope.launch(loritta.coroutineDispatcher) {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
@@ -279,12 +281,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				for (module in modules) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
-						return@execute
+						return@launch
 				}
 
 				// Executar comandos
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
-					return@execute
+					return@launch
 			}
 		}
 	}

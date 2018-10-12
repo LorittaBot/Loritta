@@ -9,9 +9,10 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -100,7 +101,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			val webhookCount = AtomicInteger()
 
 			val tasks = notCreatedYetChannels.map {channelId ->
-				async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
+				async(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
 								.form(mapOf(
