@@ -18,7 +18,7 @@ class NewRssFeedTask : Runnable {
 	companion object {
 		var storedLastEntries = ConcurrentHashMap<String, MutableSet<String>>()
 		private val logger = KotlinLogging.logger {}
-		val coroutineDispatcher = Executors.newScheduledThreadPool(2).asCoroutineDispatcher()
+		val coroutineDispatcher = Executors.newScheduledThreadPool(1).asCoroutineDispatcher()
 	}
 
 	override fun run() {

@@ -12,13 +12,13 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
-import lavalink.client.io.jda.JdaLavalink
 
 class AudioManager(val loritta: Loritta) {
 	var playerManager = DefaultAudioPlayerManager()
@@ -78,7 +78,7 @@ class AudioManager(val loritta: Loritta) {
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
-		val musicManager = getGuildAudioPlayer(guild);
+		val musicManager = getGuildAudioPlayer(guild)
 
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
