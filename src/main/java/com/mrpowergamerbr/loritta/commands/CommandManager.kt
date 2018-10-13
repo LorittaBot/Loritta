@@ -95,7 +95,6 @@ class CommandManager {
 		commandMap.add(TextCraftCommand())
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(SimsimiCommand())
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
