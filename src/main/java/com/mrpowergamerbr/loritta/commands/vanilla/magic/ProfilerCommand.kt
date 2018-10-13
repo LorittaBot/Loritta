@@ -1,24 +1,27 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import me.lucko.spark.common.CommandHandler
 import me.lucko.spark.sampler.ThreadDumper
 import me.lucko.spark.sampler.TickCounter
 
 class ProfilerCommand : AbstractCommand("profiler", category = CommandCategory.MAGIC, onlyOwner = true) {
+	val handler = SparkCommandHandler()
+	
 	override fun getDescription(locale: BaseLocale): String {
 		return "Profiler"
 	}
 
 	override fun run(context: CommandContext, locale: BaseLocale) {
-		val handler = SparkCommandHandler(context)
 		handler.handleCommand(context, context.rawArgs)
 	}
 
-	class SparkCommandHandler(val context: CommandContext) : CommandHandler<CommandContext>() {
+	class SparkCommandHandler : CommandHandler<CommandContext>() {
 		override fun getVersion(): String {
 			return "1.0.0"
 		}
@@ -32,11 +35,29 @@ class ProfilerCommand : AbstractCommand("profiler", category = CommandCategory.M
 		}
 
 		override fun sendMessage(message: String) {
-			context.sendMessage(message)
+			val user = lorittaShards.getUserById(Loritta.config.ownerId)
+
+			if (user == null) {
+				println(message)
+				return
+			}
+
+			user.openPrivateChannel().queue {
+				it.sendMessage(message).queue()
+			}
 		}
 
 		override fun sendLink(url: String) {
-			context.sendMessage(url)
+			val user = lorittaShards.getUserById(Loritta.config.ownerId)
+
+			if (user == null) {
+				println(url)
+				return
+			}
+
+			user.openPrivateChannel().queue {
+				it.sendMessage(url).queue()
+			}
 		}
 
 		override fun runAsync(r: Runnable) {
