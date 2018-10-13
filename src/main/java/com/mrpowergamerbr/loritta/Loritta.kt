@@ -45,6 +45,7 @@ import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
+import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.AccountType
 import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
@@ -139,7 +140,7 @@ class Loritta(config: LorittaConfig) {
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
 	var channelListener = ChannelListener(this)
-	var builder: JDABuilder
+	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
@@ -174,16 +175,19 @@ class Loritta(config: LorittaConfig) {
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
-		builder = JDABuilder(AccountType.BOT)
+		builder = DefaultShardManagerBuilder()
+				.setShardsTotal(Loritta.config.shards)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
-				.addEventListener(discordListener)
-				.addEventListener(eventLogListener)
-				.addEventListener(messageListener)
-				.addEventListener(voiceChannelListener)
-				.addEventListener(channelListener)
-				.addEventListener(audioManager.lavalink)
+				.addEventListeners(
+						discordListener,
+						eventLogListener,
+						messageListener,
+						voiceChannelListener,
+						channelListener,
+						audioManager.lavalink
+				)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -287,15 +291,8 @@ class Loritta(config: LorittaConfig) {
 
 		val generateShards = Loritta.config.shards - 1
 
-		for (idx in 0..generateShards) {
-			logger.info("Iniciando Shard $idx...")
-			val shard = builder
-					.useSharding(idx, Loritta.config.shards)
-					.build()
-
-			lorittaShards.shards.add(shard)
-			logger.info("Shard $idx iniciada com sucesso!")
-		}
+		val shardManager = builder.build()
+		lorittaShards.shardManager = shardManager
 
 		thread {
 			socket.start()
