@@ -19,7 +19,6 @@ import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.network.Databases
@@ -179,7 +178,6 @@ class Loritta(config: LorittaConfig) {
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
-				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListener(discordListener)
 				.addEventListener(eventLogListener)
 				.addEventListener(messageListener)

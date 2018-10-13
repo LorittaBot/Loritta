@@ -120,7 +120,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		val categoryCmds = loritta.commandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
-			for (cmd in categoryCmds) {
+			for (cmd in categoryCmds.sortedBy { it.label }) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
 					val toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
 					if ((description + toBeAdded).length > 2048) {
