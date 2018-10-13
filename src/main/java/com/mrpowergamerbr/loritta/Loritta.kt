@@ -14,13 +14,9 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.client.result.UpdateResult
-import com.mrpowergamerbr.loritta.amino.AminoRepostTask
-import com.mrpowergamerbr.loritta.analytics.AnalyticSender
-import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.listeners.*
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.threads.*
@@ -29,25 +25,19 @@ import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
-import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.core.AccountType
-import net.dv8tion.jda.core.JDABuilder
 import net.dv8tion.jda.core.entities.Guild
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
@@ -108,7 +98,6 @@ class Loritta(config: LorittaConfig) {
 	val oldCoroutineDispatcher = oldCoroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
-	val threadPool = Executors.newScheduledThreadPool(40)
 
 	fun createThreadPool(name: String): ExecutorService {
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
@@ -247,17 +236,7 @@ class Loritta(config: LorittaConfig) {
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
-			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
+		LorittaTasks.startTasks()
 
 		RemindersThread().start()
 

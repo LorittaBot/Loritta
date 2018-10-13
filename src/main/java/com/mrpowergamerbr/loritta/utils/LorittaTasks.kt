@@ -1,0 +1,35 @@
+package com.mrpowergamerbr.loritta.utils
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.amino.AminoRepostTask
+import com.mrpowergamerbr.loritta.analytics.AnalyticSender
+import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
+import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
+import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
+import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
+import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
+import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+object LorittaTasks {
+	fun startTasks() {
+		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
+			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
+	}
+
+	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
+		Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleWithFixedDelay(task, initialDelay, delay, unit)
+	}
+}
