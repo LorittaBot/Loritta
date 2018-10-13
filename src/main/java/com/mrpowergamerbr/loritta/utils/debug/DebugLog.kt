@@ -56,7 +56,7 @@ object DebugLog {
 				val mb = 1024 * 1024
 				val runtime = Runtime.getRuntime()
 				println("===[ INFO ]===")
-				println("Shards: ${lorittaShards.shards.size}")
+				println("Shards: ${lorittaShards.getShards().size}")
 				println("Total Servers: ${lorittaShards.getGuildCount()}")
 				println("Used Memory:"
 						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
@@ -66,7 +66,7 @@ object DebugLog {
 				println("Max Memory:" + runtime.maxMemory() / mb);
 			}
 			"shards" -> {
-				val shards = lorittaShards.shards
+				val shards = lorittaShards.getShards()
 
 				for ((index, shard) in shards.withIndex()) {
 					println("SHARD $index (${shard.status.name} - ${shard.ping}ms): ${shard.guilds.size} guilds - ${shard.users.size} members")

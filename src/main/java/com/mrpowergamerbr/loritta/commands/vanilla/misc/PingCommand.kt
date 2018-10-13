@@ -24,7 +24,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val row3 = mutableListOf<String>()
 			val row4 = mutableListOf<String>()
 
-			lorittaShards.shards.sortedBy { it.shardInfo.shardId }.forEach {
+			lorittaShards.getShards().sortedBy { it.shardInfo.shardId }.forEach {
 				row0.add("Shard ${it.shardInfo.shardId}")
 				row1.add("${it.ping}ms")
 				row2.add(it.status.name)

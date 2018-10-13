@@ -94,9 +94,7 @@ class UpdateAvailableCallbackController {
 
 			logger.info("Recebi que um update está disponível no Jenkins! Irei reiniciar para aplicar as novas mudanças recebidas!!!")
 			loritta.website.stop()
-			lorittaShards.shards.forEach {
-				it.shutdownNow()
-			}
+			lorittaShards.shardManager.shutdown()
 			System.exit(0)
 		}
 
