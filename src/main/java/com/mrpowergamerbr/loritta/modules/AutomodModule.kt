@@ -37,7 +37,7 @@ class AutomodModule : MessageReceivedModule {
 				val percentage = (caps / length) * 100
 
 				if (percentage >= capsThreshold) {
-					if (automodCaps.deleteMessage)
+					if (automodCaps.deleteMessage && event.guild!!.selfMember.hasPermission(event.textChannel!!, Permission.MESSAGE_MANAGE))
 						message.delete().queue()
 
 					if (automodCaps.replyToUser && message.textChannel.canTalk()) {
