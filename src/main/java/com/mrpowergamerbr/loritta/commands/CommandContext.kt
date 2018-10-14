@@ -60,8 +60,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		this.locale = locale
 	}
 
-	fun explain() {
-		// cmd.explain(this)
+	suspend fun explain() {
+		cmd.explain(this)
 	}
 
 	/**
