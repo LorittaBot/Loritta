@@ -6,13 +6,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -83,85 +77,92 @@ class InviteLinkModule : MessageReceivedModule {
 			}
 		}
 
+		if (validMatchers.isEmpty())
+			return false
+
 		// Se existe algum link na mensagem...
-		if (validMatchers.isNotEmpty()) {
-			val whitelisted = mutableListOf<String>()
-			whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
+		val whitelisted = mutableListOf<String>()
+		whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
-			val callback = callback@ {
-				val jobs = mutableListOf<Deferred<Boolean>>()
+		val callback = callback@ {
+			val jobs = mutableListOf<Deferred<Boolean>>()
 
-				for (matcher in validMatchers) {
-					while (matcher.find()) {
-						var url = matcher.group()
-						if (url.contains("discord") && url.contains("gg")) {
-							url = "discord.gg" + matcher.group(1).replace(".", "")
-						}
+			for (matcher in validMatchers) {
+				val urls = mutableSetOf<String>()
+				while (matcher.find())
+					urls.add(matcher.group())
 
-						jobs.add(
-								GlobalScope.async(loritta.oldCoroutineDispatcher) {
-									val inviteId = MiscUtils.getInviteId("http://$url")
-											?: MiscUtils.getInviteId("https://$url")
+				for (_url in urls) {
+					var url = _url
+					if (url.contains("discord") && url.contains("gg")) {
+						url = "discord.gg" + matcher.group(1).replace(".", "")
+					}
 
-									if (inviteId != null) { // INVITES DO DISCORD
-										if (inviteId == "attachments" || inviteId == "forums")
-											return@async false
+					jobs.add(
+							GlobalScope.async(loritta.coroutineDispatcher) {
+								val inviteId = MiscUtils.getInviteId("http://$url")
+										?: MiscUtils.getInviteId("https://$url")
 
-										if (whitelisted.contains(inviteId))
-											return@async false
+								if (inviteId != null) { // INVITES DO DISCORD
+									if (inviteId == "attachments" || inviteId == "forums")
+										return@async false
 
-										if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
-											message.delete().queue()
+									if (whitelisted.contains(inviteId))
+										return@async false
 
-										if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
-											val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
-													?: return@async false
+									if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
+										message.delete().queue()
 
-											message.textChannel.sendMessage(toBeSent).queue()
-										}
-										return@async true
+									if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+										val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
+												?: return@async false
+
+										message.textChannel.sendMessage(toBeSent).queue()
 									}
-									return@async false
+									return@async true
 								}
-						)
-					}
+								return@async false
+							}
+					)
+				}
 
-					runBlocking {
-						jobs.forEach {
-							if (it.await()) // true = Sim, tinha um invite
-								return@forEach
+				runBlocking {
+					jobs.forEach {
+						if (it.await()) { // true = Sim, tinha um invite
+							jobs.forEach { it.cancel() }
+							return@forEach
 						}
 					}
 				}
 			}
+		}
 
-			// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
-			// necessário, e, ao pegar, vamos guardar no cache de invites
-			if (inviteBlockerConfig.whitelistServerInvites) {
-				if (!cachedInviteLinks.containsKey(guild.id)) {
-					if (guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-						guild.invites.queue {
-							val codes = it.map { it.code }
-							cachedInviteLinks.put(guild.id, codes)
-							codes.forEach {
-								whitelisted.add(it)
-							}
-							launch(loritta.oldCoroutineDispatcher) {
-								callback.invoke()
-							}
+		// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
+		// necessário, e, ao pegar, vamos guardar no cache de invites
+		if (inviteBlockerConfig.whitelistServerInvites) {
+			if (!cachedInviteLinks.containsKey(guild.id)) {
+				if (guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
+					guild.invites.queue {
+						val codes = it.map { it.code }
+						cachedInviteLinks.put(guild.id, codes)
+						codes.forEach {
+							whitelisted.add(it)
 						}
-						return false
+						GlobalScope.launch(loritta.coroutineDispatcher) {
+							callback.invoke()
+						}
 					}
-				} else {
-					cachedInviteLinks[guild.id]?.forEach {
-						whitelisted.add(it)
-					}
+					return false
+				}
+			} else {
+				cachedInviteLinks[guild.id]?.forEach {
+					whitelisted.add(it)
 				}
 			}
+		}
 
-			launch(loritta.oldCoroutineDispatcher) {
-				callback.invoke()
-			}
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			callback.invoke()
 		}
 
 		return false
