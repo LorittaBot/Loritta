@@ -1,22 +1,28 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.runBlocking
+import me.lucko.spark.common.CommandHandler
+import me.lucko.spark.sampler.ThreadDumper
+import me.lucko.spark.sampler.TickCounter
 
 class ProfilerCommand : AbstractCommand("profiler", category = CommandCategory.MAGIC, onlyOwner = true) {
-	// val handler = SparkCommandHandler()
-	
+	val handler = SparkCommandHandler()
+
 	override fun getDescription(locale: BaseLocale): String {
 		return "Profiler"
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// handler.handleCommand(context, context.rawArgs)
+		handler.handleCommand(context, context.rawArgs)
 	}
 
-	/* class SparkCommandHandler : CommandHandler<CommandContext>() {
+	class SparkCommandHandler : CommandHandler<CommandContext>() {
 		override fun getVersion(): String {
 			return "1.0.0"
 		}
@@ -26,7 +32,9 @@ class ProfilerCommand : AbstractCommand("profiler", category = CommandCategory.M
 		}
 
 		override fun sendMessage(context: CommandContext, message: String) {
-			context.sendMessage(message)
+			runBlocking {
+				context.sendMessage(message)
+			}
 		}
 
 		override fun sendMessage(message: String) {
@@ -66,5 +74,5 @@ class ProfilerCommand : AbstractCommand("profiler", category = CommandCategory.M
 		override fun newTickCounter(): TickCounter {
 			throw UnsupportedOperationException()
 		}
-	} */
+	}
 }
