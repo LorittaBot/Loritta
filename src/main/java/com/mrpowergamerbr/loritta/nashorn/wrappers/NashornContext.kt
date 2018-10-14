@@ -208,7 +208,7 @@ imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
 	fun getImageFromContext(argumento: Int): NashornImage? {
-		val bufferedImage = context.getImageAt(argumento)
+		val bufferedImage = runBlocking { context.getImageAt(argumento) }
 
 		if (bufferedImage != null) {
 			return NashornImage(bufferedImage)

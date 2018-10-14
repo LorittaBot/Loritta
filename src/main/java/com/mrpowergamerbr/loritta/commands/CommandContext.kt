@@ -264,7 +264,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	fun getUserAt(argument: Int): User? {
+	suspend fun getUserAt(argument: Int): User? {
 		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
@@ -328,7 +328,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String? {
+	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String? {
 		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
@@ -364,7 +364,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel, Permission.MESSAGE_HISTORY)) {
 			try {
-				val message = this.message.channel.history.retrievePast(search).complete()
+				val message = this.message.channel.history.retrievePast(search).await()
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
@@ -395,7 +395,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
+	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
 		var toBeDownloaded = getImageUrlAt(argument, search, avatarSize) ?: return null
 
 		// Vamos baixar a imagem!

@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import org.apache.commons.io.IOUtils
@@ -22,7 +23,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 
 		var lastCheck = -1
 		for (i in 0 until 100) {
-			history.retrievePast(100).complete()
+			history.retrievePast(100).await()
 			if (lastCheck == history.retrievedHistory.size)
 				break
 			lastCheck = history.retrievedHistory.size

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -177,7 +178,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
 						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-						user.openPrivateChannel().complete().sendMessage(embed.build()).queue()
+						user.openPrivateChannel().await().sendMessage(embed.build()).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -232,7 +233,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				mutedRole = context.guild.controller.createRole()
 						.setName(context.locale["MUTE_ROLE_NAME"])
 						.setColor(Color.BLACK)
-						.complete()
+						.await()
 			} else {
 				// Se existe, vamos carregar a atual
 				mutedRole = mutedRoles[0]

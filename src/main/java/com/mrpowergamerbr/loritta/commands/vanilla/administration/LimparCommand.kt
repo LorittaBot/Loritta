@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.utils.MiscUtil
@@ -55,7 +56,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 				aux -= cleanUp
 				val toDelete = mutableListOf<String>()
 
-				for (msg in context.event.textChannel!!.history.retrievePast(cleanUp).complete()) {
+				for (msg in context.event.textChannel!!.history.retrievePast(cleanUp).await()) {
 					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
 					if (context.message.mentionedUsers.isNotEmpty()) {
 						if (!context.message.mentionedUsers.contains(msg.author)) {

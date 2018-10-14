@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class ServerInvitesCommand : AbstractCommand("serverinvites", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -16,7 +17,7 @@ class ServerInvitesCommand : AbstractCommand("serverinvites", category = Command
 
 		var list = ""
 		var idx = 0
-		for (invite in LorittaLauncher.loritta.lorittaShards.getGuildById(serverId)!!.invites.complete().sortedByDescending { it.uses }) {
+		for (invite in LorittaLauncher.loritta.lorittaShards.getGuildById(serverId)!!.invites.await().sortedByDescending { it.uses }) {
 			if (idx == 5)
 				break
 			list += "https://discord.gg/" + invite.code + " (" + invite.uses + "/" + invite.maxUses + ") (Criado por " + invite.inviter.name + "#" + invite.inviter.discriminator + ")\n"

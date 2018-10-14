@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -19,7 +20,7 @@ class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCate
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val invites = context.guild.invites.complete().filter { it.inviter == context.userHandle }
+		val invites = context.guild.invites.await().filter { it.inviter == context.userHandle }
 
 		if (invites.isEmpty()) {
 			context.reply(
