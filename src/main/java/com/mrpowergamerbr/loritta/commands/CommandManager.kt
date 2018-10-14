@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -266,7 +267,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -296,7 +297,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 
 		// Carregar as opções de comandos
@@ -398,7 +399,7 @@ class CommandManager {
 				command.executedCount++
 
 				if (command.hasCommandFeedback() && !conf.commandOutputInPrivate) {
-					ev.channel.sendTyping().queue()
+					ev.channel.sendTyping().await()
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

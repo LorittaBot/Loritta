@@ -27,7 +27,7 @@ class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristereali
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val cmdOpti = context.config.getCommandOptionsFor(this) as TristeRealidadeCommandOptions
 
 		val bi = ImageIO.read(File(Loritta.ASSETS + context.locale["TRISTEREALIDADE_FILE"])) // Primeiro iremos carregar o nosso template

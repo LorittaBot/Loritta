@@ -32,7 +32,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size > 1) {
 			val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 

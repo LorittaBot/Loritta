@@ -27,7 +27,7 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val template = ImageIO.read(File(Loritta.ASSETS + context.locale.get("RIPVIDA_FILE"))) // Template

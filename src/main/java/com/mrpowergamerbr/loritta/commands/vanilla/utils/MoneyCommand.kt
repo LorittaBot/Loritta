@@ -23,7 +23,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			var multiply: Double? = 1.0
 			if (context.args.size > 2) {

@@ -25,7 +25,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 		return Arrays.asList("correios")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val packageId = context.args[0]
 			try {

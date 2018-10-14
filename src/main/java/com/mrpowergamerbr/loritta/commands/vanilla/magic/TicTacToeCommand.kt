@@ -15,7 +15,7 @@ class TicTacToeCommand : AbstractCommand("tictactoe", category = CommandCategory
 		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		// Iremos criar uma sala utilizando mágica
 		val randomRoomId = RandomStringUtils.random(24, 0, 62, true, true, *"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".toCharArray())
 		val room = TicTacToeRoom()

@@ -31,7 +31,7 @@ class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 			val template = ImageIO.read(File(Loritta.ASSETS + "lava.png")); // Template

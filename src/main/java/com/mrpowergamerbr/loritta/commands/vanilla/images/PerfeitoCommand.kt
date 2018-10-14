@@ -25,7 +25,7 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 
 	override fun needsToUploadFiles() = true
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0, avatarSize = 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")); // Template

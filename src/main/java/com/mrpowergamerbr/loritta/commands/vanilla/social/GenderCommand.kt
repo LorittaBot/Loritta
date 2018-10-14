@@ -17,14 +17,14 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 		return locale["GENDER_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val embed = EmbedBuilder()
 				.setTitle(locale["GENDER_WhatAreYou"])
 				.setDescription(locale["GENDER_WhyShouldYouSelect"])
 				.build()
 
 
-		val message = context.sendMessageComplete(embed)
+		val message = context.sendMessage(embed)
 
 		message.addReaction("male:384048518853296128").queue()
 		message.addReaction("female:384048518337265665").queue()

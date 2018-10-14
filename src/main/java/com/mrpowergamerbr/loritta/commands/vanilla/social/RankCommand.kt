@@ -26,7 +26,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val list = mutableListOf<RankWrapper>()
 
 		var global = false

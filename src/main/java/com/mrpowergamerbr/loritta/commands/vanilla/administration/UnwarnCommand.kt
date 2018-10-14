@@ -34,7 +34,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 		return listOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 

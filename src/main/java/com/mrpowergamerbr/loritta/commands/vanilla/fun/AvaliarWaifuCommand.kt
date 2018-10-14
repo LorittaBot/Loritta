@@ -21,7 +21,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 		return "<usuário 1>"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var waifu = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
 			val user = context.getUserAt(0)

@@ -16,7 +16,7 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 		return locale["EXCHANGE_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.config.economyConfig.exchangeRate != null) {
 			val arg0 = context.rawArgs.getOrNull(0)
 
@@ -78,7 +78,7 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 					return
 				}
 
-				val message = context.replyComplete(
+				val message = context.reply(
 						LoriReply(
 								"Você está prestes a câmbiar **${howMuch} Sonhos** para **${howMuch * context.config.economyConfig.exchangeRate!!} ${context.config.economyConfig.economyNamePlural}**! Para confirmar, clique em ✅",
 								"\uD83D\uDCB8"

@@ -17,7 +17,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		return listOf(Permission.MESSAGE_HISTORY)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val history = context.event.channel.history
 
 		var lastCheck = -1

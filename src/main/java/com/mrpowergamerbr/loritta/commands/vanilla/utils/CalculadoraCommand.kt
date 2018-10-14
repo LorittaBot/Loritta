@@ -21,7 +21,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		return listOf("2 + 2");
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ");
 			try {

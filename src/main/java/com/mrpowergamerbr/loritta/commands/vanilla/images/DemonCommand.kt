@@ -23,7 +23,7 @@ class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "dem
 
 	override fun needsToUploadFiles() = true
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = DemonGIF.getGIF(contextImage, context.config.guildId)
 

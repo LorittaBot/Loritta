@@ -33,7 +33,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 		return listOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -113,7 +113,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					reason = _reason
 			}
 
-			val warnCallback: ((Message?, Boolean) -> Unit) = { message, isSilent ->
+			val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
 				if (!isSilent) {
 					if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 						try {
@@ -212,7 +212,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

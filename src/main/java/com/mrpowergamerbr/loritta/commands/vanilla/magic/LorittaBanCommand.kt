@@ -13,7 +13,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 		return "Banir usuários de usar a Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			var monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";

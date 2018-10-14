@@ -30,7 +30,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val seconds = context.args[0].toIntOrNull()
 

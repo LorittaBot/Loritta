@@ -26,7 +26,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val user = context.getUserAt(0)
 
 		if (user != null) {

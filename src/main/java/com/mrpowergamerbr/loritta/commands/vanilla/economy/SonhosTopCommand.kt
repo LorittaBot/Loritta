@@ -29,7 +29,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var page = context.args.getOrNull(0)?.toIntOrNull()
 
 		if (page != null)

@@ -1,17 +1,11 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.commands.vanilla.economy.LigarCommand
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
 import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
@@ -96,14 +90,14 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	 * @param context the context of the command
 	 * @param locale  the language the command should use
 	 */
-	abstract fun run(context: CommandContext, locale: BaseLocale)
+	abstract suspend fun run(context: CommandContext, locale: BaseLocale)
 
 	/**
 	 * Sends an embed explaining what the command does
 	 *
 	 * @param context the context of the command
 	 */
-	fun explain(context: CommandContext) {
+	suspend fun explain(context: CommandContext) {
 		val conf = context.config
 		val ev = context.event
 		val locale = context.locale

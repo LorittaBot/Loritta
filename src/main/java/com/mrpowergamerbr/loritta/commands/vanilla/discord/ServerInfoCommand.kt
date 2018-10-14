@@ -22,7 +22,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val embed = EmbedBuilder()
 
 		var guild: Guild? = context.guild

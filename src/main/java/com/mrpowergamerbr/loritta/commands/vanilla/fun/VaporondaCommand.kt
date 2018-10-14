@@ -24,7 +24,7 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 		return mapOf("mensagem" to "A mensagem que você deseja transformar")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
 			context.reply(

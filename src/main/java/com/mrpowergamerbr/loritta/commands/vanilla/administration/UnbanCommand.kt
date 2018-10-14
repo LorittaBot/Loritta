@@ -32,7 +32,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 		return listOf(Permission.BAN_MEMBERS)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -97,7 +97,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 					reason = _reason
 			}
 
-			val banCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
+			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				unban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
@@ -122,7 +122,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

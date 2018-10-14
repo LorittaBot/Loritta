@@ -27,7 +27,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		return mapOf("número" to "*(Opcional)* Quantos lados o dado que eu irei rolar terá, padrão: 6")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var quantity = 1L
 		var value: Long = 6
 		var expression = ""

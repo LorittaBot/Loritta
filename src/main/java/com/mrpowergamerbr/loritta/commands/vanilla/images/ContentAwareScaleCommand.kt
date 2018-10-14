@@ -26,7 +26,7 @@ class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("ca
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val loriImage = LorittaImage(contextImage)

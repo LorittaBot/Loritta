@@ -21,7 +21,7 @@ class ShuffleCommand : AbstractCommand("shuffle", listOf("embaralhar", "aleatór
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		val shuffled = manager.scheduler.queue.shuffled()

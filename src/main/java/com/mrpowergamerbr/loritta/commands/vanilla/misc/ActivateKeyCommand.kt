@@ -16,7 +16,7 @@ class ActivateKeyCommand : AbstractCommand("activatekey", listOf("ativarkey"), c
         return locale["ACTIVATEKEY_Description"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
 	    val premiumKeyName = context.args.getOrNull(0)
 
 	    if (premiumKeyName != null) {

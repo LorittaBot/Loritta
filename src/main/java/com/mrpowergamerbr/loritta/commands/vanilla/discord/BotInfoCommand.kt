@@ -22,7 +22,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais" || arg0 == "extendedinfo") {
 			showExtendedInfo(context, locale)
@@ -61,7 +61,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("\uD83D\uDC81 ${context.locale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
 		embed.addField("\uD83C\uDFC5 ${context.locale.get("BOTINFO_HONORABLE_MENTIONS")}", context.locale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
-		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "loritta") {
@@ -74,7 +74,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		message.addReaction("loritta:331179879582269451").queue()
 	}
 
-	fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
+	suspend fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
 		val mf = jar.manifest

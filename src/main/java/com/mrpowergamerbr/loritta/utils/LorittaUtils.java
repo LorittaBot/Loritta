@@ -28,7 +28,7 @@ public final class LorittaUtils {
 
 	public static boolean canUploadFiles(CommandContext context) {
 		if (!context.isPrivateChannel() && !context.getGuild().getSelfMember().hasPermission(context.getEvent().getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.getLocale().get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22");
+			context.getMessage().getChannel().sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + f(context.getLocale().get("IMAGE_UPLOAD_NO_PERM")) + " \uD83D\uDE22").queue();
 			return false;
 		}
 		return true;

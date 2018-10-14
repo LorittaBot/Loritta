@@ -80,7 +80,7 @@ object Constants {
 	 * context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 	 * ```
 	 */
-	val INVALID_IMAGE_REPLY: ((CommandContext) -> Unit) = { context ->
+	val INVALID_IMAGE_REPLY: suspend ((CommandContext) -> Unit) = { context ->
 		if (context.rawArgs.isEmpty()) {
 			context.explain()
 		} else {

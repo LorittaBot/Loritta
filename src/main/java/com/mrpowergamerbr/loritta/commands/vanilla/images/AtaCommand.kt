@@ -32,7 +32,7 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val base = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(300, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage()

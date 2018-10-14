@@ -22,7 +22,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		return Arrays.asList("@Loritta")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var getAvatar = context.getUserAt(0)
 
 		if (getAvatar == null) {

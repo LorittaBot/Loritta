@@ -29,7 +29,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
         return "monstro mensagem"
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size >= 2) {
             // Argumento 1: Monstro
             // Argumento 2...: Mensagem

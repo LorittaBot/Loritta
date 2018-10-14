@@ -31,7 +31,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -45,7 +45,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				return
 			}
 
-			fun runAction(user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
+			suspend fun runAction(user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
 				val userProfile = userProfile ?: loritta.getLorittaProfileForUser(user.id)
 				val receiverProfile = receiverProfile ?: loritta.getLorittaProfileForUser(receiver.id)
 
@@ -62,7 +62,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 
 				val randomImage = files.getRandom()
 
-				val message = context.sendFileComplete(
+				val message = context.sendFile(
 						randomImage,
 						"action.gif",
 						"${getEmoji()} **|** " + getResponse(locale, user, receiver)

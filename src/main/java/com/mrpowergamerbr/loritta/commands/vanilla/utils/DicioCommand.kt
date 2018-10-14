@@ -25,7 +25,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 		return listOf("sonho");
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val palavra = URLEncoder.encode(context.args[0], "UTF-8");
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")

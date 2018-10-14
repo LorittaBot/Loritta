@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.delay
 import org.bson.Document
 import java.awt.Color
 import java.awt.Font
@@ -22,7 +23,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
-import kotlin.concurrent.thread
 
 class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner"), category = CommandCategory.FUN) {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
@@ -37,7 +37,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val arg = context.args[0]
 			val page = if (context.args.size == 2) { context.args[1].toIntOrNull() ?: 1 } else { 1 }
@@ -255,37 +255,35 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 						)
 				)
 
-				val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
-					Thread.sleep((time * 1000).toLong())
+				delay(time * 1000)
 
-					if (spinningSpinners.contains(context.userHandle.id)) {
-						val spinner = spinningSpinners[context.userHandle.id]!!
+				if (spinningSpinners.contains(context.userHandle.id)) {
+					val spinner = spinningSpinners[context.userHandle.id]!!
 
-						if (spinner.threadId != Thread.currentThread().id) {
-							return@thread
-						}
-						val diff = (System.currentTimeMillis() - spinner.spinnedAt) / 1000
-
-						context.reply(
-								LoriReply(
-										message = context.locale["SPINNER_SPINNED", diff],
-										prefix = spinner.emoji
-								),
-								LoriReply(
-										message = context.locale["SPINNER_ViewRank", context.config.commandPrefix],
-										prefix = "\uD83C\uDFC6"
-								)
-						)
-
-						spinningSpinners.remove(context.userHandle.id)
-						val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-						profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, diff))
-						loritta save profile
+					if (spinner.threadId != Thread.currentThread().id) {
+						return
 					}
+					val diff = (System.currentTimeMillis() - spinner.spinnedAt) / 1000
+
+					context.reply(
+							LoriReply(
+									message = context.locale["SPINNER_SPINNED", diff],
+									prefix = spinner.emoji
+							),
+							LoriReply(
+									message = context.locale["SPINNER_ViewRank", context.config.commandPrefix],
+									prefix = "\uD83C\uDFC6"
+							)
+					)
+
+					spinningSpinners.remove(context.userHandle.id)
+					val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
+					profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, diff))
+					loritta save profile
 				}
 
 				spinner.lastRerotation = System.currentTimeMillis()
-				spinner.threadId = waitThread.id
+				spinner.threadId = Loritta.RANDOM.nextLong(0, Long.MAX_VALUE)
 				spinner.forTime = time
 				spinningSpinners.put(context.userHandle.id, spinner)
 			} else {
@@ -324,7 +322,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 			lowerBound = temp
 		}
 
-		val msg = context.replyComplete(
+		val msg = context.reply(
 				LoriReply(
 						message = context.locale["SPINNER_SPINNING"],
 						prefix = spinnerEmoji
@@ -335,36 +333,35 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				)
 		)
 
-		val waitThread = thread(name = "Spinner Thread (${context.guild.id} ~ ${context.userHandle.id})") {
-			Thread.sleep((time * 1000).toLong())
+		delay(time * 1000)
+		Thread.sleep((time * 1000).toLong())
 
-			if (spinningSpinners.contains(context.userHandle.id)) {
-				val spinner = spinningSpinners[context.userHandle.id]!!
+		if (spinningSpinners.contains(context.userHandle.id)) {
+			val spinner = spinningSpinners[context.userHandle.id]!!
 
-				if (spinner.threadId != Thread.currentThread().id) {
-					return@thread
-				}
-				msg.delete().queue()
-
-				context.reply(
-						LoriReply(
-								message = context.locale["SPINNER_SPINNED", time],
-								prefix = spinnerEmoji
-						),
-						LoriReply(
-								message = context.locale["SPINNER_ViewRank", context.config.commandPrefix],
-								prefix = "\uD83C\uDFC6"
-						)
-				)
-
-				spinningSpinners.remove(context.userHandle.id)
-				val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-				profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, time.toLong()))
-				loritta save profile
+			if (spinner.threadId != Thread.currentThread().id) {
+				return
 			}
+			msg.delete().queue()
+
+			context.reply(
+					LoriReply(
+							message = context.locale["SPINNER_SPINNED", time],
+							prefix = spinnerEmoji
+					),
+					LoriReply(
+							message = context.locale["SPINNER_ViewRank", context.config.commandPrefix],
+							prefix = "\uD83C\uDFC6"
+					)
+			)
+
+			spinningSpinners.remove(context.userHandle.id)
+			val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
+			profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, time.toLong()))
+			loritta save profile
 		}
 
-		val fidgetSpinner = FidgetSpinner(spinnerEmoji, waitThread.id, time, System.currentTimeMillis(), System.currentTimeMillis())
+		val fidgetSpinner = FidgetSpinner(spinnerEmoji, Loritta.RANDOM.nextLong(0, Long.MAX_VALUE), time, System.currentTimeMillis(), System.currentTimeMillis())
 
 		spinningSpinners.put(context.userHandle.id, fidgetSpinner)
 	}

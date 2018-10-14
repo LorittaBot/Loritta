@@ -24,7 +24,7 @@ class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = Comma
 		return mapOf("mensagem" to "A mensagem que você deseja transformar")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" ").toCharArray().joinToString(" ")).toUpperCase()
 			context.reply(

@@ -25,7 +25,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		return listOf(Permission.MANAGE_EMOTES)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var deletedEmotes = 0
 
 		context.message.emotes.forEach {

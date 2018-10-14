@@ -28,7 +28,7 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 		return mapOf("sua escolha" to "Pedra, Papel ou Tesoura")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val playerValue = context.args[0]
 

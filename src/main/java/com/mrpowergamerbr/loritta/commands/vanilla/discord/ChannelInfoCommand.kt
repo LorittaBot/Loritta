@@ -18,7 +18,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         return false
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         val channel = if (context.args.isEmpty()) {
             context.message.textChannel
         } else {

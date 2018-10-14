@@ -27,7 +27,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return listOf("cazum8", "lol738236")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val username = context.args.joinToString(separator = " ")
 

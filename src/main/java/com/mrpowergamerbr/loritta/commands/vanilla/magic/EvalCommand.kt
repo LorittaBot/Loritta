@@ -16,7 +16,7 @@ class EvalCommand : AbstractCommand("evaljs", listOf("evaljavascript", "evaluate
 		return "Executa códigos em JavaScript"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var javaScript = context.args.joinToString(" ")
 
 		// Agora vamos mudar um pouquinho o nosso código

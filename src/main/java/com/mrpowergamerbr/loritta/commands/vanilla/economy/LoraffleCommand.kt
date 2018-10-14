@@ -14,7 +14,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		return locale["RAFFLE_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && context.userHandle.id == Loritta.config.ownerId) {

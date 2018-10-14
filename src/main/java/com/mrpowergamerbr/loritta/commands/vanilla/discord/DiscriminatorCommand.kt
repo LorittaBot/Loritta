@@ -25,7 +25,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		return listOf("", "@Loritta");
 	}
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var user = context.userHandle
 		var discriminator = user.discriminator
 
@@ -55,7 +55,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		sendDiscriminatorEmbed(context, locale, user, discriminator, users, 0)
     }
 
-	fun sendDiscriminatorEmbed(context: CommandContext, locale: BaseLocale, user: User, discriminator: String, users: List<User>, page: Int) {
+	suspend fun sendDiscriminatorEmbed(context: CommandContext, locale: BaseLocale, user: User, discriminator: String, users: List<User>, page: Int) {
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
 			setTitle("\uD83D\uDC81 ${locale["DISCRIM_UsersWithDiscriminator", discriminator]}")
@@ -75,7 +75,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 			setDescription(description)
 		}
 
-		val message = context.sendMessageComplete(embed.build())
+		val message = context.sendMessage(embed.build())
 
 		var allowForward = false
 		var allowBack = false

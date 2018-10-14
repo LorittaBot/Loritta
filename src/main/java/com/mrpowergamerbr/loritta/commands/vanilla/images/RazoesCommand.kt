@@ -28,7 +28,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 
 	override fun needsToUploadFiles() = true
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")); // Template

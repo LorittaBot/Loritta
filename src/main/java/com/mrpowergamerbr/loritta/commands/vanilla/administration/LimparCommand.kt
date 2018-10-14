@@ -33,7 +33,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val toClear = context.args[0].toIntOrNull()
 
@@ -59,7 +59,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
 					if (context.message.mentionedUsers.isNotEmpty()) {
 						if (!context.message.mentionedUsers.contains(msg.author)) {
-							continue;
+							continue
 						}
 					}
 					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {

@@ -13,7 +13,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 		return "Desbanir usuários de usar a Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			var monster = context.args[0].toLowerCase(); // ID
 			var profile = LorittaLauncher.loritta.getLorittaProfileForUser(monster);

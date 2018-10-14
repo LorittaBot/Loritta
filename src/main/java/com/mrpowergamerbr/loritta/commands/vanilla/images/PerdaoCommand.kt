@@ -30,7 +30,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		// RULE OF THREE!!11!

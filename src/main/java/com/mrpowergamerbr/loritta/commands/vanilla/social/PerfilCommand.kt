@@ -146,7 +146,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)

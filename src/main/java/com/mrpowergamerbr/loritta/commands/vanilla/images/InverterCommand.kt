@@ -28,7 +28,7 @@ class InverterCommand : AbstractCommand("invert", listOf("inverter"), category =
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		for (x in 0 until image.width) {

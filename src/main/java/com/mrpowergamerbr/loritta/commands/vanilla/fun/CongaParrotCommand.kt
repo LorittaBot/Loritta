@@ -20,7 +20,7 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 		return listOf("5", "10")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var arg0 = context.args.getOrNull(0)
 
 		if (arg0 == null) {

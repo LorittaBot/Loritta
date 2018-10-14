@@ -21,7 +21,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val bemBoladas = listOf("Eu morava em uma ilha e me mudei para outra.\n\nNão é um trocadilho, é uma troca de ilha.",
 				"Quem é o X-Men que está sempre no trabalho?\n\nNo turno.",
 				"Por que dois oculistas estavam brigando?\n\nPorque eles estavam defendendo seu ponto de vista.",

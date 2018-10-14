@@ -26,7 +26,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		return "Recarrega a Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
 		if (arg0 == "shard") {

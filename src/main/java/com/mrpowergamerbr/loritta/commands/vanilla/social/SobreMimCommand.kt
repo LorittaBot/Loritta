@@ -17,7 +17,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
         return locale["SOBREMIM_DESCRIPTION"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         var profile = context.lorittaUser.profile;
         if (context.args.size > 0) {
             profile.aboutMe = context.args.joinToString(" ")

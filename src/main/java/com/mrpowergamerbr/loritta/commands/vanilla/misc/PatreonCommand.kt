@@ -15,7 +15,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 		return locale["PATREON_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var patrons = ""
 
 		val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")

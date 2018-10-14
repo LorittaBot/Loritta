@@ -26,7 +26,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 		return locale["COLOR_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val input = context.args.joinToString(" ")
 			var color: Color? = null

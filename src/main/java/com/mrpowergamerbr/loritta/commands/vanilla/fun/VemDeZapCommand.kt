@@ -21,7 +21,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		// Baseado em http://vemdezapbe.be/ / https://github.com/vmarchesin/vemdezapbe.be
 		// Que até agora eu não entendi porque fizeram uma API externa em vez de deixar tudo client-sided... mas vida que segue né
 		// E pelo ou menos a versão da nossa querida Loritta não tem gemidão do zap aleatório ao fazer zap, quem coloca gemidão nas coisas
@@ -349,7 +349,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 			val input = context.args.joinToString(" ").escapeMentions()
 
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							locale["VEMDEZAP_WhatIsTheMood"],
 							"\uD83E\uDD14"
@@ -393,7 +393,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 				message.delete().queue()
 
-				val levelMessage = context.replyComplete(
+				val levelMessage = context.reply(
 						LoriReply(
 								locale["VEMDEZAP_WhatIsTheLevel"],
 								"\uD83E\uDD14"

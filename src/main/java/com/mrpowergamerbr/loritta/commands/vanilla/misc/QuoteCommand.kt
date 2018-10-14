@@ -30,7 +30,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 		return Arrays.asList("msgId Olá!")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			if (context.args[0].isValidSnowflake()) {
 				var msg: Message? = null

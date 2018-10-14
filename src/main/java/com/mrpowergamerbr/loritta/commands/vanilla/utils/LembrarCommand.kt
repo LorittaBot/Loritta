@@ -26,7 +26,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		return listOf("dar comida para o dog", "lista");
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var message = context.strippedArgs.joinToString(separator = " ")
 
@@ -35,7 +35,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				return
 			}
 
-			val reply = context.replyComplete(
+			val reply = context.reply(
 					LoriReply(
 							message = locale["LEMBRAR_SetHour"],
 							prefix = "⏰"
@@ -81,7 +81,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		}
 	}
 
-	fun handleReminderList(context: CommandContext, page: Int, locale: BaseLocale) {
+	suspend fun handleReminderList(context: CommandContext, page: Int, locale: BaseLocale) {
 		val reminders = context.lorittaUser.profile.reminders
 		val visReminders = reminders.subList(page * 9, Math.min((page * 9) + 9, reminders.size))
 		val embed = EmbedBuilder()
@@ -92,7 +92,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.reason}\n")
 		}
 
-		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "➡") {

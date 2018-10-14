@@ -27,7 +27,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val choosen = mutableListOf<Member>()
 
 		var contextImage = context.getImageAt(0, 0, 128) ?: getRandomAvatar(context, choosen)

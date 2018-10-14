@@ -17,7 +17,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		return "Configura servidores na Lori's Server List"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)

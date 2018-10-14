@@ -23,7 +23,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/coredasantigas")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var inviteId = context.args.getOrNull(0)
 
 		if (inviteId != null) {

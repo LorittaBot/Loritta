@@ -31,7 +31,7 @@ class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepes
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val base = BufferedImage(400, 320, BufferedImage.TYPE_INT_ARGB)

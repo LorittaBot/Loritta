@@ -20,7 +20,7 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 		return listOf("pt Hello World!")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			val strLang = context.args[0]
 			context.args[0] = "" // Super workaround

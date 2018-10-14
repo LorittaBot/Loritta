@@ -18,7 +18,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 		return locale["AFK_Description"];
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
 
 		if (profile.isAfk) {

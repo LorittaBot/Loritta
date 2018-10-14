@@ -24,7 +24,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 		return listOf("Arthur's Headphones")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" "); // Vamos juntar a nossa query
 

@@ -17,7 +17,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 		return locale["RBGAME_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 

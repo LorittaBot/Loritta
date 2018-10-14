@@ -15,7 +15,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 		return locale["DIVORCE_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.lorittaUser.profile.marriedWith != null) {
 			loritta.usersColl.updateMany(
 					Filters.`in`(

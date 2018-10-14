@@ -13,7 +13,7 @@ class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot"
         return locale["INVITE_DESCRIPTION"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         var embed = EmbedBuilder()
                 .setDescription(context.locale["INVITE_INFO", Loritta.config.addBotUrl, "${Loritta.config.websiteUrl}dashboard", "${Loritta.config.websiteUrl}support"])
                 .setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")

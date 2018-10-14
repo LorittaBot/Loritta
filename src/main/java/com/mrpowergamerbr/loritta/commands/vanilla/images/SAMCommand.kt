@@ -27,7 +27,7 @@ class SAMCommand : AbstractCommand("sam", listOf("southamericamemes"), CommandCa
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var div: Double? = 1.5
 
 		if (context.args.size >= 2) {

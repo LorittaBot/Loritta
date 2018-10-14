@@ -47,11 +47,11 @@ class NashornCommand : AbstractCommand {
 		this.aliases = jsAliases
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		nashornRun(context, NashornContext(context))
 	}
 
-	fun nashornRun(ogContext: CommandContext, context: NashornContext) {
+	suspend fun nashornRun(ogContext: CommandContext, context: NashornContext) {
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 

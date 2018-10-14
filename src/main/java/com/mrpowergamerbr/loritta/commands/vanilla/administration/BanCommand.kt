@@ -35,7 +35,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		return listOf(Permission.BAN_MEMBERS)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -115,7 +115,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 					reason = _reason
 			}
 
-			val banCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
+			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
@@ -140,7 +140,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

@@ -12,7 +12,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 		return "Experimental";
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val phoneNumber = context.args.getOrNull(0)?.replace("-", "")
 
 		if (phoneNumber != null) {

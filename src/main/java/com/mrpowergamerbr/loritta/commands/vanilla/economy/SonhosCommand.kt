@@ -13,7 +13,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		return locale["SONHOS_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {

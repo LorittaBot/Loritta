@@ -2,6 +2,9 @@ package com.mrpowergamerbr.loritta.commands.nashorn
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
@@ -59,7 +62,9 @@ internal class ParallaxTask(var engine: ScriptEngine, var javaScript: String, va
 			builder.setFooter(
 					"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
 			builder.setColor(Color.RED)
-			ogContext.sendMessage(builder.build())
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				ogContext.sendMessage(builder.build())
+			}
 		}
 
 		running = false

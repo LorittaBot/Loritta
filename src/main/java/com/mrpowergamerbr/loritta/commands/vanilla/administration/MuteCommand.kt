@@ -36,7 +36,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -82,14 +82,14 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val setHour = context.replyComplete(
+			val setHour = context.reply(
 					LoriReply(
 							locale["MUTE_SetHour"],
 							"⏰"
 					)
 			)
 
-			fun punishUser(time: Long?) {
+			suspend fun punishUser(time: Long?) {
 				var rawArgs = context.rawArgs
 				rawArgs = rawArgs.remove(0) // remove o usuário
 
@@ -102,7 +102,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					str += " ${locale["BAN_SilentTip"]}"
 				}
 
-				val message = context.replyComplete(
+				val message = context.reply(
 						LoriReply(
 								message = str,
 								prefix = "⚠"
@@ -162,7 +162,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		// 297732013006389252#123170274651668480
 		val roleRemovalThreads = mutableMapOf<String, Thread>()
 
-		fun muteUser(context: CommandContext, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {

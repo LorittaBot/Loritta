@@ -15,7 +15,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 		return locale["DAILY_Description"];
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val votedAt = context.lorittaUser.profile.receivedDailyAt
 
 		val calendar = Calendar.getInstance()

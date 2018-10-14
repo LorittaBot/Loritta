@@ -27,7 +27,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val user = context.getUserAt(0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()

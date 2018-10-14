@@ -12,13 +12,13 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 		return locale["FANARTS_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val list = loritta.fanArts.shuffled()
 
 		sendFanArtEmbed(context, locale, list, 0)
 	}
 
-	fun sendFanArtEmbed(context: CommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int) {
+	suspend fun sendFanArtEmbed(context: CommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int) {
 		val fanArt = list[item]
 		val embed = EmbedBuilder().apply {
 			setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
@@ -42,7 +42,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 			setColor(Constants.LORITTA_AQUA)
 		}
 
-		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		var allowForward = false
 		var allowBack = false

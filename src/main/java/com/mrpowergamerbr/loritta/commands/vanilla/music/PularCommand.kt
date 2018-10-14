@@ -20,7 +20,7 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		loritta.audioManager.skipTrack(context)
 	}
 }

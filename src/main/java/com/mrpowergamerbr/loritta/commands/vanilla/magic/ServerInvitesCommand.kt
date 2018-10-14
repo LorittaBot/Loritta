@@ -11,7 +11,7 @@ class ServerInvitesCommand : AbstractCommand("serverinvites", category = Command
 		return "Pega os invites de um servidor a partir do ID dele"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val serverId = context.args[0]
 
 		var list = ""

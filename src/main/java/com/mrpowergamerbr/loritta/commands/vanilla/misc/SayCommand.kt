@@ -23,7 +23,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 		return Arrays.asList("Eu sou fofa! :3")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			var args = context.rawArgs
 			val channelId = context.rawArgs[0]

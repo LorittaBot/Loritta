@@ -14,6 +14,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.save
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -42,7 +44,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
-					loritta.executor.execute {
+					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionAdd!!.invoke(e)
 						} catch (e: Exception) {
@@ -52,7 +54,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
-					loritta.executor.execute {
+					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionAddByAuthor!!.invoke(e)
 						} catch (e: Exception) {
@@ -65,7 +67,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
 
-					loritta.executor.execute {
+					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionRemove!!.invoke(e)
 						} catch (e: Exception) {
@@ -75,7 +77,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
-					loritta.executor.execute {
+					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionRemoveByAuthor!!.invoke(e)
 						} catch (e: Exception) {

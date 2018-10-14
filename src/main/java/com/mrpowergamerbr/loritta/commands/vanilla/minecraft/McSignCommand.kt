@@ -30,7 +30,7 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val lines = context.args.joinToString(" ").split("|");
 			lines.forEach { it.trim() }

@@ -38,7 +38,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 				"conteúdo" to "O que você deseja procurar no Wikipédia")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var languageId = when (context.config.localeId) {
 				"default" -> "pt"

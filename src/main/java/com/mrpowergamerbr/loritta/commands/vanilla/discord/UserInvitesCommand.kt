@@ -18,7 +18,7 @@ class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCate
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val invites = context.guild.invites.complete().filter { it.inviter == context.userHandle }
 
 		if (invites.isEmpty()) {

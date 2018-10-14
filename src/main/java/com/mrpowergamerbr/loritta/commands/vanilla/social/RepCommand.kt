@@ -25,7 +25,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
 		val user = context.getUserAt(0)
 
