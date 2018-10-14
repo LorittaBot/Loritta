@@ -9,11 +9,18 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY) {
+	companion object {
+		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
-		return "Experimental";
+		return "Experimental"
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -34,7 +41,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 				profile.dreams -= 75
 				loritta save profile
 
-				synchronized(this) {
+				GlobalScope.launch(coroutineExecutor) {
 					if (loritta.bomDiaECia.available) {
 						val args = context.args.toMutableList()
 						args.removeAt(0)
@@ -42,27 +49,23 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 								.toLowerCase()
 
 						if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
-							runBlocking {
-								context.reply(
-										LoriReply(
-												"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)",
-												"<:yudi:446394608256024597>"
-										)
-								)
-							}
-							return@synchronized
+							context.reply(
+									LoriReply(
+											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)",
+											"<:yudi:446394608256024597>"
+									)
+							)
+							return@launch
 						}
 
 						if (text != loritta.bomDiaECia.currentText) {
-							runBlocking {
-								context.reply(
-										LoriReply(
-												"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Não se esqueça de escrever a nossa frase para que você possa ganhar o prêmio!",
-												"<:yudi:446394608256024597>"
-										)
-								)
-							}
-							return@synchronized
+							context.reply(
+									LoriReply(
+											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Não se esqueça de escrever a nossa frase para que você possa ganhar o prêmio!",
+											"<:yudi:446394608256024597>"
+									)
+							)
+							return@launch
 						}
 
 						loritta.bomDiaECia.available = false
@@ -74,25 +77,21 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 
 						logger.info("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")
 
-						runBlocking {
-							context.reply(
-									LoriReply(
-											"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!",
-											"<:yudi:446394608256024597>"
-									)
-							)
-						}
+						context.reply(
+								LoriReply(
+										"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!",
+										"<:yudi:446394608256024597>"
+								)
+						)
 
 						loritta.bomDiaECia.announceWinner(context.guild, context.userHandle)
 					} else {
-						runBlocking {
-							context.reply(
-									LoriReply(
-											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! (Você apenas deve ligar após a <@297153970613387264> anunciar no chat para ligar!)",
-											"<:yudi:446394608256024597>"
-									)
-							)
-						}
+						context.reply(
+								LoriReply(
+										"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! (Você apenas deve ligar após a <@297153970613387264> anunciar no chat para ligar!)",
+										"<:yudi:446394608256024597>"
+								)
+						)
 					}
 				}
 			} else {

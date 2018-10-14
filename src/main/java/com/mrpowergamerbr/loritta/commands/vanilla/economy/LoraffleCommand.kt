@@ -7,10 +7,17 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.Executors
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
+	companion object {
+		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RAFFLE_Description"]
 	}
@@ -39,7 +46,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			val requiredCount = quantity.toLong() * 250
 			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
 
-			synchronized(this) {
+			GlobalScope.launch(coroutineExecutor) {
 				val lorittaProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
 
 				if (lorittaProfile.dreams >= requiredCount) {
@@ -54,27 +61,23 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 					loritta.raffleThread.save()
 
-					runBlocking {
-						context.reply(
-								LoriReply(
-										context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
-										"\uD83C\uDFAB"
-								),
-								LoriReply(
-										context.locale["RAFFLE_WantMoreChances", context.config.commandPrefix],
-										mentionUser = false
-								)
-						)
-					}
+					context.reply(
+							LoriReply(
+									context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
+									"\uD83C\uDFAB"
+							),
+							LoriReply(
+									context.locale["RAFFLE_WantMoreChances", context.config.commandPrefix],
+									mentionUser = false
+							)
+					)
 				} else {
-					runBlocking {
-						context.reply(
-								LoriReply(
-										context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
-										Constants.ERROR
-								)
-						)
-					}
+					context.reply(
+							LoriReply(
+									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
+									Constants.ERROR
+							)
+					)
 				}
 			}
 			return
