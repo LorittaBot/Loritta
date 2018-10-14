@@ -89,15 +89,15 @@ class InviteLinkModule : MessageReceivedModule {
 
 			for (matcher in validMatchers) {
 				val urls = mutableSetOf<String>()
-				while (matcher.find())
-					urls.add(matcher.group())
-
-				for (_url in urls) {
-					var url = _url
+				while (matcher.find()) {
+					var url = matcher.group()
 					if (url.contains("discord") && url.contains("gg")) {
 						url = "discord.gg" + matcher.group(1).replace(".", "")
 					}
+					urls.add(url)
+				}
 
+				for (url in urls) {
 					jobs.add(
 							GlobalScope.async(loritta.coroutineDispatcher) {
 								val inviteId = MiscUtils.getInviteId("http://$url")
