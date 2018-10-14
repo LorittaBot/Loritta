@@ -5,8 +5,8 @@ enum class Gender {
 	FEMALE,
 	UNKNOWN;
 
-	fun getValidActionFolderNames(other: Gender): List<String> {
-		val folderNames = mutableListOf(
+	fun getValidActionFolderNames(other: Gender): Set<String> {
+		val folderNames = mutableSetOf(
 				Constants.ACTION_GENERIC
 		)
 
@@ -26,6 +26,38 @@ enum class Gender {
 
 		if (this == FEMALE && other == FEMALE) {
 			folderNames.add(Constants.ACTION_FEMALE_AND_FEMALE)
+		}
+
+		if (this == MALE && other == UNKNOWN) {
+			folderNames.add(Constants.ACTION_MALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_MALE_AND_MALE)
+			folderNames.add(Constants.ACTION_BOTH)
+		}
+
+		if (this == FEMALE && other == UNKNOWN) {
+			folderNames.add(Constants.ACTION_FEMALE_AND_MALE)
+			folderNames.add(Constants.ACTION_FEMALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_BOTH)
+		}
+
+		if (this == UNKNOWN && other == MALE) {
+			folderNames.add(Constants.ACTION_MALE_AND_MALE)
+			folderNames.add(Constants.ACTION_FEMALE_AND_MALE)
+			folderNames.add(Constants.ACTION_BOTH)
+		}
+
+		if (this == UNKNOWN && other == FEMALE) {
+			folderNames.add(Constants.ACTION_MALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_FEMALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_BOTH)
+		}
+
+		if (this == UNKNOWN && other == UNKNOWN) {
+			folderNames.add(Constants.ACTION_MALE_AND_MALE)
+			folderNames.add(Constants.ACTION_FEMALE_AND_MALE)
+			folderNames.add(Constants.ACTION_MALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_FEMALE_AND_FEMALE)
+			folderNames.add(Constants.ACTION_BOTH)
 		}
 
 		return folderNames
