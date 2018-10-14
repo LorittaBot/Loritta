@@ -30,6 +30,23 @@ import java.util.regex.Pattern
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		val MESSAGE_RECEIVED_MODULES = mutableListOf(
+				Modules.SLOW_MODE,
+				Modules.INVITE_LINK,
+				Modules.SERVER_SUPPORT,
+				Modules.AUTOMOD,
+				Modules.EXPERIENCE,
+				Modules.AMINO_CONVERTER,
+				Modules.AFK,
+				Modules.BOM_DIA_E_CIA,
+				Modules.QUIRKY
+		)
+
+		val MESSAGE_EDITED_MODULES = mutableListOf(
+				Modules.INVITE_LINK,
+				Modules.AUTOMOD,
+				Modules.SERVER_SUPPORT
+		)
 	}
 
 	val warnedBadLoadedGuilds = mutableSetOf<String>()
@@ -138,18 +155,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				val modules = listOf(
-						SlowModeModule(),
-						InviteLinkModule(),
-						ServerSupportModule(),
-						AutomodModule(),
-						ExperienceModule(),
-						AminoConverterModule(),
-						AFKModule(),
-						BomDiaECiaModule(),
-						QuirkyModule()
-				)
-
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
 						member,
@@ -160,7 +165,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel
 				)
 
-				for (module in modules) {
+				for (module in MESSAGE_RECEIVED_MODULES) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
 						return@launch
 				}
@@ -263,12 +268,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				EventLog.onMessageUpdate(serverConfig, locale, event.message)
 
-				val modules = listOf(
-						ServerSupportModule(),
-						AutomodModule(),
-						InviteLinkModule()
-				)
-
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
 						event.member,
@@ -279,7 +278,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel
 				)
 
-				for (module in modules) {
+				for (module in MESSAGE_EDITED_MODULES) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
 						return@launch
 				}
