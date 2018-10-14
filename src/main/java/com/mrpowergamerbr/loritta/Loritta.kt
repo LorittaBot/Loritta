@@ -226,7 +226,13 @@ class Loritta(config: LorittaConfig) {
 			})
 		}
 
-		logger.info("Sucesso! Iniciando threads da Loritta...")
+		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
+		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
+
+		val shardManager = builder.build()
+		lorittaShards.shardManager = shardManager
+
+		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
 		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
 
@@ -264,14 +270,6 @@ class Loritta(config: LorittaConfig) {
 		DebugLog.startCommandListenerThread()
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
-
-		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
-		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
-
-		val generateShards = Loritta.config.shards - 1
-
-		val shardManager = builder.build()
-		lorittaShards.shardManager = shardManager
 
 		thread {
 			socket.start()
