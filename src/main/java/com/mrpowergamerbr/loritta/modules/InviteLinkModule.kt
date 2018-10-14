@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
@@ -102,17 +103,25 @@ class InviteLinkModule : MessageReceivedModule {
 				for (url in urls) {
 					jobs.add(
 							GlobalScope.launch(loritta.coroutineDispatcher) {
+								// Isto provavelmente jamais irá acontecer *exceto* se a coroutine realmente demorar muito para iniciar
+								// Mas, caso as leis da natureza mudem, está aqui uma pequena verificação
+								if (!isActive)
+									return@launch
+
 								val inviteId = MiscUtils.getInviteId("http://$url")
-										?: MiscUtils.getInviteId("https://$url")
+										?: run { if (isActive) MiscUtils.getInviteId("https://$url") else return@launch } // Vamos evitar verificações inúteis, certo?
 
 								if (inviteId != null) { // INVITES DO DISCORD
+									if (!isActive)
+										return@launch
+
 									if (inviteId == "attachments" || inviteId == "forums")
 										return@launch
 
 									if (whitelisted.contains(inviteId))
 										return@launch
 
-									jobs.filter { it != this }.forEach { it.cancel() }
+									jobs.forEach { it.cancel() }
 
 									if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 										message.delete().queue()
