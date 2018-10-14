@@ -6,7 +6,9 @@ import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -85,7 +87,7 @@ class InviteLinkModule : MessageReceivedModule {
 		whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
 		val callback = callback@ {
-			val jobs = mutableListOf<Deferred<Boolean>>()
+			val jobs = mutableListOf<Job>()
 
 			for (matcher in validMatchers) {
 				val urls = mutableSetOf<String>()
@@ -99,40 +101,31 @@ class InviteLinkModule : MessageReceivedModule {
 
 				for (url in urls) {
 					jobs.add(
-							GlobalScope.async(loritta.coroutineDispatcher) {
+							GlobalScope.launch(loritta.coroutineDispatcher) {
 								val inviteId = MiscUtils.getInviteId("http://$url")
 										?: MiscUtils.getInviteId("https://$url")
 
 								if (inviteId != null) { // INVITES DO DISCORD
 									if (inviteId == "attachments" || inviteId == "forums")
-										return@async false
+										return@launch
 
 									if (whitelisted.contains(inviteId))
-										return@async false
+										return@launch
+
+									jobs.filter { it != this }.forEach { it.cancel() }
 
 									if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 										message.delete().queue()
 
 									if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
 										val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
-												?: return@async false
+												?: return@launch
 
 										message.textChannel.sendMessage(toBeSent).queue()
 									}
-									return@async true
 								}
-								return@async false
 							}
 					)
-				}
-
-				runBlocking {
-					jobs.forEach {
-						if (it.await()) { // true = Sim, tinha um invite
-							jobs.forEach { it.cancel() }
-							return@forEach
-						}
-					}
 				}
 			}
 		}
