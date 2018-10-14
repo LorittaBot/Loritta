@@ -26,7 +26,7 @@
             <url>https://dl.bintray.com/kotlin/kotlin-dev/</url>
         </repository>
         <repository>
-            <id>kotlin-dev</id>
+            <id>kotlin-eap</id>
             <url>https://dl.bintray.com/kotlin/kotlin-eap/</url>
         </repository>
         <repository>
