@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
@@ -53,7 +54,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 					loritta.raffleThread.save()
 
-					/* GlobalScope.launch(loritta.coroutineDispatcher) {
+					runBlocking {
 						context.reply(
 								LoriReply(
 										context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
@@ -64,16 +65,16 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 										mentionUser = false
 								)
 						)
-					} */
+					}
 				} else {
-					/* GlobalScope.launch(loritta.coroutineDispatcher) {
+					runBlocking {
 						context.reply(
 								LoriReply(
 										context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
 										Constants.ERROR
 								)
 						)
-					} */
+					}
 				}
 			}
 			return
