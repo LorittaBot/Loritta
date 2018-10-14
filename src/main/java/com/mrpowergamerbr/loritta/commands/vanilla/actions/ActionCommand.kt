@@ -31,7 +31,40 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	suspend fun runAction(context: CommandContext, user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
+		val locale = context.locale
+		val userProfile = userProfile ?: loritta.getLorittaProfileForUser(user.id)
+		val receiverProfile = receiverProfile ?: loritta.getLorittaProfileForUser(receiver.id)
+
+		val other = receiverProfile.gender
+
+		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
+		val folderNames = userProfile.gender.getValidActionFolderNames(other).toMutableList()
+		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+			folderNames.remove("generic")
+
+		val files = folderNames.flatMap {
+			File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+		}
+
+		val randomImage = files.getRandom()
+
+		val message = context.sendFile(
+				randomImage,
+				"action.gif",
+				"${getEmoji()} **|** " + getResponse(locale, user, receiver)
+		)
+
+		message.addReaction("reverse:492845304438194176").queue()
+
+		message.onReactionAdd(context) {
+			if (it.reactionEmote.id == "492845304438194176" && it.user.id == receiver.id) {
+				runAction(context, receiver, receiverProfile, user, null)
+			}
+		}
+	}
+
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -45,39 +78,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 				return
 			}
 
-			suspend fun runAction(user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
-				val userProfile = userProfile ?: loritta.getLorittaProfileForUser(user.id)
-				val receiverProfile = receiverProfile ?: loritta.getLorittaProfileForUser(receiver.id)
-
-				val other = receiverProfile.gender
-
-				val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-				val folderNames = userProfile.gender.getValidActionFolderNames(other).toMutableList()
-				if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
-					folderNames.remove("generic")
-
-				val files = folderNames.flatMap {
-					File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
-				}
-
-				val randomImage = files.getRandom()
-
-				val message = context.sendFile(
-						randomImage,
-						"action.gif",
-						"${getEmoji()} **|** " + getResponse(locale, user, receiver)
-				)
-
-				message.addReaction("reverse:492845304438194176").queue()
-
-				message.onReactionAdd(context) {
-					if (it.reactionEmote.id == "492845304438194176" && it.user.id == receiver.id) {
-						runAction(receiver, receiverProfile, user, null)
-					}
-				}
-			}
-
-			runAction(context.userHandle, context.lorittaUser.profile, user, null)
+			runAction(context, context.userHandle, context.lorittaUser.profile, user, null)
 		} else {
 			context.explain()
 		}

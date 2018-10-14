@@ -102,7 +102,7 @@ var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a 
 imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
-	@JvmOverloads fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
+	fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
 		if (sentMessages >= 3) {
@@ -140,7 +140,7 @@ sendImage(imagem, "😄");
 	}
 
 	@NashornCommand.NashornDocs(arguments = "delimitador")
-	@JvmOverloads fun joinArguments(delimitador: String = " "): String {
+	fun joinArguments(delimitador: String = " "): String {
 		return context.args.joinToString(delimitador).trim { it <= ' ' }
 	}
 

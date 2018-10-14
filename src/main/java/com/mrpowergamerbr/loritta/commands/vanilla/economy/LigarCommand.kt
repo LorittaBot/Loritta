@@ -4,8 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 
 class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -38,22 +40,26 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 								.toLowerCase()
 
 						if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
-							context.reply(
-									LoriReply(
-											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)",
-											"<:yudi:446394608256024597>"
-									)
-							)
+							/* GlobalScope.launch(loritta.coroutineDispatcher) {
+								context.reply(
+										LoriReply(
+												"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)",
+												"<:yudi:446394608256024597>"
+										)
+								)
+							} */
 							return@synchronized
 						}
 
 						if (text != loritta.bomDiaECia.currentText) {
-							context.reply(
-									LoriReply(
-											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Não se esqueça de escrever a nossa frase para que você possa ganhar o prêmio!",
-											"<:yudi:446394608256024597>"
-									)
-							)
+							/* GlobalScope.launch(loritta.coroutineDispatcher) {
+								context.reply(
+										LoriReply(
+												"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Não se esqueça de escrever a nossa frase para que você possa ganhar o prêmio!",
+												"<:yudi:446394608256024597>"
+										)
+								)
+							} */
 							return@synchronized
 						}
 
@@ -66,21 +72,25 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 
 						logger.info("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")
 
-						context.reply(
-								LoriReply(
-										"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!",
-										"<:yudi:446394608256024597>"
-								)
-						)
+						/* GlobalScope.launch(loritta.coroutineDispatcher) {
+							context.reply(
+									LoriReply(
+											"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!",
+											"<:yudi:446394608256024597>"
+									)
+							)
+						} */
 
 						loritta.bomDiaECia.announceWinner(context.guild, context.userHandle)
 					} else {
-						context.reply(
-								LoriReply(
-										"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! (Você apenas deve ligar após a <@297153970613387264> anunciar no chat para ligar!)",
-										"<:yudi:446394608256024597>"
-								)
-						)
+						/* GlobalScope.launch(loritta.coroutineDispatcher) {
+							context.reply(
+									LoriReply(
+											"Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! (Você apenas deve ligar após a <@297153970613387264> anunciar no chat para ligar!)",
+											"<:yudi:446394608256024597>"
+									)
+							)
+						} */
 					}
 				}
 			} else {

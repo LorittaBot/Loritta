@@ -167,7 +167,7 @@ class CommandManager {
 		commandMap.add(ChannelInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
 
 		// =======[ MINECRAFT ]========
@@ -208,7 +208,7 @@ class CommandManager {
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
@@ -252,7 +252,7 @@ class CommandManager {
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
 		commandMap.add(SonhosTopCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {

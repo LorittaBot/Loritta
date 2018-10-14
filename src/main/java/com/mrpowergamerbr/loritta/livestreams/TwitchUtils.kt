@@ -7,7 +7,7 @@ import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import java.net.URLEncoder
 import java.util.*

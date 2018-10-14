@@ -60,8 +60,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		this.locale = locale
 	}
 
-	suspend fun explain() {
-		cmd.explain(this)
+	fun explain() {
+		// cmd.explain(this)
 	}
 
 	/**
@@ -81,7 +81,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 		} else lorittaUser.getAsMention(true)
 	}
 
-	@JvmOverloads
 	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
 		var send = ""
 		if (prefix != null) {

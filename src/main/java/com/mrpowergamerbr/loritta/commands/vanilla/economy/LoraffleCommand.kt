@@ -53,23 +53,27 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 					loritta.raffleThread.save()
 
-					context.reply(
-							LoriReply(
-									context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
-									"\uD83C\uDFAB"
-							),
-							LoriReply(
-									context.locale["RAFFLE_WantMoreChances", context.config.commandPrefix],
-									mentionUser = false
-							)
-					)
+					/* GlobalScope.launch(loritta.coroutineDispatcher) {
+						context.reply(
+								LoriReply(
+										context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
+										"\uD83C\uDFAB"
+								),
+								LoriReply(
+										context.locale["RAFFLE_WantMoreChances", context.config.commandPrefix],
+										mentionUser = false
+								)
+						)
+					} */
 				} else {
-					context.reply(
-							LoriReply(
-									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
-									Constants.ERROR
-							)
-					)
+					/* GlobalScope.launch(loritta.coroutineDispatcher) {
+						context.reply(
+								LoriReply(
+										context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
+										Constants.ERROR
+								)
+						)
+					} */
 				}
 			}
 			return
