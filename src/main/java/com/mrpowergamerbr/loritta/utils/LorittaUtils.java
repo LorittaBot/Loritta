@@ -61,7 +61,7 @@ public final class LorittaUtils {
 	 * @return
 	 */
 	public static BufferedImage downloadImage(String url) {
-		return downloadImage(url, 15);
+		return downloadImage(url, 30);
 	}
 
 	/**
@@ -75,10 +75,6 @@ public final class LorittaUtils {
 	}
 
 	public static BufferedImage downloadImage(String url, int timeout, int maxSize) {
-		return downloadImage(url, timeout, maxSize, 512);
-	}
-
-	public static BufferedImage downloadImage(String url, int timeout, int maxSize, int maxWidthHeight) {
 		try {
 			URL imageUrl = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
@@ -95,15 +91,6 @@ public final class LorittaUtils {
 			}
 
 			BufferedImage bi = ImageIO.read(connection.getInputStream());
-
-			if (maxWidthHeight != -1) {
-				if (bi.getWidth() > maxWidthHeight || bi.getHeight() > maxWidthHeight) {
-					// Espero que isto não vá gastar tanto processamento...
-					LorittaImage img = new LorittaImage(bi);
-					img.resize(maxWidthHeight, maxWidthHeight, true);
-					return img.getBufferedImage();
-				}
-			}
 
 			return bi;
 		} catch (Exception e) {}
