@@ -16,13 +16,15 @@ import com.mongodb.client.model.Updates
 import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
@@ -108,14 +110,14 @@ class Loritta(config: LorittaConfig) {
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
-	var ignoreIds = mutableSetOf<String>() // IDs para serem ignorados nesta sessão
+	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<ServerConfig>
-	lateinit var usersColl: MongoCollection<LorittaProfile>
+	lateinit var _usersColl: MongoCollection<MongoLorittaProfile>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
@@ -317,7 +319,7 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(StoredMessages)
+			SchemaUtils.createMissingTablesAndColumns(StoredMessages, Profiles)
 		}
 	}
 
@@ -342,7 +344,7 @@ class Loritta(config: LorittaConfig) {
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
 		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
-		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
+		_usersColl = dbCodec.getCollection("users", MongoLorittaProfile::class.java)
 		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
@@ -395,16 +397,31 @@ class Loritta(config: LorittaConfig) {
 		)
 	}
 
+	fun getLorittaProfile(userId: String): Profile? {
+		return getLorittaProfile(userId.toLong())
+	}
+
 	/**
 	 * Loads the profile of an user
 	 *
 	 * @param userId the user's ID
 	 * @return       the user profile
-	 * @see          LorittaProfile
+	 * @see          MongoLorittaProfile
 	 */
-	fun getLorittaProfileForUser(userId: String): LorittaProfile {
-		val userProfile = usersColl.find(Filters.eq("_id", userId)).first()
-		return userProfile ?: LorittaProfile(userId)
+	fun getLorittaProfile(userId: Long): Profile? {
+		return transaction(Databases.loritta) {
+			Profile.findById(userId)
+		}
+	}
+
+	fun getOrCreateLorittaProfile(userId: String): Profile {
+		return getOrCreateLorittaProfile(userId.toLong())
+	}
+
+	fun getOrCreateLorittaProfile(userId: Long): Profile {
+		return transaction(Databases.loritta) {
+			Profile.findById(userId) ?: Profile.new(userId) {}
+		}
 	}
 
 	/**

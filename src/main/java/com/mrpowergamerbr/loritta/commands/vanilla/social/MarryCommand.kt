@@ -1,16 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mongodb.client.model.*
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.onReactionAdd
-import org.bson.Document
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
@@ -22,7 +15,8 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val proposeTo = context.getUserAt(0)
+		// TODO: Fix
+		/* val proposeTo = context.getUserAt(0)
 
 		if (proposeTo != null) {
 			val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
@@ -225,6 +219,6 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			message.addReaction("\uD83D\uDC8D").queue()
 		} else {
 			context.explain()
-		}
+		} */
 	}
 }

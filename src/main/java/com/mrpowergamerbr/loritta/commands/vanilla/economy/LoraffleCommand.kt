@@ -1,16 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.threads.RaffleThread
-import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
-import java.util.*
 import java.util.concurrent.Executors
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
@@ -23,7 +17,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val arg0 = context.args.getOrNull(0)
+		// TODO: Fix
+		/* val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && context.userHandle.id == Loritta.config.ownerId) {
 			context.reply(
@@ -133,6 +128,6 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						prefix = "\uD83D\uDCB5",
 						mentionUser = false
 				)
-		)
+		) */
 	}
 }

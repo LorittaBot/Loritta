@@ -1,17 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import java.awt.*
-import java.awt.geom.Path2D
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
 
 class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -27,7 +20,8 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val list = mutableListOf<RankWrapper>()
+		// TODO: Fix
+		/* val list = mutableListOf<RankWrapper>()
 
 		var global = false
 		var page = context.args.getOrNull(0)?.toIntOrNull()
@@ -144,7 +138,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				currentY += 53;
 			}
 		}
-		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
+		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true)) */
 	}
 
 	data class RankWrapper(

@@ -21,7 +21,9 @@ private class Json<out T : Any>(private val klass: Class<T>, private val jsonMap
 	}
 
 	override fun valueFromDB(value: Any): Any {
-		value as PGobject
+		if (value !is PGobject)
+			return value
+
 		return try {
 			jsonMapper.fromJson(value.value, klass)
 		} catch (e: Exception) {

@@ -1,14 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.EmbedBuilder
-import java.awt.Color
 
 class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -16,7 +11,8 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		var patrons = ""
+		// TODO: Fix
+		/* var patrons = ""
 
 		val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
 
@@ -63,7 +59,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			addField("\uD83C\uDF80 " + context.locale["PATREON_DO_YOU_WANNA_HELP"], context.locale["PATREON_HOW_TO_HELP", "https://www.patreon.com/mrpowergamerbr", "${Loritta.config.websiteUrl}donate", "https://apoia.se/mrpowergamerbr"], false)
 		}
 
-		context.sendMessage(context.getAsMention(true), embed.build())
+		context.sendMessage(context.getAsMention(true), embed.build()) */
 	}
 
 	class GenericPledge(val name: String, val pledge: Int, val discordId: String?, val source: PledgeSource)

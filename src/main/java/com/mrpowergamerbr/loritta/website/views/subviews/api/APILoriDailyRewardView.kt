@@ -3,20 +3,15 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
-import java.util.*
 
 class APILoriDailyRewardView : NoVarsView() {
 	companion object {
@@ -63,11 +58,12 @@ class APILoriDailyRewardView : NoVarsView() {
 		val ips = req.header("X-Forwarded-For").value() // Cloudflare, Apache
 		val ip = ips.split(", ")[0]
 
-		val lorittaProfile = loritta.getLorittaProfileForUser(userIdentification.id)
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
+		// TODO: Fix
 		// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 		// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-		val sameIpProfile = loritta.usersColl.find(
+		/* val sameIpProfile = loritta.usersColl.find(
 				Filters.eq("ip", ip)
 		).firstOrNull()
 
@@ -180,6 +176,7 @@ class APILoriDailyRewardView : NoVarsView() {
 		loritta save lorittaProfile
 
 		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}" }
-		return payload.toString()
+		return payload.toString() */
+		return ""
 	}
 }

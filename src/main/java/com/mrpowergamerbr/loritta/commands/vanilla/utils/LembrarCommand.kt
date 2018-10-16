@@ -1,15 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Reminder
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import net.dv8tion.jda.core.EmbedBuilder
-import org.bson.Document
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.*
 
@@ -50,12 +52,13 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				calendar.timeInMillis = inMillis
 
 				// Criar o Lembrete
-				var reminder = Reminder(context.guild.id, context.message.textChannel.id, inMillis, message.trim());
-				var profile = context.lorittaUser.profile
-
-				profile.reminders.add(reminder);
-
-				loritta save profile
+				transaction(Databases.loritta) {
+					Reminder.new {
+						userId = context.userHandle.idLong
+						channelId = context.message.textChannel.idLong
+						content = message.trim()
+					}
+				}
 
 				val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
 				val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
@@ -82,14 +85,17 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	}
 
 	suspend fun handleReminderList(context: CommandContext, page: Int, locale: BaseLocale) {
-		val reminders = context.lorittaUser.profile.reminders
+		val reminders = transaction(Databases.loritta) {
+			Reminder.find { Reminders.userId eq context.userHandle.idLong }.toMutableList()
+		}
+
 		val visReminders = reminders.subList(page * 9, Math.min((page * 9) + 9, reminders.size))
 		val embed = EmbedBuilder()
 		embed.setTitle("<a:lori_notification:394165039227207710> ${locale["LEMBRAR_YourReminders"]} (${reminders.size})")
 		embed.setColor(Color(255, 179, 43))
 
 		for ((idx, reminder) in visReminders.withIndex()) {
-			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.reason}\n")
+			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content}\n")
 		}
 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
@@ -113,25 +119,23 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 			val reminder = visReminders.getOrNull(idx) ?: return@onReactionAddByAuthor
 
-			val guild = if (reminder.guild != null) {
-				lorittaShards.getGuildById(reminder.guild!!)
+			val textChannel = lorittaShards.getTextChannelById(reminder.channelId.toString())
+
+			val guild = if (textChannel != null) {
+				lorittaShards.getGuildById(textChannel.id)
 			} else {
 				null
 			}
 
-			val textChannel = if (guild != null) {
-				guild.getTextChannelById(reminder.textChannel)
-			} else {
-				null
-			}
+
 
 			val embed = EmbedBuilder()
 			if (guild != null) {
 				embed.setThumbnail(guild.iconUrl)
 			}
 
-			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.reason}")
-			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindMe.humanize(locale)}\n")
+			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}")
+			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
 			embed.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
 			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embed.setColor(Color(255, 179, 43))
@@ -142,7 +146,9 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			message.onReactionAddByAuthor(context) {
 				message.delete().queue()
 				reminders.remove(reminder)
-				loritta.usersColl.updateOne(Filters.eq("_id", context.userHandle.id), Document("\$set", Document("reminders", reminders)))
+				transaction(Databases.loritta) {
+					Reminders.deleteWhere { Reminders.id eq reminder.id }
+				}
 
 				context.reply(
 						LoriReply(

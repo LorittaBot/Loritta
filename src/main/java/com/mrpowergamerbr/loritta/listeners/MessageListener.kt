@@ -1,12 +1,11 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.modules.*
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.modules.Modules
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -24,6 +23,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -73,25 +73,20 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
-				val ownerProfile = loritta.getLorittaProfileForUser(event.guild.owner.user.id)
+				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
+				val ownerProfile = loritta.getLorittaProfile(event.guild.owner.user.idLong)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
-				if (lorittaProfile.isAfk) {
-					loritta.usersColl.updateOne(
-							Filters.eq("_id", member.user.id),
-							Updates.combine(
-									Updates.set("afk", false),
-									Updates.set("afkReason", null)
-							)
-					)
+				if (lorittaProfile.options.isAfk) {
+					transaction(Databases.loritta) {
+						lorittaProfile.options.isAfk = false
+						lorittaProfile.options.afkReason
+						lorittaProfile.updateOptions()
+					}
 				}
 
-				lorittaProfile.isAfk = false
-				lorittaProfile.afkReason = null
-
-				if (isOwnerBanned(ownerProfile, event.guild))
+				if (ownerProfile != null && isOwnerBanned(ownerProfile, event.guild))
 					return@launch
 
 				if (isGuildBanned(event.guild))
@@ -173,11 +168,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				for (eventHandler in serverConfig.nashornEventHandlers)
 					eventHandler.handleMessageReceived(event, serverConfig)
 
-				// emotes favoritos
-				event.message.emotes.forEach {
-					lorittaProfile.usedEmotes.put(it.id, lorittaProfile.usedEmotes.getOrDefault(it.id, 0) + 1)
-				}
-
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 					return@launch
 
@@ -223,7 +213,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
-			val profile = loritta.getLorittaProfileForUser(event.author.id) // Carregar perfil do usuário
+			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
 			val locale = loritta.getLocaleById("default")
@@ -262,7 +252,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-				val lorittaProfile = loritta.getLorittaProfileForUser(event.author.id)
+				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
@@ -317,9 +307,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	fun isOwnerBanned(ownerProfile: LorittaProfile, guild: Guild): Boolean {
+	fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
-			if (ownerProfile.userId != Loritta.config.ownerId) { // E ele não é o dono do bot!
+			if (ownerProfile.userId != Loritta.config.ownerId.toLong()) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
@@ -351,7 +341,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param profile the profile of the user
 	 * @return if the user is still banned
 	 */
-	fun isUserStillBanned(profile: LorittaProfile): Boolean {
+	fun isUserStillBanned(profile: Profile): Boolean {
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
 			if (profile.isBanned) { // E ele ainda está banido...
 				return true // Então flw galerinha

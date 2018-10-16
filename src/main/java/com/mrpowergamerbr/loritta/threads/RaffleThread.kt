@@ -2,16 +2,15 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
@@ -79,14 +78,12 @@ class RaffleThread : Thread("Raffle Thread") {
 			val money = userIds.size * 250
 			lastWinnerPrize = money
 
-			val lorittaProfile = loritta.getLorittaProfileForUser(winnerId)
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.dreams} sonhos) na Rifa!")
+			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
-			lorittaProfile.dreams += money
-			loritta.usersColl.updateOne(
-					Filters.eq("_id", lorittaProfile.userId),
-					Updates.inc("dreams", money)
-			)
+			transaction(Databases.loritta){
+				lorittaProfile.money -= money
+			}
 
 			userIds.clear()
 

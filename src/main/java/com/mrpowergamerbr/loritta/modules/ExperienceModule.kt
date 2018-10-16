@@ -1,25 +1,28 @@
 package com.mrpowergamerbr.loritta.modules
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import org.bson.conversions.Bson
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ExperienceModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		// (copyright Loritta™)
 		val profileUpdates = mutableListOf<Bson>()
+		var newProfileXp = lorittaProfile.xp
+		var lastMessageSentHash: Int? = null
 
 		// Primeiro iremos ver se a mensagem contém algo "interessante"
 		if (event.message.contentStripped.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.contentStripped.hashCode()) {
@@ -27,7 +30,7 @@ class ExperienceModule : MessageReceivedModule {
 			// 7 chars por millisegundo
 			val calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
 
-			val diff = System.currentTimeMillis() - lorittaProfile.lastMessageSent
+			val diff = System.currentTimeMillis() - lorittaProfile.lastMessageSentAt
 
 			if (diff > calculatedMessageSpeed * 1000) {
 				val nonRepeatedCharsMessage = event.message.contentStripped.replace(Regex("(.)\\1{1,}"), "$1")
@@ -48,8 +51,8 @@ class ExperienceModule : MessageReceivedModule {
 						}
 					}
 
-					lorittaProfile.xp = lorittaProfile.xp + globalGainedXp
-					lorittaProfile.lastMessageSentHash = event.message.contentStripped.hashCode()
+					newProfileXp = lorittaProfile.xp + globalGainedXp
+					lastMessageSentHash = event.message.contentStripped.hashCode()
 
 					profileUpdates.add(Updates.inc("xp", globalGainedXp))
 					profileUpdates.add(Updates.set("lastMessageSentHash", event.message.contentStripped.hashCode()))
@@ -62,16 +65,13 @@ class ExperienceModule : MessageReceivedModule {
 			}
 		}
 
-		lorittaProfile.lastMessageSent = System.currentTimeMillis()
-		profileUpdates.add(Updates.set("lastMessageSent", lorittaProfile.lastMessageSent))
-
-		loritta.usersColl.updateOne(
-				Filters.eq("_id", lorittaProfile.userId),
-				Updates.combine(
-						profileUpdates
-				)
-		)
-
+		if (lastMessageSentHash != null && lorittaProfile.xp != newProfileXp) {
+			transaction(Databases.loritta) {
+				lorittaProfile.lastMessageSentHash = lastMessageSentHash
+				lorittaProfile.xp = newProfileXp
+				lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+			}
+		}
 		return false
 	}
 }

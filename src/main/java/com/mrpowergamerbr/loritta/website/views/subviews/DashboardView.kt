@@ -2,10 +2,12 @@ package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 
@@ -17,7 +19,7 @@ class DashboardView : ProtectedView() {
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
 		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
-		val lorittaProfile = loritta.getLorittaProfileForUser(userIdentification.id)
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
 
 		variables["lorittaProfile"] = lorittaProfile
 
@@ -25,8 +27,11 @@ class DashboardView : ProtectedView() {
 			val hideSharedServers = req.param("hideSharedServers").booleanValue()
 			val hidePreviousUsernames = req.param("hidePreviousUsernames").booleanValue()
 
-			lorittaProfile.hideSharedServers = hideSharedServers
-			lorittaProfile.hidePreviousUsernames = hidePreviousUsernames
+			transaction(Databases.loritta) {
+				lorittaProfile.options.hideSharedServers = hideSharedServers
+				lorittaProfile.options.hidePreviousUsernames = hidePreviousUsernames
+				lorittaProfile.updateOptions()
+			}
 
 			loritta save lorittaProfile
 

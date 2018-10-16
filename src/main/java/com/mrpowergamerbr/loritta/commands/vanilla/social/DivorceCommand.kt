@@ -1,14 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 
 class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -16,7 +11,8 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.lorittaUser.profile.marriedWith != null) {
+		// TODO: Fix
+		/* if (context.lorittaUser.profile.marriedWith != null) {
 			loritta.usersColl.updateMany(
 					Filters.`in`(
 							"_id",
@@ -38,6 +34,6 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 							Constants.ERROR
 					)
 			)
-		}
+		} */
 	}
 }

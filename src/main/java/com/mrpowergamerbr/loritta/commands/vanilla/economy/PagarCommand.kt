@@ -3,11 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -19,7 +15,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.rawArgs.size >= 2) {
+		// TODO: Fix
+		/* if (context.rawArgs.size >= 2) {
 			var economySource = "global"
 			var currentIdx = 0
 
@@ -171,6 +168,6 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 		} else {
 			context.explain()
-		}
+		} */
 	}
 }

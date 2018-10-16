@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -55,14 +54,15 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			setTitle("<:discord:314003252830011395> $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
-			val lorittaProfile = loritta.getLorittaProfileForUser(user.id)
-			if (lorittaProfile.hidePreviousUsernames) {
+			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
+			if (lorittaProfile.options.hidePreviousUsernames) {
 				var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {
-				val usernameChanges = lorittaProfile.usernameChanges
+				// TODO: Fix
+				/* val usernameChanges = lorittaProfile.usernameChanges
 				if (usernameChanges.isEmpty()) {
-					usernameChanges.add(LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
+					usernameChanges.add(MongoLorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
 				}
 
 				val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }.toMutableList()
@@ -89,7 +89,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 						length += line.length
 					}
 					setDescription(aux.reversed().joinToString(separator = "\n"))
-				}
+				} */
 			}
 
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${user.name}#${user.discriminator}", true)
@@ -100,7 +100,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 
-			var servers = if (lorittaProfile.hideSharedServers) {
+			var servers = if (lorittaProfile.options.hideSharedServers) {
 				"*${locale["USERINFO_PrivacyOn"]}*"
 			} else {
 				sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
@@ -119,11 +119,9 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 
-			val profile = loritta.getLorittaProfileForUser(user.id)
+			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime();
 
-			val offset = Instant.ofEpochMilli(profile.lastMessageSent).atZone(ZoneId.systemDefault()).toOffsetDateTime();
-
-			if (profile.lastMessageSent != 0L) {
+			if (lorittaProfile.lastMessageSentAt != 0L) {
 				addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(locale), true)
 			}
 

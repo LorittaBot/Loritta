@@ -1,12 +1,14 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.UpdateOneModel
-import com.mongodb.client.model.Updates
-import com.mongodb.client.model.WriteModel
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import mu.KotlinLogging
-import org.bson.Document
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.util.*
 
@@ -43,15 +45,12 @@ class DailyTaxTask : Runnable {
 			if (hour == 18) {
 				logger.info("Avisando sobre a taxa diária!")
 
-				val documents = loritta.usersColl.find(
-						Filters.and(
-								Filters.exists("marriedWith"),
-								Filters.lt("dreams", MARRIAGE_DAILY_TAX)
-						)
-				).toMutableList()
+				val documents = transaction(Databases.loritta) {
+					Profile.find { Profiles.marriedWith.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
+				}
 
 				for (document in documents) {
-					val user = lorittaShards.getUserById(document.userId) ?: continue
+					val user = lorittaShards.getUserById(document.userId.toString()) ?: continue
 
 					try {
 						user.openPrivateChannel().queue {
@@ -62,32 +61,31 @@ class DailyTaxTask : Runnable {
 				alreadySentDMs = true
 				return
 			}
+
 			alreadySentDMs = false
 
 			logger.info("Executando a taxa diária!")
 
 			// MARRY
-			val documents = loritta.usersColl.find(
-					Filters.and(
-							Filters.exists("marriedWith"),
-							Filters.lt("dreams", MARRIAGE_DAILY_TAX)
-					)
-			).toMutableList()
+			val documents = transaction(Databases.loritta) {
+				val selected = Profile.find { Profiles.marriedWith.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
 
-			loritta.usersColl.updateMany(
-					Filters.and(
-							Filters.exists("marriedWith"),
-							Filters.gte("dreams", MARRIAGE_DAILY_TAX)
-					),
-					Updates.inc("dreams", -MARRIAGE_DAILY_TAX)
-			)
+				Profiles.update({ Profiles.marriedWith.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble())}) {
+					with(SqlExpressionBuilder) {
+						it.update(Profiles.money, Profiles.money - MARRIAGE_DAILY_TAX.toDouble())
+					}
+				}
+
+				selected
+			}
 
 			// Okay, tudo certo, vamos lá!
-			val bulk = mutableListOf<WriteModel<Document>>()
-
 			for (document in documents) {
-				val marriedWith = lorittaShards.getUserById(document.marriedWith)
-				val user = lorittaShards.getUserById(document.userId)
+				if (document.marriedWith == null)
+					continue
+
+				val marriedWith = lorittaShards.getUserById(document.marriedWith?.toString())
+				val user = lorittaShards.getUserById(document.userId.toString())
 
 				if (user != null) {
 					try {
@@ -105,24 +103,14 @@ class DailyTaxTask : Runnable {
 					} catch (e: Exception) {}
 				}
 
-				bulk.add(
-						UpdateOneModel<Document>(
-								Filters.eq("_id", document.userId),
-								Updates.unset("marriedWith")
-						)
-				)
-				bulk.add(
-						UpdateOneModel<Document>(
-								Filters.eq("_id", document.marriedWith),
-								Updates.unset("marriedWith")
-						)
-				)
-			}
-
-			if (bulk.isNotEmpty()) {
-				loritta.mongo.getDatabase(Loritta.config.databaseName).getCollection("users").bulkWrite(
-						bulk
-				)
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq document.userId }) {
+						it[Profiles.marriedWith] = null as Long?
+					}
+					Profiles.update({ Profiles.id eq document.marriedWith }) {
+						it[Profiles.marriedWith] = null as Long?
+					}
+				}
 			}
 
 			lastDailyTax.writeText(

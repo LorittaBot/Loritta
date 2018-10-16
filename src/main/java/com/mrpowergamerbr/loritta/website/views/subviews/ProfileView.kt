@@ -1,22 +1,8 @@
 package com.mrpowergamerbr.loritta.website.views.subviews
 
-import com.github.salomonbrys.kotson.fromJson
-import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Emote
-import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
-import java.io.ByteArrayOutputStream
-import java.util.*
-import javax.imageio.ImageIO
 
 class ProfileView : AbstractView() {
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
@@ -30,10 +16,11 @@ class ProfileView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
-		val arg0 = path.split("/").getOrNull(2) ?: "derp"
+		// TODO: Fix
+		/* val arg0 = path.split("/").getOrNull(2) ?: "derp"
 		val arg3 = path.split("/").getOrNull(3)
 		val user = lorittaShards.getUserById(arg0)!!
-		val lorittaProfile = loritta.getLorittaProfileForUser(arg0)
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(arg0)
 
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 
@@ -44,7 +31,7 @@ class ProfileView : AbstractView() {
 				val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 				discordAuth.isReady(true)
 				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-				val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+				val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 				variables["selfProfile"] = Loritta.GSON.toJson(profile)
 			} catch (e: Exception) {
@@ -111,6 +98,7 @@ class ProfileView : AbstractView() {
 		variables["notInGuildList"] = notInGuildList
 		variables["onlineCount"] = onlineCount
 
-		return evaluate("profile.html", variables)
+		return evaluate("profile.html", variables) */
+		return ""
 	}
 }

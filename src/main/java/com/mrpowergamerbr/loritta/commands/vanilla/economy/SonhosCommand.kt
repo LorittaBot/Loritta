@@ -3,10 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -14,7 +11,8 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		var retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
+		// TODO: Fix
+		/* var retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
 			context.lorittaUser.profile
@@ -78,6 +76,6 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 				)
 			}
 			logger.info("Usuário ${retrieveDreamsFromUser.id} possui ${lorittaProfile.dreams} sonhos!")
-		}
+		} */
 	}
 }

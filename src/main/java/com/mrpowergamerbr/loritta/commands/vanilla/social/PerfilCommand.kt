@@ -7,11 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
@@ -24,7 +20,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User, profile: LorittaProfile): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: MongoLorittaProfile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 
@@ -147,7 +143,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		var userProfile = context.lorittaUser.profile
+		// TODO: Fix
+		/* var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
 		val user = if (contextUser != null) contextUser else context.userHandle
@@ -228,6 +225,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		)
 
 		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}"); // E agora envie o arquivo
+		*/
 	}
 
 	class DiscordBotVote(

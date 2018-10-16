@@ -1,15 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar", "lsx", "lsxs"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -17,7 +11,8 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.config.economyConfig.exchangeRate != null) {
+		// TODO: Fix
+		/* if (context.config.economyConfig.exchangeRate != null) {
 			val arg0 = context.rawArgs.getOrNull(0)
 
 			if (arg0 == null) {
@@ -165,6 +160,6 @@ class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar"
 							Constants.ERROR
 					)
 			)
-		}
+		} */
 	}
 }

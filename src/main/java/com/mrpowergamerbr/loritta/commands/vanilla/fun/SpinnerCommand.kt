@@ -1,28 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.Aggregates.*
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Projections
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.coroutines.delay
-import org.bson.Document
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
-import java.awt.Rectangle
-import java.awt.geom.Path2D
-import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
-import java.util.concurrent.TimeUnit
-import javax.imageio.ImageIO
 
 class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner"), category = CommandCategory.FUN) {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
@@ -38,7 +19,8 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
+		// TODO: Fix
+		/* if (context.args.isNotEmpty()) {
 			val arg = context.args[0]
 			val page = if (context.args.size == 2) { context.args[1].toIntOrNull() ?: 1 } else { 1 }
 			if (arg == "rank") {
@@ -278,7 +260,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 					spinningSpinners.remove(context.userHandle.id)
 					val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-					profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, diff))
+					profile.spinnerScores.add(MongoLorittaProfile.SpinnerScore(spinner.emoji, diff))
 					loritta save profile
 				}
 
@@ -303,7 +285,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 				spinningSpinners.remove(context.userHandle.id)
 
 				val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-				profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, diff))
+				profile.spinnerScores.add(MongoLorittaProfile.SpinnerScore(spinner.emoji, diff))
 				loritta save profile
 			}
 			return
@@ -357,12 +339,12 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 
 			spinningSpinners.remove(context.userHandle.id)
 			val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-			profile.spinnerScores.add(LorittaProfile.SpinnerScore(spinner.emoji, time.toLong()))
+			profile.spinnerScores.add(MongoLorittaProfile.SpinnerScore(spinner.emoji, time.toLong()))
 			loritta save profile
 		}
 
 		val fidgetSpinner = FidgetSpinner(spinnerEmoji, Loritta.RANDOM.nextLong(0, Long.MAX_VALUE), time, System.currentTimeMillis(), System.currentTimeMillis())
 
-		spinningSpinners.put(context.userHandle.id, fidgetSpinner)
+		spinningSpinners.put(context.userHandle.id, fidgetSpinner) */
 	}
 }

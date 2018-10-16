@@ -4,14 +4,13 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.StoredMessage
+import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StoredMessages
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.save
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -181,19 +180,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
 		embed.setColor(Constants.DISCORD_BLURPLE)
 
-		val changedAt = System.currentTimeMillis()
+		var changedAt = System.currentTimeMillis()
 
-		val changeWrapper = LorittaProfile.UsernameChange(changedAt, newName, newDiscriminator)
-
-		val profile = loritta.getLorittaProfileForUser(user.id)
-
-		if (profile.usernameChanges.isEmpty()) {
-			profile.usernameChanges.add((LorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator)))
+		transaction(Databases.loritta) {
+			UsernameChange.new {
+				username = newName
+				discriminator = newDiscriminator
+				changedAt = changedAt
+			}
 		}
-
-		profile.usernameChanges.add(changeWrapper)
-
-		loritta save profile
 
 		val guilds = lorittaShards.getMutualGuilds(user)
 

@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
@@ -31,15 +31,15 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 
-	suspend fun runAction(context: CommandContext, user: User, userProfile: LorittaProfile?, receiver: User, receiverProfile: LorittaProfile?) {
+	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
 		val locale = context.locale
-		val userProfile = userProfile ?: loritta.getLorittaProfileForUser(user.id)
-		val receiverProfile = receiverProfile ?: loritta.getLorittaProfileForUser(receiver.id)
+		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
+		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 
-		val other = receiverProfile.gender
+		val other = receiverProfile.options.gender
 
 		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-		val folderNames = userProfile.gender.getValidActionFolderNames(other).toMutableList()
+		val folderNames = userProfile.options.gender.getValidActionFolderNames(other).toMutableList()
 		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
 			folderNames.remove("generic")
 

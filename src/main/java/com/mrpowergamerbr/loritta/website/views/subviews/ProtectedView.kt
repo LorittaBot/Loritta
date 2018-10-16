@@ -87,10 +87,10 @@ abstract class ProtectedView : AbstractView() {
 										return false
 									}
 
-									val profile = loritta.getLorittaProfileForUser(guild.owner.user.id)
+									val profile = loritta.getOrCreateLorittaProfile(guild.owner.user.id)
 									if (profile.isBanned) { // Dono blacklisted
 										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner.user.asMention, profile.banReason ?: "???"]
+										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner.user.asMention, profile.bannedReason ?: "???"]
 
 										user.openPrivateChannel().queue {
 											it.sendMessage(message).queue({

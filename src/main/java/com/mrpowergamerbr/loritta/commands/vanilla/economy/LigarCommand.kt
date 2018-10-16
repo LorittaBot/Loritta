@@ -1,17 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY) {
@@ -24,7 +17,8 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val phoneNumber = context.args.getOrNull(0)?.replace("-", "")
+		// TODO: Fix
+		/* val phoneNumber = context.args.getOrNull(0)?.replace("-", "")
 
 		if (phoneNumber != null) {
 			if (phoneNumber == "40028922") {
@@ -102,6 +96,6 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 			}
 		} else {
 			this.explain(context)
-		}
+		} */
 	}
 }

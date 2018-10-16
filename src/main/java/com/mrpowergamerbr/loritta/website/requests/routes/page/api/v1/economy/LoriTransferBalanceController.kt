@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
@@ -11,6 +12,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -53,7 +55,7 @@ class LoriTransferBalanceController {
 		val metadata = body["metadata"].string // Metadata da transação
 		val webhookUrl = body["url"].string // Webhook URL
 
-		val lorittaProfile = loritta.getLorittaProfileForUser(userId)
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
 		if (quantity.isNaN()) {
 			res.status(Status.BAD_REQUEST)
@@ -73,7 +75,7 @@ class LoriTransferBalanceController {
 			return
 		}
 
-		if (quantity > lorittaProfile.dreams) {
+		if (quantity > lorittaProfile.money) {
 			res.status(Status.BAD_REQUEST)
 			res.send(WebsiteUtils.createErrorPayload(
 					LoriWebCode.INSUFFICIENT_FUNDS,
@@ -137,8 +139,8 @@ class LoriTransferBalanceController {
 				if (it.reactionEmote.name == "✅") {
 					message.delete().complete()
 
-					val lorittaProfile = loritta.getLorittaProfileForUser(userId)
-					val receiverProfile = loritta.getLorittaProfileForUser(receiverId)
+					val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
+					val receiverProfile = loritta.getOrCreateLorittaProfile(receiverId)
 
 					if (quantity.isNaN()) {
 						val json = WebsiteUtils.createErrorPayload(
@@ -164,7 +166,7 @@ class LoriTransferBalanceController {
 						return@onReactionAddByAuthor
 					}
 
-					if (quantity > lorittaProfile.dreams) {
+					if (quantity > lorittaProfile.money) {
 						val json = WebsiteUtils.createErrorPayload(
 								LoriWebCode.INSUFFICIENT_FUNDS,
 								"User ${lorittaProfile.userId} has less than ${quantity} dreams"
@@ -177,13 +179,13 @@ class LoriTransferBalanceController {
 						return@onReactionAddByAuthor
 					}
 
-					val before = lorittaProfile.dreams
-					lorittaProfile.dreams -= quantity
-					receiverProfile.dreams += quantity
+					val before = lorittaProfile.money
+					// lorittaProfile.dreams -= quantity
+					// receiverProfile.dreams += quantity
 
 					// Transação feita!
-					json["payerBalance"] = lorittaProfile.dreams
-					json["receiverBalance"] = receiverProfile.dreams
+					json["payerBalance"] = lorittaProfile.money
+					json["receiverBalance"] = receiverProfile.money
 					json["metadata"] = metadata
 					json["guildId"] = guildId
 					json["receiverId"] = receiverId
@@ -195,8 +197,10 @@ class LoriTransferBalanceController {
 							.send(json.toString())
 							.ok()
 
-					loritta save lorittaProfile
-					loritta save receiverProfile
+					transaction(Databases.loritta) {
+						lorittaProfile.money -= quantity
+						receiverProfile.money -= quantity
+					}
 
 					logger.info { "${lorittaProfile.userId} teve $quantity sonhos (antes possuia $before sonhos) transferidos para ${receiverProfile.userId}. motivo: ${reason} - ID: ${guildId}" }
 					return@onReactionAddByAuthor

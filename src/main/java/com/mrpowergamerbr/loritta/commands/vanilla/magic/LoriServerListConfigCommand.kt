@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -24,7 +22,8 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
-			val user = context.getUserAt(2)!!
+			// TODO: Fix
+			/* val user = context.getUserAt(2)!!
 			loritta.usersColl.updateOne(
 					Filters.eq("_id", user.id),
 					Updates.set(
@@ -36,7 +35,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					LoriReply(
 							"Sonhos de ${user.asMention} foram editados com sucesso!"
 					)
-			)
+			) */
 			return
 		}
 
@@ -128,7 +127,8 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		}
 
 		if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
-			val user = lorittaShards.getUserById(arg1)!!
+			// TODO: Fix
+			/* val user = lorittaShards.getUserById(arg1)!!
 			val userConfig = loritta.getLorittaProfileForUser(user.id)
 			val isDonator = arg2.toBoolean()
 
@@ -150,7 +150,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					LoriReply(
 							"Usuário `${user.name}` foi marcado como doador até `${userConfig.donationExpiresIn.humanize(locale)}`"
 					)
-			)
+			) */
 		}
 	}
 }

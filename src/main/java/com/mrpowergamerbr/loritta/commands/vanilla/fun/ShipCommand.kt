@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
@@ -80,8 +79,9 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
-				val loriProfile1 = loritta.getLorittaProfileForUser(user1.id)
-				val loriProfile2 = loritta.getLorittaProfileForUser(user2.id)
+				// TODO: Fix
+				/* val loriProfile1 = loritta.getOrCreateLorittaProfile(user1.id)
+				val loriProfile2 = loritta.getOrCreateLorittaProfile(user2.id)
 
 				val editedShipEffect1 = loriProfile1.editedShipEffects.firstOrNull { it.userId == user2.id }
 				val editedShipEffect2 = loriProfile2.editedShipEffects.firstOrNull { it.userId == user1.id }
@@ -90,7 +90,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					percentage = editedShipEffect1.editedTo
 				} else if (editedShipEffect2 != null) {
 					percentage = editedShipEffect2.editedTo
-				}
+				} */
 
 				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
 					if ((user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {

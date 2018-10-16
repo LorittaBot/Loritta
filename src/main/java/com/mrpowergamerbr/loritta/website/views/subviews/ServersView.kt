@@ -44,7 +44,7 @@ class ServersView : AbstractView() {
 				val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 				discordAuth.isReady(true)
 				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-				val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+				val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 				variables["selfProfile"] = Loritta.GSON.toJson(profile)
 			} catch (e: Exception) {
