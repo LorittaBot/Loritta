@@ -19,8 +19,8 @@ import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.StoredMessages
+import com.mrpowergamerbr.loritta.profile.ProfileOptions
+import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
@@ -420,7 +420,21 @@ class Loritta(config: LorittaConfig) {
 
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
 		return transaction(Databases.loritta) {
-			Profile.findById(userId) ?: Profile.new(userId) {}
+			Profile.findById(userId) ?: Profile.new(userId) {
+				xp = 0
+				isBanned = false
+				bannedReason = null
+				lastMessageSentAt = 0L
+				lastMessageSentHash = 0
+				money = 0.0
+				isDonator = false
+				donatorPaid = 0.0
+				donatedAt = 0L
+				donationExpiresIn = 0L
+				marriedWith = null
+				marriedAt = null
+				options = ProfileOptions()
+			}
 		}
 	}
 
