@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StoredMessages
+import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -33,6 +34,7 @@ import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import org.apache.commons.io.IOUtils
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -180,13 +182,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
 		embed.setColor(Constants.DISCORD_BLURPLE)
 
-		var changedAt = System.currentTimeMillis()
+		val changedAt = System.currentTimeMillis()
 
 		transaction(Databases.loritta) {
 			UsernameChange.new {
+				userId = user.idLong
 				username = newName
 				discriminator = newDiscriminator
-				changedAt = changedAt
+				writeValues[UsernameChanges.changedAt as Column<Any?>] = changedAt
 			}
 		}
 

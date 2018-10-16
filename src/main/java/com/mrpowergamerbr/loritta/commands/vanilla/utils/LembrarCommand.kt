@@ -51,13 +51,19 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				val calendar = Calendar.getInstance()
 				calendar.timeInMillis = inMillis
 
+				val message = message.trim()
+				println("userId = ${context.userHandle.idLong}")
+				println("channelId = ${context.message.textChannel.idLong}")
+				println("remindAt = ${inMillis}")
+				println("content = ${message.trim()}")
+
 				// Criar o Lembrete
 				transaction(Databases.loritta) {
 					Reminder.new {
 						userId = context.userHandle.idLong
 						channelId = context.message.textChannel.idLong
-						remindAt = inMillis
-						content = message.trim()
+						remindAt = calendar.timeInMillis
+						content = message
 					}
 				}
 
@@ -81,7 +87,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 			reply.addReaction("\uD83D\uDE45").queue()
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 

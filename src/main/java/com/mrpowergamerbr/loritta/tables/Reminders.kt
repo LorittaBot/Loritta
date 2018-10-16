@@ -7,8 +7,9 @@ import org.jetbrains.exposed.sql.Column
 object Reminders : LongIdTable() {
 	override val id: Column<EntityID<Long>>
 		get() = long("id").primaryKey().autoIncrement().entityId()
+
 	val userId = long("user_id").index()
 	val channelId = long("channel_id")
-	val remindAt = long("created_at")
+	val remindAt = long("remind_at")
 	val content = text("content")
 }
