@@ -319,7 +319,7 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(StoredMessages, Profiles)
+			SchemaUtils.createMissingTablesAndColumns(StoredMessages, Profiles, Reminders, Reputations, UsernameChanges)
 		}
 	}
 
