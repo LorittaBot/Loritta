@@ -56,6 +56,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 					Reminder.new {
 						userId = context.userHandle.idLong
 						channelId = context.message.textChannel.idLong
+						remindAt = inMillis
 						content = message.trim()
 					}
 				}
