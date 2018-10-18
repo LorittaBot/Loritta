@@ -438,6 +438,7 @@ class Loritta(config: LorittaConfig) {
 				donationExpiresIn = 0L
 				marriedWith = null
 				marriedAt = null
+				isAfk = false
 				settings = ProfileSettings.new(userId) {
 					gender = Gender.UNKNOWN
 					hideSharedServers = false
