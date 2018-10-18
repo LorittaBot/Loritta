@@ -439,7 +439,7 @@ class Loritta(config: LorittaConfig) {
 				marriedWith = null
 				marriedAt = null
 				isAfk = false
-				settings = ProfileSettings.new(userId) {
+				settings = ProfileSettings.new {
 					gender = Gender.UNKNOWN
 					hideSharedServers = false
 					hidePreviousUsernames = false

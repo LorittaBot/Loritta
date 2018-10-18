@@ -17,7 +17,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
     }
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
-        val profile = context.lorittaUser.profile;
+        val profile = transaction(Databases.loritta) { context.lorittaUser.profile }
         if (context.args.isNotEmpty()) {
             transaction(Databases.loritta) {
                 profile.settings.aboutMe = context.args.joinToString(" ")

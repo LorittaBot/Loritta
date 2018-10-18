@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.tables
 
 import com.mrpowergamerbr.loritta.utils.Gender
+import org.jetbrains.exposed.dao.LongIdTable
 
-object UserSettings : SnowflakeTable() {
+object UserSettings : LongIdTable() {
 	val aboutMe = text("about_me").nullable()
 	val gender = enumeration("gender", Gender::class)
 	val hidePreviousUsernames = bool("hide_previous_usernames")
