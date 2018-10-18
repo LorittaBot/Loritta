@@ -433,7 +433,7 @@ class Loritta(config: LorittaConfig) {
 				donationExpiresIn = 0L
 				marriedWith = null
 				marriedAt = null
-				options = ProfileOptions()
+				updateOptions(ProfileOptions())
 			}
 		}
 	}

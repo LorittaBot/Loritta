@@ -25,7 +25,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 
 	var _options by Profiles.options
 	val options by lazy { _options }
-	
+
 	var marriedWith by Profiles.marriedWith
 	var marriedAt by Profiles.marriedAt
 
