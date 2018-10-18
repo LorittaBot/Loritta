@@ -321,7 +321,7 @@ class Loritta(config: LorittaConfig) {
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(StoredMessages,
 					Profiles,
-					ProfilesSettings,
+					UserSettings,
 					Reminders,
 					Reputations,
 					UsernameChanges)
@@ -438,7 +438,7 @@ class Loritta(config: LorittaConfig) {
 				donationExpiresIn = 0L
 				marriedWith = null
 				marriedAt = null
-				settings = ProfileSettings.new {
+				settings = ProfileSettings.new(userId) {
 					gender = Gender.UNKNOWN
 					hideSharedServers = false
 					hidePreviousUsernames = false

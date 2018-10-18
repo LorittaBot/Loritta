@@ -15,5 +15,5 @@ object Profiles : SnowflakeTable() {
 	var marriedAt = long("married_at").nullable()
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
-	var settings = reference("settings", ProfilesSettings)
+	var settings = reference("settings", UserSettings)
 }

@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.tables
 
 import com.mrpowergamerbr.loritta.utils.Gender
 
-object ProfilesSettings : SnowflakeTable() {
+object UserSettings : SnowflakeTable() {
 	val aboutMe = text("about_me").nullable()
 	val gender = enumeration("gender", Gender::class)
 	val hidePreviousUsernames = bool("hide_previous_usernames")
