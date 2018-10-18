@@ -8,14 +8,15 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
-import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -157,6 +158,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
 
+		val settings = transaction(Databases.loritta) { userProfile.settings }
+
 		if (contextUser != null && userProfile.isBanned) {
 			context.reply(
 					LoriReply(
@@ -186,8 +189,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do SparklyPower (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
 		}
 
-		if (userProfile.options.aboutMe != null && userProfile.options.aboutMe != "A Loritta é minha amiga!") {
-			aboutMe = userProfile.options.aboutMe
+		if (settings.aboutMe != null && settings.aboutMe != "A Loritta é minha amiga!") {
+			aboutMe = settings.aboutMe
 		}
 
 		if (aboutMe == null) {

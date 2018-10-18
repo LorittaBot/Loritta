@@ -20,11 +20,10 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
         val profile = context.lorittaUser.profile;
         if (context.args.isNotEmpty()) {
             transaction(Databases.loritta) {
-                profile.options.aboutMe = context.args.joinToString(" ")
-                profile.updateOptions()
+                profile.settings.aboutMe = context.args.joinToString(" ")
             }
 
-            context.sendMessage(context.getAsMention(true) + context.locale["SOBREMIM_CHANGED", profile.options.aboutMe])
+            context.sendMessage(context.getAsMention(true) + context.locale["SOBREMIM_CHANGED", profile.settings.aboutMe])
         } else {
             this.explain(context);
         }

@@ -17,9 +17,9 @@ import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.ProfileOptions
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
@@ -319,7 +319,12 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(StoredMessages, Profiles, Reminders, Reputations, UsernameChanges)
+			SchemaUtils.createMissingTablesAndColumns(StoredMessages,
+					Profiles,
+					ProfilesSettings,
+					Reminders,
+					Reputations,
+					UsernameChanges)
 		}
 	}
 
@@ -433,7 +438,12 @@ class Loritta(config: LorittaConfig) {
 				donationExpiresIn = 0L
 				marriedWith = null
 				marriedAt = null
-				updateOptions(ProfileOptions())
+				settings = ProfileSettings.new {
+					gender = Gender.UNKNOWN
+					hideSharedServers = false
+					hidePreviousUsernames = false
+					hideLastSeen = false
+				}
 			}
 		}
 	}

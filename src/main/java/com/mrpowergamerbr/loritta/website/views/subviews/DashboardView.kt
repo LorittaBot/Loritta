@@ -20,7 +20,7 @@ class DashboardView : ProtectedView() {
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
 		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
-
+		val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile
 
 		if (req.param("hideSharedServers").isSet) {
@@ -28,9 +28,8 @@ class DashboardView : ProtectedView() {
 			val hidePreviousUsernames = req.param("hidePreviousUsernames").booleanValue()
 
 			transaction(Databases.loritta) {
-				lorittaProfile.options.hideSharedServers = hideSharedServers
-				lorittaProfile.options.hidePreviousUsernames = hidePreviousUsernames
-				lorittaProfile.updateOptions()
+				settings.hideSharedServers = hideSharedServers
+				settings.hidePreviousUsernames = hidePreviousUsernames
 			}
 
 			loritta save lorittaProfile

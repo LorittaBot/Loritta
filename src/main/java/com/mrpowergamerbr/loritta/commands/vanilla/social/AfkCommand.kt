@@ -19,11 +19,10 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
 
-		if (profile.options.isAfk) {
+		if (profile.isAfk) {
 			transaction(Databases.loritta) {
-				profile.options.isAfk = false
-				profile.options.afkReason
-				profile.updateOptions()
+				profile.isAfk = false
+				profile.afkReason = null
 			}
 
 			context.reply(
@@ -37,13 +36,12 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			transaction(Databases.loritta) {
 				if (reason.isNotEmpty()) {
-					profile.options.afkReason = reason
+					profile.afkReason = reason
 				} else {
-					profile.options.afkReason = null
+					profile.afkReason = null
 				}
 
-				profile.options.isAfk = true
-				profile.updateOptions()
+				profile.isAfk = true
 			}
 
 			context.reply(

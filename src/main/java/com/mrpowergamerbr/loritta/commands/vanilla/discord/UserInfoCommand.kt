@@ -3,10 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
 
@@ -55,8 +57,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
-			if (lorittaProfile.options.hidePreviousUsernames) {
-				var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
+			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
+
+			if (settings.hidePreviousUsernames) {
+				val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {
 				// TODO: Fix
@@ -100,7 +104,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 
-			var servers = if (lorittaProfile.options.hideSharedServers) {
+			var servers = if (settings.hideSharedServers) {
 				"*${locale["USERINFO_PrivacyOn"]}*"
 			} else {
 				sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})

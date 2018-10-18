@@ -38,6 +38,7 @@ class APISaveSelfUserProfileView : NoVarsView() {
 		}
 
 		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val settings = transaction(Databases.loritta) { profile.settings }
 
 		val body = jsonParser.parse(req.body().value()).obj // content payload
 
@@ -47,8 +48,7 @@ class APISaveSelfUserProfileView : NoVarsView() {
 
 		val config = body["config"].obj
 		transaction(Databases.loritta) {
-			profile.options.aboutMe = config["aboutMe"].string
-			profile.updateOptions()
+			settings.aboutMe = config["aboutMe"].string
 		}
 		loritta save profile
 

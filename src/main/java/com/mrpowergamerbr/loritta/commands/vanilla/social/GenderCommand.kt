@@ -32,7 +32,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 			message.delete().queue()
 			if (it.reactionEmote.id == "384048518853296128") {
 				transaction(Databases.loritta) {
-					context.lorittaUser.profile.options.gender = Gender.MALE
+					context.lorittaUser.profile.settings.gender = Gender.MALE
 				}
 
 				context.reply(
@@ -44,7 +44,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 			}
 			if (it.reactionEmote.id == "384048518337265665") {
 				transaction(Databases.loritta) {
-					context.lorittaUser.profile.options.gender = Gender.FEMALE
+					context.lorittaUser.profile.settings.gender = Gender.FEMALE
 				}
 
 				context.reply(
