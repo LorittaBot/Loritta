@@ -1,12 +1,10 @@
 package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.UserSettings
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.*
 
-class ProfileSettings(id: EntityID<Long>) : Entity<Long>(id) {
-	companion object : EntityClass<Long, ProfileSettings>(UserSettings)
+class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
+	companion object : LongEntityClass<ProfileSettings>(UserSettings)
 
 	val userId = this.id.value
 	var aboutMe by UserSettings.aboutMe
