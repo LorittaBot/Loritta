@@ -3,12 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import org.apache.commons.lang3.RandomStringUtils
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -22,20 +26,18 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
-			// TODO: Fix
-			/* val user = context.getUserAt(2)!!
-			loritta.usersColl.updateOne(
-					Filters.eq("_id", user.id),
-					Updates.set(
-							"dreams",
-							arg1.toDouble()
-					)
-			)
+			val user = context.getUserAt(2)!!
+			transaction(Databases.loritta) {
+				Profiles.update({ Profiles.id eq user.idLong }) {
+					it[money] = arg1.toDouble()
+				}
+			}
+
 			context.reply(
 					LoriReply(
 							"Sonhos de ${user.asMention} foram editados com sucesso!"
 					)
-			) */
+			)
 			return
 		}
 
@@ -127,13 +129,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		}
 
 		if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
-			// TODO: Fix
-			/* val user = lorittaShards.getUserById(arg1)!!
-			val userConfig = loritta.getLorittaProfileForUser(user.id)
+			val user = lorittaShards.getUserById(arg1)!!
+			val userConfig = loritta.getOrCreateLorittaProfile(user.id)
 			val isDonator = arg2.toBoolean()
-
-			userConfig.isDonator = isDonator
-			userConfig.donatorPaid = arg3.toDouble()
 
 			val rawArgs = context.rawArgs.toMutableList()
 			rawArgs.removeAt(0)
@@ -141,16 +139,18 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			rawArgs.removeAt(0)
 			rawArgs.removeAt(0)
 
-			userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillis()
-			userConfig.donatedAt = System.currentTimeMillis()
-
-			loritta save userConfig
+			transaction(Databases.loritta) {
+				userConfig.isDonator = isDonator
+				userConfig.donatorPaid = arg3.toDouble()
+				userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillis()
+				userConfig.donatedAt
+			}
 
 			context.reply(
 					LoriReply(
 							"Usuário `${user.name}` foi marcado como doador até `${userConfig.donationExpiresIn.humanize(locale)}`"
 					)
-			) */
+			)
 		}
 	}
 }

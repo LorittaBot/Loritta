@@ -7,6 +7,11 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
+import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
+import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -20,7 +25,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User, profile: MongoLorittaProfile): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: Profile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 
@@ -143,14 +148,13 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* var userProfile = context.lorittaUser.profile
+		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
 		val user = if (contextUser != null) contextUser else context.userHandle
 
 		if (contextUser != null) {
-			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
+			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
 
 		if (contextUser != null && userProfile.isBanned) {
@@ -160,7 +164,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 							"\uD83D\uDE45"
 					),
 					LoriReply(
-							"**Motivo:** `${userProfile.banReason}`",
+							"**Motivo:** `${userProfile.bannedReason}`",
 							"✍"
 					)
 			)
@@ -174,16 +178,16 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		var aboutMe: String? = null
 
-		if (userProfile.userId == Loritta.config.clientId) {
+		if (userProfile.userId == Loritta.config.clientId.toLong()) {
 			aboutMe = locale["PERFIL_LORITTA_DESCRIPTION"]
 		}
 
-		if (userProfile.userId == "390927821997998081") {
-			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do PerfectDreams (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
+		if (userProfile.userId == 390927821997998081L) {
+			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do SparklyPower (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
 		}
 
-		if (userProfile.aboutMe != null && userProfile.aboutMe != "A Loritta é minha amiga!") {
-			aboutMe = userProfile.aboutMe
+		if (userProfile.options.aboutMe != null && userProfile.options.aboutMe != "A Loritta é minha amiga!") {
+			aboutMe = userProfile.options.aboutMe
 		}
 
 		if (aboutMe == null) {
@@ -225,7 +229,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		)
 
 		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}"); // E agora envie o arquivo
-		*/
 	}
 
 	class DiscordBotVote(

@@ -1,9 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -11,21 +16,30 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* if (context.args.size >= 2) {
-			var monster = context.args[0].toLowerCase(); // ID
+		if (context.args.size >= 2) {
+			val monster = context.args[0].toLowerCase(); // ID
 			context.args[0] = "";
-			var reason = context.args.joinToString(" ");
-			var profile = LorittaLauncher.loritta.getLorittaProfileForUser(monster);
+			val reason = context.args.joinToString(" ");
+			val profile = LorittaLauncher.loritta.getLorittaProfile(monster);
 
-			profile.isBanned = true;
-			profile.banReason = reason;
+			if (profile == null) {
+				context.reply(
+						LoriReply(
+								"Usuário não possui perfil na Loritta!",
+								Constants.ERROR
+						)
+				)
+				return
+			}
 
-			loritta save profile
+			transaction(Databases.loritta) {
+				profile.isBanned = true
+				profile.bannedReason = reason
+			}
 
 			context.sendMessage(context.getAsMention(true) + "Usuário banido com sucesso!")
 		} else {
 			this.explain(context);
-		} */
+		}
 	}
 }

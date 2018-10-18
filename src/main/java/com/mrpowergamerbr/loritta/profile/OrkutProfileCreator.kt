@@ -1,13 +1,20 @@
 package com.mrpowergamerbr.loritta.profile
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -16,7 +23,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class OrkutProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: MongoLorittaProfile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/orkut/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
@@ -64,7 +71,10 @@ class OrkutProfileCreator : ProfileCreator {
 		graphics.font = whitneyMedium18
 		graphics.drawString("A Loritta e a Pantufa são suas amigas", 267, 276)
 
-		val reversedRep = userProfile.receivedReputations.size.toString().reversed()
+		val reputations = transaction(Databases.loritta) {
+			Reputations.select { Reputations.receivedById eq user.idLong }.count()
+		}
+		val reversedRep = reputations.toString().reversed()
 
 		var startX = 202
 		graphics.color = Color(153, 153, 153)
