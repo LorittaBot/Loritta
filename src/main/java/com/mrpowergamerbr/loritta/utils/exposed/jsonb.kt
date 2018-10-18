@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.exposed
 
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
@@ -34,14 +33,10 @@ private class Json<out T : Any>(private val klass: Class<T>, private val jsonMap
 	}
 
 	override fun notNullValueToDB(value: Any): Any {
-		if (value is JsonElement || value is String)
-			return "$value"
+		if (value is String)
+			return value
 		return jsonMapper.toJson(value)
 	}
 
-	override fun nonNullValueToString(value: Any): String {
-		if (value is JsonElement || value is String)
-			return "$value"
-		return "'${jsonMapper.toJson(value)}'"
-	}
+	override fun nonNullValueToString(value: Any): String = "'${jsonMapper.toJson(value)}'"
 }
