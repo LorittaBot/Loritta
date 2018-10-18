@@ -23,15 +23,16 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var donatedAt by Profiles.donatedAt
 	var donationExpiresIn by Profiles.donationExpiresIn
 
-	var options by Profiles.options
-
+	var _options by Profiles.options
+	val options by lazy { _options }
+	
 	var marriedWith by Profiles.marriedWith
 	var marriedAt by Profiles.marriedAt
 
 	fun updateOptions() = updateOptions(options)
 
 	fun updateOptions(options: ProfileOptions) {
-		this.options = options
+		this._options = options
 		writeValues[Profiles.options as Column<Any?>] = options
 	}
 }
