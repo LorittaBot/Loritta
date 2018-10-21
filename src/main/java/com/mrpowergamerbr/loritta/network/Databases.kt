@@ -14,7 +14,7 @@ object Databases {
 			config.password = Loritta.config.postgreSqlPassword
 		config.driverClassName = "org.postgresql.Driver"
 
-		config.maximumPoolSize = 10
+		config.maximumPoolSize = 256
 		config.addDataSourceProperty("cachePrepStmts", "true")
 		config.addDataSourceProperty("prepStmtCacheSize", "250")
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")

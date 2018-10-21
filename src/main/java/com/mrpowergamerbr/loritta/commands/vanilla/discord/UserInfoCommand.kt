@@ -3,7 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -63,26 +65,23 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {
-				// TODO: Fix
-				/* val usernameChanges = lorittaProfile.usernameChanges
-				if (usernameChanges.isEmpty()) {
+				val usernameChanges = transaction(Databases.loritta) { UsernameChange.find { UsernameChanges.userId eq user.idLong }.sortedBy { it.changedAt }.toMutableList() }
+				/* if (usernameChanges.isEmpty()) {
 					usernameChanges.add(MongoLorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
+				} */
+
+				if (usernameChanges.isNotEmpty() && usernameChanges[0].discriminator == user.discriminator && usernameChanges[0].username == user.name) {
+					usernameChanges.removeAt(0)
 				}
 
-				val sortedChanges = lorittaProfile.usernameChanges.sortedBy { it.changedAt }.toMutableList()
-
-				if (sortedChanges[0].discriminator == user.discriminator && sortedChanges[0].username == user.name) {
-					sortedChanges.removeAt(0)
-				}
-
-				if (sortedChanges.isNotEmpty()) {
-					var alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + sortedChanges.joinToString(separator = "\n", transform = {
+				if (usernameChanges.isNotEmpty()) {
+					val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + usernameChanges.joinToString(separator = "\n", transform = {
 						"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale) + ")"
 					})
 					// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
-					var alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
+					val alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
 
-					var aux = mutableListOf<String>()
+					val aux = mutableListOf<String>()
 
 					var length = 0
 					for (line in alsoKnownAsLines) {
@@ -93,7 +92,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 						length += line.length
 					}
 					setDescription(aux.reversed().joinToString(separator = "\n"))
-				} */
+				}
 			}
 
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${user.name}#${user.discriminator}", true)
@@ -120,7 +119,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 				val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}" });
 
-				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substring(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 
 			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime();

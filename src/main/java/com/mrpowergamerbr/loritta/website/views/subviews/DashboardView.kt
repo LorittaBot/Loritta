@@ -22,6 +22,7 @@ class DashboardView : ProtectedView() {
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
 		val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile
+		variables["settings"] = settings
 
 		if (req.param("hideSharedServers").isSet) {
 			val hideSharedServers = req.param("hideSharedServers").booleanValue()

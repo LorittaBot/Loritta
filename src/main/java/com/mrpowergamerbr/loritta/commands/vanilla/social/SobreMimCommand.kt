@@ -17,13 +17,13 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
     }
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
-        val profile = transaction(Databases.loritta) { context.lorittaUser.profile }
+        val settings = transaction(Databases.loritta) { context.lorittaUser.profile.settings }
         if (context.args.isNotEmpty()) {
             transaction(Databases.loritta) {
-                profile.settings.aboutMe = context.args.joinToString(" ")
+	            settings.aboutMe = context.args.joinToString(" ")
             }
 
-            context.sendMessage(context.getAsMention(true) + context.locale["SOBREMIM_CHANGED", profile.settings.aboutMe])
+            context.sendMessage(context.getAsMention(true) + context.locale["SOBREMIM_CHANGED", settings.aboutMe])
         } else {
             this.explain(context);
         }

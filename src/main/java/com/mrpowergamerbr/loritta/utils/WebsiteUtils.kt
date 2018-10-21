@@ -8,6 +8,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
@@ -525,5 +526,14 @@ object WebsiteUtils {
 		serverConfigJson["serverListConfig"]["votes"] = newArray
 
 		return serverConfigJson
+	}
+
+	fun transformProfileToJson(profile: Profile): JsonObject {
+		// TODO: É necessário alterar o frontend para usar os novos valores
+		val jsonObject = JsonObject()
+		jsonObject["userId"] = profile.id.value
+		jsonObject["money"] = profile.money
+		jsonObject["dreams"] = profile.money // Deprecated
+		return jsonObject
 	}
 }

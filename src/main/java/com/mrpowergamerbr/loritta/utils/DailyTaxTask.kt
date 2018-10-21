@@ -46,7 +46,7 @@ class DailyTaxTask : Runnable {
 				logger.info("Avisando sobre a taxa diária!")
 
 				val documents = transaction(Databases.loritta) {
-					Profile.find { Profiles.marriedWith.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
+					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
 				}
 
 				for (document in documents) {
@@ -68,23 +68,28 @@ class DailyTaxTask : Runnable {
 
 			// MARRY
 			val documents = transaction(Databases.loritta) {
-				val selected = Profile.find { Profiles.marriedWith.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
+				val selected = Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
 
-				Profiles.update({ Profiles.marriedWith.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble())}) {
+				Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble())}) {
 					with(SqlExpressionBuilder) {
 						it.update(Profiles.money, Profiles.money - MARRIAGE_DAILY_TAX.toDouble())
 					}
 				}
 
-				selected
+				selected.onEach { it.marriage }
 			}
 
 			// Okay, tudo certo, vamos lá!
 			for (document in documents) {
-				if (document.marriedWith == null)
-					continue
+				val marriage = document.marriage ?: continue
 
-				val marriedWith = lorittaShards.getUserById(document.marriedWith?.toString())
+				val marriedWithId = if (marriage.user1 == document.userId) {
+					marriage.user2
+				} else {
+					marriage.user1
+				}.toString()
+
+				val marriedWith = lorittaShards.getUserById(marriedWithId)
 				val user = lorittaShards.getUserById(document.userId.toString())
 
 				if (user != null) {
@@ -105,11 +110,12 @@ class DailyTaxTask : Runnable {
 
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq document.userId }) {
-						it[Profiles.marriedWith] = null as Long?
+						it[Profiles.marriage] = null
 					}
-					Profiles.update({ Profiles.id eq document.marriedWith }) {
-						it[Profiles.marriedWith] = null as Long?
+					Profiles.update({ Profiles.id eq marriedWithId.toLong() }) {
+						it[Profiles.marriage] = null
 					}
+					marriage.delete()
 				}
 			}
 

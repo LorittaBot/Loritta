@@ -43,45 +43,43 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 				return
 			}
 
-			if (2 >= toClear) {
+			if (toClear !in 2..100) {
 				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
 				return
 			}
 
-			var aux = toClear + 1
-			var ignoredMessages = 0
+			// Primeiros iremos deletar a mensagem do comando que o usuário enviou
+			try { context.message.delete().await() } catch (e: Exception) {}
 
-			while (aux > 0) {
-				val cleanUp = Math.min(aux, 100)
-				aux -= cleanUp
-				val toDelete = mutableListOf<String>()
-
-				for (msg in context.event.textChannel!!.history.retrievePast(cleanUp).await()) {
-					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
-					if (context.message.mentionedUsers.isNotEmpty()) {
-						if (!context.message.mentionedUsers.contains(msg.author)) {
-							continue
-						}
-					}
-					if (MiscUtil.parseSnowflake(msg.id) > twoWeeksAgo) {
-						toDelete.add(msg.id)
-					} else {
-						ignoredMessages++
-					}
+			val messages = context.event.textChannel!!.history.retrievePast(toClear).await()
+			val allowedMessages = messages.asSequence().filter {
+				if (context.message.mentionedUsers.isNotEmpty()) {
+					!context.message.mentionedUsers.contains(it.author)
+				} else {
+					true
 				}
+			}.filter {
+				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
+				MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
+			}.toList()
 
-				if (toDelete.size !in 2..100) {
-					context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
-					return
-				}
-
-				context.event.textChannel!!.deleteMessagesByIds(toDelete).queue()
+			if (allowedMessages.isEmpty()) {
+				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				return
 			}
 
-			if (ignoredMessages == 0) {
+			if (allowedMessages.size !in 2..100) {
+				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				return
+			}
+
+			// E agora realmente iremos apagar as mensagens!
+			context.message.textChannel.deleteMessages(allowedMessages).await()
+
+			if (allowedMessages.size == messages.size) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.userHandle.asMention])
 			} else {
-				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, ignoredMessages])
+				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
 			}
 		} else {
 			this.explain(context)

@@ -21,8 +21,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var donatorPaid by Profiles.donatorPaid
 	var donatedAt by Profiles.donatedAt
 	var donationExpiresIn by Profiles.donationExpiresIn
-	var marriedWith by Profiles.marriedWith
-	var marriedAt by Profiles.marriedAt
 
 	var settings by ProfileSettings referencedOn Profiles.settings
+	var marriage by Marriage optionalReferencedOn Profiles.marriage
 }

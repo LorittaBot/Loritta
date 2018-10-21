@@ -11,9 +11,8 @@ object Profiles : SnowflakeTable() {
 	var donatorPaid = double("donator_paid")
 	var donatedAt = long("donated_at")
 	var donationExpiresIn = long("donation_expires_in")
-	var marriedWith = long("married_with").nullable()
-	var marriedAt = long("married_at").nullable()
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
 	var settings = reference("settings", UserSettings)
+	var marriage = reference("marriage", Marriages).nullable()
 }

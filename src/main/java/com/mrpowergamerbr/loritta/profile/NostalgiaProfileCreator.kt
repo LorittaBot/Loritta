@@ -104,11 +104,18 @@ class NostalgiaProfileCreator : ProfileCreator {
 		graphics.drawText("Sonhos", 159, 98  + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
 		graphics.drawText(userProfile.money.toString(), 159, 116  + shiftY, 800 - 6)
+		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
-		if (userProfile.marriedWith != null) {
+		if (marriage != null) {
+			val marriedWithId = if (marriage.user1 == user.idLong) {
+				marriage.user2
+			} else {
+				marriage.user1
+			}.toString()
+
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/nostalgia/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = lorittaShards.getUserById(userProfile.marriedWith?.toString())
+			val marriedWith = lorittaShards.getUserById(marriedWithId)
 
 			if (marriedWith != null) {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
@@ -118,8 +125,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16
-				println("Casado as: " + userProfile.marriedAt)
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(userProfile.marriedAt ?: 0,System.currentTimeMillis(), locale), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
 			}
 		}
 

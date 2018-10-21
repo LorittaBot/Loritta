@@ -4,14 +4,23 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.dao.Daily
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
+import java.util.*
 
 class APILoriDailyRewardView : NoVarsView() {
 	companion object {
@@ -60,58 +69,30 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
-		// TODO: Fix
 		// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 		// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-		/* val sameIpProfile = loritta.usersColl.find(
-				Filters.eq("ip", ip)
-		).firstOrNull()
+		val calendar = Calendar.getInstance()
+		calendar.timeInMillis = System.currentTimeMillis()
+		calendar.set(Calendar.HOUR_OF_DAY, 0)
+		calendar.set(Calendar.MINUTE, 0)
+		calendar.add(Calendar.DAY_OF_MONTH, 1)
+		val tomorrow = calendar.timeInMillis
 
-		run {
-			val votedAt = lorittaProfile.receivedDailyAt
+		val currentDaily = transaction(Databases.loritta) { Daily.find { (Dailies.receivedById eq userIdentification.id.toLong()) and (Dailies.receivedAt less tomorrow) }.firstOrNull() }
+		val sameIpDaily = transaction(Databases.loritta) { Daily.find { (Dailies.ip eq ip) and (Dailies.receivedAt less tomorrow) }.firstOrNull() }
 
-			val calendar = Calendar.getInstance()
-			calendar.timeInMillis = votedAt
-			calendar.set(Calendar.HOUR_OF_DAY, 0)
-			calendar.set(Calendar.MINUTE, 0)
-			calendar.add(Calendar.DAY_OF_MONTH, 1)
-			val tomorrow = calendar.timeInMillis
-
-			val canGetDaily = System.currentTimeMillis() > tomorrow
-
-			if (!canGetDaily) {
-				val payload = JsonObject()
-				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-				return payload.toString()
-			}
-		}
-
-		if (sameIpProfile != null) {
-			run {
-				val votedAt = sameIpProfile.receivedDailyAt
-
-				val calendar = Calendar.getInstance()
-				calendar.timeInMillis = votedAt
-				calendar.set(Calendar.HOUR_OF_DAY, 0)
-				calendar.set(Calendar.MINUTE, 0)
-				calendar.add(Calendar.DAY_OF_MONTH, 1)
-				val tomorrow = calendar.timeInMillis
-
-				val canGetDaily = System.currentTimeMillis() > tomorrow
-
-				if (!canGetDaily) {
-					val payload = JsonObject()
-					payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-					return payload.toString()
-				}
-			}
+		if (currentDaily != null || sameIpDaily != null) {
+			val payload = JsonObject()
+			payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
+			return payload.toString()
 		}
 
 		val status = MiscUtils.verifyAccount(userIdentification, ip)
-
-		logger.debug { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
-		logger.debug { "Is verified? ${userIdentification.verified}" }
-		logger.debug { "Email ${userIdentification.email}" }
+		val email = userIdentification.email
+		logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
+		logger.info { "Is verified? ${userIdentification.verified}" }
+		logger.info { "Email ${email}" }
+		logger.info { "IP: $ip" }
 
 		if (!status.canAccess) {
 			val payload = JsonObject()
@@ -169,14 +150,26 @@ class APILoriDailyRewardView : NoVarsView() {
 		payload["receivedDailyAt"] = receivedDailyAt
 		payload["dailyPayout"] = dailyPayout
 
-		lorittaProfile.dreams += dailyPayout
-		lorittaProfile.ip = ip
-		lorittaProfile.receivedDailyAt = receivedDailyAt
+		val id = userIdentification.id.toLong()
 
-		loritta save lorittaProfile
+		println(userIdentification.id.toLong())
+		println(receivedDailyAt)
+		println(ip)
+		println(email!!)
 
-		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.dreams}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${lorittaProfile.ip}" }
-		return payload.toString() */
-		return ""
+		transaction(Databases.loritta) {
+			Dailies.insert {
+				it[Dailies.receivedById] = id
+				it[Dailies.receivedAt] = receivedDailyAt
+				it[Dailies.ip] = ip
+				it[Dailies.email] = email
+			}
+
+			lorittaProfile.money += dailyPayout
+		}
+
+
+		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip}" }
+		return payload.toString()
 	}
 }

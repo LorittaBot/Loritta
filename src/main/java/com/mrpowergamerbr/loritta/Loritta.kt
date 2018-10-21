@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.collect.EvictingQueue
+import com.google.common.collect.Queues
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -16,8 +18,7 @@ import com.mongodb.client.model.Updates
 import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.dao.ProfileSettings
+import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
@@ -41,10 +42,13 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.entities.Guild
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -157,8 +161,8 @@ class Loritta(config: LorittaConfig) {
 		FRONTEND = config.frontendFolder
 		Loritta.config = config
 		loadLocales()
-		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
-		Loritta.youtube = TemmieYouTube()
+		temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
+		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
 		loadPremiumKeys()
@@ -166,11 +170,20 @@ class Loritta(config: LorittaConfig) {
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
+
+		val okHttpBuilder = OkHttpClient.Builder()
+				.connectTimeout(30, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
+				.readTimeout(30, TimeUnit.SECONDS)
+				.writeTimeout(30, TimeUnit.SECONDS)
+				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
+
+
 		builder = DefaultShardManagerBuilder()
 				.setShardsTotal(Loritta.config.shards)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
+				.setHttpClientBuilder(okHttpBuilder)
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
@@ -222,7 +235,7 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
-			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			website = LorittaWebsite(config.websiteUrl, config.frontendFolder)
 			org.jooby.run({
 				website
 			})
@@ -236,9 +249,9 @@ class Loritta(config: LorittaConfig) {
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
-		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
+		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(FOLDER, "livestreaming.json").readText())
 
-		socket = SocketServer(Loritta.config.socketPort)
+		socket = SocketServer(config.socketPort)
 
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
@@ -319,12 +332,16 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(StoredMessages,
+			SchemaUtils.createMissingTablesAndColumns(
+					StoredMessages,
 					Profiles,
 					UserSettings,
 					Reminders,
 					Reputations,
-					UsernameChanges)
+					UsernameChanges,
+					Dailies,
+					Marriages
+			)
 		}
 	}
 
@@ -344,7 +361,7 @@ class Loritta(config: LorittaConfig) {
 
 		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
 
-		val db = mongo.getDatabase(Loritta.config.databaseName)
+		val db = mongo.getDatabase(config.databaseName)
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
@@ -423,9 +440,92 @@ class Loritta(config: LorittaConfig) {
 		return getOrCreateLorittaProfile(userId.toLong())
 	}
 
+	var idx0 = 0L
+	val findProfileMongo = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+	var idx1 = 0L
+	val findProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+	var idx2 = 0L
+	val newProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
 		return transaction(Databases.loritta) {
-			Profile.findById(userId) ?: Profile.new(userId) {
+			val start0 = System.nanoTime()
+			val sqlProfile = Profile.findById(userId)
+			if (idx0 % 100 == 0L) {
+				findProfilePostgre.add(System.nanoTime() - start0)
+			}
+			idx0++
+
+			if (sqlProfile != null) {
+				return@transaction sqlProfile
+			}
+
+			// Carregar do Mongo
+			val start1 = System.nanoTime()
+			val mongoProfile = _usersColl.find(Filters.eq("_id", userId.toString())).firstOrNull()
+			if (idx1 % 100 == 0L) {
+				findProfileMongo.add(System.nanoTime() - start1)
+			}
+			idx1++
+
+			if (mongoProfile != null) {
+				for (change in mongoProfile.usernameChanges) {
+					UsernameChange.new {
+						this.userId = userId
+						this.username = change.username
+						this.discriminator = change.discriminator
+						this.changedAt = change.changedAt
+					}
+				}
+				for (reminder in mongoProfile.reminders) {
+					if (reminder.textChannel == null)
+						continue
+
+					Reminder.new {
+						this.userId = userId
+						this.remindAt = reminder.remindMe
+						this.content = reminder.reason ?: "???"
+						this.channelId = reminder.textChannel!!.toLong()
+					}
+				}
+
+				return@transaction Profile.new(userId) {
+					xp = mongoProfile.xp
+					isBanned = mongoProfile.isBanned
+					bannedReason = mongoProfile.banReason
+					lastMessageSentAt = 0L
+					lastMessageSentHash = 0
+					money = mongoProfile.dreams
+					isDonator = mongoProfile.isDonator
+					donatorPaid = mongoProfile.donatorPaid
+					donatedAt = mongoProfile.donatedAt
+					donationExpiresIn = mongoProfile.donationExpiresIn
+					isAfk = mongoProfile.isAfk
+					afkReason = mongoProfile.afkReason
+					settings = ProfileSettings.new {
+						gender = mongoProfile.gender
+						aboutMe = mongoProfile.aboutMe
+						hideSharedServers = mongoProfile.hideSharedServers
+						hidePreviousUsernames = mongoProfile.hidePreviousUsernames
+						hideLastSeen = false
+					}
+					if (mongoProfile.marriedWith != null) {
+						val currentMarriage = Marriage.find { (Marriages.user1 eq userId) or (Marriages.user2 eq userId) }.firstOrNull()
+						if (currentMarriage != null) {
+							marriage = currentMarriage
+						} else {
+							marriage = Marriage.new {
+								user1 = userId
+								user2 = mongoProfile.marriedWith!!.toLong()
+								marriedSince = mongoProfile.marriedAt ?: System.currentTimeMillis()
+							}
+						}
+					}
+				}
+			}
+
+			val start2 = System.nanoTime()
+			val newProfile = Profile.new(userId) {
 				xp = 0
 				isBanned = false
 				bannedReason = null
@@ -436,8 +536,6 @@ class Loritta(config: LorittaConfig) {
 				donatorPaid = 0.0
 				donatedAt = 0L
 				donationExpiresIn = 0L
-				marriedWith = null
-				marriedAt = null
 				isAfk = false
 				settings = ProfileSettings.new {
 					gender = Gender.UNKNOWN
@@ -446,6 +544,12 @@ class Loritta(config: LorittaConfig) {
 					hideLastSeen = false
 				}
 			}
+			if (idx2 % 100 == 0L) {
+				newProfilePostgre.add(System.nanoTime() - start2)
+			}
+
+			idx2++
+			return@transaction newProfile
 		}
 	}
 
@@ -476,7 +580,7 @@ class Loritta(config: LorittaConfig) {
 		val locales = mutableMapOf<String, BaseLocale>()
 
 		// Carregar primeiro o locale padrão
-		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
+		val defaultLocaleFile = File(LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
 		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
@@ -491,7 +595,7 @@ class Loritta(config: LorittaConfig) {
 		locales.put("default", defaultLocale)
 
 		// Carregar todos os locales
-		val localesFolder = File(Loritta.LOCALES)
+		val localesFolder = File(LOCALES)
 		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 		for (file in localesFolder.listFiles()) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
@@ -507,9 +611,9 @@ class Loritta(config: LorittaConfig) {
 		// E agora preencher valores nulos e salvar as traduções
 		for ((id, locale) in locales) {
 			if (id != "default") {
-				val jsonObject = JSON_PARSER.parse(Loritta.GSON.toJson(locale))
+				val jsonObject = JSON_PARSER.parse(GSON.toJson(locale))
 
-				val localeFile = File(Loritta.LOCALES, "$id.json")
+				val localeFile = File(LOCALES, "$id.json")
 				val asJson = JSON_PARSER.parse(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
@@ -557,7 +661,7 @@ class Loritta(config: LorittaConfig) {
 					}
 				}
 
-				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
+				File(LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
 

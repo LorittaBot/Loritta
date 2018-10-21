@@ -1,10 +1,19 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Rectangle
+import java.awt.geom.Path2D
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 
 class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -20,8 +29,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* val list = mutableListOf<RankWrapper>()
+		val list = mutableListOf<RankWrapper>()
 
 		var global = false
 		var page = context.args.getOrNull(0)?.toIntOrNull()
@@ -89,7 +97,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			var member = lorittaShards.getUserById(id)
 
 			if (member != null) {
-				val userProfile = loritta.getLorittaProfileForUser(id)
+				val userProfile = loritta.getOrCreateLorittaProfile(id)
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
@@ -138,7 +146,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				currentY += 53;
 			}
 		}
-		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true)) */
+		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
 	}
 
 	data class RankWrapper(
