@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.dao.Daily
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Dailies
@@ -14,8 +13,8 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -71,20 +70,48 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 		// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-		val calendar = Calendar.getInstance()
-		calendar.timeInMillis = System.currentTimeMillis()
-		calendar.set(Calendar.HOUR_OF_DAY, 0)
-		calendar.set(Calendar.MINUTE, 0)
-		calendar.add(Calendar.DAY_OF_MONTH, 1)
-		val tomorrow = calendar.timeInMillis
+		val lastReceivedDailyAt = transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq lorittaProfile.id.value }
+					.orderBy(Dailies.receivedAt to false)
+					.limit(1)
+					.firstOrNull()
+		}?.get(Dailies.receivedAt) ?: 0L
 
-		val currentDaily = transaction(Databases.loritta) { Daily.find { (Dailies.receivedById eq userIdentification.id.toLong()) and (Dailies.receivedAt less tomorrow) }.firstOrNull() }
-		val sameIpDaily = transaction(Databases.loritta) { Daily.find { (Dailies.ip eq ip) and (Dailies.receivedAt less tomorrow) }.firstOrNull() }
+		val sameIpDailyAt = transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
+					.orderBy(Dailies.receivedAt to false)
+					.limit(1)
+					.firstOrNull()
+		}?.get(Dailies.receivedAt) ?: 0L
 
-		if (currentDaily != null || sameIpDaily != null) {
-			val payload = JsonObject()
-			payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-			return payload.toString()
+		run {
+			val calendar = Calendar.getInstance()
+			calendar.timeInMillis = lastReceivedDailyAt
+			calendar.set(Calendar.HOUR_OF_DAY, 0)
+			calendar.set(Calendar.MINUTE, 0)
+			calendar.add(Calendar.DAY_OF_MONTH, 1)
+			val tomorrow = calendar.timeInMillis
+
+			if (tomorrow > System.currentTimeMillis()) {
+				val payload = JsonObject()
+				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
+				return payload.toString()
+			}
+		}
+
+		run {
+			val calendar = Calendar.getInstance()
+			calendar.timeInMillis = sameIpDailyAt
+			calendar.set(Calendar.HOUR_OF_DAY, 0)
+			calendar.set(Calendar.MINUTE, 0)
+			calendar.add(Calendar.DAY_OF_MONTH, 1)
+			val tomorrow = calendar.timeInMillis
+
+			if (tomorrow > System.currentTimeMillis()) {
+				val payload = JsonObject()
+				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
+				return payload.toString()
+			}
 		}
 
 		val status = MiscUtils.verifyAccount(userIdentification, ip)

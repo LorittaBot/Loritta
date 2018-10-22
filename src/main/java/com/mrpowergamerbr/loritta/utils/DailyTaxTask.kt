@@ -42,7 +42,7 @@ class DailyTaxTask : Runnable {
 		}
 
 		try {
-			if (hour == 18) {
+			if (hour == 18 && !alreadySentDMs) {
 				logger.info("Avisando sobre a taxa diária!")
 
 				val documents = transaction(Databases.loritta) {
@@ -76,12 +76,12 @@ class DailyTaxTask : Runnable {
 					}
 				}
 
-				selected.onEach { it.marriage }
+				selected.onEach { it.marriage != null } // Vamos carregar todos os marriages antes de prosseguir
 			}
 
 			// Okay, tudo certo, vamos lá!
 			for (document in documents) {
-				val marriage = document.marriage ?: continue
+				val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
 
 				val marriedWithId = if (marriage.user1 == document.userId) {
 					marriage.user2

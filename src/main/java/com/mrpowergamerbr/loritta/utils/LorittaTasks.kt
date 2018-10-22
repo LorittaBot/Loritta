@@ -15,7 +15,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 object LorittaTasks {
+	lateinit var DAILY_TAX_TASK: DailyTaxTask
+
 	fun startTasks() {
+		DAILY_TAX_TASK = DailyTaxTask()
+
 		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
 			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
@@ -25,7 +29,7 @@ object LorittaTasks {
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
 	}
 
