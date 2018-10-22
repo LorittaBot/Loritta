@@ -4,17 +4,27 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import java.util.concurrent.Executors
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
+	companion object {
+		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+	}
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["RAFFLE_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && context.userHandle.id == Loritta.config.ownerId) {
@@ -38,18 +48,19 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			val requiredCount = quantity.toLong() * 250
 			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
 
-			synchronized(this) {
-				val lorittaProfile = loritta.getLorittaProfileForUser(context.userHandle.id)
+			GlobalScope.launch(coroutineExecutor) {
+				val lorittaProfile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
 
-				if (lorittaProfile.dreams >= requiredCount) {
-					lorittaProfile.dreams -= requiredCount
-					loritta save lorittaProfile
+				if (lorittaProfile.money >= requiredCount) {
+					transaction(Databases.loritta) {
+						lorittaProfile.money -= requiredCount
+					}
 
 					for (i in 0 until quantity) {
 						RaffleThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
 					}
 
-					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.dreams + requiredCount}) sonhos!")
+					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
 
 					loritta.raffleThread.save()
 
@@ -66,7 +77,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				} else {
 					context.reply(
 							LoriReply(
-									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.dreams, quantity, if (quantity == 1) "" else "s"],
+									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.money, quantity, if (quantity == 1) "" else "s"],
 									Constants.ERROR
 							)
 					)

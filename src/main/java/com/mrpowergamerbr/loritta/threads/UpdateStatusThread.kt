@@ -48,7 +48,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		}
 		val calendar = Calendar.getInstance()
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
-		val firstInstance = loritta.lorittaShards.shards.firstOrNull { it.status == JDA.Status.CONNECTED }
+		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
 		if (Loritta.config.fanArtExtravaganza) {
 			if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
@@ -144,7 +144,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				str = str.replace("{users}", loritta.lorittaShards.getUserCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
-				val shard = lorittaShards.shards.firstOrNull() ?: return
+				val shard = lorittaShards.getShards().firstOrNull() ?: return
 				loritta.lorittaShards.setGame(EntityBuilder(shard).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()

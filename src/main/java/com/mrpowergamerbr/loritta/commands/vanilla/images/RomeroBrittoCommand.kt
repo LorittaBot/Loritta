@@ -31,7 +31,7 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0, 25, 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)

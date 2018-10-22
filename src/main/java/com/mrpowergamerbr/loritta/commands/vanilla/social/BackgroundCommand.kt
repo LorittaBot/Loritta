@@ -28,7 +28,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val link = context.getImageUrlAt(0, 1, 2048);
 
 		if (link != null) {
@@ -36,7 +36,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			return;
 		}
 		val embed = getFirstPageEmbed(context)
-		val message = context.sendMessageComplete(embed);
+		val message = context.sendMessage(embed);
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
@@ -113,9 +113,9 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		message.addReaction("\uD83D\uDED2").queue() // Carrinho de supermercado - Para procurar novos backgrounds
 	}
 
-	fun setAsBackground(link0: String, context: CommandContext) {
+	suspend fun setAsBackground(link0: String, context: CommandContext) {
 		var link = link0
-		var mensagem = context.sendMessageComplete("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
+		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...");
 
 		val params = getQueryParameters(link)
 

@@ -11,8 +11,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
@@ -173,14 +174,6 @@ infix fun <T> Loritta.save(obj: T) {
 		)
 		return
 	}
-	if (obj is LorittaProfile) {
-		loritta.usersColl.replaceOne(
-				Filters.eq("_id", obj.userId),
-				obj,
-				updateOptions
-		)
-		return
-	}
 	throw RuntimeException("Trying to save $obj but no collection for that type exists!")
 }
 
@@ -200,16 +193,16 @@ enum class NSFWResponse {
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
-	fun handleIfBanned(context: CommandContext, profile: LorittaProfile): Boolean {
+	fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
 		if (profile.isBanned) {
-			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.id)
+			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 
 			// Se um usuário está banido...
 			context.userHandle
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.banReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
 					)
 			return true
 		}
@@ -365,7 +358,7 @@ object LorittaUtilsKotlin {
 		return embed.build();
 	}
 
-	fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
+	suspend fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
 		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
 			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
 				if (e.reactionEmote.name == "\uD83D\uDD22") {
@@ -402,30 +395,29 @@ object LorittaUtilsKotlin {
 			}
 		} else { // Se for facepalm...
 			val atw = context.metadata.get("currentTrack") as AudioTrackWrapper
-			e.reaction.users.queue { list ->
-				val count = list.count { !it.isBot }
+			val list = e.reaction.users.await()
+			val count = list.count { !it.isBot }
 
-				val conf = context.config
+			val conf = context.config
 
-				if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
-					val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
+			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
+				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
 
-					if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
-						return@queue
-					}
+				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
+					return
+				}
 
-					if (e.member.voiceState.channel !== vc) {
-						e.reaction.removeReaction(e.user).queue()
-						return@queue
-					}
+				if (e.member.voiceState.channel !== vc) {
+					e.reaction.removeReaction(e.user).queue()
+					return
+				}
 
-					if (vc != null) {
-						val inChannel = vc.members.filter { !it.user.isBot }.size
-						val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
+				if (vc != null) {
+					val inChannel = vc.members.filter { !it.user.isBot }.size
+					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
 
-						if (count >= required) {
-							loritta.audioManager.skipTrack(context)
-						}
+					if (count >= required) {
+						loritta.audioManager.skipTrack(context)
 					}
 				}
 			}

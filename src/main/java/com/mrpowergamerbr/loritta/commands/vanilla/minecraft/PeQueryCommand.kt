@@ -26,7 +26,7 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 		return Arrays.asList("PvP.PigRaid.com")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

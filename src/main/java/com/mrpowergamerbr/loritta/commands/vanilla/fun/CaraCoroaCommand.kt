@@ -11,7 +11,7 @@ class CaraCoroaCommand : AbstractCommand("flipcoin", listOf("girarmoeda", "flip"
 		return locale["CARACOROA_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		context.sendMessage(context.getAsMention(true) + if (Loritta.RANDOM.nextBoolean()) "<:cara:412586256409559041> **${locale["CARACOROA_HEADS"]}!**" else "<:coroa:412586257114464259> **${locale["CARACOROA_TAILS"]}!**")
 	}
 }

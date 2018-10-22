@@ -37,7 +37,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.message.mentionedUsers.size == 2) {
 			// Não podemos usar context...
 			val user = context.message.mentionedUsers[0]

@@ -20,7 +20,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		return locale["AJUDA_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		context.userHandle.openPrivateChannel().queue({ privateChannel ->
 			if (!context.isPrivateChannel) {
 				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").queue()
@@ -120,7 +120,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		val categoryCmds = loritta.commandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
-			for (cmd in categoryCmds) {
+			for (cmd in categoryCmds.sortedBy { it.label }) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
 					val toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
 					if ((description + toBeAdded).length > 2048) {
@@ -207,7 +207,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 	}
 
-	fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
+	suspend fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
 		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
 
 		msg.delete().queue()
@@ -265,7 +265,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				if (lastMessage != null)
 					deleteMessagesOnClick.add(lastMessage.id)
 
-				lastMessage = context.sendMessageComplete(embed)
+				lastMessage = context.sendMessage(embed)
 			}
 
 			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick

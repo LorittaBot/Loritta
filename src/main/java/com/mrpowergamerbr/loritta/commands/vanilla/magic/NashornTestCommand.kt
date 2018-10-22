@@ -11,7 +11,7 @@ class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory
 		return "Executa códigos em JavaScript usando a sandbox de comandos da Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val javaScript = context.args.joinToString(" ")
 
 		val nashornCmd = NashornCommand("teste", javaScript)

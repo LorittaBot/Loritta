@@ -33,7 +33,7 @@ class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), Comman
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 			val template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template

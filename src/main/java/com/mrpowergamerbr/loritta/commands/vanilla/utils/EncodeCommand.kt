@@ -28,7 +28,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val args = context.rawArgs.toMutableList()
 		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
 

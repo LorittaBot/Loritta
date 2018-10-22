@@ -1,13 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -29,7 +31,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var page = context.args.getOrNull(0)?.toIntOrNull()
 
 		if (page != null)
@@ -38,11 +40,9 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 		if (page == null)
 			page = 0
 
-		val userData = loritta.usersColl
-				.find(Filters.gt("dreams", 60000))
-				.sort(Sorts.descending("dreams"))
-				.skip(page * 10)
-				.limit(10)
+		val userData = transaction(Databases.loritta) {
+			Profiles.selectAll().orderBy(Profiles.money to false).limit(10, page * 10).toMutableList()
+		}
 
 		val list = userData.toMutableList()
 
@@ -87,10 +87,11 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 				break
 			}
 
-			val member = lorittaShards.getUserById(profile.userId)
+			val userId = profile[Profiles.id].value.toString()
+			val member = lorittaShards.getUserById(userId)
 
 			if (member != null) {
-				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.userId + ".png")
+				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/$userId.png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
 				val rankBackground = ImageIO.read(imageFile)
@@ -109,7 +110,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 
 				graphics.font = oswaldRegular16
 
-				ImageUtils.drawTextWrap("${profile.dreams} sonhos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("${profile[Profiles.money]} sonhos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 

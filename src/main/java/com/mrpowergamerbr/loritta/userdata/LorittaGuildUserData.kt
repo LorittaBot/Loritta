@@ -17,8 +17,8 @@ class LorittaGuildUserData @BsonCreator constructor(@BsonProperty("userId") val 
 	var quickPunishment = false
 
 	@BsonIgnore
-	fun getCurrentLevel(): LorittaProfile.XpWrapper {
-		return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
+	fun getCurrentLevel(): MongoLorittaProfile.XpWrapper {
+		return MongoLorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
 	}
 
 	@BsonIgnore

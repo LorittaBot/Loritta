@@ -7,7 +7,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import java.awt.*
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Rectangle
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -26,7 +28,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val list = mutableListOf<RankWrapper>()
 
 		var global = false
@@ -95,7 +97,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			var member = lorittaShards.getUserById(id)
 
 			if (member != null) {
-				val userProfile = loritta.getLorittaProfileForUser(id)
+				val userProfile = loritta.getOrCreateLorittaProfile(id)
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 

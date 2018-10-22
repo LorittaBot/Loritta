@@ -14,7 +14,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
         return locale["PING_DESCRIPTION"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "shards") {
@@ -24,7 +24,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val row3 = mutableListOf<String>()
 			val row4 = mutableListOf<String>()
 
-			lorittaShards.shards.sortedBy { it.shardInfo.shardId }.forEach {
+			lorittaShards.getShards().sortedBy { it.shardInfo.shardId }.forEach {
 				row0.add("Shard ${it.shardInfo.shardId}")
 				row1.add("${it.ping}ms")
 				row2.add(it.status.name)
@@ -66,7 +66,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				context.sendMessage("```${str}```")
 			}
 		} else {
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
 							prefix = "\uD83C\uDFD3"

@@ -37,7 +37,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 				"conteúdo" to "O que você deseja procurar na Wikia")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
 			val websiteId = context.args[0]
 

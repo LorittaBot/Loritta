@@ -14,7 +14,7 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
         return locale["MCSTATUS_DESCRIPTION"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         var body = HttpRequest.get("https://use.gameapis.net/mc/extra/status").body();
 
         var builder = EmbedBuilder()

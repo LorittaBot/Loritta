@@ -3,11 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -18,7 +20,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		return "usuário quantia"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
 			var economySource = "global"
 			var currentIdx = 0
@@ -46,7 +48,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 									Constants.ERROR
 							),
 							LoriReply(
-									"`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.dreams} Sonhos**!)",
+									"`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.money} Sonhos**!)",
 									prefix = "<:loritta:331179879582269451>",
 									mentionUser = false
 							),
@@ -83,7 +85,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (0 >= howMuch || context.lorittaUser.profile.dreams.isNaN()) {
+			if (0 >= howMuch || context.lorittaUser.profile.money.isNaN()) {
 				context.reply(
 						LoriReply(
 								locale["INVALID_NUMBER", context.rawArgs[1]],
@@ -95,7 +97,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Se o servidor tem uma economia local...
 			val balanceQuantity = if (economySource == "global") {
-				context.lorittaUser.profile.dreams
+				context.lorittaUser.profile.money
 			} else {
 				payerProfile.money
 			}
@@ -112,27 +114,27 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Hora de transferir!
 			if (economySource == "global") {
-				val receiverProfile = loritta.getLorittaProfileForUser(user.id)
+				val receiverProfile = loritta.getOrCreateLorittaProfile(user.id)
 
-				if (receiverProfile.dreams.isNaN()) {
+				if (receiverProfile.money.isNaN()) {
 					// receiverProfile.dreams = 0.0
 					return
 				}
 
-				if (context.lorittaUser.profile.dreams.isNaN()) {
+				if (context.lorittaUser.profile.money.isNaN()) {
 					// context.lorittaUser.profile.dreams = 0.0
 					return
 				}
 
-				val beforeGiver = context.lorittaUser.profile.dreams
-				val beforeReceiver = receiverProfile.dreams
+				val beforeGiver = context.lorittaUser.profile.money
+				val beforeReceiver = receiverProfile.money
 
-				context.lorittaUser.profile.dreams -= howMuch
-				receiverProfile.dreams += howMuch
+				transaction(Databases.loritta) {
+					context.lorittaUser.profile.money -= howMuch
+					receiverProfile.money += howMuch
+				}
 
 				logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos)")
-				loritta save context.lorittaUser.profile
-				loritta save receiverProfile
 
 				context.reply(
 						LoriReply(

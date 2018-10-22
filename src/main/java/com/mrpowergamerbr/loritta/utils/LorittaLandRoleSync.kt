@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import net.dv8tion.jda.core.entities.Guild
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
 class LorittaLandRoleSync : Runnable {
@@ -74,10 +77,14 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 
 			// Apply donators roles
-			val donators = loritta.usersColl.find(Filters.eq("donator", true)).mapNotNull {
+			val donatorsProfiles = transaction(Databases.loritta) {
+				Profile.find { Profiles.isDonator eq true }.toMutableList()
+			}
+
+			val donators = donatorsProfiles.mapNotNull {
 				val member = originalGuild.getMemberById(it.userId)
 				if (member != null)
-				Pair(it, member)
+					Pair(it, member)
 				else
 					null
 			}

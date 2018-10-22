@@ -6,11 +6,13 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.save
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -35,7 +37,8 @@ class APISaveSelfUserProfileView : NoVarsView() {
 			return Loritta.GSON.toJson(mapOf("api:code" to LoriWebCodes.UNAUTHORIZED))
 		}
 
-		val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val settings = transaction(Databases.loritta) { profile.settings }
 
 		val body = jsonParser.parse(req.body().value()).obj // content payload
 
@@ -44,8 +47,9 @@ class APISaveSelfUserProfileView : NoVarsView() {
 		)
 
 		val config = body["config"].obj
-		profile.aboutMe = config["aboutMe"].string
-
+		transaction(Databases.loritta) {
+			settings.aboutMe = config["aboutMe"].string
+		}
 		loritta save profile
 
 		return GSON.toJson(profile)

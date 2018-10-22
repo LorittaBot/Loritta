@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -26,7 +27,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		return locale["EMOJISEARCH_Description"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ").toLowerCase()
 
@@ -51,22 +52,26 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		}
 	}
 
-	fun sendQueriedEmbed(context: CommandContext, _queriedEmotes: List<Emote>, query: String, page: Int): Message {
+	suspend fun sendQueriedEmbed(context: CommandContext, _queriedEmotes: List<Emote>, query: String, page: Int): Message {
 		val emotesPreview = BufferedImage(333, 128, BufferedImage.TYPE_INT_ARGB)
 		val graphics = emotesPreview.graphics
 
+		val totalPages = (_queriedEmotes.size / 9)
 		val queriedEmotes = _queriedEmotes.subList(page * 9, Math.min(_queriedEmotes.size, (page + 1) * 9))
 		var x = 0
 		var y = 0
 		for ((index, emote) in queriedEmotes.withIndex()) {
 			val url = emote.imageUrl
-			val emoteImage = LorittaUtils.downloadImage(url).getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH)
+			val emoteImage = LorittaUtils.downloadImage(url)
 
 			if (x + 64 > 333) {
 				x = 32
 				y += 64
 			}
-			graphics.drawImage(emoteImage, x, y, null)
+
+			if (emoteImage != null) {
+				graphics.drawImage(emoteImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH), x, y, null)
+			}
 			x += 64
 		}
 
@@ -75,9 +80,10 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
 			setColor(Constants.DISCORD_BLURPLE)
 			setImage("attachment://emotes.png")
+			setFooter("${context.locale["LORITTA_PageOf", page + 1, totalPages + 1]} | ${queriedEmotes.size} emojis", null)
 		}
 
-		val message = context.sendFileComplete(emotesPreview, "emotes.png", embed.build())
+		val message = context.sendFile(emotesPreview, "emotes.png", embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			var index = -1
@@ -101,7 +107,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 					setColor(Constants.DISCORD_BLURPLE)
 				}
 
-				val emoteInfo = context.sendMessageComplete(embed.build())
+				val emoteInfo = context.sendMessage(embed.build())
 
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
 					emoteInfo.addReaction("wumplus:388417805126467594").queue()
@@ -114,14 +120,13 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
 
 									os.use { inputStream ->
-										context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).queue {
-											context.reply(
-													LoriReply(
-															context.locale["EMOJISEARCH_AddSuccess"],
-															emote.asMention
-													)
-											)
-										}
+										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
+										context.reply(
+												LoriReply(
+														context.locale["EMOJISEARCH_AddSuccess"],
+														sentEmote.asMention
+												)
+										)
 									}
 								}
 							} catch (e: Exception) {

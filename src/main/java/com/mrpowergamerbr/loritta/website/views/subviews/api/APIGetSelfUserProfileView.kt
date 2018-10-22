@@ -3,9 +3,9 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -31,7 +31,7 @@ class APIGetSelfUserProfileView : NoVarsView() {
 			return Loritta.GSON.toJson(mapOf("api:code" to LoriWebCodes.UNAUTHORIZED))
 		}
 
-		val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 		return GSON.toJson(profile)
 	}

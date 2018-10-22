@@ -20,7 +20,7 @@ class PararCommand : AbstractCommand("stop", listOf("parar"), CommandCategory.MU
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		loritta.audioManager.musicManagers.remove(context.guild.idLong) // Remover o music manager da guild atual
 		val link = loritta.audioManager.lavalink.getLink(context.guild)
 		link.disconnect()

@@ -18,7 +18,7 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 		return Arrays.asList("http://loritta.website/")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var url = context.args[0];
 

@@ -1,13 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor"), category = CommandCategory.MISC) {
@@ -15,7 +17,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 		return locale["PATREON_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var patrons = ""
 
 		val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById("297732013006389252")
@@ -27,15 +29,12 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
 			val inative = lorittaGuild.getMembersWithRoles(roleInative)
 
-			val lorittaProfiles = loritta.usersColl.find(
-					Filters.`in`(
-							"_id",
-							donators.map { it.user.id }
-					)
-			)
+			val lorittaProfiles = transaction(Databases.loritta) {
+				Profile.find { Profiles.id inList donators.map { it.user.idLong } }.toMutableList()
+			}
 
 			donators.forEach {
-				val lorittaProfile = lorittaProfiles.firstOrNull { profile -> it.user.id == profile.userId }
+				val lorittaProfile = lorittaProfiles.firstOrNull { profile -> it.user.idLong == profile.userId }
 				val isBold = if (lorittaProfile != null) {
 					lorittaProfile.donatorPaid >= 19.99
 				} else {

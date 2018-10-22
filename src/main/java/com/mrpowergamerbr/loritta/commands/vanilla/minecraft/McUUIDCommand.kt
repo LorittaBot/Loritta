@@ -24,7 +24,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
         return Arrays.asList("Monerk")
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size > 0) {
             val player = context.args[0];
 

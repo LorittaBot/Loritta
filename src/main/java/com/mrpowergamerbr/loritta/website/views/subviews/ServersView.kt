@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
@@ -44,9 +45,9 @@ class ServersView : AbstractView() {
 				val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 				discordAuth.isReady(true)
 				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-				val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+				val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
-				variables["selfProfile"] = Loritta.GSON.toJson(profile)
+				variables["selfProfile"] = WebsiteUtils.transformProfileToJson(profile).toString()
 			} catch (e: Exception) {
 				variables["selfProfile"] = Loritta.GSON.toJson(mapOf("api:code" to LoriWebCodes.UNAUTHORIZED))
 			}

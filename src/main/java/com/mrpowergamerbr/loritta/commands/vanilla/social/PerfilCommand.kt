@@ -2,19 +2,27 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.Reputation
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
 import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -24,7 +32,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User, profile: LorittaProfile): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: Profile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 
@@ -127,7 +135,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
 			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			if (profile.marriedWith != null) badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
+			val marriage = transaction(Databases.loritta) { profile.marriage }
+			if (marriage != null) badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
 			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
 			return badges
@@ -146,15 +155,17 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
 		val user = if (contextUser != null) contextUser else context.userHandle
 
 		if (contextUser != null) {
-			userProfile = loritta.getLorittaProfileForUser(contextUser.id)
+			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
+
+		val settings = transaction(Databases.loritta) { userProfile.settings }
 
 		if (contextUser != null && userProfile.isBanned) {
 			context.reply(
@@ -163,12 +174,70 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 							"\uD83D\uDE45"
 					),
 					LoriReply(
-							"**Motivo:** `${userProfile.banReason}`",
+							"**Motivo:** `${userProfile.bannedReason}`",
 							"✍"
 					)
 			)
 			return
 		}
+
+		if (!loritta.lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED }) {
+			val hasReputations = transaction(Databases.loritta) {
+				Reputations.select { Reputations.receivedById eq userProfile.id.value }.firstOrNull()
+			} != null
+
+			val oldProfile = loritta._usersColl.find(Filters.eq("_id", userProfile.id.value.toString())).firstOrNull()
+
+			if (!hasReputations && oldProfile != null && oldProfile.receivedReputations.isNotEmpty()) {
+				context.reply(
+						LoriReply(
+								"Migrando reputações antigas..."
+						)
+				)
+
+				val givenCountMap = mutableMapOf<String, Int>()
+
+				for (id in oldProfile.receivedReputations) {
+					if ((givenCountMap[id] ?: 0) >= 125)
+						continue
+
+					// Carregar o perfil do usuário
+					val givenByUser = lorittaShards.getUserById(id) ?: continue
+
+					if (givenByUser.avatarUrl == null)
+						continue
+
+					if (givenByUser.name.contains("Deleted User", true))
+						continue
+
+					val mutualGuilds = lorittaShards.getMutualGuilds(givenByUser)
+					val hasEmailVerified = mutualGuilds.any { it.verificationLevel.key >= Guild.VerificationLevel.LOW.key }
+					if (!hasEmailVerified)
+						continue
+
+					givenCountMap[id] = givenCountMap.getOrDefault(id, 0) + 1
+					transaction(Databases.loritta) {
+						Reputation.new {
+							this.givenById = id.toLong()
+							this.givenByEmail = "loritta-magical-reputation-giver@loritta.website"
+							this.givenByIp = "127.0.0.1"
+							this.receivedById = userProfile.id.value
+							this.receivedAt = System.currentTimeMillis()
+							this.content = null
+						}
+					}
+				}
+
+				val totalReputations = transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq userProfile.id.value }.count() }
+
+				context.reply(
+						LoriReply(
+								"Prontinho! Eu manti ${totalReputations} reputações para o perfil que você tentou visualizar!"
+						)
+				)
+			}
+		}
+
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
 		val badges = getUserBadges(user, userProfile)
@@ -177,16 +246,16 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		var aboutMe: String? = null
 
-		if (userProfile.userId == Loritta.config.clientId) {
+		if (userProfile.userId == Loritta.config.clientId.toLong()) {
 			aboutMe = locale["PERFIL_LORITTA_DESCRIPTION"]
 		}
 
-		if (userProfile.userId == "390927821997998081") {
-			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do PerfectDreams (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
+		if (userProfile.userId == 390927821997998081L) {
+			aboutMe = "Olá, eu me chamo Pantufa, sou da equipe do SparklyPower (e eu sou a melhor ajudante de lá! :3), e, é claro, a melhor amiga da Lori!"
 		}
 
-		if (userProfile.aboutMe != null && userProfile.aboutMe != "A Loritta é minha amiga!") {
-			aboutMe = userProfile.aboutMe
+		if (settings.aboutMe != null && settings.aboutMe != "A Loritta é minha amiga!") {
+			aboutMe = settings.aboutMe
 		}
 
 		if (aboutMe == null) {

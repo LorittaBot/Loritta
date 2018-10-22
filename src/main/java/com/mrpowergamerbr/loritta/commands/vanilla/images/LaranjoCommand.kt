@@ -28,7 +28,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")); // Template
 			val texto = context.args.joinToString(" ");

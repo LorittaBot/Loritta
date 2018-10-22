@@ -21,7 +21,7 @@ class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamerica
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		// TODO: Migrar para a API do Twitter após o Twitter remover a suspensão da minha conta @mrpowergamerbr
 		val upperBound = (System.currentTimeMillis().toBigInteger().multiply(1039952060005920769.toBigInteger())).divide(1536938490000.toBigInteger())
 		val lowerBound = upperBound - 1183800219463680.toBigInteger()

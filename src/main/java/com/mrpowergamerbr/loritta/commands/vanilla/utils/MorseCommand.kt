@@ -23,7 +23,7 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 		return locale["MORSE_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val message = context.args.joinToString(" ");
 

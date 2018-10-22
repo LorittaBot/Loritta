@@ -48,7 +48,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		}
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val apiEndpoint = getApiEndpoint(context.config.localeId)
 		val response = HttpRequest.get("$apiEndpoint/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
 				.body()
@@ -100,7 +100,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		context.metadata["signature"] = signature
 		context.metadata["step"] = step
 
-		val message = context.sendMessageComplete(context.getAsMention(true), builder.build())
+		val message = context.sendMessage(context.getAsMention(true), builder.build())
 
 		message.onReactionAddByAuthor(context) {
 			val apiEndpoint = getApiEndpoint(context.config.localeId)

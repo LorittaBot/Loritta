@@ -2,9 +2,11 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 
@@ -20,11 +22,13 @@ class APILoriSetBalanceView : NoVarsRequireAuthView() {
 
 		val userId = body["userId"].string
 		val quantity = body["quantity"].double
-		val lorittaProfile = loritta.getLorittaProfileForUser(userId)
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
-		lorittaProfile.dreams = quantity
+		transaction(Databases.loritta) {
+			lorittaProfile.money = quantity
+		}
 		loritta save lorittaProfile
-		json["balance"] = lorittaProfile.dreams
+		json["balance"] = quantity
 		return json.toString()
 	}
 }

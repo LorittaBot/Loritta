@@ -24,7 +24,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 		return Arrays.asList("mc.hypixel.net")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

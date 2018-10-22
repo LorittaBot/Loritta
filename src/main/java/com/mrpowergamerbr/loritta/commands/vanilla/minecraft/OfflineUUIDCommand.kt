@@ -20,7 +20,7 @@ class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"
 		return Arrays.asList("Monerk")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + context.args[0]).toByteArray(Charsets.UTF_8))
 

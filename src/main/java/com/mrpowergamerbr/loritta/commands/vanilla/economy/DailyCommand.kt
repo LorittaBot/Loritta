@@ -8,24 +8,17 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import java.util.*
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["DAILY_Description"];
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
-		val votedAt = context.lorittaUser.profile.receivedDailyAt
-
-		val calendar = Calendar.getInstance()
-		calendar.timeInMillis = votedAt
-		calendar.set(Calendar.HOUR_OF_DAY, 0)
-		calendar.set(Calendar.MINUTE, 0)
-		calendar.add(Calendar.DAY_OF_MONTH, 1)
-		val tomorrow = calendar.timeInMillis
-
-		val canGetDaily = System.currentTimeMillis() > tomorrow
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+		// 1. Pegue quando o daily foi pego da última vez
+		// 2. Pegue o tempo de quando seria amanhã
+		// 3. Compare se o tempo atual é maior que o tempo de amanhã
+		val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
 
 		if (!canGetDaily) {
 			context.reply(

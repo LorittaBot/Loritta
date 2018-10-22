@@ -21,7 +21,7 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		// https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
 		val piadas = listOf(
 				"Você pode até escrever uma carta para todos os cachorros do mundo...\n\n... mas só o Rottweiler",

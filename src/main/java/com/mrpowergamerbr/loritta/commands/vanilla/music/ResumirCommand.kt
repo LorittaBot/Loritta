@@ -21,7 +21,7 @@ class ResumirCommand : AbstractCommand("unpause", listOf("resumir", "despausar",
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (!manager.player.isPaused) {

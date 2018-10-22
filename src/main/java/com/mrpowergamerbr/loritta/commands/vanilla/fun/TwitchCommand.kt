@@ -30,7 +30,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ");
 

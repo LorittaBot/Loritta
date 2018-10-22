@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Perfil de um usuário que usa a Loritta
  */
-class LorittaProfile @BsonCreator constructor(
+class MongoLorittaProfile @BsonCreator constructor(
         @BsonProperty("_id")
         @get:[BsonIgnore]
         val userId: String
@@ -49,8 +49,8 @@ class LorittaProfile @BsonCreator constructor(
 	var marriedAt: Long? = null
 
     @BsonIgnore
-    fun getCurrentLevel(): LorittaProfile.XpWrapper {
-        return LorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
+    fun getCurrentLevel(): MongoLorittaProfile.XpWrapper {
+        return MongoLorittaProfile.XpWrapper((xp / 1000).toInt(), xp)
     }
 
     @BsonIgnore

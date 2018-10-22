@@ -9,10 +9,9 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -28,22 +27,21 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		return "Recarrega a Loritta"
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
+		if (arg0 == "dailytax") {
+			context.reply(
+					LoriReply(
+							"Retirando granas de pessoas!"
+					)
+			)
+			LorittaTasks.DAILY_TAX_TASK.runDailyTax(true)
+			return
+		}
 		if (arg0 == "shard") {
 			val shardId = context.rawArgs.getOrNull(1)!!.toInt()
-			val shard = lorittaShards.shards.first { it.shardInfo.shardId == shardId }
-
-			shard.shutdownNow()
-
-			lorittaShards.shards.remove(shard)
-
-			val shard2 = loritta.builder
-					.useSharding(shardId, Loritta.config.shards)
-					.build()
-
-			lorittaShards.shards.add(shard2)
+			lorittaShards.shardManager.restart(shardId)
 			context.reply(
 					LoriReply(
 							message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
@@ -282,27 +280,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		loritta.initMongo()
 
 		GlobalHandler.generateViews()
-
-		if (context.args.isNotEmpty() && context.args[0] == "listeners") {
-			context.sendMessage(context.getAsMention(true) + "Recarregando listeners...")
-
-			// Desregistrar listeners
-			LorittaLauncher.loritta.lorittaShards.shards.forEach {
-				val shard = it;
-				it.registeredListeners.forEach {
-					shard.removeEventListener(it)
-				}
-			}
-
-			val discordListener = DiscordListener(loritta)
-			val eventLogListener = EventLogListener(loritta)
-
-			// Registrar novos listeners
-			LorittaLauncher.loritta.lorittaShards.shards.forEach {
-				it.addEventListener(discordListener)
-				it.addEventListener(eventLogListener)
-			}
-		}
 
 		context.reply(
 				LoriReply(

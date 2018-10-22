@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.modules
 
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -10,15 +10,15 @@ import net.dv8tion.jda.core.entities.TextChannel
 import java.util.concurrent.TimeUnit
 
 class AFKModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return (event.channel as TextChannel).canTalk()
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: LorittaProfile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentionedMembers) {
-			val lorittaProfile = loritta.getLorittaProfileForUser(mention.user.id)
+			val lorittaProfile = loritta.getOrCreateLorittaProfile(mention.user.id)
 
 			if (lorittaProfile.isAfk) {
 				var reason = lorittaProfile.afkReason

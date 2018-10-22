@@ -32,7 +32,7 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val bi = ImageIO.read(File(Loritta.ASSETS + "drake.png")) // Primeiro iremos carregar o nosso template
 		val graph = bi.graphics
 

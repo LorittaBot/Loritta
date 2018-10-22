@@ -20,13 +20,13 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
 		val validLanguages = "\uD83C\uDDE7\uD83C\uDDF7 Português-Brasil\n<:loritta_quebrada:338679008210190336> Português-Funk\n\uD83C\uDDF5\uD83C\uDDF9 Português-Portugal\n\uD83C\uDDFA\uD83C\uDDF8 English-US\n\uD83C\uDDEA\uD83C\uDDF8 Español"
 		embed.setDescription(context.locale["LANGUAGE_INFO", validLanguages])
-		val message = context.sendMessageComplete(context.getAsMention(true), embed.build())
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
 			var localeId = "default"

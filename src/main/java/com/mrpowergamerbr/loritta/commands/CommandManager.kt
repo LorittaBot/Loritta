@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -50,7 +51,7 @@ class CommandManager {
 		commandMap.add(PrimeirasPalavrasCommand())
 		commandMap.add(DrakeCommand())
 		commandMap.add(InverterCommand())
-		commandMap.add(SpinnerCommand())
+		// commandMap.add(SpinnerCommand())
 		commandMap.add(LavaCommand())
 		commandMap.add(LavaReversoCommand())
 		commandMap.add(ShipCommand())
@@ -95,7 +96,6 @@ class CommandManager {
 		commandMap.add(TextCraftCommand())
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(SimsimiCommand())
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
@@ -122,7 +122,7 @@ class CommandManager {
 		commandMap.add(BackgroundCommand())
 		commandMap.add(SobreMimCommand())
 		commandMap.add(DiscriminatorCommand())
-		commandMap.add(RepCommand())
+		// commandMap.add(RepCommand())
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
 		commandMap.add(AfkCommand())
@@ -167,7 +167,7 @@ class CommandManager {
 		commandMap.add(ChannelInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
 
 		// =======[ MINECRAFT ]========
@@ -208,7 +208,7 @@ class CommandManager {
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
@@ -228,6 +228,7 @@ class CommandManager {
 		commandMap.add(LoriServerListConfigCommand())
 		commandMap.add(TicTacToeCommand())
 		commandMap.add(EvalKotlinCommand())
+		commandMap.add(ProfilerCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
@@ -251,7 +252,7 @@ class CommandManager {
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
 		commandMap.add(SonhosTopCommand())
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {
@@ -266,7 +267,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -296,7 +297,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 
 		// Carregar as opções de comandos
@@ -398,7 +399,7 @@ class CommandManager {
 				command.executedCount++
 
 				if (command.hasCommandFeedback() && !conf.commandOutputInPrivate) {
-					ev.channel.sendTyping().queue()
+					ev.channel.sendTyping().await()
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

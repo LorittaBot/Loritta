@@ -19,7 +19,6 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 		}
 	}
 	override fun valueFromDB(value: Any): Any {
-		println(value)
 		if (value is java.sql.Array) {
 			return value.array
 		}

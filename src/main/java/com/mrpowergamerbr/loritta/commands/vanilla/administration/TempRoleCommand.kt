@@ -30,7 +30,7 @@ class TempRoleCommand : AbstractCommand("temprole", listOf("cargotemp"), Command
 		return listOf(Permission.MANAGE_ROLES)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val split = context.rawArgs.joinToString(" ").split("|").map { it.trim() }
 			val type = split.getOrNull(0)

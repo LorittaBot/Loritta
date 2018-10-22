@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -63,7 +64,7 @@ reply("Olá, eu me chamo Loritta!");
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
-		return NashornMessage(context.sendMessageComplete(context.getAsMention(true) + mensagem))
+		return runBlocking { NashornMessage(context.sendMessage(context.getAsMention(true) + mensagem)) }
 	}
 
 	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual.",
@@ -90,7 +91,7 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
-		return NashornMessage(context.sendMessageComplete(mensagem))
+		return runBlocking { NashornMessage(context.sendMessage(mensagem)) }
 	}
 
 	@Throws(NoSuchFieldException::class, IllegalAccessException::class, IOException::class)
@@ -101,7 +102,7 @@ var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a 
 imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
-	@JvmOverloads fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
+	fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
 		var diff = System.currentTimeMillis() - lastMessageSent
 
 		if (sentMessages >= 3) {
@@ -130,14 +131,16 @@ sendImage(imagem, "😄");
 			return null!!
 		}
 
-		val message = NashornMessage(context.sendFileComplete(`is`, "Loritta-NashornCommand.png", mensagem))
+		runBlocking {
+			val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
+		}
 		`is`.close()
 		`os`.close()
 		return message
 	}
 
 	@NashornCommand.NashornDocs(arguments = "delimitador")
-	@JvmOverloads fun joinArguments(delimitador: String = " "): String {
+	fun joinArguments(delimitador: String = " "): String {
 		return context.args.joinToString(delimitador).trim { it <= ' ' }
 	}
 
@@ -205,7 +208,7 @@ imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
 	fun getImageFromContext(argumento: Int): NashornImage? {
-		val bufferedImage = context.getImageAt(argumento)
+		val bufferedImage = runBlocking { context.getImageAt(argumento) }
 
 		if (bufferedImage != null) {
 			return NashornImage(bufferedImage)

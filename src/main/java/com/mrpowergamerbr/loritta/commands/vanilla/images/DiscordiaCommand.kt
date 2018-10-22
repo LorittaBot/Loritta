@@ -23,7 +23,7 @@ class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "disco
 
 	override fun needsToUploadFiles() = true
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		var file = MentionGIF.getGIF(contextImage);
 		MiscUtils.optimizeGIF(file)

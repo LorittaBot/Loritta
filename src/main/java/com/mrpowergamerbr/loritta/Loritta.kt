@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.collect.EvictingQueue
+import com.google.common.collect.Queues
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -14,45 +16,39 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.client.result.UpdateResult
-import com.mrpowergamerbr.loritta.amino.AminoRepostTask
-import com.mrpowergamerbr.loritta.analytics.AnalyticSender
-import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.dao.StoredMessage
+import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.listeners.*
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.StoredMessages
+import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.*
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
-import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
-import net.dv8tion.jda.core.AccountType
-import net.dv8tion.jda.core.JDABuilder
+import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.entities.Guild
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -108,7 +104,6 @@ class Loritta(config: LorittaConfig) {
 	val oldCoroutineDispatcher = oldCoroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
-	val threadPool = Executors.newScheduledThreadPool(40)
 
 	fun createThreadPool(name: String): ExecutorService {
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
@@ -119,14 +114,14 @@ class Loritta(config: LorittaConfig) {
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
 	var locales = mutableMapOf<String, BaseLocale>()
-	var ignoreIds = mutableSetOf<String>() // IDs para serem ignorados nesta sessão
+	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<ServerConfig>
-	lateinit var usersColl: MongoCollection<LorittaProfile>
+	lateinit var _usersColl: MongoCollection<MongoLorittaProfile>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
@@ -140,7 +135,7 @@ class Loritta(config: LorittaConfig) {
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
 	var channelListener = ChannelListener(this)
-	var builder: JDABuilder
+	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
@@ -166,8 +161,8 @@ class Loritta(config: LorittaConfig) {
 		FRONTEND = config.frontendFolder
 		Loritta.config = config
 		loadLocales()
-		Loritta.temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
-		Loritta.youtube = TemmieYouTube()
+		temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
+		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
 		loadPremiumKeys()
@@ -175,18 +170,28 @@ class Loritta(config: LorittaConfig) {
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
-		builder = JDABuilder(AccountType.BOT)
+
+		val okHttpBuilder = OkHttpClient.Builder()
+				.connectTimeout(30, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
+				.readTimeout(30, TimeUnit.SECONDS)
+				.writeTimeout(30, TimeUnit.SECONDS)
+				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
+
+
+		builder = DefaultShardManagerBuilder()
+				.setShardsTotal(Loritta.config.shards)
 				.setStatus(Loritta.config.userStatus)
 				.setToken(Loritta.config.clientToken)
-				.setCorePoolSize(16)
 				.setBulkDeleteSplittingEnabled(false)
-				// .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
-				.addEventListener(discordListener)
-				.addEventListener(eventLogListener)
-				.addEventListener(messageListener)
-				.addEventListener(voiceChannelListener)
-				.addEventListener(channelListener)
-				.addEventListener(audioManager.lavalink)
+				.setHttpClientBuilder(okHttpBuilder)
+				.addEventListeners(
+						discordListener,
+						eventLogListener,
+						messageListener,
+						voiceChannelListener,
+						channelListener,
+						audioManager.lavalink
+				)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -230,33 +235,29 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
-			website = com.mrpowergamerbr.loritta.website.LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			website = LorittaWebsite(config.websiteUrl, config.frontendFolder)
 			org.jooby.run({
 				website
 			})
 		}
 
-		logger.info("Sucesso! Iniciando threads da Loritta...")
+		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
+		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
-		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(Loritta.FOLDER, "livestreaming.json").readText())
+		val shardManager = builder.build()
+		lorittaShards.shardManager = shardManager
 
-		socket = SocketServer(Loritta.config.socketPort)
+		logger.info { "Sucesso! Iniciando threads da Loritta..." }
+
+		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(FOLDER, "livestreaming.json").readText())
+
+		socket = SocketServer(config.socketPort)
 
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
-			threadPool.scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AminoRepostTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		threadPool.scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(DailyTaxTask(), 0L, 15L, TimeUnit.SECONDS)
-		threadPool.scheduleWithFixedDelay(ApplyBansTask(), 0L, 2L, TimeUnit.MINUTES)
+		LorittaTasks.startTasks()
 
 		RemindersThread().start()
 
@@ -284,21 +285,6 @@ class Loritta(config: LorittaConfig) {
 		DebugLog.startCommandListenerThread()
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
-
-		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
-		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
-
-		val generateShards = Loritta.config.shards - 1
-
-		for (idx in 0..generateShards) {
-			logger.info("Iniciando Shard $idx...")
-			val shard = builder
-					.useSharding(idx, Loritta.config.shards)
-					.build()
-
-			lorittaShards.shards.add(shard)
-			logger.info("Shard $idx iniciada com sucesso!")
-		}
 
 		thread {
 			socket.start()
@@ -346,7 +332,16 @@ class Loritta(config: LorittaConfig) {
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(StoredMessages)
+			SchemaUtils.createMissingTablesAndColumns(
+					StoredMessages,
+					Profiles,
+					UserSettings,
+					Reminders,
+					Reputations,
+					UsernameChanges,
+					Dailies,
+					Marriages
+			)
 		}
 	}
 
@@ -366,12 +361,12 @@ class Loritta(config: LorittaConfig) {
 
 		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
 
-		val db = mongo.getDatabase(Loritta.config.databaseName)
+		val db = mongo.getDatabase(config.databaseName)
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
 		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
-		usersColl = dbCodec.getCollection("users", LorittaProfile::class.java)
+		_usersColl = dbCodec.getCollection("users", MongoLorittaProfile::class.java)
 		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
@@ -424,16 +419,138 @@ class Loritta(config: LorittaConfig) {
 		)
 	}
 
+	fun getLorittaProfile(userId: String): Profile? {
+		return getLorittaProfile(userId.toLong())
+	}
+
 	/**
 	 * Loads the profile of an user
 	 *
 	 * @param userId the user's ID
 	 * @return       the user profile
-	 * @see          LorittaProfile
+	 * @see          MongoLorittaProfile
 	 */
-	fun getLorittaProfileForUser(userId: String): LorittaProfile {
-		val userProfile = usersColl.find(Filters.eq("_id", userId)).first()
-		return userProfile ?: LorittaProfile(userId)
+	fun getLorittaProfile(userId: Long): Profile? {
+		return transaction(Databases.loritta) {
+			Profile.findById(userId)
+		}
+	}
+
+	fun getOrCreateLorittaProfile(userId: String): Profile {
+		return getOrCreateLorittaProfile(userId.toLong())
+	}
+
+	var idx0 = 0L
+	val findProfileMongo = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+	var idx1 = 0L
+	val findProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+	var idx2 = 0L
+	val newProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
+
+	fun getOrCreateLorittaProfile(userId: Long): Profile {
+		return transaction(Databases.loritta) {
+			val start0 = System.nanoTime()
+			val sqlProfile = Profile.findById(userId)
+			if (idx0 % 100 == 0L) {
+				findProfilePostgre.add(System.nanoTime() - start0)
+			}
+			idx0++
+
+			if (sqlProfile != null) {
+				return@transaction sqlProfile
+			}
+
+			// Carregar do Mongo
+			val start1 = System.nanoTime()
+			val mongoProfile = _usersColl.find(Filters.eq("_id", userId.toString())).firstOrNull()
+			if (idx1 % 100 == 0L) {
+				findProfileMongo.add(System.nanoTime() - start1)
+			}
+			idx1++
+
+			if (mongoProfile != null) {
+				for (change in mongoProfile.usernameChanges) {
+					UsernameChange.new {
+						this.userId = userId
+						this.username = change.username
+						this.discriminator = change.discriminator
+						this.changedAt = change.changedAt
+					}
+				}
+				for (reminder in mongoProfile.reminders) {
+					if (reminder.textChannel == null)
+						continue
+
+					Reminder.new {
+						this.userId = userId
+						this.remindAt = reminder.remindMe
+						this.content = reminder.reason ?: "???"
+						this.channelId = reminder.textChannel!!.toLong()
+					}
+				}
+
+				return@transaction Profile.new(userId) {
+					xp = mongoProfile.xp
+					isBanned = mongoProfile.isBanned
+					bannedReason = mongoProfile.banReason
+					lastMessageSentAt = 0L
+					lastMessageSentHash = 0
+					money = mongoProfile.dreams
+					isDonator = mongoProfile.isDonator
+					donatorPaid = mongoProfile.donatorPaid
+					donatedAt = mongoProfile.donatedAt
+					donationExpiresIn = mongoProfile.donationExpiresIn
+					isAfk = mongoProfile.isAfk
+					afkReason = mongoProfile.afkReason
+					settings = ProfileSettings.new {
+						gender = mongoProfile.gender
+						aboutMe = mongoProfile.aboutMe
+						hideSharedServers = mongoProfile.hideSharedServers
+						hidePreviousUsernames = mongoProfile.hidePreviousUsernames
+						hideLastSeen = false
+					}
+					if (mongoProfile.marriedWith != null) {
+						val currentMarriage = Marriage.find { (Marriages.user1 eq userId) or (Marriages.user2 eq userId) }.firstOrNull()
+						if (currentMarriage != null) {
+							marriage = currentMarriage
+						} else {
+							marriage = Marriage.new {
+								user1 = userId
+								user2 = mongoProfile.marriedWith!!.toLong()
+								marriedSince = mongoProfile.marriedAt ?: System.currentTimeMillis()
+							}
+						}
+					}
+				}
+			}
+
+			val start2 = System.nanoTime()
+			val newProfile = Profile.new(userId) {
+				xp = 0
+				isBanned = false
+				bannedReason = null
+				lastMessageSentAt = 0L
+				lastMessageSentHash = 0
+				money = 0.0
+				isDonator = false
+				donatorPaid = 0.0
+				donatedAt = 0L
+				donationExpiresIn = 0L
+				isAfk = false
+				settings = ProfileSettings.new {
+					gender = Gender.UNKNOWN
+					hideSharedServers = false
+					hidePreviousUsernames = false
+					hideLastSeen = false
+				}
+			}
+			if (idx2 % 100 == 0L) {
+				newProfilePostgre.add(System.nanoTime() - start2)
+			}
+
+			idx2++
+			return@transaction newProfile
+		}
 	}
 
 	/**
@@ -463,7 +580,7 @@ class Loritta(config: LorittaConfig) {
 		val locales = mutableMapOf<String, BaseLocale>()
 
 		// Carregar primeiro o locale padrão
-		val defaultLocaleFile = File(Loritta.LOCALES, "default.json")
+		val defaultLocaleFile = File(LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
 		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
@@ -478,7 +595,7 @@ class Loritta(config: LorittaConfig) {
 		locales.put("default", defaultLocale)
 
 		// Carregar todos os locales
-		val localesFolder = File(Loritta.LOCALES)
+		val localesFolder = File(LOCALES)
 		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 		for (file in localesFolder.listFiles()) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
@@ -494,9 +611,9 @@ class Loritta(config: LorittaConfig) {
 		// E agora preencher valores nulos e salvar as traduções
 		for ((id, locale) in locales) {
 			if (id != "default") {
-				val jsonObject = JSON_PARSER.parse(Loritta.GSON.toJson(locale))
+				val jsonObject = JSON_PARSER.parse(GSON.toJson(locale))
 
-				val localeFile = File(Loritta.LOCALES, "$id.json")
+				val localeFile = File(LOCALES, "$id.json")
 				val asJson = JSON_PARSER.parse(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
@@ -544,7 +661,7 @@ class Loritta(config: LorittaConfig) {
 					}
 				}
 
-				File(Loritta.LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
+				File(LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
 

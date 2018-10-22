@@ -32,7 +32,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val premiumKey = loritta.getPremiumKey(context.config.premiumKey)
 
 		if (premiumKey == null || 10 > premiumKey.paid) {

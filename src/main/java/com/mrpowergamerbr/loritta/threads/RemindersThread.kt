@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.dao.Reminder
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.reminders.Reminder
-import com.mrpowergamerbr.loritta.utils.save
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
@@ -25,46 +25,22 @@ class RemindersThread : Thread("Reminders Thread") {
 	}
 
 	fun checkReminders() {
-		val list = loritta.usersColl.find(
-				Filters.gt("reminders", listOf<Any>())
-		).iterator()
+		val reminders = transaction(Databases.loritta) {
+			Reminder.find { Reminders.remindAt.lessEq(System.currentTimeMillis()) }.toMutableList()
+		}
 
-		val profiles = mutableListOf<LorittaProfile>()
+		for (reminder in reminders) {
+			val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
-		list.use {
-			while (it.hasNext()) {
-				val profile = it.next()
-
-				val toRemove = mutableListOf<Reminder>()
-
-				for (reminder in profile.reminders) {
-					if (System.currentTimeMillis() >= reminder.remindMe) {
-						toRemove.add(reminder);
-
-						if (reminder.guild == null)
-							continue
-
-						val guild = lorittaShards.getGuildById(reminder.guild!!)
-
-						if (guild != null) {
-							val textChannel = guild.getTextChannelById(reminder.textChannel) ?: continue
-
-							if (!textChannel.canTalk())
-								continue
-
-							textChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + profile.userId + "> Lembrete! `" + reminder.reason + "`").queue()
-						}
-					}
-				}
-
-				if (!toRemove.isEmpty()) {
-					profile.reminders.removeAll(toRemove)
-					profiles.add(profile)
-				}
+			if (channel != null && channel.canTalk()) {
+				channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
+			} else {
+				// TODO: Enviar na DM do usuário
 			}
 		}
 
-		for (profile in profiles) // TODO: Otimizar!
-			loritta save profile
+		transaction(Databases.loritta) {
+			Reminders.deleteWhere { Reminders.remindAt.lessEq(System.currentTimeMillis()) }
+		}
 	}
 }

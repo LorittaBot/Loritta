@@ -22,7 +22,7 @@ class InternalAnalyticSender : Runnable {
 		val runtime = Runtime.getRuntime()
 
 		logger.debug("Loritta's status...")
-		logger.debug("Shards: ${lorittaShards.shards.size}")
+		logger.debug("Shards: ${lorittaShards.getShards().size}")
 		logger.debug("Total Servers: ${lorittaShards.getGuildCount()}")
 		logger.debug("Used Memory:"
 				+ (runtime.totalMemory() - runtime.freeMemory()) / mb);

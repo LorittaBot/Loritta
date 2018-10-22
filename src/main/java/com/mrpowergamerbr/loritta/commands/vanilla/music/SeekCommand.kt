@@ -27,7 +27,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.playingTrack != null) {

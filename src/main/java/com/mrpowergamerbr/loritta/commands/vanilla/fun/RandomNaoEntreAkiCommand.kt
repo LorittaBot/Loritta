@@ -21,7 +21,7 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (!context.isPrivateChannel && !context.message.textChannel.isNSFW) {
 			context.reply(
 					LoriReply(

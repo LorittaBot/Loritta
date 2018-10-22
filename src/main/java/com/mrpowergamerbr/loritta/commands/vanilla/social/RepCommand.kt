@@ -1,16 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -25,8 +18,9 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
-		var profile = context.lorittaUser.profile
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		// TODO: Fix
+		/* var profile = context.lorittaUser.profile
 		val user = context.getUserAt(0)
 
 		if (user != null) {
@@ -77,6 +71,6 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 						)
 				)
 			}
-		}
+		} */
 	}
 }

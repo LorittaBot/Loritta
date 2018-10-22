@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.profile
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.userdata.LorittaProfile
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -18,7 +18,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class MSNProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: LorittaProfile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
@@ -104,8 +104,8 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.font = whitneySemiBold20
 		graphics.drawText("${userProfile.xp} XP", 4, 39  + shiftY, 244)
 
-		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == userProfile.userId } + 1
-		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == userProfile.userId }
+		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == user.id } + 1
+		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == user.id }
 
 		graphics.font = whitneyBold20
 		graphics.drawText(guild.name, 4, 61  + shiftY, 244)
@@ -119,7 +119,7 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.font = whitneyBold20
 		graphics.drawText("Sonhos", 4, 98  + shiftY, 244)
 		graphics.font = whitneySemiBold20
-		graphics.drawText(userProfile.dreams.toString(), 4, 116  + shiftY, 244)
+		graphics.drawText(userProfile.money.toString(), 4, 116  + shiftY, 244)
 
 		var x = 272
 		for (badge in badges) {

@@ -34,7 +34,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var user1: User? = context.getUserAt(0)
 		var user2: User? =  context.getUserAt(1)
 

@@ -16,7 +16,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots");
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
 			var split = joined.split(","); // E vamos separar!

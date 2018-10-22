@@ -39,7 +39,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
 				val user = context.getUserAt(0)
@@ -111,7 +111,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					str += " ${locale["BAN_SilentTip"]}"
 				}
 
-				val message = context.replyComplete(
+				val message = context.reply(
 						LoriReply(
 								message = str,
 								prefix = "⚠"

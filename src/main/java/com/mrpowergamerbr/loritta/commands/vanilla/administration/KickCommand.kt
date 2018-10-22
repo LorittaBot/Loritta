@@ -34,7 +34,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		return listOf(Permission.KICK_MEMBERS)
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -122,7 +122,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					reason = _reason
 			}
 
-			val kickCallback: (Message?, Boolean) -> (Unit) = { message, isSilent ->
+			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				kick(context, locale, member, user, reason, isSilent)
 
 				message?.delete()?.queue()
@@ -147,7 +147,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				str += " ${locale["BAN_SilentTip"]}"
 			}
 
-			val message = context.replyComplete(
+			val message = context.reply(
 					LoriReply(
 							message = str,
 							prefix = "⚠"

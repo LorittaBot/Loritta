@@ -21,7 +21,7 @@ class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), 
 		return locale["BITLY_DESCRIPTION"]
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
 			var url = context.args[0];

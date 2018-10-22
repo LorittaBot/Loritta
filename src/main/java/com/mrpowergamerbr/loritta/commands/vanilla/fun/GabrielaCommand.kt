@@ -29,7 +29,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val corretores = mapOf(
 				"(dima)" to "diamante",
 				"(b(e)?l(e)?z(a)?)" to "beleza",
@@ -284,7 +284,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		functions.onReactionAddByAuthor = {
 			// ENSINAR
 			if (it.reactionEmote.name == "\uD83D\uDCA1") {
-				val ask = context.replyComplete(
+				val ask = context.reply(
 						LoriReply(
 								context.locale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],
 								"\uD83E\uDD14"

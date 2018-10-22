@@ -53,7 +53,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.channel, "Faustão")
 
 		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);

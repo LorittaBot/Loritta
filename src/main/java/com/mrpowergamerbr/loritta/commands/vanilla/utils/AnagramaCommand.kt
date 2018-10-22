@@ -23,7 +23,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val palavra = context.args.joinToString(separator = " ");
 

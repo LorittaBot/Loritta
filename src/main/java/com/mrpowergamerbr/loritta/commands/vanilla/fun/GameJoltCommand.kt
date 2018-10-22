@@ -28,7 +28,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		return Arrays.asList("undertale yellow")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val embed = EmbedBuilder()
 			val query = context.args.joinToString(" ")
@@ -57,7 +57,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			embed.setColor(Color(47, 127, 111))
 			embed.setDescription(format)
 			embed.setTitle("<:gamejolt:362325764181590017> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
-			val mensagem = context.sendMessageComplete(context.getAsMention(true), embed.build())
+			val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 			mensagem.onReactionAddByAuthor(context) {
 				val game: JsonObject

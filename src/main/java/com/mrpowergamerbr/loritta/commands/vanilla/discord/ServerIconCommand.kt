@@ -20,7 +20,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var guild: Guild? = context.guild
 		val id = if (context.args.isNotEmpty()) { context.args[0] } else { null }
 

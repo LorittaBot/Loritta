@@ -3,13 +3,13 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api.config
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
@@ -61,7 +61,7 @@ class APIUpdateServerConfigView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getLorittaProfileForUser(id))
+		val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
 		var canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 
 		var canOpen = id == Loritta.config.ownerId || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)

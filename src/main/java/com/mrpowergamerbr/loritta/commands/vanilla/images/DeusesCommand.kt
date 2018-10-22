@@ -34,7 +34,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		return true
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val texto = context.args.joinToString(" ")
 

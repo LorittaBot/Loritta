@@ -23,7 +23,7 @@ class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusic
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.playingTrack != null) {
@@ -39,7 +39,7 @@ class RestartSongCommand : AbstractCommand("restartsong", listOf("reiniciarmusic
 	}
 
 	companion object {
-		fun skip(context: CommandContext, locale: BaseLocale, manager: GuildMusicManager) {
+		suspend fun skip(context: CommandContext, locale: BaseLocale, manager: GuildMusicManager) {
 			manager.player.playingTrack.position = 0L
 			context.reply(
 					LoriReply(

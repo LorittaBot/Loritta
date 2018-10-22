@@ -32,7 +32,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 		return mapOf("bolo" to "Procura \"bolo\" no livro de receitas da Ana Maria Braga™")
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ");
 

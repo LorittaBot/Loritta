@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -12,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import mu.KotlinLogging
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -70,20 +72,20 @@ class APIBumpServerView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val profile = loritta.getLorittaProfileForUser(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
-		if (750 > profile.dreams) {
+		if (750 > profile.money) {
 			val payload = JsonObject()
 			payload["api:code"] = LoriWebCodes.INSUFFICIENT_FUNDS
 			return payload.toString()
 		}
 
-		profile.dreams -= 750
+		transaction(Databases.loritta) {
+			profile.money -= 750
+		}
 
 		serverConfig.serverListConfig.lastBump = System.currentTimeMillis()
 		loritta save serverConfig
-		loritta save profile
-
 
 		val member = guild.getMemberById(userIdentification.id)
 

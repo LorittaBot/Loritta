@@ -12,20 +12,22 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.managers.AudioManager
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
-import lavalink.client.io.jda.JdaLavalink
 
 class AudioManager(val loritta: Loritta) {
 	var playerManager = DefaultAudioPlayerManager()
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.shards.first { shardId == it.shardInfo.shardId } })
+	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.getShards().first { shardId == it.shardInfo.shardId } })
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
@@ -69,7 +71,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param alreadyChecked if we already searched for this track before (and failed)
 	 * @param override       (optional) forces the song to be played
 	 */
-	fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean = false, override: Boolean = false) {
+	suspend fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean = false, override: Boolean = false) {
 		if (!alreadyChecked) {
 			if (!checkVoiceChannelState(context))
 				return
@@ -78,7 +80,7 @@ class AudioManager(val loritta: Loritta) {
 		val channel = context.event.channel
 		val guild = context.guild
 		val musicConfig = context.config.musicConfig
-		val musicManager = getGuildAudioPlayer(guild);
+		val musicManager = getGuildAudioPlayer(guild)
 
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
@@ -114,8 +116,10 @@ class AudioManager(val loritta: Loritta) {
 					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
 
 					if (items.isNotEmpty()) {
-						loadAndPlay(context, items[0].id.videoId, true, override)
-						return;
+						GlobalScope.launch(loritta.coroutineDispatcher) {
+							loadAndPlay(context, items[0].id.videoId, true, override)
+						}
+						return
 					}
 				}
 				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue();
@@ -243,7 +247,7 @@ class AudioManager(val loritta: Loritta) {
 	 *
 	 * @param context        the context of the command
 	 */
-	fun skipTrack(context: CommandContext) {
+	suspend fun skipTrack(context: CommandContext) {
 		val musicManager = getGuildAudioPlayer(context.guild);
 		musicManager.scheduler.nextTrack()
 
@@ -284,7 +288,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param context the command context
 	 * @return if the voice channel state is valid
 	 */
-	fun checkVoiceChannelState(context: CommandContext): Boolean {
+	suspend fun checkVoiceChannelState(context: CommandContext): Boolean {
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
 			val channel = context.guild.getVoiceChannelById(context.config.musicConfig.musicGuildId)

@@ -21,7 +21,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		return false
 	}
 
-	override fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val userData = context.config.getUserData(context.userHandle.id)
 
 		if (userData.quickPunishment) {

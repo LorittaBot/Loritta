@@ -14,7 +14,7 @@ class VotarCommand : AbstractCommand("vote", listOf("votar"), category = Command
         return locale["VOTE_Description"]
     }
 
-    override fun run(context: CommandContext, locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
 	    if (context.config.serverListConfig.isEnabled) {
 		    val serverListConfig = context.config.serverListConfig
 

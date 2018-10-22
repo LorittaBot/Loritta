@@ -175,7 +175,7 @@ object MessageUtils {
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionAdd(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
+fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
@@ -188,7 +188,7 @@ fun Message.onReactionAdd(context: CommandContext, function: (MessageReactionAdd
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionRemove(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
+fun Message.onReactionRemove(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemove = function
 	return this
@@ -201,7 +201,7 @@ fun Message.onReactionRemove(context: CommandContext, function: (MessageReaction
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionAddByAuthor(context: CommandContext, function: (MessageReactionAddEvent) -> Unit): Message {
+fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionAddByAuthor = function
 	return this
@@ -214,7 +214,7 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: (MessageRea
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionAddByAuthor(userId: String, function: (MessageReactionAddEvent) -> Unit): Message {
+fun Message.onReactionAddByAuthor(userId: String, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(null, userId) }
 	functions.onReactionAddByAuthor = function
 	return this
@@ -227,7 +227,7 @@ fun Message.onReactionAddByAuthor(userId: String, function: (MessageReactionAddE
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionRemoveByAuthor(context: CommandContext, function: (MessageReactionRemoveEvent) -> Unit): Message {
+fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
 	return this
@@ -240,7 +240,7 @@ fun Message.onReactionRemoveByAuthor(context: CommandContext, function: (Message
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onResponse(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponse = function
 	return this
@@ -253,7 +253,7 @@ fun Message.onResponse(context: CommandContext, function: (LorittaMessageEvent) 
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onResponseByAuthor(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+fun Message.onResponseByAuthor(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onResponseByAuthor = function
 	return this
@@ -266,7 +266,7 @@ fun Message.onResponseByAuthor(context: CommandContext, function: (LorittaMessag
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onMessageReceived(context: CommandContext, function: (LorittaMessageEvent) -> Unit): Message {
+fun Message.onMessageReceived(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this
@@ -274,11 +274,11 @@ fun Message.onMessageReceived(context: CommandContext, function: (LorittaMessage
 
 class MessageInteractionFunctions(val guild: String?, val originalAuthor: String) {
 	// Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
-	var onReactionAdd: ((MessageReactionAddEvent) -> Unit)? = null
-	var onReactionRemove: ((MessageReactionRemoveEvent) -> Unit)? = null
-	var onReactionAddByAuthor: ((MessageReactionAddEvent) -> Unit)? = null
-	var onReactionRemoveByAuthor: ((MessageReactionRemoveEvent) -> Unit)? = null
-	var onResponse: ((LorittaMessageEvent) -> Unit)? = null
-	var onResponseByAuthor: ((LorittaMessageEvent) -> Unit)? = null
-	var onMessageReceived: ((LorittaMessageEvent) -> Unit)? = null
+	var onReactionAdd: (suspend (MessageReactionAddEvent) -> Unit)? = null
+	var onReactionRemove: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
+	var onReactionAddByAuthor: (suspend (MessageReactionAddEvent) -> Unit)? = null
+	var onReactionRemoveByAuthor: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
+	var onResponse: (suspend (LorittaMessageEvent) -> Unit)? = null
+	var onResponseByAuthor: (suspend (LorittaMessageEvent) -> Unit)? = null
+	var onMessageReceived: (suspend (LorittaMessageEvent) -> Unit)? = null
 }
