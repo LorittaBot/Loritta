@@ -1,9 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Marriage
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAdd
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
@@ -15,11 +23,13 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* val proposeTo = context.getUserAt(0)
+		val proposeTo = context.getUserAt(0)
 
 		if (proposeTo != null) {
-			val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
+			val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
+			val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+			val proposeMarriage = transaction(Databases.loritta) { proposeToProfile.marriage }
+
 			val splitCost = MARRIAGE_COST / 2
 
 			if (proposeTo.id == context.userHandle.id) {
@@ -42,7 +52,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (context.lorittaUser.profile.marriedWith != null) {
+			if (marriage != null) {
 				// Não tem dinheiro suficiente!
 				context.reply(
 						LoriReply(
@@ -53,7 +63,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (proposeToProfile.marriedWith != null) {
+			if (proposeMarriage != null) {
 				// Já está casado!
 				context.reply(
 						LoriReply(
@@ -64,9 +74,9 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (splitCost > context.lorittaUser.profile.dreams) {
+			if (splitCost > context.lorittaUser.profile.money) {
 				// Não tem dinheiro suficiente!
-				val diff = splitCost - context.lorittaUser.profile.dreams
+				val diff = splitCost - context.lorittaUser.profile.money
 				context.reply(
 						LoriReply(
 								locale["MARRY_InsufficientFunds", diff],
@@ -76,9 +86,9 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (splitCost > proposeToProfile.dreams) {
+			if (splitCost > proposeToProfile.money) {
 				// Não tem dinheiro suficiente!
-				val diff = splitCost - proposeToProfile.dreams
+				val diff = splitCost - proposeToProfile.money
 				context.reply(
 						LoriReply(
 								locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
@@ -107,8 +117,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				if (it.reactionEmote.name == "\uD83D\uDC8D" && it.member.user.id == proposeTo.id) {
 					message.delete().queue()
 
-					val profile = loritta.getLorittaProfileForUser(context.userHandle.id)
-					val proposeToProfile = loritta.getLorittaProfileForUser(proposeTo.id)
+					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
+					val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
+					val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+					val proposeMarriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
 
 					if (proposeTo.id == context.userHandle.id) {
 						context.reply(
@@ -130,7 +142,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (profile.marriedWith != null) {
+					if (marriage != null) {
 						// Não tem dinheiro suficiente!
 						context.reply(
 								LoriReply(
@@ -141,7 +153,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (proposeToProfile.marriedWith != null) {
+					if (proposeMarriage != null) {
 						// Já está casado!
 						context.reply(
 								LoriReply(
@@ -152,9 +164,9 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (splitCost > profile.dreams) {
+					if (splitCost > profile.money) {
 						// Não tem dinheiro suficiente!
-						val diff = splitCost - profile.dreams
+						val diff = splitCost - profile.money
 						context.reply(
 								LoriReply(
 										locale["MARRY_InsufficientFunds", diff],
@@ -164,9 +176,9 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (splitCost > proposeToProfile.dreams) {
+					if (splitCost > proposeToProfile.money) {
 						// Não tem dinheiro suficiente!
-						val diff = splitCost - proposeToProfile.dreams
+						val diff = splitCost - proposeToProfile.money
 						context.reply(
 								LoriReply(
 										locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
@@ -176,36 +188,18 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					val marriedAt = System.currentTimeMillis()
-
 					// Okay, tudo certo, vamos lá!
-					val bulk = listOf<WriteModel<Document>>(
-							UpdateManyModel<Document>( // Retirar os sonhos dos usuários
-									Filters.`in`("_id", listOf(proposeTo.id, context.userHandle.id)),
-									Updates.inc(
-											"dreams",
-											-splitCost
-									)
-							),
-							UpdateOneModel<Document>(
-									Filters.eq("_id", context.userHandle.id),
-									Updates.combine(
-											Updates.set("marriedWith", proposeTo.id),
-											Updates.set("marriedAt", marriedAt)
-									)
-							),
-							UpdateOneModel<Document>(
-									Filters.eq("_id", proposeTo.id),
-									Updates.combine(
-											Updates.set("marriedWith", context.userHandle.id),
-											Updates.set("marriedAt", marriedAt)
-									)
-							)
-					)
-
-					loritta.mongo.getDatabase(Loritta.config.databaseName).getCollection("users").bulkWrite(
-							bulk
-					)
+					transaction(Databases.loritta) {
+						val newMarriage = Marriage.new {
+							user1 = context.userHandle.idLong
+							user2 = proposeTo.idLong
+							marriedSince = System.currentTimeMillis()
+						}
+						profile.marriage = newMarriage
+						proposeToProfile.marriage = newMarriage
+						profile.money -= splitCost
+						proposeToProfile.money -= splitCost
+					}
 
 					context.reply(
 							LoriReply(
@@ -219,6 +213,6 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			message.addReaction("\uD83D\uDC8D").queue()
 		} else {
 			context.explain()
-		} */
+		}
 	}
 }

@@ -78,11 +78,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
-				if (lorittaProfile.options.isAfk) {
+				if (lorittaProfile.isAfk) {
 					transaction(Databases.loritta) {
-						lorittaProfile.options.isAfk = false
-						lorittaProfile.options.afkReason
-						lorittaProfile.updateOptions()
+						lorittaProfile.isAfk = false
+						lorittaProfile.afkReason
 					}
 				}
 

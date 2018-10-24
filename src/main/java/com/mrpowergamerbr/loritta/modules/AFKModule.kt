@@ -20,8 +20,8 @@ class AFKModule : MessageReceivedModule {
 		for (mention in event.message.mentionedMembers) {
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(mention.user.id)
 
-			if (lorittaProfile.options.isAfk) {
-				var reason = lorittaProfile.options.afkReason
+			if (lorittaProfile.isAfk) {
+				var reason = lorittaProfile.afkReason
 
 				if (reason != null) {
 					val matcher = Constants.URL_PATTERN.matcher(reason

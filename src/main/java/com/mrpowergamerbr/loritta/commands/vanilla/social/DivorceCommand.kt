@@ -3,7 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -11,15 +17,16 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* if (context.lorittaUser.profile.marriedWith != null) {
-			loritta.usersColl.updateMany(
-					Filters.`in`(
-							"_id",
-							listOf(context.userHandle.id, context.lorittaUser.profile.marriedWith)
-					),
-					Updates.unset("marriedWith")
-			)
+		val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+
+		if (marriage != null) {
+			// depois
+			transaction(Databases.loritta) {
+				Profiles.update({ Profiles.marriage eq marriage.id }) {
+					it[Profiles.marriage] = null
+				}
+				marriage.delete()
+			}
 
 			context.reply(
 					LoriReply(
@@ -34,6 +41,6 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 							Constants.ERROR
 					)
 			)
-		} */
+		}
 	}
 }

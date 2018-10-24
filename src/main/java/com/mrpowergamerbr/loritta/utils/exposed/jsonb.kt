@@ -32,6 +32,11 @@ private class Json<out T : Any>(private val klass: Class<T>, private val jsonMap
 		}
 	}
 
-	override fun notNullValueToDB(value: Any): Any = jsonMapper.toJson(value)
+	override fun notNullValueToDB(value: Any): Any {
+		if (value is String)
+			return value
+		return jsonMapper.toJson(value)
+	}
+
 	override fun nonNullValueToString(value: Any): String = "'${jsonMapper.toJson(value)}'"
 }

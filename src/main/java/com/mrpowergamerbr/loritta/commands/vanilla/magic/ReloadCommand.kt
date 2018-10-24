@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -29,6 +30,15 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
+		if (arg0 == "dailytax") {
+			context.reply(
+					LoriReply(
+							"Retirando granas de pessoas!"
+					)
+			)
+			LorittaTasks.DAILY_TAX_TASK.runDailyTax(true)
+			return
+		}
 		if (arg0 == "shard") {
 			val shardId = context.rawArgs.getOrNull(1)!!.toInt()
 			lorittaShards.shardManager.restart(shardId)

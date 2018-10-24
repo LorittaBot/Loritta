@@ -3,7 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Gender
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import net.dv8tion.jda.core.EmbedBuilder
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -11,8 +17,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* val embed = EmbedBuilder()
+		val embed = EmbedBuilder()
 				.setTitle(locale["GENDER_WhatAreYou"])
 				.setDescription(locale["GENDER_WhyShouldYouSelect"])
 				.build()
@@ -26,10 +31,9 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 		message.onReactionAddByAuthor(context) {
 			message.delete().queue()
 			if (it.reactionEmote.id == "384048518853296128") {
-				loritta.usersColl.updateOne(
-						Filters.eq("_id", context.userHandle.id),
-						Updates.set("gender", Gender.MALE.name)
-				)
+				transaction(Databases.loritta) {
+					context.lorittaUser.profile.settings.gender = Gender.MALE
+				}
 
 				context.reply(
 						LoriReply(
@@ -39,10 +43,9 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 				)
 			}
 			if (it.reactionEmote.id == "384048518337265665") {
-				loritta.usersColl.updateOne(
-						Filters.eq("_id", context.userHandle.id),
-						Updates.set("gender", Gender.FEMALE.name)
-				)
+				transaction(Databases.loritta) {
+					context.lorittaUser.profile.settings.gender = Gender.FEMALE
+				}
 
 				context.reply(
 						LoriReply(
@@ -51,6 +54,6 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 						)
 				)
 			}
-		} */
+		}
 	}
 }

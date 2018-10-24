@@ -51,7 +51,7 @@ class CommandManager {
 		commandMap.add(PrimeirasPalavrasCommand())
 		commandMap.add(DrakeCommand())
 		commandMap.add(InverterCommand())
-		commandMap.add(SpinnerCommand())
+		// commandMap.add(SpinnerCommand())
 		commandMap.add(LavaCommand())
 		commandMap.add(LavaReversoCommand())
 		commandMap.add(ShipCommand())
@@ -122,7 +122,7 @@ class CommandManager {
 		commandMap.add(BackgroundCommand())
 		commandMap.add(SobreMimCommand())
 		commandMap.add(DiscriminatorCommand())
-		commandMap.add(RepCommand())
+		// commandMap.add(RepCommand())
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
 		commandMap.add(AfkCommand())
@@ -510,6 +510,11 @@ class CommandManager {
 											"<:lori_triste:370344565967814659>"
 									)
 							)
+							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
+								context.guild.controller.setNickname(context.guild.selfMember, null).queue()
+							} else {
+								return true
+							}
 						}
 					}
 				}

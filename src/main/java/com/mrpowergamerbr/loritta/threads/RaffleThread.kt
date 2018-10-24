@@ -82,7 +82,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
 			transaction(Databases.loritta){
-				lorittaProfile.money -= money
+				lorittaProfile.money += money
 			}
 
 			userIds.clear()

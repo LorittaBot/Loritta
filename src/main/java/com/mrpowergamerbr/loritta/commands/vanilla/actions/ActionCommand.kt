@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
@@ -12,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 abstract class ActionCommand(name: String, aliases: List<String>) : AbstractCommand(name, aliases, CommandCategory.ACTION) {
@@ -35,11 +37,11 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		val locale = context.locale
 		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
 		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
-
-		val other = receiverProfile.options.gender
+		val settings = transaction(Databases.loritta) { receiverProfile.settings }
+		val other = settings.gender
 
 		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-		val folderNames = userProfile.options.gender.getValidActionFolderNames(other).toMutableList()
+		val folderNames = settings.gender.getValidActionFolderNames(other).toMutableList()
 		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
 			folderNames.remove("generic")
 

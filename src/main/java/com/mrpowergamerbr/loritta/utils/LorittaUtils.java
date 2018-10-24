@@ -93,7 +93,7 @@ public final class LorittaUtils {
 			BufferedImage bi = ImageIO.read(connection.getInputStream());
 
 			return bi;
-		} catch (Exception e) {}
+		} catch (Exception e) { }
 		return null;
 	}
 

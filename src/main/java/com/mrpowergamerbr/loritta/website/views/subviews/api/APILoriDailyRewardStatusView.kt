@@ -1,14 +1,22 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
+import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
+import org.json.XML
+import java.net.InetAddress
+import java.util.*
 
 class APILoriDailyRewardStatusView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
@@ -37,54 +45,51 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 		val ips = req.header("X-Forwarded-For").value() // Cloudflare, Apache
 		val ip = ips.split(", ")[0]
 
-		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
-
-		// TODO: Fix
 		// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 		// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-		/* val sameIpProfile = loritta.usersColl.find(
-				Filters.eq("ip", ip)
-		).firstOrNull()
+		val lastReceivedDailyAt = transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() }
+					.orderBy(Dailies.receivedAt to false)
+					.limit(1)
+					.firstOrNull()
+		}?.get(Dailies.receivedAt) ?: 0L
+
+		val sameIpDailyAt = transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
+					.orderBy(Dailies.receivedAt to false)
+					.limit(1)
+					.firstOrNull()
+		}?.get(Dailies.receivedAt) ?: 0L
 
 		run {
-			val votedAt = lorittaProfile.receivedDailyAt
-
 			val calendar = Calendar.getInstance()
-			calendar.timeInMillis = votedAt
+			calendar.timeInMillis = lastReceivedDailyAt
 			calendar.set(Calendar.HOUR_OF_DAY, 0)
 			calendar.set(Calendar.MINUTE, 0)
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			val canGetDaily = System.currentTimeMillis() > tomorrow
-
-			if (!canGetDaily) {
+			if (tomorrow > System.currentTimeMillis()) {
 				val payload = JsonObject()
-				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				payload["canPayoutAgain"] = tomorrow
+				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				return payload.toString()
 			}
 		}
 
-		if (sameIpProfile != null) {
-			run {
-				val votedAt = sameIpProfile.receivedDailyAt
+		run {
+			val calendar = Calendar.getInstance()
+			calendar.timeInMillis = sameIpDailyAt
+			calendar.set(Calendar.HOUR_OF_DAY, 0)
+			calendar.set(Calendar.MINUTE, 0)
+			calendar.add(Calendar.DAY_OF_MONTH, 1)
+			val tomorrow = calendar.timeInMillis
 
-				val calendar = Calendar.getInstance()
-				calendar.timeInMillis = votedAt
-				calendar.set(Calendar.HOUR_OF_DAY, 0)
-				calendar.set(Calendar.MINUTE, 0)
-				calendar.add(Calendar.DAY_OF_MONTH, 1)
-				val tomorrow = calendar.timeInMillis
-
-				val canGetDaily = System.currentTimeMillis() > tomorrow
-
-				if (!canGetDaily) {
-					val payload = JsonObject()
-					payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-					payload["canPayoutAgain"] = tomorrow
-					return payload.toString()
-				}
+			if (tomorrow > System.currentTimeMillis()) {
+				val payload = JsonObject()
+				payload["canPayoutAgain"] = tomorrow
+				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
+				return payload.toString()
 			}
 		}
 
@@ -145,7 +150,6 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
 
-		return payload.toString() */
-		return ""
+		return payload.toString()
 	}
 }

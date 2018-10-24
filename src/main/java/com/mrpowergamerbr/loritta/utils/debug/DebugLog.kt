@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import java.io.File
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
@@ -118,6 +119,30 @@ object DebugLog {
 				waitQueueField.isAccessible = true
 				val waitQueueSize = waitQueueField.get(conPool) as AtomicInteger
 				println("Wait Queue Size: " + waitQueueSize.get())
+			}
+			"databases" -> {
+				val findProfilePostgreAvg = loritta.findProfilePostgre.toTypedArray().mapNotNull { it }.average()
+				val findProfileMongoAvg = loritta.findProfileMongo.toTypedArray().mapNotNull { it }.average()
+				val newProfilePostgreAvg = loritta.newProfilePostgre.toTypedArray().mapNotNull { it }.average()
+
+				println("findProfilePostgre (${loritta.idx0}): $findProfilePostgreAvg nanosegundos (${findProfilePostgreAvg / 1000000})")
+				println("findProfileMongo (${loritta.idx1}): $findProfileMongoAvg nanosegundos (${findProfileMongoAvg / 1000000})")
+				println("newProfilePostgre (${loritta.idx2}): $newProfilePostgreAvg nanosegundos (${newProfilePostgreAvg / 1000000})")
+
+				var text = "===[ findProfilePostgre ($findProfilePostgreAvg nanosegundos) ]===\n"
+				loritta.findProfilePostgre.toTypedArray().mapNotNull { it }.forEach {
+					text += "$it nanosegundos\n"
+				}
+				text += "\n\n===[ findProfileMongo ($findProfileMongoAvg nanosegundos) ]===\n"
+				loritta.findProfileMongo.toTypedArray().mapNotNull { it }.forEach {
+					text += "$it nanosegundos\n"
+				}
+				text += "\n\n===[ newProfilePostgre ($newProfilePostgreAvg nanosegundos) ]===\n"
+				loritta.newProfilePostgre.toTypedArray().mapNotNull { it }.forEach {
+					text += "$it nanosegundos\n"
+				}
+
+				File("database-results.txt").writeText(text)
 			}
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)

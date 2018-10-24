@@ -1,9 +1,5 @@
 package com.mrpowergamerbr.loritta.tables
 
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.profile.ProfileOptions
-import com.mrpowergamerbr.loritta.utils.exposed.jsonb
-
 object Profiles : SnowflakeTable() {
 	val xp = long("xp").index()
 	val isBanned = bool("banned")
@@ -15,8 +11,8 @@ object Profiles : SnowflakeTable() {
 	var donatorPaid = double("donator_paid")
 	var donatedAt = long("donated_at")
 	var donationExpiresIn = long("donation_expires_in")
-	var marriedWith = long("married_with").nullable()
-	var marriedAt = long("married_at").nullable()
-
-	val options = jsonb("options", ProfileOptions::class.java, Loritta.GSON)
+	var isAfk = bool("isAfk")
+	var afkReason = text("afkReason").nullable()
+	var settings = reference("settings", UserSettings)
+	var marriage = reference("marriage", Marriages).nullable()
 }
