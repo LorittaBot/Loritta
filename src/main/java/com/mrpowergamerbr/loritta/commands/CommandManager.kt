@@ -510,6 +510,11 @@ class CommandManager {
 											"<:lori_triste:370344565967814659>"
 									)
 							)
+							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
+								context.guild.controller.setNickname(context.guild.selfMember, null).queue()
+							} else {
+								return true
+							}
 						}
 					}
 				}
