@@ -73,7 +73,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 							prefix = ":ping_pong:"
 					),
 					LoriReply(
-							message = "**WebSocket Ping: ** `${context.event.jda.ping} ms`",
+							message = "**WebSocket Ping: ** `${context.event.jda.ping}ms`",
 							prefix = ":stopwatch:",
 							mentionUser = false
 					),
@@ -89,7 +89,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			replies.removeAt(2) // remova o último
 			replies.add(
 					LoriReply(
-							message = "**API Ping:** `${System.currentTimeMillis() - time} ms`",
+							message = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
 							prefix = ":zap:",
 							mentionUser = false
 					)
