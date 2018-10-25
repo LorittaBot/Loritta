@@ -53,10 +53,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			}
 
 			if (marriage != null) {
-				// Não tem dinheiro suficiente!
+				// Já está casado!
 				context.reply(
 						LoriReply(
-								locale["MARRY_AlreadyMarried"],
+								locale["MARRY_AlreadyMarried", context.config.commandPrefix],
 								Constants.ERROR
 						)
 				)
