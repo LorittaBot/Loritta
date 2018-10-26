@@ -37,11 +37,13 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		val locale = context.locale
 		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
 		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
-		val settings = transaction(Databases.loritta) { receiverProfile.settings }
-		val other = settings.gender
+
+        // R U a boy or girl?
+        val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
+		val receiverGender = transaction(Databases.loritta) { receiverProfile.settings.gender }
 
 		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-		val folderNames = settings.gender.getValidActionFolderNames(other).toMutableList()
+		val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
 		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
 			folderNames.remove("generic")
 

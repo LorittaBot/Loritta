@@ -76,7 +76,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		}
 
 		val embed = EmbedBuilder().apply {
-			setTitle("<:osama:325332212255948802> ${context.locale["EMOJISEARCH_Title"]}")
+			setTitle(":lori_pac: ${context.locale["EMOJISEARCH_Title"]}")
 			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
 			setColor(Constants.DISCORD_BLURPLE)
 			setImage("attachment://emotes.png")
