@@ -9,7 +9,7 @@ class AttackCommand : ActionCommand("attack", listOf("atacar")) {
 	}
 
 	override fun getResponse(locale: BaseLocale, first: User, second: User): String {
-		return locale["Attack_Response", first.asMention, second.asMention]
+		return locale["ATTACK_Response", first.asMention, second.asMention]
 	}
 
 	override fun getFolderName(): String {
