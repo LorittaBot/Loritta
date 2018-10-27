@@ -644,9 +644,6 @@ class Loritta(config: LorittaConfig) {
 						if (changedValue is List<*>) {
 							val tree = prettyGson.toJsonTree(changedValue)
 							jsonObject[field.name] = tree
-						} else {
-							jsonObject[field.name] = changedValue
-							locale.strings.put(field.name, changedValue as String)
 						}
 					}
 				}
@@ -670,19 +667,22 @@ class Loritta(config: LorittaConfig) {
 		for ((key, locale) in locales) {
 			val yaml = Yaml()
 			// Atualmente apenas o default
-			val obj = yaml.load(File("C:\\Users\\Whistler\\Documents\\TavaresBot\\locales\\default.yml").readText()) as Map<String, Object>
+			val obj = yaml.load(File(LOCALES, "default.yml").readText()) as Map<String, Object>
 
 			fun handle(root: Any, name: String, entries: Map<*, *>) {
 				entries as Map<String, Any>
 
-				val field = locale::class.java.getDeclaredField(name)
+				val field = root::class.java.getDeclaredField(name)
+				field.isAccessible = true
 				for ((key, value) in entries) {
 					when {
 						value is Map<*, *> -> {
 							handle(field.get(root), key, value)
 						}
 						else -> {
-							field.set(root, obj)
+							val entryField = field.get(root)::class.java.getDeclaredField(key)
+							entryField.isAccessible = true
+							entryField.set(field.get(root), value)
 						}
 					}
 				}
