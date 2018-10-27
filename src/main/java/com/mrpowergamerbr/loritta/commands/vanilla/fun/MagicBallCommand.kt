@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -32,7 +32,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + context.locale.VIEIRINHA_responses[Loritta.RANDOM.nextInt(context.locale.VIEIRINHA_responses.size)])
+					.content(context.getAsMention(true) + locale.commands.vieirinha.responses.getRandom())
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {

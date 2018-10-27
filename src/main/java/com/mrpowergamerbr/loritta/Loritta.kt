@@ -51,6 +51,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
+import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.lang.reflect.Modifier
 import java.util.*
@@ -662,6 +663,37 @@ class Loritta(config: LorittaConfig) {
 				}
 
 				File(LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
+			}
+		}
+
+		// Nós também suportamos locales em YAML
+		for ((key, locale) in locales) {
+			val yaml = Yaml()
+			// Atualmente apenas o default
+			val obj = yaml.load(File("C:\\Users\\Whistler\\Documents\\TavaresBot\\locales\\default.yml").readText()) as Map<String, Object>
+
+			fun handle(root: Any, name: String, entries: Map<*, *>) {
+				entries as Map<String, Any>
+
+				val field = locale::class.java.getDeclaredField(name)
+				for ((key, value) in entries) {
+					when {
+						value is Map<*, *> -> {
+							handle(field.get(root), key, value)
+						}
+						else -> {
+							field.set(root, obj)
+						}
+					}
+				}
+			}
+
+			for ((key, value) in obj) {
+				if (value is Map<*, *>)
+					handle(locale, key, value)
+				else {
+					println("Invalid!")
+				}
 			}
 		}
 

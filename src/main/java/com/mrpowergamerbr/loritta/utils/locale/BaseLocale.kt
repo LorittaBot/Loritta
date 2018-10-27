@@ -16,6 +16,8 @@ open class BaseLocale {
 
 	@Transient
 	var strings = mutableMapOf<String, String>()
+	@Transient
+	var commands = Commands()
 
 	operator fun get(key: String, vararg arguments: Any?): String {
 		if (!strings.containsKey(key)) {
@@ -47,4 +49,11 @@ open class BaseLocale {
 	lateinit var SHIP_valor10: List<String>
 
 	lateinit var SHIP_valor0: List<String>
+
+	class Commands {
+		class Vieirinha {
+			lateinit var responses: List<String>
+		}
+		var vieirinha = Vieirinha()
+	}
 }
