@@ -30,18 +30,19 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 
-	fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
-		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-		val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
-		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
-			folderNames.remove("generic")
 
-		val files = folderNames.flatMap {
-			File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
-		}
+    fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
+        val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
+        val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
+        if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+            folderNames.remove("generic")
 
-		return files
-	}
+        val files = folderNames.flatMap {
+            File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+        }
+
+        return files
+    }
 
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
 		val locale = context.locale

@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream
 
 class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
-		return "query"
+		return "query [animated]"
 	}
 
 	override fun getExample(): List<String> {
@@ -41,10 +41,15 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				return
 			}
 
-			val queriedEmotes = lorittaShards.getGuilds()
-					.flatMap {
-						it.emotes.filter { it.name.toLowerCase().contains(query) }
-					}.sortedByDescending { it.guild.members.size }
+            // verifica se o ultimo argumento é animated, caso verdadeito só retorna emojos animados
+            val onlyAnimated = context.args[context.args.size - 1] == "animated"
+
+            val queriedEmotes = lorittaShards.getGuilds()
+                    .flatMap { it ->
+                        it.emotes.filter {
+                            it.name.toLowerCase().contains(query)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
+                        }
+                    }.sortedByDescending { it.guild.members.size }
 
 			sendQueriedEmbed(context, queriedEmotes, query, 0)
 		} else {
@@ -76,7 +81,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		}
 
 		val embed = EmbedBuilder().apply {
-			setTitle(":lori_pac: ${context.locale["EMOJISEARCH_Title"]}")
+			setTitle("<:lori_pac:503600573741006863> ${context.locale["EMOJISEARCH_Title"]}")
 			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
 			setColor(Constants.DISCORD_BLURPLE)
 			setImage("attachment://emotes.png")
