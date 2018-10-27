@@ -26,10 +26,12 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 		val message = context.sendMessage(embed)
 
 		message.addReaction("male:384048518853296128").queue()
-		message.addReaction("female:384048518337265665").queue()
+        message.addReaction("female:384048518337265665").queue()
+        message.addReaction("❓").queue()
 
 		message.onReactionAddByAuthor(context) {
 			message.delete().queue()
+
 			if (it.reactionEmote.id == "384048518853296128") {
 				transaction(Databases.loritta) {
 					context.lorittaUser.profile.settings.gender = Gender.MALE
@@ -42,18 +44,33 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 						)
 				)
 			}
-			if (it.reactionEmote.id == "384048518337265665") {
-				transaction(Databases.loritta) {
-					context.lorittaUser.profile.settings.gender = Gender.FEMALE
-				}
 
-				context.reply(
-						LoriReply(
-								locale["GENDER_SuccessfullyChanged"],
-								"\uD83C\uDF89"
-						)
-				)
-			}
+
+            if (it.reactionEmote.id == "384048518337265665") {
+                transaction(Databases.loritta) {
+                    context.lorittaUser.profile.settings.gender = Gender.FEMALE
+                }
+
+                context.reply(
+                        LoriReply(
+                                locale["GENDER_SuccessfullyChanged"],
+                                "\uD83C\uDF89"
+                        )
+                )
+            }
+
+            if (it.reactionEmote.name == "❓") {
+                transaction(Databases.loritta) {
+                    context.lorittaUser.profile.settings.gender = Gender.UNKNOWN
+                }
+
+                context.reply(
+                        LoriReply(
+                                locale["GENDER_SuccessfullyChanged"],
+                                "\uD83C\uDF89"
+                        )
+                )
+            }
 		}
 	}
 }
