@@ -4,7 +4,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
-import com.mrpowergamerbr.loritta.commands.vanilla.actions.HugCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.actions.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
@@ -131,7 +131,11 @@ class CommandManager {
 		commandMap.add(GenderCommand())
 
 		// =======[ ACTIONS ]======
+        commandMap.add(AttackCommand())
+        commandMap.add(DanceCommand())
 		commandMap.add(HugCommand())
+        commandMap.add(KissCommand())
+        commandMap.add(SlapCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
@@ -510,6 +514,11 @@ class CommandManager {
 											"<:lori_triste:370344565967814659>"
 									)
 							)
+							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
+								context.guild.controller.setNickname(context.guild.selfMember, null).queue()
+							} else {
+								return true
+							}
 						}
 					}
 				}

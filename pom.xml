@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2018.09.19</loritta.version>
+        <loritta.version>2018.10.28-SNAPSHOT</loritta.version>
         <kotlin.version>1.3-M2</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.8</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -202,7 +202,7 @@
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>1.11.0</version>
+            <version>1.11.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -307,7 +307,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.0</version>
                 <executions>
                     <!-- Replacing default-compile as it is treated specially by maven -->
                     <execution>

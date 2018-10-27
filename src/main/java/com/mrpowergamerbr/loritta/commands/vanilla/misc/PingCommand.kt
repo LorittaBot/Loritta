@@ -4,10 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String {
@@ -63,19 +62,44 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			asMessage.add(buf)
 
 			for (str in asMessage) {
-				context.sendMessage("```${str}```")
+				context.sendMessage("```$str```")
 			}
 		} else {
-			val message = context.reply(
+            val time = System.currentTimeMillis()
+
+            val replies = mutableListOf(
 					LoriReply(
-							message = "**Pong!** `${context.event.jda.ping}ms` (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
-							prefix = "\uD83C\uDFD3"
+							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
+							prefix = ":ping_pong:"
+					),
+					LoriReply(
+							message = "**WebSocket Ping: ** `${context.event.jda.ping}ms`",
+							prefix = ":stopwatch:",
+							mentionUser = false
+					),
+					LoriReply(
+							message = "**API Ping:** `...ms`",
+							prefix = ":stopwatch:",
+							mentionUser = false
 					)
 			)
+
+			val message = context.reply(*replies.toTypedArray())
+
+			replies.removeAt(2) // remova o último
+			replies.add(
+					LoriReply(
+							message = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
+							prefix = ":zap:",
+							mentionUser = false
+					)
+			)
+
+			message.editMessage(replies.joinToString(separator = "\n", transform = {it.build(context)})).await()
 
 			message.onReactionAddByAuthor(context) {
 				message.editMessage("${context.userHandle.asMention} i luv u <:lori_blobnom:412582340272062464>").queue()
 			}
 		}
-    }
+	}
 }
