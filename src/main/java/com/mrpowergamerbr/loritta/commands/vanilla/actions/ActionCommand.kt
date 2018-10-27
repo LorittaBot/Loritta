@@ -6,12 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.dv8tion.jda.core.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -33,22 +30,43 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 
+
+    fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
+        val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
+        val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
+        if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+            folderNames.remove("generic")
+
+        val files = folderNames.flatMap {
+            File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+        }
+
+        return files
+    }
+
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
 		val locale = context.locale
 		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
 		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 
-        // R U a boy or girl?
-        val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
+		// Anti-gente idiota
+		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
+			context.reply(
+					locale["KISS_NahPleaseDont"],
+					"\uD83D\uDE45"
+			)
+			return
+		}
+
+		// R U a boy or girl?
+		val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
 		val receiverGender = transaction(Databases.loritta) { receiverProfile.settings.gender }
 
-		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-		val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
-		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
-			folderNames.remove("generic")
+		var files = getGifsFor(userGender, receiverGender)
 
-		val files = folderNames.flatMap {
-			File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+		if (files.isEmpty()) {
+			// Caso não tenha nenhuma GIF disponível, vamos abrir o nosso "leque" de GIFs, para evitar que dê erro
+			files = getGifsFor(Gender.UNKNOWN, Gender.UNKNOWN)
 		}
 
 		val randomImage = files.getRandom()
