@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream
 
 class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
-		return "query"
+		return "query [animated]"
 	}
 
 	override fun getExample(): List<String> {
