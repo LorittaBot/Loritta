@@ -63,7 +63,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 
 		var files = getGifsFor(userGender, receiverGender)
 
-		if (files.isEmpty()) {
+		while (files.isEmpty()) {
 			// Caso não tenha nenhuma GIF disponível, vamos abrir o nosso "leque" de GIFs, para evitar que dê erro
 			files = getGifsFor(Gender.UNKNOWN, Gender.UNKNOWN)
 		}
