@@ -38,6 +38,15 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
 		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 
+		// Anti-gente idiota
+		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
+			context.reply(
+					locale["KISS_NahPleaseDont"],
+					"\uD83D\uDE45"
+			)
+			return
+		}
+
         // R U a boy or girl?
         val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
 		val receiverGender = transaction(Databases.loritta) { receiverProfile.settings.gender }
