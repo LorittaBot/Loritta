@@ -29,7 +29,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val query = context.args.joinToString(" ").toLowerCase()
+			val query = context.rawArgs[0]
 
 			if (3 > query.length) {
 				context.reply(
