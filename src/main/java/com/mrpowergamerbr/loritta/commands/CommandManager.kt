@@ -328,6 +328,17 @@ class CommandManager {
 				val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 				val start = System.currentTimeMillis()
 
+				var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
+				var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
+				if (byMention) {
+					args = args.remove(0)
+					rawArgs = rawArgs.remove(0)
+					strippedArgs = strippedArgs.remove(0)
+				}
+
+				val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
+
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					AbstractCommand.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				} else {
@@ -392,7 +403,12 @@ class CommandManager {
 
 				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
-					ev.channel.sendMessage("\uD83D\uDD25 **|** ${ev.author.asMention} ${locale["PLEASE_WAIT_COOLDOWN", fancy]}").queue()
+					context.reply(
+							LoriReply(
+									locale.commands.pleaseWaitCooldown.format(fancy, "\uD83D\uDE45"),
+									"\uD83D\uDD25"
+							)
+					)
 					return true
 				}
 
@@ -439,15 +455,6 @@ class CommandManager {
 					}
 				}
 
-				var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				if (byMention) {
-					args = args.remove(0)
-					rawArgs = rawArgs.remove(0)
-					strippedArgs = strippedArgs.remove(0)
-				}
-				val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					command.explain(context)
 					return true
