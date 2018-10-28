@@ -51,6 +51,13 @@ open class BaseLocale {
 	lateinit var SHIP_valor0: List<String>
 
 	class Commands {
+		lateinit var pleaseWaitCooldown: String
+		lateinit var errorWhileExecutingCommand: String
+		class Ajuda {
+			lateinit var errorWhileOpeningDm: String
+		}
+		var ajuda = Ajuda()
+
 		class Vieirinha {
 			lateinit var description: String
 			lateinit var examples: List<String>

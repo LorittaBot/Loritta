@@ -11,7 +11,20 @@ fun main(args: Array<String>) {
 	var classes = ""
 
 	fun String.yamlToVariable(): String {
-		return this.replace("-", "")
+		var newVariable = ""
+		var nextShouldBeUppercase = false
+		for (ch in this) {
+			if (ch == '-') {
+				nextShouldBeUppercase = true
+				continue
+			}
+			var thisChar = ch
+			if (nextShouldBeUppercase)
+				thisChar = thisChar.toUpperCase()
+			newVariable += thisChar
+			nextShouldBeUppercase = false
+		}
+		return newVariable
 	}
 
 	fun handle(name: String, entries: Map<*, *>, isRoot: Boolean, tabs: Int) {

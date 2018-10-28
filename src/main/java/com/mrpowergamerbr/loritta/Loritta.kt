@@ -670,6 +670,23 @@ class Loritta(config: LorittaConfig) {
 			val defaultYaml = File(LOCALES, "default.yml")
 			val localeYaml = File(LOCALES, "$key.yml")
 
+			fun String.yamlToVariable(): String {
+				var newVariable = ""
+				var nextShouldBeUppercase = false
+				for (ch in this) {
+					if (ch == '-') {
+						nextShouldBeUppercase = true
+						continue
+					}
+					var thisChar = ch
+					if (nextShouldBeUppercase)
+						thisChar = thisChar.toUpperCase()
+					newVariable += thisChar
+					nextShouldBeUppercase = false
+				}
+				return newVariable
+			}
+
 			fun applyValues(file: File) {
 				val obj = yaml.load(file.readText()) as Map<String, Object>
 
@@ -681,10 +698,10 @@ class Loritta(config: LorittaConfig) {
 					for ((key, value) in entries) {
 						when (value) {
 							is Map<*, *> -> {
-								handle(field.get(root), key, value)
+								handle(field.get(root), key.yamlToVariable(), value)
 							}
 							else -> {
-								val entryField = field.get(root)::class.java.getDeclaredField(key)
+								val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
 								entryField.isAccessible = true
 								entryField.set(field.get(root), value)
 							}
@@ -694,7 +711,7 @@ class Loritta(config: LorittaConfig) {
 
 				for ((key, value) in obj) {
 					if (value is Map<*, *>)
-						handle(locale, key, value)
+						handle(locale, key.yamlToVariable(), value)
 					else {
 						logger.error { "Posição inválida para $key em $value"}
 					}
