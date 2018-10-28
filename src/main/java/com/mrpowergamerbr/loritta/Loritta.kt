@@ -696,16 +696,20 @@ class Loritta(config: LorittaConfig) {
 					val field = root::class.java.getDeclaredField(name)
 					field.isAccessible = true
 					for ((key, value) in entries) {
-						when (value) {
-							is Map<*, *> -> {
-								handle(field.get(root), key.yamlToVariable(), value)
-							}
-							else -> {
-								val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
-								entryField.isAccessible = true
-								entryField.set(field.get(root), value)
-							}
-						}
+						try {
+                            when (value) {
+                                is Map<*, *> -> {
+                                    handle(field.get(root), key.yamlToVariable(), value)
+                                }
+                                else -> {
+                                    val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
+                                    entryField.isAccessible = true
+                                    entryField.set(field.get(root), value)
+                                }
+                            }
+                        } catch (e: NoSuchFieldException) {
+                            logger.warn { "O campo $key não existe." }
+                        }
 					}
 				}
 
