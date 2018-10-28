@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-data class CommandArguments(private val arguments: List<CommandArgument>) {
+data class CommandArguments(val arguments: List<CommandArgument>) {
 	fun build(locale: BaseLocale): String {
 		val builder = StringBuilder()
 		for (argument in arguments) {
@@ -26,8 +26,8 @@ data class CommandArgument(val type: ArgumentType, val optional: Boolean)
 enum class ArgumentType {
 	TEXT;
 
-	fun localized(locale: BaseLocale) {
-		when (this) {
+	fun localized(locale: BaseLocale): String {
+		return when (this) {
 			TEXT -> locale.commands.arguments.text
 		}
 	}
