@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import org.slf4j.LoggerFactory
@@ -32,7 +33,12 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return mapOf()
 	}
 
+	@Deprecated("Please use getExample(locale)")
 	open fun getExample(): List<String> {
+		return getExample(loritta.getLocaleById("default"))
+	}
+
+	open fun getExample(locale: BaseLocale): List<String> {
 		return listOf()
 	}
 

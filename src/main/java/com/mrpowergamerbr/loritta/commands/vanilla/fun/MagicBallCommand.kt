@@ -7,15 +7,14 @@ import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import java.util.*
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["VIEIRINHA_DESCRIPTION"]
+		return locale.commands.vieirinha.description
 	}
 
-	override fun getExample(): List<String> {
-		return Arrays.asList("você me ama?")
+	override fun getExample(locale: BaseLocale): List<String> {
+		return locale.commands.vieirinha.examples
 	}
 
 	override fun hasCommandFeedback(): Boolean {

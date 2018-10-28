@@ -52,6 +52,8 @@ open class BaseLocale {
 
 	class Commands {
 		class Vieirinha {
+			lateinit var description: String
+			lateinit var examples: List<String>
 			lateinit var responses: List<String>
 		}
 		var vieirinha = Vieirinha()
