@@ -126,9 +126,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
 			val commandArguments = getUsage(locale)
-			val usage = if (commandArguments.arguments.isNotEmpty()) {
-				commandArguments.build(locale)
-			} else if (getUsage() != null) " `${getUsage()}`" else ""
+			val usage = when {
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}"
+				getUsage() != null -> " `${getUsage()}`"
+				else -> ""
+			}
 
 			var cmdInfo = getDescription(context.locale) + "\n\n"
 
