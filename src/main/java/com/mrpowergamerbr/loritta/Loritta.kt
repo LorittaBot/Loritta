@@ -666,34 +666,46 @@ class Loritta(config: LorittaConfig) {
 		// Nós também suportamos locales em YAML
 		for ((key, locale) in locales) {
 			val yaml = Yaml()
-			// Atualmente apenas o default
-			val obj = yaml.load(File(LOCALES, "default.yml").readText()) as Map<String, Object>
 
-			fun handle(root: Any, name: String, entries: Map<*, *>) {
-				entries as Map<String, Any>
+			val defaultYaml = File(LOCALES, "default.yml")
+			val localeYaml = File(LOCALES, "$key.yml")
 
-				val field = root::class.java.getDeclaredField(name)
-				field.isAccessible = true
-				for ((key, value) in entries) {
-					when {
-						value is Map<*, *> -> {
-							handle(field.get(root), key, value)
+			fun applyValues(file: File) {
+				val obj = yaml.load(file.readText()) as Map<String, Object>
+
+				fun handle(root: Any, name: String, entries: Map<*, *>) {
+					entries as Map<String, Any>
+
+					val field = root::class.java.getDeclaredField(name)
+					field.isAccessible = true
+					for ((key, value) in entries) {
+						when (value) {
+							is Map<*, *> -> {
+								handle(field.get(root), key, value)
+							}
+							else -> {
+								val entryField = field.get(root)::class.java.getDeclaredField(key)
+								entryField.isAccessible = true
+								entryField.set(field.get(root), value)
+							}
 						}
-						else -> {
-							val entryField = field.get(root)::class.java.getDeclaredField(key)
-							entryField.isAccessible = true
-							entryField.set(field.get(root), value)
-						}
+					}
+				}
+
+				for ((key, value) in obj) {
+					if (value is Map<*, *>)
+						handle(locale, key, value)
+					else {
+						logger.error { "Posição inválida para $key em $value"}
 					}
 				}
 			}
 
-			for ((key, value) in obj) {
-				if (value is Map<*, *>)
-					handle(locale, key, value)
-				else {
-					println("Invalid!")
-				}
+			applyValues(defaultYaml)
+			if (localeYaml.exists()) {
+				applyValues(localeYaml)
+			} else {
+				logger.error { "Locale $key não possui YAML! Fix it, fix it, fix it!!!" }
 			}
 		}
 
