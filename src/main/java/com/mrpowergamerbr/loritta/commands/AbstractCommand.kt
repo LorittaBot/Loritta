@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import org.slf4j.LoggerFactory
@@ -181,7 +182,52 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					it.sendMessage(embed.build()).queue()
 				}
 			} else {
-				context.sendMessage(context.getAsMention(true), embed.build())
+				val message = context.sendMessage(context.getAsMention(true), embed.build())
+				message.addReaction("❓").queue()
+				message.onReactionAddByAuthor(context) {
+					if (it.reactionEmote.emote.name == "❓") {
+						message.delete().queue()
+						explainArguments(context)
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends an embed explaining how the argument works
+	 *
+	 * @param context the context of the command
+	 */
+	suspend fun explainArguments(context: CommandContext) {
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.setTitle("\uD83E\uDD14 Como os argumentos funcionam?")
+		embed.addField(
+				"Estilos de Argumentos",
+				"""
+					`<argumento>` - Argumento obrigatório
+					`[argumento]` - Argumento opcional
+				""".trimIndent(),
+				false
+		)
+
+		embed.addField(
+				"Tipos de Argumentos",
+				"""
+					`texto` - Um texto qualquer
+					`usuário` - Menção, nome de um usuário ou ID de um usuário
+					`imagem` - URL da imagem,  menção, nome de um usupario, ID de um usuário e, caso nada tenha sido encontrado, será pego a primeira imagem encontrada nas últimas 25 mensagens.
+				""".trimIndent(),
+				false
+		)
+
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		message.addReaction("❓").queue()
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.emote.name == "❓") {
+				message.delete().queue()
+				explain(context)
 			}
 		}
 	}
