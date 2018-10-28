@@ -127,7 +127,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			val commandArguments = getUsage(locale)
 			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}"
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
 				getUsage() != null -> " `${getUsage()}`"
 				else -> ""
 			}
