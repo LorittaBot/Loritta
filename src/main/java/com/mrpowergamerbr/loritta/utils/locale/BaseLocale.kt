@@ -15,10 +15,12 @@ open class BaseLocale {
 	}
 
 	@Transient
+	@Deprecated("Please use the inner classes")
 	var strings = mutableMapOf<String, String>()
 	@Transient
 	var commands = Commands()
 
+	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
 		if (!strings.containsKey(key)) {
 			logger.warn {"Missing translation key! $key" }
