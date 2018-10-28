@@ -30,8 +30,6 @@ open class BaseLocale {
 	}
 
 	// Generic
-	lateinit var VIEIRINHA_responses: List<String>
-
 	lateinit var SHIP_valor90: List<String>
 
 	lateinit var SHIP_valor80: List<String>
