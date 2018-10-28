@@ -137,9 +137,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
-			if (!this.getDetailedUsage().isEmpty()) {
-				for ((key, value) in this.getDetailedUsage()) {
-					cmdInfo += "${Constants.LEFT_PADDING} `$key` - $value\n"
+			for (argument in commandArguments.arguments) {
+				if (argument.explanation != null) {
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - ${argument.explanation}\n"
 				}
 			}
 

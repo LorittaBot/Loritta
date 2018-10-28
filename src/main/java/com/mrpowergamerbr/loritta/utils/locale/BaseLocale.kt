@@ -59,6 +59,9 @@ open class BaseLocale {
 		lateinit var cantUseInPrivate: String
 		class Arguments {
 			lateinit var text: String
+			lateinit var number: String
+			lateinit var user: String
+			lateinit var image: String
 		}
 		var arguments = Arguments()
 
@@ -66,6 +69,12 @@ open class BaseLocale {
 			lateinit var errorWhileOpeningDm: String
 		}
 		var ajuda = Ajuda()
+
+		class Roll {
+			lateinit var description: String
+			lateinit var howMuchSides: String
+		}
+		var roll = Roll()
 
 		class Vieirinha {
 			lateinit var description: String
