@@ -17,6 +17,8 @@ open class BaseLocale {
 	var strings = mutableMapOf<String, String>()
 	@Transient
 	var commands = Commands()
+	@Transient
+	var loritta = Loritta()
 
 	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
