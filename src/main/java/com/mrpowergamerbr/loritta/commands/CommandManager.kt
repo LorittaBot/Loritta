@@ -232,7 +232,6 @@ class CommandManager {
 		commandMap.add(LoriServerListConfigCommand())
 		commandMap.add(TicTacToeCommand())
 		commandMap.add(EvalKotlinCommand())
-		commandMap.add(ProfilerCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())
