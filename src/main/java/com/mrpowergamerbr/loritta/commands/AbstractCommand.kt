@@ -25,8 +25,13 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return "Insira descrição do comando aqui!"
 	}
 
+	@Deprecated("Please use getUsage(locale)")
 	open fun getUsage(): String? {
 		return null
+	}
+
+	open fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {}
 	}
 
 	open fun getDetailedUsage(): Map<String, String> {
@@ -120,7 +125,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			embed.setColor(Color(0, 193, 223))
 			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
+			var usage = " `${getUsage(context.locale).build(locale)}`"
+
+			if (usage.isEmpty())
+				usage = if (getUsage() != null) " `${getUsage()}`" else ""
 
 			var cmdInfo = getDescription(context.locale) + "\n\n"
 

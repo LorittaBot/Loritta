@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -11,6 +9,12 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.commands.vieirinha.description
+	}
+
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.TEXT, false)
+		}
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {

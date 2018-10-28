@@ -48,9 +48,18 @@ open class BaseLocale {
 
 	lateinit var SHIP_valor0: List<String>
 
+	class Loritta {
+		lateinit var translationAuthors: List<String>
+	}
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
 		lateinit var errorWhileExecutingCommand: String
+		lateinit var cantUseInPrivate: String
+		class Arguments {
+			lateinit var text: String
+		}
+		var arguments = Arguments()
+
 		class Ajuda {
 			lateinit var errorWhileOpeningDm: String
 		}
@@ -62,5 +71,6 @@ open class BaseLocale {
 			lateinit var responses: List<String>
 		}
 		var vieirinha = Vieirinha()
+
 	}
 }
