@@ -185,7 +185,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val message = context.sendMessage(context.getAsMention(true), embed.build())
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.emote.name == "❓") {
+					if (it.reactionEmote.name == "❓") {
 						message.delete().queue()
 						explainArguments(context)
 					}
@@ -225,7 +225,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.emote.name == "❓") {
+			if (it.reactionEmote.name == "❓") {
 				message.delete().queue()
 				explain(context)
 			}
