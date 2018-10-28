@@ -8,8 +8,6 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
-import net.dv8tion.jda.core.EmbedBuilder
-import java.awt.Color
 
 class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -45,7 +43,7 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 			}
 
 			val bufferedImage = LorittaUtils.downloadImage("https://crafatar.com/renders/body/$uuid?size=128&overlay")
-			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
+			context.sendFile(bufferedImage!!, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

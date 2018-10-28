@@ -30,7 +30,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 

@@ -52,9 +52,9 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			val graphics = template.graphics as Graphics2D // É necessário usar Graphics2D para usar gradients
 
 			// Colocar todos os avatares
-			graphics.drawImage(avatar.getScaledInstance(108, 108, BufferedImage.SCALE_SMOOTH), 55, 10, null)
-			graphics.drawImage(avatar3.getScaledInstance(110, 110, BufferedImage.SCALE_SMOOTH), 232, 54, null)
-			graphics.drawImage(avatar2.getScaledInstance(85, 134, BufferedImage.SCALE_SMOOTH), 0, 166, null)
+			graphics.drawImage(avatar!!.getScaledInstance(108, 108, BufferedImage.SCALE_SMOOTH), 55, 10, null)
+			graphics.drawImage(avatar3!!.getScaledInstance(110, 110, BufferedImage.SCALE_SMOOTH), 232, 54, null)
+			graphics.drawImage(avatar2!!.getScaledInstance(85, 134, BufferedImage.SCALE_SMOOTH), 0, 166, null)
 			graphics.drawImage(avatar2.getScaledInstance(111, 120, BufferedImage.SCALE_SMOOTH), 289, 180, null)
 
 			// E colocar o overlay da imagem

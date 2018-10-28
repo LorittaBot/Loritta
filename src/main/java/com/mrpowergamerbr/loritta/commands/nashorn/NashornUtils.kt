@@ -24,7 +24,7 @@ object NashornUtils {
 	@JvmStatic
 	fun downloadImage(url: String): NashornImage {
 		val image = LorittaUtils.downloadImage(url)
-		return NashornImage(image)
+		return NashornImage(image!!)
 	}
 
 	@Throws(IOException::class)

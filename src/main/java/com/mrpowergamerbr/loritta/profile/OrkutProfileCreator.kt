@@ -32,7 +32,7 @@ class OrkutProfileCreator : ProfileCreator {
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
 
 		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -98,7 +98,7 @@ class OrkutProfileCreator : ProfileCreator {
 				startGuildY += 113 + 26
 			}
 
-			val icon = LorittaUtils.downloadImage(guild.iconUrl).getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
+			val icon = LorittaUtils.downloadImage(guild.iconUrl)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
 			graphics.drawImage(icon, startGuildX, startGuildY, null)
 			graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
 			startGuildX += 113 + 12

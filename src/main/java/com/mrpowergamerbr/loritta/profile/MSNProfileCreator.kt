@@ -27,9 +27,9 @@ class MSNProfileCreator : ProfileCreator {
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 		val imageToBeDownload = if (sender == user) { guild.selfMember.user.avatarUrl } else { sender.effectiveAvatarUrl }
-		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		val msnFont = FileInputStream(File(Loritta.ASSETS + "micross.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
