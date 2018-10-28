@@ -17,7 +17,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		return locale["CALC_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("2 + 2");
 	}
 

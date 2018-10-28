@@ -28,7 +28,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 		return "url conteúdo"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("parappatherapper Katy Kat", "dbz Goku", "undertale Asriel Dreemurr")
 	}
 

@@ -26,7 +26,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return true
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
 	}
 

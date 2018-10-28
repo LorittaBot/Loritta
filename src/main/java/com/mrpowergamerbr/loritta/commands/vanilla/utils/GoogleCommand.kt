@@ -21,7 +21,7 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 		return locale["GOOGLE_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Loritta");
 	}
 

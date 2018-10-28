@@ -13,7 +13,7 @@ class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "dem
 		return locale["DEMON_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot");
 	}
 

@@ -27,7 +27,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		return "artista - nome da música"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf(
 				"she - Atomic",
 				"she - Chiptune Memories",

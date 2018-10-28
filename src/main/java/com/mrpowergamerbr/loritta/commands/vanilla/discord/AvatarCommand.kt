@@ -18,7 +18,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		return "nome do usuário"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("@Loritta")
 	}
 

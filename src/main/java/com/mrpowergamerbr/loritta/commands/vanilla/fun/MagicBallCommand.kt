@@ -13,7 +13,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		return locale.commands.vieirinha.description
 	}
 
-	override fun getExample(locale: BaseLocale): List<String> {
+	override fun getExamples(locale: BaseLocale): List<String> {
 		return locale.commands.vieirinha.examples
 	}
 

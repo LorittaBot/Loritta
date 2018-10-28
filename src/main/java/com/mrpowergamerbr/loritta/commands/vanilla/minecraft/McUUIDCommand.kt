@@ -20,7 +20,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
         return "nickname"
     }
 
-    override fun getExample(): List<String> {
+    override fun getExamples(): List<String> {
         return Arrays.asList("Monerk")
     }
 

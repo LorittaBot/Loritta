@@ -18,7 +18,7 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 		return locale["MCSIGN_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Isto é um texto | em uma placa! | | Legal né?");
 	}
 

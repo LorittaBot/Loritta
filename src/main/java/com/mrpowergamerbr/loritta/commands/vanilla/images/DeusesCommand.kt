@@ -22,7 +22,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		return locale["DEUSES_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Quando você é nível 4 e vê pessoas de nível 100 jogando");
 	}
 

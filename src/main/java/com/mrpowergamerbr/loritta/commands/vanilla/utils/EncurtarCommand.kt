@@ -13,7 +13,7 @@ class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), 
 		return "link"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("https://mrpowergamerbr.com/", "https://loritta.website/")
 	}
 

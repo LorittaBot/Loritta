@@ -21,7 +21,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("correios")
 	}
 

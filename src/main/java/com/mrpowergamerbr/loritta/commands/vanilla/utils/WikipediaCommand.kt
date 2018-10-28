@@ -29,7 +29,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 		return "[linguagem] conteúdo"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("Minecraft", "[en] Shantae")
 	}
 

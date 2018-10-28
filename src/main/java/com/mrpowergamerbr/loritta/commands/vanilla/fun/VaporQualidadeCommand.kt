@@ -16,7 +16,7 @@ class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = Comma
 		return "<mensagem>"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("kk eae men, o sam é brabo")
 	}
 

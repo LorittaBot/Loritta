@@ -12,7 +12,7 @@ class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), Comma
 		return locale.get("TOCAR_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("https://youtu.be/wn4Ju5-vMQ4",
 				"https://soundcloud.com/itsreach/sonicmashup",
 				"https://soundcloud.com/shokkbutt/ruining-songs-forever",

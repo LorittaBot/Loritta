@@ -16,7 +16,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
         return locale["POKEDEX_DESCRIPTION"]
     }
 
-    override fun getExample(): List<String> {
+    override fun getExamples(): List<String> {
         return Arrays.asList("Pikachu")
     }
 

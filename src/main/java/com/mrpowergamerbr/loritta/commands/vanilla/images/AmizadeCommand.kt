@@ -25,7 +25,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		return locale.get("AMIZADE_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Tatsumaki @Loritta");
 	}
 

@@ -19,7 +19,7 @@ class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory
 		return locale["TRIGGERED_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

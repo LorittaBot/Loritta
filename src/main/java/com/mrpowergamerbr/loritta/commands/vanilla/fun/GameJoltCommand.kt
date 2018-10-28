@@ -24,7 +24,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		return locale["GAMEJOLT_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("undertale yellow")
 	}
 

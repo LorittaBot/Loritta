@@ -24,7 +24,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		return locale["LEMBRAR_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("dar comida para o dog", "lista");
 	}
 

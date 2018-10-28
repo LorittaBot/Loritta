@@ -67,7 +67,7 @@ class APIGetCommandsView : NoVarsView() {
 			obj["description"] = it.getDescription(lorittaLocale)
 			obj["usage"] = it.getUsage()
 			obj["detailedUsage"] = GSON.toJsonTree(it.getDetailedUsage())
-			obj["example"] = it.getExample().toJsonArray()
+			obj["example"] = it.getExamples().toJsonArray()
 			obj["extendedExamples"] = GSON.toJsonTree(it.getExtendedExamples())
 			obj["requiredUserPermissions"] = it.getDiscordPermissions().map { it.name }.toJsonArray()
 			obj["requiredBotPermissions"] = it.getBotPermissions().map { it.name }.toJsonArray()

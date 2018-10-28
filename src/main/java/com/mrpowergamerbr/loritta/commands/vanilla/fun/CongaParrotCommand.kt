@@ -16,7 +16,7 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 		return "número"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("5", "10")
 	}
 

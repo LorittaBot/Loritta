@@ -22,7 +22,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 		return locale["RAZOES_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

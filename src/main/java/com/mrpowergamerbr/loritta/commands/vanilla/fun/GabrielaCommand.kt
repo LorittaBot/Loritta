@@ -21,7 +21,7 @@ import org.bson.types.ObjectId
 class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
 
-	override fun getExample(): List<String> = listOf("Como vai você?")
+	override fun getExamples(): List<String> = listOf("Como vai você?")
 
 	override fun hasCommandFeedback(): Boolean = false
 

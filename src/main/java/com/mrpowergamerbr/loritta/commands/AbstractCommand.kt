@@ -33,12 +33,12 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return mapOf()
 	}
 
-	@Deprecated("Please use getExample(locale)")
-	open fun getExample(): List<String> {
-		return getExample(loritta.getLocaleById("default"))
+	@Deprecated("Please use getExamples(locale)")
+	open fun getExamples(): List<String> {
+		return getExamples(loritta.getLocaleById("default"))
 	}
 
-	open fun getExample(locale: BaseLocale): List<String> {
+	open fun getExamples(locale: BaseLocale): List<String> {
 		return listOf()
 	}
 
@@ -136,7 +136,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
-			for (example in this.getExample(context.locale)) { // Adicionar todos os exemplos simples
+			for (example in this.getExamples(context.locale)) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
@@ -146,7 +146,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			if (examples.isEmpty()) {
 				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + ":**\n" + commandLabel
 			} else {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExample().size == 1) "" else "s") + ":**"
+				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s") + ":**"
 				for (example in examples) {
 					cmdInfo += "\n" + example
 				}

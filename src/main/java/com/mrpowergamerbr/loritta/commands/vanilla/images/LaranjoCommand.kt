@@ -16,7 +16,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 		return locale["LARANJO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("ei ademin bane o cara ai pfv");
 	}
 

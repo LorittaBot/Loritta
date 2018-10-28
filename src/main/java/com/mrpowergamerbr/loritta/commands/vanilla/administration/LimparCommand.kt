@@ -18,7 +18,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 		return "QuantasMensagens"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("10", "25", "7 @Tsugami", "50 @Tsugami @Tsumari")
 	}
 

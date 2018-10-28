@@ -21,7 +21,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		return locale["MUTE_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
 	}
 

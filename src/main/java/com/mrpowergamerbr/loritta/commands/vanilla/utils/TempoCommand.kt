@@ -25,7 +25,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 		return locale["TEMPO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("São Paulo");
 	}
 

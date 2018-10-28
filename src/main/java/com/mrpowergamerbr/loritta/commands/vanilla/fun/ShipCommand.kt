@@ -21,7 +21,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
         return locale["SHIP_DESCRIPTION"]
     }
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot")
 	}
 

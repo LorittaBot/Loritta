@@ -21,7 +21,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
         return locale["UTBATTLE_DESCRIPTION"]
     }
 
-    override fun getExample(): List<String> {
+    override fun getExamples(): List<String> {
         return Arrays.asList("Asriel Chara, are you there?")
     }
 

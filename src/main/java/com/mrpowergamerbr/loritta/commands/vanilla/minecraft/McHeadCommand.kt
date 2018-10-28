@@ -18,7 +18,7 @@ class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINEC
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Monerk")
 	}
 

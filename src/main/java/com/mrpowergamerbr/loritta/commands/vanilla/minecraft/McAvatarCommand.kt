@@ -18,7 +18,7 @@ class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.M
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Monerk")
 	}
 

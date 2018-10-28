@@ -15,7 +15,7 @@ class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGE
 		return locale["DEUS_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

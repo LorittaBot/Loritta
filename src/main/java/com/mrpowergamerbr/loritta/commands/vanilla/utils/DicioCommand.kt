@@ -21,7 +21,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 		return locale["DICIO_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("sonho");
 	}
 

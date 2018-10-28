@@ -23,7 +23,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				"motivo" to "(Opcional) Motivo do Softban")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Fulano", "@Fulano Algum motivo bastante aleatório", "@Fulano 1 Limpar mensagens do último dia");
 	}
 

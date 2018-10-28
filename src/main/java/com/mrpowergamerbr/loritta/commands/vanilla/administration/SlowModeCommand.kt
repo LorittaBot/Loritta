@@ -14,7 +14,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		return locale["SLOWMODE_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("5");
 	}
 

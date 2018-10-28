@@ -19,7 +19,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		return locale["BAN_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
 	}
 

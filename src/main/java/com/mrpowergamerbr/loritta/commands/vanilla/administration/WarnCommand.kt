@@ -17,7 +17,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 		return locale["WARN_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
 	}
 

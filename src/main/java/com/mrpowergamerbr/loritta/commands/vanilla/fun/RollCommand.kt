@@ -19,7 +19,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		return "[número]"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("", "12", "24", "2d20", "3d5", "4d10")
 	}
 

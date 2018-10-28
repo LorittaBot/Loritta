@@ -19,7 +19,7 @@ class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory
 		return locale["TEXTCRAFT_Description", TextCraftFont.values().joinToString(", ", transform = { it.internalName })]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf(
 				"Minecraft",
 				"PerfectDreams | é o melhor servidor survival de Minecraft",

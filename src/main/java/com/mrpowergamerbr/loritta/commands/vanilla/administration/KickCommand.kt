@@ -18,7 +18,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		return locale["KICK_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
 	}
 

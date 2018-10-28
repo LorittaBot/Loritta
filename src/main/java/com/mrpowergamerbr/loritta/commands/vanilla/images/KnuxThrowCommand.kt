@@ -13,7 +13,7 @@ class KnuxThrowCommand : AbstractCommand("knuxthrow", listOf("knucklesthrow", "t
 		return locale["KNUXTHROW_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

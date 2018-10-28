@@ -22,7 +22,7 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 		return "IP do servidor"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("PvP.PigRaid.com")
 	}
 

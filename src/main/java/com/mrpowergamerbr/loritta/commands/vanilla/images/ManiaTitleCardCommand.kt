@@ -16,7 +16,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		return locale.get("MANIATITLECARD_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

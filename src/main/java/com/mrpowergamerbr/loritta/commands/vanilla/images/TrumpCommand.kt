@@ -13,7 +13,7 @@ class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES)
 		return locale["TRUMP_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

@@ -22,7 +22,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		return locale["TWITCH_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")
 	}
 

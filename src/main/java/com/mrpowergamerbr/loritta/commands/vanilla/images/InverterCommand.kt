@@ -14,7 +14,7 @@ class InverterCommand : AbstractCommand("invert", listOf("inverter"), category =
 		return locale["INVERTER_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C")
 	}
 
