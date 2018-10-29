@@ -159,12 +159,21 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + ":**\n" + commandLabel
+				embed.addField(
+						"\uD83D\uDCD6 " + context.locale["EXAMPLE"],
+						commandLabel,
+						false
+				)
 			} else {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s") + ":**"
+				var exampleList = ""
 				for (example in examples) {
-					cmdInfo += "\n" + example
+					exampleList += example + "\n"
 				}
+				embed.addField(
+						"\uD83D\uDCD6 " + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
+						exampleList,
+						false
+				)
 			}
 
 			val aliases = mutableSetOf<String>()
@@ -173,7 +182,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
-				cmdInfo += "\n\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
+				embed.addField(
+						"\uD83D\uDD00 ${context.locale["CommandAliases"]}",
+						onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it }),
+						true
+				)
 			}
 
 			embed.setDescription(cmdInfo)
