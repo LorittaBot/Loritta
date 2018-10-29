@@ -42,7 +42,7 @@ open class BaseLocale {
 		val result = block.invoke(this)
 		return when (result) {
 			is String -> MessageFormat.format(result, *args) as T
-			is List<*> -> result.map { MessageFormat.format(result.toString(), *args) } as T
+			is List<*> -> result.map { MessageFormat.format(it.toString(), *args) } as T
 			else -> throw UnsupportedOperationException("Can't parse $result in BaseLocale!")
 		}
 	}
