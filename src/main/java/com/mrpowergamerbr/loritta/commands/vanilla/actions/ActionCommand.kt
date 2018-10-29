@@ -1,9 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.actions
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
@@ -18,20 +16,23 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 	abstract fun getFolderName(): String
 	abstract fun getEmoji(): String
 
-	override fun getUsage(): String {
-		return "<usuário>"
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+		}
 	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
 	}
 
-	override fun getExamples(): List<String> {
-		return listOf("297153970613387264", "@Loritta", "@MrPowerGamerBR")
+	override fun getExamples(locale: BaseLocale): List<String> {
+		return locale.commands.actions.examples
 	}
 
-
-    fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
+	private fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
         val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
         val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
         if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
@@ -45,33 +46,32 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
     }
 
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
-		var response: String
+		val response: String
 		var files: List<File>
 		val locale = context.locale
-		var userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
-		var receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
+		val senderProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
+		val recProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 
 		// Anti-gente idiota
 		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
 			context.reply(
-					locale["KISS_NahPleaseDont"],
+					locale.commands.actions.kiss.responseAntiIdiot,
 					"\uD83D\uDE45"
 			)
 			return
 		}
 
 		// R U a boy or girl?
-		val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
-		val receiverGender = transaction(Databases.loritta) { receiverProfile.settings.gender }
+		val userGender = transaction (Databases.loritta) { senderProfile.settings.gender }
+		val receiverGender = transaction(Databases.loritta) { recProfile.settings.gender }
+
+		response = getResponse(locale, user, receiver)
 
 		// Quem tentar estapear a Loritta, vai ser estapeado
-		if (this is SlapCommand && receiver.id == Loritta.config.clientId) {
-			response = getResponse(locale, receiver, user)
-			files = getGifsFor(receiverGender, userGender)
+		files = if ((this is SlapCommand || this is AttackCommand || this is KissCommand) && receiver.id == Loritta.config.clientId) {
+			getGifsFor(receiverGender, userGender)
 		} else {
-			response = getResponse(locale, user, receiver)
-			files = getGifsFor(userGender, receiverGender)
-
+			getGifsFor(userGender, receiverGender)
 		}
 
 		while (files.isEmpty()) {
@@ -91,7 +91,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 
 		message.onReactionAdd(context) {
 			if (it.reactionEmote.id == "492845304438194176" && it.user.id == receiver.id) {
-				runAction(context, receiver, receiverProfile, user, null)
+				runAction(context, receiver, recProfile, user, null)
 			}
 		}
 	}
@@ -103,7 +103,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 			if (user == null) {
 				context.reply(
 						LoriReply(
-								locale["BAN_UserDoesntExist"],
+								locale.commands.userDoesNotExists,
 								Constants.ERROR
 						)
 				)
