@@ -139,11 +139,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			for (argument in commandArguments.arguments) {
 				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} "
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
 					if (argument.defaultValue != null) {
 						cmdInfo += "(Padrão: ${argument.defaultValue}) "
 					}
-					cmdInfo += "`${argument.build(locale)}` - ${argument.explanation}\n"
+					cmdInfo += "${argument.explanation}\n"
 				}
 			}
 
