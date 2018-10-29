@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.remove
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.commands.roll.description
+		return locale.commands.roll.description.get()
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {

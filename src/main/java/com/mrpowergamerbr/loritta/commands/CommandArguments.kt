@@ -46,10 +46,10 @@ enum class ArgumentType {
 
 	fun localized(locale: BaseLocale): String {
 		return when (this) {
-			TEXT -> locale.commands.arguments.text
-			NUMBER -> locale.commands.arguments.number
-			USER -> locale.commands.arguments.user
-			IMAGE -> locale.commands.arguments.image
+			TEXT -> locale.commands.arguments.text.get()
+			NUMBER -> locale.commands.arguments.number.get()
+			USER -> locale.commands.arguments.user.get()
+			IMAGE -> locale.commands.arguments.image.get()
 		}
 	}
 }
@@ -68,7 +68,7 @@ class CommandArgumentBuilder {
 	var optional = false
 	var defaultValue: String? = null
 	var text: String? = null
-	var explanation: String? = null
+	var explanation: Any? = null
 
-	fun build(type: ArgumentType) : CommandArgument = CommandArgument(type, optional, defaultValue, text, explanation)
+	fun build(type: ArgumentType): CommandArgument = CommandArgument(type, optional, defaultValue, text, explanation?.toString())
 }

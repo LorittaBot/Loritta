@@ -405,7 +405,7 @@ class CommandManager {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
 					context.reply(
 							LoriReply(
-									locale.commands.pleaseWaitCooldown.format(fancy, "\uD83D\uDE45"),
+									locale.commands.pleaseWaitCooldown[fancy, "\uD83D\uDE45"],
 									"\uD83D\uDD25"
 							)
 					)

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.LocaleMessage
 import net.dv8tion.jda.core.entities.User
 
 class LoriReply(
@@ -10,6 +11,14 @@ class LoriReply(
 		val hasPadding: Boolean = true,
 		val mentionUser: Boolean = true
 ) {
+	constructor(
+			message: LocaleMessage,
+			prefix: String? = null,
+			forceMention: Boolean = false,
+			hasPadding: Boolean = true,
+			mentionUser: Boolean = true
+	) : this(message.get(), prefix, forceMention, hasPadding, mentionUser)
+
 	fun build(commandContext: CommandContext): String {
 		var send = ""
 		if (prefix != null) {

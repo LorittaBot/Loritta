@@ -29,21 +29,21 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.commands.actions.examples
+		return locale.commands.actions.examples.map { it.toString() }
 	}
 
 	private fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
-        val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
-        val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
-        if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
-            folderNames.remove("generic")
+		val folder = File(Loritta.ASSETS, "actions/${getFolderName()}")
+		val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
+		if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+			folderNames.remove("generic")
 
-        val files = folderNames.flatMap {
-            File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
-        }
+		val files = folderNames.flatMap {
+			File(folder, it).listFiles().filter { it.extension == "gif" || it.extension == "png" }
+		}
 
-        return files
-    }
+		return files
+	}
 
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
 		val response: String
@@ -55,8 +55,10 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		// Anti-gente idiota
 		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
 			context.reply(
-					locale.commands.actions.kiss.responseAntiIdiot,
-					"\uD83D\uDE45"
+					LoriReply(
+							locale.commands.actions.kiss.responseAntiIdiot,
+							"\uD83D\uDE45"
+					)
 			)
 			return
 		}
