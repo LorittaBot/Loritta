@@ -184,7 +184,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			if (onlyUnusedAliases.isNotEmpty()) {
 				embed.addField(
 						"\uD83D\uDD00 ${context.locale["CommandAliases"]}",
-						onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it }),
+						onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
 						true
 				)
 			}
