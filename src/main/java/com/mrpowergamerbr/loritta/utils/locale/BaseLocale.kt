@@ -57,6 +57,7 @@ open class BaseLocale {
 		lateinit var pleaseWaitCooldown: String
 		lateinit var errorWhileExecutingCommand: String
 		lateinit var cantUseInPrivate: String
+		lateinit var userDoesNotExists: String
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String
@@ -82,6 +83,57 @@ open class BaseLocale {
 			lateinit var responses: List<String>
 		}
 		var vieirinha = Vieirinha()
+
+		class Actions {
+			lateinit var examples: List<String>
+			class Slap {
+
+				lateinit var description: String
+
+				lateinit var response: String
+
+				lateinit var responseAntiIdiot: String
+			}
+			var slap = Slap()
+
+			class Kiss {
+
+				lateinit var description: String
+
+				lateinit var response: String
+
+				lateinit var responseAntiIdiot: String
+			}
+			var kiss = Kiss()
+
+			class Attack {
+
+				lateinit var description: String
+
+				lateinit var response: String
+
+				lateinit var responseAntiIdiot: String
+			}
+			var attack = Attack()
+
+			class Hug {
+
+				lateinit var description: String
+
+				lateinit var response: String
+			}
+			var hug = Hug()
+
+			class Dance {
+
+				lateinit var description: String
+
+				lateinit var response: String
+			}
+			var dance = Dance()
+
+		}
+		var actions = Actions()
 
 	}
 }
