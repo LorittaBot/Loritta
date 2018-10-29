@@ -45,9 +45,11 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
     }
 
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
+		var response: String
+		var files: List<File>
 		val locale = context.locale
-		val userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
-		val receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
+		var userProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
+		var receiverProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 
 		// Anti-gente idiota
 		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
@@ -62,7 +64,15 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		val userGender = transaction (Databases.loritta) { userProfile.settings.gender }
 		val receiverGender = transaction(Databases.loritta) { receiverProfile.settings.gender }
 
-		var files = getGifsFor(userGender, receiverGender)
+		// Quem tentar estapear a Loritta, vai ser estapeado
+		if (this is SlapCommand && receiver.id == Loritta.config.clientId) {
+			response = getResponse(locale, receiver, user)
+			files = getGifsFor(receiverGender, userGender)
+		} else {
+			response = getResponse(locale, user, receiver)
+			files = getGifsFor(userGender, receiverGender)
+
+		}
 
 		while (files.isEmpty()) {
 			// Caso não tenha nenhuma GIF disponível, vamos abrir o nosso "leque" de GIFs, para evitar que dê erro
@@ -74,7 +84,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		val message = context.sendFile(
 				randomImage,
 				"action.gif",
-				"${getEmoji()} **|** " + getResponse(locale, user, receiver)
+				"${getEmoji()} **|** " + response
 		)
 
 		message.addReaction("reverse:492845304438194176").queue()
