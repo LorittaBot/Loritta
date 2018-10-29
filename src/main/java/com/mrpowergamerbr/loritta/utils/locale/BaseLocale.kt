@@ -10,6 +10,9 @@ open class BaseLocale {
 	companion object {
 		@JvmStatic
 		private val logger = KotlinLogging.logger {}
+
+		private val DEFAULT_MESSAGE = LocaleMessage("Whoopsie! Missing translation string here! Fix it!!!")
+		private val DEFAULT_LIST = listOf(LocaleMessage("Whoopsie! Missing transation list here! Fix it!!!"))
 	}
 
 	@Transient
@@ -51,89 +54,75 @@ open class BaseLocale {
 	lateinit var SHIP_valor0: List<String>
 
 	class Loritta {
-		lateinit var translationAuthors: List<String>
+		var translationAuthors: List<LocaleMessage> = DEFAULT_LIST
 	}
 	class Commands {
-		lateinit var pleaseWaitCooldown: String
-		lateinit var errorWhileExecutingCommand: String
-		lateinit var cantUseInPrivate: String
-		lateinit var userDoesNotExists: String
+		var pleaseWaitCooldown: LocaleMessage = DEFAULT_MESSAGE
+		var errorWhileExecutingCommand: LocaleMessage = DEFAULT_MESSAGE
+		var cantUseInPrivate: LocaleMessage = DEFAULT_MESSAGE
+		var userDoesNotExists: LocaleMessage = DEFAULT_MESSAGE
 		class Arguments {
-			lateinit var text: String
-			lateinit var number: String
-			lateinit var user: String
-			lateinit var image: String
+			var text: LocaleMessage = DEFAULT_MESSAGE
+			var number: LocaleMessage = DEFAULT_MESSAGE
+			var user: LocaleMessage = DEFAULT_MESSAGE
+			var image: LocaleMessage = DEFAULT_MESSAGE
 		}
 		var arguments = Arguments()
 
 		class Ajuda {
-			lateinit var errorWhileOpeningDm: String
+			var errorWhileOpeningDm: LocaleMessage = DEFAULT_MESSAGE
 		}
 		var ajuda = Ajuda()
 
 		class Roll {
-			lateinit var description: String
-			lateinit var howMuchSides: String
+			var description: LocaleMessage = DEFAULT_MESSAGE
+			var howMuchSides: LocaleMessage = DEFAULT_MESSAGE
 		}
 		var roll = Roll()
 
 		class Vieirinha {
-			lateinit var description: String
-			lateinit var examples: List<String>
-			lateinit var responses: List<String>
+			var description: LocaleMessage = DEFAULT_MESSAGE
+			var examples: List<LocaleMessage> = DEFAULT_LIST
+			var responses: List<LocaleMessage> = DEFAULT_LIST
 		}
 		var vieirinha = Vieirinha()
 
 		class Actions {
-			lateinit var examples: List<String>
+			var examples: List<LocaleMessage> = DEFAULT_LIST
 			class Slap {
-
-				lateinit var description: String
-
-				lateinit var response: String
-
-				lateinit var responseAntiIdiot: String
+				var description: LocaleMessage = DEFAULT_MESSAGE
+				var response: LocaleMessage = DEFAULT_MESSAGE
+				var responseAntiIdiot: LocaleMessage = DEFAULT_MESSAGE
 			}
 			var slap = Slap()
 
 			class Kiss {
-
-				lateinit var description: String
-
-				lateinit var response: String
-
-				lateinit var responseAntiIdiot: String
+				var description: LocaleMessage = DEFAULT_MESSAGE
+				var response: LocaleMessage = DEFAULT_MESSAGE
+				var responseAntiIdiot: LocaleMessage = DEFAULT_MESSAGE
 			}
 			var kiss = Kiss()
 
 			class Attack {
-
-				lateinit var description: String
-
-				lateinit var response: String
-
-				lateinit var responseAntiIdiot: String
+				var description: LocaleMessage = DEFAULT_MESSAGE
+				var response: LocaleMessage = DEFAULT_MESSAGE
+				var responseAntiIdiot: LocaleMessage = DEFAULT_MESSAGE
 			}
 			var attack = Attack()
 
 			class Hug {
-
-				lateinit var description: String
-
-				lateinit var response: String
+				var description: LocaleMessage = DEFAULT_MESSAGE
+				var response: LocaleMessage = DEFAULT_MESSAGE
 			}
 			var hug = Hug()
 
 			class Dance {
-
-				lateinit var description: String
-
-				lateinit var response: String
+				var description: LocaleMessage = DEFAULT_MESSAGE
+				var response: LocaleMessage = DEFAULT_MESSAGE
 			}
 			var dance = Dance()
 
 		}
 		var actions = Actions()
-
 	}
 }

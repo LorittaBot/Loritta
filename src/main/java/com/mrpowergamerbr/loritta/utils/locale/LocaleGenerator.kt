@@ -38,10 +38,10 @@ fun main(args: Array<String>) {
 					classes += "var ${key.toLowerCase()} = ${key.capitalize()}()\n\n"
 				}
 				value is List<*> -> {
-					classes += "    lateinit var ${key.yamlToVariable()}: List<String>\n"
+					classes += "    var ${key.yamlToVariable()}: List<LocaleMessage> = DEFAULT_LIST\n"
 				}
 				else -> {
-					classes += "    lateinit var ${key.yamlToVariable()}: String\n"
+					classes += "    var ${key.yamlToVariable()}: LocaleMessage = DEFAULT_MESSAGE\n"
 				}
 			}
 		}
@@ -57,34 +57,4 @@ fun main(args: Array<String>) {
 	}
 
 	println(classes)
-}
-
-object Test {
-	class Loritta {
-		lateinit var yes: String
-		lateinit var no: String
-	}
-	class Commands {
-		class Kiss {
-			lateinit var description: String
-		}
-		var kiss = Kiss()
-
-		class Hug {
-			lateinit var description: String
-		}
-		var hug = Hug()
-
-		class Ping {
-			lateinit var response: String
-			lateinit var easteregg: String
-		}
-		var ping = Ping()
-
-		class Vieirinha {
-			lateinit var responses: List<String>
-		}
-		var vieirinha = Vieirinha()
-
-	}
 }
