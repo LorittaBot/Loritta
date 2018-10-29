@@ -234,7 +234,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				"""
 					`texto` - Um texto qualquer
 					`usuário` - Menção, nome de um usuário ou ID de um usuário
-					`imagem` - URL da imagem,  menção, nome de um usupario, ID de um usuário e, caso nada tenha sido encontrado, será pego a primeira imagem encontrada nas últimas 25 mensagens.
+					`imagem` - URL da imagem,  menção, nome de um usuário, ID de um usuário e, caso nada tenha sido encontrado, será pego a primeira imagem encontrada nas últimas 25 mensagens.
 				""".trimIndent(),
 				false
 		)
