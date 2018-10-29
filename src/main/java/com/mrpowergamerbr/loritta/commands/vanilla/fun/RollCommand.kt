@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.remove
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.commands.roll.description.get()
+		return locale.format { commands.roll.description }
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {
@@ -18,7 +18,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			argument(ArgumentType.NUMBER) {
 				optional = true
 				defaultValue = "6"
-				explanation = locale.commands.roll.howMuchSides
+				explanation = locale.format { commands.roll.howMuchSides }
 			}
 		}
 	}

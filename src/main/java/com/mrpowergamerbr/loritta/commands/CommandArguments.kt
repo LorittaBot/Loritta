@@ -46,10 +46,10 @@ enum class ArgumentType {
 
 	fun localized(locale: BaseLocale): String {
 		return when (this) {
-			TEXT -> locale.commands.arguments.text.get()
-			NUMBER -> locale.commands.arguments.number.get()
-			USER -> locale.commands.arguments.user.get()
-			IMAGE -> locale.commands.arguments.image.get()
+			TEXT ->   locale.format { commands.arguments.text }
+			NUMBER -> locale.format { commands.arguments.number }
+			USER ->   locale.format { commands.arguments.user }
+			IMAGE ->  locale.format { commands.arguments.image }
 		}
 	}
 }

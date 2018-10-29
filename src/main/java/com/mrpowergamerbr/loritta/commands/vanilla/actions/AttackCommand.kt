@@ -6,15 +6,15 @@ import net.dv8tion.jda.core.entities.User
 
 class AttackCommand : ActionCommand("attack", listOf("atacar")) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.commands.actions.attack.description.get()
+		return locale.format { commands.actions.attack.description }
 	}
 
 	override fun getResponse(locale: BaseLocale, first: User, second: User): String {
 		return if (second.id != Loritta.config.clientId) {
-			locale.commands.actions.attack.response[first.asMention, second.asMention]
+			locale.format(first.asMention, second.asMention) { commands.actions.attack.response }
 		} else {
 			// Quem tentar atacar a Loritta, vai levar umas porrada
-			locale.commands.actions.attack.responseAntiIdiot[second.asMention, first.asMention]
+			locale.format(second.asMention, first.asMention) { commands.actions.attack.responseAntiIdiot }
 		}
 	}
 

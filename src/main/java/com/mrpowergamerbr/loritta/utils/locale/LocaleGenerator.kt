@@ -38,10 +38,10 @@ fun main(args: Array<String>) {
 					classes += "var ${key.toLowerCase()} = ${key.capitalize()}()\n\n"
 				}
 				value is List<*> -> {
-					classes += "    lateinit var ${key.yamlToVariable()}: List<LocaleMessage>\n"
+					classes += "    lateinit var ${key.yamlToVariable()}: List<String>\n"
 				}
 				else -> {
-					classes += "    lateinit var ${key.yamlToVariable()}: LocaleMessage\n"
+					classes += "    lateinit var ${key.yamlToVariable()}: String\n"
 				}
 			}
 		}

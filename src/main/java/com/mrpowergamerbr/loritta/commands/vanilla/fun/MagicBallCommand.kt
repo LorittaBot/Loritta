@@ -8,7 +8,7 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.commands.vieirinha.description.get()
+		return locale.format { commands.vieirinha.description }
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {
@@ -20,7 +20,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.commands.vieirinha.examples.map { it.toString() }
+		return locale.format { commands.vieirinha.examples }
 	}
 
 	override fun hasCommandFeedback(): Boolean {

@@ -32,7 +32,6 @@ import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleMessage
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -705,11 +704,7 @@ class Loritta(config: LorittaConfig) {
                                 else -> {
                                     val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
                                     entryField.isAccessible = true
-	                                if (value is List<*>) {
-		                                entryField.set(field.get(root), value.map { LocaleMessage(it.toString()) })
-	                                } else {
-		                                entryField.set(field.get(root), LocaleMessage(value.toString()))
-	                                }
+	                                entryField.set(field.get(root), value)
                                 }
                             }
                         } catch (e: NoSuchFieldException) {
