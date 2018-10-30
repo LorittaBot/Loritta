@@ -2,9 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -15,6 +13,14 @@ import java.util.*
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["VEMDEZAP_Description"]
+	}
+
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.TEXT) {
+				optional = false
+			}
+		}
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
