@@ -54,7 +54,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			val messages = context.event.textChannel!!.history.retrievePast(toClear).await()
 			val allowedMessages = messages.asSequence().filter {
 				if (context.message.mentionedUsers.isNotEmpty()) {
-					!context.message.mentionedUsers.contains(it.author)
+					context.message.mentionedUsers.contains(it.author)
 				} else {
 					true
 				}
