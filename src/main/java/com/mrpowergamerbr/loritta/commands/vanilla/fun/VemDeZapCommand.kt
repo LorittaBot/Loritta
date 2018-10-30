@@ -17,10 +17,6 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 		return locale["VEMDEZAP_Description"]
 	}
 
-	override fun hasCommandFeedback(): Boolean {
-		return false
-	}
-
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		// Baseado em http://vemdezapbe.be/ / https://github.com/vmarchesin/vemdezapbe.be
 		// Que até agora eu não entendi porque fizeram uma API externa em vez de deixar tudo client-sided... mas vida que segue né
