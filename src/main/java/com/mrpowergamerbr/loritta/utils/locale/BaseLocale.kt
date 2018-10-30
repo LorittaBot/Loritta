@@ -102,6 +102,12 @@ open class BaseLocale {
 		}
 		var vieirinha = Vieirinha()
 
+		class Vemdezap {
+			lateinit var description: String
+			lateinit var examples: List<String>
+		}
+		var vemdezap = Vemdezap()
+
 		class Actions {
 			lateinit var examples: List<String>
 			class Slap {

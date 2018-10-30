@@ -1,20 +1,22 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import org.jsoup.Jsoup
-import java.io.File
-import java.util.*
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["VEMDEZAP_Description"]
+		return locale.format { commands.vemdezap.description }
 	}
 
+	override fun getExamples(locale: BaseLocale): List<String> {
+		return locale.format { commands.vemdezap.examples }
+	}
+	
 	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
@@ -23,7 +25,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 		}
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		// Baseado em http://vemdezapbe.be/ / https://github.com/vmarchesin/vemdezapbe.be
 		// Que até agora eu não entendi porque fizeram uma API externa em vez de deixar tudo client-sided... mas vida que segue né
 		// E pelo ou menos a versão da nossa querida Loritta não tem gemidão do zap aleatório ao fazer zap, quem coloca gemidão nas coisas
