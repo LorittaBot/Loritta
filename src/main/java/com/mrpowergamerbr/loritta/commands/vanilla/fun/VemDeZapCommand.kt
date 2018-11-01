@@ -16,7 +16,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 	override fun getExamples(locale: BaseLocale): List<String> {
 		return locale.format { commands.vemdezap.examples }
 	}
-	
+
 	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {

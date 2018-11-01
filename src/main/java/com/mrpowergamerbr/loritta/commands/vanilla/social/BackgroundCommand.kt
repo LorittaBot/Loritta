@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -40,10 +41,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
-				message.editMessage(getFirstPageEmbed(context)).queue();
-				message.clearReactions().queue()
-				message.addReaction("\uD83D\uDDBC").queue() // Quadro - Para ver seu background atual
-				message.addReaction("\uD83D\uDED2").queue() // Carrinho de supermercado - Para procurar novos backgrounds
+				message.editMessage(getFirstPageEmbed(context)).await();
+				message.clearReactions().await()
+				message.addReaction("\uD83D\uDDBC").await() // Quadro - Para ver seu background atual
+				message.addReaction("\uD83D\uDED2").await() // Carrinho de supermercado - Para procurar novos backgrounds
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
@@ -54,10 +55,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
-				message.editMessage(builder.build()).queue()
-				message.clearReactions().queue()
-				message.addReaction("\uD83D\uDE4B").queue() // Para voltar para a "página inicial"
-				message.addReaction("\uD83D\uDED2").queue() // Para ir para os "templates"
+				message.editMessage(builder.build()).await()
+				message.clearReactions().await()
+				message.addReaction("\uD83D\uDE4B").await() // Para voltar para a "página inicial"
+				message.addReaction("\uD83D\uDED2").await() // Para ir para os "templates"
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.name == "\uD83D\uDED2" || it.reactionEmote.name == "⬅" || it.reactionEmote.name == "➡" || it.reactionEmote.name == "✅") { // Se é o carrinho de super mercado...
@@ -86,7 +87,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				var currentUrl = templates[index];
 
 				if (it.reactionEmote.name == "✅") {
-					message.delete().queue()
+					message.delete().await()
 					setAsBackground(currentUrl, context)
 					return@onReactionAddByAuthor
 				}
@@ -97,20 +98,20 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
-				message.editMessage(builder.build()).queue();
-				message.clearReactions().queue()
-				message.addReaction("✅").queue();
-				message.addReaction("\uD83D\uDE4B").queue(); // Para voltar para a "página inicial"
+				message.editMessage(builder.build()).await();
+				message.clearReactions().await()
+				message.addReaction("✅").await();
+				message.addReaction("\uD83D\uDE4B").await(); // Para voltar para a "página inicial"
 				if (index > 0) {
-					message.addReaction("⬅").queue();
+					message.addReaction("⬅").await();
 				}
 				if (templates.size > index + 1) {
-					message.addReaction("➡").queue();
+					message.addReaction("➡").await();
 				}
 			}
 		}
-		message.addReaction("\uD83D\uDDBC").queue() // Quadro - Para ver seu background atual
-		message.addReaction("\uD83D\uDED2").queue() // Carrinho de supermercado - Para procurar novos backgrounds
+		message.addReaction("\uD83D\uDDBC").await() // Quadro - Para ver seu background atual
+		message.addReaction("\uD83D\uDED2").await() // Carrinho de supermercado - Para procurar novos backgrounds
 	}
 
 	suspend fun setAsBackground(link0: String, context: CommandContext) {
