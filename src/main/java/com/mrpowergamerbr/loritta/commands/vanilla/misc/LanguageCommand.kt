@@ -34,12 +34,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				LocaleWrapper(
 						"Português-Funk",
 						loritta.getLocaleById("pt-funk"),
-						"loritta_quebrada"
-				),
-				LocaleWrapper(
-						"Português-Funk",
-						loritta.getLocaleById("pt-funk"),
-						"loritta_quebrada"
+						"<:loritta_quebrada:338679008210190336>"
 				),
 				LocaleWrapper(
 						"Português-Portugal",
@@ -59,10 +54,10 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		)
 
 		// TODO: Derp
-		embed.setTitle(context.locale["LANGUAGE_INFO"], "")
+		embed.setTitle("\uD83C\uDF0E " + context.locale["LANGUAGE_INFO"], "")
 
 		for (wrapper in validLanguages) {
-			val translators = wrapper.locale.loritta.translationAuthors.map { lorittaShards.getUserById(it) }.filterNotNull()
+			val translators = wrapper.locale.loritta.translationAuthors.mapNotNull { lorittaShards.getUserById(it) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
@@ -99,7 +94,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		}
 
 		for (wrapper in validLanguages) {
-			message.addReaction(wrapper.emoteName).queue()
+			message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
 		}
 	}
 
