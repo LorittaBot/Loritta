@@ -151,8 +151,12 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
-			for (example in this.getExamples(context.locale)) { // Adicionar todos os exemplos simples
-				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+			examples.addAll(this.getExamples())
+			if (this.getExamples(context.locale).isNotEmpty()) {
+				examples.clear()
+				for (example in this.getExamples(context.locale)) { // Adicionar todos os exemplos simples
+					examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+				}
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
 				examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
