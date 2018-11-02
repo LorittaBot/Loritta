@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -14,6 +12,14 @@ import net.dv8tion.jda.core.entities.User
 class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["UNBAN_Description"]
+	}
+
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+		}
 	}
 
 	override fun getExamples(): List<String> {

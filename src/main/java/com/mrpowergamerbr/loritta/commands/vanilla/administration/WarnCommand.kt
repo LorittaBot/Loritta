@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -16,6 +14,18 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["WARN_Description"]
 	}
+
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+			argument(ArgumentType.TEXT) {
+				optional = true
+			}
+		}
+	}
+
 
 	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
