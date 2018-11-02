@@ -41,7 +41,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			page = 0
 
 		val userData = transaction(Databases.loritta) {
-			Profiles.selectAll().orderBy(Profiles.money to false).limit(10, page * 10).toMutableList()
+			Profiles.selectAll().orderBy(Profiles.money to false).limit(5, page * 5).toMutableList()
 		}
 
 		val list = userData.toMutableList()
