@@ -14,7 +14,7 @@ import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["LANGUAGE_DESCRIPTION"]
+		return locale.format("\uD83D\uDE0A") { commands.language.description }
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -53,15 +53,14 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				)
 		)
 
-		// TODO: Derp
-		embed.setTitle("\uD83C\uDF0E " + context.locale["LANGUAGE_INFO"], "")
+		embed.setTitle("\uD83C\uDF0E " + locale.format { commands.language.pleaseSelectYourLanguage }, "")
 
 		for (wrapper in validLanguages) {
 			val translators = wrapper.locale.loritta.translationAuthors.mapNotNull { lorittaShards.getUserById(it) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
-					"**Traduzido por:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+					"**${locale.format { commands.language.translatedBy }}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true
 			)
 		}
@@ -89,11 +88,12 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
-			context.reply(newLocale["LANGUAGE_USING_LOCALE", localeId], "\uD83C\uDFA4")
+			context.reply(newLocale.format { commands.language.languageChanged }, "\uD83C\uDFA4")
 			message.delete().queue()
 		}
 
 		for (wrapper in validLanguages) {
+			// O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
 			message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
 		}
 	}

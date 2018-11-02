@@ -84,6 +84,14 @@ open class BaseLocale {
 		}
 		var arguments = Arguments()
 
+		class Language {
+			lateinit var description: String
+			lateinit var pleaseSelectYourLanguage: String
+			lateinit var translatedBy: String
+			lateinit var languageChanged: String
+		}
+		var language = Language()
+
 		class Ajuda {
 			lateinit var errorWhileOpeningDm: String
 		}
@@ -145,5 +153,6 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
+
 	}
 }
