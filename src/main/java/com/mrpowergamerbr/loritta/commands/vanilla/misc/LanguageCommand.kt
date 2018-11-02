@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
@@ -24,8 +25,52 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
-		val validLanguages = "\uD83C\uDDE7\uD83C\uDDF7 Português-Brasil\n<:loritta_quebrada:338679008210190336> Português-Funk\n\uD83C\uDDF5\uD83C\uDDF9 Português-Portugal\n\uD83C\uDDFA\uD83C\uDDF8 English-US\n\uD83C\uDDEA\uD83C\uDDF8 Español"
-		embed.setDescription(context.locale["LANGUAGE_INFO", validLanguages])
+		val validLanguages = listOf(
+				LocaleWrapper(
+						"Português-Brasil",
+						loritta.getLocaleById("default"),
+						"\uD83C\uDDE7\uD83C\uDDF7"
+				),
+				LocaleWrapper(
+						"Português-Funk",
+						loritta.getLocaleById("pt-funk"),
+						"loritta_quebrada"
+				),
+				LocaleWrapper(
+						"Português-Funk",
+						loritta.getLocaleById("pt-funk"),
+						"loritta_quebrada"
+				),
+				LocaleWrapper(
+						"Português-Portugal",
+						loritta.getLocaleById("pt-pt"),
+						"\uD83C\uDDF5\uD83C\uDDF9"
+				),
+				LocaleWrapper(
+						"English-US",
+						loritta.getLocaleById("en-us"),
+						"\uD83C\uDDFA\uD83C\uDDF8"
+				),
+				LocaleWrapper(
+						"Español",
+						loritta.getLocaleById("es-es"),
+						"\uD83C\uDDEA\uD83C\uDDF8"
+				)
+		)
+
+		// TODO: Derp
+		embed.setTitle(context.locale["LANGUAGE_INFO"], "")
+
+		for (wrapper in validLanguages) {
+			val translators = wrapper.locale.loritta.translationAuthors.map { lorittaShards.getUserById(it) }.filterNotNull()
+
+			embed.addField(
+					wrapper.emoteName + " " + wrapper.name,
+					"**Traduzido por:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+					true
+			)
+		}
+
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
@@ -53,10 +98,14 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			message.delete().queue()
 		}
 
-		message.addReaction("\uD83C\uDDE7\uD83C\uDDF7").queue()
-		message.addReaction("loritta_quebrada:338679008210190336").queue()
-		message.addReaction("\uD83C\uDDF5\uD83C\uDDF9").queue()
-		message.addReaction("\uD83C\uDDFA\uD83C\uDDF8").queue()
-		message.addReaction("\uD83C\uDDEA\uD83C\uDDF8").queue()
+		for (wrapper in validLanguages) {
+			message.addReaction(wrapper.emoteName).queue()
+		}
 	}
+
+	private class LocaleWrapper(
+			val name: String,
+			val locale: BaseLocale,
+			val emoteName: String
+	)
 }
