@@ -88,7 +88,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
-			context.reply(newLocale.format { commands.language.languageChanged }, "\uD83C\uDFA4")
+			context.reply(newLocale.format("`$localeId`") { commands.language.languageChanged }, "\uD83C\uDFA4")
 			message.delete().queue()
 		}
 
