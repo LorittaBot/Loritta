@@ -5,7 +5,7 @@ import java.io.File
 
 fun main(args: Array<String>) {
 	val yaml = Yaml();
-	val obj = yaml.load(File("C:\\Users\\Whistler\\Documents\\TavaresBot\\locales\\default.yml").readText()) as Map<String, Object>
+	val obj = yaml.load(File("./default.yml").readText()) as Map<String, Object>
 	System.out.println(obj)
 
 	var classes = ""

@@ -68,6 +68,8 @@ open class BaseLocale {
 
 	lateinit var SHIP_valor0: List<String>
 
+	// !!!       DO NOT EDIT        !!!
+	// ===[ AUTO GENEREATED LOCALE ]===
 	class Loritta {
 		lateinit var translationAuthors: List<String>
 	}
@@ -153,6 +155,7 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
-
 	}
+	// ===[ END  GENEREATED LOCALE ]===
+	// !!!       DO NOT EDIT        !!!
 }
