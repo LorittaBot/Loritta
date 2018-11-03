@@ -5,11 +5,11 @@ import net.dv8tion.jda.core.entities.User
 
 class DanceCommand : ActionCommand("dance", listOf("dançar")) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["DANCE_Description"]
+		return locale.format { commands.actions.dance.description }
 	}
 
 	override fun getResponse(locale: BaseLocale, first: User, second: User): String {
-		return locale["DANCE_Response", first.asMention, second.asMention]
+		return locale.format(first.asMention, second.asMention) { commands.actions.dance.response }
 	}
 
 	override fun getFolderName(): String {

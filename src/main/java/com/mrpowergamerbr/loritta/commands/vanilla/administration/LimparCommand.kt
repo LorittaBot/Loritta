@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -14,11 +12,20 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 		return locale["LIMPAR_DESCRIPTION"]
 	}
 
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.NUMBER) {
+				optional = false
+			}
+		}
+	}
+
+
 	override fun getUsage(): String {
 		return "QuantasMensagens"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("10", "25", "7 @Tsugami", "50 @Tsugami @Tsumari")
 	}
 
@@ -54,7 +61,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			val messages = context.event.textChannel!!.history.retrievePast(toClear).await()
 			val allowedMessages = messages.asSequence().filter {
 				if (context.message.mentionedUsers.isNotEmpty()) {
-					!context.message.mentionedUsers.contains(it.author)
+					context.message.mentionedUsers.contains(it.author)
 				} else {
 					true
 				}

@@ -34,7 +34,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		return "cat"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("", "cat", "caaaaaaat", "caaaaaaaaaaaaat", "dog")
 	}
 

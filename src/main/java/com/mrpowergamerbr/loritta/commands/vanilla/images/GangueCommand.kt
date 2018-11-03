@@ -22,7 +22,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		return locale["GANGUE_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta @MrPowerGamerBR @Best Player @Giovanna_GGold @Nirewen");
 	}
 

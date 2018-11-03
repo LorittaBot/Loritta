@@ -18,7 +18,7 @@ class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINEC
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Monerk")
 	}
 
@@ -43,7 +43,7 @@ class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINEC
 			}
 
 			val bufferedImage = LorittaUtils.downloadImage("https://crafatar.com/renders/head/$uuid?size=128&overlay")
-			context.sendFile(bufferedImage, "avatar.png", context.getAsMention(true))
+			context.sendFile(bufferedImage!!, "avatar.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

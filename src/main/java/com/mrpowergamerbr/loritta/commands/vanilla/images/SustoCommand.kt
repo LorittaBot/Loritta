@@ -18,7 +18,7 @@ class SustoCommand : AbstractCommand("fright", listOf("susto"), CommandCategory.
 		return locale["SUSTO_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

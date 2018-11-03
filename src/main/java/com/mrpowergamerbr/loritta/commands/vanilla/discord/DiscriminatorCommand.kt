@@ -21,7 +21,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
         return locale["DISCRIM_DESCRIPTION"]
     }
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("", "@Loritta");
 	}
 

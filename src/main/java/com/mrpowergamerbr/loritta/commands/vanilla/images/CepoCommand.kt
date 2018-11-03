@@ -13,7 +13,7 @@ class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 		return locale["CEPO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

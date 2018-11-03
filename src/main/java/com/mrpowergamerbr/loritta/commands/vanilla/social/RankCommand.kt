@@ -67,7 +67,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			"${Loritta.config.websiteUrl}assets/img/unknown.png"
 		}
 
-		val serverIcon = LorittaUtils.downloadImage(serverIconUrl).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(serverIcon, 259, -52, null)
 
@@ -123,7 +123,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl)
+				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
 				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)

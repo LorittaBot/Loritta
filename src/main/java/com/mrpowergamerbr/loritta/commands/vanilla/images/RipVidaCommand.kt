@@ -15,7 +15,7 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 		return locale.get("RIPVIDA_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

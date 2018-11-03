@@ -2,9 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -16,7 +14,15 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 		return locale["UNMUTE_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+		}
+	}
+
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944");
 	}
 

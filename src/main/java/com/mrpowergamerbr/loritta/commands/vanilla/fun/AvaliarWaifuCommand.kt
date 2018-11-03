@@ -13,7 +13,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 		return locale["RATEWAIFU_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Loritta");
 	}
 

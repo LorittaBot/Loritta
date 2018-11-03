@@ -20,7 +20,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 		return "IP do servidor"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("mc.hypixel.net")
 	}
 

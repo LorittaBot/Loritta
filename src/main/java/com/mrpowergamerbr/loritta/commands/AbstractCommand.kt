@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import org.slf4j.LoggerFactory
@@ -24,15 +26,25 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return "Insira descrição do comando aqui!"
 	}
 
+	@Deprecated("Please use getUsage(locale)")
 	open fun getUsage(): String? {
 		return null
+	}
+
+	open fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {}
 	}
 
 	open fun getDetailedUsage(): Map<String, String> {
 		return mapOf()
 	}
 
-	open fun getExample(): List<String> {
+	@Deprecated("Please use getExamples(locale)")
+	open fun getExamples(): List<String> {
+		return getExamples(loritta.getLocaleById("default"))
+	}
+
+	open fun getExamples(locale: BaseLocale): List<String> {
 		return listOf()
 	}
 
@@ -114,15 +126,24 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			embed.setColor(Color(0, 193, 223))
 			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val usage = if (getUsage() != null) " `${getUsage()}`" else ""
+			val commandArguments = getUsage(locale)
+			val usage = when {
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
+				getUsage() != null -> " `${getUsage()}`"
+				else -> ""
+			}
 
 			var cmdInfo = getDescription(context.locale) + "\n\n"
 
 			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
-			if (!this.getDetailedUsage().isEmpty()) {
-				for ((key, value) in this.getDetailedUsage()) {
-					cmdInfo += "${Constants.LEFT_PADDING} `$key` - $value\n"
+			for (argument in commandArguments.arguments) {
+				if (argument.explanation != null) {
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
+					if (argument.defaultValue != null) {
+						cmdInfo += "(Padrão: ${argument.defaultValue}) "
+					}
+					cmdInfo += "${argument.explanation}\n"
 				}
 			}
 
@@ -130,20 +151,35 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
-			for (example in this.getExample()) { // Adicionar todos os exemplos simples
+			for (example in this.getExamples()) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+			}
+			if (this.getExamples(context.locale).isNotEmpty()) {
+				examples.clear()
+				for (example in this.getExamples(context.locale)) { // Adicionar todos os exemplos simples
+					examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+				}
 			}
 			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
 				examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
 			}
 
 			if (examples.isEmpty()) {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + ":**\n" + commandLabel
+				embed.addField(
+						"\uD83D\uDCD6 " + context.locale["EXAMPLE"],
+						commandLabel,
+						false
+				)
 			} else {
-				cmdInfo += "\uD83D\uDCD6 **" + context.locale["EXAMPLE"] + (if (this.getExample().size == 1) "" else "s") + ":**"
+				var exampleList = ""
 				for (example in examples) {
-					cmdInfo += "\n" + example
+					exampleList += example + "\n"
 				}
+				embed.addField(
+						"\uD83D\uDCD6 " + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
+						exampleList,
+						false
+				)
 			}
 
 			val aliases = mutableSetOf<String>()
@@ -152,7 +188,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
-				cmdInfo += "\n\n\uD83D\uDD00 **${context.locale["CommandAliases"]}:**\n${onlyUnusedAliases.joinToString(", ", transform = { context.config.commandPrefix + it })}"
+				embed.addField(
+						"\uD83D\uDD00 ${context.locale["CommandAliases"]}",
+						onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
+						true
+				)
 			}
 
 			embed.setDescription(cmdInfo)
@@ -165,7 +205,52 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					it.sendMessage(embed.build()).queue()
 				}
 			} else {
-				context.sendMessage(context.getAsMention(true), embed.build())
+				val message = context.sendMessage(context.getAsMention(true), embed.build())
+				message.addReaction("❓").queue()
+				message.onReactionAddByAuthor(context) {
+					if (it.reactionEmote.name == "❓") {
+						message.delete().queue()
+						explainArguments(context)
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends an embed explaining how the argument works
+	 *
+	 * @param context the context of the command
+	 */
+	suspend fun explainArguments(context: CommandContext) {
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.setTitle("\uD83E\uDD14 Como os argumentos funcionam?")
+		embed.addField(
+				"Estilos de Argumentos",
+				"""
+					`<argumento>` - Argumento obrigatório
+					`[argumento]` - Argumento opcional
+				""".trimIndent(),
+				false
+		)
+
+		embed.addField(
+				"Tipos de Argumentos",
+				"""
+					`texto` - Um texto qualquer
+					`usuário` - Menção, nome de um usuário ou ID de um usuário
+					`imagem` - URL da imagem,  menção, nome de um usuário, ID de um usuário e, caso nada tenha sido encontrado, será pego a primeira imagem encontrada nas últimas 25 mensagens.
+				""".trimIndent(),
+				false
+		)
+
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		message.addReaction("❓").queue()
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.name == "❓") {
+				message.delete().queue()
+				explain(context)
 			}
 		}
 	}

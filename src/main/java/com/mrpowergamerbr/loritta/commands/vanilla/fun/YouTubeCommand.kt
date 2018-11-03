@@ -22,7 +22,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 		return locale["YOUTUBE_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("shantae tassel town")
 	}
 

@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
@@ -17,13 +15,24 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 		return locale["SOFTBAN_DESCRIPTION"]
 	}
 
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+			argument(ArgumentType.TEXT) {
+				optional = true
+			}
+		}
+	}
+
 	override fun getDetailedUsage(): Map<String, String> {
 		return mapOf("menção/ID" to "ID ou menção do usuário que será banido",
 				"dias" to "(Opcional) Quantos dias serão deletados, no máximo 7",
 				"motivo" to "(Opcional) Motivo do Softban")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Fulano", "@Fulano Algum motivo bastante aleatório", "@Fulano 1 Limpar mensagens do último dia");
 	}
 

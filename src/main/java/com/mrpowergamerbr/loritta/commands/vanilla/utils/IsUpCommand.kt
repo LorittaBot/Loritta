@@ -14,7 +14,7 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 		return locale["ISUP_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("http://loritta.website/")
 	}
 

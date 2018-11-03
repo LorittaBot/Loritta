@@ -20,7 +20,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Monerk")
 	}
 
@@ -56,7 +56,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 
 			val bufferedImage = LorittaUtils.downloadImage(profile.textures["SKIN"]!!.url)
 
-			context.sendFile(bufferedImage, "${nickname}.png", context.getAsMention(true))
+			context.sendFile(bufferedImage!!, "${nickname}.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

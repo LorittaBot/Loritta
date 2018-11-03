@@ -16,7 +16,7 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 		return "<mensagem>"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Windows 95")
 	}
 

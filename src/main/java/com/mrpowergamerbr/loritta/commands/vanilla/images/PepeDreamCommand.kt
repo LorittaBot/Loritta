@@ -19,7 +19,7 @@ class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepes
 		return locale.get("PEPEDREAM_Description")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

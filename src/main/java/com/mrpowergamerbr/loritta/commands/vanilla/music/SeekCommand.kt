@@ -15,7 +15,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 		return locale.get("SEEK_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("2:30")
 	}
 

@@ -19,7 +19,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 		return locale["MONEY_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
 	}
 

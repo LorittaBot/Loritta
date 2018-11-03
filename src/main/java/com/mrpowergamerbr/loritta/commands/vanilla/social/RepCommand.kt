@@ -10,7 +10,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return locale["REP_DESCRIPTON"];
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta", "@MrPowerGamerBR")
 	}
 

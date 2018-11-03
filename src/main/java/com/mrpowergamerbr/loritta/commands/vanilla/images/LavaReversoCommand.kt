@@ -21,7 +21,7 @@ class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), Comman
 		return locale["LAVAREVERSO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta servidores brasileiros");
 	}
 

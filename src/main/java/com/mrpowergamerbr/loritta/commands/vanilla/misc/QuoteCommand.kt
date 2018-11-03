@@ -27,7 +27,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 		return false
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("msgId Olá!")
 	}
 

@@ -28,7 +28,7 @@ class DefaultProfileCreator : ProfileCreator {
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl).getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -65,7 +65,7 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		val guildIcon = LorittaUtils.downloadImage(guild?.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png").getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
+		val guildIcon = LorittaUtils.downloadImage(guild?.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 562, 21, 800 - 6)

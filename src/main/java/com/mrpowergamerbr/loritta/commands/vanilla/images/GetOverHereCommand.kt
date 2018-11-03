@@ -13,7 +13,7 @@ class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCate
 		return locale.get("GETOVERHERE_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

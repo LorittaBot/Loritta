@@ -18,7 +18,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 		return "emoji"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("😏")
 	}
 
@@ -45,7 +45,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 						} else {
 							fileName += ".png"
 						}
-						context.sendFile(emojiImage, fileName, MessageBuilder().append(" ").build())
+						context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -65,7 +65,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 						return
 					}
 					val emojiImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/$value.png")
-					context.sendFile(emojiImage, "emoji.png", MessageBuilder().append(" ").build())
+					context.sendFile(emojiImage!!, "emoji.png", MessageBuilder().append(" ").build())
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}

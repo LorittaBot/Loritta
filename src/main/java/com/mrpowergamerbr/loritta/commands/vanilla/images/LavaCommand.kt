@@ -19,7 +19,7 @@ class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 		return locale["LAVA_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta bots indecentes");
 	}
 

@@ -15,7 +15,7 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 		return locale["PERFEITO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

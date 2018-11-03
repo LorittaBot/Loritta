@@ -5,11 +5,11 @@ import net.dv8tion.jda.core.entities.User
 
 class HugCommand : ActionCommand("hug", listOf("abraço", "abraçar", "abraco", "abracar")) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["HUG_Description"]
+		return locale.format { commands.actions.hug.description }
 	}
 
 	override fun getResponse(locale: BaseLocale, first: User, second: User): String {
-		return locale["HUG_Response", first.asMention, second.asMention]
+		return locale.format(first.asMention, second.asMention) { commands.actions.hug.response }
 	}
 
 	override fun getFolderName(): String {

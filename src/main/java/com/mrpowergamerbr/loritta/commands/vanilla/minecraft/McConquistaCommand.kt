@@ -20,7 +20,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 		return locale["MCCONQUISTA_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta Ser muito fofa!");
 	}
 

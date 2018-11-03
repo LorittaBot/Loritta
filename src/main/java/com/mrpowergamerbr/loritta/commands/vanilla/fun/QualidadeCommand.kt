@@ -15,7 +15,7 @@ class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory
 		return "<mensagem>"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("qualidade & sincronia")
 	}
 

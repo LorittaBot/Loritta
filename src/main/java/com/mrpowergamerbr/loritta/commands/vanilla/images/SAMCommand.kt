@@ -19,7 +19,7 @@ class SAMCommand : AbstractCommand("sam", listOf("southamericamemes"), CommandCa
 		return locale["SAM_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("https://cdn.discordapp.com/attachments/265632341530116097/297440837871206420/meme.png")
 	}
 

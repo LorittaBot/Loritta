@@ -19,7 +19,7 @@ class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), Co
 		return locale["QUADRO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

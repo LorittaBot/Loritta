@@ -19,7 +19,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 		return "mensagem"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("Eu sou fofa! :3")
 	}
 

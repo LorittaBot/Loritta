@@ -19,7 +19,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 		return "ID do invite"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/coredasantigas")
 	}
 

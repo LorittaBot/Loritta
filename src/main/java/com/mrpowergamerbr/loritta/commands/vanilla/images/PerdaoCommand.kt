@@ -18,7 +18,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		return locale["PERDAO_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

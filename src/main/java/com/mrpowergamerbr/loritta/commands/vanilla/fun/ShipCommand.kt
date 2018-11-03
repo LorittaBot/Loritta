@@ -21,7 +21,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
         return locale["SHIP_DESCRIPTION"]
     }
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot")
 	}
 
@@ -152,12 +152,12 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old
 
-			if (avatar1.height != 128 && avatar1.width != 128) {
-				avatar1 = ImageUtils.toBufferedImage(avatar1.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
+			if (avatar1!!.height != 128 && avatar1!!.width != 128) {
+				avatar1 = ImageUtils.toBufferedImage(avatar1!!.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
 			}
 
-			if (avatar2.height != 128 && avatar2.width != 128) {
-				avatar2 = ImageUtils.toBufferedImage(avatar2.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
+			if (avatar2!!.height != 128 && avatar2!!.width != 128) {
+				avatar2 = ImageUtils.toBufferedImage(avatar2!!.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
 			}
 
 			var image = BufferedImage(384, 128, BufferedImage.TYPE_INT_ARGB)

@@ -60,7 +60,7 @@ class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristereali
 		while (6 > aux) {
 			val member = users[0]
 
-			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl).getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 			baseGraph.drawImage(avatarImg, x, y, null)
 
 			if (!cmdOpti.hideDiscordTags) {

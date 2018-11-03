@@ -20,7 +20,7 @@ class LoriSignCommand : AbstractCommand("lorisign", listOf("lorittasign", "lorip
 		return locale["LORISIGN_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

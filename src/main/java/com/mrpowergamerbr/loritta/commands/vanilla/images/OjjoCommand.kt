@@ -15,7 +15,7 @@ class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 		return locale.get("OJJO_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("@Loritta")
 	}
 

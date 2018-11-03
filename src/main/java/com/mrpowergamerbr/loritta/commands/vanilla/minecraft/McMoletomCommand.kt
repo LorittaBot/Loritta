@@ -24,7 +24,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Monerk")
 	}
 

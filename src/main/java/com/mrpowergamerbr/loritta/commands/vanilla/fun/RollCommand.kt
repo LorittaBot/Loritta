@@ -1,9 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -12,19 +10,21 @@ import com.mrpowergamerbr.loritta.utils.remove
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["ROLL_DESCRIPTION"]
+		return locale.format { commands.roll.description }
 	}
 
-	override fun getUsage(): String {
-		return "[número]"
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.NUMBER) {
+				optional = true
+				defaultValue = "6"
+				explanation = locale.format { commands.roll.howMuchSides }
+			}
+		}
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(locale: BaseLocale): List<String> {
 		return listOf("", "12", "24", "2d20", "3d5", "4d10")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("número" to "*(Opcional)* Quantos lados o dado que eu irei rolar terá, padrão: 6")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

@@ -17,7 +17,7 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 		return locale["DRAKE_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
 	}
 

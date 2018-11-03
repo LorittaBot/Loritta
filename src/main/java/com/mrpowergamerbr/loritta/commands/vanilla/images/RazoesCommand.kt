@@ -22,7 +22,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 		return locale["RAZOES_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 
@@ -43,7 +43,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 		val avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
 
 		// Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
-		val dominantImage = ImageUtils.toBufferedImage(avatar.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING));
+		val dominantImage = ImageUtils.toBufferedImage(avatar!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING));
 		val dominantColor = dominantImage.getRGB(0, 0);
 
 		val red = (dominantColor shr 16) and 0xFF;
@@ -78,7 +78,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 
 		// Agora nós vamos colar o avatar em cima do template
 		// Vamos usar o javaxt porque é bem mais fácil
-		var rotatedAvatar = LorittaImage(avatar);
+		var rotatedAvatar = LorittaImage(avatar!!);
 		rotatedAvatar.resize(109, 109)
 		rotatedAvatar.rotate(5.0)
 		graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)

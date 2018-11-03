@@ -16,7 +16,7 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 		return "língua texto"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("pt Hello World!")
 	}
 

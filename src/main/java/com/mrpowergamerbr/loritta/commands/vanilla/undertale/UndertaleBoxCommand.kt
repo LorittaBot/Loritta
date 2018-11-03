@@ -21,7 +21,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 		return locale["UTBOX_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta Legendary being made of every SOUL in the underground.")
 	}
 
@@ -55,7 +55,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 				// graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
 				ImageUtils.drawTextWrap(str, 180, 56 + determinationMono.size, 578, 0, graph.fontMetrics, graph)
 
-				val avatarImg = LorittaUtils.downloadImage(member.user.effectiveAvatarUrl).getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+				val avatarImg = LorittaUtils.downloadImage(member.user.effectiveAvatarUrl)!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
 				val blackWhite = BufferedImage(avatarImg.getWidth(null), avatarImg.getHeight(null), BufferedImage.TYPE_BYTE_GRAY)
 				val g2d = blackWhite.createGraphics()

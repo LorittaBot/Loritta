@@ -16,7 +16,7 @@ class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("Monerk")
 	}
 

@@ -20,7 +20,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 		return locale["KYM_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Arthur's Headphones")
 	}
 

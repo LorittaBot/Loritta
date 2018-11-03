@@ -21,7 +21,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		return "[usuário1] [usuário2]"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
 	}
 

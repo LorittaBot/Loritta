@@ -54,6 +54,23 @@ object MiscUtils {
 		}
 	}
 
+	/**
+	 * Strips all links from the [string]
+	 */
+	fun stripLinks(string: String): String {
+		var output = string
+		val matcher = Constants.URL_PATTERN.matcher(
+				string.replace("\u200B", "")
+				.replace("\\", "")
+		)
+
+		while (matcher.find()) {
+			val url = matcher.group()
+			output = string.replace(url, "")
+		}
+		return output
+	}
+
 	fun isJSONValid(jsonInString: String): Boolean {
 		try {
 			GSON.fromJson(jsonInString, Any::class.java)

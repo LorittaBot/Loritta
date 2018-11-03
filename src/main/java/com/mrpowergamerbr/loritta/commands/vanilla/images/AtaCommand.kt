@@ -20,7 +20,7 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 		return locale.get("ATA_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

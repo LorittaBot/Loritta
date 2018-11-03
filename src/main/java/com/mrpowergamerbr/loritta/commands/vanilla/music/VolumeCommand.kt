@@ -16,7 +16,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 		return locale.get("VOLUME_DESCRIPTION")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return Arrays.asList("100", "66", "33")
 	}
 

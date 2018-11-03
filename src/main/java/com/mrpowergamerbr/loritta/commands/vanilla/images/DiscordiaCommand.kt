@@ -13,7 +13,7 @@ class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "disco
 		return locale["DISCORDIA_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

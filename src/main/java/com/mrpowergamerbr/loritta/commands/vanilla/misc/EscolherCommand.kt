@@ -12,7 +12,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 		return locale["ESCOLHER_DESCRIPTION"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots");
 	}
 

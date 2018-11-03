@@ -4,8 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.CommandOptions
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -63,7 +61,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		for (aux in 5 downTo 0) {
 			val member = users[0]
 
-			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl).getScaledInstance(122, 122, Image.SCALE_SMOOTH)
+			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!.getScaledInstance(122, 122, Image.SCALE_SMOOTH)
 			baseGraph.drawImage(avatarImg, x, y, null)
 
 			x += 122

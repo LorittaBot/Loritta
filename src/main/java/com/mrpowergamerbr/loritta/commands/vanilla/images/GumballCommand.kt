@@ -13,7 +13,7 @@ class GumballCommand : AbstractCommand("gumball", category = CommandCategory.IMA
 		return locale["GUMBALL_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

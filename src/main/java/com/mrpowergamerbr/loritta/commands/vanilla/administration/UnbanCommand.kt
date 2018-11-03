@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -16,7 +14,15 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 		return locale["UNBAN_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.USER) {
+				optional = false
+			}
+		}
+	}
+
+	override fun getExamples(): List<String> {
 		return listOf("159985870458322944", "159985870458322944 Pediu desculpas pelo o que aconteceu, e prometeu que o que aconteceu não irá se repetir.", "395935916952256523 Bani sem querer, desculpa!");
 	}
 

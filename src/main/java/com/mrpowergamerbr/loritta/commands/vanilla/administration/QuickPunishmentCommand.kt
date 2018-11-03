@@ -13,7 +13,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		return locale["QUICKPUNISHMENT_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf()
 	}
 

@@ -20,7 +20,7 @@ class ArtCommand : AbstractCommand("art", listOf("arte"), category = CommandCate
 		return locale.get("ART_Description")
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta")
 	}
 

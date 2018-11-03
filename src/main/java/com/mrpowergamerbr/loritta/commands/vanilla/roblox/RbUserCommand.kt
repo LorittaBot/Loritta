@@ -23,7 +23,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return "nickname"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("cazum8", "lol738236")
 	}
 
@@ -135,7 +135,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 
 					val thumbnailUrl = coll["Thumbnail"]["Url"].string
 
-					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl).getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)!!.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
 					bufferedImage.graphics.drawImage(thumbnail, x, y, null)
 					x += 55
 				}
@@ -157,7 +157,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 
 					val thumbnailUrl = coll["Thumbnail"]["Url"].string
 
-					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl).getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)!!.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
 					bufferedImage.graphics.drawImage(thumbnail, x, y, null)
 					x += 55
 				}

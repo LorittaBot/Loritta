@@ -13,7 +13,7 @@ class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES)
 		return locale["SWING_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot");
 	}
 

@@ -19,7 +19,7 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 		return locale["ROMEROBRITTO_DESCRIPTION"];
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta");
 	}
 

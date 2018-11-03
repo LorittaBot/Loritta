@@ -15,7 +15,7 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 		return "código morse ou texto"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("Loritta")
 	}
 

@@ -20,7 +20,7 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 		return "sua escolha"
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("pedra", "papel", "tesoura")
 	}
 

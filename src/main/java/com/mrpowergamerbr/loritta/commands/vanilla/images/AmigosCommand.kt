@@ -87,6 +87,6 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 				choosen.add(member)
 		}
 
-		return LorittaUtils.downloadImage(userAvatar) ?: Constants.IMAGE_FALLBACK
+		return LorittaUtils.downloadImage(userAvatar!!) ?: Constants.IMAGE_FALLBACK
 	}
 }

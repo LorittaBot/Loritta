@@ -14,7 +14,7 @@ class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("ca
 		return locale["CONTENTAWARESCALE_Description"]
 	}
 
-	override fun getExample(): List<String> {
+	override fun getExamples(): List<String> {
 		return listOf("@Loritta")
 	}
 
