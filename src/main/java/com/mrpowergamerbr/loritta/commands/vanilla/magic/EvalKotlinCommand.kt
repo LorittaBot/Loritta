@@ -56,7 +56,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import java.io.File
 			import javax.imageio.ImageIO
 
-			fun loritta(context: CommandContext, locale: BaseLocale) {
+			suspend fun loritta(context: CommandContext, locale: BaseLocale) {
 				$kotlinCode
 			}""".trimIndent()
 
