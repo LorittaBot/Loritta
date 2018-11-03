@@ -8,13 +8,14 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
+import java.lang.reflect.Method
 import java.nio.file.Paths
 import java.util.concurrent.ExecutionException
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
-
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -64,7 +65,9 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 		try {
 			engine.eval(kotlinCode)
 			val invocable = engine as Invocable
-			invocable.invokeFunction("loritta", context, locale) // Pegar o valor retornado pelo script
+			suspendCoroutineUninterceptedOrReturn<Any?> { cont ->
+				invocable.invokeFunction("loritta", context, locale, cont) // Pegar o valor retornado pelo script
+			}
 		} catch (e: Exception) {
 			e.printStackTrace()
 			val builder = EmbedBuilder()
@@ -87,3 +90,8 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 		}
 	}
 }
+
+suspend fun Method.invokeSuspend(obj: Any, vararg args: Any?): Any? =
+		suspendCoroutineUninterceptedOrReturn { cont ->
+			invoke(obj, *args, cont)
+		}
