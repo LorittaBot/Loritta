@@ -123,6 +123,8 @@ class PubSubHubbubCallbackController {
 					Filters.eq("youTubeConfig.channels.channelId", channelId)
 			).iterator()
 
+			val guildIds = mutableListOf<String>()
+
 			servers.use {
 				while (it.hasNext()) {
 					val config = it.next()
@@ -158,8 +160,20 @@ class PubSubHubbubCallbackController {
 						) ?: continue
 
 						textChannel.sendMessage(discordMessage).queue()
+						guildIds.add(config.guildId)
 					}
 				}
+			}
+
+			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
+			val textChannel = lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
+
+			if (textChannel != null) {
+				val guildNames = guildIds.mapNotNull { lorittaShards.getGuildById(it) }
+				textChannel.sendMessage("""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
+					|**Enviado em...**
+					|${guildNames.joinToString("\n", transform = { "`${it.name.stripCodeMarks()}`" })}
+				""".trimMargin()).queue()
 			}
 		}
 

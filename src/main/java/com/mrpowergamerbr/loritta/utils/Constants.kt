@@ -72,6 +72,9 @@ object Constants {
 			"fdp"
 	)
 
+	// Canais de textos utilizados na Loritta
+	const val RELAY_YOUTUBE_VIDEOS_CHANNEL = "509043859792068609"
+
 	/**
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image
 	 * is valid or, if he doesn't provide any arguments to the command, explain how the command works.
