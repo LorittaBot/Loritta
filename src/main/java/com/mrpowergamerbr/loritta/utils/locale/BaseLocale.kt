@@ -20,6 +20,8 @@ open class BaseLocale {
 	var commands = Commands()
 	@Transient
 	var loritta = Loritta()
+	@Transient
+	var discord = Discord()
 
 	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
@@ -73,6 +75,30 @@ open class BaseLocale {
 	class Loritta {
 		lateinit var translationAuthors: List<String>
 		lateinit var xOfX: String
+	}
+	class Discord {
+		class Permissions {
+			lateinit var kickMembers: String
+			lateinit var banMembers: String
+			lateinit var administrator: String
+			lateinit var manageChannel: String
+			lateinit var manageServer: String
+			lateinit var addReactions: String
+			lateinit var messageHistory: String
+			lateinit var viewAuditLogs: String
+			lateinit var messageRead: String
+			lateinit var messageWrite: String
+			lateinit var messageManage: String
+			lateinit var messageExtEmoji: String
+			lateinit var messageEmbedLinks: String
+			lateinit var manageRoles: String
+			lateinit var managePermissions: String
+			lateinit var manageWebhooks: String
+			lateinit var manageEmotes: String
+			lateinit var createInstantInvite: String
+		}
+		var permissions = Permissions()
+
 	}
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
