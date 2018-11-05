@@ -29,7 +29,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 			val displayName = fanArt.fancyName ?: user?.name
 
-			setDescription(locale.format(displayName) { commands.fanarts.madeBy })
+			setDescription("**" + locale.format(displayName) { commands.fanarts.madeBy } + "**")
 			appendDescription("\n\n${locale.format(displayName) { commands.fanarts.thankYouAll }}")
 
 			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
