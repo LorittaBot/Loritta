@@ -188,7 +188,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ")} para utilizar este comando!\n"
 				}
 				if (getBotPermissions().isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getDiscordPermissions().joinToString(", ")} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ")} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",
