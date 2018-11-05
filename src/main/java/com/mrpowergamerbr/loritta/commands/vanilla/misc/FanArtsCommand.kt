@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.fanarts.description }
+		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.fanarts.description }
 	}
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {

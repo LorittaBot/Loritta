@@ -437,8 +437,8 @@ class CommandManager {
 						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
 								LoriReply(
-										Constants.ERROR,
-										locale.format(required) { commands.doesntHavePermissionDiscord }
+										locale.format(required, "\uD83D\uDE22", "\uD83D\uDE42") { commands.loriDoesntHavePermissionDiscord },
+										Constants.ERROR
 								)
 						)
 						return true
