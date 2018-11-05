@@ -1,3 +1,15 @@
 package com.mrpowergamerbr.loritta.utils
 
-class LorittaFanArt(val artistId: String?, val fancyName: String?, val fileName: String, val additionalInfo: String?)
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+
+class LorittaFanArt @JsonCreator constructor(
+		@JsonProperty("artistId")
+		val artistId: String?,
+		@JsonProperty("fancyName")
+		val fancyName: String?,
+		@JsonProperty("fileName")
+		val fileName: String,
+		@JsonProperty("additionalInfo")
+		val additionalInfo: String?
+)
