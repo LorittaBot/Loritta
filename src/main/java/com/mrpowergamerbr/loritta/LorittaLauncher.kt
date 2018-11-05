@@ -1,10 +1,6 @@
 package com.mrpowergamerbr.loritta
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.google.gson.GsonBuilder
-import com.mrpowergamerbr.loritta.Loritta.Companion.config
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import java.io.File
@@ -33,7 +29,6 @@ object LorittaLauncher {
 		// Nós precisamos ativar o PATCH manualmente
 		WebsiteUtils.allowMethods("PATCH")
 
-		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 		val file = File(System.getProperty("conf") ?: "./config.yml")
 		var config: LorittaConfig? = null
 
@@ -41,7 +36,7 @@ object LorittaLauncher {
 			val json: String
 			try {
 				json = file.readText()
-				config = mapper.readValue(json, LorittaConfig::class.java)
+				config = Constants.MAPPER.readValue(json, LorittaConfig::class.java)
 			} catch (e: IOException) {
 				e.printStackTrace()
 				System.exit(1) // Sair caso der erro

@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.awt.Color
@@ -34,6 +37,8 @@ object Constants {
 	const val ACTION_GENERIC = "generic"
 	const val ACTION_MALE_AND_FEMALE = "male_x_female"
 	const val ACTION_MALE_AND_MALE = "male_x_male"
+
+	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)

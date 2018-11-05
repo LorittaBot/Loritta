@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.collect.EvictingQueue
@@ -28,6 +29,7 @@ import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.FanArtConfig
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
@@ -130,7 +132,10 @@ class Loritta(config: LorittaConfig) {
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
 
-	var fanArts = mutableListOf<LorittaFanArt>()
+	lateinit var fanArtConfig: FanArtConfig
+	val fanArts: List<LorittaFanArt>
+			get() = fanArtConfig.fanArts
+
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
@@ -569,7 +574,7 @@ class Loritta(config: LorittaConfig) {
 	 * Loads the Fan Arts from the "fanarts.json" file
 	 */
 	fun loadFanArts() {
-		fanArts = GSON.fromJson(File("./fanarts.json").readText())
+		fanArtConfig = Constants.MAPPER.readValue(File("./fanarts.json").readText())
 	}
 
 	/**
