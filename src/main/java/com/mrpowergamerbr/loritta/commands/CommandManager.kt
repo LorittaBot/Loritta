@@ -471,7 +471,14 @@ class CommandManager {
 				}
 
 				if (!context.canUseCommand()) {
-					context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**" + locale["NO_PERMISSION"] + "**")
+					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member.hasPermission(ev.message.textChannel, it) }
+					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+					context.reply(
+							LoriReply(
+									Constants.ERROR,
+									locale.format(required) { commands.doesntHavePermissionDiscord }
+							)
+					)
 					return true
 				}
 
