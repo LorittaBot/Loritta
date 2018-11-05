@@ -45,7 +45,7 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
             roles.add(everyone)
         }
 
-        roles.sortedByDescending { it.position }
+        roles.sortByDescending { it.position }
 
 		return roles
 				.map { config.permissionsConfig.roles.getOrDefault(it.id, PermissionsConfig.PermissionRole()) }

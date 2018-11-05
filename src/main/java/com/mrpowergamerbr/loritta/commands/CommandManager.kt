@@ -475,8 +475,8 @@ class CommandManager {
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
 							LoriReply(
-									Constants.ERROR,
-									locale.format(required) { commands.doesntHavePermissionDiscord }
+									locale.format(required) { commands.doesntHavePermissionDiscord },
+									Constants.ERROR
 							)
 					)
 					return true
