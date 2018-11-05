@@ -574,7 +574,7 @@ class Loritta(config: LorittaConfig) {
 	 * Loads the Fan Arts from the "fanarts.json" file
 	 */
 	fun loadFanArts() {
-		fanArtConfig = Constants.MAPPER.readValue(File("./fanarts.json").readText())
+		fanArtConfig = Constants.MAPPER.readValue(File("./fanarts.yml").readText())
 	}
 
 	/**
