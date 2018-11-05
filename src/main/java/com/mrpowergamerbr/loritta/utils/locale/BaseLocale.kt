@@ -105,6 +105,7 @@ open class BaseLocale {
 		lateinit var errorWhileExecutingCommand: String
 		lateinit var cantUseInPrivate: String
 		lateinit var userDoesNotExists: String
+		lateinit var doesntHavePermissionDiscord: String
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String

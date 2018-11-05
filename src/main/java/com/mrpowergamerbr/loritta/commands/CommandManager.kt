@@ -25,6 +25,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -433,8 +434,13 @@ class CommandManager {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}"] + "`" })
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").queue()
+						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+						context.reply(
+								LoriReply(
+										Constants.ERROR,
+										locale.format(required) { commands.doesntHavePermissionDiscord }
+								)
+						)
 						return true
 					}
 				}
