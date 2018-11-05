@@ -6,5 +6,6 @@ enum class SocialNetwork(val fancyName: String) {
 	TWITTER("Twitter"),
 	STEAM("Steam"),
 	YOUTUBE("YouTube"),
-	WEBSITE("Website")
+	WEBSITE("Website"),
+	AMINO("Amino")
 }
