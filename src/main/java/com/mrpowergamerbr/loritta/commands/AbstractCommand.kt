@@ -186,10 +186,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
 				var field = ""
 				if (getDiscordPermissions().isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { it.localized(locale) })} para utilizar este comando!\n"
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
 				}
 				if (getBotPermissions().isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { it.localized(locale) })} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",
