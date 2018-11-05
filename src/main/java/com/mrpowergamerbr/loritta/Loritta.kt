@@ -31,6 +31,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.FanArtConfig
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale

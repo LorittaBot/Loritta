@@ -4,8 +4,12 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
@@ -29,6 +33,16 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 			val displayName = fanArt.fancyName ?: user?.name
 
 			setDescription("**" + locale.format(displayName) { commands.fanarts.madeBy } + "**")
+			val artist = loritta.fanArtConfig.artists[fanArt.artistId]
+			if (artist != null) {
+				for (socialNetwork in artist.socialNetworks) {
+					var root = socialNetwork.display
+					if (socialNetwork.link != null) {
+						root = "[$root](${socialNetwork.link})"
+					}
+					appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
+				}
+			}
 			appendDescription("\n\n${locale.format(displayName) { commands.fanarts.thankYouAll }}")
 
 			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
