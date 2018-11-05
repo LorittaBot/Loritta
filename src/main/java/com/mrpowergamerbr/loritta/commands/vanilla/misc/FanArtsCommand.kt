@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["FANARTS_Description"]
+		return locale.format { commands.fanarts.description }
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -20,6 +20,8 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 	suspend fun sendFanArtEmbed(context: CommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int) {
 		val fanArt = list[item]
+		val index = loritta.fanArts.indexOf(fanArt) + 1
+
 		val embed = EmbedBuilder().apply {
 			setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
 
@@ -27,17 +29,16 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 			val displayName = fanArt.fancyName ?: user?.name
 
-			var info = ""
+			setDescription(locale.format(displayName) { commands.fanarts.madeBy })
+			appendDescription("\n\n${locale.format(displayName) { commands.fanarts.thankYouAll }}")
+
+			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
 
 			if (user != null) {
-				info += user.name + "#" + user.discriminator + "\n"
+				footer = "${user.name + "#" + user.discriminator} • $footer"
 			}
 
-			if (fanArt.additionalInfo != null) {
-				info += fanArt.additionalInfo + "\n"
-			}
-
-			setDescription(locale["FANARTS_EmbedDescription", displayName, info])
+			setFooter(footer, user?.effectiveAvatarUrl)
 			setImage("https://loritta.website/assets/img/fanarts/${fanArt.fileName}")
 			setColor(Constants.LORITTA_AQUA)
 		}

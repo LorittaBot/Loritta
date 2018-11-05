@@ -72,6 +72,7 @@ open class BaseLocale {
 	// ===[ AUTO GENEREATED LOCALE ]===
 	class Loritta {
 		lateinit var translationAuthors: List<String>
+		lateinit var xOfX: String
 	}
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
@@ -155,6 +156,13 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
+
+		class Fanarts {
+			lateinit var description: String
+			lateinit var madeBy: String
+			lateinit var thankYouAll: String
+		}
+		var fanarts = Fanarts()
 	}
 	// ===[ END  GENEREATED LOCALE ]===
 	// !!!       DO NOT EDIT        !!!
