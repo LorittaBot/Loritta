@@ -303,6 +303,7 @@ class CommandManager {
 	 */
 	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
+		val member = ev.message.member
 
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(command)
@@ -467,6 +468,16 @@ class CommandManager {
 				}
 
 				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
+					return true
+				}
+
+				if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+					context.reply(
+							LoriReply(
+									locale.format { commands.commandOnlyForOwner },
+									Constants.ERROR
+							)
+					)
 					return true
 				}
 

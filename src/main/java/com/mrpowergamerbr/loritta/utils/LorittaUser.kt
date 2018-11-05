@@ -28,6 +28,11 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
      * Verifica se o usuário tem permissão para utilizar um comando
      */
     open fun canUseCommand(context: CommandContext): Boolean {
+	    // A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
+	    if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+		    return false
+	    }
+
         return true
     }
 }
@@ -36,7 +41,6 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
  * Um usuário que está comunicando com a Loritta em canais de texto
  */
 class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profile) : LorittaUser(member.user, config, profile) {
-
     override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
         val roles = member.roles.toMutableList()
 
@@ -56,10 +60,8 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
      * Verifica se o usuário tem permissão para utilizar um comando
      */
     override fun canUseCommand(context: CommandContext): Boolean {
-        // A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
-        if (context.cmd.onlyOwner && member.user.id != Loritta.config.ownerId) {
-            return false
-        }
+	    if (!super.canUseCommand(context))
+		    return false
 
         // Primeiro iremos verificar as roles
         for (role in member.roles) {
