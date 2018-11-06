@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue
 class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEventListenerAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
 	var currentTrack: AudioTrackWrapper? = null
+	var isLoadingNextTrack = false
 
 	init {
 		this.queue = LinkedBlockingQueue()
@@ -68,28 +69,33 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 	 * Start the next track, stopping the current one if it is playing.
 	 */
 	fun nextTrack() {
+		// A música irá trocar! Então iremos retirar a nossa currentTrack
+		currentTrack = null
+
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
 		val audioTrackWrapper = queue.poll()
 
-		if (audioTrackWrapper == null) {
-			// Caso seja null, quer dizer que não existe "próxima" música, então vamos parar a atual
-			currentTrack = null
-			if (player.playingTrack != null)
-				player.stopTrack()
+		if (audioTrackWrapper == null) { // Caso seja null, quer dizer que não existe "próxima" música na fila, então vamos parar a atual
+			// Mas "nextTrack" pode ser chamado ao usar "pular"
+			// Ou seja...
+			if (player.playingTrack != null) // Se está tocando uma música
+				player.stopTrack() // Vamos parar ela!
 
-			loritta.executor.execute {
+			// Para evitar colocar várias músicas na playlist em seguida, vamos verificar se estamos carregando a próxima música antes de fazer algo
+			isLoadingNextTrack = true
+			loritta.executor.execute { // Vamos agora verificar se devemos tocar uma música aleatória
 				val serverConfig = loritta.getServerConfigForGuild(guild.id)
-				// this.player.volume = serverConfig.volume
 
 				// Então quer dizer que nós iniciamos uma música vazia?
 				// Okay então, vamos pegar nossas próprias coisas
 				LorittaUtilsKotlin.startRandomSong(guild, serverConfig)
+				isLoadingNextTrack = false
 			}
 			return
 		}
 
-		this.currentTrack = audioTrackWrapper
+		this.currentTrack = audioTrackWrapper // Se não, vamos tocar a próxima música da fila!
 		player.playTrack(audioTrackWrapper.track)
 	}
 

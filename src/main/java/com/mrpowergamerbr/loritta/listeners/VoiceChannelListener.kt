@@ -69,11 +69,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
 				return@execute
 
-			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
-
-			if (mm.player.playingTrack != null) {
-				mm.player.isPaused = true // Pausar música caso todos os usuários saiam
-			}
+			// Caso não tenha ninguém no canal de voz, vamos retirar o music manager da nossa lista
+			loritta.audioManager.musicManagers.remove(event.guild.idLong)
 
 			val link = loritta.audioManager.lavalink.getLink(event.guild)
 			link.disconnect() // E desconectar do canal de voz

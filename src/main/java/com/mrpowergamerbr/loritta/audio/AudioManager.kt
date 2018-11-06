@@ -50,7 +50,6 @@ class AudioManager(val loritta: Loritta) {
 	 * @return the guild music manager
 	 * @see    GuildMusicManager
 	 */
-	@Synchronized
 	fun getGuildAudioPlayer(guild: Guild): GuildMusicManager {
 		val guildId = java.lang.Long.parseLong(guild.getId())
 		var musicManager = musicManagers[guildId]
