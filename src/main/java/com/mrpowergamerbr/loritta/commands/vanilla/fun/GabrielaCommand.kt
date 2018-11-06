@@ -93,7 +93,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		)
 
 		if (context.args.isNotEmpty()) {
-			val webhook = getOrCreateWebhook(context.event.textChannel!!, locale["FRASETOSCA_GABRIELA"])
+			val webhook = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, locale["FRASETOSCA_GABRIELA"])
 
 			var pergunta = context.strippedArgs.joinToString(" ").toLowerCase().trim() // Já que nós não ligamos se o cara escreve "Nilce" ou "nilce"
 

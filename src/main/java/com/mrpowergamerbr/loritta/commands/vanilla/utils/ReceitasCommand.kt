@@ -4,8 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.f
-import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage

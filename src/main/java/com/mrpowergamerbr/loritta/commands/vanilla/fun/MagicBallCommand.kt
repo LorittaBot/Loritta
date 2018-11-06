@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
-import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 
@@ -33,7 +33,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val temmie = getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")
+			val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")

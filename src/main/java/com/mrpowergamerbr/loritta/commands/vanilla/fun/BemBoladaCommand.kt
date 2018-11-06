@@ -5,12 +5,9 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import org.jsoup.Jsoup
-import java.io.File
-import java.util.*
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -203,7 +200,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 				"Por que o médico que trabalha de noite usa verde?\n\nÉ porque ele está de plantão.",
 				"O que o tomate foi fazer no banco?\n\nFoi tirar o extrato.")
 
-		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Kenji do Loop Infinito")
+		val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Kenji do Loop Infinito")
 
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Kenji do Loop Infinito")

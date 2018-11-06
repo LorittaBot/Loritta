@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.getOrCreateWebhook
+import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 
@@ -54,7 +54,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val temmie = getOrCreateWebhook(context.event.channel, "Faustão")
+		val temmie = WebhookUtils.getOrCreateWebhook(context.event.channel, "Faustão")
 
 		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);
 
