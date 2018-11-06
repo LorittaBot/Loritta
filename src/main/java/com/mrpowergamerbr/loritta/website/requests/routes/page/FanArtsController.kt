@@ -1,10 +1,11 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page
 
-import mu.KotlinLogging
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
+import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.User
 import org.jooby.Request
 import org.jooby.Response
@@ -24,7 +25,7 @@ class FanArtsController {
 		val users = mutableMapOf<String, User?>()
 		loritta.fanArts.forEach {
 			if (it.artistId != null)
-				users[it.artistId] = lorittaShards.retrieveUserById(it.artistId)
+				users[it.artistId] = runBlocking { lorittaShards.retrieveUserById(it.artistId) }
 		}
 		variables["fanArtsUsers"] = users
 		res.send(evaluate("fan_arts.html", variables))

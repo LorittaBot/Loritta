@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.dv8tion.jda.bot.sharding.ShardManager
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
@@ -35,11 +36,11 @@ class LorittaShards {
 		return shardManager.getUserById(id)
 	}
 
-	fun retrieveUserById(id: String?): User? {
+	suspend fun retrieveUserById(id: String?): User? {
 		if (id == null)
 			return null
 
-		return getUserById(id) ?: shardManager.retrieveUserById(id).complete()
+		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
 	}
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)

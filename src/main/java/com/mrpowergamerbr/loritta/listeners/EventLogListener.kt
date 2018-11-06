@@ -12,6 +12,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -292,7 +294,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -300,11 +302,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@execute
+					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessage = transaction(Databases.loritta) {
@@ -312,7 +314,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (storedMessage != null) {
-						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@execute
+						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@launch
 
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -344,7 +346,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
 						}
-						return@execute
+						return@launch
 					}
 				}
 			}
@@ -355,7 +357,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
@@ -363,11 +365,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@execute
+					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
 					val storedMessages = transaction(Databases.loritta) {
@@ -375,7 +377,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 					if (storedMessages.isNotEmpty()) {
 						val user = lorittaShards.retrieveUserById(storedMessages.first().authorId.toString())
-								?: return@execute
+								?: return@launch
 
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -411,7 +413,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
 						}
-						return@execute
+						return@launch
 					}
 				}
 			}

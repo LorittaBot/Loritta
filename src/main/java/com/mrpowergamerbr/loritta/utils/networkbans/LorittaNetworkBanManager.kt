@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.User
@@ -80,7 +81,7 @@ class LorittaNetworkBanManager {
 	fun addBanEntry(entry: NetworkBanEntry) {
 		val userId = entry.id
 		logger.info { "Adicionando $userId na lista de usuários banidos na Loritta Network..." }
-		val user = lorittaShards.retrieveUserById(entry.id) ?: run {
+		val user = runBlocking { lorittaShards.retrieveUserById(entry.id) } ?: run {
 			logger.error("$userId não é um usuário válido!")
 			return
 		}
