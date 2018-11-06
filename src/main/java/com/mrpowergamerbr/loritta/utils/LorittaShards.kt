@@ -17,15 +17,27 @@ class LorittaShards {
 
 	fun getGuildCount(): Int = shardManager.guilds.size
 
+	fun getCachedGuildCount(): Long = shardManager.guildCache.size()
+
 	fun getUserCount(): Int = shardManager.users.size
+
+	fun getCachedUserCount(): Long = shardManager.userCache.size()
 
 	fun getEmoteCount(): Int = shardManager.emotes.size
 
+	fun getCachedEmoteCount(): Long = shardManager.emoteCache.size()
+
 	fun getChannelCount(): Int = shardManager.textChannels.size + shardManager.voiceChannels.size
+
+	fun getCachedChannelCount(): Long = shardManager.textChannelCache.size() + shardManager.voiceChannels.size
 
 	fun getTextChannelCount(): Int = shardManager.textChannels.size
 
+	fun getCachedTextChannelCount(): Long = shardManager.textChannelCache.size()
+
 	fun getVoiceChannelCount(): Int  = shardManager.voiceChannels.size
+
+	fun getCachedVoiceChannelCount(): Long = shardManager.voiceChannelCache.size()
 
 	fun getUsers(): List<User> = shardManager.users
 

@@ -48,12 +48,12 @@ object LorittaAnalytics {
 		when (service) {
 			DISCORD_BOTS, DISCORD_BOT_LIST -> {
 				return jsonObject(
-						"server_count" to lorittaShards.getGuildCount()
+						"server_count" to lorittaShards.getCachedGuildCount()
 				)
 			}
 			VESPERTINE_BOT_LIST -> {
 				return jsonObject(
-						"guildCount" to lorittaShards.getGuildCount()
+						"guildCount" to lorittaShards.getCachedGuildCount()
 				)
 			}
 			else -> throw UnsupportedAnalyticServiceException()

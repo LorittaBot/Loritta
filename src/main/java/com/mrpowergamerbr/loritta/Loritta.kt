@@ -154,8 +154,6 @@ class Loritta(config: LorittaConfig) {
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
-	var userCount = 0
-	var guildCount = 0
 
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
@@ -300,9 +298,6 @@ class Loritta(config: LorittaConfig) {
 		thread(name = "Update Random Stuff") {
 			while (true) {
 				try {
-					userCount = lorittaShards.getUserCount()
-					guildCount = lorittaShards.getGuildCount()
-
 					val isPatreon = mutableMapOf<String, Boolean>()
 					val isDonator = mutableMapOf<String, Boolean>()
 
