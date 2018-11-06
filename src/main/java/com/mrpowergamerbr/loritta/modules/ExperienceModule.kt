@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.modules
 
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -8,8 +7,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -54,12 +51,12 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = lorittaProfile.xp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					profileUpdates.add(Updates.inc("xp", globalGainedXp))
-					profileUpdates.add(Updates.set("lastMessageSentHash", event.message.contentStripped.hashCode()))
+					// profileUpdates.add(Updates.inc("xp", globalGainedXp))
+					// profileUpdates.add(Updates.set("lastMessageSentHash", event.message.contentStripped.hashCode()))
 
-					val userData = serverConfig.getUserData(event.member!!.user.id)
-					userData.xp = userData.xp + gainedXp
-					loritta save serverConfig
+					// val userData = serverConfig.getUserData(event.member!!.user.id)
+					// userData.xp = userData.xp + gainedXp
+					// loritta save serverConfig
 					// loritta.updateLorittaGuildUserData(serverConfig, userData.userId, Updates.inc("guildUserData.$.xp", gainedXp))
 				}
 			}
