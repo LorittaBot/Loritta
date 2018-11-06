@@ -56,18 +56,20 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import java.awt.image.BufferedImage
 			import java.io.File
 			import javax.imageio.ImageIO
+			import kotlinx.coroutines.GlobalScope
+			import kotlinx.coroutines.launch
 
-			suspend fun loritta(context: CommandContext, locale: BaseLocale) {
-				$kotlinCode
+			fun loritta(context: CommandContext, locale: BaseLocale) {
+			    GlobalScope.launch(loritta.coroutineDispatcher) {
+					$kotlinCode
+				}
 			}""".trimIndent()
 
 		val engine = ScriptEngineManager().getEngineByName("kotlin") // Iniciar o nashorn
 		try {
 			engine.eval(kotlinCode)
 			val invocable = engine as Invocable
-			suspendCoroutineUninterceptedOrReturn<Any?> { cont ->
-				invocable.invokeFunction("loritta", context, locale, cont) // Pegar o valor retornado pelo script
-			}
+			invocable.invokeFunction("loritta", context, locale) // Pegar o valor retornado pelo script
 		} catch (e: Exception) {
 			e.printStackTrace()
 			val builder = EmbedBuilder()
