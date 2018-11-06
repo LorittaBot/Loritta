@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
@@ -61,8 +62,8 @@ object GlobalHandler {
 				"discordAuth" to null,
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
-				"guildCount" to loritta.guildCount,
-				"userCount" to loritta.userCount,
+				"guildCount" to lorittaShards.getCachedGuildCount(),
+				"userCount" to lorittaShards.getCachedUserCount(),
 				"availableCommandsCount" to loritta.commandManager.commandMap.size,
 				"commandMap" to loritta.commandManager.commandMap,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
