@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.parallax
 fun main(args: Array<String>) {
 	val input = """
 		enviar "Olá, mundo!"
-		enviar "kk eae mens" em "297732013006389252"
+		enviar "kk eae mens" em Constants.PORTUGUESE_SUPPORT_GUILD_ID
 	""".trimIndent()
 
 	var output = ""

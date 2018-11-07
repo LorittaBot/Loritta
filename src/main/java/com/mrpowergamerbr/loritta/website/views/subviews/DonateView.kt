@@ -34,7 +34,7 @@ class DonateView : AbstractView() {
 				return "Redirecionando..."
 			}
 		}
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		var patreons: List<Member>? = null
 		var donators: List<Member>? = null

@@ -40,7 +40,7 @@ class UpdateAvailableCallbackController {
 			val items = payload["changeSet"]["items"].array
 
 			run {
-				val textChannel = lorittaShards.getTextChannelById("297732013006389252")
+				val textChannel = lorittaShards.getTextChannelById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				if (textChannel != null) {
 					val loriReplies = mutableListOf<LoriReply>()

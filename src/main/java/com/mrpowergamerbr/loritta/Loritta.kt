@@ -301,7 +301,7 @@ class Loritta(config: LorittaConfig) {
 					val isPatreon = mutableMapOf<String, Boolean>()
 					val isDonator = mutableMapOf<String, Boolean>()
 
-					val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+					val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 					if (lorittaGuild != null) {
 						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel

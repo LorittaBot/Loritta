@@ -40,6 +40,9 @@ object Constants {
 
 	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 
+	const val PORTUGUESE_SUPPORT_GUILD_ID = "297732013006389252"
+	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
+
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)

@@ -426,8 +426,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		loritta.executor.execute {
 			// Fazer relay de bans
-			if (event.guild.id == "297732013006389252") {
-				val relayTo = lorittaShards.getGuildById("420626099257475072")
+			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
+				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
 					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
@@ -435,8 +435,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 			}
-			if (event.guild.id == "420626099257475072") {
-				val relayTo = lorittaShards.getGuildById("297732013006389252")
+			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
+				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
 					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
@@ -492,13 +492,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		loritta.executor.execute {
 			// Fazer relay de unbans
-			if (event.guild.id == "297732013006389252") {
-				val relayTo = lorittaShards.getGuildById("420626099257475072")
+			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
+				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				relayTo?.controller?.unban(event.user)?.queue()
 			}
-			if (event.guild.id == "420626099257475072") {
-				val relayTo = lorittaShards.getGuildById("297732013006389252")
+			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
+				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				relayTo?.controller?.unban(event.user)?.queue()
 			}
