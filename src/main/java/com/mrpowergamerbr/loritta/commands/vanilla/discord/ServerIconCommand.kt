@@ -41,7 +41,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		if (guild.iconUrl == null) {
 			context.reply(
 					LoriReply(
-							message = context.locale["SERVERICON_NoIcon", context.args[0]],
+							message = context.locale["SERVERICON_NoIcon"],
 							prefix = Constants.ERROR
 					)
 			)

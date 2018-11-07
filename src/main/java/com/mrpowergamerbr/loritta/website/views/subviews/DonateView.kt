@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem
 import com.mrpowergamerbr.temmiemercadopago.mp.request.PaymentRequest
 import net.dv8tion.jda.core.entities.Member
