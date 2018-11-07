@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem
