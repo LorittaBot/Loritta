@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Icon
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 
 class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), CommandCategory.DISCORD) {
 	override fun getUsage(locale: BaseLocale): CommandArguments {
@@ -52,8 +53,18 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				)
 			}
 		} catch (e: Exception) {
-			// TODO: Remover isto
-			logger.info("Erro ao adicionar o emoji!", e)
+			if (e is ErrorResponseException) {
+				if (e.errorCode == 30008) {
+					context.reply(
+							LoriReply(
+									context.locale["EMOJISEARCH_EmotesLimitReached"],
+									Constants.ERROR
+							)
+					)
+					
+					return
+				}
+			}
 			
 			context.reply(
 					LoriReply(
