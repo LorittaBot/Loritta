@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Icon
 
@@ -33,9 +34,11 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		return listOf(Permission.MANAGE_EMOTES)
 	}
 
+	val logger = KotlinLogging.logger {  }
+	
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val imageUrl = context.getImageUrlAt(1, 0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-
+		
 		try {
 			val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
@@ -49,6 +52,9 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				)
 			}
 		} catch (e: Exception) {
+			// TODO: Remover isto
+			logger.info("Erro ao adicionar o emoji!", e)
+			
 			context.reply(
 					LoriReply(
 							context.locale["EMOJISEARCH_AddError"],
