@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.profile
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -10,6 +12,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -100,9 +104,12 @@ class MSNProfileCreator : ProfileCreator {
 		val shiftY = 291
 
 		graphics.font = whitneyBold20
+		val globalPosition = transaction(Databases.loritta) {
+			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
+		}
 		graphics.drawText("Global", 4, 21 + shiftY, 244)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("${userProfile.xp} XP", 4, 39  + shiftY, 244)
+		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
 
 		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == user.id } + 1
 		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == user.id }
