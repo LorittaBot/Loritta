@@ -47,7 +47,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			val queriedEmotes = lorittaShards.getGuilds()
 					.flatMap { it ->
 						it.emotes.filter {
-							it.name.toLowerCase().contains(query)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
+							it.name.contains(query, true)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
 						}
 					}.sortedByDescending { it.guild.members.size }
 
