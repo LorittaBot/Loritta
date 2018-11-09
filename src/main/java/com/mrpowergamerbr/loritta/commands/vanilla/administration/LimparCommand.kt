@@ -90,7 +90,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			if (allowedMessages.size == messages.size) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.userHandle.asMention])
-			} else {
+			} else if (hasTooOldMessages) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
 			}
 		} else {
