@@ -185,6 +185,14 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
+		
+		class AddEmoji {
+			lateinit var description: String
+			lateinit var success: String
+			lateinit var limitReached: String
+			lateinit var error: String
+		}
+		var addEmoji = AddEmoji()
 
 		class Fanarts {
 			lateinit var description: String
