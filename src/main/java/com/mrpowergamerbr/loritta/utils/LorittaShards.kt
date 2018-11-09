@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.dv8tion.jda.bot.sharding.ShardManager
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
@@ -16,15 +17,27 @@ class LorittaShards {
 
 	fun getGuildCount(): Int = shardManager.guilds.size
 
+	fun getCachedGuildCount(): Long = shardManager.guildCache.size()
+
 	fun getUserCount(): Int = shardManager.users.size
+
+	fun getCachedUserCount(): Long = shardManager.userCache.size()
 
 	fun getEmoteCount(): Int = shardManager.emotes.size
 
+	fun getCachedEmoteCount(): Long = shardManager.emoteCache.size()
+
 	fun getChannelCount(): Int = shardManager.textChannels.size + shardManager.voiceChannels.size
+
+	fun getCachedChannelCount(): Long = shardManager.textChannelCache.size() + shardManager.voiceChannels.size
 
 	fun getTextChannelCount(): Int = shardManager.textChannels.size
 
+	fun getCachedTextChannelCount(): Long = shardManager.textChannelCache.size()
+
 	fun getVoiceChannelCount(): Int  = shardManager.voiceChannels.size
+
+	fun getCachedVoiceChannelCount(): Long = shardManager.voiceChannelCache.size()
 
 	fun getUsers(): List<User> = shardManager.users
 
@@ -35,11 +48,11 @@ class LorittaShards {
 		return shardManager.getUserById(id)
 	}
 
-	fun retrieveUserById(id: String?): User? {
+	suspend fun retrieveUserById(id: String?): User? {
 		if (id == null)
 			return null
 
-		return getUserById(id) ?: shardManager.retrieveUserById(id).complete()
+		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
 	}
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)

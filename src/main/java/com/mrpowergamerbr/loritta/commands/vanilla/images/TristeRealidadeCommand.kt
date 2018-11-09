@@ -40,7 +40,7 @@ class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristereali
 		baseGraph.font = Constants.MINECRAFTIA.deriveFont(Font.PLAIN, 8f)
 
 		val users = ArrayList<User>()
-		var members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null }.toMutableList()
+		var members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null && !it.user.isBot }.toMutableList()
 
 		users.addAll(context.message.mentionedUsers)
 

@@ -58,6 +58,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			// Primeiros iremos deletar a mensagem do comando que o usuário enviou
 			try { context.message.delete().await() } catch (e: Exception) {}
 
+			var hasTooOldMessages = false
 			val messages = context.event.textChannel!!.history.retrievePast(toClear).await()
 			val allowedMessages = messages.asSequence().filter {
 				if (context.message.mentionedUsers.isNotEmpty()) {
@@ -67,7 +68,11 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 				}
 			}.filter {
 				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
-				MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
+				val isTooOld = MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
+				if (isTooOld) {
+					hasTooOldMessages = true
+				}
+				isTooOld
 			}.toList()
 
 			if (allowedMessages.isEmpty()) {
@@ -85,7 +90,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			if (allowedMessages.size == messages.size) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.userHandle.asMention])
-			} else {
+			} else if (hasTooOldMessages) {
 				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
 			}
 		} else {

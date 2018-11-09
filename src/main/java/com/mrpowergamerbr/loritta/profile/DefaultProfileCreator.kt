@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.profile
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -70,7 +71,10 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 562, 21, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("${userProfile.xp} XP", 562, 39, 800 - 6)
+		val globalPosition = transaction(Databases.loritta) {
+			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
+		}
+		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 562, 39, 800 - 6)
 
 		val localPosition = serverConfig.guildUserData.sortedByDescending { it.xp }.indexOfFirst { it.userId == user.id } + 1
 		val xpLocal = serverConfig.guildUserData.firstOrNull { it.userId == user.id }

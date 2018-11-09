@@ -25,6 +25,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -302,6 +303,7 @@ class CommandManager {
 	 */
 	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
+		val member = ev.message.member
 
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(command)
@@ -433,8 +435,13 @@ class CommandManager {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["PERMISSION_${it.name}"] + "`" })
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} ${locale["PERMISSION_I_NEED_PERMISSION", required]}").queue()
+						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+						context.reply(
+								LoriReply(
+										locale.format(required, "\uD83D\uDE22", "\uD83D\uDE42") { commands.loriDoesntHavePermissionDiscord },
+										Constants.ERROR
+								)
+						)
 						return true
 					}
 				}
@@ -464,8 +471,25 @@ class CommandManager {
 					return true
 				}
 
+				if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+					context.reply(
+							LoriReply(
+									locale.format { commands.commandOnlyForOwner },
+									Constants.ERROR
+							)
+					)
+					return true
+				}
+
 				if (!context.canUseCommand()) {
-					context.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + "**" + locale["NO_PERMISSION"] + "**")
+					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member.hasPermission(ev.message.textChannel, it) }
+					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+					context.reply(
+							LoriReply(
+									locale.format(required) { commands.doesntHavePermissionDiscord },
+									Constants.ERROR
+							)
+					)
 					return true
 				}
 

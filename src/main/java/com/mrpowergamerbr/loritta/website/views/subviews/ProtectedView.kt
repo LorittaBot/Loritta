@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.core.Permission
 import org.jooby.Request
 import org.jooby.Response
@@ -63,7 +64,7 @@ abstract class ProtectedView : AbstractView() {
 
 						val userId = auth.getUserIdentification().id
 
-						val user = lorittaShards.retrieveUserById(userId)
+						val user = runBlocking { lorittaShards.retrieveUserById(userId) }
 
 						if (user != null) {
 							val member = guild.getMember(user)

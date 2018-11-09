@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.evaluate
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.temmiemercadopago.mp.TemmieItem
 import com.mrpowergamerbr.temmiemercadopago.mp.request.PaymentRequest
 import net.dv8tion.jda.core.entities.Member
@@ -34,7 +35,7 @@ class DonateView : AbstractView() {
 				return "Redirecionando..."
 			}
 		}
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		var patreons: List<Member>? = null
 		var donators: List<Member>? = null

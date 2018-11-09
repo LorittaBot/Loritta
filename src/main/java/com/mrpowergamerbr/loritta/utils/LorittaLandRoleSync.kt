@@ -27,11 +27,11 @@ class LorittaLandRoleSync : Runnable {
 					"334734175531696128" to "420710241693466627" // Notificar Novidades
 			)
 
-			val originalGuild = lorittaShards.getGuildById("297732013006389252") ?: run {
+			val originalGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID) ?: run {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Original) não existe!")
 				return
 			}
-			val usGuild = lorittaShards.getGuildById("420626099257475072") ?: run {
+			val usGuild = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID) ?: run {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
 				return
 			}

@@ -25,7 +25,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 			} catch (e: Exception) {
 				logger.error("Erro ao verificar novas streams do Twitch!", e)
 			}
-			Thread.sleep(5000); // Só 5s de delay!
+			Thread.sleep(60000); // Só 60s de delay!
 		}
 	}
 

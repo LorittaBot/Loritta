@@ -123,7 +123,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-				val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!
+				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
 				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)

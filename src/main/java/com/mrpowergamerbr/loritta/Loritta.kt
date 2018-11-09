@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.collect.EvictingQueue
@@ -28,7 +29,9 @@ import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.FanArtConfig
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -130,7 +133,10 @@ class Loritta(config: LorittaConfig) {
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
 
-	var fanArts = mutableListOf<LorittaFanArt>()
+	lateinit var fanArtConfig: FanArtConfig
+	val fanArts: List<LorittaFanArt>
+			get() = fanArtConfig.fanArts
+
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
@@ -148,8 +154,6 @@ class Loritta(config: LorittaConfig) {
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
-	var userCount = 0
-	var guildCount = 0
 
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
@@ -294,13 +298,10 @@ class Loritta(config: LorittaConfig) {
 		thread(name = "Update Random Stuff") {
 			while (true) {
 				try {
-					userCount = lorittaShards.getUserCount()
-					guildCount = lorittaShards.getGuildCount()
-
 					val isPatreon = mutableMapOf<String, Boolean>()
 					val isDonator = mutableMapOf<String, Boolean>()
 
-					val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+					val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 					if (lorittaGuild != null) {
 						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
@@ -569,7 +570,7 @@ class Loritta(config: LorittaConfig) {
 	 * Loads the Fan Arts from the "fanarts.json" file
 	 */
 	fun loadFanArts() {
-		fanArts = GSON.fromJson(File("./fanarts.json").readText())
+		fanArtConfig = Constants.MAPPER.readValue(File("./fanarts.yml").readText())
 	}
 
 	/**

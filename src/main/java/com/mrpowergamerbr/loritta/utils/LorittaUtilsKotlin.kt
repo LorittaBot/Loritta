@@ -54,7 +54,7 @@ fun Array<String>.remove(index: Int): Array<String> {
 
 val User.patreon: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("364201981016801281")
@@ -70,7 +70,7 @@ val User.patreon: Boolean
 
 val User.lorittaSupervisor: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("351473717194522647")
@@ -86,7 +86,7 @@ val User.lorittaSupervisor: Boolean
 
 val User.donator: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("334711262262853642")
@@ -102,7 +102,7 @@ val User.donator: Boolean
 
 val User.artist: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("341343754336337921")
@@ -118,7 +118,7 @@ val User.artist: Boolean
 
 val User.supervisor: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("351473717194522647")
@@ -134,7 +134,7 @@ val User.supervisor: Boolean
 
 val User.support: Boolean
 	get() {
-		val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("399301696892829706")
@@ -503,7 +503,7 @@ object LorittaUtilsKotlin {
 		if (t is ErrorResponseException && t.errorCode == -1) // Ignorar socket timeouts (provavelmente é a shard do Discord que está morrendo)
 			return
 
-		val guild = lorittaShards.getGuildById("297732013006389252")
+		val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (guild == null) {
 			logger.error("Não foi possível enviar stacktrace: Guild inexistente!")

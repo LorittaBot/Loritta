@@ -64,64 +64,68 @@ class DailyTaxTask : Runnable {
 
 			alreadySentDMs = false
 
-			logger.info("Executando a taxa diária!")
+			if (hour == 19) {
+				logger.info("Executando a taxa diária!")
 
-			// MARRY
-			val documents = transaction(Databases.loritta) {
-				val selected = Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
+				lastDailyTax.writeText(
+						System.currentTimeMillis().toString()
+				)
 
-				Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble())}) {
-					with(SqlExpressionBuilder) {
-						it.update(Profiles.money, Profiles.money - MARRIAGE_DAILY_TAX.toDouble())
-					}
-				}
+				// MARRY
+				val documents = transaction(Databases.loritta) {
+					val selected = Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
 
-				selected.onEach { it.marriage != null } // Vamos carregar todos os marriages antes de prosseguir
-			}
-
-			// Okay, tudo certo, vamos lá!
-			for (document in documents) {
-				val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
-
-				val marriedWithId = if (marriage.user1 == document.userId) {
-					marriage.user2
-				} else {
-					marriage.user1
-				}.toString()
-
-				val marriedWith = lorittaShards.getUserById(marriedWithId)
-				val user = lorittaShards.getUserById(document.userId.toString())
-
-				if (user != null) {
-					try {
-						user.openPrivateChannel().queue {
-							it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble()) }) {
+						with(SqlExpressionBuilder) {
+							it.update(Profiles.money, Profiles.money - MARRIAGE_DAILY_TAX.toDouble())
 						}
-					} catch (e: Exception) {}
+					}
+
+					selected.onEach { it.marriage != null } // Vamos carregar todos os marriages antes de prosseguir
 				}
 
-				if (marriedWith != null) {
-					try {
-						marriedWith.openPrivateChannel().queue {
-							it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+				// Okay, tudo certo, vamos lá!
+				for (document in documents) {
+					val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
+
+					val marriedWithId = if (marriage.user1 == document.userId) {
+						marriage.user2
+					} else {
+						marriage.user1
+					}.toString()
+
+					val marriedWith = lorittaShards.getUserById(marriedWithId)
+					val user = lorittaShards.getUserById(document.userId.toString())
+
+					if (user != null) {
+						try {
+							user.openPrivateChannel().queue {
+								it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+							}
+						} catch (e: Exception) {
 						}
-					} catch (e: Exception) {}
-				}
+					}
 
-				transaction(Databases.loritta) {
-					Profiles.update({ Profiles.id eq document.userId }) {
-						it[Profiles.marriage] = null
+					if (marriedWith != null) {
+						try {
+							marriedWith.openPrivateChannel().queue {
+								it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+							}
+						} catch (e: Exception) {
+						}
 					}
-					Profiles.update({ Profiles.id eq marriedWithId.toLong() }) {
-						it[Profiles.marriage] = null
+
+					transaction(Databases.loritta) {
+						Profiles.update({ Profiles.id eq document.userId }) {
+							it[Profiles.marriage] = null
+						}
+						Profiles.update({ Profiles.id eq marriedWithId.toLong() }) {
+							it[Profiles.marriage] = null
+						}
+						marriage.delete()
 					}
-					marriage.delete()
 				}
 			}
-
-			lastDailyTax.writeText(
-					System.currentTimeMillis().toString()
-			)
 		} catch (e: Exception) {
 			logger.error("Erro ao atualizar a taxa diária!", e)
 		}

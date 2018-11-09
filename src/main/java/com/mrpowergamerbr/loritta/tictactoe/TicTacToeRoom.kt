@@ -6,8 +6,9 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import kotlinx.coroutines.runBlocking
 import org.jooby.Session
 import org.jooby.WebSocket
 
@@ -162,7 +163,7 @@ class TicTacToeRoom {
 		).obj
 
 		if (player1 != null) {
-			val user = lorittaShards.retrieveUserById(player1)
+			val user = runBlocking { lorittaShards.retrieveUserById(player1) }
 
 			if (user != null) {
 				roomAsJson["player1Metadata"] = jsonObject(
@@ -174,7 +175,7 @@ class TicTacToeRoom {
 		}
 
 		if (player2 != null) {
-			val user = lorittaShards.retrieveUserById(player2)
+			val user = runBlocking { lorittaShards.retrieveUserById(player2) }
 
 			if (user != null) {
 				roomAsJson["player2Metadata"] = jsonObject(

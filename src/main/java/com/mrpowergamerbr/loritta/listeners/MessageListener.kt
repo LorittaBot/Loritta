@@ -111,7 +111,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							roles.add(everyone)
 						}
 
-						roles.sortedByDescending { it.position }
+						roles.sortByDescending { it.position }
 
 						var ignoringCommandsRole: Role? = null
 						for (role in roles) {

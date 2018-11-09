@@ -61,7 +61,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				false
 			}
 
-			val lorittaGuild = lorittaShards.getGuildById("297732013006389252")
+			val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 			var hasNotifyMeRole = if (lorittaGuild != null) {
 				if (lorittaGuild.isMember(user)) {
 					val member = lorittaGuild.getMember(user)

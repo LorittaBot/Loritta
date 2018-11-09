@@ -20,6 +20,8 @@ open class BaseLocale {
 	var commands = Commands()
 	@Transient
 	var loritta = Loritta()
+	@Transient
+	var discord = Discord()
 
 	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
@@ -68,14 +70,44 @@ open class BaseLocale {
 
 	lateinit var SHIP_valor0: List<String>
 
+	// !!!       DO NOT EDIT        !!!
+	// ===[ AUTO GENEREATED LOCALE ]===
 	class Loritta {
 		lateinit var translationAuthors: List<String>
+		lateinit var xOfX: String
+	}
+	class Discord {
+		class Permissions {
+			lateinit var kickMembers: String
+			lateinit var banMembers: String
+			lateinit var administrator: String
+			lateinit var manageChannel: String
+			lateinit var manageServer: String
+			lateinit var addReactions: String
+			lateinit var messageHistory: String
+			lateinit var viewAuditLogs: String
+			lateinit var messageRead: String
+			lateinit var messageWrite: String
+			lateinit var messageManage: String
+			lateinit var messageExtEmoji: String
+			lateinit var messageEmbedLinks: String
+			lateinit var manageRoles: String
+			lateinit var managePermissions: String
+			lateinit var manageWebhooks: String
+			lateinit var manageEmotes: String
+			lateinit var createInstantInvite: String
+		}
+		var permissions = Permissions()
+
 	}
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
 		lateinit var errorWhileExecutingCommand: String
 		lateinit var cantUseInPrivate: String
 		lateinit var userDoesNotExists: String
+		lateinit var doesntHavePermissionDiscord: String
+		lateinit var loriDoesntHavePermissionDiscord: String
+		lateinit var commandOnlyForOwner: String
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String
@@ -153,6 +185,22 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
+		
+		class AddEmoji {
+			lateinit var description: String
+			lateinit var success: String
+			lateinit var limitReached: String
+			lateinit var error: String
+		}
+		var addEmoji = AddEmoji()
 
+		class Fanarts {
+			lateinit var description: String
+			lateinit var madeBy: String
+			lateinit var thankYouAll: String
+		}
+		var fanarts = Fanarts()
 	}
+	// ===[ END  GENEREATED LOCALE ]===
+	// !!!       DO NOT EDIT        !!!
 }

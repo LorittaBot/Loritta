@@ -1,25 +1,30 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["FANARTS_Description"]
+		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.fanarts.description }
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val list = loritta.fanArts.shuffled()
-
-		sendFanArtEmbed(context, locale, list, 0)
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+		sendFanArtEmbed(context, locale, loritta.fanArts, Loritta.RANDOM.nextInt(loritta.fanArts.size))
 	}
 
 	suspend fun sendFanArtEmbed(context: CommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int) {
 		val fanArt = list[item]
+		val index = loritta.fanArts.indexOf(fanArt) + 1
+
 		val embed = EmbedBuilder().apply {
 			setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
 
@@ -27,17 +32,26 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 			val displayName = fanArt.fancyName ?: user?.name
 
-			var info = ""
+			setDescription("**" + locale.format(displayName) { commands.fanarts.madeBy } + "**")
+			val artist = loritta.fanArtConfig.artists[fanArt.artistId]
+			if (artist != null) {
+				for (socialNetwork in artist.socialNetworks) {
+					var root = socialNetwork.display
+					if (socialNetwork.link != null) {
+						root = "[$root](${socialNetwork.link})"
+					}
+					appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
+				}
+			}
+			appendDescription("\n\n${locale.format(displayName) { commands.fanarts.thankYouAll }}")
+
+			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
 
 			if (user != null) {
-				info += user.name + "#" + user.discriminator + "\n"
+				footer = "${user.name + "#" + user.discriminator} • $footer"
 			}
 
-			if (fanArt.additionalInfo != null) {
-				info += fanArt.additionalInfo + "\n"
-			}
-
-			setDescription(locale["FANARTS_EmbedDescription", displayName, info])
+			setFooter(footer, user?.effectiveAvatarUrl)
 			setImage("https://loritta.website/assets/img/fanarts/${fanArt.fileName}")
 			setColor(Constants.LORITTA_AQUA)
 		}

@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import java.awt.Color
@@ -34,6 +37,11 @@ object Constants {
 	const val ACTION_GENERIC = "generic"
 	const val ACTION_MALE_AND_FEMALE = "male_x_female"
 	const val ACTION_MALE_AND_MALE = "male_x_male"
+
+	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+
+	const val PORTUGUESE_SUPPORT_GUILD_ID = "297732013006389252"
+	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
 
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
@@ -71,6 +79,9 @@ object Constants {
 			"putiane",
 			"fdp"
 	)
+
+	// Canais de textos utilizados na Loritta
+	const val RELAY_YOUTUBE_VIDEOS_CHANNEL = "509043859792068609"
 
 	/**
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image

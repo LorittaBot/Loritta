@@ -140,8 +140,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val game = Loritta.config.currentlyPlaying[currentIndex]
 
 				var str = game.name
-				str = str.replace("{guilds}", loritta.lorittaShards.getGuildCount().toString())
-				str = str.replace("{users}", loritta.lorittaShards.getUserCount().toString())
+				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
+				str = str.replace("{users}", loritta.lorittaShards.getCachedUserCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
 				val shard = lorittaShards.getShards().firstOrNull() ?: return

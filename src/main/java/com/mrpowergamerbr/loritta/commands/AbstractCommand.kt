@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -178,6 +179,21 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				embed.addField(
 						"\uD83D\uDCD6 " + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
 						exampleList,
+						false
+				)
+			}
+
+			if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
+				var field = ""
+				if (getDiscordPermissions().isNotEmpty()) {
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
+				}
+				if (getBotPermissions().isNotEmpty()) {
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
+				}
+				embed.addField(
+						"\uD83D\uDCDB Permissões",
+						field,
 						false
 				)
 			}
