@@ -114,36 +114,36 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 
 				val emoteInfo = context.sendMessage(embed.build())
 
-				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
-					emoteInfo.addReaction("wumplus:388417805126467594").queue()
+				emoteInfo.onReactionAddByAuthor(context) {
+					if (it.reactionEmote.name == "wumplus") {
+						emoteInfo.delete().queue()
+						try {
+							ByteArrayOutputStream().use { os ->
+								val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
 
-					emoteInfo.onReactionAddByAuthor(context) {
-						if (it.reactionEmote.name == "wumplus") {
-							emoteInfo.delete().queue()
-							try {
-								ByteArrayOutputStream().use { os ->
-									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
-
-									os.use { inputStream ->
-										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
-										context.reply(
-												LoriReply(
-														context.locale["EMOJISEARCH_AddSuccess"],
-														sentEmote.asMention
-												)
-										)
-									}
+								os.use { inputStream ->
+									val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
+									context.reply(
+											LoriReply(
+													context.locale["EMOJISEARCH_AddSuccess"],
+													sentEmote.asMention
+											)
+									)
 								}
-							} catch (e: Exception) {
-								context.reply(
-										LoriReply(
-												context.locale["EMOJISEARCH_AddError"],
-												Constants.ERROR
-										)
-								)
 							}
+						} catch (e: Exception) {
+							context.reply(
+									LoriReply(
+											context.locale["EMOJISEARCH_AddError"],
+											Constants.ERROR
+									)
+							)
 						}
 					}
+				}
+				
+				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
+					emoteInfo.addReaction("wumplus:388417805126467594").queue()
 				}
 			} else {
 				if (it.reactionEmote.name == "⏩") {
