@@ -41,15 +41,15 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				return
 			}
 
-            // verifica se o ultimo argumento é animated, caso verdadeito só retorna emojos animados
-            val onlyAnimated = context.args[context.args.size - 1] == "animated"
+			// verifica se o ultimo argumento é animated, caso verdadeito só retorna emojos animados
+			val onlyAnimated = context.args[context.args.size - 1] == "animated"
 
-            val queriedEmotes = lorittaShards.getGuilds()
-                    .flatMap { it ->
-                        it.emotes.filter {
-                            it.name.toLowerCase().contains(query)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
-                        }
-                    }.sortedByDescending { it.guild.members.size }
+			val queriedEmotes = lorittaShards.getGuilds()
+					.flatMap { it ->
+						it.emotes.filter {
+							it.name.toLowerCase().contains(query)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
+						}
+					}.sortedByDescending { it.guild.members.size }
 
 			sendQueriedEmbed(context, queriedEmotes, query, 0)
 		} else {
@@ -115,33 +115,41 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				val emoteInfo = context.sendMessage(embed.build())
 
 				emoteInfo.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "wumplus") {
+					if (it.reactionEmote.name == "⏪") {
 						emoteInfo.delete().queue()
-						try {
-							ByteArrayOutputStream().use { os ->
-								val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
+						sendQueriedEmbed(context, _queriedEmotes, query, page)
+					}
+					if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
+						if (it.reactionEmote.name == "wumplus") {
+							emoteInfo.delete().queue()
+							try {
+								ByteArrayOutputStream().use { os ->
+									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
 
-								os.use { inputStream ->
-									val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
-									context.reply(
-											LoriReply(
-													context.locale["EMOJISEARCH_AddSuccess"],
-													sentEmote.asMention
-											)
-									)
+									os.use { inputStream ->
+										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
+										context.reply(
+												LoriReply(
+														context.locale["EMOJISEARCH_AddSuccess"],
+														sentEmote.asMention
+												)
+										)
+									}
 								}
+							} catch (e: Exception) {
+								context.reply(
+										LoriReply(
+												context.locale["EMOJISEARCH_AddError"],
+												Constants.ERROR
+										)
+								)
 							}
-						} catch (e: Exception) {
-							context.reply(
-									LoriReply(
-											context.locale["EMOJISEARCH_AddError"],
-											Constants.ERROR
-									)
-							)
 						}
 					}
 				}
-				
+
+				emoteInfo.addReaction("⏪").queue()
+
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
 					emoteInfo.addReaction("wumplus:388417805126467594").queue()
 				}
