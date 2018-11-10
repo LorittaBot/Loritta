@@ -19,12 +19,12 @@ import java.util.concurrent.TimeUnit
 class UpdateStatusThread : Thread("Update Status Thread") {
 	companion object {
 		var skipToIndex = -1 // owo
+		var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
 	}
 
 	var lastUpdate: Long = System.currentTimeMillis()
 	var fanArtMinutes = -1
 	var currentIndex = 0 // Index atual
-	var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
 	var currentDay = -1
 	var revertedAvatar = false
 
