@@ -24,29 +24,43 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return listOf("", "12", "24", "2d20", "3d5", "4d10")
+		return listOf("", "12", "24", "2d20", "3d5", "4d10", "5..10", "5..10d10")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var quantity = 1L
-		var value: Long = 6
+		var lowerBound = 1L
+		var upperBound = 6L
 		var expression = ""
 
 		if (context.args.isNotEmpty()) {
 			try {
+				fun setBounds(arg: String) {
+					// Se o usuário inserir...
+					// 5..10
+					// 10
+					val bounds = arg.split("..")
+					if (bounds.size == 1) { // Caso não tenha nenhum "..", então só coloque o upper bound
+						upperBound = bounds[0].toLong()
+					} else { // Mas caso tenha (5..10), então coloque o lower bound e o upper bound!
+						lowerBound = bounds[0].toLong()
+						upperBound = bounds[1].toLong()
+					}
+				}
+
 				if (context.args[0].contains("d")) {
 					val values = context.args[0].split("d")
 
 					quantity = values[0].toLongOrNull() ?: 1
-					value = values[1].toLong()
+					setBounds(values[1])
 				} else {
-					value = context.args[0].toLong()
+					setBounds(context.args[0])
 				}
-				Loritta.RANDOM.nextLong(1, value + 1)
+
 				if (context.args.size >= 2) {
 					expression = context.args.remove(0).joinToString(" ")
 					try {
-						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(1, value + 1).toString() + expression).toInt().toString()
+						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
 						return
@@ -62,7 +76,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 
 		}
 
-		if (0 >= value) {
+		if (0 >= upperBound || lowerBound > upperBound) {
 			context.sendMessage(context.getAsMention(true) + locale["ROLL_INVALID_NUMBER"])
 			return
 		}
@@ -71,7 +85,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 
 		var response = ""
 		for (i in 1..quantity) {
-			val rolledSide = Loritta.RANDOM.nextLong(1, value + 1)
+			val rolledSide = Loritta.RANDOM.nextLong(lowerBound, upperBound + 1)
 			rolledSides.add(rolledSide)
 		}
 
@@ -97,7 +111,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			response = "`${finalResult.toInt()}` **»** $response"
 		}
 
-		var message = context.locale["ROLL_RESULT", value, finalResult.toInt()]
+		var message = context.locale["ROLL_RESULT", upperBound, finalResult.toInt()]
 
 		val list = mutableListOf<LoriReply>()
 		list.add(LoriReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))
