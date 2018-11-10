@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.ExtrasController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.FanArtsController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.HomeController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.extras.ExtrasViewerController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserReputationController
 import org.jooby.Jooby
 
 class UserRoute : Jooby() {
@@ -12,5 +13,7 @@ class UserRoute : Jooby() {
 		use(FanArtsController::class.java)
 		use(ExtrasController::class.java)
 		use(ExtrasViewerController::class.java)
+
+		use(UserReputationController::class.java)
 	}
 }

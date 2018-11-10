@@ -10,6 +10,7 @@ import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
@@ -18,6 +19,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
+import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
 import org.jooby.Jooby
 import org.jooby.Kooby
@@ -27,6 +29,7 @@ import org.jooby.mongodb.Mongodb
 import java.io.File
 import java.io.StringWriter
 import java.util.*
+import kotlin.reflect.full.functions
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(Loritta.config.websitePort) // Porta do website
@@ -158,6 +161,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var WEBSITE_URL: String
 		private val logger = KotlinLogging.logger {}
 		val templateCache = Caffeine.newBuilder().build<String, PebbleTemplate>().asMap()
+		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
@@ -207,4 +211,45 @@ fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<St
 	val template = LorittaWebsite.templateCache.getOrPut(file) { LorittaWebsite.ENGINE.getTemplate(file) }
 	template.evaluate(writer, variables)
 	return writer.toString()
+}
+
+fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlBlockTag.() -> Unit {
+	println("Evaluating $fileName...")
+	val template = LorittaWebsite.kotlinTemplateCache.getOrPut(fileName) {
+		val file = File(LorittaWebsite.FOLDER, fileName)
+		val scriptContent = file.readText()
+		val content = """
+			import com.mrpowergamerbr.loritta.Loritta
+			import com.mrpowergamerbr.loritta.LorittaLauncher
+			import com.mrpowergamerbr.loritta.commands.CommandContext
+			import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+			import com.mrpowergamerbr.loritta.utils.loritta
+			import com.mrpowergamerbr.loritta.utils.lorittaShards
+			import com.mrpowergamerbr.loritta.utils.save
+			import com.mrpowergamerbr.loritta.utils.Constants
+			import com.mrpowergamerbr.loritta.utils.LorittaImage
+			import com.mrpowergamerbr.loritta.utils.toBufferedImage
+			import com.mrpowergamerbr.loritta.utils.*
+			import com.mrpowergamerbr.loritta.utils.locale.*
+			import java.awt.image.BufferedImage
+			import java.io.File
+			import javax.imageio.ImageIO
+			import kotlinx.coroutines.GlobalScope
+			import kotlinx.coroutines.launch
+			import kotlinx.html.body
+			import kotlinx.html.html
+			import kotlinx.html.stream.appendHTML
+			import kotlinx.html.*
+
+			class ContentStuff {
+				$scriptContent
+			}
+
+			ContentStuff()"""
+		KtsObjectLoader().load<Any>(content)
+	}
+
+	val kotlinFunction = template::class.functions.first { it.name == function }
+	val result = kotlinFunction.call(*args) as HtmlBlockTag.() -> Unit
+	return result
 }
