@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.user
 
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
@@ -24,13 +25,20 @@ class UserReputationController {
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
 		val userId = req.param("userId").value()
 		val user = lorittaShards.getUserById(userId)!!
+		val userIdentification = variables["userIdentification"] as TemmieDiscordAuth.UserIdentification?
 
 		// Vamos agora pegar todas as reputações
 		val reputations = transaction(Databases.loritta) {
 			Reputation.find { Reputations.receivedById eq user.idLong }.sortedByDescending { it.receivedAt }
 		}
 
-		val result = evaluateKotlin("user/reputation.kts", "onLoad", user, reputations)
+		val lastReputationGiven = if (userIdentification != null) {
+			transaction(Databases.loritta) {
+				Reputation.find { Reputations.receivedById eq userIdentification.id.toLong() }.sortedByDescending { it.receivedAt }.firstOrNull()
+			}
+		} else { null }
+
+		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations)
 		val builder = StringBuilder()
 		builder.appendHTML().html {
 			Page.getHead(req, res, variables).invoke(this)
