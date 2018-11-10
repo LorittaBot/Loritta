@@ -47,7 +47,7 @@ object Page {
 		<meta name="author" content="MrPowerGamerBR">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 		<link rel="icon" href="/favicon.ico" type="image/x-icon">
-		{% block metaproperty %}
+
 		<meta property="og:site_name" content="Website da Loritta">
 		<meta property="og:description" content="{{ WEBSITE_MetaDescription }}">
 		<meta property="og:title" content="Meu Website!">
@@ -58,7 +58,7 @@ object Page {
 		<meta property="twitter:card" content="summary">
 		<meta property="twitter:title" content="Página inicial">
 		<meta name="theme-color" content="#00c1df">
-		{% endblock %}
+
 		<link rel="alternate" hreflang="en" href="https://loritta.website/us$pathNL" />
 		<link rel="alternate" hreflang="pt" href="https://loritta.website/pt$pathNL" />
 		<link rel="alternate" hreflang="pt-BR" href="https://loritta.website/br$pathNL" />
