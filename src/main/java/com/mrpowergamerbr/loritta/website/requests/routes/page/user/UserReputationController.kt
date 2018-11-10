@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluateKotlin
+import com.mrpowergamerbr.loritta.website.requests.routes.Page
 import kotlinx.html.body
 import kotlinx.html.html
 import kotlinx.html.stream.appendHTML
@@ -30,12 +31,14 @@ class UserReputationController {
 		}
 
 		val result = evaluateKotlin("user/reputation.kts", "onLoad", user, reputations)
-		return StringBuilder().apply {
-			appendHTML().html {
-				body {
-					result.invoke(this)
-				}
+		val builder = StringBuilder()
+		builder.appendHTML().html {
+			Page.getHead(req, res, variables).invoke(this)
+			body {
+				result.invoke(this)
 			}
-		}.toString()
+		}
+
+		return builder.toString()
 	}
 }
