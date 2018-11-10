@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -9,10 +8,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.lang.reflect.Method
-import java.nio.file.Paths
 import java.util.concurrent.ExecutionException
-import java.util.jar.Attributes
-import java.util.jar.JarFile
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -23,22 +19,6 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
-		val path = this::class.java.protectionDomain.codeSource.location.path
-		val jar = JarFile(path)
-		val mf = jar.manifest
-		val mattr = mf.mainAttributes
-		// Yes, you SHOULD USE Attributes.Name.CLASS_PATH! Don't try using "Class-Path", it won't work!
-		val manifestClassPath = mattr[Attributes.Name.CLASS_PATH] as String
-
-		// The format within the Class-Path attribute is different than the one expected by the property, so let's fix it!
-		// By the way, don't forget to append your original JAR at the end of the string!
-		val clazz = LorittaLauncher::class.java
-		val protectionDomain = clazz.protectionDomain
-		val propClassPath = manifestClassPath.replace(" ", ":") + ":${Paths.get(protectionDomain.codeSource.location.toURI()).fileName}"
-
-		// Now we set it to our own classpath
-		System.setProperty("kotlin.script.classpath", propClassPath)
 		var kotlinCode = context.args.joinToString(" ")
 
 		// Agora vamos mudar um pouquinho o nosso código

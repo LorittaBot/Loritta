@@ -250,6 +250,6 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 	}
 
 	val kotlinFunction = template::class.functions.first { it.name == function }
-	val result = kotlinFunction.call(*args) as HtmlBlockTag.() -> Unit
+	val result = kotlinFunction.call(template, *args) as HtmlBlockTag.() -> Unit
 	return result
 }
