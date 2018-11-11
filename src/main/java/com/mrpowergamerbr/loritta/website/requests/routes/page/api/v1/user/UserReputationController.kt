@@ -8,14 +8,14 @@ import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
-import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -109,7 +109,72 @@ class UserReputationController {
 			}
 		}
 
-		res.status(Status.NO_CONTENT)
-		res.send("")
+		val reputations = transaction(Databases.loritta) {
+			Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
+		}
+
+		res.status(Status.OK)
+
+		val rank = StringBuilder().appendHTML().div(classes = "box-item") {
+			val map = reputations.groupingBy { it.givenById }.eachCount()
+					.entries
+					.sortedByDescending { it.value }
+
+			var idx = 0;
+			div(classes = "rank-title") {
+				+ "Placar de Reputações"
+			}
+			table {
+				tbody {
+					tr {
+						th {
+							// + "Posição"
+						}
+						th {}
+						th {
+							// + "Nome"
+						}
+					}
+					for ((userId, count) in map) {
+						if (idx == 5) break;
+						val rankUser = lorittaShards.getUserById(userId.toString())
+
+						if (rankUser != null) {
+							tr {
+								td {
+									img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
+								}
+								td(classes = "rank-position") {
+									+ "#${idx + 1}"
+								}
+								td {
+									if (idx == 0) {
+										div(classes = "rank-name rainbow") {
+											+ rankUser.name
+										}
+
+									} else {
+										div(classes = "rank-name") {
+											+ rankUser.name
+										}
+									}
+									div(classes = "reputations-received") {
+										+ "${count} reputações"
+									}
+								}
+							}
+							idx++;
+						}
+					}
+				}
+			}
+		}
+
+		// Vamos reenviar vários dados utilizados na hora de gerar a telinha
+		val response = jsonObject(
+				"count" to Reputations.select { Reputations.receivedById eq receiver.toLong() }.count(),
+				"rank" to rank.toString()
+		)
+		res.send(gson.toJson(response))
 	}
 }

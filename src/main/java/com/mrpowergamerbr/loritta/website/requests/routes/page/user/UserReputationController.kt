@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluateKotlin
@@ -11,6 +12,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.Page
 import kotlinx.html.body
 import kotlinx.html.html
 import kotlinx.html.stream.appendHTML
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
@@ -34,7 +36,11 @@ class UserReputationController {
 
 		val lastReputationGiven = if (userIdentification != null) {
 			transaction(Databases.loritta) {
-				Reputation.find { Reputations.receivedById eq userIdentification.id.toLong() }.sortedByDescending { it.receivedAt }.firstOrNull()
+				Reputation.find {
+					(Reputations.givenById eq userIdentification.id.toLong()) or
+							(Reputations.givenByEmail eq userIdentification.email!!) or
+							(Reputations.givenByIp eq req.trueIp)
+				}.sortedByDescending { it.receivedAt }.firstOrNull()
 			}
 		} else { null }
 
