@@ -46,11 +46,11 @@ class UserReputationController {
 	@POST
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresVariables(true)
-	fun giveReputation(req: Request, res: Response, @Local _userIdentification: TemmieDiscordAuth.UserIdentification?, @Body rawMessage: String) {
+	fun giveReputation(req: Request, res: Response, @Body rawMessage: String) {
 		res.type(MediaType.json)
 
 		val receiver = req.param("userId").value()
-		val userIdentification = _userIdentification ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
+		val userIdentification = req.attributes()["userIdentification"] ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
 				WebsiteUtils.createErrorPayload(
 						LoriWebCode.COOLDOWN
 				)
