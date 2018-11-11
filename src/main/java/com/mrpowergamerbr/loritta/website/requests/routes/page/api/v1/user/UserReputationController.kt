@@ -1,9 +1,7 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
 import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
@@ -15,8 +13,9 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import mu.KotlinLogging
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -34,70 +33,42 @@ class UserReputationController {
 	@POST
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresVariables(true)
-	fun giveReputation(req: Request, res: Response, @Local userIdentification: TemmieDiscordAuth.UserIdentification?, @Body rawMessage: String) {
+	fun giveReputation(req: Request, res: Response, @Local _userIdentification: TemmieDiscordAuth.UserIdentification?, @Body rawMessage: String) {
 		res.type(MediaType.json)
 
 		val receiver = req.param("userId").value()
+		val userIdentification = _userIdentification ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
+				WebsiteUtils.createErrorPayload(
+						LoriWebCode.COOLDOWN
+				)
+		)
 
-		if (userIdentification == null) {
-			res.status(Status.UNAUTHORIZED)
-			res.send(WebsiteUtils.createErrorPayload(
-					LoriWebCode.UNAUTHORIZED
-			).toString())
-			return
-		}
+		val ip = req.trueIp
 
 		val lastReputationGiven = transaction(Databases.loritta) {
-			Reputation.find { Reputations.receivedById eq userIdentification.id.toLong() }.sortedByDescending { it.receivedAt }.firstOrNull()
+			Reputation.find {
+				(Reputations.givenById eq userIdentification.id.toLong()) or
+						(Reputations.givenByEmail eq userIdentification.email!!) or
+						(Reputations.givenByIp eq ip)
+			}.sortedByDescending { it.receivedAt }.firstOrNull()
 		}
 
 		val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
 
-		if (3_600_000 > diff) {
-			res.status(Status.FORBIDDEN)
-			res.send(WebsiteUtils.createErrorPayload(
-					LoriWebCode.COOLDOWN
-			).toString())
-			return
-		}
+		if (3_600_000 > diff)
+			throw WebsiteAPIException(Status.FORBIDDEN,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.COOLDOWN
+					)
+			)
 
-		val ip = req.trueIp
 		val status = MiscUtils.verifyAccount(userIdentification, ip)
 		val email = userIdentification.email
 		logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
 		logger.info { "Is verified? ${userIdentification.verified}" }
 		logger.info { "Email ${email}" }
 		logger.info { "IP: $ip" }
-
-		if (!status.canAccess) {
-			val payload = JsonObject()
-			res.send(when (status) {
-				MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
-				MiscUtils.AccountCheckResult.BAD_HOSTNAME,
-				MiscUtils.AccountCheckResult.OVH_HOSTNAME -> {
-					// Para identificar meliantes, cada request terá uma razão determinando porque o IP foi bloqueado
-					// 0 = Stop Forum Spam
-					// 1 = Bad hostname
-					// 2 = OVH IP
-					payload["api:code"] = LoriWebCodes.BAD_IP
-					payload["reason"] = when (status) {
-						MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
-						MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
-						MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
-						else -> -1
-					}
-				}
-				MiscUtils.AccountCheckResult.BAD_EMAIL -> {
-					payload["api:code"] = LoriWebCodes.BAD_EMAIL
-
-				}
-				MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
-					payload["api:code"] = LoriWebCodes.NOT_VERIFIED
-				}
-				else -> throw RuntimeException("Missing !canAccess result! ${status.name}")
-			}.toString())
-			return
-		}
+		MiscUtils.handleVerification(status)
 
 		val json = jsonParser.parse(rawMessage)
 		val content = json["content"].string

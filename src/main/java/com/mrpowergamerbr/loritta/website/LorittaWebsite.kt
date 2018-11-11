@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
@@ -23,6 +24,7 @@ import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
 import org.jooby.Jooby
 import org.jooby.Kooby
+import org.jooby.MediaType
 import org.jooby.internal.SessionManager
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
@@ -36,6 +38,12 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
+
+	err(WebsiteAPIException::class.java) { req, res, err ->
+		val cause = err.cause as WebsiteAPIException
+		res.type(MediaType.json)
+		res.send(gson.toJson(cause.payload))
+	}
 
 	// Mostrar conexões realizadas ao website
 	before { req, res ->

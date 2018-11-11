@@ -43,8 +43,10 @@ object WebsiteUtils {
 	 * @param message the error reason
 	 * @return        the json object containing the error
 	 */
-	fun createErrorPayload(code: LoriWebCode, message: String? = null): JsonObject {
-		return jsonObject("error" to createErrorObject(code, message))
+	fun createErrorPayload(code: LoriWebCode, message: String? = null, data: ((JsonObject) -> Unit)? = null): JsonObject {
+		val result = jsonObject("error" to createErrorObject(code, message))
+		data?.invoke(result)
+		return result
 	}
 
 	/**
