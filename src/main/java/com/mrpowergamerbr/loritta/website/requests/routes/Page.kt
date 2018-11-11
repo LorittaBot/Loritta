@@ -26,7 +26,7 @@ object Page {
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>$title • Loritta{% endblock %}</title>
+		<title>$title • Loritta</title>
 		<meta name="description" content="$description">
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 		<script src='https://www.google.com/recaptcha/api.js?render=explicit'></script>
