@@ -23,16 +23,13 @@ import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.Status
-import org.jooby.mvc.Body
-import org.jooby.mvc.Local
-import org.jooby.mvc.POST
-import org.jooby.mvc.Path
+import org.jooby.mvc.*
 
 @Path("/api/v1/user/:userId/reputation")
 class UserReputationController {
 	private val logger = KotlinLogging.logger {}
 
-	@POST
+	@GET
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresVariables(true)
 	fun getReputations(req: Request, res: Response) {
