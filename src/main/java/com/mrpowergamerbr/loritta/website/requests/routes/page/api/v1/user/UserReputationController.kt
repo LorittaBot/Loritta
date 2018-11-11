@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.Status
@@ -32,6 +33,8 @@ class UserReputationController {
 	@POST
 	@LoriDoNotLocaleRedirect(true)
 	fun giveReputation(req: Request, res: Response, @Local userIdentification: TemmieDiscordAuth.UserIdentification?, @Body rawMessage: String) {
+		res.type(MediaType.json)
+		
 		val receiver = req.param("userId").value()
 
 		if (userIdentification == null) {
