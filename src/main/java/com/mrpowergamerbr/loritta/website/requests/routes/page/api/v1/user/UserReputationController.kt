@@ -23,7 +23,10 @@ import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.Status
-import org.jooby.mvc.*
+import org.jooby.mvc.Body
+import org.jooby.mvc.GET
+import org.jooby.mvc.POST
+import org.jooby.mvc.Path
 
 @Path("/api/v1/user/:blah/reputation")
 class UserReputationController {
@@ -50,7 +53,7 @@ class UserReputationController {
 		res.type(MediaType.json)
 
 		val receiver = req.param("userId").value()
-		val userIdentification = req.attributes()["userIdentification"] ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
+		val userIdentification = req.attributes()["userIdentification"] as TemmieDiscordAuth.UserIdentification? ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
 				WebsiteUtils.createErrorPayload(
 						LoriWebCode.COOLDOWN
 				)
