@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
@@ -32,9 +33,10 @@ class UserReputationController {
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
+	@LoriRequiresVariables(true)
 	fun giveReputation(req: Request, res: Response, @Local userIdentification: TemmieDiscordAuth.UserIdentification?, @Body rawMessage: String) {
 		res.type(MediaType.json)
-		
+
 		val receiver = req.param("userId").value()
 
 		if (userIdentification == null) {
