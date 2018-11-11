@@ -36,11 +36,10 @@ object Page {
 		<script src="${websiteUrl}assets/js/tingle.min.js"></script>
 		<script src="${websiteUrl}assets/js/autosize.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-		<script type="text/javascript" src="${websiteUrl}assets/js/kotlin.min.js?v=3"></script>
+		<script type="text/javascript" src="${websiteUrl}assets/js/kotlin.min.js?v=4"></script>
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-		<script type="text/javascript" src="${websiteUrl}assets/js/kotlinx-html-js.min.js?v=3"></script>
-		<script type="text/javascript" src="${websiteUrl}assets/js/LoriJS.js"></script>
+		<script type="text/javascript" src="${websiteUrl}assets/js/kotlinx-html-js.min.js?v=4"></script>
 		<script type="text/javascript" src="${websiteUrl}assets/js/moment-with-locales.min.js"></script>
 		<link rel="stylesheet" href="${websiteUrl}assets/css/style.css?v=$cssAssetVersion">
 		<meta name="author" content="MrPowerGamerBR">
