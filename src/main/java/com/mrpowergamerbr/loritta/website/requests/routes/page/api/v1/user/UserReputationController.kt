@@ -172,7 +172,7 @@ class UserReputationController {
 
 		// Vamos reenviar vários dados utilizados na hora de gerar a telinha
 		val response = jsonObject(
-				"count" to Reputations.select { Reputations.receivedById eq receiver.toLong() }.count(),
+				"count" to transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
 				"rank" to rank.toString()
 		)
 		res.send(gson.toJson(response))
