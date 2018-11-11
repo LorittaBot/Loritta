@@ -70,7 +70,7 @@ class UserReputationController {
 							LoriWebCode.INVALID_RECAPTCHA
 					)
 			)
-		
+
 		val ip = req.trueIp
 
 		val lastReputationGiven = transaction(Databases.loritta) {
