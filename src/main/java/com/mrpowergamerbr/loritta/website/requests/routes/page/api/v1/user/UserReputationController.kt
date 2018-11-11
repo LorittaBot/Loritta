@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
@@ -16,6 +17,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -29,6 +31,20 @@ import org.jooby.mvc.Path
 @Path("/api/v1/user/:userId/reputation")
 class UserReputationController {
 	private val logger = KotlinLogging.logger {}
+
+	@POST
+	@LoriDoNotLocaleRedirect(true)
+	@LoriRequiresVariables(true)
+	fun getReputations(req: Request, res: Response) {
+		res.type(MediaType.json)
+		val receiver = req.param("userId").value()
+
+		val count = transaction(Databases.loritta) {
+			Reputations.select { Reputations.receivedById eq receiver.toLong() }.count()
+		}
+
+		res.send(jsonObject("count" to count).toString())
+	}
 
 	@POST
 	@LoriDoNotLocaleRedirect(true)
