@@ -91,7 +91,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, res: Response) {
+	fun initializeVariables(req: Request, res: Response, doNotLocaleRedirect: Boolean) {
 		val queryString = req.urlQueryString
 
 		val variables = mutableMapOf(
@@ -168,7 +168,7 @@ object WebsiteUtils {
 			split.removeAt(0)
 			split.removeAt(0)
 			pathNoLanguageCode = "/" + split.joinToString("/")
-		} else {
+		} else if (!doNotLocaleRedirect) {
 			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 			if (localeId != null) {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {

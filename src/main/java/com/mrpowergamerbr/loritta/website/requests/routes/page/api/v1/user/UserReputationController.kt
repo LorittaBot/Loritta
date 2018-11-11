@@ -31,9 +31,8 @@ class UserReputationController {
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)
-	// @LoriRequiresVariables(true)
-	fun getReputations(req: Request, res: Response): String {
-		logger.info("UserReputationController#getReputations")
+	@LoriRequiresVariables(true)
+	fun getReputations(req: Request, res: Response) {
 		res.type(MediaType.json)
 		val receiver = req.param("blah").value()
 
@@ -42,7 +41,6 @@ class UserReputationController {
 		}
 
 		res.send(jsonObject("count" to count).toString())
-		return "blah"
 	}
 
 	@POST
