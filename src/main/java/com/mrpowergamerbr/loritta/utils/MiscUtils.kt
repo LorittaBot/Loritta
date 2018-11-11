@@ -148,12 +148,17 @@ object MiscUtils {
 		// 1 = Bad hostname
 		// 2 = OVH IP
 
+		logger.info("Verifying IP: $ip")
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
 		val stopForumSpam = HttpRequest.get("http://api.stopforumspam.org/api?ip=$ip")
 				.body()
 
+		logger.info("Stop Forum Spam: $stopForumSpam")
+
 		// STOP FORUM SPAM
 		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
+
+		logger.info("as JSON: $xmlJSONObj")
 
 		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
 
