@@ -6,6 +6,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	// 8xx - LORI ERROR
 	UNAUTHORIZED(700, "Unauthorized"),
 	FORBIDDEN(701, "Forbidden"),
+	INVALID_RECAPTCHA(702, "Invalid reCAPTCHA"),
 	UNKNOWN_GUILD(702, "Unknown Guild"),
 	INVALID_NUMBER(710, "Invalid Number"),
 	INSUFFICIENT_FUNDS(711, "Insufficient Funds"),

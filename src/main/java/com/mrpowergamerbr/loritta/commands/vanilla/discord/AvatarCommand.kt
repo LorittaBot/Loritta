@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
-import org.jetbrains.kotlin.config.TargetPlatformVersion.NoVersion.description
 import java.util.*
 
 class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCORD) {

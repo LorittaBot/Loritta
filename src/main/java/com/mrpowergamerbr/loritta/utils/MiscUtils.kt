@@ -234,6 +234,14 @@ object MiscUtils {
 		}
 	}
 
+	fun checkRecaptcha(serverToken: String, clientToken: String): Boolean {
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${serverToken}&response=$clientToken")
+				.body()
+
+		val jsonParser = jsonParser.parse(body).obj
+		return jsonParser["success"].bool
+	}
+
 	fun hasInappropriateWords(string: String): Boolean {
 		val lowerCaseNickname = string.toLowerCase()
 				.replace("4", "a")

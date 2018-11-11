@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
@@ -55,10 +56,21 @@ class UserReputationController {
 		val receiver = req.param("userId").value()
 		val userIdentification = req.attributes()["userIdentification"] as TemmieDiscordAuth.UserIdentification? ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
 				WebsiteUtils.createErrorPayload(
-						LoriWebCode.COOLDOWN
+						LoriWebCode.UNAUTHORIZED
 				)
 		)
 
+		val json = jsonParser.parse(rawMessage)
+		val content = json["content"].string
+		val token = json["token"].string
+		if (!MiscUtils.checkRecaptcha(Loritta.config.invisibleRecaptchaToken, token))
+			throw WebsiteAPIException(
+					Status.FORBIDDEN,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.INVALID_RECAPTCHA
+					)
+			)
+		
 		val ip = req.trueIp
 
 		val lastReputationGiven = transaction(Databases.loritta) {
@@ -86,8 +98,6 @@ class UserReputationController {
 		logger.info { "IP: $ip" }
 		MiscUtils.handleVerification(status)
 
-		val json = jsonParser.parse(rawMessage)
-		val content = json["content"].string
 		transaction(Databases.loritta) {
 			Reputation.new {
 				this.givenById = userIdentification.id.toLong()
