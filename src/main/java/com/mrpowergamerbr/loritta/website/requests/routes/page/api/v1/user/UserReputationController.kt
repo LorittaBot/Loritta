@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
 import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
@@ -25,23 +24,23 @@ import org.jooby.Response
 import org.jooby.Status
 import org.jooby.mvc.*
 
-@Path("/api/v1/user/:userId/reputation")
+@Path("/api/v1/user/:blah/reputation")
 class UserReputationController {
 	private val logger = KotlinLogging.logger {}
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)
-	@LoriRequiresVariables(true)
+	// @LoriRequiresVariables(true)
 	fun getReputations(req: Request, res: Response): String {
 		logger.info("UserReputationController#getReputations")
-		res.type(MediaType.json)
-		val receiver = req.param("userId").value()
+		// res.type(MediaType.json)
+		val receiver = req.param("blah").value()
 
 		val count = transaction(Databases.loritta) {
 			Reputations.select { Reputations.receivedById eq receiver.toLong() }.count()
 		}
 
-		res.send(jsonObject("count" to count).toString())
+		// res.send(jsonObject("count" to count).toString())
 		return "blah"
 	}
 
