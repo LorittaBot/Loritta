@@ -28,7 +28,7 @@ import org.jooby.mvc.GET
 import org.jooby.mvc.POST
 import org.jooby.mvc.Path
 
-@Path("/api/v1/user/:blah/reputation")
+@Path("/api/v1/user/:userId/reputation")
 class UserReputationController {
 	private val logger = KotlinLogging.logger {}
 
@@ -37,7 +37,7 @@ class UserReputationController {
 	@LoriRequiresVariables(true)
 	fun getReputations(req: Request, res: Response) {
 		res.type(MediaType.json)
-		val receiver = req.param("blah").value()
+		val receiver = req.param("userId").value()
 
 		val count = transaction(Databases.loritta) {
 			Reputations.select { Reputations.receivedById eq receiver.toLong() }.count()
