@@ -7,7 +7,7 @@ import org.jooby.Request
 import org.jooby.Response
 
 object Page {
-	fun getHead(req: Request, res: Response, variables: Map<String, Any?>): HTML.() -> Unit = {
+	fun getHead(req: Request, res: Response, variables: Map<String, Any?>, title: String? = null, description: String? = null, imageUrl: String? = null): HTML.() -> Unit = {
 		head {
 			val pathNL = variables["pathNL"]
 			val websiteUrl = variables["websiteUrl"]
@@ -26,8 +26,8 @@ object Page {
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>{% block title %}{% block subtitle %}{{ WEBSITE_DEFAULT_TITLE }}{% endblock %} • Loritta{% endblock %}</title>
-		<meta name="description" content="{{ WEBSITE_MetaDescription }}">
+		<title>$title • Loritta{% endblock %}</title>
+		<meta name="description" content="$description">
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 		<script src='https://www.google.com/recaptcha/api.js?render=explicit'></script>
 		<script src="${websiteUrl}assets/js/countUp.min.js"></script>
@@ -47,9 +47,9 @@ object Page {
 		<link rel="icon" href="/favicon.ico" type="image/x-icon">
 
 		<meta property="og:site_name" content="Website da Loritta">
-		<meta property="og:description" content="{{ WEBSITE_MetaDescription }}">
-		<meta property="og:title" content="Meu Website!">
-		<meta property="og:image" content="http://loritta.website/assets/img/loritta_gabizinha_v1.png">
+		<meta property="og:description" content="$description">
+		<meta property="og:title" content="$title">
+		<meta property="og:image" content="${imageUrl ?: "http://loritta.website/assets/img/loritta_gabizinha_v1.png"}">
 		<meta property="og:ttl" content="600">
 		<meta property="og:image:width" content="320">
 		<meta property="twitter:site" content="loritta">

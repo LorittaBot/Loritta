@@ -1,9 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Reputation
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -19,9 +27,22 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		// TODO: Fix
-		/* var profile = context.lorittaUser.profile
 		val user = context.getUserAt(0)
+		val lastReputationGiven = transaction(Databases.loritta) {
+			Reputation.find {
+				(Reputations.givenById eq context.userHandle.idLong)
+			}.sortedByDescending { it.receivedAt }.firstOrNull()
+		}
+
+		if (lastReputationGiven != null) {
+			val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
+
+			if (3_600_000 > diff) {
+				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
+				return
+			}
+		}
 
 		if (user != null) {
 			if (user == context.userHandle) {
@@ -34,32 +55,11 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 				return
 			}
 
-			var diff = System.currentTimeMillis() - profile.lastReputationGiven
-
-			if (3.6e+6 > diff) {
-				var fancy = DateUtils.formatDateDiff(profile.lastReputationGiven + 3.6e+6.toLong(), locale)
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
-				return
-			}
-
-			var givenProfile = LorittaLauncher.loritta.getLorittaProfileForUser(user.id);
-
-			// Agora nós iremos dar reputação para este usuário
-			givenProfile.receivedReputations.add(context.userHandle.id)
-
-			// E vamos salvar a última vez que o usuário deu reputação para o usuário
-			profile.lastReputationGiven = System.currentTimeMillis()
-
 			context.reply(
 					LoriReply(
-							message = context.locale["REP_SUCCESS", user.asMention],
-							prefix = "☝"
+							"${Loritta.config.websiteUrl}user/${user.id}/rep"
 					)
 			)
-
-			// E vamos salvar as configurações
-			loritta save givenProfile
-			loritta save profile
 		} else {
 			if (context.args.isEmpty()) {
 				this.explain(context)
@@ -71,6 +71,6 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 						)
 				)
 			}
-		} */
+		}
 	}
 }

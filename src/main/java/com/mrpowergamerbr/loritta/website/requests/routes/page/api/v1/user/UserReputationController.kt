@@ -60,6 +60,16 @@ class UserReputationController {
 				)
 		)
 
+		if (userIdentification.id == receiver) {
+			throw WebsiteAPIException(
+					Status.FORBIDDEN,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.FORBIDDEN,
+							"You can't give a reputation to yourself, silly!"
+					)
+			)
+		}
+
 		val json = jsonParser.parse(rawMessage)
 		val content = json["content"].string
 		val token = json["token"].string

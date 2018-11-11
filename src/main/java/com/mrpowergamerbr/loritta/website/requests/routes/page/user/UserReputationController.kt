@@ -47,7 +47,14 @@ class UserReputationController {
 		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations)
 		val builder = StringBuilder()
 		builder.appendHTML().html {
-			Page.getHead(req, res, variables).invoke(this)
+			Page.getHead(
+					req,
+					res,
+					variables,
+					"Reputações para ${user.name}",
+					"Reputações servem para você agradecer outro usuário por algo que ele fez. ${user.name} te ajudou em algo? ${user.name} contou uma piada e você caiu no chão de tanto rir? Então dê uma reputação para agradecer!",
+					user.effectiveAvatarUrl
+			).invoke(this)
 			body {
 				result.invoke(this)
 			}
