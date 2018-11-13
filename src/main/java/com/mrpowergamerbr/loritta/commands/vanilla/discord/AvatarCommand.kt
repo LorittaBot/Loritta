@@ -44,7 +44,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		if (getAvatar.id == Loritta.config.clientId) {
 			val calendar = Calendar.getInstance()
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
-			
+
 			embed.appendDescription("\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
 			if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
 				val fanArt = UpdateStatusThread.currentFanArt
