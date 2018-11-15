@@ -23,7 +23,6 @@ abstract class ConfigureView : ProtectedView() {
 		}
 		val guildId = split[3]
 
-		val temmieGuild = discordAuth.getUserGuilds().firstOrNull { it.id == guildId }
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 		val serverConfig = loritta.getServerConfigForGuild(guildId)
 

@@ -1,18 +1,12 @@
 package com.mrpowergamerbr.loritta.website.views
 
-import com.github.salomonbrys.kotson.fromJson
 import com.google.common.collect.Lists
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.OptimizeAssets
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.views.subviews.*
 import com.mrpowergamerbr.loritta.website.views.subviews.api.*
@@ -24,10 +18,7 @@ import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
 import org.jooby.Request
 import org.jooby.Response
 import org.slf4j.LoggerFactory
-import java.lang.management.ManagementFactory
-import java.text.MessageFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 object GlobalHandler {
 	var views = mutableListOf<AbstractView>()
@@ -57,21 +48,6 @@ object GlobalHandler {
 
 		apiViews.filter { it.handleRender(req, res, req.path()) }
 				.forEach { return it.render(req, res, req.path()) }
-
-		val variables = mutableMapOf(
-				"discordAuth" to null,
-				"userIdentification" to null,
-				"epochMillis" to System.currentTimeMillis(),
-				"guildCount" to lorittaShards.getCachedGuildCount(),
-				"userCount" to lorittaShards.getCachedUserCount(),
-				"availableCommandsCount" to loritta.commandManager.commandMap.size,
-				"commandMap" to loritta.commandManager.commandMap,
-				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
-				"path" to req.path(),
-				"clientId" to Loritta.config.clientId,
-				"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
-				"environment" to Loritta.config.environment
-		)
 
 		// TODO: Deprecated
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
@@ -117,9 +93,7 @@ object GlobalHandler {
 			}
 		}
 
-		for (locale in lorittaLocale.strings) {
-			variables[locale.key] = MessageFormat.format(locale.value)
-		}
+		WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode)
 
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()
@@ -150,46 +124,7 @@ object GlobalHandler {
 			}
 		}
 
-		variables["pathNL"] = pathNoLanguageCode // path no language code
-		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
-
-		variables["isPatreon"] = loritta.isPatreon
-		variables["isDonator"] = loritta.isDonator
-		variables["addBotUrl"] = Loritta.config.addBotUrl
-
-		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
-
-		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
-		jvmUpTime -= TimeUnit.DAYS.toMillis(days)
-		val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
-		jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
-		val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
-		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
-		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
-		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
-		variables["uptimeDays"] = days
-		variables["uptimeHours"] = hours
-		variables["uptimeMinutes"] = minutes
-		variables["uptimeSeconds"] = seconds
-		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["localeAsJson"] = GSON.toJson(lorittaLocale.strings)
-		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
-
-		if (req.session().isSet("discordAuth")) {
-			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
-			try {
-				discordAuth.isReady(true)
-				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-				variables["discordAuth"] = discordAuth
-				variables["userIdentification"] = userIdentification
-				req.set("discordAuth", discordAuth)
-				req.set("userIdentification", userIdentification)
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		}
-
+		val variables = req.get("variables") as MutableMap<String, Any?>
 		try {
 			views.filter { it.handleRender(req, res, pathNoLanguageCode, variables) }
 					.forEach { return it.render(req, res, pathNoLanguageCode, variables) }

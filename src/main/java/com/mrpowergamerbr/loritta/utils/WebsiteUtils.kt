@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
-import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -90,9 +89,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, res: Response, locale: BaseLocale, languageCode: String?, doNotLocaleRedirect: Boolean) {
-		val queryString = req.urlQueryString
-
+	fun initializeVariables(req: Request, locale: BaseLocale, languageCode: String?) {
 		val variables = mutableMapOf(
 				"discordAuth" to null,
 				"userIdentification" to null,
