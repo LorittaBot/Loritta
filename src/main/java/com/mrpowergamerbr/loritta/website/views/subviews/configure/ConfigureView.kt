@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
@@ -42,7 +42,7 @@ abstract class ConfigureView : ProtectedView() {
 		}
 
 		val canBypass = userIdentification.id == Loritta.config.ownerId || canAccessDashboardViaPermission
-		if ((!canBypass) && (temmieGuild == null || !LorittaWebsite.canManageGuild(temmieGuild))) {
+		if (!canBypass && !(member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER))) {
 			return "Você não tem permissão!"
 		}
 
