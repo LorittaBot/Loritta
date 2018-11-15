@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
@@ -42,28 +43,35 @@ class DashboardView : ProtectedView() {
 			return response.toString()
 		}
 
-		val guilds = discordAuth.getUserGuilds().filter {
-			val guild = lorittaShards.getGuildById(it.id)
-			if (guild != null) {
-				val member = guild.getMemberById(lorittaProfile.userId)
-				if (member != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-					val config = loritta.getServerConfigForGuild(it.id)
-					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
-					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-				} else {
-					LorittaWebsite.canManageGuild(it)
-				}
+		val userGuilds = discordAuth.getUserGuilds()
+
+		// Vamos primeiro filtrar todas as guilds que não existem para uma map separada
+		val discordGuilds = userGuilds.mapNotNull {
+			val discordGuild = lorittaShards.getGuildById(it.id) ?: return@mapNotNull null
+			Pair(it, discordGuild)
+		}
+
+		// Agora vamos pegar todas as configurações de todos os servidores que o usuário está
+		val mongoServerConfigs = loritta.serversColl.find(Filters.`in`("_id", discordGuilds.map { it.second.id })).toMutableList()
+
+		// E agora iremos filtrar as "guilds em que o usuário pode mexer"!
+		val guilds = discordGuilds.filter { (temmieGuild, guild) ->
+			val member = guild.getMemberById(lorittaProfile.userId)
+			if (member != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
+				val config = mongoServerConfigs.firstOrNull { it.guildId == guild.id} ?: return@filter false
+				val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
+				LorittaWebsite.canManageGuild(temmieGuild) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 			} else {
-				LorittaWebsite.canManageGuild(it)
+				LorittaWebsite.canManageGuild(temmieGuild)
 			}
 		}
 
 		variables["userGuilds"] = guilds
 		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.DiscordGuild, LorittaWebsite.UserPermissionLevel>()
 		val joinedServers = mutableMapOf<TemmieDiscordAuth.DiscordGuild, Boolean>()
-		for (guild in guilds) {
-			userPermissionLevels[guild] = LorittaWebsite.getUserPermissionLevel(guild)
-			joinedServers[guild] = lorittaShards.getGuildById(guild.id) != null
+		for ((temmieGuild, guild) in guilds) {
+			userPermissionLevels[temmieGuild] = LorittaWebsite.getUserPermissionLevel(temmieGuild)
+			joinedServers[temmieGuild] = lorittaShards.getGuildById(guild.id) != null
 		}
 		variables["userPermissionLevels"] = userPermissionLevels
 		variables["joinedServers"] = joinedServers
