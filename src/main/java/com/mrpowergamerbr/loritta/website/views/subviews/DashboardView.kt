@@ -66,7 +66,7 @@ class DashboardView : ProtectedView() {
 			}
 		}
 
-		variables["userGuilds"] = guilds.map { it.first }
+		variables["userGuilds"] = userGuilds
 		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.DiscordGuild, LorittaWebsite.UserPermissionLevel>()
 		val joinedServers = mutableMapOf<TemmieDiscordAuth.DiscordGuild, Boolean>()
 		for ((temmieGuild, guild) in guilds) {
