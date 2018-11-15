@@ -9,12 +9,14 @@ import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
@@ -83,28 +85,35 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use("*") { req, res, chain ->
 		val doNotLocaleRedirect = req.route().attributes().entries.any { it.key == "loriDoNotLocaleRedirect" } || req.route().path().startsWith("/api/v1/") // TODO: Remover esta verificação após toda a API ser migrada para MVC paths
 
-		if (!doNotLocaleRedirect) {
-			var localeId: String? = null
-
-			// TODO: Deprecated
-			val acceptLanguage = req.header("Accept-Language").value("en-US")
-			val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
-			for (range in ranges) {
-				localeId = range.range.toLowerCase()
-				var bypassCheck = false
-				if (localeId == "pt-br" || localeId == "pt") {
-					localeId = "default"
-					bypassCheck = true
-				}
-				if (localeId == "en") {
-					localeId = "en-us"
-				}
-				// val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
-				if (bypassCheck /* || defaultLocale !== parsedLocale */) {
-					// lorittaLocale = parsedLocale
-				}
+		var localeId: String? = null
+		val acceptLanguage = req.header("Accept-Language").value("en-US")
+		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+		for (range in ranges) {
+			localeId = range.range.toLowerCase()
+			if (localeId == "pt-br" || localeId == "pt") {
+				localeId = "default"
 			}
+			if (localeId == "en") {
+				localeId = "en-us"
+			}
+		}
 
+		var lorittaLocale = loritta.getLocaleById(localeId ?: "default")
+
+		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
+		val languageCode = req.path().split("/").getOrNull(1)
+
+		if (languageCode != null) {
+			lorittaLocale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> lorittaLocale
+			}
+		}
+
+		if (!doNotLocaleRedirect) {
 			val languageCode2 = req.path().split("/").getOrNull(1)
 			val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
 			if (!hasLangCode) {
@@ -132,7 +141,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
 
 		if (requiresVariables != null)
-			WebsiteUtils.initializeVariables(req, res, doNotLocaleRedirect)
+			WebsiteUtils.initializeVariables(req, res, lorittaLocale, languageCode, doNotLocaleRedirect)
 
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 

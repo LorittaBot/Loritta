@@ -1,18 +1,17 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.salomonbrys.kotson.*
-import com.google.common.collect.Lists
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
@@ -91,7 +90,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, res: Response, doNotLocaleRedirect: Boolean) {
+	fun initializeVariables(req: Request, res: Response, locale: BaseLocale, languageCode: String?, doNotLocaleRedirect: Boolean) {
 		val queryString = req.urlQueryString
 
 		val variables = mutableMapOf(
@@ -111,52 +110,12 @@ object WebsiteUtils {
 
 		req.set("variables", variables)
 
-		// TODO: Deprecated
-		val acceptLanguage = req.header("Accept-Language").value("en-US")
-
-		// Vamos parsear!
-		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
-
-		val defaultLocale = LorittaLauncher.loritta.getLocaleById("default")
-		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
-
-		var localeId: String? = null
-
-		for (range in ranges) {
-			localeId = range.range.toLowerCase()
-			var bypassCheck = false
-			if (localeId == "pt-br" || localeId == "pt") {
-				localeId = "default"
-				bypassCheck = true
-			}
-			if (localeId == "en") {
-				localeId = "en-us"
-			}
-			val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
-			if (bypassCheck || defaultLocale !== parsedLocale) {
-				lorittaLocale = parsedLocale
-			}
-		}
-
 		if (req.param("logout").isSet) {
 			req.session().destroy()
 		}
 
-		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
-		val languageCode = req.path().split("/").getOrNull(1)
-
-		if (languageCode != null) {
-			lorittaLocale = when (languageCode) {
-				"br" -> LorittaLauncher.loritta.getLocaleById("default")
-				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
-				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
-				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
-				else -> lorittaLocale
-			}
-		}
-
-		for (locale in lorittaLocale.strings) {
-			variables[locale.key] = MessageFormat.format(locale.value)
+		for ((key, rawMessage) in locale.strings) {
+			variables[key] = MessageFormat.format(rawMessage)
 		}
 
 		var pathNoLanguageCode = req.path()
@@ -168,25 +127,6 @@ object WebsiteUtils {
 			split.removeAt(0)
 			split.removeAt(0)
 			pathNoLanguageCode = "/" + split.joinToString("/")
-		} else if (!doNotLocaleRedirect) {
-			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
-			if (localeId != null) {
-				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
-					res.status(302) // temporary redirect / no page rank penalty (?)
-					if (localeId == "default") {
-						res.redirect("${Loritta.config.websiteUrl}br${req.path()}${queryString}")
-					}
-					if (localeId == "pt-pt") {
-						res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${queryString}")
-					}
-					if (localeId == "es-es") {
-						res.redirect("${Loritta.config.websiteUrl}es${req.path()}${queryString}")
-					}
-					res.redirect("${Loritta.config.websiteUrl}us${req.path()}${queryString}")
-					res.send("Redirecting...")
-					return
-				}
-			}
 		}
 
 		variables["pathNL"] = pathNoLanguageCode // path no language code
@@ -212,7 +152,7 @@ object WebsiteUtils {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["localeAsJson"] = Loritta.GSON.toJson(lorittaLocale.strings)
+		variables["localeAsJson"] = Loritta.GSON.toJson(locale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {
