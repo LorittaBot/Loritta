@@ -64,7 +64,7 @@ class DashboardView : ProtectedView() {
 			} else {
 				LorittaWebsite.canManageGuild(temmieGuild)
 			}
-		}
+		}.map { it.second }
 
 		variables["userGuilds"] = guilds
 		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.DiscordGuild, LorittaWebsite.UserPermissionLevel>()
