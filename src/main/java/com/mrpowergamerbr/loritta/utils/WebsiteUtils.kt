@@ -244,7 +244,7 @@ object WebsiteUtils {
 	}
 
 	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
-		var userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
+		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
 		if (userIdentification == null && req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
