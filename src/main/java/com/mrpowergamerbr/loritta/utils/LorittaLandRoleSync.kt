@@ -1,9 +1,13 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
+import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Member
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
@@ -14,8 +18,6 @@ class LorittaLandRoleSync : Runnable {
 
 	override fun run() {
 		try {
-			logger.info("Sincronizando cargos da LorittaLand...")
-
 			val roleRemap = mutableMapOf(
 					"316363779518627842" to "420630427837923328", // Deusas Supremas
 					"301764115582681088" to "420630186061725696", // Loritta (Integration)
@@ -24,7 +26,7 @@ class LorittaLandRoleSync : Runnable {
 					"341343754336337921" to "467750037812936704", // Desenhistas
 					"385579854336360449" to "467750852610752561", // Tradutores
 					"434512654292221952" to "467751141363548171", // Loritta Partner
-					"334734175531696128" to "420710241693466627" // Notificar Novidades
+					"334734175531696128" to "420710241693466627"  // Notificar Novidades
 			)
 
 			val originalGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID) ?: run {
@@ -35,6 +37,72 @@ class LorittaLandRoleSync : Runnable {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
 				return
 			}
+
+			logger.info("Dando cargos especiais da LorittaLand...")
+
+			// ===[ DESENHISTAS ]===
+			val drawingRole = originalGuild.getRoleById("341343754336337921")
+
+			logger.info("Processando cargos de desenhistas...")
+			val validIllustrators = loritta.fanArts.mapNotNull {
+				val artist = loritta.fanArtConfig.artists[it.artistId]
+				val discordId = artist?.discordId ?: it.artistId
+				if (discordId != null) {
+					originalGuild.getMemberById(discordId)
+				} else {
+					null
+				}
+			}
+
+			for (illustrator in validIllustrators) {
+				if (!illustrator.roles.contains(drawingRole)) {
+					logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
+					originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
+				}
+			}
+
+			val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
+			invalidIllustrators.forEach {
+				logger.info("Removendo cargo de desenhista de ${it.user.id}...")
+				originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
+			}
+
+			// ===[ PARCEIROS ]===
+			logger.info("Processando cargos de parceiros...")
+			if (!loritta.lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED }) {
+				val partnerRole = originalGuild.getRoleById("434512654292221952")
+				val partnerServerConfigs = loritta.serversColl.find(
+						Filters.eq(
+								"serverListConfig.partner",
+								true
+						)
+				)
+
+				val validPartners = mutableListOf<Member>()
+
+				val partnerGuilds = partnerServerConfigs.mapNotNull { lorittaShards.getGuildById(it.guildId) }
+				partnerGuilds.forEach {
+					val partners = it.members.filter { it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER) }
+					for (partner in partners) {
+						val member = originalGuild.getMember(partner.user) ?: continue
+						validPartners.add(member)
+						if (!member.roles.contains(partnerRole)) {
+							logger.info("Dando o cargo de parceiro para ${member.user.id}...")
+							originalGuild.controller.addSingleRoleToMember(member, partnerRole).queue()
+						}
+					}
+				}
+
+				val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
+				invalidPartners.forEach {
+					logger.info("Removendo cargo de parceiro de ${it.user.id}...")
+					originalGuild.controller.removeSingleRoleFromMember(it, partnerRole).queue()
+				}
+			} else {
+				logger.warn("Todas as shards não estão carregadas! Ignorando cargos de parceiros...")
+			}
+
+			logger.info("Sincronizando cargos da LorittaLand...")
 
 			for ((originalRoleId, usRoleId) in roleRemap) {
 				val originalRole = originalGuild.getRoleById(originalRoleId)
@@ -54,12 +122,12 @@ class LorittaLandRoleSync : Runnable {
 				}
 
 				if (originalRole.isHoisted != usRole.isHoisted) {
-					manager.setHoisted(true)
+					manager.setHoisted(originalRole.isHoisted)
 					changed = true
 				}
 
 				if (originalRole.isMentionable != usRole.isMentionable) {
-					manager.setMentionable(true)
+					manager.setMentionable(originalRole.isMentionable)
 					changed = true
 				}
 

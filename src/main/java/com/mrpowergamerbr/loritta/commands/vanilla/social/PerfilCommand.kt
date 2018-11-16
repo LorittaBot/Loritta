@@ -34,7 +34,22 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		fun getUserBadges(user: User, profile: Profile): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-			var member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
+			val member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
+
+			fun hasRole(guildId: String, roleId: String): Boolean {
+				val lorittaGuild = lorittaShards.getGuildById(guildId)
+				return if (lorittaGuild != null) {
+					if (lorittaGuild.isMember(user)) {
+						val member = lorittaGuild.getMember(user)
+						val role = lorittaGuild.getRoleById(roleId)
+						member.roles.contains(role)
+					} else {
+						false
+					}
+				} else {
+					false
+				}
+			}
 
 			try {
 				// biscord bots
@@ -51,7 +66,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			}
 
 
-			var upvotedOnDiscordBots = try {
+			val upvotedOnDiscordBots = try {
 				if (userVotes != null) {
 					userVotes!!.any { it.id == user.id }
 				} else {
@@ -61,60 +76,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				false
 			}
 
-			val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-			var hasNotifyMeRole = if (lorittaGuild != null) {
-				if (lorittaGuild.isMember(user)) {
-					val member = lorittaGuild.getMember(user)
-					val role = lorittaGuild.getRoleById("334734175531696128")
-					member.roles.contains(role)
-				} else {
-					false
-				}
-			} else {
-				false
-			}
-
-			var isLorittaPartner = if (lorittaGuild != null) {
-				if (lorittaGuild.isMember(user)) {
-					val member = lorittaGuild.getMember(user)
-					val role = lorittaGuild.getRoleById("434512654292221952")
-					member.roles.contains(role)
-				} else {
-					false
-				}
-			} else {
-				false
-			}
-
-			var isTranslator = if (lorittaGuild != null) {
-				if (lorittaGuild.isMember(user)) {
-					val member = lorittaGuild.getMember(user)
-					val role = lorittaGuild.getRoleById("385579854336360449")
-					member.roles.contains(role)
-				} else {
-					false
-				}
-			} else {
-				false
-			}
-
-			var usesPocketDreamsRichPresence = if (member != null) {
+			val hasNotifyMeRole = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128")
+			val isLorittaPartner = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952")
+			val isTranslator = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449")
+			val hasLoriStickerArt = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, Constants.LORI_STICKERS_ROLE_ID)
+			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
+			val usesPocketDreamsRichPresence = if (member != null) {
 				val game = member.game
 				if (game != null && game.isRich) {
 					game.asRichPresence().applicationId == "415617983411388428"
-				} else {
-					false
-				}
-			} else {
-				false
-			}
-
-			val pocketDreamsGuild = lorittaShards.getGuildById("320248230917046282")
-			var isPocketDreamsStaff = if (pocketDreamsGuild != null) {
-				if (pocketDreamsGuild.isMember(user)) {
-					val member = pocketDreamsGuild.getMember(user)
-					val role = pocketDreamsGuild.getRoleById("332650495522897920")
-					member.roles.contains(role)
 				} else {
 					false
 				}
@@ -127,6 +97,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.supervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
+			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 			if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
 			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
 			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))

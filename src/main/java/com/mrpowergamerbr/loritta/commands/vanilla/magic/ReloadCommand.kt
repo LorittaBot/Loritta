@@ -95,6 +95,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 							"Views regeneradas!"
 					)
 			)
+			LorittaWebsite.kotlinTemplateCache.clear()
+			LorittaWebsite.templateCache.clear()
+			LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			return
 		}
 
@@ -112,6 +115,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 					loritta.website
 				})
 			}
+			LorittaWebsite.kotlinTemplateCache.clear()
 			context.reply(
 					LoriReply(
 							"Full website reload completado!"

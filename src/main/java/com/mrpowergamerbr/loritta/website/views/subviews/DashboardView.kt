@@ -2,7 +2,9 @@ package com.mrpowergamerbr.loritta.website.views.subviews
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -18,7 +20,7 @@ class DashboardView : ProtectedView() {
 	}
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
 		val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile
@@ -42,12 +44,15 @@ class DashboardView : ProtectedView() {
 			return response.toString()
 		}
 
-		val guilds = discordAuth.getUserGuilds().filter {
+		val userGuilds = discordAuth.getUserGuilds()
+		val mongoServerConfigs = loritta.serversColl.find(Filters.`in`("_id", userGuilds.map { it.id })).toMutableList()
+
+		val guilds = userGuilds.filter {
 			val guild = lorittaShards.getGuildById(it.id)
 			if (guild != null) {
 				val member = guild.getMemberById(lorittaProfile.userId)
-				if (member != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-					val config = loritta.getServerConfigForGuild(it.id)
+				val config = mongoServerConfigs.firstOrNull { config -> config.guildId == it.id }
+				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
 					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
 					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 				} else {

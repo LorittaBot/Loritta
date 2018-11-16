@@ -95,6 +95,7 @@ class CommandManager {
 		commandMap.add(KnuxThrowCommand())
 		commandMap.add(LoriSignCommand())
 		commandMap.add(TextCraftCommand())
+		commandMap.add(BolsonaroCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(CongaParrotCommand())
@@ -123,7 +124,8 @@ class CommandManager {
 		commandMap.add(BackgroundCommand())
 		commandMap.add(SobreMimCommand())
 		commandMap.add(DiscriminatorCommand())
-		// commandMap.add(RepCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(RepCommand())
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())
 		commandMap.add(AfkCommand())

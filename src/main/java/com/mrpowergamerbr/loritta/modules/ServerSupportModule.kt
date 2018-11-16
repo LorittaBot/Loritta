@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -21,7 +21,6 @@ class ServerSupportModule : MessageReceivedModule {
 				.toLowerCase()
 
 		val responses = listOf(
-				LoriOfflineResponse(),
 				LanguageResponse(),
 				MentionChannelResponse(),
 				MusicResponse(),
@@ -30,7 +29,8 @@ class ServerSupportModule : MessageReceivedModule {
 				AddEmotesResponse(),
 				SendFanArtsResponse(),
 				LoriMandarComandosResponse(),
-				HelpMeResponse()
+				HelpMeResponse(),
+				LoriOfflineResponse()
 		)
 
 		responses.forEach {

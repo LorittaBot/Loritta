@@ -142,6 +142,11 @@ open class BaseLocale {
 		}
 		var vieirinha = Vieirinha()
 
+		class Bolsonaro {
+			lateinit var description: String
+		}
+		var bolsonaro = Bolsonaro()
+
 		class Vemdezap {
 			lateinit var description: String
 			lateinit var examples: List<String>
@@ -185,14 +190,6 @@ open class BaseLocale {
 
 		}
 		var actions = Actions()
-		
-		class AddEmoji {
-			lateinit var description: String
-			lateinit var success: String
-			lateinit var limitReached: String
-			lateinit var error: String
-		}
-		var addEmoji = AddEmoji()
 
 		class Fanarts {
 			lateinit var description: String
@@ -200,6 +197,14 @@ open class BaseLocale {
 			lateinit var thankYouAll: String
 		}
 		var fanarts = Fanarts()
+
+		class AddEmoji {
+			lateinit var description: String
+			lateinit var success: String
+			lateinit var limitReached: String
+			lateinit var error: String
+		}
+		var addEmoji = AddEmoji()
 	}
 	// ===[ END  GENEREATED LOCALE ]===
 	// !!!       DO NOT EDIT        !!!

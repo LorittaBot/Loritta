@@ -396,7 +396,18 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @see              BufferedImage
 	 */
 	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
-		var toBeDownloaded = getImageUrlAt(argument, search, avatarSize) ?: return null
+		var toBeDownloaded = getImageUrlAt(argument, 0, avatarSize)
+
+		if (toBeDownloaded == null) {
+			if (args.isNotEmpty()) {
+				return ImageUtils.createTextAsImage(256, 256, args.joinToString(" "))
+			}
+
+			toBeDownloaded = getImageUrlAt(argument, search, avatarSize)
+		}
+
+		if (toBeDownloaded == null)
+			return null
 
 		// Vamos baixar a imagem!
 		try {
@@ -408,7 +419,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 					toBeDownloaded = elements.attr("content")
 				}
 			}
-			return LorittaUtils.downloadImage(toBeDownloaded)
+			return LorittaUtils.downloadImage(toBeDownloaded ?: return null)
 		} catch (e: Exception) {
 			return null
 		}

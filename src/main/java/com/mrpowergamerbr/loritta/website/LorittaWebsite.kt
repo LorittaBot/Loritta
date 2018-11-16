@@ -9,30 +9,43 @@ import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mitchellbosecke.pebble.template.PebbleTemplate
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
+import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
 import org.jooby.Jooby
 import org.jooby.Kooby
+import org.jooby.MediaType
 import org.jooby.internal.SessionManager
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
 import java.io.File
 import java.io.StringWriter
 import java.util.*
+import kotlin.reflect.full.functions
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(Loritta.config.websitePort) // Porta do website
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
+
+	err(WebsiteAPIException::class.java) { req, res, err ->
+		val cause = err.cause as WebsiteAPIException
+		res.type(MediaType.json)
+		res.send(gson.toJson(cause.payload))
+	}
 
 	// Mostrar conexões realizadas ao website
 	before { req, res ->
@@ -72,28 +85,35 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use("*") { req, res, chain ->
 		val doNotLocaleRedirect = req.route().attributes().entries.any { it.key == "loriDoNotLocaleRedirect" } || req.route().path().startsWith("/api/v1/") // TODO: Remover esta verificação após toda a API ser migrada para MVC paths
 
-		if (!doNotLocaleRedirect) {
-			var localeId: String? = null
-
-			// TODO: Deprecated
-			val acceptLanguage = req.header("Accept-Language").value("en-US")
-			val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
-			for (range in ranges) {
-				localeId = range.range.toLowerCase()
-				var bypassCheck = false
-				if (localeId == "pt-br" || localeId == "pt") {
-					localeId = "default"
-					bypassCheck = true
-				}
-				if (localeId == "en") {
-					localeId = "en-us"
-				}
-				// val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
-				if (bypassCheck /* || defaultLocale !== parsedLocale */) {
-					// lorittaLocale = parsedLocale
-				}
+		var localeId: String? = null
+		val acceptLanguage = req.header("Accept-Language").value("en-US")
+		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+		for (range in ranges) {
+			localeId = range.range.toLowerCase()
+			if (localeId == "pt-br" || localeId == "pt") {
+				localeId = "default"
 			}
+			if (localeId == "en") {
+				localeId = "en-us"
+			}
+		}
 
+		var lorittaLocale = loritta.getLocaleById(localeId ?: "default")
+
+		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
+		val languageCode = req.path().split("/").getOrNull(1)
+
+		if (languageCode != null) {
+			lorittaLocale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> lorittaLocale
+			}
+		}
+
+		if (!doNotLocaleRedirect) {
 			val languageCode2 = req.path().split("/").getOrNull(1)
 			val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
 			if (!hasLangCode) {
@@ -121,7 +141,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
 
 		if (requiresVariables != null)
-			WebsiteUtils.initializeVariables(req, res)
+			WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, req.route().attributes().entries.any { it.key == "loriForceReauthentication" })
 
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 
@@ -158,6 +178,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var WEBSITE_URL: String
 		private val logger = KotlinLogging.logger {}
 		val templateCache = Caffeine.newBuilder().build<String, PebbleTemplate>().asMap()
+		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
@@ -207,4 +228,51 @@ fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<St
 	val template = LorittaWebsite.templateCache.getOrPut(file) { LorittaWebsite.ENGINE.getTemplate(file) }
 	template.evaluate(writer, variables)
 	return writer.toString()
+}
+
+fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlBlockTag.() -> Unit {
+	println("Evaluating $fileName...")
+	val template = LorittaWebsite.kotlinTemplateCache.getOrPut(fileName) {
+		val file = File(LorittaWebsite.FOLDER, fileName)
+		val scriptContent = file.readText()
+		val content = """
+			import com.mrpowergamerbr.loritta.Loritta
+			import com.mrpowergamerbr.loritta.LorittaLauncher
+			import com.mrpowergamerbr.loritta.commands.CommandContext
+			import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+			import com.mrpowergamerbr.loritta.utils.loritta
+			import com.mrpowergamerbr.loritta.utils.lorittaShards
+			import com.mrpowergamerbr.loritta.utils.save
+			import com.mrpowergamerbr.loritta.utils.Constants
+			import com.mrpowergamerbr.loritta.utils.LorittaImage
+			import com.mrpowergamerbr.loritta.utils.toBufferedImage
+			import com.mrpowergamerbr.loritta.utils.*
+			import com.mrpowergamerbr.loritta.utils.locale.*
+			import com.mrpowergamerbr.loritta.dao.*
+			import com.mrpowergamerbr.loritta.tables.*
+			import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth.*
+			import java.awt.image.BufferedImage
+			import java.io.File
+			import javax.imageio.ImageIO
+			import kotlinx.coroutines.GlobalScope
+			import kotlinx.coroutines.launch
+			import kotlinx.html.body
+			import kotlinx.html.html
+			import kotlinx.html.stream.appendHTML
+			import kotlinx.html.*
+			import net.dv8tion.jda.core.entities.*
+			import net.dv8tion.jda.core.*
+			import net.dv8tion.jda.core.entities.impl.*
+
+			class ContentStuff {
+				$scriptContent
+			}
+
+			ContentStuff()"""
+		KtsObjectLoader().load<Any>(content)
+	}
+
+	val kotlinFunction = template::class.functions.first { it.name == function }
+	val result = kotlinFunction.call(template, *args) as HtmlBlockTag.() -> Unit
+	return result
 }

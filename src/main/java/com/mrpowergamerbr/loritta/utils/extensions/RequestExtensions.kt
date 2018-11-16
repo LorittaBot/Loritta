@@ -8,9 +8,9 @@ import org.jooby.Request
  */
 val Request.trueIp: String get() {
 	val forwardedForHeader = this.header("X-Forwarded-For")
-	return if (forwardedForHeader.isSet)
-		forwardedForHeader.value()
-	else
+	return if (forwardedForHeader.isSet) {
+		forwardedForHeader.value().split(", ").first()
+	} else
 		this.ip()
 }
 

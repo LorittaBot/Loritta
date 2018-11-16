@@ -1,18 +1,17 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.salomonbrys.kotson.*
-import com.google.common.collect.Lists
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
-import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
@@ -43,8 +42,10 @@ object WebsiteUtils {
 	 * @param message the error reason
 	 * @return        the json object containing the error
 	 */
-	fun createErrorPayload(code: LoriWebCode, message: String? = null): JsonObject {
-		return jsonObject("error" to createErrorObject(code, message))
+	fun createErrorPayload(code: LoriWebCode, message: String? = null, data: ((JsonObject) -> Unit)? = null): JsonObject {
+		val result = jsonObject("error" to createErrorObject(code, message))
+		data?.invoke(result)
+		return result
 	}
 
 	/**
@@ -89,9 +90,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, res: Response) {
-		val queryString = req.urlQueryString
-
+	fun initializeVariables(req: Request, locale: BaseLocale, languageCode: String?, forceReauthentication: Boolean) {
 		val variables = mutableMapOf(
 				"discordAuth" to null,
 				"userIdentification" to null,
@@ -109,52 +108,12 @@ object WebsiteUtils {
 
 		req.set("variables", variables)
 
-		// TODO: Deprecated
-		val acceptLanguage = req.header("Accept-Language").value("en-US")
-
-		// Vamos parsear!
-		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
-
-		val defaultLocale = LorittaLauncher.loritta.getLocaleById("default")
-		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
-
-		var localeId: String? = null
-
-		for (range in ranges) {
-			localeId = range.range.toLowerCase()
-			var bypassCheck = false
-			if (localeId == "pt-br" || localeId == "pt") {
-				localeId = "default"
-				bypassCheck = true
-			}
-			if (localeId == "en") {
-				localeId = "en-us"
-			}
-			val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
-			if (bypassCheck || defaultLocale !== parsedLocale) {
-				lorittaLocale = parsedLocale
-			}
-		}
-
 		if (req.param("logout").isSet) {
 			req.session().destroy()
 		}
 
-		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
-		val languageCode = req.path().split("/").getOrNull(1)
-
-		if (languageCode != null) {
-			lorittaLocale = when (languageCode) {
-				"br" -> LorittaLauncher.loritta.getLocaleById("default")
-				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
-				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
-				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
-				else -> lorittaLocale
-			}
-		}
-
-		for (locale in lorittaLocale.strings) {
-			variables[locale.key] = MessageFormat.format(locale.value)
+		for ((key, rawMessage) in locale.strings) {
+			variables[key] = MessageFormat.format(rawMessage)
 		}
 
 		var pathNoLanguageCode = req.path()
@@ -166,25 +125,6 @@ object WebsiteUtils {
 			split.removeAt(0)
 			split.removeAt(0)
 			pathNoLanguageCode = "/" + split.joinToString("/")
-		} else {
-			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
-			if (localeId != null) {
-				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
-					res.status(302) // temporary redirect / no page rank penalty (?)
-					if (localeId == "default") {
-						res.redirect("${Loritta.config.websiteUrl}br${req.path()}${queryString}")
-					}
-					if (localeId == "pt-pt") {
-						res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${queryString}")
-					}
-					if (localeId == "es-es") {
-						res.redirect("${Loritta.config.websiteUrl}es${req.path()}${queryString}")
-					}
-					res.redirect("${Loritta.config.websiteUrl}us${req.path()}${queryString}")
-					res.send("Redirecting...")
-					return
-				}
-			}
 		}
 
 		variables["pathNL"] = pathNoLanguageCode // path no language code
@@ -210,18 +150,41 @@ object WebsiteUtils {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["localeAsJson"] = Loritta.GSON.toJson(lorittaLocale.strings)
+		variables["localeAsJson"] = Loritta.GSON.toJson(locale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
-				discordAuth.isReady(true)
-				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+				val storedIdMutant = req.session()["discordId"]
+				val storedId = if (storedIdMutant.isSet) {
+					storedIdMutant.value()
+				} else {
+					null
+				}
+
+				val user = lorittaShards.getUserById(storedId)
+
+				if (forceReauthentication || user == null) {
+					discordAuth.isReady(true)
+					val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+					variables["userIdentification"] = userIdentification
+					req.set("userIdentification", userIdentification)
+					req.session()["discordId"] = userIdentification.id
+				} else {
+					// Se não estamos forçando a reautenticação, vamos primeiro descobrir se a Lori conhece o usuário, se não, ai a gente irá utilizar a API
+					val simpleUserIdentification = SimpleUserIdentification(
+							user.name,
+							user.id,
+							user.effectiveAvatarUrl.split("/")[5].split(".")[0],
+							user.discriminator
+					)
+
+					variables["userIdentification"] = simpleUserIdentification
+					req.set("userIdentification", simpleUserIdentification)
+				}
 				variables["discordAuth"] = discordAuth
-				variables["userIdentification"] = userIdentification
 				req.set("discordAuth", discordAuth)
-				req.set("userIdentification", userIdentification)
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}
@@ -281,7 +244,7 @@ object WebsiteUtils {
 	}
 
 	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
-		var userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").getOrNull()
+		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
 		if (userIdentification == null && req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
@@ -449,7 +412,7 @@ object WebsiteUtils {
 		}
 	}
 
-	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: TemmieDiscordAuth.UserIdentification): JsonElement {
+	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
 		val textChannels = JsonArray()

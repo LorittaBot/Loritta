@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -32,7 +33,7 @@ class TestMessageView : ConfigureView() {
 			textChannelId = receivedPayload["textChannelId"].string
 
 		var message = content
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
 		val member = guild.getMemberById(userIdentification.id)
 		val nickname = member.effectiveName
 

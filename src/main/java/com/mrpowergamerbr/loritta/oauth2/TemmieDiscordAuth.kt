@@ -204,15 +204,15 @@ class TemmieDiscordAuth {
 	class MethodNotAllowedException : RuntimeException()
 
 	class UserIdentification(
-		val username: String,
+		username: String,
 		val verified: Boolean,
 		@SerializedName("mfa_enabled")
 		val mfaEnabled: Boolean,
-		val id: String,
-		val avatar: String,
-		val discriminator: String,
+		id: String,
+		avatar: String,
+		discriminator: String,
 		val email: String?
-	)
+	) : SimpleUserIdentification(username, id, avatar, discriminator)
 
 	class DiscordGuild(
 		val owner: Boolean,

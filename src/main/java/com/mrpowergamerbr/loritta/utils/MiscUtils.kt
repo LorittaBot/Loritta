@@ -7,6 +7,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import org.jooby.Status
 import org.json.XML
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -61,7 +64,7 @@ object MiscUtils {
 		var output = string
 		val matcher = Constants.URL_PATTERN.matcher(
 				string.replace("\u200B", "")
-				.replace("\\", "")
+						.replace("\\", "")
 		)
 
 		while (matcher.find()) {
@@ -145,12 +148,17 @@ object MiscUtils {
 		// 1 = Bad hostname
 		// 2 = OVH IP
 
+		logger.info("Verifying IP: $ip")
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
 		val stopForumSpam = HttpRequest.get("http://api.stopforumspam.org/api?ip=$ip")
 				.body()
 
+		logger.info("Stop Forum Spam: $stopForumSpam")
+
 		// STOP FORUM SPAM
 		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
+
+		logger.info("as JSON: $xmlJSONObj")
 
 		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
 
@@ -183,6 +191,60 @@ object MiscUtils {
 			return AccountCheckResult.OVH_HOSTNAME
 
 		return AccountCheckResult.SUCCESS
+	}
+
+	fun handleVerification(status: AccountCheckResult) {
+		if (!status.canAccess) {
+			when (status) {
+				MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
+				MiscUtils.AccountCheckResult.BAD_HOSTNAME,
+				MiscUtils.AccountCheckResult.OVH_HOSTNAME -> {
+					// Para identificar meliantes, cada request terá uma razão determinando porque o IP foi bloqueado
+					// 0 = Stop Forum Spam
+					// 1 = Bad hostname
+					// 2 = OVH IP
+					throw WebsiteAPIException(Status.FORBIDDEN,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.FORBIDDEN,
+									"Bad IP!"
+							) {
+								it["code"] = 3
+								it["type"] = when (status) {
+									MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
+									MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
+									MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
+									else -> -1
+								}
+							}
+					)
+				}
+				MiscUtils.AccountCheckResult.BAD_EMAIL -> {
+					throw WebsiteAPIException(Status.FORBIDDEN,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.FORBIDDEN,
+									"Bad email!"
+							) { it["code"] = 2 }
+					)
+				}
+				MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
+					throw WebsiteAPIException(Status.FORBIDDEN,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.FORBIDDEN,
+									"Account is not verified!"
+							) { it["code"] = 1 }
+					)
+				}
+				else -> throw WebsiteAPIException(Status.SERVER_ERROR, jsonObject("reason" to "Missing !canAccess result! ${status.name}"))
+			}
+		}
+	}
+
+	fun checkRecaptcha(serverToken: String, clientToken: String): Boolean {
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${serverToken}&response=$clientToken")
+				.body()
+
+		val jsonParser = jsonParser.parse(body).obj
+		return jsonParser["success"].bool
 	}
 
 	fun hasInappropriateWords(string: String): Boolean {
