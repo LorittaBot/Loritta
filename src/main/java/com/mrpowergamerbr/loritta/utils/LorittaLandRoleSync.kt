@@ -44,31 +44,27 @@ class LorittaLandRoleSync : Runnable {
 			val drawingRole = originalGuild.getRoleById("341343754336337921")
 
 			logger.info("Processando cargos de desenhistas...")
-			val membersWithDesenhistas = originalGuild.getMembersWithRoles(drawingRole)
-			for (member in membersWithDesenhistas) {
-				val fanArt = loritta.fanArts.firstOrNull {
-					val artist = loritta.fanArtConfig.artists[it.artistId]
-					val discordId = artist?.discordId ?: it.artistId
-					it.artistId == discordId
-				}
-				if (fanArt == null) {
-					logger.info("Removendo cargo de desenhista de ${member.user.id}...")
-					originalGuild.controller.removeSingleRoleFromMember(member, drawingRole).queue()
+			val validIllustrators = loritta.fanArts.mapNotNull {
+				val artist = loritta.fanArtConfig.artists[it.artistId]
+				val discordId = artist?.discordId ?: it.artistId
+				if (discordId != null) {
+					originalGuild.getMemberById(discordId)
+				} else {
+					null
 				}
 			}
 
-			loritta.fanArts.forEach {
-				val artistId = it.artistId
-				if (artistId != null) {
-					// Vamos pegar o ID do usuário no Discord, primeiro iremos tentar pegar pelas entries de artistas, e caso não tenha, usar o ID original mesmo
-					val discordId = loritta.fanArtConfig.artists[artistId]?.discordId ?: artistId
-
-					val member = try { originalGuild.getMemberById(discordId) } catch (e: Exception) { return@forEach } ?: return@forEach
-					if (!member.roles.contains(drawingRole)) {
-						logger.info("Dando o cargo de desenhista para ${member.user.id}...")
-						originalGuild.controller.addSingleRoleToMember(member, drawingRole).queue()
-					}
+			for (illustrator in validIllustrators) {
+				if (!illustrator.roles.contains(drawingRole)) {
+					logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
+					originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
 				}
+			}
+
+			val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
+			invalidIllustrators.forEach {
+				logger.info("Removendo cargo de desenhista de ${it.user.id}...")
+				originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
 			}
 
 			// ===[ PARCEIROS ]===
