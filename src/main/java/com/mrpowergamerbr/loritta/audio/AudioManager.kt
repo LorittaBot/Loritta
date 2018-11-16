@@ -81,6 +81,10 @@ class AudioManager(val loritta: Loritta) {
 		val musicConfig = context.config.musicConfig
 		val musicManager = getGuildAudioPlayer(guild)
 
+		if (!override)
+			if (musicManager.scheduler.queue.size > Constants.MAX_TRACKS_ON_PLAYLIST)
+				return
+
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
 
@@ -221,9 +225,6 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override     (optional) forces the song to be played
 	 */
 	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
-		if (musicManager.scheduler.queue.size > 25)
-			return
-
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {
@@ -237,6 +238,9 @@ class AudioManager(val loritta: Loritta) {
 		if (override) {
 			musicManager.player.playTrack(trackWrapper.track)
 		} else {
+			if (musicManager.scheduler.queue.size > Constants.MAX_TRACKS_ON_PLAYLIST)
+				return
+
 			musicManager.scheduler.queue(trackWrapper, conf)
 		}
 	}

@@ -45,6 +45,8 @@ object Constants {
 	const val SPARKLYPOWER_GUILD_ID = "320248230917046282"
 	const val LORI_STICKERS_ROLE_ID = "510788363264196638"
 
+	const val MAX_TRACKS_ON_PLAYLIST = 25
+
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
