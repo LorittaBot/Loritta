@@ -47,8 +47,7 @@ class DashboardView : ProtectedView() {
 
 		// Vamos primeiro filtrar todas as guilds que não existem para uma map separada
 		val discordGuilds = userGuilds.map {
-			val discordGuild = lorittaShards.getGuildById(it.id)
-			Pair(it, discordGuild)
+			Pair(it, lorittaShards.getGuildById(it.id))
 		}
 
 		// Agora vamos pegar todas as configurações de todos os servidores que o usuário está
@@ -56,26 +55,23 @@ class DashboardView : ProtectedView() {
 
 		// E agora iremos filtrar as "guilds em que o usuário pode mexer"!
 		val guilds = discordGuilds.filter { (temmieGuild, guild) ->
-			if (guild !=  null) {
+			if (guild != null) {
 				val member = guild.getMemberById(lorittaProfile.userId)
 				if (member != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
 					val config = mongoServerConfigs.firstOrNull { it.guildId == guild.id } ?: return@filter false
 					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
-					LorittaWebsite.canManageGuild(temmieGuild) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-				} else {
-					LorittaWebsite.canManageGuild(temmieGuild)
+					return@filter LorittaWebsite.canManageGuild(temmieGuild) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 				}
-			} else {
-				LorittaWebsite.canManageGuild(temmieGuild)
 			}
+			return@filter LorittaWebsite.canManageGuild(temmieGuild)
 		}
 
 		variables["userGuilds"] = userGuilds
 		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.DiscordGuild, LorittaWebsite.UserPermissionLevel>()
 		val joinedServers = mutableMapOf<TemmieDiscordAuth.DiscordGuild, Boolean>()
-		for ((temmieGuild, guild) in guilds) {
+		for ((temmieGuild, discordGuild) in guilds) {
 			userPermissionLevels[temmieGuild] = LorittaWebsite.getUserPermissionLevel(temmieGuild)
-			joinedServers[temmieGuild] = if (guild != null) lorittaShards.getGuildById(guild.id) != null else false
+			joinedServers[temmieGuild] = lorittaShards.getGuildById(temmieGuild.id) != null
 		}
 		variables["userPermissionLevels"] = userPermissionLevels
 		variables["joinedServers"] = joinedServers
