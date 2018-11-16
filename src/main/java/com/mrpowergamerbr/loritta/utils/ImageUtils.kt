@@ -222,7 +222,6 @@ object ImageUtils {
 	 * @param rect The Rectangle to center the text in.
 	 */
 	fun drawCenteredStringEmoji(graphics: Graphics, text: String, rect: Rectangle, font: Font) {
-		graphics.font
 		// Get the FontMetrics
 		val metrics = graphics.getFontMetrics(font)
 		// Determine the X coordinate for the text
@@ -247,8 +246,6 @@ object ImageUtils {
 			graphics.drawString(c.toString(), x, y) // Escreva o char na imagem
 			x += width // E adicione o width no nosso currentX
 		}
-		// Draw the String
-		graphics.drawString(text, x, y)
 	}
 
 	/**
@@ -337,5 +334,69 @@ object ImageUtils {
 			}
 		}
 		return currentY
+	}
+
+	/**
+	 * Creates an image containing the [text] centralized on it
+	 */
+	fun createTextAsImage(width: Int, height: Int, text: String): BufferedImage {
+		val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+		val graphics = image.graphics
+		graphics.color = Color.WHITE
+		graphics.fillRect(0, 0, width, height)
+		val font = image.graphics.font.deriveFont(Font.BOLD, 22f)
+		graphics.font = font
+		graphics.color = Color.BLACK
+		val fontMetrics = graphics.fontMetrics
+
+		// Para escrever uma imagem centralizada, nós precisamos primeiro saber algumas coisas sobre o texto
+
+		// Lista contendo (texto, posição)
+		val lines = mutableListOf<String>()
+
+		// Se está centralizado verticalmente ou não, por enquanto não importa para a gente
+		val split = text.split(" ")
+
+		var x = 0
+		var currentLine = StringBuilder()
+
+		for (string in split) {
+			val stringWidth = fontMetrics.stringWidth("$string ")
+			val newX = x + stringWidth
+
+			if (newX >= width) {
+				var endResult = currentLine.toString().trim()
+				if (endResult.isEmpty()) { // okay wtf
+					// Se o texto é grande demais e o conteúdo atual está vazio... bem... substitua o endResult pela string atual
+					endResult = string
+					lines.add(endResult)
+					x = 0
+					continue
+				}
+				lines.add(endResult)
+				currentLine = StringBuilder()
+				currentLine.append(' ')
+				currentLine.append(string)
+				x = fontMetrics.stringWidth("$string ")
+			} else {
+				currentLine.append(' ')
+				currentLine.append(string)
+				x = newX
+			}
+		}
+		lines.add(currentLine.toString().trim())
+
+		// got it!!!
+		// bem, supondo que cada fonte tem 22f de altura...
+
+		// para centralizar é mais complicado
+		val skipHeight = fontMetrics.ascent
+		var y = (height / 2) - ((skipHeight - 10) * (lines.size - 1))
+		for (line in lines) {
+			ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(0, y, width, 24), font)
+			y += skipHeight
+		}
+
+		return image
 	}
 }

@@ -328,36 +328,38 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String? {
-		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
-			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
+	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048, getOnlyAttachedFiles: Boolean = true): String? {
+		if (!getOnlyAttachedFiles) {
+			if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
+				val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
-			if (LorittaUtils.isValidUrl(link))
-				return link // Se é um link, vamos enviar para o usuário agora
+				if (LorittaUtils.isValidUrl(link))
+					return link // Se é um link, vamos enviar para o usuário agora
 
-			// Vamos verificar por usuários no argumento especificado
-			val user = getUserAt(argument)
-			if (user != null)
-				return user.effectiveAvatarUrl + "?size=" + avatarSize
+				// Vamos verificar por usuários no argumento especificado
+				val user = getUserAt(argument)
+				if (user != null)
+					return user.effectiveAvatarUrl + "?size=" + avatarSize
 
-			// Ainda não?!? Vamos verificar se é um emoji.
-			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
-			for (emote in this.message.emotes) {
-				if (link.equals(emote.asMention, ignoreCase = true)) {
-					return emote.imageUrl
+				// Ainda não?!? Vamos verificar se é um emoji.
+				// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
+				for (emote in this.message.emotes) {
+					if (link.equals(emote.asMention, ignoreCase = true)) {
+						return emote.imageUrl
+					}
 				}
-			}
 
-			// Se não é nada... então talvez seja um emoji padrão do Discordão!
-			// Na verdade é um emoji padrão...
-			try {
-				var unicodeEmoji = LorittaUtils.toUnicode(this.rawArgs[argument].codePointAt(0)) // Vamos usar codepoints porque emojis
-				unicodeEmoji = unicodeEmoji.substring(2) // Remover coisas desnecessárias
-				val toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/$unicodeEmoji.png"
-				if (HttpRequest.get(toBeDownloaded).code() == 200) {
-					return toBeDownloaded
+				// Se não é nada... então talvez seja um emoji padrão do Discordão!
+				// Na verdade é um emoji padrão...
+				try {
+					var unicodeEmoji = LorittaUtils.toUnicode(this.rawArgs[argument].codePointAt(0)) // Vamos usar codepoints porque emojis
+					unicodeEmoji = unicodeEmoji.substring(2) // Remover coisas desnecessárias
+					val toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/$unicodeEmoji.png"
+					if (HttpRequest.get(toBeDownloaded).code() == 200) {
+						return toBeDownloaded
+					}
+				} catch (e: Exception) {
 				}
-			} catch (e: Exception) {
 			}
 		}
 
@@ -396,7 +398,13 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	 * @see              BufferedImage
 	 */
 	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
-		var toBeDownloaded = getImageUrlAt(argument, search, avatarSize) ?: return null
+		var toBeDownloaded = getImageUrlAt(argument, search, avatarSize, false)
+
+		if (toBeDownloaded == null && args.isNotEmpty()) {
+			return ImageUtils.createTextAsImage(256, 256, args.joinToString(" "))
+		}
+
+		toBeDownloaded = getImageUrlAt(argument, search, avatarSize, true) ?: return null
 
 		// Vamos baixar a imagem!
 		try {
@@ -408,7 +416,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 					toBeDownloaded = elements.attr("content")
 				}
 			}
-			return LorittaUtils.downloadImage(toBeDownloaded)
+			return LorittaUtils.downloadImage(toBeDownloaded ?: return null)
 		} catch (e: Exception) {
 			return null
 		}
