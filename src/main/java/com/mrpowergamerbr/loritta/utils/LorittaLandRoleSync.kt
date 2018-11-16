@@ -63,7 +63,7 @@ class LorittaLandRoleSync : Runnable {
 					// Vamos pegar o ID do usuário no Discord, primeiro iremos tentar pegar pelas entries de artistas, e caso não tenha, usar o ID original mesmo
 					val discordId = loritta.fanArtConfig.artists[artistId]?.discordId ?: artistId
 
-					val member = try { originalGuild.getMemberById(discordId) } catch (e: Exception) { return@forEach }
+					val member = try { originalGuild.getMemberById(discordId) } catch (e: Exception) { return@forEach } ?: return@forEach
 					if (!member.roles.contains(drawingRole)) {
 						logger.info("Dando o cargo de desenhista para ${member.user.id}...")
 						originalGuild.controller.addSingleRoleToMember(member, drawingRole).queue()
