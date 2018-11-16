@@ -141,7 +141,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
 
 		if (requiresVariables != null)
-			WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode)
+			WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, false)
 
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 

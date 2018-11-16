@@ -93,7 +93,7 @@ object GlobalHandler {
 			}
 		}
 
-		WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode)
+		WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, false)
 
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()
