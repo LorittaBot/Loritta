@@ -7,6 +7,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
@@ -89,7 +90,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, locale: BaseLocale, languageCode: String?) {
+	fun initializeVariables(req: Request, locale: BaseLocale, languageCode: String?, forceReauthentication: Boolean) {
 		val variables = mutableMapOf(
 				"discordAuth" to null,
 				"userIdentification" to null,
@@ -155,12 +156,35 @@ object WebsiteUtils {
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
-				discordAuth.isReady(true)
-				val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+				val storedIdMutant = req.session()["discordId"]
+				val storedId = if (storedIdMutant.isSet) {
+					storedIdMutant.value()
+				} else {
+					null
+				}
+
+				val user = lorittaShards.getUserById(storedId)
+
+				if (forceReauthentication || user == null) {
+					discordAuth.isReady(true)
+					val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+					variables["userIdentification"] = userIdentification
+					req.set("userIdentification", userIdentification)
+					req.session()["discordId"] = userIdentification.id
+				} else {
+					// Se não estamos forçando a reautenticação, vamos primeiro descobrir se a Lori conhece o usuário, se não, ai a gente irá utilizar a API
+					val simpleUserIdentification = SimpleUserIdentification(
+							user.name,
+							user.id,
+							user.effectiveAvatarUrl,
+							user.discriminator
+					)
+
+					variables["userIdentification"] = simpleUserIdentification
+					req.set("userIdentification", simpleUserIdentification)
+				}
 				variables["discordAuth"] = discordAuth
-				variables["userIdentification"] = userIdentification
 				req.set("discordAuth", discordAuth)
-				req.set("userIdentification", userIdentification)
 			} catch (e: Exception) {
 				req.session().unset("discordAuth")
 			}
