@@ -24,7 +24,7 @@ class LorittaLandRoleSync : Runnable {
 					"341343754336337921" to "467750037812936704", // Desenhistas
 					"385579854336360449" to "467750852610752561", // Tradutores
 					"434512654292221952" to "467751141363548171", // Loritta Partner
-					"334734175531696128" to "420710241693466627" // Notificar Novidades
+					"334734175531696128" to "420710241693466627"  // Notificar Novidades
 			)
 
 			val originalGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID) ?: run {
@@ -54,12 +54,12 @@ class LorittaLandRoleSync : Runnable {
 				}
 
 				if (originalRole.isHoisted != usRole.isHoisted) {
-					manager.setHoisted(true)
+					manager.setHoisted(originalRole.isHoisted)
 					changed = true
 				}
 
 				if (originalRole.isMentionable != usRole.isMentionable) {
-					manager.setMentionable(true)
+					manager.setMentionable(originalRole.isMentionable)
 					changed = true
 				}
 
