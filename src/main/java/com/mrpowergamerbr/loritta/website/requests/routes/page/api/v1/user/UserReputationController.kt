@@ -10,10 +10,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
-import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
-import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
-import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import com.mrpowergamerbr.loritta.website.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -50,6 +47,7 @@ class UserReputationController {
 	@POST
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresVariables(true)
+	@LoriForceReauthentication(true)
 	fun giveReputation(req: Request, res: Response, @Body rawMessage: String) {
 		res.type(MediaType.json)
 

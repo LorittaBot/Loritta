@@ -412,7 +412,7 @@ object WebsiteUtils {
 		}
 	}
 
-	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: TemmieDiscordAuth.UserIdentification): JsonElement {
+	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
 		val textChannels = JsonArray()

@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -19,7 +20,7 @@ class DashboardView : ProtectedView() {
 	}
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
-		val userIdentification = req.ifGet<TemmieDiscordAuth.UserIdentification>("userIdentification").get()
+		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
 		val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile

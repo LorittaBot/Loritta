@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluateKotlin
 import com.mrpowergamerbr.loritta.website.requests.routes.Page
@@ -24,6 +25,7 @@ import org.jooby.mvc.Path
 class UserReputationController {
 	@GET
 	@LoriRequiresVariables(true)
+	@LoriForceReauthentication(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
 		val userId = req.param("userId").value()
 		val user = lorittaShards.getUserById(userId)!!
