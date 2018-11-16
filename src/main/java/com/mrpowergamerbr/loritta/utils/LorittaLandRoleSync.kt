@@ -88,7 +88,7 @@ class LorittaLandRoleSync : Runnable {
 						validPartners.add(member)
 						if (!member.roles.contains(partnerRole)) {
 							logger.info("Dando o cargo de parceiro para ${member.user.id}...")
-							originalGuild.controller.addSingleRoleToMember(member, partnerRole)
+							originalGuild.controller.addSingleRoleToMember(member, partnerRole).queue()
 						}
 					}
 				}
