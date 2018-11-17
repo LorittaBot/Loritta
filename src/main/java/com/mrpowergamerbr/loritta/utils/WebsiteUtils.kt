@@ -176,7 +176,7 @@ object WebsiteUtils {
 					val simpleUserIdentification = SimpleUserIdentification(
 							user.name,
 							user.id,
-							user.effectiveAvatarUrl.split("/")[5].split(".")[0],
+							(user.avatarId ?: user.defaultAvatarId),
 							user.discriminator
 					)
 
