@@ -24,7 +24,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 			for (answer in answers) {
 				val guild = context.guild
 				val role = guild.getRoleById(answer.roleId)
-				guild.controller.addSingleRoleToMember(context.handle, role)
+				guild.controller.addSingleRoleToMember(context.handle, role).queue()
 			}
 			return
 		}
