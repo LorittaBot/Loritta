@@ -237,6 +237,8 @@ class CommandManager {
 		commandMap.add(LoriServerListConfigCommand())
 		commandMap.add(TicTacToeCommand())
 		commandMap.add(EvalKotlinCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(AntiRaidCommand())
 
 		// =======[ MÚSICA ]========
 		commandMap.add(TocarCommand())

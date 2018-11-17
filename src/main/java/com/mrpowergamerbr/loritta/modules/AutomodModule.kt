@@ -22,8 +22,18 @@ import java.util.concurrent.TimeUnit
 
 class AutomodModule : MessageReceivedModule {
 	companion object {
-		val MESSAGES  = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<String, Queue<Message>>().asMap()
+		val MESSAGES  = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build<String, Queue<Message>>().asMap()
 		const val FRESH_ACCOUNT_TIMEOUT = 604_800_000L
+		var ANTIRAID_ENABLED = true
+		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
+		var SIMILARITY_THRESHOLD = 7
+		var ATTACHED_IMAGE_SCORE = 0.005
+		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.01
+		var NO_AVATAR_SCORE = 0.15
+		var MUTUAL_GUILDS_MULTIPLIER = 0.01
+		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.01
+		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.25
+		var BAN_THRESHOLD = 0.75
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -41,7 +51,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
-		if (event.guild!!.id == "268353819409252352" && Loritta.config.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (event.guild!!.id == "268353819409252352" || event.channel.id == "297732013006389252" || event.channel.id == "398987569485971466") && Loritta.config.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
@@ -49,31 +59,39 @@ class AutomodModule : MessageReceivedModule {
 				val raider = wrapper.author
 				var raidingPercentage = 0.0
 
+				val verySimilarMessages = mutableListOf<Message>()
+
 				for (message in messages) {
 					// println(message.content + " -- " + wrapper.content)
 					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
 
+					if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
+						verySimilarMessages.add(message)
+					}
+
 					// println(Math.max(0, 25 - threshold))
-					raidingPercentage += 0.0025 * (Math.max(0, 7 - threshold))
+					raidingPercentage += SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, SIMILARITY_THRESHOLD - threshold))
 					// raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
 					// val diff = wrapper.sentAt - message.sentAt
 					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
-						raidingPercentage += 0.005
+						raidingPercentage += ATTACHED_IMAGE_SCORE
 					}
 				}
 
+				raidingPercentage += SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
+
 				if (wrapper.author.avatarUrl == null) {
-					raidingPercentage += 0.15
+					raidingPercentage += NO_AVATAR_SCORE
 				}
 
 				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
-				raidingPercentage += 0.01 * Math.max(5 - raider.mutualGuilds.size, 1)
-				raidingPercentage += 0.01 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+				raidingPercentage += MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
+				raidingPercentage += FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				val member = wrapper.member
 				if (member != null) {
-					raidingPercentage += 0.25 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+					raidingPercentage += FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				}
 
 				return raidingPercentage
@@ -82,7 +100,7 @@ class AutomodModule : MessageReceivedModule {
 			val raidingPercentage = calculateRaidingPercentage(event.message)
 			println("${event.author.id} (${raidingPercentage}% chance de ser raider ~ ${messages.toMutableList().size}): ${event.message.contentRaw}")
 
-			if (raidingPercentage >= 0.75) {
+			if (raidingPercentage >= BAN_THRESHOLD) {
 				println("Applying punishments to all involved!")
 				val alreadyBanned = mutableListOf<User>()
 
@@ -92,16 +110,16 @@ class AutomodModule : MessageReceivedModule {
 
 					val percentage = calculateRaidingPercentage(storedMessage)
 
-					if (percentage >= 0.75) {
+					if (percentage >= BAN_THRESHOLD) {
 						alreadyBanned.add(storedMessage.author)
-						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
+						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid! (Isto é experimental, caso você tenha sido banido sem querer, vá em https://loritta.website/support e entre de novo :3)", false, 7)
 					}
 				}
 
 				if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 					return true
 
-				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
+				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid! (Isto é experimental, caso você tenha sido banido sem querer, vá em https://loritta.website/support e entre de novo :3)", false, 7)
 				return true
 			}
 
