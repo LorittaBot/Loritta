@@ -8,7 +8,11 @@ import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.response.LorittaResponse
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.io.File
 import java.io.FileNotFoundException
@@ -27,8 +31,8 @@ class ServerSupportModule : MessageReceivedModule {
 			if (!responsesFolder.exists())
 				throw FileNotFoundException("Pasta de respostas não existe!")
 
-			for (file in responsesFolder.listFiles()) {
-				if (file.extension == "kts") {
+			val deferred = responsesFolder.listFiles().filter { it.extension == "kts" }.map { file ->
+				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
 						logger.info("Carregando ${file.name}...")
 						val scriptContent = file.readText()
@@ -63,11 +67,20 @@ class ServerSupportModule : MessageReceivedModule {
 						$scriptContent
 						"""
 						val response = KtsObjectLoader().load<LorittaResponse>(content)
-						responses.add(response)
 						logger.info("${file.name} foi carregado com sucesso!")
+						response
 					} catch (e: Exception) {
 						logger.error(e) { "Erro ao carregar ${file.name}" }
+						null
 					}
+				}
+			}
+
+			runBlocking {
+				deferred.onEach {
+					val response = it.await()
+					if (response != null)
+						responses.add(response)
 				}
 			}
 
