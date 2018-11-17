@@ -85,7 +85,7 @@ class AutomodModule : MessageReceivedModule {
 				val alreadyBanned = mutableListOf<User>()
 
 				for (storedMessage in messages) {
-					if (!event.guild.isMember(event.author) || !alreadyBanned.contains(event.author)) // O usuário já pode estar banido
+					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 						continue
 
 					val percentage = calculateRaidingPercentage(storedMessage)
@@ -96,7 +96,7 @@ class AutomodModule : MessageReceivedModule {
 					}
 				}
 
-				if (!event.guild.isMember(event.author) || !alreadyBanned.contains(event.author)) // O usuário já pode estar banido
+				if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 					return true
 
 				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
