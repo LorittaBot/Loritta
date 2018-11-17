@@ -45,11 +45,11 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 		message.onReactionAddByAuthor(context) { event ->
 			// Sim, é necessário pegar a mensagem DE NOVO para pegar os valores das reações atualizados
 			val reactedMessage = channel.getMessageById(message.id).await()
-			
+
 			val reactions = reactedMessage.reactions.filter { it.count > 1} // Como é apenas via DM, se as reações forem maiores que 1 == o usuário reagiu!
 			val answersMade = step.options.filter {
 				reactions.any {storedEmote ->
-					it.emote == storedEmote.reactionEmote.name || it.emote.split(":").getOrNull(1) == storedEmote.reactionEmote.id }
+					it.emote == storedEmote.reactionEmote.name || (storedEmote.reactionEmote.id != null && it.emote.split(":").getOrNull(1) == storedEmote.reactionEmote.id) }
 			}
 
 			if (step.maxAnswers > answersMade.size) {
