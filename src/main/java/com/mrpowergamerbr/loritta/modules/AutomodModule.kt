@@ -1,16 +1,30 @@
 package com.mrpowergamerbr.loritta.modules
 
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.google.common.collect.EvictingQueue
+import com.google.common.collect.Queues
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
+import org.apache.commons.text.similarity.LevenshteinDistance
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AutomodModule : MessageReceivedModule {
+	companion object {
+		val MESSAGES  = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<String, Queue<Message>>().asMap()
+		const val FRESH_ACCOUNT_TIMEOUT = 604_800_000L
+	}
+
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_AUTO_MOD))
 			return false
@@ -25,6 +39,59 @@ class AutomodModule : MessageReceivedModule {
 		val automodConfig = textChannelConfig.automodConfig
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
+
+		if (event.guild!!.id == "268353819409252352" && Loritta.config.environment == EnvironmentType.CANARY) {
+			val messages = MESSAGES.getOrPut(event.guild.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(25)) }
+
+			fun calculateRaidingPercentage(wrapper: Message): Double {
+				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
+				val raider = wrapper.author
+				var raidingPercentage = 0.0
+				for (message in messages) {
+					// println(message.content + " -- " + wrapper.content)
+					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw, wrapper.contentRaw)
+					// println(Math.max(0, 25 - threshold))
+					raidingPercentage += 0.005 * (Math.max(0, 7 - threshold))
+
+					// val diff = wrapper.sentAt - message.sentAt
+					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
+
+					if (wrapper.attachments.isNotEmpty() == message.attachments.isNotEmpty()) {
+						raidingPercentage += 0.005
+					}
+				}
+
+				if (wrapper.author.avatarUrl == null) {
+					raidingPercentage += 0.15
+				}
+
+				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
+				raidingPercentage += 0.01 * Math.max(5 - raider.mutualGuilds.size, 1)
+				raidingPercentage += 0.02 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+
+				return raidingPercentage
+			}
+
+			val raidingPercentage = calculateRaidingPercentage(event.message)
+			println("${event.author.id} (${raidingPercentage}% chance de ser raider): ${event.message.contentRaw}")
+
+			if (raidingPercentage >= 0.75) {
+				println("Applying punishments to all involved!")
+				for (storedMessage in messages) {
+					val percentage = calculateRaidingPercentage(storedMessage)
+
+					if (percentage >= 0.75) {
+						// ban(serverConfig: ServerConfig, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
+						// ban(message.author)
+					}
+				}
+
+				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
+				// ban(raider)
+				return true
+			}
+		}
 
 		if (automodCaps.isEnabled) {
 			val content = message.contentRaw.replace(" ", "")
