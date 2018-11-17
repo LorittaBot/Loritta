@@ -42,15 +42,17 @@ class AutomodModule : MessageReceivedModule {
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
 		if (event.guild!!.id == "268353819409252352" && Loritta.config.environment == EnvironmentType.CANARY) {
-			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(75)) }
+			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
 				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
 				val raider = wrapper.author
 				var raidingPercentage = 0.0
+
 				for (message in messages) {
 					// println(message.content + " -- " + wrapper.content)
-					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw, wrapper.contentRaw)
+					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
+
 					// println(Math.max(0, 25 - threshold))
 					raidingPercentage += 0.0015 * (Math.max(0, 7 - threshold))
 					raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
