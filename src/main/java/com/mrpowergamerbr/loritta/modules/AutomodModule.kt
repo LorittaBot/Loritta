@@ -28,11 +28,11 @@ class AutomodModule : MessageReceivedModule {
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
 		var ATTACHED_IMAGE_SCORE = 0.005
-		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.01
+		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.015
 		var NO_AVATAR_SCORE = 0.15
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
 		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.01
-		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.25
+		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.275
 		var BAN_THRESHOLD = 0.75
 	}
 
@@ -105,7 +105,7 @@ class AutomodModule : MessageReceivedModule {
 				val alreadyBanned = mutableListOf<User>()
 
 				for (storedMessage in messages) {
-					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
+					if (!event.guild.isMember(event.author) || alreadyBanned.contains(storedMessage.author)) // O usuário já pode estar banido
 						continue
 
 					val percentage = calculateRaidingPercentage(storedMessage)
