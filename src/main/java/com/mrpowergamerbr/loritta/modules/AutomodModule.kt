@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.User
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -67,7 +68,11 @@ class AutomodModule : MessageReceivedModule {
 
 				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
 				raidingPercentage += 0.01 * Math.max(5 - raider.mutualGuilds.size, 1)
-				raidingPercentage += 0.02 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+				raidingPercentage += 0.01 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+				val member = wrapper.member
+				if (member != null) {
+					raidingPercentage += 0.015 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+				}
 
 				return raidingPercentage
 			}
@@ -77,19 +82,21 @@ class AutomodModule : MessageReceivedModule {
 
 			if (raidingPercentage >= 0.75) {
 				println("Applying punishments to all involved!")
-				for (storedMessage in messages) {
-					if (!event.guild.isMember(event.author)) // O usuário já pode estar banido
-						continue
+				val alreadyBanned = mutableListOf<User>()
 
+				for (storedMessage in messages) {
+					if (!event.guild.isMember(event.author) || !alreadyBanned.contains(event.author)) // O usuário já pode estar banido
+						continue
 
 					val percentage = calculateRaidingPercentage(storedMessage)
 
 					if (percentage >= 0.75) {
 						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
+						alreadyBanned.add(storedMessage.author)
 					}
 				}
 
-				if (!event.guild.isMember(event.author)) // O usuário já pode estar banido
+				if (!event.guild.isMember(event.author) || !alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 					return true
 
 				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
