@@ -21,6 +21,7 @@ import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.listeners.*
+import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.*
@@ -56,6 +57,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
 import java.io.File
+import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -325,6 +327,10 @@ class Loritta(config: LorittaConfig) {
 				}
 				Thread.sleep(15000)
 			}
+		}
+
+		try { ServerSupportModule.loadResponses() } catch (e: FileNotFoundException) {
+			logger.error(e) { "Erro ao carregar as respostas automáticas!" }
 		}
 
 		// Ou seja, agora a Loritta está funcionando, Yay!
