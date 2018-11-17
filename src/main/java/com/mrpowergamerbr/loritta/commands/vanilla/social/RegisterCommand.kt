@@ -50,7 +50,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 		}
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.guild.id != "297732013006389252")
 			return
 
@@ -63,14 +63,14 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 								"owo nós precisamos saber",
 								"https://loritta.website/assets/img/fanarts/Loritta_Dormindo_-_Ayano.png",
 								listOf(
-									RegisterConfig.RegisterOption(
-											"\uD83D\uDD35",
-											"513303483659714586"
-									),
-									RegisterConfig.RegisterOption(
-											"\uD83D\uDD34",
-											"513303519348916224"
-									)
+										RegisterConfig.RegisterOption(
+												"\uD83D\uDD35",
+												"513303483659714586"
+										),
+										RegisterConfig.RegisterOption(
+												"\uD83D\uDD34",
+												"513303519348916224"
+										)
 								)
 						),
 						RegisterConfig.RegisterStep(
@@ -90,6 +90,13 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 						)
 				)
 		)
+
+		// Retirar todos os cargos existentes do usuário relacionados ao registro
+		val flatMap = registerConfig.step.flatMap { it.options }
+		val rolesToBeRemoved = context.handle.roles.filter { flatMap.any { option -> it.id == option.roleId }}
+		if (rolesToBeRemoved.isNotEmpty()) {
+			context.guild.controller.removeRolesFromMember(context.handle, rolesToBeRemoved).queue()
+		}
 
 		// Vamos começar
 		sendStep(context, privateChannel, registerConfig, 0, mutableListOf())
