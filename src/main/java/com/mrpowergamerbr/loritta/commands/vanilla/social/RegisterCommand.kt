@@ -3,20 +3,30 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.modules.register.RegisterConfig
+import com.mrpowergamerbr.loritta.dao.RegisterConfig
+import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageChannel
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegisterCommand : AbstractCommand("register", listOf("registrar"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["AFK_Description"]
 	}
 
-	suspend fun sendStep(context: CommandContext, channel: MessageChannel, config: RegisterConfig, stepIndex: Int, answers: MutableList<RegisterConfig.RegisterOption>) {
+	suspend fun sendStep(context: CommandContext, channel: MessageChannel, config: RegisterHolder, stepIndex: Int, answers: MutableList<RegisterHolder.RegisterOption>) {
 		val step = config.step.getOrNull(stepIndex)
+
+		val registerConfig = transaction(Databases.loritta) {
+			RegisterConfig.find { RegisterConfigs.id eq context.guild.idLong }.firstOrNull()
+		}
+
+
 
 		if (step == null) { // Se for null, quer dizer que o usuário completou todas as perguntas!
 			channel.sendMessage("Obrigada por responder nosso questionário de registro marotex! https://i.imgur.com/Rl4198r.png").await()
@@ -68,71 +78,83 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 
 		val privateChannel = context.userHandle.openPrivateChannel().await()
 
-		val registerConfig = RegisterConfig(
+		/*
+		val registerConfig = RegisterHolder(
 				step = listOf(
-						RegisterConfig.RegisterStep(
+						RegisterHolder.RegisterStep(
 								"are u a novinha or a novinha?",
 								"owo nós precisamos saber",
 								"https://loritta.website/assets/img/fanarts/Loritta_Dormindo_-_Ayano.png",
 								1,
 								listOf(
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"\uD83D\uDD35",
 												"513303483659714586"
 										),
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"\uD83D\uDD34",
 												"513303519348916224"
 										)
 								)
 						),
-						RegisterConfig.RegisterStep(
+						RegisterHolder.RegisterStep(
 								"biscoito ou bolacha?",
 								"A resposta certa é bolacha e você sabe disso",
 								"https://guiadacozinha.com.br/wp-content/uploads/2016/11/torta-holandesa-facil.jpg",
 								1,
 								listOf(
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"\uD83D\uDD35",
 												"513303531026120704"
 										),
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"\uD83D\uDD34",
 												"513303543911022593"
 										)
 								)
 						),
-						RegisterConfig.RegisterStep(
+						RegisterHolder.RegisterStep(
 								"escolhe algo filosófico ai",
 								"você pode escolher até DUAS COISAS diferentes, wow!",
 								null,
 								2,
 								listOf(
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"krisnite:508811243994480641",
 												"513310935511728130"
 										),
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"ralseinite:508811387175436291",
 												"513310965647933443"
 										),
-										RegisterConfig.RegisterOption(
+										RegisterHolder.RegisterOption(
 												"vieirinha:412574915879763982",
 												"513310993326014464"
 										)
 								)
 						)
 				)
-		)
+		) */
+
+		val registerConfig = transaction(Databases.loritta) {
+			RegisterConfig.find { RegisterConfigs.id eq context.guild.idLong }.firstOrNull()
+		}
+
+		if (registerConfig == null) {
+			context.sendMessage("derp")
+			return
+		}
+
+		val registerHolder = registerConfig.holder
 
 		// Retirar todos os cargos existentes do usuário relacionados ao registro
-		val flatMap = registerConfig.step.flatMap { it.options }
+		val flatMap = registerHolder.step.flatMap { it.options }
 		val rolesToBeRemoved = context.handle.roles.filter { flatMap.any { option -> it.id == option.roleId }}
 		if (rolesToBeRemoved.isNotEmpty()) {
 			context.guild.controller.removeRolesFromMember(context.handle, rolesToBeRemoved).queue()
 		}
 
 		// Vamos começar
-		sendStep(context, privateChannel, registerConfig, 0, mutableListOf())
+		sendStep(context, privateChannel, registerHolder, 0, mutableListOf())
 	}
 }

@@ -348,7 +348,8 @@ class Loritta(config: LorittaConfig) {
 					Reputations,
 					UsernameChanges,
 					Dailies,
-					Marriages
+					Marriages,
+					RegisterConfigs
 			)
 		}
 	}
