@@ -6,8 +6,8 @@ import java.util.regex.Pattern
 
 class HelpMeResponse : RegExResponse() {
 	init {
-		patterns.add("alguem".toPattern(Pattern.CASE_INSENSITIVE))
-		patterns.add("ajud".toPattern(Pattern.CASE_INSENSITIVE))
+		patterns.add("algu?(e|é)?m".toPattern(Pattern.CASE_INSENSITIVE))
+		patterns.add("ajud|d(ú|u)vida".toPattern(Pattern.CASE_INSENSITIVE))
 		patterns.add("\\?".toPattern(Pattern.CASE_INSENSITIVE))
 	}
 

@@ -29,7 +29,9 @@ class ServerSupportModule : MessageReceivedModule {
 				AddEmotesResponse(),
 				SendFanArtsResponse(),
 				LoriMandarComandosResponse(),
+				MemberCounterResponse(),
 				HelpMeResponse(),
+				ConfigureLoriResponse(),
 				LoriOfflineResponse()
 		)
 
