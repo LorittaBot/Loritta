@@ -55,7 +55,7 @@ class AutomodModule : MessageReceivedModule {
 
 					// println(Math.max(0, 25 - threshold))
 					raidingPercentage += 0.0015 * (Math.max(0, 7 - threshold))
-					raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
+					// raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
 					// val diff = wrapper.sentAt - message.sentAt
 					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
 
@@ -73,7 +73,7 @@ class AutomodModule : MessageReceivedModule {
 				raidingPercentage += 0.01 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				val member = wrapper.member
 				if (member != null) {
-					raidingPercentage += 0.15 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+					raidingPercentage += 0.25 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				}
 
 				return raidingPercentage
