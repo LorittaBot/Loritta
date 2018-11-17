@@ -41,7 +41,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
 		if (event.guild!!.id == "268353819409252352" && Loritta.config.environment == EnvironmentType.CANARY) {
-			val messages = MESSAGES.getOrPut(event.guild.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(25)) }
+			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(25)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
 				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
@@ -78,14 +78,19 @@ class AutomodModule : MessageReceivedModule {
 			if (raidingPercentage >= 0.75) {
 				println("Applying punishments to all involved!")
 				for (storedMessage in messages) {
+					if (!event.guild.isMember(event.author)) // O usuário já pode estar banido
+						continue
+
+
 					val percentage = calculateRaidingPercentage(storedMessage)
 
 					if (percentage >= 0.75) {
-						// ban(serverConfig: ServerConfig, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
-						// ban(message.author)
 					}
 				}
+
+				if (!event.guild.isMember(event.author)) // O usuário já pode estar banido
+					return true
 
 				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
 				// ban(raider)
