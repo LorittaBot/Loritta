@@ -5,9 +5,7 @@ import java.io.Reader
 import javax.script.ScriptEngineManager
 
 class KtsObjectLoader {
-	companion object {
-		val engine = ScriptEngineManager().getEngineByExtension("kts")
-	}
+	val engine = ScriptEngineManager().getEngineByExtension("kts")
 
 	inline fun <reified T> load(script: String): T = engine.eval(script).takeIf { it is T } as T
 			?: throw IllegalStateException("Could not load script from .kts")
