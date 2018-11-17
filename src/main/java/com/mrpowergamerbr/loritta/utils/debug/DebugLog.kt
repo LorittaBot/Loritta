@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils.debug
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -91,6 +92,8 @@ object DebugLog {
 				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
 				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
 				println("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
+				println("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
+				println("detectedInviteLinks.size: ${InviteLinkModule.detectedInviteLinks.size}")
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
