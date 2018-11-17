@@ -73,7 +73,7 @@ class AutomodModule : MessageReceivedModule {
 			}
 
 			val raidingPercentage = calculateRaidingPercentage(event.message)
-			println("${event.author.id} (${raidingPercentage}% chance de ser raider): ${event.message.contentRaw}")
+			println("${event.author.id} (${raidingPercentage}% chance de ser raider ~ ${messages.toMutableList().size}): ${event.message.contentRaw}")
 
 			if (raidingPercentage >= 0.75) {
 				println("Applying punishments to all involved!")
@@ -91,6 +91,8 @@ class AutomodModule : MessageReceivedModule {
 				// ban(raider)
 				return true
 			}
+
+			messages.add(event.message)
 		}
 
 		if (automodCaps.isEnabled) {
