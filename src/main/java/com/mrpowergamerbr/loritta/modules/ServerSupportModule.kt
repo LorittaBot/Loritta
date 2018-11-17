@@ -84,7 +84,7 @@ class ServerSupportModule : MessageReceivedModule {
 				}
 			}
 
-			this.responses = responses
+			this.responses = responses.sortedByDescending { it.getPriority() }
 			logger.info("${responses.size} respostas automáticas foram carregadas com sucesso!")
 		}
 	}
