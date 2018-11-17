@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 
 class ReceiveDreamsResponse : RegExResponse() {
 	init {
-		patterns.add("conseg".toPattern(Pattern.CASE_INSENSITIVE))
+		patterns.add("conseg|peg".toPattern(Pattern.CASE_INSENSITIVE))
 		patterns.add("sonhos".toPattern(Pattern.CASE_INSENSITIVE))
 		patterns.add("\\?".toPattern(Pattern.CASE_INSENSITIVE)) }
 
@@ -18,7 +18,8 @@ class ReceiveDreamsResponse : RegExResponse() {
 				),
 				LoriReply(
 						"Brincadeirinha!! ^-^ Você pode pegar sonhos usando `+daily`",
-								prefix = "<:lori_owo:417813932380520448>"
+						prefix = "<:lori_owo:417813932380520448>",
+						mentionUser = false
 				)
 		)
 

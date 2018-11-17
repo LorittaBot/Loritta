@@ -38,9 +38,11 @@ class ServerSupportModule : MessageReceivedModule {
 				LoriOfflineResponse()
 		)
 
-		responses.forEach {
-			if (it.handleResponse(event, content))
-				event.channel.sendMessage(it.getResponse(event, content)).queue()
+		for (response in responses) {
+			if (response.handleResponse(event, content)) {
+				event.channel.sendMessage(response.getResponse(event, content)).queue()
+				return false
+			}
 		}
 
 		return false
