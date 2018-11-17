@@ -54,7 +54,7 @@ class AutomodModule : MessageReceivedModule {
 					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
 
 					// println(Math.max(0, 25 - threshold))
-					raidingPercentage += 0.0015 * (Math.max(0, 7 - threshold))
+					raidingPercentage += 0.0025 * (Math.max(0, 7 - threshold))
 					// raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
 					// val diff = wrapper.sentAt - message.sentAt
 					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
