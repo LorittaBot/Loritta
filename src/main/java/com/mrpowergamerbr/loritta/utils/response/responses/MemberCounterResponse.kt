@@ -1,13 +1,36 @@
 package com.mrpowergamerbr.loritta.utils.response.responses
 
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import java.util.regex.Pattern
 
 class MemberCounterResponse : RegExResponse() {
 	init {
 		patterns.add("ativ|coloc".toPattern(Pattern.CASE_INSENSITIVE))
 		patterns.add("(contador|counter)".toPattern(Pattern.CASE_INSENSITIVE))
-		patterns.add("\\?".toPattern(Pattern.CASE_INSENSITIVE))
+		patterns.add("\\?".toPattern(Pattern.CASE_INSENSITIVE)) }
 
-		response = "{@mention} para você ativar o sistema de contador de membros, vá no meu painel de administração <https://loritta.website/dashboard>, escolha o seu servidor, clique em \"Contador de Membros\", procure qual canal você quer que tenha o contador e coloque \"{counter}\" lá no painel. Agora é só salvar e esperar alguém entrar no seu servidor e ver a mágica acontecer! <:lori_owo:417813932380520448>"
+	override fun getResponse(event: LorittaMessageEvent, message: String): String? {
+		val replies = listOf(
+				LoriReply(
+						"**Ativar o contador de membros é bem fácil!**",
+						prefix = "<:lori_pac:503600573741006863>"
+				),
+				LoriReply(
+						"Vá no painel de administração clicando aqui <https://loritta.website/dashboard> e escolha o servidor que você deseja ativar o contador de membros!"
+				),
+				LoriReply(
+						"Clique em \"Contador de Membros\""
+				),
+				LoriReply(
+						"Procure o canal que você deseja ativar o contador e, na caixinha de texto, coloque \"{counter}\" e salve"
+				),
+				LoriReply(
+						"Agora é só esperar alguém entrar no seu servidor e ver a mágica acontecer!",
+						prefix = "<:lori_owo:417813932380520448>"
+				)
+		)
+
+		return replies.joinToString("\n", transform = { it.build(event.author)} )
 	}
 }

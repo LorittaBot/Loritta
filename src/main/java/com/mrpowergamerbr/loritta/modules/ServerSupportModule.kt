@@ -30,8 +30,11 @@ class ServerSupportModule : MessageReceivedModule {
 				SendFanArtsResponse(),
 				LoriMandarComandosResponse(),
 				MemberCounterResponse(),
-				HelpMeResponse(),
 				ConfigureLoriResponse(),
+				JoinLeaveResponse(),
+				EmbedsResponse(),
+				ReceiveDreamsResponse(),
+				HelpMeResponse(),
 				LoriOfflineResponse()
 		)
 
