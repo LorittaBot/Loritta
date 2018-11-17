@@ -11,14 +11,17 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
-import org.yaml.snakeyaml.Yaml
 
 object MessageUtils {
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
-		val yaml = Yaml()
 		val jsonObject = try {
-			val map = yaml.load(message) as Map<String, Object>
-			gson.toJsonTree(map).obj
+			if (message.startsWith("---\n")) { // Se existe o header de um arquivo YAML... vamos processar como se fosse YAML!
+				val map = Constants.YAML.load(message) as Map<String, Object>
+				gson.toJsonTree(map).obj
+			} else {
+				// Se não, vamos processar como se fosse JSON
+				jsonParser.parse(message).obj
+			}
 		} catch (ex: Exception) {
 			null
 		}

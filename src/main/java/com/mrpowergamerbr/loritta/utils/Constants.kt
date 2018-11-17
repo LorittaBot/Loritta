@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -39,6 +40,7 @@ object Constants {
 	const val ACTION_MALE_AND_MALE = "male_x_male"
 
 	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+	val YAML = Yaml()
 
 	const val PORTUGUESE_SUPPORT_GUILD_ID = "297732013006389252"
 	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
