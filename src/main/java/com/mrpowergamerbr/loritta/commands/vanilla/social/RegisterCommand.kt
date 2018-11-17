@@ -43,9 +43,17 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 		}
 
 		message.onReactionAddByAuthor(context) { event ->
-			val answer = step.options.firstOrNull { it.emote == event.reactionEmote.name } ?: return@onReactionAddByAuthor
+			val reactions = message.reactions.filter { it.count > 1} // Como é apenas via DM, se as reações forem maiores que 1 == o usuário reagiu!
+			val answersMade = step.options.filter {
+				reactions.any {storedEmote -> it.emote == storedEmote.reactionEmote.name || it.emote == storedEmote.reactionEmote.id }
+			}
+
+			if (step.maxAnswers > answersMade.size) {
+				return@onReactionAddByAuthor
+			}
+
 			message.delete().queue()
-			answers.add(answer)
+			answers.addAll(answersMade)
 			sendStep(context, channel, config, stepIndex + 1, answers)
 		}
 	}
@@ -62,6 +70,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 								"are u a novinha or a novinha?",
 								"owo nós precisamos saber",
 								"https://loritta.website/assets/img/fanarts/Loritta_Dormindo_-_Ayano.png",
+								1,
 								listOf(
 										RegisterConfig.RegisterOption(
 												"\uD83D\uDD35",
@@ -77,6 +86,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 								"biscoito ou bolacha?",
 								"A resposta certa é bolacha e você sabe disso",
 								"https://guiadacozinha.com.br/wp-content/uploads/2016/11/torta-holandesa-facil.jpg",
+								1,
 								listOf(
 										RegisterConfig.RegisterOption(
 												"\uD83D\uDD35",
@@ -85,6 +95,26 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 										RegisterConfig.RegisterOption(
 												"\uD83D\uDD34",
 												"513303543911022593"
+										)
+								)
+						),
+						RegisterConfig.RegisterStep(
+								"escolhe algo filosófico ai",
+								"você pode escolher até DUAS COISAS diferentes, wow!",
+								null,
+								2,
+								listOf(
+										RegisterConfig.RegisterOption(
+												"krisnite:508811243994480641",
+												"513310935511728130"
+										),
+										RegisterConfig.RegisterOption(
+												"ralseinite:508811387175436291",
+												"513310965647933443"
+										),
+										RegisterConfig.RegisterOption(
+												"vieirinha:412574915879763982",
+												"513310993326014464"
 										)
 								)
 						)

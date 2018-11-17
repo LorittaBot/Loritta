@@ -5,6 +5,7 @@ class RegisterConfig(val step: List<RegisterStep>) {
 			val title: String,
 			val description: String,
 			val thumbnail: String?,
+			val maxAnswers: Int,
 			val options: List<RegisterOption>
 	)
 
