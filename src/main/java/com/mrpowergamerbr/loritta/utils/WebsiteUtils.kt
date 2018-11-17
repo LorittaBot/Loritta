@@ -154,6 +154,7 @@ object WebsiteUtils {
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {
+			println("Usuário está logado!")
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
 				val storedIdMutant = req.session()["discordId"]
@@ -163,16 +164,20 @@ object WebsiteUtils {
 					null
 				}
 
+				println("Id cacheado é ${storedId}")
 				val user = lorittaShards.getUserById(storedId)
 
 				if (forceReauthentication || user == null) {
+					println("Forçando reautenticação!!!")
 					discordAuth.isReady(true)
 					val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
 					variables["userIdentification"] = userIdentification
 					req.set("userIdentification", userIdentification)
 					req.session()["discordId"] = userIdentification.id
 				} else {
+					println("Usando identificador cacheado...")
 					// Se não estamos forçando a reautenticação, vamos primeiro descobrir se a Lori conhece o usuário, se não, ai a gente irá utilizar a API
+					println(user.effectiveAvatarUrl)
 					val simpleUserIdentification = SimpleUserIdentification(
 							user.name,
 							user.id,
@@ -185,7 +190,10 @@ object WebsiteUtils {
 				}
 				variables["discordAuth"] = discordAuth
 				req.set("discordAuth", discordAuth)
+				println("We are bacc, discordAuth está em nossas variáveis!")
 			} catch (e: Exception) {
+				println("Erro ao tentar autenticar!!")
+				e.printStackTrace()
 				req.session().unset("discordAuth")
 			}
 		}

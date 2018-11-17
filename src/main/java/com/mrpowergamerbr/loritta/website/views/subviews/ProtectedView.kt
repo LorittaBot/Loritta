@@ -25,6 +25,7 @@ abstract class ProtectedView : AbstractView() {
 			val state = req.param("state")
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
+					println("Redirecionando...")
 					val state = JsonObject()
 					state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
 					res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
@@ -32,13 +33,15 @@ abstract class ProtectedView : AbstractView() {
 				}
 			} else {
 				val code = req.param("code").value()
+				println("Código de autenticação é $code")
 				val auth = TemmieDiscordAuth(code, "${Loritta.config.websiteUrl}dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
-					debug = false
+					debug = true
 				}
 				auth.doTokenExchange()
 
 				req.session()["discordAuth"] = GSON.toJson(auth)
 				if (state.isSet) {
+					println("Estado está marcado! Vamos redirecionar!!")
 					// state = base 64 encoded JSON
 					val decodedState = Base64.getDecoder().decode(state.value()).toString(Charsets.UTF_8)
 					val jsonState = jsonParser.parse(decodedState).obj
@@ -114,10 +117,12 @@ abstract class ProtectedView : AbstractView() {
 						}
 					}
 
+					println("Redirecionando para a config do servidor...")
 					res.redirect("${Loritta.config.websiteUrl}dashboard/configure/${guildId.value()}")
 					return true
 				}
 
+				println("Redirecionando para o dashboard, agora a gente tem o discordAuth na session!")
 				res.redirect("${Loritta.config.websiteUrl}dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true
@@ -127,6 +132,7 @@ abstract class ProtectedView : AbstractView() {
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		if (!req.session().isSet("discordAuth")) { // Caso discordAuth não exista, vamos redirecionar para a tela de autenticação
+			println("discordAuth não existe na session dentro do ProtectedView, voltando...")
 			res.redirect(Loritta.config.authorizationUrl)
 			return "Redirecionando..."
 		}
@@ -135,6 +141,7 @@ abstract class ProtectedView : AbstractView() {
 		try {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {
+			println("discordAuth não estava pronto no ProtectedView!! Voltando...")
 			req.session().unset("discordAuth")
 			res.redirect(Loritta.config.authorizationUrl)
 			return "Redirecionando..."
