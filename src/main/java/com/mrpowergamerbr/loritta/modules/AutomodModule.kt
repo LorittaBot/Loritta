@@ -42,7 +42,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
 		if (event.guild!!.id == "268353819409252352" && Loritta.config.environment == EnvironmentType.CANARY) {
-			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(25)) }
+			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(75)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
 				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
@@ -53,7 +53,7 @@ class AutomodModule : MessageReceivedModule {
 					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw, wrapper.contentRaw)
 					// println(Math.max(0, 25 - threshold))
 					raidingPercentage += 0.005 * (Math.max(0, 7 - threshold))
-
+					raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 1000, 0)
 					// val diff = wrapper.sentAt - message.sentAt
 					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
 
@@ -71,7 +71,7 @@ class AutomodModule : MessageReceivedModule {
 				raidingPercentage += 0.01 * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				val member = wrapper.member
 				if (member != null) {
-					raidingPercentage += 0.015 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
+					raidingPercentage += 0.25 * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
 				}
 
 				return raidingPercentage
@@ -91,8 +91,8 @@ class AutomodModule : MessageReceivedModule {
 					val percentage = calculateRaidingPercentage(storedMessage)
 
 					if (percentage >= 0.75) {
-						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
 						alreadyBanned.add(storedMessage.author)
+						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raiding", false, 7)
 					}
 				}
 
@@ -100,7 +100,6 @@ class AutomodModule : MessageReceivedModule {
 					return true
 
 				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raiding", false, 7)
-				// ban(raider)
 				return true
 			}
 
