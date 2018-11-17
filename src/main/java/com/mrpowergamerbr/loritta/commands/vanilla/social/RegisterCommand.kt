@@ -45,7 +45,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 		message.onReactionAddByAuthor(context) { event ->
 			val reactions = message.reactions.filter { it.count > 1} // Como é apenas via DM, se as reações forem maiores que 1 == o usuário reagiu!
 			val answersMade = step.options.filter {
-				reactions.any {storedEmote -> it.emote == storedEmote.reactionEmote.name || it.emote == storedEmote.reactionEmote.id }
+				reactions.any {storedEmote -> it.emote == storedEmote.reactionEmote.name || it.emote.split(":").getOrNull(1) == storedEmote.reactionEmote.id }
 			}
 
 			if (step.maxAnswers > answersMade.size) {
