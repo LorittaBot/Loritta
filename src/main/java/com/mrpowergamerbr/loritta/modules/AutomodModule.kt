@@ -61,7 +61,7 @@ class AutomodModule : MessageReceivedModule {
 				var raidingPercentage = 0.0
 
 				val verySimilarMessages = mutableListOf<Message>()
-				var isStreamFlood = false
+				var isStreamFlood = true
 
 				for (message in messages.reversed()) {
 					// println(message.content + " -- " + wrapper.content)
