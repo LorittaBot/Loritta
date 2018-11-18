@@ -29,15 +29,15 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.042
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.024
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.024
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.015
 		var ATTACHED_IMAGE_SCORE = 0.005
-		var SAME_LINK_SCORE = 0.006
-		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.015
-		var NO_AVATAR_SCORE = 0.03
+		var SAME_LINK_SCORE = 0.007
+		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.032
+		var NO_AVATAR_SCORE = 0.02
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
 		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.0000000001
-		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.000000000125
+		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.00000000015
 		var BAN_THRESHOLD = 0.75
 
 		private val logger = KotlinLogging.logger {}
@@ -153,9 +153,9 @@ class AutomodModule : MessageReceivedModule {
 			}
 
 			val raidingPercentage = calculateRaidingPercentage(event.message)
-			logger.info("[${event.guild!!.name} -> ${event.channel.name}] (${raidingPercentage}% chance de ser raider: ${event.message.contentRaw}")
+			logger.info("[${event.guild!!.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider: ${event.message.contentRaw}")
 
-			if (raidingPercentage >= 50) {
+			if (raidingPercentage >= 0.5) {
 				logger.warn("[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider (CHANCE ALTA DEMAIS!): ${event.message.contentRaw}")
 			}
 			if (raidingPercentage >= BAN_THRESHOLD) {
