@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
@@ -28,16 +29,18 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.084
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.042
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.042
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.024
 		var ATTACHED_IMAGE_SCORE = 0.005
-		var SAME_LINK_SCORE = 0.0025
+		var SAME_LINK_SCORE = 0.006
 		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.015
-		var NO_AVATAR_SCORE = 0.15
+		var NO_AVATAR_SCORE = 0.03
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
-		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.01
-		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.275
+		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.0000000001
+		var FRESH_ACCOUNT_JOINED_MULTIPLIER = 0.000000000125
 		var BAN_THRESHOLD = 0.75
+
+		private val logger = KotlinLogging.logger {}
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -55,7 +58,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
-		if (ANTIRAID_ENABLED && (event.guild!!.id == "268353819409252352" || event.channel.id == "297732013006389252" || event.channel.id == "398987569485971466" || event.channel.id == "490983068266659840") && Loritta.config.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (Loritta.config.antiRaidIds.contains(event.channel.id)) && Loritta.config.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
@@ -72,35 +75,42 @@ class AutomodModule : MessageReceivedModule {
 				var raidingPercentage = 0.0
 
 				val verySimilarMessages = mutableListOf<Message>()
-				var isStreamFlood = true
+				var streamFloodCounter = 0
 
 				for (message in messages.reversed()) {
 					if (message.contentRaw.isNotBlank()) {
+						if (0 > streamFloodCounter)
+							streamFloodCounter = 0
+
+						val isStreamFlood = 2 > streamFloodCounter
+
 						val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
 
 						if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
 							verySimilarMessages.add(message)
 						}
 
-						if (wrapper.author.id != message.author.id)
-							isStreamFlood = false
-
 						if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
-							// println("Detected stream flood by ${wrapper.author.id}!")
+							// println("Detected stream flood by ${wrapper.author.id}! - $streamFloodCounter")
+							// println("Stream flood!")
 							raidingPercentage += if (wrapper.author.id != message.author.id) {
 								AutomodModule.IN_ROW_SAME_USER_SIMILAR_SCORE
 							} else {
 								AutomodModule.IN_ROW_DIFFERENT_USER_SIMILAR_SCORE
 							}
+							// println(">>> ${wrapper.author.id}: IN_ROW_XYZ_SIMILAR_SCORE ${raidingPercentage}")
+							streamFloodCounter--
 						} else {
-							isStreamFlood = false
+							streamFloodCounter++
 						}
 
-						raidingPercentage += SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, SIMILARITY_THRESHOLD - threshold))
+						raidingPercentage += AutomodModule.SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, AutomodModule.SIMILARITY_THRESHOLD - threshold))
+						// println(">>> ${wrapper.author.id}: SIMILAR_MESSAGE_MULTIPLIER ${raidingPercentage}")
 					}
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
-						raidingPercentage += ATTACHED_IMAGE_SCORE
+						raidingPercentage += AutomodModule.ATTACHED_IMAGE_SCORE
+						// println(">>> ${wrapper.author.id}: ATTACHED_IMAGE_SCORE ${raidingPercentage}")
 					}
 
 					val matcher2 = pattern.matcher(wrapper.contentRaw)
@@ -109,32 +119,47 @@ class AutomodModule : MessageReceivedModule {
 						if (urlsDetected.contains(matcher2.group(0))) {
 							// println("Has same link!")
 							raidingPercentage += AutomodModule.SAME_LINK_SCORE
+							// println(">>> ${wrapper.author.id}: SAME_LINK_SCORE ${raidingPercentage}")
 						}
 					}
 				}
 
-				raidingPercentage += SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
+				raidingPercentage += AutomodModule.SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
+				// println(">>> ${wrapper.author.id}: SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER ${raidingPercentage}")
 
 				if (wrapper.author.avatarUrl == null) {
-					raidingPercentage += NO_AVATAR_SCORE
+					raidingPercentage += AutomodModule.NO_AVATAR_SCORE
+					// println(">>> ${wrapper.author.id}: NO_AVATAR_SCORE ${raidingPercentage}")
 				}
 
 				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
-				raidingPercentage += MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
-				raidingPercentage += FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(FRESH_ACCOUNT_TIMEOUT - (wrapper.author.creationTime.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
-				val member = wrapper.member
-				if (member != null) {
-					raidingPercentage += FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - FRESH_ACCOUNT_TIMEOUT), 0)
-				}
+				raidingPercentage += AutomodModule.MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
+				// println(">>> ${wrapper.author.id}: MUTUAL_GUILDS_MULTIPLIER ${raidingPercentage}")
+				// println("criada em ${Instant.ofEpochMilli(raider.createdAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().fancier()} - $value")
+				raidingPercentage += AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.creationTime.toInstant().toEpochMilli()))
+				// println(">>> ${wrapper.author.id}: FRESH_ACCOUNT_DISCORD_MULTIPLIER ${raidingPercentage}")
+
+				val member = event.member
+				if (member != null)
+					raidingPercentage += AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - member.joinDate.toInstant().toEpochMilli()))
+				// println(">>> ${wrapper.author.id}: FRESH_ACCOUNT_JOINED_MULTIPLIER ${raidingPercentage}")
+				// raidingPercentage += AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(AutomodModule.FRESH_ACCOUNT_TIMEOUT - (wrapper.author.createdAt - AutomodModule.FRESH_ACCOUNT_TIMEOUT), 0)
+				// val member = wrapper.author
+				// if (member != null) {
+				// 	raidingPercentage += AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * (Math.max(AutomodModule.FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - AutomodModule.FRESH_ACCOUNT_TIMEOUT), 0))
+				// }
 
 				return raidingPercentage
 			}
 
 			val raidingPercentage = calculateRaidingPercentage(event.message)
-			println("${event.author.id} (${raidingPercentage}% chance de ser raider ~ ${messages.toMutableList().size}): ${event.message.contentRaw}")
+			logger.info("[${event.guild!!.name} -> ${event.channel.name}] (${raidingPercentage}% chance de ser raider: ${event.message.contentRaw}")
 
+			if (raidingPercentage >= 50) {
+				logger.warn("[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider (CHANCE ALTA DEMAIS!): ${event.message.contentRaw}")
+			}
 			if (raidingPercentage >= BAN_THRESHOLD) {
-				println("Applying punishments to all involved!")
+				logger.info("Applying punishments to all involved!")
 				val alreadyBanned = mutableListOf<User>()
 
 				for (storedMessage in messages) {
