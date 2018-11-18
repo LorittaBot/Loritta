@@ -52,7 +52,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
-		if (ANTIRAID_ENABLED && (event.guild!!.id == "268353819409252352" || event.channel.id == "297732013006389252" || event.channel.id == "398987569485971466") && Loritta.config.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (event.guild!!.id == "268353819409252352" || event.channel.id == "297732013006389252" || event.channel.id == "398987569485971466" || event.channel.id == "490983068266659840") && Loritta.config.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
@@ -64,26 +64,23 @@ class AutomodModule : MessageReceivedModule {
 				var isStreamFlood = true
 
 				for (message in messages.reversed()) {
-					// println(message.content + " -- " + wrapper.content)
-					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
+					if (message.contentRaw.isNotBlank()) {
+						val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
 
-					if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
-						verySimilarMessages.add(message)
+						if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
+							verySimilarMessages.add(message)
+						}
+
+						if (wrapper.author.id != message.author.id)
+							isStreamFlood = false
+
+						if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
+							println("Detected stream flood by ${wrapper.author.id}!")
+							raidingPercentage += IN_ROW_SIMILAR_SCORE
+						}
+
+						raidingPercentage += SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, SIMILARITY_THRESHOLD - threshold))
 					}
-
-					if (wrapper.author.id != message.author.id)
-						isStreamFlood = false
-
-					if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
-						println("Detected stream flood by ${wrapper.author.id}!")
-						raidingPercentage += IN_ROW_SIMILAR_SCORE
-					}
-
-					// println(Math.max(0, 25 - threshold))
-					raidingPercentage += SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, SIMILARITY_THRESHOLD - threshold))
-					// raidingPercentage += 0.005 * Math.max(message.contentRaw.length - 500, 0)
-					// val diff = wrapper.sentAt - message.sentAt
-					// raidingPercentage += 0.00008 * Math.max(0, (1250 - diff))
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
 						raidingPercentage += ATTACHED_IMAGE_SCORE
