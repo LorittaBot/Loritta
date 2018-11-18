@@ -1,5 +1,5 @@
 <p align="center">
-<img height="384" src="https://loritta.website/assets/img/loritta.png">
+<img height="384" src="https://loritta.website/assets/img/loritta.png?v2">
 <br>
 <a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 <a href="https://perfectdreams.net/"><img src="https://perfectdreams.net/assets/img/perfectdreams_badge.png?v2"></a>
@@ -126,6 +126,12 @@ A Lori utiliza várias [dependências no código-fonte dela](https://github.com/
 | [JDA-NAS](https://github.com/PebbleTemplates/pebble) |  sedmelluq |
 | [JRakNet](https://github.com/JRakNet/JRakNet) | Whirvis |
 | [Kotson](https://github.com/SalomonBrys/Kotson) | SalomonBrys |
+
+### 💫 Agradecimentos especiais para...
+
+![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
+
+[YourKit](http://www.yourkit.com/), criadores do YourKit Java Profiler, suportam projetos open source de todos os tipos com o excelente profiler de aplicações [Java](https://www.yourkit.com/java/profiler/index.jsp) e [.NET](https://www.yourkit.com/.net/profiler/index.jsp). Nós agradecemos por darem uma licença open source para conseguir deixar a Lori mais incrível e maravilhosa para todos os nossos usuários!
 
 ## 📄 Licença
 
