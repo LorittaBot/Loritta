@@ -27,6 +27,7 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
+		var IN_ROW_SIMILAR_SCORE = 0.021
 		var ATTACHED_IMAGE_SCORE = 0.005
 		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.015
 		var NO_AVATAR_SCORE = 0.15
@@ -60,13 +61,22 @@ class AutomodModule : MessageReceivedModule {
 				var raidingPercentage = 0.0
 
 				val verySimilarMessages = mutableListOf<Message>()
+				var isStreamFlood = false
 
-				for (message in messages) {
+				for (message in messages.reversed()) {
 					// println(message.content + " -- " + wrapper.content)
 					val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
 
 					if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
 						verySimilarMessages.add(message)
+					}
+
+					if (wrapper.author.id != message.author.id)
+						isStreamFlood = false
+
+					if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
+						println("Detected stream flood by ${wrapper.author.id}!")
+						raidingPercentage += IN_ROW_SIMILAR_SCORE
 					}
 
 					// println(Math.max(0, 25 - threshold))
