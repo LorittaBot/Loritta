@@ -43,8 +43,6 @@ object DebugLog {
 		logger.info("Total Memory:" + runtime.totalMemory() / mb)
 		logger.info("Max Memory:" + runtime.maxMemory() / mb)
 		logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
-		logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
-		logger.info("oldCorotuineExecutor: ${(loritta.oldCoroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
@@ -122,7 +120,6 @@ object DebugLog {
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
-				println("oldCorotuineExecutor: ${(loritta.oldCoroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}

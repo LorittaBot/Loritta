@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
@@ -57,7 +57,7 @@ class AminoRepostTask : Runnable {
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
-			GlobalScope.launch(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
+			GlobalScope.launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 				try {
 					logger.info("Verificando comunidade ${communityId}...")
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")

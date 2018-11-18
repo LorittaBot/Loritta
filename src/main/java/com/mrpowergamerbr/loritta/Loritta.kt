@@ -107,8 +107,6 @@ class Loritta(config: LorittaConfig) {
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
-	val oldCoroutineExecutor = createThreadPool("Old Coroutine Executor Thread %d")
-	val oldCoroutineDispatcher = oldCoroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
