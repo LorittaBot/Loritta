@@ -127,7 +127,7 @@ A Lori utiliza várias [dependências no código-fonte dela](https://github.com/
 | [JRakNet](https://github.com/JRakNet/JRakNet) | Whirvis |
 | [Kotson](https://github.com/SalomonBrys/Kotson) | SalomonBrys |
 
-### 💫 Agradecimentos especiais para...
+## 💫 Agradecimentos especiais para...
 
 ![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
 
