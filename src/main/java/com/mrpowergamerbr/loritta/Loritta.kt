@@ -46,6 +46,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.utils.cache.CacheFlag
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -191,6 +192,7 @@ class Loritta(config: LorittaConfig) {
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
