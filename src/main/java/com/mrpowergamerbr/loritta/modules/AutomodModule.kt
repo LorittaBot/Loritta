@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
@@ -27,8 +28,10 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SIMILAR_SCORE = 0.021
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.084
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.042
 		var ATTACHED_IMAGE_SCORE = 0.005
+		var SAME_LINK_SCORE = 0.0025
 		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.015
 		var NO_AVATAR_SCORE = 0.15
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
@@ -56,6 +59,14 @@ class AutomodModule : MessageReceivedModule {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
+				val pattern = Constants.URL_PATTERN
+				val matcher = pattern.matcher(wrapper.contentRaw)
+
+				val urlsDetected = mutableSetOf<String>()
+
+				while (matcher.find())
+					urlsDetected.add(matcher.group(0))
+
 				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
 				val raider = wrapper.author
 				var raidingPercentage = 0.0
@@ -75,8 +86,14 @@ class AutomodModule : MessageReceivedModule {
 							isStreamFlood = false
 
 						if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
-							println("Detected stream flood by ${wrapper.author.id}!")
-							raidingPercentage += IN_ROW_SIMILAR_SCORE
+							// println("Detected stream flood by ${wrapper.author.id}!")
+							raidingPercentage += if (wrapper.author.id != message.author.id) {
+								AutomodModule.IN_ROW_SAME_USER_SIMILAR_SCORE
+							} else {
+								AutomodModule.IN_ROW_DIFFERENT_USER_SIMILAR_SCORE
+							}
+						} else {
+							isStreamFlood = false
 						}
 
 						raidingPercentage += SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, SIMILARITY_THRESHOLD - threshold))
@@ -84,6 +101,15 @@ class AutomodModule : MessageReceivedModule {
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
 						raidingPercentage += ATTACHED_IMAGE_SCORE
+					}
+
+					val matcher2 = pattern.matcher(wrapper.contentRaw)
+
+					while (matcher2.find()) {
+						if (urlsDetected.contains(matcher2.group(0))) {
+							// println("Has same link!")
+							raidingPercentage += AutomodModule.SAME_LINK_SCORE
+						}
 					}
 				}
 
