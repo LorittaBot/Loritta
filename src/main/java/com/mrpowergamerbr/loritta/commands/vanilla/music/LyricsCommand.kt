@@ -110,7 +110,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 			val cover = getCoverArt(songInfo.albumUrl)
 
-			val averageColor = cover!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING)
+			val averageColor = cover.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING)
 					.toBufferedImage()
 					.getRGB(0, 0)
 

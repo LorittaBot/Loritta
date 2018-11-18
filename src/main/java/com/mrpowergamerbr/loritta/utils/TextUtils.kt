@@ -83,7 +83,7 @@ val morseValues = mapOf(
 )
 
 fun String.stripNewLines(): String {
-	return this.replace(Regex("\\r|\\n"), "")
+	return this.replace(Regex("[\\r\\n]"), "")
 }
 
 fun String.encodeToUrl(enc: String = "UTF-8"): String {

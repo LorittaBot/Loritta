@@ -391,9 +391,9 @@ object WebsiteUtils {
 
 	fun allowMethods(vararg methods: String) {
 		try {
-			val methodsField = HttpURLConnection::class.java!!.getDeclaredField("methods")
+			val methodsField = HttpURLConnection::class.java.getDeclaredField("methods")
 
-			val modifiersField = Field::class.java!!.getDeclaredField("modifiers")
+			val modifiersField = Field::class.java.getDeclaredField("modifiers")
 			modifiersField.setAccessible(true)
 			modifiersField.setInt(methodsField, methodsField.getModifiers() and Modifier.FINAL.inv())
 

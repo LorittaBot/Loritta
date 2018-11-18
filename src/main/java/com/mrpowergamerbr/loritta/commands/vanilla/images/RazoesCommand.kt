@@ -78,7 +78,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 
 		// Agora nós vamos colar o avatar em cima do template
 		// Vamos usar o javaxt porque é bem mais fácil
-		var rotatedAvatar = LorittaImage(avatar!!);
+		var rotatedAvatar = LorittaImage(avatar);
 		rotatedAvatar.resize(109, 109)
 		rotatedAvatar.rotate(5.0)
 		graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)

@@ -89,7 +89,7 @@ class LorittaImage {
 	 * maintained.
 	 */
 	var width: Int
-		get() = bufferedImage!!.width
+		get() = bufferedImage.width
 		set(Width) {
 			val ratio = Width.toDouble() / this.width.toDouble()
 

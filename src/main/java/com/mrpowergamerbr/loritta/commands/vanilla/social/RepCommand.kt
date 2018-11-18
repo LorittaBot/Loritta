@@ -35,7 +35,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		}
 
 		if (lastReputationGiven != null) {
-			val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
+			val diff = System.currentTimeMillis() - lastReputationGiven.receivedAt
 
 			if (3_600_000 > diff) {
 				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)

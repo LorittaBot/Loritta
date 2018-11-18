@@ -46,7 +46,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
             var file: File? = null;
 
             if (directoryListing != null) {
-                for (child in directoryListing!!) {
+                for (child in directoryListing) {
                     // Do something with child
                     if (child.nameWithoutExtension.toLowerCase().equals(monster)) {
                         valid = true;

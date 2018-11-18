@@ -54,7 +54,7 @@ object Constants {
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
 	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
-	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
+	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }
