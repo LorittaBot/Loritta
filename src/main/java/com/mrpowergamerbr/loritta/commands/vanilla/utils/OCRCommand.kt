@@ -25,7 +25,7 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 
 		ByteArrayOutputStream().use {
 			ImageIO.write(contextImage, "png", it)
-			val json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}""";
+			val json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}"""
 			val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVisionKey}&alt=json")
 					.contentType("application/json")
 					.header("Content-Length", json.toByteArray().size)

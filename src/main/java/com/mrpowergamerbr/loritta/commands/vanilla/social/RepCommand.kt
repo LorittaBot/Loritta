@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["REP_DESCRIPTON"];
+		return locale["REP_DESCRIPTON"]
 	}
 
 	override fun getExamples(): List<String> {

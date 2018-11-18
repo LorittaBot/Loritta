@@ -33,7 +33,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Fulano", "@Fulano Algum motivo bastante aleatório", "@Fulano 1 Limpar mensagens do último dia");
+		return listOf("@Fulano", "@Fulano Algum motivo bastante aleatório", "@Fulano 1 Limpar mensagens do último dia")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -55,19 +55,19 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				var rawArgs = context.rawArgs
 				rawArgs = rawArgs.remove(0) // remove o usuário
 
-				var days = 7;
+				var days = 7
 				if (context.args.size > 1 && context.args[1].toIntOrNull() != null) {
 					days = context.args[1].toInt()
 					rawArgs = rawArgs.remove(0) // remove o tempo
 				}
 
 				if (days > 7) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"]);
-					return;
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
+					return
 				}
 				if (0 > days) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"]);
-					return;
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
+					return
 				}
 
 				var reason = rawArgs.joinToString(" ")
@@ -153,7 +153,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_NO_PERM"])
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 

@@ -25,11 +25,11 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val palavra = context.args.joinToString(separator = " ");
+			val palavra = context.args.joinToString(separator = " ")
 
 			val shuffledChars = LorittaUtilsKotlin.shuffle(palavra.toCharArray().toMutableList())
 
-			val shuffledWord = shuffledChars.joinToString(separator = "");
+			val shuffledWord = shuffledChars.joinToString(separator = "")
 
 			val chars = mutableMapOf<Char, Int>()
 			for (ch in palavra) {
@@ -54,7 +54,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 					)
 			)
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

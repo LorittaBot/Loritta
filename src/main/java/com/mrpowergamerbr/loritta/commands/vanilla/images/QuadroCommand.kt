@@ -20,11 +20,11 @@ class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), Co
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -50,12 +50,12 @@ class QuadroCommand : AbstractCommand("frame", listOf("quadro", "wolverine"), Co
 
 				172F,283F, // LR
 
-				73F, 293F); // LL
+				73F, 293F) // LL
 
-		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
+		graphics.drawImage(skewed.bufferedImage, 0, 0, null)
 
-		graphics.drawImage(TEMPLATE, 0, 0, null); // Desenhe o template por cima!
+		graphics.drawImage(TEMPLATE, 0, 0, null) // Desenhe o template por cima!
 
-		context.sendFile(image, "quadro.png", context.getAsMention(true));
+		context.sendFile(image, "quadro.png", context.getAsMention(true))
 	}
 }

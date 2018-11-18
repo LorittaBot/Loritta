@@ -18,13 +18,13 @@ class MongoLorittaProfile @BsonCreator constructor(
 ) {
     var xp: Long = 0 // XP do usuário
     var aboutMe: String = "A Loritta é minha amiga!" // TODO: null
-    var isBanned = false;
-    var banReason: String? = null;
-    var reminders: MutableList<Reminder> = arrayListOf();
-    var receivedReputations: MutableList<String> = ArrayList<String>(); // Nós salvamos os usuários que deram reputação em vez de só salvar um número
-    var lastReputationGiven: Long = 0;
-    var lastMessageSent: Long = 0; // Última vez que o usuário enviou uma mensagem
-	var lastMessageSentHash: Int = 0; // HashCode da última mensagem enviada
+    var isBanned = false
+	var banReason: String? = null
+	var reminders: MutableList<Reminder> = arrayListOf()
+	var receivedReputations: MutableList<String> = ArrayList<String>() // Nós salvamos os usuários que deram reputação em vez de só salvar um número
+    var lastReputationGiven: Long = 0
+	var lastMessageSent: Long = 0 // Última vez que o usuário enviou uma mensagem
+	var lastMessageSentHash: Int = 0 // HashCode da última mensagem enviada
     var usernameChanges: MutableList<UsernameChange> = arrayListOf()
     var spinnerScores = mutableListOf<SpinnerScore>()
     var dreams: Double = 0.0
@@ -60,7 +60,7 @@ class MongoLorittaProfile @BsonCreator constructor(
 
     @BsonIgnore
     fun getReputation(): Int {
-        return receivedReputations.size;
+        return receivedReputations.size
     }
 
     class XpWrapper @BsonCreator constructor(@BsonProperty("currentLevel") val currentLevel: Int, @BsonProperty("expLeft") val expLeft: Long)

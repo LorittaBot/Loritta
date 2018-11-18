@@ -87,7 +87,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		ImageUtils.drawCenteredString(graphics, if (global) "Ranking Global" else context.guild.name, Rectangle(0, 0, 268, 37), oswaldRegular16)
 
 		var idx = 0
-		var currentY = 37;
+		var currentY = 37
 
 		for ((id, userData) in list) {
 			if (idx >= 5) {
@@ -143,7 +143,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
 				graphics.drawImage(editedAvatar, 0, currentY, null)
 				idx++
-				currentY += 53;
+				currentY += 53
 			}
 		}
 		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))

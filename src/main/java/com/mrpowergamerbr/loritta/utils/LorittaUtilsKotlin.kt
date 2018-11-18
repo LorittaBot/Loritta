@@ -41,7 +41,7 @@ fun Image.toBufferedImage() : BufferedImage {
 }
 
 fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
-	return ImageUtils.makeRoundedCorner(this, cornerRadius);
+	return ImageUtils.makeRoundedCorner(this, cornerRadius)
 }
 
 fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY: Int = 9999) {
@@ -251,19 +251,19 @@ object LorittaUtilsKotlin {
 	fun fillTrackMetadata(track: AudioTrackWrapper) {
 		if (track.track.sourceManager.sourceName == "youtube") { // Se é do YouTube, então vamos preencher com algumas informações "legais"
 			try {
-				val playingTrack = track.track;
+				val playingTrack = track.track
 				val videoId = playingTrack.info.uri.substring(playingTrack.info.uri.length - 11 until playingTrack.info.uri.length)
-				val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
-				val parser = JsonParser();
-				val json = parser.parse(response).asJsonObject;
+				val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
+				val parser = JsonParser()
+				val json = parser.parse(response).asJsonObject
 				val item = json["items"][0]
 				val snippet = item["snippet"].obj
 				val statistics = item["statistics"].obj
 				val likeCount = statistics["likeCount"].nullString
 				val dislikeCount = statistics["dislikeCount"].nullString
 
-				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
-				var channelJson = parser.parse(channelResponse).obj;
+				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
+				var channelJson = parser.parse(channelResponse).obj
 
 				track.metadata.put("viewCount", statistics["viewCount"].string)
 
@@ -303,17 +303,17 @@ object LorittaUtilsKotlin {
 				TimeUnit.MILLISECONDS.toMinutes(millis),
 				TimeUnit.MILLISECONDS.toSeconds(millis) -
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-		);
+		)
 
-		val elapsedMillis = playingTrack.position;
+		val elapsedMillis = playingTrack.position
 
 		val elapsed = String.format("%02d:%02d",
 				TimeUnit.MILLISECONDS.toMinutes(elapsedMillis),
 				TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) -
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis))
-		);
+		)
 
-		embed.addField("\uD83D\uDD52 ${locale["MUSICINFO_LENGTH"]}", "`$elapsed`/`$fancy`", true);
+		embed.addField("\uD83D\uDD52 ${locale["MUSICINFO_LENGTH"]}", "`$elapsed`/`$fancy`", true)
 
 		if (playingTrack.sourceManager.sourceName == "youtube" && metaTrack != null) {
 			val viewCount = if (metaTrack.metadata.containsKey("viewCount")) metaTrack.metadata["viewCount"] else "???"
@@ -322,10 +322,10 @@ object LorittaUtilsKotlin {
 			val commentCount = if (metaTrack.metadata.containsKey("commentCount")) metaTrack.metadata["commentCount"] else "???"
 
 			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${locale["MUSICINFO_VIEWS"]}", viewCount, true);
-			embed.addField("\uD83D\uDE0D ${locale["MUSICINFO_LIKES"]}", likeCount, true);
-			embed.addField("\uD83D\uDE20 ${locale["MUSICINFO_DISLIKES"]}", dislikeCount, true);
-			embed.addField("\uD83D\uDCAC ${locale["MUSICINFO_COMMENTS"]}", commentCount, true);
+			embed.addField("\uD83D\uDCFA ${locale["MUSICINFO_VIEWS"]}", viewCount, true)
+			embed.addField("\uD83D\uDE0D ${locale["MUSICINFO_LIKES"]}", likeCount, true)
+			embed.addField("\uD83D\uDE20 ${locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
+			embed.addField("\uD83D\uDCAC ${locale["MUSICINFO_COMMENTS"]}", commentCount, true)
 			embed.setThumbnail(metaTrack.metadata["thumbnail"])
 			embed.setAuthor(playingTrack.info.author, null, metaTrack.metadata["channelIcon"])
 		}
@@ -346,16 +346,16 @@ object LorittaUtilsKotlin {
 		val songs = manager.scheduler.queue.toList()
 		val currentTrack = manager.scheduler.currentTrack
 		if (currentTrack != null) {
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n";
+			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n"
 			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${it.user.asMention})" })
 			if (text.length >= 2048) {
-				text = text.substring(0, 2047);
+				text = text.substring(0, 2047)
 			}
 			embed.setDescription(text)
 		} else {
-			embed.setDescription(context.locale["MUSICINFO_NOMUSIC_SHORT"]);
+			embed.setDescription(context.locale["MUSICINFO_NOMUSIC_SHORT"])
 		}
-		return embed.build();
+		return embed.build()
 	}
 
 	suspend fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
@@ -445,11 +445,11 @@ object LorittaUtilsKotlin {
 		}
 
 		for (post in json["data"].array) {
-			val foundUrl = post["attachments"]["data"][0]["url"].string;
+			val foundUrl = post["attachments"]["data"][0]["url"].string
 
 			if (!foundUrl.contains("video")) {
 				try { // Provavelmente não é o que nós queremos
-					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
+					url = post["attachments"]["data"][0]["media"]["image"]["src"].string
 					description = post["attachments"]["data"][0]["description"].string
 					posts.add(FacebookPostWrapper(url, description))
 				} catch (e: Exception) {}
@@ -466,8 +466,8 @@ object LorittaUtilsKotlin {
 				.body()
 		val json = jsonParser.parse(response)
 
-		var url: String? = null;
-		var description: String? = null;
+		var url: String? = null
+		var description: String? = null
 
 		val posts = mutableListOf<FacebookPostWrapper>()
 
@@ -476,7 +476,7 @@ object LorittaUtilsKotlin {
 
 			if (!foundUrl.contains("video")) {
 				try { // Provavelmente não é o que nós queremos
-					url = post["attachments"]["data"][0]["media"]["image"]["src"].string;
+					url = post["attachments"]["data"][0]["media"]["image"]["src"].string
 					description = if (post.obj.has("message")) post["message"].string else ""
 					posts.add(FacebookPostWrapper(url, description))
 				} catch (e: Exception) {}
@@ -553,7 +553,7 @@ object LorittaUtilsKotlin {
 		stackTraceCount++
 	}
 
-	var executedCommands = 0;
+	var executedCommands = 0
 
 	fun startRandomSong(guild: Guild, conf: ServerConfig) {
 		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)

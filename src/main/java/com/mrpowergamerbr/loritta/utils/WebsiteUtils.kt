@@ -394,10 +394,10 @@ object WebsiteUtils {
 			val methodsField = HttpURLConnection::class.java.getDeclaredField("methods")
 
 			val modifiersField = Field::class.java.getDeclaredField("modifiers")
-			modifiersField.setAccessible(true)
-			modifiersField.setInt(methodsField, methodsField.getModifiers() and Modifier.FINAL.inv())
+			modifiersField.isAccessible = true
+			modifiersField.setInt(methodsField, methodsField.modifiers and Modifier.FINAL.inv())
 
-			methodsField.setAccessible(true)
+			methodsField.isAccessible = true
 
 			val oldMethods = methodsField.get(null) as Array<String>
 			val methodsSet = LinkedHashSet(Arrays.asList(*oldMethods))

@@ -31,7 +31,7 @@ class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), Comma
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
-			val selfMember = context.guild.selfMember;
+			val selfMember = context.guild.selfMember
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_MUTED"])
 				return

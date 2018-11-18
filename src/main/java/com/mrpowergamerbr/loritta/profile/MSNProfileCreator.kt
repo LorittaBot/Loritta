@@ -25,11 +25,11 @@ class MSNProfileCreator : ProfileCreator {
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
 
-		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
-		val graphics = base.graphics as java.awt.Graphics2D;
+		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
+		val graphics = base.graphics as java.awt.Graphics2D
 		graphics.setRenderingHint(
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 		val imageToBeDownload = if (sender == user) { guild.selfMember.user.avatarUrl } else { sender.effectiveAvatarUrl }

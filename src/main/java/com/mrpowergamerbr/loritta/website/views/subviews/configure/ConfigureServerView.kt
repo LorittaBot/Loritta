@@ -25,9 +25,9 @@ class ConfigureServerView : ConfigureView() {
 	}
 
 	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
-		val split = path.split("/");
+		val split = path.split("/")
 		if (split.size == 5) {
-			val argument = split[4];
+			val argument = split[4]
 
 			if (argument == "save") {
 				val receivedPayload = jsonParser.parse(req.body().value()).obj

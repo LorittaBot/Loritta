@@ -22,7 +22,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944");
+		return listOf("159985870458322944")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -98,7 +98,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 					)
 			)
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

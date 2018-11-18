@@ -21,7 +21,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("5");
+		return listOf("5")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

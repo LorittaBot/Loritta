@@ -26,19 +26,19 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size > 0) {
-            val player = context.args[0];
+            val player = context.args[0]
 
-            val data = HttpRequest.get("https://api.mojang.com/users/profiles/minecraft/$player").body();
+	        val data = HttpRequest.get("https://api.mojang.com/users/profiles/minecraft/$player").body()
 
-            try {
-                val json = jsonParser.parse(data).asJsonObject;
+	        try {
+                val json = jsonParser.parse(data).asJsonObject
 
-                context.sendMessage(context.getAsMention(true) + context.locale["MCUUID_RESULT", player, LorittaUtils.getUUID(json["id"].string)])
+	            context.sendMessage(context.getAsMention(true) + context.locale["MCUUID_RESULT", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {
                 context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCUUID_INVALID", player])
             }
         } else {
-            this.explain(context);
+            this.explain(context)
         }
     }
 }

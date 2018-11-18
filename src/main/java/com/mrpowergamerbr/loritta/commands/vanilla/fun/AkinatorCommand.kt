@@ -53,9 +53,9 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		val response = HttpRequest.get("$apiEndpoint/ws/new_session.php?base=0&partner=410&premium=0&player=Android-Phone&uid=6fe3a92130c49446&do_geoloc=1&prio=0&constraint=ETAT%3C%3E'AV'&channel=0&only_minibase=0")
 				.body()
 
-		val xmlJSONObj = XML.toJSONObject(response);
+		val xmlJSONObj = XML.toJSONObject(response)
 
-		val jsonPrettyPrintString = xmlJSONObj.toString(4);
+		val jsonPrettyPrintString = xmlJSONObj.toString(4)
 
 		val jsonSession = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
 
@@ -72,12 +72,12 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 		val step = stepInfo["STEP"].int
 		val answers = stepInfo["ANSWERS"]["ANSWER"].array
 
-		var text = "[`";
+		var text = "[`"
 		for (i in 0..100 step 10) {
 			if (progression >= i) {
-				text += "█";
+				text += "█"
 			} else {
-				text += ".";
+				text += "."
 			}
 		}
 		text += "`]"
@@ -128,9 +128,9 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 							.body()
 				}
 
-				val xmlJSONObj = XML.toJSONObject(response);
+				val xmlJSONObj = XML.toJSONObject(response)
 
-				val jsonPrettyPrintString = xmlJSONObj.toString(4);
+				val jsonPrettyPrintString = xmlJSONObj.toString(4)
 
 				val jsonResult = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]
 
@@ -177,12 +177,12 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 					val answers = jsonAnswer["ANSWERS"]["ANSWER"].array
 
 					if (95 >= progression) {
-						var text = "[`";
+						var text = "[`"
 						for (i in 0..100 step 10) {
 							if (progression >= i) {
-								text += "█";
+								text += "█"
 							} else {
-								text += ".";
+								text += "."
 							}
 						}
 						text += "`]"
@@ -224,9 +224,9 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 						val response = HttpRequest.get("$apiEndpoint/ws/list.php?base=0&channel=$channel&session=$session&signature=$signature&step=$step&size=1&max_pic_width=360&max_pic_height=640&mode_question=0")
 								.body()
 
-						val xmlJSONObj = XML.toJSONObject(response);
+						val xmlJSONObj = XML.toJSONObject(response)
 
-						val jsonPrettyPrintString = xmlJSONObj.toString(4);
+						val jsonPrettyPrintString = xmlJSONObj.toString(4)
 
 						val jsonAnswer = jsonParser.parse(jsonPrettyPrintString).obj["RESULT"]["PARAMETERS"]["ELEMENTS"]["ELEMENT"]
 

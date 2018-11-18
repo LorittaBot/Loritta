@@ -95,7 +95,7 @@ fun String.stripCodeMarks(): String {
 }
 
 fun String.msgFormat(vararg arguments: Any?): String {
-	return MessageFormat.format(this, *arguments);
+	return MessageFormat.format(this, *arguments)
 }
 
 fun String.f(vararg arguments: Any?): String {
@@ -257,7 +257,7 @@ fun String.escapeMentions(): String {
 
 fun String.fromMorse(): String {
 	// Criar uma string vazia para guardar a nossa mensagem em texto comum
-	var text = "";
+	var text = ""
 
 	// Separar nossa string em morse em espaços para fazer um for nela
 	this.split(" ").forEach { inMorse ->
@@ -273,7 +273,7 @@ fun String.fromMorse(): String {
 
 fun String.toMorse(): String {
 	// Criar uma string vazia para guardar a nossa mensagem em morse
-	var morse = "";
+	var morse = ""
 
 	// Fazer um for na nossa mensagem
 	this.toCharArray().forEach { char ->

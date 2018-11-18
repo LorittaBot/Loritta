@@ -30,7 +30,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 	}
 
 	override fun needsToUploadFiles(): Boolean {
-		return true;
+		return true
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

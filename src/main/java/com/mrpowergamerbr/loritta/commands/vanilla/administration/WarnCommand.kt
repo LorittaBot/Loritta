@@ -28,7 +28,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
+		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -114,11 +114,11 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						delDays = it.split(" ")[0].toIntOrNull() ?: 0
 
 						if (delDays > 7) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"]);
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
 							return
 						}
 						if (0 > delDays) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"]);
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
 							return
 						}
 
@@ -248,7 +248,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				message.addReaction("\uD83D\uDE4A").queue()
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

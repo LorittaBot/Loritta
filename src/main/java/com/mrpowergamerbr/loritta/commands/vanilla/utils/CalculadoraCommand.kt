@@ -18,12 +18,12 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("2 + 2");
+		return listOf("2 + 2")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val expression = context.args.joinToString(" ");
+			val expression = context.args.joinToString(" ")
 			try {
 				val result = LorittaUtils.evalMath(expression)
 

@@ -56,7 +56,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val temmie = WebhookUtils.getOrCreateWebhook(context.event.channel, "Faustão")
 
-		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention);
+		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)
 
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Faustão")

@@ -18,7 +18,7 @@ abstract class ConfigureView : ProtectedView() {
 
 	override fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String {
 		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
-		val split = path.split("/");
+		val split = path.split("/")
 		if (4 > split.size) {
 			return "Servidor não encontrado!"
 		}

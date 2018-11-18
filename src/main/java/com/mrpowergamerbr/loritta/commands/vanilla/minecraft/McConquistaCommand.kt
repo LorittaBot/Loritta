@@ -21,11 +21,11 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta Ser muito fofa!");
+		return listOf("@Loritta Ser muito fofa!")
 	}
 
 	override fun getUsage(): String {
-		return "texto";
+		return "texto"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -36,7 +36,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 		if (context.args.size > 1) {
 			val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-			val advancementText = context.rawArgs.remove(0).joinToString(" ");
+			val advancementText = context.rawArgs.remove(0).joinToString(" ")
 
 			val template = ImageIO.read(File(Loritta.ASSETS + "mcconquista.png")) // Template
 
@@ -45,7 +45,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 			val minecraftia = Constants.MINECRAFTIA
 					.deriveFont(24f) // A fonte para colocar no progresso
 
-			graphics.font = minecraftia;
+			graphics.font = minecraftia
 			graphics.color = Color(255, 255, 0)
 
 			graphics.drawString(context.locale["MCCONQUISTA_AdvancementMade"], 90, 41 + 14)
@@ -99,8 +99,8 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 		// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
 		val y = rect.y + (rect.height - metrics.height) / 2 + metrics.ascent
 
-		var currentX = x;
-		var nextIsColor = false;
+		var currentX = x
+		var nextIsColor = false
 		// Dar um loop em todos os chars da nossa string
 		for (char in colored) {
 			if (char == '§') { // Controlador de cor!

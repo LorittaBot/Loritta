@@ -14,7 +14,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("Loritta");
+		return listOf("Loritta")
 	}
 
 	override fun getUsage(): String {
@@ -23,7 +23,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var waifu = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
+			var waifu = context.args.joinToString(separator = " ") // Vamos juntar tudo em uma string
 			val user = context.getUserAt(0)
 			if (user != null) {
 				waifu = user.name
@@ -63,11 +63,11 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 				reason = locale["RATEWAIFU_1"]
 			}
 			if (nota == 0) {
-				reason = "🤦 ${locale["RATEWAIFU_0"]}";
+				reason = "🤦 ${locale["RATEWAIFU_0"]}"
 			}
-			var strNota = nota.toString();
+			var strNota = nota.toString()
 			if (waifuLowerCase == "loritta") {
-				strNota = "∞";
+				strNota = "∞"
 				reason = "${locale["RATEWAIFU_IM_PERFECT"]} <:loritta_quebrada:338679008210190336>"
 			}
 			if (waifuLowerCase == "pollux") {
@@ -83,7 +83,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 				reason = locale["RATEWAIFU_Tyrone"]
 			}
 			if (waifuLowerCase == "tatsumaki") {
-				strNota = "10";
+				strNota = "10"
 				reason = locale["RATEWAIFU_Tatsumaki"]
 			}
 			if (waifuLowerCase == "mantaro") {
@@ -99,19 +99,19 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 				reason = locale["RATEWAIFU_Yggdrasil"]
 			}
 			if (waifuLowerCase == "mee6") {
-				strNota = "8";
+				strNota = "8"
 				reason = locale["RATEWAIFU_Mee6"]
 			}
 			if (waifuLowerCase == "dyno") {
-				strNota = "8";
+				strNota = "8"
 				reason = locale["RATEWAIFU_Dyno"]
 			}
 			if (waifuLowerCase == "notsobot") {
-				strNota = "6";
+				strNota = "6"
 				reason = locale["RATEWAIFU_NotSoBot"]
 			}
 			if (waifuLowerCase == "lorita" || waifuLowerCase == "lorrita") {
-				strNota = "-∞";
+				strNota = "-∞"
 				reason = locale["RATEWAIFU_Lorrita"]
 			}
 			context.reply(
@@ -121,7 +121,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 					)
 			)
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

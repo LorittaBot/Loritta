@@ -14,20 +14,20 @@ class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "disco
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		var file = MentionGIF.getGIF(contextImage);
+		var file = MentionGIF.getGIF(contextImage)
 		MiscUtils.optimizeGIF(file)
-		context.sendFile(file, "discordia.gif", context.getAsMention(true));
+		context.sendFile(file, "discordia.gif", context.getAsMention(true))
 		file.delete()
 	}
 }

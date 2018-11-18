@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["AFK_Description"];
+		return locale["AFK_Description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

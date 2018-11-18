@@ -25,17 +25,17 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val message = context.args.joinToString(" ");
+			val message = context.args.joinToString(" ")
 
 			val toMorse = message.toUpperCase().toMorse()
 			val fromMorse = message.fromMorse()
 
 			if (toMorse.trim().isEmpty()) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["MORSE_FAIL"])
-				return;
+				return
 			}
 
-			val embed = EmbedBuilder();
+			val embed = EmbedBuilder()
 
 			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB ${locale["MORSE_TO_FROM"]}" else "\uD83D\uDC49\uD83D\uDCFB ${locale["MORSE_FROM_TO"]}")
 			embed.setDescription("*beep* *boop*```${if (fromMorse.isNotEmpty()) fromMorse else toMorse}```")

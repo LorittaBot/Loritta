@@ -22,12 +22,12 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("sonho");
+		return listOf("sonho")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
-			val palavra = URLEncoder.encode(context.args[0], "UTF-8");
+			val palavra = URLEncoder.encode(context.args[0], "UTF-8")
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
 					.userAgent(Constants.USER_AGENT)
 			val response = httpRequest.body()
@@ -77,24 +77,24 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 
 			// Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
 			if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de")) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!");
-				return;
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!")
+				return
 			}
 
-			val description = jsoup.select("p[itemprop = description]")[0];
+			val description = jsoup.select("p[itemprop = description]")[0]
 
 			val type = description.getElementsByTag("span")[0]
 			val what = description.getElementsByTag("span").getOrNull(1)
-			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else "";
+			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else ""
 			val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
 				jsoup.getElementsByClass("frase")[0]
 			} else {
 				null
 			}
 
-			val embed = EmbedBuilder();
+			val embed = EmbedBuilder()
 			embed.setColor(Color(25, 89, 132))
-			embed.setFooter(etim, null);
+			embed.setFooter(etim, null)
 
 			embed.setTitle("📙 Significado de ${context.args[0]}")
 			embed.setDescription("*${type.text()}*")
@@ -102,23 +102,23 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 				embed.appendDescription("\n\n**${what.text()}**")
 
 			if (jsoup.getElementsByClass("sinonimos").size > 0) {
-				val sinonimos = jsoup.getElementsByClass("sinonimos")[0];
+				val sinonimos = jsoup.getElementsByClass("sinonimos")[0]
 
-				embed.addField("🙂 Sinônimos", sinonimos.text(), false);
+				embed.addField("🙂 Sinônimos", sinonimos.text(), false)
 			}
 			if (jsoup.getElementsByClass("sinonimos").size > 1) {
-				val antonimos = jsoup.getElementsByClass("sinonimos")[1];
+				val antonimos = jsoup.getElementsByClass("sinonimos")[1]
 
-				embed.addField("🙁 Antônimos", antonimos.text(), false);
+				embed.addField("🙁 Antônimos", antonimos.text(), false)
 			}
 
 			if (frase != null) {
-				embed.addField("🖋 Frase", frase.text(), false);
+				embed.addField("🖋 Frase", frase.text(), false)
 			}
 
-			context.sendMessage(context.getAsMention(true), embed.build());
+			context.sendMessage(context.getAsMention(true), embed.build())
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

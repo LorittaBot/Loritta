@@ -26,7 +26,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val query = context.args.joinToString(" "); // Vamos juntar a nossa query
+			val query = context.args.joinToString(" ") // Vamos juntar a nossa query
 
 			val response = HttpRequest.get("http://rkgk.api.searchify.com/v1/indexes/kym_production/instantlinks?query=" + URLEncoder.encode(query, "UTF-8") + "&fetch=*")
 					.body() // Vamos pegar a response...
@@ -37,7 +37,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["KYM_COULDNT_FIND", query])
-				return;
+				return
 			} else {
 				// Algo foi encontrado!
 				val meme = json["results"][0]

@@ -112,7 +112,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 
 			if (isPre18) {
 				fun flipAndPaste(bufferedImage: BufferedImage, x: Int, y: Int) {
-					graphics.drawImage(bufferedImage, x + bufferedImage.width, y, -bufferedImage.width, bufferedImage.height, null);
+					graphics.drawImage(bufferedImage, x + bufferedImage.width, y, -bufferedImage.width, bufferedImage.height, null)
 				}
 
 				// i have no idea what I'm doing

@@ -53,7 +53,7 @@ class APIGetChannelInfoView : NoVarsView() {
 			val key = loritta.youtubeKey
 
 			var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=$channelId&key=$key")
-					.body();
+					.body()
 
 			var json = jsonParser.parse(response).obj
 			val responseError = getResponseError(json)

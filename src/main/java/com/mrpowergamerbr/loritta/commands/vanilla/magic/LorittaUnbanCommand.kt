@@ -37,7 +37,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 
 			context.sendMessage(context.getAsMention(true) + "Usuário desbanido com sucesso!")
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

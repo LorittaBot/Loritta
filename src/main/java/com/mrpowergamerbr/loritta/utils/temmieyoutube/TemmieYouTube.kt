@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.*
 
-class TemmieYouTube() {
+class TemmieYouTube {
 	/**
 	 * Pesquisa algo no YouTube
 	 *

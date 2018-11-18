@@ -23,7 +23,7 @@ class DefaultProfileCreator : ProfileCreator {
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: ServerConfig, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
-		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB); // Base
+		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics as java.awt.Graphics2D
 		graphics.setRenderingHint(
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,

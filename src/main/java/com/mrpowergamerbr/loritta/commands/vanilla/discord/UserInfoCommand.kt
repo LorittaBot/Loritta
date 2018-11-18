@@ -110,19 +110,19 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			if (servers.length >= 1024) {
-				servers = servers.substring(0..1020) + "...";
+				servers = servers.substring(0..1020) + "..."
 			}
 
 			embed.addField("\uD83C\uDF0E " + context.locale["USERINFO_SHARED_SERVERS"] + " (${sharedServers.size})", servers, true)
 			if (member != null) {
 				addField("\uD83D\uDCE1 " + context.locale["USERINFO_STATUS"], member.onlineStatus.name, true)
 
-				val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}" });
+				val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}" })
 
 				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 
-			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime()
 
 			if (lorittaProfile.lastMessageSentAt != 0L) {
 				addField("\uD83D\uDC40 " + context.locale["USERINFO_LAST_SEEN"], offset.humanize(locale), true)

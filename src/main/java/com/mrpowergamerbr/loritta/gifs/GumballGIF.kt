@@ -18,7 +18,7 @@ object GumballGIF {
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
 
-		var fileName = Loritta.TEMP + "gumball-" + System.currentTimeMillis() + ".gif";
+		var fileName = Loritta.TEMP + "gumball-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 12, true)
 
@@ -41,14 +41,14 @@ object GumballGIF {
 		var font = toUse.graphics.font.deriveFont(Font.BOLD, 14f)
 
 		for (i in 0..49) {
-			val file = File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png");
+			val file = File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
 				var ogImage = ImageIO.read(File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png"))
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				val graphics = image.graphics as java.awt.Graphics2D
 				graphics.setRenderingHint(
 						java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-						java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+						java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 				graphics.font = font
 				graphics.color = Color.WHITE
 				graphics.drawImage(ogImage, 0, 0, null)

@@ -22,11 +22,11 @@ class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), Comman
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta servidores brasileiros");
+		return listOf("@Loritta servidores brasileiros")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -36,53 +36,53 @@ class LavaReversoCommand : AbstractCommand("reverselava", listOf("lava"), Comman
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-			val template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")); // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")) // Template
 
-			context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1);
+			context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1)
 
 			if (context.rawArgs.isEmpty()) {
-				this.explain(context);
-				return;
+				this.explain(context)
+				return
 			}
 
-			var joined = context.rawArgs.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			var singular = true; // E verificar se é singular ou não
+			var joined = context.rawArgs.joinToString(separator = " ") // Vamos juntar tudo em uma string
+			var singular = true // E verificar se é singular ou não
 			if (context.rawArgs[0].endsWith("s", true)) { // Se termina com s...
-				singular = false; // Então é plural!
+				singular = false // Então é plural!
 			}
 			// Redimensionar, se nós não fizermos isso, vai ficar bugado na hora de dar rotate
-			var firstImage = contextImage.getScaledInstance(256, 256, BufferedImage.SCALE_SMOOTH);
+			var firstImage = contextImage.getScaledInstance(256, 256, BufferedImage.SCALE_SMOOTH)
 			// E agora aumentar o tamanho da canvas
-			var firstImageCanvas = BufferedImage(326, 326, BufferedImage.TYPE_INT_ARGB);
-			var firstImageCanvasGraphics = firstImageCanvas.graphics;
-			firstImageCanvasGraphics.drawImage(firstImage, 35, 35, null);
+			var firstImageCanvas = BufferedImage(326, 326, BufferedImage.TYPE_INT_ARGB)
+			var firstImageCanvasGraphics = firstImageCanvas.graphics
+			firstImageCanvasGraphics.drawImage(firstImage, 35, 35, null)
 
-			var transform = AffineTransform();
-			transform.rotate(0.436332, (firstImageCanvas.getWidth() / 2).toDouble(), (firstImageCanvas.getHeight() / 2).toDouble());
-			var op = AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-			var rotated = op.filter(firstImageCanvas, null);
+			var transform = AffineTransform()
+			transform.rotate(0.436332, (firstImageCanvas.width / 2).toDouble(), (firstImageCanvas.height / 2).toDouble())
+			var op = AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR)
+			var rotated = op.filter(firstImageCanvas, null)
 
-			var resized = rotated.getScaledInstance(196, 196, BufferedImage.SCALE_SMOOTH);
-			var small = contextImage.getScaledInstance(111, 111, BufferedImage.SCALE_SMOOTH);
-			var templateGraphics = template.graphics;
-			templateGraphics.drawImage(resized, 100, 0, null);
-			templateGraphics.drawImage(small, 464, 175, null);
-			var image = BufferedImage(693, 766, BufferedImage.TYPE_INT_ARGB);
-			var graphics = image.getGraphics() as java.awt.Graphics2D;
-			graphics.color = Color.WHITE;
-			graphics.fillRect(0, 0, 693, 766);
-			graphics.color = Color.BLACK;
-			graphics.drawImage(template, 0, 100, null);
+			var resized = rotated.getScaledInstance(196, 196, BufferedImage.SCALE_SMOOTH)
+			var small = contextImage.getScaledInstance(111, 111, BufferedImage.SCALE_SMOOTH)
+			var templateGraphics = template.graphics
+			templateGraphics.drawImage(resized, 100, 0, null)
+			templateGraphics.drawImage(small, 464, 175, null)
+			var image = BufferedImage(693, 766, BufferedImage.TYPE_INT_ARGB)
+			var graphics = image.graphics as java.awt.Graphics2D
+			graphics.color = Color.WHITE
+			graphics.fillRect(0, 0, 693, 766)
+			graphics.color = Color.BLACK
+			graphics.drawImage(template, 0, 100, null)
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F);
-			graphics.font = font;
-			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 693, 100), font);
+					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F)
+			graphics.font = font
+			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 693, 100), font)
 
-			context.sendFile(image, "lavareverso.png", context.getAsMention(true));
+			context.sendFile(image, "lavareverso.png", context.getAsMention(true))
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

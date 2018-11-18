@@ -23,7 +23,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944");
+		return listOf("159985870458322944")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -95,7 +95,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 					)
 			)
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

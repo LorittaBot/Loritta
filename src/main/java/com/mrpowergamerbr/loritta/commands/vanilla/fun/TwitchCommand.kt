@@ -32,7 +32,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var query = context.args.joinToString(" ");
+			var query = context.args.joinToString(" ")
 
 			val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/users?login=${query.encodeToUrl()}")
 					.body()

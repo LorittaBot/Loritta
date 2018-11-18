@@ -80,7 +80,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 		ImageUtils.drawCenteredString(graphics, "Ranking Global", Rectangle(0, 0, 268, 37), oswaldRegular16)
 
 		var idx = 0
-		var currentY = 37;
+		var currentY = 37
 
 		for (profile in list) {
 			if (idx >= 5) {
@@ -136,7 +136,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 				editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
 				graphics.drawImage(editedAvatar, 0, currentY, null)
 				idx++
-				currentY += 53;
+				currentY += 53
 			}
 		}
 		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))

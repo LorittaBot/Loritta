@@ -19,11 +19,11 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -39,8 +39,8 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		val newHeight = (contextImage.width * TEMPLATE.height) / TEMPLATE.width
 
 		val scaledTemplate = TEMPLATE.getScaledInstance(contextImage.width, Math.max(newHeight, 1), BufferedImage.SCALE_SMOOTH)
-		contextImage.graphics.drawImage(scaledTemplate, 0, contextImage.height - scaledTemplate.getHeight(null), null);
+		contextImage.graphics.drawImage(scaledTemplate, 0, contextImage.height - scaledTemplate.getHeight(null), null)
 
-		context.sendFile(contextImage, "perdao.png", context.getAsMention(true));
+		context.sendFile(contextImage, "perdao.png", context.getAsMention(true))
 	}
 }

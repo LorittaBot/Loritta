@@ -82,7 +82,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
-		val embeds = ArrayList<MessageEmbed>();
+		val embeds = ArrayList<MessageEmbed>()
 		var embed = EmbedBuilder()
 		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.locale[cat.fancyTitle], null)
 		val conf = context.config

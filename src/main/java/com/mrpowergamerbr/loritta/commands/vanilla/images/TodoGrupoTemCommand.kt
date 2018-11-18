@@ -55,7 +55,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		var y = 20
 
 		val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(16f)
-		baseGraph.font = font;
+		baseGraph.font = font
 		ImageUtils.drawCenteredStringOutlined(baseGraph, locale["TODOGRUPOTEM_EveryGroupHas"], Rectangle(0, 0, 366, 22), font)
 
 		for (aux in 5 downTo 0) {

@@ -19,7 +19,7 @@ class NashornDocsView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
-		variables.put("docsAnnotation", NashornCommand.NashornDocs::class.java);
+		variables.put("docsAnnotation", NashornCommand.NashornDocs::class.java)
 		variables.put("nashClasses",
 				listOf(
 						NashornPebbleClassWrapper(NashornContext::class.java, "docsNashContext"),
@@ -31,7 +31,7 @@ class NashornDocsView : AbstractView() {
 						NashornPebbleClassWrapper(NashornRole::class.java, "docsNashRole"),
 						NashornPebbleClassWrapper(NashornUser::class.java, "docsNashUser")
 				)
-		);
+		)
 
 		return evaluate("loriapi.html", variables)
 	}

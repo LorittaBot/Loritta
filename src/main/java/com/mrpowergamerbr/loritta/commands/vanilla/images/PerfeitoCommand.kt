@@ -16,11 +16,11 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true
@@ -28,11 +28,11 @@ class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCa
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0, avatarSize = 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")); // Template
+		val template = ImageIO.read(File(Loritta.ASSETS + "perfeito.png")) // Template
 
 		val scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
-		template.graphics.drawImage(scaled, 225, 85, null);
+		template.graphics.drawImage(scaled, 225, 85, null)
 
-		context.sendFile(template, "perfeito.png", context.getAsMention(true));
+		context.sendFile(template, "perfeito.png", context.getAsMention(true))
 	}
 }

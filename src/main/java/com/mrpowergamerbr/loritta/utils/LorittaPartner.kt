@@ -41,9 +41,7 @@ object LorittaPartner {
 		NSFW
 	}
 
-	enum class Language {
-
-	}
+	enum class Language
 
 	enum class Type {
 		SPONSOR,

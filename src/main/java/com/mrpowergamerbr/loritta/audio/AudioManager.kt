@@ -51,7 +51,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @see    GuildMusicManager
 	 */
 	fun getGuildAudioPlayer(guild: Guild): GuildMusicManager {
-		val guildId = java.lang.Long.parseLong(guild.getId())
+		val guildId = java.lang.Long.parseLong(guild.id)
 		var musicManager = musicManagers[guildId]
 
 		if (musicManager == null) {
@@ -97,9 +97,9 @@ class AudioManager(val loritta: Loritta) {
 			override fun trackLoaded(track: AudioTrack) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60));
-						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue();
-						return;
+						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60))
+						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue()
+						return
 					}
 				}
 				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
@@ -116,7 +116,7 @@ class AudioManager(val loritta: Loritta) {
 				if (!alreadyChecked) {
 					// Ok, não encontramos NADA relacionado a essa música
 					// Então vamos pesquisar!
-					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl);
+					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl)
 
 					if (items.isNotEmpty()) {
 						GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -125,11 +125,11 @@ class AudioManager(val loritta: Loritta) {
 						return
 					}
 				}
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue()
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_ERROR", exception.message]).queue();
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_ERROR", exception.message]).queue()
 			}
 		})
 	}
@@ -157,16 +157,16 @@ class AudioManager(val loritta: Loritta) {
 
 			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override)
 		} else { // Mas se ela aceita...
-			var ignored = 0;
+			var ignored = 0
 			for (track in playlist.tracks) {
 				if (musicConfig.hasMaxSecondRestriction) {
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-						ignored++;
-						continue;
+						ignored++
+						continue
 					}
 				}
 
-				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override);
+				play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override)
 			}
 
 			if (ignored == 0) {
@@ -233,7 +233,7 @@ class AudioManager(val loritta: Loritta) {
 			logger.info("Playing ${trackWrapper.track.info.title} - in guild ${guild.name} (${guild.id})")
 		}
 
-		connectToVoiceChannel(musicGuildId, guild.audioManager);
+		connectToVoiceChannel(musicGuildId, guild.audioManager)
 
 		if (override) {
 			musicManager.player.playTrack(trackWrapper.track)
@@ -251,7 +251,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param context        the context of the command
 	 */
 	suspend fun skipTrack(context: CommandContext) {
-		val musicManager = getGuildAudioPlayer(context.guild);
+		val musicManager = getGuildAudioPlayer(context.guild)
 		musicManager.scheduler.nextTrack()
 
 		context.reply(

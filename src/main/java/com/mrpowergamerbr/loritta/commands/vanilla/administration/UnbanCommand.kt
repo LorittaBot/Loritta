@@ -23,7 +23,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Pediu desculpas pelo o que aconteceu, e prometeu que o que aconteceu não irá se repetir.", "395935916952256523 Bani sem querer, desculpa!");
+		return listOf("159985870458322944", "159985870458322944 Pediu desculpas pelo o que aconteceu, e prometeu que o que aconteceu não irá se repetir.", "395935916952256523 Bani sem querer, desculpa!")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -147,7 +147,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				message.addReaction("\uD83D\uDE4A").queue()
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 

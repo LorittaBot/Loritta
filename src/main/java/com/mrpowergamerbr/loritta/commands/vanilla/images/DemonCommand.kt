@@ -14,11 +14,11 @@ class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "dem
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot");
+		return listOf("@Loritta @SparklyBot")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true

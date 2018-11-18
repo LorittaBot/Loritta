@@ -9,7 +9,7 @@ object VaporwaveUtils {
 	fun vaporwave(str: String): String {
 		val sb = StringBuilder()
 		for (_c in str.toCharArray()) {
-			val isUpperCase = _c.isUpperCase();
+			val isUpperCase = _c.isUpperCase()
 			val c = _c.toLowerCase()
 			if (Character.isSpaceChar(c)) {
 				sb.append(" ")

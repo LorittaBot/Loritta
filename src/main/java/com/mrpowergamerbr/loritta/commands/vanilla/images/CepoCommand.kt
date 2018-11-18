@@ -14,18 +14,18 @@ class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val file = CepoDeMadeiraGIF.getGIF(contextImage);
+		val file = CepoDeMadeiraGIF.getGIF(contextImage)
 
 		MiscUtils.optimizeGIF(file)
 		context.sendFile(file, "cepo.gif", context.getAsMention(true))

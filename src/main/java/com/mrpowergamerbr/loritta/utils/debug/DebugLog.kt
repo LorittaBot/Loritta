@@ -37,7 +37,7 @@ object DebugLog {
 
 		logger.info("===[ EXTENDED INFO ]===")
 		logger.info("Used Memory:"
-				+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
+				+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
 		logger.info("Free Memory:"
 				+ runtime.freeMemory() / mb)
 		logger.info("Total Memory:" + runtime.totalMemory() / mb)
@@ -103,11 +103,11 @@ object DebugLog {
 				println("Shards: ${lorittaShards.getShards().size}")
 				println("Total Servers: ${lorittaShards.getGuildCount()}")
 				println("Used Memory:"
-						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
+						+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
 				println("Free Memory:"
-						+ runtime.freeMemory() / mb);
-				println("Total Memory:" + runtime.totalMemory() / mb);
-				println("Max Memory:" + runtime.maxMemory() / mb);
+						+ runtime.freeMemory() / mb)
+				println("Total Memory:" + runtime.totalMemory() / mb)
+				println("Max Memory:" + runtime.maxMemory() / mb)
 			}
 			"shards" -> {
 				val shards = lorittaShards.getShards()

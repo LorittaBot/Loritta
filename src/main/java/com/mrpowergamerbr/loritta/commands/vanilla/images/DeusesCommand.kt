@@ -23,11 +23,11 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("Quando você é nível 4 e vê pessoas de nível 100 jogando");
+		return listOf("Quando você é nível 4 e vê pessoas de nível 100 jogando")
 	}
 
 	override fun getUsage(): String {
-		return "<texto>";
+		return "<texto>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {

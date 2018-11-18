@@ -20,19 +20,19 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var url = context.args[0];
+			var url = context.args[0]
 
 			if (!url.startsWith("http", true)) {
-				url = "http://" + url;
+				url = "http://" + url
 			}
-			url = url.toLowerCase();
+			url = url.toLowerCase()
 
 			try {
 				var response = HttpRequest.get(url)
 						.userAgent(Constants.USER_AGENT)
 						.connectTimeout(5000)
 						.readTimeout(5000)
-						.code();
+						.code()
 
 				if (response in 100..308) {
 					context.sendMessage(context.getAsMention(true) + context.locale["ISUP_ONLINE", url, response])
@@ -40,14 +40,14 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 					context.sendMessage(context.getAsMention(true) + context.locale["ISUP_OFFLINE", url, response])
 				}
 			} catch (e: Exception) {
-				var reason = e.message;
+				var reason = e.message
 				if (e.cause is UnknownHostException) {
 					reason = context.locale["ISUP_UNKNOWN_HOST", url]
 				}
 				context.sendMessage(context.getAsMention(true) + context.locale["ISUP_OFFLINE", url, reason])
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

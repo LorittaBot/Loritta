@@ -22,7 +22,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES);
+		return listOf(Permission.MANAGE_ROLES)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

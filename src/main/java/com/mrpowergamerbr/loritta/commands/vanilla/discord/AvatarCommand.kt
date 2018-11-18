@@ -34,7 +34,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 			getAvatar = context.userHandle
 		}
 
-		val embed = EmbedBuilder();
+		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setDescription("**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**")
 

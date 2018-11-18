@@ -24,11 +24,11 @@ class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
-			var url = context.args[0];
+			var url = context.args[0]
 			if (!url.startsWith("http")) {
-				url = "http://$url";
+				url = "http://$url"
 			}
-			var short = temmie.shorten(url);
+			var short = temmie.shorten(url)
 			if (short != null && short != "INVALID_URI") {
 				context.reply(
 						LoriReply(

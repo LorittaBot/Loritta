@@ -31,7 +31,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório");
+		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -161,7 +161,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 			setHour.addReaction("\uD83D\uDD04").queue()
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 

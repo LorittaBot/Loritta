@@ -14,11 +14,11 @@ class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCate
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true
@@ -27,7 +27,7 @@ class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCate
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = GetOverHereGIF.getGIF(contextImage)
 		MiscUtils.optimizeGIF(file)
-		context.sendFile(file, "getoverhere.gif", context.getAsMention(true));
+		context.sendFile(file, "getoverhere.gif", context.getAsMention(true))
 		file.delete()
 	}
 }

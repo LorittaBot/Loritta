@@ -33,11 +33,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 		while (true) {
 			try {
-				updateStatus();
+				updateStatus()
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			Thread.sleep(1000);
+			Thread.sleep(1000)
 		}
 	}
 

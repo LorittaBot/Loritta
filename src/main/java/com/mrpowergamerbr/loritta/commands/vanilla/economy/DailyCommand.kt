@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["DAILY_Description"];
+		return locale["DAILY_Description"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {

@@ -38,7 +38,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			val json = Loritta.JSON_PARSER.parse(response).obj
 			val games = json["payload"]["games"].array
 
-			var format = "";
+			var format = ""
 			if (games.size() == 1) {
 				context.sendMessage(createResourceEmbed(context, games[0].obj).build())
 				return

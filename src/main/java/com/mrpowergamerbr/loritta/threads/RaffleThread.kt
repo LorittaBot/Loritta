@@ -42,7 +42,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			Thread.sleep(1000);
+			Thread.sleep(1000)
 		}
 	}
 

@@ -23,7 +23,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 
 	@NashornCommand.NashornDocs()
 	fun getIcon(): NashornImage? {
-		val image = LorittaUtils.downloadImage(guild.iconUrl) ?: return null;
+		val image = LorittaUtils.downloadImage(guild.iconUrl) ?: return null
 		return NashornImage(image)
 	}
 
