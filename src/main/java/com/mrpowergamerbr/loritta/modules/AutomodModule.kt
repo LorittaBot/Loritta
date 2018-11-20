@@ -29,11 +29,11 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.020
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.012
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.032
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.024
 		var ATTACHED_IMAGE_SCORE = 0.005
 		var SAME_LINK_SCORE = 0.007
-		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.028
+		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.040
 		var NO_AVATAR_SCORE = 0.02
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
 		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.00000000001
@@ -170,14 +170,14 @@ class AutomodModule : MessageReceivedModule {
 
 					if (percentage >= BAN_THRESHOLD) {
 						alreadyBanned.add(storedMessage.author)
-						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid! (Isto é experimental, caso você tenha sido banido sem querer, vá em https://loritta.website/support e entre de novo :3)", false, 7)
+						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid!", false, 7)
 					}
 				}
 
 				if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 					return true
 
-				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid! (Isto é experimental, caso você tenha sido banido sem querer, vá em https://loritta.website/support e entre de novo :3)", false, 7)
+				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid!", false, 7)
 				return true
 			}
 
