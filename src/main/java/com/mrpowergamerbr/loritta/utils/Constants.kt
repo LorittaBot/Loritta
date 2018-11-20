@@ -56,6 +56,7 @@ object Constants {
 	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 	val HTTP_URL_PATTERN = Pattern.compile("https?:\\/\\/[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
+	val REPEATING_CHARACTERS_REGEX = Regex("(.)\\1+")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }
