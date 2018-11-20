@@ -48,15 +48,13 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val discordServerList = EmbedBuilder()
 					.setColor(Color(0, 121, 183))
 					.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
-					.setAuthor("Loritta")
 					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
 					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
 
 			val loriStickers = EmbedBuilder()
 					.setColor(Color(0, 121, 183))
 					.setImage("https://i.imgur.com/uJ0Lnb4.jpg")
-					.setAuthor("Loritta")
-					.setTitle("<:lori_owo:417813932380520448> Meus Stickers")
+					.setTitle("<:lori_owo:417813932380520448> Meus Stickers!", "https://bit.ly/loristickers")
 					.setDescription("Cansado de stickers genéricos mal feitos? Bem, eu também. Por isto eu resolvi lançar o meu PRÓPRIO pack de stickers para o WhatsApp e para o Telegram! <:eu_te_moido:366047906689581085>\\n\\nBaixe, use, divirta-se e compartilhe com seus amigos! E, é claro, não se esqueça de dar aquela review 10/10 no app para me ajudar a crescer ;w;")
 					.addField("<a:SWbounce:444281772319047698> Link para baixar os stickers!", "https://bit.ly/loristickers", false)
 
