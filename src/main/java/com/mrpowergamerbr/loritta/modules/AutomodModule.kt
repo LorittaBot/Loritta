@@ -159,25 +159,29 @@ class AutomodModule : MessageReceivedModule {
 				logger.warn("[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider (CHANCE ALTA DEMAIS!): ${event.message.contentRaw}")
 			}
 			if (raidingPercentage >= BAN_THRESHOLD) {
-				logger.info("Applying punishments to all involved!")
-				val alreadyBanned = mutableListOf<User>()
+				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
+				synchronized(event.guild) {
+					val alreadyBanned = mutableListOf<User>()
 
-				for (storedMessage in messages) {
-					if (!event.guild.isMember(event.author) || alreadyBanned.contains(storedMessage.author)) // O usuário já pode estar banido
-						continue
+					for (storedMessage in messages) {
+						if (!event.guild.isMember(event.author) || alreadyBanned.contains(storedMessage.author)) // O usuário já pode estar banido
+							continue
 
-					val percentage = calculateRaidingPercentage(storedMessage)
+						val percentage = calculateRaidingPercentage(storedMessage)
 
-					if (percentage >= BAN_THRESHOLD) {
-						alreadyBanned.add(storedMessage.author)
-						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid!", false, 7)
+						if (percentage >= BAN_THRESHOLD) {
+							alreadyBanned.add(storedMessage.author)
+							logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
+							BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid!", false, 7)
+						}
 					}
+
+					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
+						return true
+
+					logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
+					BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid!", false, 7)
 				}
-
-				if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
-					return true
-
-				BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid!", false, 7)
 				return true
 			}
 
