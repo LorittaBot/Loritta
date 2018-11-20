@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
@@ -99,17 +100,17 @@ class ServerConfig @BsonCreator constructor(
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
 		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
 			// Vamos retornar uma configuração padrão!
-			return CommandOptions()
+			return CommandManager.DEFAULT_COMMAND_OPTIONS
 		}
 
-		if (commandOptions.containsKey(cmd.javaClass.simpleName)) {
-			return commandOptions[cmd.javaClass.simpleName]!!
-		}
-
-		if (loritta.commandManager.defaultCmdOptions.containsKey(cmd.javaClass.simpleName)) {
-			return loritta.commandManager.defaultCmdOptions[cmd.javaClass.simpleName]!!.newInstance() as CommandOptions
-		} else {
-			return CommandOptions()
+		val simpleName = cmd.javaClass.simpleName
+		return when {
+			// Se a configuração do servidor tem opções de comandos...
+			commandOptions.containsKey(simpleName) -> commandOptions[simpleName]!!
+			// Se as opções padrões de comandos possui uma opção "específica" para o comando
+			loritta.commandManager.defaultCmdOptions.containsKey(simpleName) -> loritta.commandManager.defaultCmdOptions[simpleName]!!.newInstance() as CommandOptions
+			// Se não, retorne as opções padrões
+			else -> CommandManager.DEFAULT_COMMAND_OPTIONS
 		}
 	}
 

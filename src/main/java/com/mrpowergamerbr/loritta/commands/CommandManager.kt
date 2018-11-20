@@ -32,6 +32,10 @@ import net.dv8tion.jda.core.entities.ChannelType
 import java.util.*
 
 class CommandManager {
+	companion object {
+		val DEFAULT_COMMAND_OPTIONS = CommandOptions()
+	}
+
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
 	var defaultCmdOptions: MutableMap<String, Class<*>> = HashMap()
 
@@ -266,11 +270,11 @@ class CommandManager {
 			commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {
-			defaultCmdOptions.put(cmdBase.javaClass.simpleName, CommandOptions::class.java)
+			defaultCmdOptions[cmdBase.javaClass.simpleName] = CommandOptions::class.java
 		}
 
 		// Custom Options
-		defaultCmdOptions.put(TristeRealidadeCommand::class.java.simpleName, TristeRealidadeCommand.TristeRealidadeCommandOptions::class.java)
+		defaultCmdOptions[TristeRealidadeCommand::class.java.simpleName] = TristeRealidadeCommand.TristeRealidadeCommandOptions::class.java
 	}
 
 	fun getCommandsDisabledIn(conf: ServerConfig): List<AbstractCommand> {
