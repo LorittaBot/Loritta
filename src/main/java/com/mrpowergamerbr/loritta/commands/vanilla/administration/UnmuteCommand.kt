@@ -1,13 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.Permission
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -57,36 +59,20 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			if (member != null) {
 				val mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false).firstOrNull()
 
-				val thread = MuteCommand.roleRemovalThreads[member.guild.id + "#" + member.user.id]
-				thread?.interrupt()
-				MuteCommand.roleRemovalThreads.remove(member.guild.id + "#" + member.user.id)
+				val thread = MuteCommand.roleRemovalJobs[member.guild.id + "#" + member.user.id]
+				thread?.cancel()
+				MuteCommand.roleRemovalJobs.remove(member.guild.id + "#" + member.user.id)
 
 				if (mutedRoles != null) {
 					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).queue()
 				}
 			}
 
-			loritta.serversColl.updateOne(
-					Filters.and(
-							Filters.eq(
-									"_id", context.guild.id
-							),
-							Filters.eq(
-									"guildUserData.userId", context.userHandle.id
-							)
-					),
-					Updates.combine(
-							Updates.set(
-									"guildUserData.$.muted", false
-							),
-							Updates.set(
-									"guildUserData.$.temporaryMute", false
-							),
-							Updates.set(
-									"guildUserData.$.expiresIn", 0
-							)
-					)
-			)
+			transaction(Databases.loritta) {
+				Mutes.deleteWhere {
+					(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
+				}
+			}
 
 			context.reply(
 					LoriReply(

@@ -207,50 +207,6 @@ fun String.convertToEpochMillis(): Long {
 	return calendar.timeInMillis
 }
 
-@Deprecated(message = "convertToEpochMillis()")
-fun String.convertToSpan(): Long {
-	var time = this
-	var diff = 0L
-
-	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(time)
-	if (yearsMatcher.find()) {
-		var addYears = yearsMatcher.group(1).toInt()
-		diff += (31536000 * addYears)
-	}
-	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(time)
-	if (monthMatcher.find()) {
-		var addMonths = monthMatcher.group(1).toInt()
-		diff += ((86400 * 30) * addMonths)
-	}
-	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(time)
-	if (weekMatcher.find()) {
-		var addWeeks = weekMatcher.group(1).toInt()
-		diff += (604800 * addWeeks)
-	}
-	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(time)
-	if (dayMatcher.find()) {
-		var addDays = dayMatcher.group(1).toInt()
-		diff += (86400 * addDays)
-	}
-	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(time)
-	if (hourMatcher.find()) {
-		var addHours = hourMatcher.group(1).toInt()
-		diff += (3600 * addHours)
-	}
-	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(time)
-	if (minuteMatcher.find()) {
-		var addMinutes = minuteMatcher.group(1).toInt()
-		diff += (60 * addMinutes)
-	}
-	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(time)
-	if (secondsMatcher.find()) {
-		var addSeconds = secondsMatcher.group(1).toInt()
-		diff += (1 * addSeconds)
-	}
-
-	return diff
-}
-
 fun String.escapeMentions(): String {
 	return this.replace(Regex("\\\\+@"), "@").replace("@", "@\u200B")
 }

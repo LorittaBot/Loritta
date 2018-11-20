@@ -24,7 +24,10 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
-import com.mrpowergamerbr.loritta.threads.*
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
+import com.mrpowergamerbr.loritta.threads.RaffleThread
+import com.mrpowergamerbr.loritta.threads.RemindersThread
+import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
@@ -268,8 +271,6 @@ class Loritta(config: LorittaConfig) {
 
 		RemindersThread().start()
 
-		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
-
 		bomDiaECia = BomDiaECia()
 
 		val raffleFile = File(FOLDER, "raffle.json")
@@ -349,7 +350,8 @@ class Loritta(config: LorittaConfig) {
 					UsernameChanges,
 					Dailies,
 					Marriages,
-					RegisterConfigs
+					RegisterConfigs,
+					Mutes
 			)
 		}
 	}

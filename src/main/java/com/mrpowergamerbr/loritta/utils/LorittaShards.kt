@@ -12,6 +12,7 @@ class LorittaShards {
 	lateinit var shardManager: ShardManager
 
 	fun getGuildById(id: String): Guild? = shardManager.getGuildById(id)
+	fun getGuildById(id: Long): Guild? = shardManager.getGuildById(id)
 
 	fun getGuilds(): List<Guild> = shardManager.guilds
 

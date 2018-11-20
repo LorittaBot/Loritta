@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
@@ -292,6 +293,45 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "migrate_mutes") {
+			context.reply(
+					LoriReply(
+							"Migrando status de silenciado em servidores..."
+					)
+			)
+
+			val servers = loritta.serversColl.find(
+					Filters.eq("guildUserData.temporaryMute", true)
+			)
+
+			servers.iterator().use {
+				while (it.hasNext()) {
+					val next = it.next()
+
+					transaction(Databases.loritta) {
+						next.guildUserData.filter { it.temporaryMute }.forEach {
+							Mute.new {
+								this.guildId = next.guildId.toLong()
+								this.userId = it.userId.toLong()
+								this.receivedAt = System.currentTimeMillis()
+								this.punishedById = Loritta.config.clientId.toLong()
+								this.isTemporary = it.temporaryMute
+								if (this.isTemporary)
+									this.expiresAt = it.expiresIn
+							}
+						}
+					}
+				}
+			}
+
+			context.reply(
+					LoriReply(
+							"Sucesso! Todos os status de silenciado foram migrados com sucesso!"
+					)
+			)
+
+			return
+		}
 		if (arg0 == "queryuseless") {
 			val uselessServers = loritta.serversColl.find(
 					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)
