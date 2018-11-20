@@ -2,8 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
@@ -76,32 +79,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				}
 			}
 
-			var rawArgs = context.rawArgs
-			rawArgs = rawArgs.remove(0) // remove o usuário
-
-			var reason = rawArgs.joinToString(" ")
-
-			val pipedReason = reason.split("|")
-
-			var usingPipedArgs = false
-			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
-
-			if (pipedReason.size > 1) {
-				val pipedArgs=  pipedReason.toMutableList()
-				val _reason = pipedArgs[0]
-				pipedArgs.removeAt(0)
-
-				pipedArgs.forEach {
-					val arg = it.trim()
-					if (arg == "force") {
-						skipConfirmation = true
-						usingPipedArgs = true
-					}
-				}
-
-				if (usingPipedArgs)
-					reason = _reason
-			}
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				unban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent)

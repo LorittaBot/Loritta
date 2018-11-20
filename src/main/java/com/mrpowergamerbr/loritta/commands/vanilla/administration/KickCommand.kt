@@ -1,8 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
@@ -89,54 +92,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return
 			}
 
-			var rawArgs = context.rawArgs
-			rawArgs = rawArgs.remove(0) // remove o usuário
-
-			var reason = rawArgs.joinToString(" ")
-
-			val pipedReason = reason.split("|")
-
-			var usingPipedArgs = false
-			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
-			var delDays = 0
-			
-			var silent = false
-
-			if (pipedReason.size > 1) {
-				val pipedArgs=  pipedReason.toMutableList()
-				val _reason = pipedArgs[0]
-				pipedArgs.removeAt(0)
-
-				pipedArgs.forEach {
-					val arg = it.trim()
-					if (arg == "force" || arg == "f") {
-						skipConfirmation = true
-						usingPipedArgs = true
-					}
-					if (arg == "s" || arg == "silent") {
-						skipConfirmation = true
-						usingPipedArgs = true
-						silent = true
-					}
-					if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
-						delDays = it.split(" ")[0].toIntOrNull() ?: 0
-
-						if (delDays > 7) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
-							return
-						}
-						if (0 > delDays) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
-							return
-						}
-
-						usingPipedArgs = true
-					}
-				}
-
-				if (usingPipedArgs)
-					reason = _reason
-			}
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				kick(context, locale, member, user, reason, isSilent)
