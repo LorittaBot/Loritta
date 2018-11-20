@@ -62,7 +62,7 @@ class AutomodModule : MessageReceivedModule {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
-				val pattern = Constants.URL_PATTERN
+				val pattern = Constants.HTTP_URL_PATTERN
 				val matcher = pattern.matcher(wrapper.contentRaw)
 
 				val urlsDetected = mutableSetOf<String>()
