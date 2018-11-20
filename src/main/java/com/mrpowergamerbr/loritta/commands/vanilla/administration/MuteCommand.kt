@@ -427,10 +427,18 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 					val member = guild.getMemberById(userId)
 
+					transaction(Databases.loritta) {
+						Mutes.deleteWhere {
+							(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+						}
+					}
+
 					if (member == null) {
 						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas o usuário não está mais no servidor!")
 						return@launch
 					}
+
+					logger.info("Retirando role removal thread de $userId na guild $guildId, finalmente expirou!")
 
 					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
 					removeRole.queue()

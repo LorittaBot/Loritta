@@ -19,7 +19,7 @@ class MutedUsersTask : Runnable {
 			val mutes = transaction(Databases.loritta) {
 				Mute.find {
 					Mutes.isTemporary eq true
-				}
+				}.toMutableList()
 			}
 
 			for (mute in mutes) {
