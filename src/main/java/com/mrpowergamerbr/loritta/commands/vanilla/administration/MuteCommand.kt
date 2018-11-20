@@ -297,7 +297,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			try {
 				val addRole = context.guild.controller.addSingleRoleToMember(member, mutedRole)
 
-				addRole.queue()
+				addRole.await()
 
 				transaction(Databases.loritta) {
 					Mutes.deleteWhere {
@@ -346,9 +346,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
 
 		fun spawnRoleRemovalThread(guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
+			val jobId = "$guildId#$userId"
 			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
 
-			val previousJob = roleRemovalJobs["$guildId#$userId"]
+			val previousJob = roleRemovalJobs[jobId]
 			if (previousJob != null) {
 				logger.info("Interrompendo job de $userId na guild $guildId! Criar outra removal job enquanto uma já está ativa é feio!")
 				roleRemovalJobs.remove("$guildId#$userId")
@@ -415,6 +416,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					logger.info("Criado role removal thread de $userId na guild $guildId, irá expirar em $expiresAt")
 					val delay = expiresAt - System.currentTimeMillis()
 					delay(delay)
+					roleRemovalJobs.remove(jobId)
 					if (!this.isActive) {
 						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas pelo visto esta task já tinha sido cancelada, whoops!!")
 						return@launch
@@ -425,23 +427,18 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas a guild não existe mais!")
 						return@launch
 					}
-					val member = guild.getMemberById(userId)
 
-					transaction(Databases.loritta) {
-						Mutes.deleteWhere {
-							(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
-						}
-					}
+					val member = guild.getMemberById(userId) ?: return@launch
 
-					if (member == null) {
-						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas o usuário não está mais no servidor!")
-						return@launch
-					}
-
-					logger.info("Retirando role removal thread de $userId na guild $guildId, finalmente expirou!")
-
-					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
-					removeRole.queue()
+					UnmuteCommand.unmute(
+							loritta.getServerConfigForGuild(guild.id),
+							guild,
+							guild.selfMember.user,
+							locale,
+							member.user,
+							locale.format { locale.commands.moderation.unmute.automaticallyExpired },
+							false
+					)
 				}
 			}
 		}

@@ -191,6 +191,18 @@ open class BaseLocale {
 		}
 		var actions = Actions()
 
+		class Moderation {
+			class Unmute {
+				lateinit var punishAction: String
+				lateinit var punishName: String
+				lateinit var sucessfullyUnmuted: String
+				lateinit var automaticallyExpired: String
+			}
+			var unmute = Unmute()
+
+		}
+		var moderation = Moderation()
+
 		class Fanarts {
 			lateinit var description: String
 			lateinit var madeBy: String
