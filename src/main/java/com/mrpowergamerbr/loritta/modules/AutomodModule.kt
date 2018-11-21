@@ -36,9 +36,11 @@ class AutomodModule : MessageReceivedModule {
 		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.040
 		var NO_AVATAR_SCORE = 0.02
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
-		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.00000000001
-		var FRESH_ACCOUNT_JOINED_MULTIPLIER =  0.00000000007
+		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.00000000004
+		var FRESH_ACCOUNT_JOINED_MULTIPLIER =  0.00000000013
 		var BAN_THRESHOLD = 0.75
+
+		val COMMON_EMOTES = listOf(";-;", ";w;", "uwu", "owo", "-.-", "'-'", "-w-")
 
 		private val logger = KotlinLogging.logger {}
 	}
@@ -62,6 +64,10 @@ class AutomodModule : MessageReceivedModule {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
+				var content = wrapper.contentRaw.toLowerCase()
+				for (emote in COMMON_EMOTES)
+					content = content.replace(emote, "")
+
 				val pattern = Constants.HTTP_URL_PATTERN
 				val matcher = pattern.matcher(wrapper.contentRaw)
 
@@ -79,12 +85,16 @@ class AutomodModule : MessageReceivedModule {
 
 				for (message in messages.reversed()) {
 					if (message.contentRaw.isNotBlank()) {
+						var compareContent = message.contentRaw.toLowerCase()
+						for (emote in COMMON_EMOTES)
+							compareContent = compareContent.replace(emote, "")
+
 						if (0 > streamFloodCounter)
 							streamFloodCounter = 0
 
 						val isStreamFlood = 2 > streamFloodCounter
 
-						val threshold = LevenshteinDistance.getDefaultInstance().apply(message.contentRaw.toLowerCase(), wrapper.contentRaw.toLowerCase())
+						val threshold = LevenshteinDistance.getDefaultInstance().apply(compareContent.toLowerCase(), content.toLowerCase())
 
 						if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
 							verySimilarMessages.add(message)
