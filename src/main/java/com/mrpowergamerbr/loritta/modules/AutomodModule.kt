@@ -29,20 +29,32 @@ class AutomodModule : MessageReceivedModule {
 		var ANTIRAID_ENABLED = true
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0020
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.048
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.022
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.064
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.020
 		var DISTANCE_MULTIPLIER = 0.02
-		var ATTACHED_IMAGE_SCORE = 0.020
+		var ATTACHED_IMAGE_SCORE = 0.015
 		var SAME_LINK_SCORE = 0.005
-		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.040
-		var NO_AVATAR_SCORE = 0.02
+		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.024
+		var NO_AVATAR_SCORE = 0.04
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
 		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.00000000004
 		var FRESH_ACCOUNT_JOINED_MULTIPLIER =  0.00000000013
 		var QUEUE_SIZE = 50
 		var BAN_THRESHOLD = 0.75
 
-		val COMMON_EMOTES = listOf(";-;", ";w;", "uwu", "owo", "-.-", "'-'", "-w-")
+		val COMMON_EMOTES = listOf(
+				";-;",
+				";w;",
+				"uwu",
+				"owo",
+				"-.-",
+				"'-'",
+				"-w-",
+				"p-p",
+				"q-q",
+				"p-q",
+				"q-p"
+		)
 
 		private val logger = KotlinLogging.logger {}
 	}
@@ -109,7 +121,7 @@ class AutomodModule : MessageReceivedModule {
 								AutomodModule.IN_ROW_SAME_USER_SIMILAR_SCORE
 							} else {
 								AutomodModule.IN_ROW_DIFFERENT_USER_SIMILAR_SCORE
-							} * withoutEmoteBlankMultiplier
+							} * distanceMultiplier * withoutEmoteBlankMultiplier
 
 							// analysis(analysis, "+ Stream Flood (mesmo usuário: ${(wrapper.author.id == message.author.id)}) - Valor atual é $raidingPercentage")
 
@@ -119,14 +131,11 @@ class AutomodModule : MessageReceivedModule {
 						}
 
 						val similarMessageScore = distanceMultiplier * AutomodModule.SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, AutomodModule.SIMILARITY_THRESHOLD - threshold))
-						if (similarMessageScore != 0.0) {
-							// analysis(analysis, "+ similarMessageScore é $similarMessageScore (${((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)})- Valor atual é $raidingPercentage")
-						}
 						raidingPercentage += similarMessageScore
 					}
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
-						raidingPercentage += AutomodModule.ATTACHED_IMAGE_SCORE
+						raidingPercentage += AutomodModule.ATTACHED_IMAGE_SCORE * distanceMultiplier
 						// analysis(analysis, "+ Possui attachments ~ ${AutomodModule.ATTACHED_IMAGE_SCORE} - Valor atual é $raidingPercentage")
 						// println(">>> ${wrapper.author.id}: ATTACHED_IMAGE_SCORE ${raidingPercentage}")
 					}
@@ -143,7 +152,7 @@ class AutomodModule : MessageReceivedModule {
 
 				val similarSameAuthorScore = AutomodModule.SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
 				// analysis(analysis, "+ similarSameAuthorScore é $similarSameAuthorScore - Valor atual é $raidingPercentage")
-				raidingPercentage += AutomodModule.SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
+				raidingPercentage += similarSameAuthorScore
 
 				// Caso o usuário não tenha avatar
 				if (wrapper.author.avatarUrl == null) {
