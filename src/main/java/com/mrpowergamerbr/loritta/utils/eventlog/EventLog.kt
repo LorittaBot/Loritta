@@ -3,10 +3,8 @@ package com.mrpowergamerbr.loritta.utils.eventlog
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.misc.PomfUtils
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
@@ -15,7 +13,6 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.VoiceChannel
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
-import java.net.URL
 import java.time.Instant
 
 object EventLog {
@@ -29,37 +26,17 @@ object EventLog {
 				val attachments = mutableListOf<String>()
 
 				message.attachments.forEach {
-					attachments.add(it.url)
+					// https://i.imgur.com/VyVlzVe.png
+					attachments.add(it.url.replace("cdn.discordapp.com", "media.discordapp.net"))
 				}
 
-				val storedMessage = transaction(Databases.loritta) {
+				transaction(Databases.loritta) {
 					StoredMessage.new(message.idLong) {
 						authorId = message.author.idLong
 						channelId = message.channel.idLong
 						content = message.contentRaw
 						createdAt = System.currentTimeMillis()
 						storedAttachments = attachments.toTypedArray()
-					}
-				}
-
-				// Agora nós iremos fazer reupload dos attachments para o pomf
-				val reuploadedAttachments = mutableListOf<String>()
-
-				for (attachmentUrl in attachments) {
-					val url = URL(attachmentUrl)
-					val conn = url.openConnection()
-					conn.setRequestProperty("User-Agent", Constants.USER_AGENT)
-					val content = conn.getInputStream().use { it.readBytes() }
-					val split = attachmentUrl.split("/")
-					val pomfUrl = PomfUtils.uploadFile(content, split.last())
-
-					reuploadedAttachments.add(pomfUrl ?: attachmentUrl)
-				}
-
-				if (reuploadedAttachments.isNotEmpty()) {
-					// E depois iremos atualizar caso ainda exista uma mensagem com o ID desejado
-					transaction(Databases.loritta) {
-						storedMessage.storedAttachments = reuploadedAttachments.toTypedArray()
 					}
 				}
 			}
