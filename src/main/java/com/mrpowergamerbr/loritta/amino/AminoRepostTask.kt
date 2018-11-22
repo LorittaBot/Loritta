@@ -131,7 +131,7 @@ class AminoRepostTask : Runnable {
 							val nickname = titleDiv.getElementsByClass("overflow-hidden").first().getElementsByClass("nickname").text()
 							val avatar = titleDiv.getElementsByTag("section").first().getElementsByClass("avatar").firstOrNull()?.attr("data-src")
 
-							val richContent = titleDiv.getElementsByAttributeValue("data-vce", "post-content-body").first()
+							val richContent = titleDiv.getElementsByAttributeValue("data-vce", "body").first()
 
 							if (richContent == null) {
 								logger.error("Post não tem post-content-body! $link")
