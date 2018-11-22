@@ -27,17 +27,19 @@ class AutomodModule : MessageReceivedModule {
 		val MESSAGES  = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build<String, Queue<Message>>().asMap()
 		const val FRESH_ACCOUNT_TIMEOUT = 604_800_000L
 		var ANTIRAID_ENABLED = true
-		var SIMILAR_MESSAGE_MULTIPLIER = 0.0025
+		var SIMILAR_MESSAGE_MULTIPLIER = 0.0020
 		var SIMILARITY_THRESHOLD = 7
-		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.032
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.024
-		var ATTACHED_IMAGE_SCORE = 0.005
-		var SAME_LINK_SCORE = 0.007
+		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.048
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.022
+		var DISTANCE_MULTIPLIER = 0.02
+		var ATTACHED_IMAGE_SCORE = 0.020
+		var SAME_LINK_SCORE = 0.005
 		var SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER = 0.040
 		var NO_AVATAR_SCORE = 0.02
 		var MUTUAL_GUILDS_MULTIPLIER = 0.01
 		var FRESH_ACCOUNT_DISCORD_MULTIPLIER = 0.00000000004
 		var FRESH_ACCOUNT_JOINED_MULTIPLIER =  0.00000000013
+		var QUEUE_SIZE = 50
 		var BAN_THRESHOLD = 0.75
 
 		val COMMON_EMOTES = listOf(";-;", ";w;", "uwu", "owo", "-.-", "'-'", "-w-")
@@ -65,7 +67,7 @@ class AutomodModule : MessageReceivedModule {
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
 				var content = wrapper.contentRaw.toLowerCase()
-				for (emote in COMMON_EMOTES)
+				for (emote in AutomodModule.COMMON_EMOTES)
 					content = content.replace(emote, "")
 
 				val pattern = Constants.HTTP_URL_PATTERN
@@ -76,18 +78,20 @@ class AutomodModule : MessageReceivedModule {
 				while (matcher.find())
 					urlsDetected.add(matcher.group(0))
 
-				// println(wrapper.author.id + ": (original message is ${wrapper.content}")
 				val raider = wrapper.author
 				var raidingPercentage = 0.0
 
 				val verySimilarMessages = mutableListOf<Message>()
 				var streamFloodCounter = 0
 
-				for (message in messages.reversed()) {
+				for ((index, message) in messages.reversed().withIndex()) {
+					val distanceMultiplier = ((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)
 					if (message.contentRaw.isNotBlank()) {
 						var compareContent = message.contentRaw.toLowerCase()
-						for (emote in COMMON_EMOTES)
+						for (emote in AutomodModule.COMMON_EMOTES)
 							compareContent = compareContent.replace(emote, "")
+						val contentIsBlank = compareContent.isBlank()
+						val withoutEmoteBlankMultiplier = if (contentIsBlank) 0.3 else 1.0
 
 						if (0 > streamFloodCounter)
 							streamFloodCounter = 0
@@ -101,25 +105,29 @@ class AutomodModule : MessageReceivedModule {
 						}
 
 						if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
-							// println("Detected stream flood by ${wrapper.author.id}! - $streamFloodCounter")
-							// println("Stream flood!")
-							raidingPercentage += if (wrapper.author.id != message.author.id) {
+							raidingPercentage += if (wrapper.author.id == message.author.id) {
 								AutomodModule.IN_ROW_SAME_USER_SIMILAR_SCORE
 							} else {
 								AutomodModule.IN_ROW_DIFFERENT_USER_SIMILAR_SCORE
-							}
-							// println(">>> ${wrapper.author.id}: IN_ROW_XYZ_SIMILAR_SCORE ${raidingPercentage}")
+							} * withoutEmoteBlankMultiplier
+
+							// analysis(analysis, "+ Stream Flood (mesmo usuário: ${(wrapper.author.id == message.author.id)}) - Valor atual é $raidingPercentage")
+
 							streamFloodCounter--
 						} else {
 							streamFloodCounter++
 						}
 
-						raidingPercentage += AutomodModule.SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, AutomodModule.SIMILARITY_THRESHOLD - threshold))
-						// println(">>> ${wrapper.author.id}: SIMILAR_MESSAGE_MULTIPLIER ${raidingPercentage}")
+						val similarMessageScore = distanceMultiplier * AutomodModule.SIMILAR_MESSAGE_MULTIPLIER * (Math.max(0, AutomodModule.SIMILARITY_THRESHOLD - threshold))
+						if (similarMessageScore != 0.0) {
+							// analysis(analysis, "+ similarMessageScore é $similarMessageScore (${((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)})- Valor atual é $raidingPercentage")
+						}
+						raidingPercentage += similarMessageScore
 					}
 
 					if (wrapper.attachments.isNotEmpty() && message.attachments.isNotEmpty()) {
 						raidingPercentage += AutomodModule.ATTACHED_IMAGE_SCORE
+						// analysis(analysis, "+ Possui attachments ~ ${AutomodModule.ATTACHED_IMAGE_SCORE} - Valor atual é $raidingPercentage")
 						// println(">>> ${wrapper.author.id}: ATTACHED_IMAGE_SCORE ${raidingPercentage}")
 					}
 
@@ -127,37 +135,39 @@ class AutomodModule : MessageReceivedModule {
 
 					while (matcher2.find()) {
 						if (urlsDetected.contains(matcher2.group(0))) {
-							// println("Has same link!")
-							raidingPercentage += AutomodModule.SAME_LINK_SCORE
-							// println(">>> ${wrapper.author.id}: SAME_LINK_SCORE ${raidingPercentage}")
+							// analysis(analysis, "+ Mesmo link ~ ${AutomodModule.SAME_LINK_SCORE} - Valor atual é $raidingPercentage")
+							raidingPercentage += distanceMultiplier * AutomodModule.SAME_LINK_SCORE
 						}
 					}
 				}
 
+				val similarSameAuthorScore = AutomodModule.SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
+				// analysis(analysis, "+ similarSameAuthorScore é $similarSameAuthorScore - Valor atual é $raidingPercentage")
 				raidingPercentage += AutomodModule.SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER * verySimilarMessages.size
-				// println(">>> ${wrapper.author.id}: SIMILAR_SAME_AUTHOR_MESSAGE_MULTIPLIER ${raidingPercentage}")
 
+				// Caso o usuário não tenha avatar
 				if (wrapper.author.avatarUrl == null) {
 					raidingPercentage += AutomodModule.NO_AVATAR_SCORE
-					// println(">>> ${wrapper.author.id}: NO_AVATAR_SCORE ${raidingPercentage}")
+					// analysis(analysis, "+ Usuário não possui avatar, então iremos adicionar ${AutomodModule.NO_AVATAR_SCORE} a porcentagem - Valor atual é $raidingPercentage")
 				}
 
 				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
-				raidingPercentage += AutomodModule.MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
-				// println(">>> ${wrapper.author.id}: MUTUAL_GUILDS_MULTIPLIER ${raidingPercentage}")
-				// println("criada em ${Instant.ofEpochMilli(raider.createdAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().fancier()} - $value")
-				raidingPercentage += AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.creationTime.toInstant().toEpochMilli()))
-				// println(">>> ${wrapper.author.id}: FRESH_ACCOUNT_DISCORD_MULTIPLIER ${raidingPercentage}")
+				val nonMutualGuildsScore = AutomodModule.MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
+				// analysis(analysis, "+ nonMutualGuildsScore é $nonMutualGuildsScore - Valor atual é $raidingPercentage")
+				raidingPercentage += nonMutualGuildsScore
 
+				// Conta nova no Discord
+				val newAccountScore = AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.creationTime.toInstant().toEpochMilli()))
+				// analysis(analysis, "+ newAccountScore é $nonMutualGuildsScore - Valor atual é $raidingPercentage")
+				raidingPercentage += newAccountScore
+
+				// Conta nova que entrou no servidor
 				val member = event.member
-				if (member != null)
-					raidingPercentage += AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - member.joinDate.toInstant().toEpochMilli()))
-				// println(">>> ${wrapper.author.id}: FRESH_ACCOUNT_JOINED_MULTIPLIER ${raidingPercentage}")
-				// raidingPercentage += AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(AutomodModule.FRESH_ACCOUNT_TIMEOUT - (wrapper.author.createdAt - AutomodModule.FRESH_ACCOUNT_TIMEOUT), 0)
-				// val member = wrapper.author
-				// if (member != null) {
-				// 	raidingPercentage += AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * (Math.max(AutomodModule.FRESH_ACCOUNT_TIMEOUT - (member.joinDate.toInstant().toEpochMilli() - AutomodModule.FRESH_ACCOUNT_TIMEOUT), 0))
-				// }
+				if (member != null) {
+					val recentlyJoinedScore = AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - member.joinDate.toInstant().toEpochMilli()))
+					// analysis(analysis, "+ recentlyJoinedScore é $recentlyJoinedScore - Valor atual é $raidingPercentage")
+					raidingPercentage += recentlyJoinedScore
+				}
 
 				return raidingPercentage
 			}
