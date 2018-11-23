@@ -131,10 +131,12 @@ class AminoRepostTask : Runnable {
 							val nickname = titleDiv.getElementsByClass("overflow-hidden").first().getElementsByClass("nickname").text()
 							val avatar = titleDiv.getElementsByTag("section").first().getElementsByClass("avatar").firstOrNull()?.attr("data-src")
 
-							val richContent = titleDiv.getElementsByClass("content").first()
+							// <section>[0] = informações sobre o autor
+							// <section>[1] = informações sobre o post
+							val richContent = titleDiv.getElementsByTag("section").getOrNull(1)
 
 							if (richContent == null) {
-								logger.error("Post não tem content! $link")
+								logger.error("Post não tem tag de <section>! $link")
 								continue
 							}
 
