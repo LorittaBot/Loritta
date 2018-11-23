@@ -76,7 +76,7 @@ object LorittaLauncher {
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
 
-		if (arg0 != null) {
+		if (arg0 != null && arg0 == "migrate" && arg1 != null) {
 			val tool = MigrationTool(config)
 
 			when (arg1) {
