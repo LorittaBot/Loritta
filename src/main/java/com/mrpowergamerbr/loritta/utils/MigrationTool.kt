@@ -16,7 +16,7 @@ class MigrationTool(val config: LorittaConfig) {
 
 		println("Migrando avisos...")
 
-		val servers = com.mrpowergamerbr.loritta.utils.loritta.serversColl.find()
+		val servers = loritta.serversColl.find()
 
 		servers.iterator().use {
 			while (it.hasNext()) {
@@ -48,7 +48,7 @@ class MigrationTool(val config: LorittaConfig) {
 
 		println("Migrando perfis locais...")
 
-		val servers = com.mrpowergamerbr.loritta.utils.loritta.serversColl.find()
+		val servers = loritta.serversColl.find()
 
 		servers.iterator().use {
 			while (it.hasNext()) {
