@@ -13,8 +13,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -103,7 +101,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 
 		val localPosition = if (localProfile != null) {
 			transaction(Databases.loritta) {
-				GuildProfiles.select { GuildProfiles.xp greaterEq localProfile.xp }.count()
+				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
 			}
 		} else { null }
 
@@ -113,7 +111,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 		graphics.drawText(guild.name, 159, 61  + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
 		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / ${xpLocal} XP", 159, 78 + shiftY, 800 - 6)
+			graphics.drawText("#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
 		} else {
 			graphics.drawText("???", 159, 78 + shiftY, 800 - 6)
 		}

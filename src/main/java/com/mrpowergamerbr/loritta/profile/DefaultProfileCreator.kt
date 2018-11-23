@@ -85,7 +85,7 @@ class DefaultProfileCreator : ProfileCreator {
 
 		val localPosition = if (localProfile != null) {
 			transaction(Databases.loritta) {
-				GuildProfiles.select { GuildProfiles.xp greaterEq localProfile.xp }.count()
+				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
 			}
 		} else { null }
 
@@ -95,7 +95,7 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.drawText(guild.name, 562, 61, 800 - 6)
 		graphics.font = whitneySemiBold20
 		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / ${xpLocal} XP", 562, 78, 800 - 6)
+			graphics.drawText("#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
 		} else {
 			graphics.drawText("???", 562, 78, 800 - 6)
 		}

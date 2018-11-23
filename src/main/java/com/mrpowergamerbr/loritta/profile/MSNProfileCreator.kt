@@ -120,7 +120,7 @@ class MSNProfileCreator : ProfileCreator {
 
 		val localPosition = if (localProfile != null) {
 			transaction(Databases.loritta) {
-				GuildProfiles.select { GuildProfiles.xp greaterEq localProfile.xp }.count()
+				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
 			}
 		} else { null }
 
@@ -130,7 +130,7 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.drawText(guild.name, 4, 61  + shiftY, 244)
 		graphics.font = whitneySemiBold20
 		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / ${xpLocal} XP", 4, 78 + shiftY, 244)
+			graphics.drawText("#$localPosition / $xpLocal XP", 4, 78 + shiftY, 244)
 		} else {
 			graphics.drawText("???", 4, 78 + shiftY, 244)
 		}
