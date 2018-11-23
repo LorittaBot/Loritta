@@ -35,8 +35,6 @@ class DashboardView : ProtectedView() {
 				settings.hidePreviousUsernames = hidePreviousUsernames
 			}
 
-			loritta save lorittaProfile
-
 			val response = JsonObject()
 			response["api:message"] = "OK"
 			response["hideSharedServers"] = hideSharedServers

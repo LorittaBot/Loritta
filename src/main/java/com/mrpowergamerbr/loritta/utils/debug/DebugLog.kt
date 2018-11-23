@@ -123,12 +123,6 @@ object DebugLog {
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}
-			"freeze" -> {
-				val time = args[0].toLong()
-				logger.info("Travando thread por $time segundos...")
-				Thread.sleep(time * 1000)
-				logger.info("Thread destravada!")
-			}
 			"mongo" -> {
 				println("===[ MONGODB ]===")
 				println("isLocked: " + loritta.mongo.isLocked)
