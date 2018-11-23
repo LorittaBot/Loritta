@@ -46,9 +46,11 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		val profiles = transaction(Databases.loritta) {
 			GuildProfiles.select { GuildProfiles.guildId eq context.guild.idLong }
 					.orderBy(GuildProfiles.xp to false)
-					.limit(5, page * 5).toMutableList()
+					.limit(5, page * 5)
+					.toMutableList()
 		}
 
+		println("Loaded ${profiles.size}!")
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics as Graphics2D
@@ -93,6 +95,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			val profile = transaction(Databases.loritta) { GuildProfile.wrapRow(resultRow) }
 			val member = lorittaShards.getUserById(profile.id.value)
 
+			println("Member is $member with ID ${profile.id.value}")
 			if (member != null) {
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.id.value + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
