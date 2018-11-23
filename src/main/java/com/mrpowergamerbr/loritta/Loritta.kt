@@ -58,6 +58,7 @@ import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -391,8 +392,9 @@ class Loritta(config: LorittaConfig) {
 	 * @see           ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
-		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
-		return serverConfig ?: ServerConfig(guildId)
+		val serverConfig = measureTimeMillisWithResult { serversColl.find(Filters.eq("_id", guildId)).first() }
+		logger.info("Config de $guildId demorou ${serverConfig.first}ms para ser carregada!")
+		return serverConfig.second ?: ServerConfig(guildId)
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
