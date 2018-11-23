@@ -133,7 +133,7 @@ class AminoRepostTask : Runnable {
 
 							// <section>[0] = informações sobre o autor
 							// <section>[1] = informações sobre o post
-							val richContent = titleDiv.getElementsByTag("section").getOrNull(1)
+							val richContent = titleDiv.getElementsByTag("section").getOrNull(2)
 
 							if (richContent == null) {
 								logger.error("Post não tem tag de <section>! $link")
@@ -169,7 +169,16 @@ class AminoRepostTask : Runnable {
 										}
 
 										setTitle("<:amino:375313236234469386> $title", link)
-										setDescription(richContent.text().substringIfNeeded())
+
+										if (richContent.hasClass("pollopt")) {
+											// POLLS
+											val pollItems = richContent.getElementsByClass("poll-item")
+											for (item in pollItems) {
+												appendDescription("\uD83D\uDCCC ${item.text()}\n")
+											}
+										} else {
+											setDescription(richContent.text().substringIfNeeded())
+										}
 
 										if (imageUrl != null) {
 											try {
