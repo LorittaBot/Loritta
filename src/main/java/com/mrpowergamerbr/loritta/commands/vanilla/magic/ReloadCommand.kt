@@ -312,8 +312,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 								Warn.new {
 									this.guildId = next.guildId.toLong()
 									this.userId = userData.userId.toLong()
-									this.receivedAt = System.currentTimeMillis()
-									this.punishedById = Loritta.config.clientId.toLong()
+									this.receivedAt = it.time
+									this.punishedById = it.punishedBy.toLong()
+									this.content = it.reason
 								}
 							}
 						}
