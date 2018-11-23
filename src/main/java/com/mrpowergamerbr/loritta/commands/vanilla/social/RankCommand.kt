@@ -90,7 +90,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				break
 			}
 
-			val profile = GuildProfile.wrapRow(resultRow)
+			val profile = transaction(Databases.loritta) { GuildProfile.wrapRow(resultRow) }
 			val member = lorittaShards.getUserById(profile.id.value)
 
 			if (member != null) {
