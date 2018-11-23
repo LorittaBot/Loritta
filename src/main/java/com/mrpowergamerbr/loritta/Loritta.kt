@@ -15,8 +15,6 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
-import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.*
@@ -29,7 +27,6 @@ import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
-import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -48,13 +45,11 @@ import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.utils.cache.CacheFlag
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -392,9 +387,8 @@ class Loritta(config: LorittaConfig) {
 	 * @see           ServerConfig
 	 */
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
-		val serverConfig = measureTimeMillisWithResult { serversColl.find(Filters.eq("_id", guildId)).first() }
-		logger.info("Config de $guildId demorou ${serverConfig.first}ms para ser carregada!")
-		return serverConfig.second ?: ServerConfig(guildId)
+		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
+		return serverConfig ?: ServerConfig(guildId)
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
