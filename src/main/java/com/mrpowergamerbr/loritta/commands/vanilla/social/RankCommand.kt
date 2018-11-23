@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -46,7 +45,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		val profiles = transaction(Databases.loritta) {
 			GuildProfiles.select { GuildProfiles.guildId eq context.guild.idLong }
-					.orderBy(Profiles.xp to false)
+					.orderBy(GuildProfiles.xp to false)
 					.limit(5, page * 5).toMutableList()
 		}
 
