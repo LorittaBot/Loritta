@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta
 
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import java.io.File
@@ -69,6 +70,19 @@ object LorittaLauncher {
 			println("")
 			println("After configuring the file, run me again!")
 			System.exit(1)
+			return
+		}
+
+		val arg0 = args.getOrNull(0)
+		val arg1 = args.getOrNull(1)
+
+		if (arg0 != null) {
+			val tool = MigrationTool(config)
+
+			when (arg1) {
+				"warns" -> tool.migrateWarns()
+				"local" -> tool.migrateLocalProfiles()
+			}
 			return
 		}
 
