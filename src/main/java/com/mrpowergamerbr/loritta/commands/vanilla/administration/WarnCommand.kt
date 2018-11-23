@@ -1,12 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.dao.Warn
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.time.Instant
 
@@ -81,54 +87,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				}
 			}
 
-			var rawArgs = context.rawArgs
-			rawArgs = rawArgs.remove(0) // remove o usuário
-
-			var reason = rawArgs.joinToString(" ")
-
-			val pipedReason = reason.split("|")
-
-			var usingPipedArgs = false
-			var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
-			var delDays = 0
-			
-			var silent = false
-
-			if (pipedReason.size > 1) {
-				val pipedArgs=  pipedReason.toMutableList()
-				val _reason = pipedArgs[0]
-				pipedArgs.removeAt(0)
-
-				pipedArgs.forEach {
-					val arg = it.trim()
-					if (arg == "force" || arg == "f") {
-						skipConfirmation = true
-						usingPipedArgs = true
-					}
-					if (arg == "s" || arg == "silent") {
-						skipConfirmation = true
-						usingPipedArgs = true
-						silent = true
-					}
-					if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
-						delDays = it.split(" ")[0].toIntOrNull() ?: 0
-
-						if (delDays > 7) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
-							return
-						}
-						if (0 > delDays) {
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
-							return
-						}
-
-						usingPipedArgs = true
-					}
-				}
-
-				if (usingPipedArgs)
-					reason = _reason
-			}
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
 				if (!isSilent) {
@@ -179,11 +138,9 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				val config = loritta.getServerConfigForGuild(context.guild.id)
 
-				val userData = config.getUserData(
-						user.id
-				)
-
-				val warnCount = userData.warns.size + 1
+				val warnCount = transaction(Databases.loritta) {
+					Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
+				} + 1
 
 				val punishments = config.moderationConfig.punishmentActions.filter { it.warnCount == warnCount }
 
@@ -197,13 +154,15 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					}
 				}
 
-				userData.warns.add(
-						ModerationConfig.Warn(
-								reason,
-								System.currentTimeMillis(),
-								context.userHandle.id
-						)
-				)
+				transaction(Databases.loritta) {
+					Warn.new {
+						this.guildId = context.guild.idLong
+						this.userId = user.idLong
+						this.receivedAt = System.currentTimeMillis()
+						this.punishedById = context.userHandle.idLong
+						this.content = reason
+					}
+				}
 
 				loritta save config
 

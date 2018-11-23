@@ -16,7 +16,7 @@ import java.time.ZoneId
 fun OffsetDateTime.humanize(locale: BaseLocale): String {
 	val localeId = loritta.locales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
 	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols().months
+	val months = DateFormatSymbols(BaseLocale.toJavaLocale(locale)).months
 
 	return if (localeId == "en-us") {
 		val fancy = when (this.dayOfMonth) {
@@ -25,7 +25,7 @@ fun OffsetDateTime.humanize(locale: BaseLocale): String {
 			3 -> "rd"
 			else -> "th"
 		}
-		"${this.dayOfMonth}${fancy} of ${months[this.month.value - 1]}, ${fixedOffset.year} at ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
+		"${this.dayOfMonth}$fancy of ${months[this.month.value - 1]}, ${fixedOffset.year} at ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
 	} else {
 		"${this.dayOfMonth} de ${months[this.month.value - 1]}, ${fixedOffset.year} às ${fixedOffset.hour.toString().padStart(2, '0')}:${fixedOffset.minute.toString().padStart(2, '0')}"
 	}

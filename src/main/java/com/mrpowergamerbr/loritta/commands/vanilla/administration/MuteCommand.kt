@@ -104,10 +104,23 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			)
 
 			suspend fun punishUser(time: Long?) {
-				var rawArgs = context.rawArgs
-				rawArgs = rawArgs.remove(0) // remove o usuário
+				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
-				val reason = rawArgs.joinToString(" ")
+				if (skipConfirmation) {
+					val result = muteUser(context, member, time, locale, user, reason, silent)
+
+					if (!result) {
+						return
+					}
+
+					context.reply(
+							LoriReply(
+									locale["BAN_SuccessfullyPunished"],
+									"\uD83C\uDF89"
+							)
+					)
+					return
+				}
 
 				var str = locale["BAN_ReadyToPunish", locale["MUTE_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
 
@@ -125,7 +138,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
+						val isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
 
 						message.delete().queue()
 

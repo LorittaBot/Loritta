@@ -351,7 +351,8 @@ class Loritta(config: LorittaConfig) {
 					Dailies,
 					Marriages,
 					RegisterConfigs,
-					Mutes
+					Mutes,
+					Warns
 			)
 		}
 	}

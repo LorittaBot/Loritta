@@ -9,8 +9,8 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
+import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
@@ -293,31 +293,28 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
-		if (arg0 == "migrate_mutes") {
+		if (arg0 == "migrate_warns") {
 			context.reply(
 					LoriReply(
-							"Migrando status de silenciado em servidores..."
+							"Migrando warns de usuários em servidores..."
 					)
 			)
 
-			val servers = loritta.serversColl.find(
-					Filters.eq("guildUserData.temporaryMute", true)
-			)
+			val servers = loritta.serversColl.find()
 
 			servers.iterator().use {
 				while (it.hasNext()) {
 					val next = it.next()
 
 					transaction(Databases.loritta) {
-						next.guildUserData.filter { it.temporaryMute }.forEach {
-							Mute.new {
-								this.guildId = next.guildId.toLong()
-								this.userId = it.userId.toLong()
-								this.receivedAt = System.currentTimeMillis()
-								this.punishedById = Loritta.config.clientId.toLong()
-								this.isTemporary = it.temporaryMute
-								if (this.isTemporary)
-									this.expiresAt = it.expiresIn
+						next.guildUserData.filter { it.warns.isNotEmpty() }.forEach { userData ->
+							userData.warns.forEach {
+								Warn.new {
+									this.guildId = next.guildId.toLong()
+									this.userId = userData.userId.toLong()
+									this.receivedAt = System.currentTimeMillis()
+									this.punishedById = Loritta.config.clientId.toLong()
+								}
 							}
 						}
 					}
@@ -326,7 +323,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 			context.reply(
 					LoriReply(
-							"Sucesso! Todos os status de silenciado foram migrados com sucesso!"
+							"Sucesso! Todos os warns foram migrados com sucesso!"
 					)
 			)
 
