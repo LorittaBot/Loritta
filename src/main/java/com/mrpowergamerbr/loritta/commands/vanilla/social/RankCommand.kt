@@ -93,11 +93,10 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			}
 
 			val profile = transaction(Databases.loritta) { GuildProfile.wrapRow(resultRow) }
-			val member = lorittaShards.getUserById(profile.id.value)
+			val member = lorittaShards.getUserById(profile.userId)
 
-			println("Member is $member with ID ${profile.id.value}")
 			if (member != null) {
-				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.id.value + ".png")
+				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.userId + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
 				val rankBackground = ImageIO.read(imageFile)
