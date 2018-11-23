@@ -14,7 +14,7 @@ object AdminUtils {
 		val pipedReason = reason.split("|")
 
 		var usingPipedArgs = false
-		var skipConfirmation = context.config.getUserData(context.userHandle.id).quickPunishment
+		var skipConfirmation = context.config.getUserData(context.userHandle.idLong).quickPunishment
 		var delDays = 7
 
 		var silent = false

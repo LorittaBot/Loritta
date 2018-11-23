@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
@@ -28,6 +29,7 @@ import net.dv8tion.jda.core.entities.Guild
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import java.math.BigDecimal
 import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -330,6 +332,43 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 			return
 		}
+
+		if (arg0 == "migrate_xp") {
+			context.reply(
+					LoriReply(
+							"Migrando XP de usuários em servidores..."
+					)
+			)
+
+			val servers = loritta.serversColl.find()
+
+			servers.iterator().use {
+				while (it.hasNext()) {
+					val next = it.next()
+
+					transaction(Databases.loritta) {
+						next.guildUserData.forEach { userData ->
+							GuildProfile.new {
+								this.guildId = next.guildId.toLong()
+								this.userId = userData.userId.toLong()
+								this.money = BigDecimal(userData.money)
+								this.quickPunishment = userData.quickPunishment
+								this.xp = userData.xp
+							}
+						}
+					}
+				}
+			}
+
+			context.reply(
+					LoriReply(
+							"Sucesso! Todos os warns foram migrados com sucesso!"
+					)
+			)
+
+			return
+		}
+
 		if (arg0 == "queryuseless") {
 			val uselessServers = loritta.serversColl.find(
 					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)

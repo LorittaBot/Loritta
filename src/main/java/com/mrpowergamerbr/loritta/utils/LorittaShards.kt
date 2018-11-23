@@ -49,6 +49,13 @@ class LorittaShards {
 		return shardManager.getUserById(id)
 	}
 
+	fun getUserById(id: Long?): User? {
+		if (id == null)
+			return null
+
+		return shardManager.getUserById(id)
+	}
+
 	suspend fun retrieveUserById(id: String?): User? {
 		if (id == null)
 			return null

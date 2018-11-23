@@ -48,8 +48,6 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toMutableList()
 			}
 
-			val profile = context.config.getUserData(user.id)
-
 			if (warns.isEmpty()) {
 				context.reply(
 						locale["WARNLIST_UserDoesntHaveWarns", user.asMention],

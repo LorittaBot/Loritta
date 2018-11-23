@@ -4,9 +4,15 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.GuildProfile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -29,8 +35,6 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val list = mutableListOf<RankWrapper>()
-
 		var global = false
 		var page = context.args.getOrNull(0)?.toIntOrNull()
 
@@ -40,17 +44,10 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		if (page == null)
 			page = 0
 
-		if (!global) {
-			context.config.guildUserData
-					.forEach { list.add(RankWrapper(it.userId, it)) }
-		}
-
-		list.sortBy { it.userData.xp }
-		list.reverse()
-
-		for (idx in 0 until (page * 5)) {
-			if (list.size >= 5)
-				list.removeAt(0)
+		val profiles = transaction(Databases.loritta) {
+			GuildProfiles.select { GuildProfiles.guildId eq context.guild.idLong }
+					.orderBy(Profiles.xp to false)
+					.limit(5, page * 5).toMutableList()
 		}
 
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
@@ -89,16 +86,16 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		var idx = 0
 		var currentY = 37
 
-		for ((id, userData) in list) {
+		for (resultRow in profiles) {
 			if (idx >= 5) {
 				break
 			}
 
-			var member = lorittaShards.getUserById(id)
+			val profile = GuildProfile.wrapRow(resultRow)
+			val member = lorittaShards.getUserById(profile.id.value)
 
 			if (member != null) {
-				val userProfile = loritta.getOrCreateLorittaProfile(id)
-				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
+				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.id.value + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
 				val rankBackground = ImageIO.read(imageFile)
@@ -117,11 +114,11 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				graphics.font = oswaldRegular16
 
-				ImageUtils.drawTextWrap("XP total // " + userData.xp, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("XP total // " + profile.xp, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 
-				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("Nível " + profile.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
 				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)

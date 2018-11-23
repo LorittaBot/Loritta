@@ -352,7 +352,8 @@ class Loritta(config: LorittaConfig) {
 					Marriages,
 					RegisterConfigs,
 					Mutes,
-					Warns
+					Warns,
+					GuildProfiles
 			)
 		}
 	}
@@ -392,43 +393,6 @@ class Loritta(config: LorittaConfig) {
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
 		return serverConfig ?: ServerConfig(guildId)
-	}
-
-	fun updateServerConfig(guild: Guild, updates: List<Bson>): UpdateResult {
-		return serversColl.updateOne(
-				Filters.eq("_id", guild.id),
-				Updates.combine(updates)
-		)
-	}
-
-	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, update: Bson): UpdateResult {
-		return updateLorittaGuildUserData(serverConfig, userId, listOf(update))
-	}
-
-	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, updates: List<Bson>): UpdateResult {
-		val hasUserData = serverConfig.hasUserData(userId)
-		if (!hasUserData) {
-			serversColl.updateOne(
-					Filters.and(
-							Filters.eq("_id", serverConfig.guildId),
-							Filters.ne("guildUserData.userId", userId)
-					),
-					Updates.push(
-							"guildUserData",
-							LorittaGuildUserData(userId)
-					)
-			)
-		}
-
-		return serversColl.updateOne(
-				Filters.and(
-						Filters.eq("_id", serverConfig.guildId),
-						Filters.eq("guildUserData.userId", userId)
-				),
-				Updates.combine(
-						updates
-				)
-		)
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
