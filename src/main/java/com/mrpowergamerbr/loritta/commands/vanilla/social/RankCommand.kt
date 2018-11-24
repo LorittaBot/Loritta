@@ -4,9 +4,14 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.GuildProfile
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -29,8 +34,6 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val list = mutableListOf<RankWrapper>()
-
 		var global = false
 		var page = context.args.getOrNull(0)?.toIntOrNull()
 
@@ -40,19 +43,14 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		if (page == null)
 			page = 0
 
-		if (!global) {
-			context.config.guildUserData
-					.forEach { list.add(RankWrapper(it.userId, it)) }
+		val profiles = transaction(Databases.loritta) {
+			GuildProfiles.select { GuildProfiles.guildId eq context.guild.idLong }
+					.orderBy(GuildProfiles.xp to false)
+					.limit(5, page * 5)
+					.toMutableList()
 		}
 
-		list.sortBy { it.userData.xp }
-		list.reverse()
-
-		for (idx in 0 until (page * 5)) {
-			if (list.size >= 5)
-				list.removeAt(0)
-		}
-
+		println("Loaded ${profiles.size}!")
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics as Graphics2D
@@ -87,18 +85,18 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		ImageUtils.drawCenteredString(graphics, if (global) "Ranking Global" else context.guild.name, Rectangle(0, 0, 268, 37), oswaldRegular16)
 
 		var idx = 0
-		var currentY = 37;
+		var currentY = 37
 
-		for ((id, userData) in list) {
+		for (resultRow in profiles) {
 			if (idx >= 5) {
 				break
 			}
 
-			var member = lorittaShards.getUserById(id)
+			val profile = transaction(Databases.loritta) { GuildProfile.wrapRow(resultRow) }
+			val member = lorittaShards.getUserById(profile.userId)
 
 			if (member != null) {
-				val userProfile = loritta.getOrCreateLorittaProfile(id)
-				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
+				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.userId + ".png")
 				val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
 
 				val rankBackground = ImageIO.read(imageFile)
@@ -117,11 +115,11 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				graphics.font = oswaldRegular16
 
-				ImageUtils.drawTextWrap("XP total // " + userData.xp, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("XP total // " + profile.xp, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 
-				ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("Nível " + profile.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
 				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
@@ -143,7 +141,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				editedAvatar = editedAvatar.getSubimage(0, 45, 143, 53)
 				graphics.drawImage(editedAvatar, 0, currentY, null)
 				idx++
-				currentY += 53;
+				currentY += 53
 			}
 		}
 		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))

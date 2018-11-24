@@ -17,11 +17,11 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<texto>";
+		return "<texto>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {

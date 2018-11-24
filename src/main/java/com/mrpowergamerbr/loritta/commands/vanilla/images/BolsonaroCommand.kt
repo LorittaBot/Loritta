@@ -50,9 +50,9 @@ class BolsonaroCommand : AbstractCommand("bolsonaro", category = CommandCategory
 
 				375F,167F, // LR
 
-				106F, 158F); // LL
+				106F, 158F) // LL
 
-		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
+		graphics.drawImage(skewed.bufferedImage, 0, 0, null)
 
 		graphics.drawImage(TEMPLATE, 0, 0, null) // Desenhe o template por cima!
 

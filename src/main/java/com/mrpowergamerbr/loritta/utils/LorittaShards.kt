@@ -12,6 +12,7 @@ class LorittaShards {
 	lateinit var shardManager: ShardManager
 
 	fun getGuildById(id: String): Guild? = shardManager.getGuildById(id)
+	fun getGuildById(id: Long): Guild? = shardManager.getGuildById(id)
 
 	fun getGuilds(): List<Guild> = shardManager.guilds
 
@@ -42,6 +43,13 @@ class LorittaShards {
 	fun getUsers(): List<User> = shardManager.users
 
 	fun getUserById(id: String?): User? {
+		if (id == null)
+			return null
+
+		return shardManager.getUserById(id)
+	}
+
+	fun getUserById(id: Long?): User? {
 		if (id == null)
 			return null
 

@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -25,7 +26,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			var economySource = "global"
 			var currentIdx = 0
 
-			val payerProfile = context.config.getUserData(context.userHandle.id)
+			val payerProfile = context.config.getUserData(context.userHandle.idLong)
 
 			if (context.config.economyConfig.isEnabled) {
 				val arg0 = context.rawArgs.getOrNull(currentIdx++)
@@ -97,12 +98,12 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Se o servidor tem uma economia local...
 			val balanceQuantity = if (economySource == "global") {
-				context.lorittaUser.profile.money
+				BigDecimal(context.lorittaUser.profile.money)
 			} else {
 				payerProfile.money
 			}
 
-			if (howMuch > balanceQuantity) {
+			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
 						LoriReply(
 								locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else context.config.economyConfig.economyNamePlural],
@@ -143,23 +144,13 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						)
 				)
 			} else {
-				val receiverProfile = context.config.getUserData(user.id)
-
-				if (receiverProfile.money.isNaN()) {
-					// receiverProfile.dreams = 0.0
-					return
-				}
-
-				if (payerProfile.money.isNaN()) {
-					// context.lorittaUser.profile.dreams = 0.0
-					return
-				}
+				val receiverProfile = context.config.getUserData(user.idLong)
 
 				val beforeGiver = payerProfile.money
 				val beforeReceiver = receiverProfile.money
 
-				payerProfile.money -= howMuch
-				receiverProfile.money += howMuch
+				payerProfile.money -= howMuch.toBigDecimal()
+				receiverProfile.money += howMuch.toBigDecimal()
 
 				logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} economia local) transferiu ${howMuch} economia local para ${receiverProfile.userId} (antes possuia ${beforeReceiver} economia local)")
 				loritta save context.config

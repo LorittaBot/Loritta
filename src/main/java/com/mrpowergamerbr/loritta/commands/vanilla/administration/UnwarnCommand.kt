@@ -1,12 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.dao.Warn
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -22,7 +27,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944");
+		return listOf("159985870458322944")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -75,9 +80,11 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				}
 			}
 
-			val userData = context.config.getUserData(user.id)
+			val warns = transaction(Databases.loritta) {
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toMutableList()
+			}
 
-			if (userData.warns.isEmpty()) {
+			if (warns.isEmpty()) {
 				context.reply(
 						LoriReply(
 								locale["WARN_DoesntHaveWarns"],
@@ -87,7 +94,12 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				return
 			}
 
-			userData.warns.removeAt(userData.warns.size - 1)
+			transaction(Databases.loritta) {
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }
+						.sortedByDescending { it.receivedAt }
+						.first()
+						.delete()
+			}
 
 			loritta save context.config
 
@@ -98,7 +110,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 					)
 			)
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

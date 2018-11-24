@@ -140,14 +140,14 @@ object LorittaUtils {
 
 	fun evalMath(str: String): Double {
 		return object : Any() {
-			internal var pos = -1
-			internal var ch: Int = 0
+			var pos = -1
+			var ch: Int = 0
 
-			internal fun nextChar() {
+			fun nextChar() {
 				ch = if (++pos < str.length) str[pos].toInt() else -1
 			}
 
-			internal fun eat(charToEat: Int): Boolean {
+			fun eat(charToEat: Int): Boolean {
 				while (ch == ' '.toInt()) nextChar()
 				if (ch == charToEat) {
 					nextChar()
@@ -156,7 +156,7 @@ object LorittaUtils {
 				return false
 			}
 
-			internal fun parse(): Double {
+			fun parse(): Double {
 				nextChar()
 				val x = parseExpression()
 				if (pos < str.length) throw RuntimeException("Unexpected: " + ch.toChar())
@@ -169,7 +169,7 @@ object LorittaUtils {
 			// factor = `+` factor | `-` factor | `(` expression `)`
 			//        | number | functionName factor | factor `^` factor
 
-			internal fun parseExpression(): Double {
+			fun parseExpression(): Double {
 				var x = parseTerm()
 				while (true) {
 					if (eat('+'.toInt()))
@@ -181,7 +181,7 @@ object LorittaUtils {
 				}
 			}
 
-			internal fun parseTerm(): Double {
+			fun parseTerm(): Double {
 				var x = parseFactor()
 				while (true) {
 					if (eat('*'.toInt()))
@@ -193,7 +193,7 @@ object LorittaUtils {
 				}
 			}
 
-			internal fun parseFactor(): Double {
+			fun parseFactor(): Double {
 				if (eat('+'.toInt())) return parseFactor() // unary plus
 				if (eat('-'.toInt())) return -parseFactor() // unary minus
 

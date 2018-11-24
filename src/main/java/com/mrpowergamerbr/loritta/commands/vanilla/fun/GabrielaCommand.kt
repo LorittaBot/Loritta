@@ -19,18 +19,8 @@ import org.apache.commons.text.similarity.LevenshteinDistance
 import org.bson.types.ObjectId
 
 class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
-
-	override fun getExamples(): List<String> = listOf("Como vai você?")
-
-	override fun hasCommandFeedback(): Boolean = false
-
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val corretores = mapOf(
+	companion object {
+		val CORRECTIONS = mapOf(
 				"(dima)" to "diamante",
 				"(b(e)?l(e)?z(a)?)" to "beleza",
 				"(vem ca)" to "vem cá",
@@ -88,16 +78,28 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				"\\b(flar)\\b" to "falar"
 		)
 
-		val wordBlacklist = mutableListOf<String>(
+		val WORD_BLACKLIST = listOf(
 				"calcinha","cueca","buceta","pau","foder","fuder","vadia","crl","puta", "bucetaa","bucetaaa","cu","cú","cuu","cuuu","cuh","whatsapp","endereço","vaca","putaa","gozei","gozar","meter","meti","piranha","cadela","penetro","penetrar","boquete","boqueteira","chupa","chupar","safada","putinha","safadinha","viado","viada","gay","fdp","capeta","demonio","demônio","fudi","fudiii","arrombado","arrombada","prostituta","transa","transar","transei","transou","possuir","seu corpo","estrupar","estrupei","arrombada","piriguete","putona","novinha","novinhas","meter","meteria","comer","comeria","cama","bunda","bundinha","bucetinha","ppk","xoxota","passa o","pauzudo","bucetuda", "camisinha", "cocaína", "fude", "fudee", "viadinho", "xereca","pedofilo", "penis","pênis", "rapariga", "gostosa", "eu chupo","todinha", "sexoo","sexooo", "sex","sexo", "punheta", "siririca", "ponheta", "transaria", "comi ela", "Vo infia tão fundo", "infia", "cuzinho", "cuzao", "cuzão", "bucetinhaa", "bicha","Que tranza","tranza","pica", "pika", "me encontre", "passa","endereço", "vc mora", "você mora", "deu muito", "pika", "bct", "cuu", "gostoso", "putiane", "arrombado", "rolas", "gozo","virgindade","estrupa", "arrombar", "estrupado","estrupada", "estruparei", "chupar", "estrupador", "galinha","estrupar", "penetra","bucetuda","porra","fode", "gozada","nudes","adiciona","cu!","soca","socar","mata","matar","morrer","morre","mora","casa","pelado","pelada", "fudeee", "meteu" ,"chupo", "chupeta"
 		)
+	}
 
+	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
+
+	override fun getExamples(): List<String> = listOf("Como vai você?")
+
+	override fun hasCommandFeedback(): Boolean = false
+
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val webhook = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, locale["FRASETOSCA_GABRIELA"])
 
 			var pergunta = context.strippedArgs.joinToString(" ").toLowerCase().trim() // Já que nós não ligamos se o cara escreve "Nilce" ou "nilce"
 
-			for ((regex, replace) in corretores) {
+			for ((regex, replace) in CORRECTIONS) {
 				pergunta = pergunta.replace(Regex(regex), replace)
 			}
 
@@ -145,7 +147,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				}
 
 				val answers = document.answers.filter { raw ->
-					wordBlacklist.forEach {
+					WORD_BLACKLIST.forEach {
 						if (raw.answer.contains(it, true)) {
 							return@filter false
 						}

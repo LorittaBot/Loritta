@@ -1,14 +1,21 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.math.BigDecimal
 import java.util.*
 
 class ServerConfig @BsonCreator constructor(
@@ -64,20 +71,17 @@ class ServerConfig @BsonCreator constructor(
 	var apiKey: String? = null
 	var premiumKey: String? = null
 
-	fun hasUserData(id: String): Boolean {
-		return guildUserData.any { it.userId == id }
-	}
-
-	fun getUserData(id: String): LorittaGuildUserData {
-		var userData = guildUserData.firstOrNull { it.userId == id }
-
-		if (userData == null) {
-			userData = LorittaGuildUserData(id)
-
-			this.guildUserData.add(userData)
+	fun getUserData(id: Long): GuildProfile {
+		val t = this
+		return transaction(Databases.loritta) {
+			GuildProfile.find { (GuildProfiles.guildId eq guildId.toLong()) and (GuildProfiles.userId eq id) }.firstOrNull() ?: GuildProfile.new {
+				this.guildId = t.guildId.toLong()
+				this.userId = id
+				this.money = BigDecimal(0)
+				this.quickPunishment = false
+				this.xp = 0
+			}
 		}
-
-		return userData
 	}
 
 	fun getTextChannelConfig(textChannel: TextChannel): TextChannelConfig {
@@ -99,17 +103,17 @@ class ServerConfig @BsonCreator constructor(
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
 		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
 			// Vamos retornar uma configuração padrão!
-			return CommandOptions()
+			return CommandManager.DEFAULT_COMMAND_OPTIONS
 		}
 
-		if (commandOptions.containsKey(cmd.javaClass.simpleName)) {
-			return commandOptions[cmd.javaClass.simpleName]!!
-		}
-
-		if (loritta.commandManager.defaultCmdOptions.containsKey(cmd.javaClass.simpleName)) {
-			return loritta.commandManager.defaultCmdOptions[cmd.javaClass.simpleName]!!.newInstance() as CommandOptions
-		} else {
-			return CommandOptions()
+		val simpleName = cmd.javaClass.simpleName
+		return when {
+			// Se a configuração do servidor tem opções de comandos...
+			commandOptions.containsKey(simpleName) -> commandOptions[simpleName]!!
+			// Se as opções padrões de comandos possui uma opção "específica" para o comando
+			loritta.commandManager.defaultCmdOptions.containsKey(simpleName) -> loritta.commandManager.defaultCmdOptions[simpleName]!!.newInstance() as CommandOptions
+			// Se não, retorne as opções padrões
+			else -> CommandManager.DEFAULT_COMMAND_OPTIONS
 		}
 	}
 

@@ -59,19 +59,19 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 
 					context.sendMessage(context.getAsMention(true), createResourceEmbed(context, resourceId, locale).build())
 				} else {
-					var format = "";
+					var format = ""
 					for (i in 0..Math.min(5, array.size()) - 1) {
 						var item = json[i]
-						format += "${Constants.INDEXES[i]} **[${item["name"].string}](https://www.spigotmc.org/${item["id"].string})**\n";
+						format += "${Constants.INDEXES[i]} **[${item["name"].string}](https://www.spigotmc.org/${item["id"].string})**\n"
 
-						context.metadata.put(i.toString(), item["id"].string);
+						context.metadata.put(i.toString(), item["id"].string)
 					}
-					embed.setDescription(format);
-					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["YOUTUBE_RESULTS_FOR", query]}");
-					val mensagem = context.sendMessage(context.getAsMention(true), embed.build());
+					embed.setDescription(format)
+					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
+					val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 					mensagem.onReactionAddByAuthor(context) {
-						val resourceId: String;
+						val resourceId: String
 						when {
 							it.reactionEmote.name == "1⃣" -> resourceId = context.metadata.get("0") as String
 							it.reactionEmote.name == "2⃣" -> resourceId = context.metadata.get("1") as String
@@ -81,20 +81,20 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 						}
 
 						// Criar novo embed!
-						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).queue();
+						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).queue()
 
 						// Remover todos os reactions
-						mensagem.clearReactions().queue();
+						mensagem.clearReactions().queue()
 					}
 
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
-						mensagem.addReaction(Constants.INDEXES[i]).queue();
+						mensagem.addReaction(Constants.INDEXES[i]).queue()
 					}
 				}
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 

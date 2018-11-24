@@ -43,9 +43,9 @@ class ArtCommand : AbstractCommand("art", listOf("arte"), category = CommandCate
 				106f, 399f,
 				13f, 369f)
 
-		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null);
+		base.graphics.drawImage(transformed.bufferedImage, 0, 0, null)
 		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
-		context.sendFile(base, "art.png", context.getAsMention(true));
+		context.sendFile(base, "art.png", context.getAsMention(true))
 	}
 }

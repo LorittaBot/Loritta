@@ -26,12 +26,12 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("São Paulo");
+		return listOf("São Paulo")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var cidade = context.args.joinToString(separator = " ");
+			var cidade = context.args.joinToString(separator = " ")
 
 			var cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + Loritta.config.openWeatherMapKey).body()
 			val reader = StringReader(cidadeResponse)
@@ -39,66 +39,66 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 			val cidadeJsonResponse = jsonParser.parse(jsonReader).asJsonObject // Base
 
 			if (cidadeJsonResponse.get("cod").asString == "200") { // Nós encontramos alguma coisa?
-				var status = cidadeJsonResponse.get("list").asJsonArray.get(0).asJsonObject;
+				var status = cidadeJsonResponse.get("list").asJsonArray.get(0).asJsonObject
 
-				var now = status.getAsJsonObject("main").get("temp").asDouble;
-				var max = status.getAsJsonObject("main").get("temp_max").asDouble;
-				var min = status.getAsJsonObject("main").get("temp_min").asDouble;
-				var pressure = status.getAsJsonObject("main").get("pressure").asDouble;
-				var humidity = status.getAsJsonObject("main").get("humidity").asDouble;
-				var windSpeed = status.getAsJsonObject("wind").get("speed").asDouble;
-				var realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString;
-				var countryShort = if (cidadeJsonResponse["city"].obj.has("country")) cidadeJsonResponse.get("city").asJsonObject.get("country").asString else realCityName;
-				var icon = "";
+				var now = status.getAsJsonObject("main").get("temp").asDouble
+				var max = status.getAsJsonObject("main").get("temp_max").asDouble
+				var min = status.getAsJsonObject("main").get("temp_min").asDouble
+				var pressure = status.getAsJsonObject("main").get("pressure").asDouble
+				var humidity = status.getAsJsonObject("main").get("humidity").asDouble
+				var windSpeed = status.getAsJsonObject("wind").get("speed").asDouble
+				var realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString
+				var countryShort = if (cidadeJsonResponse["city"].obj.has("country")) cidadeJsonResponse.get("city").asJsonObject.get("country").asString else realCityName
+				var icon = ""
 
-				var embed = EmbedBuilder();
+				var embed = EmbedBuilder()
 
 				var description = status.get("weather").asJsonArray.get(0).asJsonObject.get("description").asString
 				var abbr = status.get("weather").asJsonArray.get(0).asJsonObject.get("icon").asString
 
 				if (abbr.startsWith("01")) {
-					icon = "☀ ";
+					icon = "☀ "
 				}
 				if (abbr.startsWith("02")) {
-					icon = "⛅ ";
+					icon = "⛅ "
 				}
 				if (abbr.startsWith("03")) {
-					icon = "☁ ";
+					icon = "☁ "
 				}
 				if (abbr.startsWith("04")) {
-					icon = "☁ ";
+					icon = "☁ "
 				}
 				if (abbr.startsWith("09")) {
-					icon = "\uD83D\uDEBF ";
+					icon = "\uD83D\uDEBF "
 				}
 				if (abbr.startsWith("10")) {
-					icon = "\uD83C\uDF27 ";
+					icon = "\uD83C\uDF27 "
 				}
 				if (abbr.startsWith("11")) {
-					icon = "⛈ ";
+					icon = "⛈ "
 				}
 				if (abbr.startsWith("13")) {
-					icon = "\uD83C\uDF28 ";
+					icon = "\uD83C\uDF28 "
 				}
 				if (abbr.startsWith("50")) {
-					icon = "\uD83C\uDF2B ";
+					icon = "\uD83C\uDF2B "
 				}
 
 				embed.setTitle(locale["TEMPO_PREVISAO_PARA", realCityName, countryShort])
-				embed.setDescription(icon + description);
-				embed.setColor(Color(0, 210, 255));
-				embed.addField("🌡 ${context.locale["TEMPO_TEMPERATURA"]}", "**${context.locale["TEMPO_ATUAL"]}: **$now ºC\n**${context.locale["TEMPO_MAX"]}: **$max ºC\n**${context.locale["TEMPO_MIN"]}: **$min ºC", true);
-				embed.addField("💦 ${context.locale["TEMPO_UMIDADE"]}", "$humidity%", true);
-				embed.addField("🌬 ${context.locale["TEMPO_VELOCIDADE_VENTO"]}", "$windSpeed km/h", true);
-				embed.addField("🏋 ${context.locale["TEMPO_PRESSAO_AR"]}", "$pressure kPA", true);
+				embed.setDescription(icon + description)
+				embed.setColor(Color(0, 210, 255))
+				embed.addField("🌡 ${context.locale["TEMPO_TEMPERATURA"]}", "**${context.locale["TEMPO_ATUAL"]}: **$now ºC\n**${context.locale["TEMPO_MAX"]}: **$max ºC\n**${context.locale["TEMPO_MIN"]}: **$min ºC", true)
+				embed.addField("💦 ${context.locale["TEMPO_UMIDADE"]}", "$humidity%", true)
+				embed.addField("🌬 ${context.locale["TEMPO_VELOCIDADE_VENTO"]}", "$windSpeed km/h", true)
+				embed.addField("🏋 ${context.locale["TEMPO_PRESSAO_AR"]}", "$pressure kPA", true)
 
-				context.sendMessage(embed.build());
+				context.sendMessage(embed.build())
 			} else {
 				// Cidade inexistente!
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TEMPO_COULDNT_FIND", cidade])
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

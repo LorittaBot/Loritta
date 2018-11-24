@@ -244,7 +244,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val locale = loritta.getLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 			if (eventLogConfig.isEnabled) {
-				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId);
+				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -389,7 +389,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						for (message in storedMessages) {
 							val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
 							gmt.timeInMillis = message.createdAt
-							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId())
+							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.timeZone.toZoneId())
 
 							val dayOfMonth = String.format("%02d", creationTime.dayOfMonth)
 							val month = String.format("%02d", creationTime.monthValue)
@@ -465,15 +465,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**";
+				var message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**"
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
 					val auditLog = event.guild.auditLogs.complete().first()
 
 					if (auditLog.type == ActionType.BAN) {
-						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}";
-						message += "\n**${locale["BAN_PunishmentReason"]}:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`";
+						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}"
+						message += "\n**${locale["BAN_PunishmentReason"]}:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`"
 					}
 				}
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
@@ -522,7 +522,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**";
+				var message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**"
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!

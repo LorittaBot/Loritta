@@ -35,11 +35,11 @@ object WebhookUtils {
 				return null
 			}
 		} else {
-			webhooks[0];
+			webhooks[0]
 		}
 
 		val temmie = TemmieWebhook(webhook.url, true)
 
-		return temmie;
+		return temmie
 	}
 }

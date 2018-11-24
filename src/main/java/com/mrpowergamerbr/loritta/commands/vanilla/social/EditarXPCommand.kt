@@ -3,12 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -42,11 +41,11 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				return
 			}
 
-			val userData = context.config.getUserData(user.id)
+			val userData = context.config.getUserData(user.idLong)
 
-			userData.xp = newXp
-
-			loritta save context.config
+			transaction(Databases.loritta) {
+				userData.xp = newXp
+			}
 
 			context.sendMessage(context.getAsMention(true) + context.locale["EDITARXP_SUCCESS", user.asMention])
 		} else {

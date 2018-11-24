@@ -17,11 +17,11 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("ei ademin bane o cara ai pfv");
+		return listOf("ei ademin bane o cara ai pfv")
 	}
 
 	override fun getUsage(): String {
-		return "<texto>";
+		return "<texto>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -30,19 +30,19 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")); // Template
-			val texto = context.args.joinToString(" ");
+			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")) // Template
+			val texto = context.args.joinToString(" ")
 
-			var graphics = template.graphics as java.awt.Graphics2D;
-			graphics.color = Color.BLACK;
+			var graphics = template.graphics as java.awt.Graphics2D
+			graphics.color = Color.BLACK
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F);
-			graphics.font = font;
-			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics);
+					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
+			graphics.font = font
+			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
 
-			context.sendFile(template, "laranjo.png", context.getAsMention(true));
+			context.sendFile(template, "laranjo.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

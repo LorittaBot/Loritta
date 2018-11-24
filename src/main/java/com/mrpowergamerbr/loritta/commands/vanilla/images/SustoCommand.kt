@@ -19,11 +19,11 @@ class SustoCommand : AbstractCommand("fright", listOf("susto"), CommandCategory.
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -35,9 +35,9 @@ class SustoCommand : AbstractCommand("fright", listOf("susto"), CommandCategory.
 
 		val base = BufferedImage(191, 300, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(84, 63, BufferedImage.SCALE_SMOOTH)
-		base.graphics.drawImage(scaled, 61, 138, null);
+		base.graphics.drawImage(scaled, 61, 138, null)
 		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
-		context.sendFile(base, "loritta_susto.png", context.getAsMention(true));
+		context.sendFile(base, "loritta_susto.png", context.getAsMention(true))
 	}
 }

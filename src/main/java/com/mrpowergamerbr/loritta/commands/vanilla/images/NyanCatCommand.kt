@@ -46,7 +46,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		var times = 0
 		var isDog = false
 		if (context.args.size == 1) {
-			var nonRepeatedCharsMessage = context.args[0].replace(Regex("(.)\\1{1,}"), "$1")
+			var nonRepeatedCharsMessage = context.args[0].replace(Regex("(.)\\1+"), "$1")
 			isDog = nonRepeatedCharsMessage.equals("dog", true)
 			times = StringUtils.countMatches(context.args[0], if (isDog) "o" else "a")
 		}
@@ -78,40 +78,40 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		var idx = 0
 
 		while (times > idx) {
-			val catMiddleCopy = BufferedImage(catMiddle.width, catMiddle.height, BufferedImage.TYPE_INT_ARGB);
-			val graphics = catMiddleCopy.graphics;
-			graphics.drawImage(catMiddle, 0, 0, null); // Nós iremos "clonar" o nosso cat middle para colocar alguns pontinhos rosas aleatórios :)
+			val catMiddleCopy = BufferedImage(catMiddle.width, catMiddle.height, BufferedImage.TYPE_INT_ARGB)
+			val graphics = catMiddleCopy.graphics
+			graphics.drawImage(catMiddle, 0, 0, null) // Nós iremos "clonar" o nosso cat middle para colocar alguns pontinhos rosas aleatórios :)
 			graphics.color = if (!isDog) {
 				Color(255, 51, 153) // Usar a cor rosa-meio-roxo que o Nyan Cat tem
 			} else {
 				Color(243, 254, 255)
 			}
 
-			val randomDots = Loritta.RANDOM.nextInt(0, 6);
+			val randomDots = Loritta.RANDOM.nextInt(0, 6)
 
-			val invalidDotsPositionsX = ArrayList<Int>();
-			val invalidDotsPositionsY = ArrayList<Int>();
+			val invalidDotsPositionsX = ArrayList<Int>()
+			val invalidDotsPositionsY = ArrayList<Int>()
 
 			for (i in 0..randomDots) {
-				val randomX = Loritta.RANDOM.nextInt(0, 2);
-				val randomY = Loritta.RANDOM.nextInt(2, 16);
+				val randomX = Loritta.RANDOM.nextInt(0, 2)
+				val randomY = Loritta.RANDOM.nextInt(2, 16)
 				if (invalidDotsPositionsX.contains(randomX) || invalidDotsPositionsX.contains(randomX - 1) || invalidDotsPositionsX.contains(randomX + 1)) {
-					continue;
+					continue
 				}
 
 				if (invalidDotsPositionsY.contains(randomY) || invalidDotsPositionsY.contains(randomY - 1) || invalidDotsPositionsY.contains(randomY + 1)) {
-					continue;
+					continue
 				}
 
 				// Sabia que width/height 0 = 1px? Agora você sabe!
-				graphics.drawRect(randomX, randomY, 0, 0); // Faça um retângulo 1x1 na nossa coordenada aleatória
+				graphics.drawRect(randomX, randomY, 0, 0) // Faça um retângulo 1x1 na nossa coordenada aleatória
 
-				invalidDotsPositionsX.add(randomX);
-				invalidDotsPositionsY.add(randomY);
+				invalidDotsPositionsX.add(randomX)
+				invalidDotsPositionsY.add(randomY)
 			}
 
-			invalidDotsPositionsX.clear();
-			invalidDotsPositionsY.clear();
+			invalidDotsPositionsX.clear()
+			invalidDotsPositionsY.clear()
 
 			bi.graphics.drawImage(catMiddleCopy, x, 0, null) // E depois desenhe nossa imagem modificada na imagem original
 			x += catMiddleCopy.getWidth(null)

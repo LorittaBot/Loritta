@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -20,7 +21,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		return locale["AJUDA_DESCRIPTION"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		context.userHandle.openPrivateChannel().queue({ privateChannel ->
 			if (!context.isPrivateChannel) {
 				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").queue()
@@ -47,16 +48,26 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val discordServerList = EmbedBuilder()
 					.setColor(Color(0, 121, 183))
 					.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
-					.setAuthor("Loritta")
 					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
 					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
+
+			val loriStickers = EmbedBuilder()
+					.setColor(Color(0, 121, 183))
+					.setImage("https://i.imgur.com/uJ0Lnb4.jpg")
+					.setTitle("<:lori_owo:417813932380520448> Meus Stickers!", "https://bit.ly/loristickers")
+					.setDescription("Cansado de stickers genéricos mal feitos? Bem, eu também. Por isto eu resolvi lançar o meu PRÓPRIO pack de stickers para o WhatsApp e para o Telegram! <:eu_te_moido:366047906689581085>\n\nBaixe, use, divirta-se e compartilhe com seus amigos! E, é claro, não se esqueça de dar aquela review 10/10 no app para me ajudar a crescer ;w;")
+					.addField("<a:SWbounce:444281772319047698> Link para baixar os stickers!", "https://bit.ly/loristickers", false)
 
 			privateChannel.sendMessage(builder.build()).queue()
 			privateChannel.sendMessage(pleaseDonate.build()).queue()
 
 			// TODO: Remover verificação após ter a lista traduzida
 			if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
-				privateChannel.sendMessage(discordServerList.build()).queue()
+				if (RANDOM.nextBoolean()) {
+					privateChannel.sendMessage(discordServerList.build()).queue()
+				} else {
+					privateChannel.sendMessage(loriStickers.build()).queue()
+				}
 			}
 
 			sendInfoBox(context, privateChannel)
@@ -82,7 +93,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.ECONOMY to "\uD83D\uDCB5"
 		)
 
-		val embeds = ArrayList<MessageEmbed>();
+		val embeds = ArrayList<MessageEmbed>()
 		var embed = EmbedBuilder()
 		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.locale[cat.fancyTitle], null)
 		val conf = context.config

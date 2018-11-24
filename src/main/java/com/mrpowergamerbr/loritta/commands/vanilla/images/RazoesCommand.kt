@@ -23,7 +23,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun needsToUploadFiles() = true
@@ -31,33 +31,33 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")); // Template
+		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")) // Template
 		val image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
-		val graphics = image.graphics;
-		val skewed = LorittaImage(contextImage);
+		val graphics = image.graphics
+		val skewed = LorittaImage(contextImage)
 
-		skewed.resize(202, 202);
+		skewed.resize(202, 202)
 
 		// Vamos baixar o avatar do usuário
 		val avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
 
 		// Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
-		val dominantImage = ImageUtils.toBufferedImage(avatar!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING));
-		val dominantColor = dominantImage.getRGB(0, 0);
+		val dominantImage = ImageUtils.toBufferedImage(avatar!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING))
+		val dominantColor = dominantImage.getRGB(0, 0)
 
-		val red = (dominantColor shr 16) and 0xFF;
-		val green = (dominantColor shr 8) and 0xFF;
-		val blue = dominantColor and 0xFF;
+		val red = (dominantColor shr 16) and 0xFF
+		val green = (dominantColor shr 8) and 0xFF
+		val blue = dominantColor and 0xFF
 
 		// Aplicar nosso filtro
 		val colorFilter = MagentaDominantSwapFilter(red, green, blue)
 
-		val newTemplate = FilteredImageSource(template.source, colorFilter);
-		template = ImageUtils.toBufferedImage(Toolkit.getDefaultToolkit().createImage(newTemplate));
+		val newTemplate = FilteredImageSource(template.source, colorFilter)
+		template = ImageUtils.toBufferedImage(Toolkit.getDefaultToolkit().createImage(newTemplate))
 
-		skewed.width = 240; // Aumentar o tamanho da imagem para manipular ela
-		skewed.height = 240;
+		skewed.width = 240 // Aumentar o tamanho da imagem para manipular ela
+		skewed.height = 240
 		// skew image
 		skewed.setCorners(
 				// keep the upper left corner as it is
@@ -70,43 +70,43 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 				236F,210F, // LR
 
 				// push the lower left corner more to the right
-				95F, 215F); // LL
+				95F, 215F) // LL
 
-		graphics.drawImage(skewed.bufferedImage, 30, 370, null);
+		graphics.drawImage(skewed.bufferedImage, 30, 370, null)
 
-		graphics.drawImage(template, 0, 0, null); // Desenhe o template por cima!
+		graphics.drawImage(template, 0, 0, null) // Desenhe o template por cima!
 
 		// Agora nós vamos colar o avatar em cima do template
 		// Vamos usar o javaxt porque é bem mais fácil
-		var rotatedAvatar = LorittaImage(avatar!!);
+		var rotatedAvatar = LorittaImage(avatar)
 		rotatedAvatar.resize(109, 109)
 		rotatedAvatar.rotate(5.0)
 		graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)
 
-		context.sendFile(image, "reasons.png", context.getAsMention(true));
+		context.sendFile(image, "reasons.png", context.getAsMention(true))
 	}
 }
 
 class MagentaDominantSwapFilter : RGBImageFilter {
-	var newR: Int = 0;
-	var newG: Int = 0;
-	var newB: Int = 0;
+	var newR: Int = 0
+	var newG: Int = 0
+	var newB: Int = 0
 
 	constructor(newR: Int, newG: Int, newB: Int) {
-		canFilterIndexColorModel = false;
-		this.newR = newR;
-		this.newG = newG;
-		this.newB = newB;
+		canFilterIndexColorModel = false
+		this.newR = newR
+		this.newG = newG
+		this.newB = newB
 	}
 
 	override fun filterRGB(x: Int, y: Int, rgb: Int): Int {
-		var red = (rgb shr 16) and 0xFF;
-		var green = (rgb shr 8) and 0xFF;
-		var blue = rgb and 0xFF;
+		var red = (rgb shr 16) and 0xFF
+		var green = (rgb shr 8) and 0xFF
+		var blue = rgb and 0xFF
 
 		if (red == 255 && green == 0 && blue == 255) {
-			return Color(newR, newB, newG).rgb;
+			return Color(newR, newB, newG).rgb
 		}
-		return rgb;
+		return rgb
 	}
 }

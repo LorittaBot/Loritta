@@ -8,7 +8,7 @@ import javax.imageio.stream.FileImageOutputStream
 
 object DemonGIF {
 	fun getGIF(_toUse1: BufferedImage, localeId: String): File {
-		var fileName = Loritta.TEMP + "demon-" + System.currentTimeMillis() + ".gif";
+		var fileName = Loritta.TEMP + "demon-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
@@ -30,7 +30,7 @@ object DemonGIF {
 		var you = ImageIO.read(File(Loritta.ASSETS, "demon/${lang}_you.png"))
 
 		for (i in 0..108) {
-			val file = File(Loritta.ASSETS + "demon/demon_${i.toString().padStart(6, '0')}.png");
+			val file = File(Loritta.ASSETS + "demon/demon_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
 				var ogImage = ImageIO.read(file)
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)

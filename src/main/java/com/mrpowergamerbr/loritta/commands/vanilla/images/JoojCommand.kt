@@ -35,10 +35,10 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)
 
 		// Girar a imagem horizontalmente
-		val tx = AffineTransform.getScaleInstance(-1.0, 1.0);
-		tx.translate(-leftSide.getWidth(null).toDouble(), 0.0);
-		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-		val leftSideFlipped = op.filter(leftSide, null);
+		val tx = AffineTransform.getScaleInstance(-1.0, 1.0)
+		tx.translate(-leftSide.getWidth(null).toDouble(), 0.0)
+		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR)
+		val leftSideFlipped = op.filter(leftSide, null)
 
 		image.graphics.drawImage(leftSideFlipped, image.width / 2, 0, null)
 

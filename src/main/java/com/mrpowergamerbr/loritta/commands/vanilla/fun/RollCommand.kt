@@ -98,7 +98,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		}
 
 		if (expression.isNotEmpty()) {
-			response += " = ${finalResult.toInt()} `${expression.trim()}";
+			response += " = ${finalResult.toInt()} `${expression.trim()}"
 
 			finalResult = LorittaUtils.evalMath(finalResult.toString() + expression).toFloat()
 

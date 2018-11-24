@@ -3,10 +3,12 @@ package com.mrpowergamerbr.loritta.utils.debug
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import mu.KotlinLogging
 import java.io.File
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
@@ -14,6 +16,7 @@ import kotlin.concurrent.thread
 
 object DebugLog {
 	var cancelAllEvents = false
+	private val logger = KotlinLogging.logger {}
 
 	fun startCommandListenerThread() {
 		thread {
@@ -26,6 +29,44 @@ object DebugLog {
 				}
 			}
 		}
+	}
+
+	fun showExtendedInfo() {
+		val mb = 1024 * 1024
+		val runtime = Runtime.getRuntime()
+
+		logger.info("===[ EXTENDED INFO ]===")
+		logger.info("Used Memory:"
+				+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
+		logger.info("Free Memory:"
+				+ runtime.freeMemory() / mb)
+		logger.info("Total Memory:" + runtime.totalMemory() / mb)
+		logger.info("Max Memory:" + runtime.maxMemory() / mb)
+		logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
+		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
+		logger.info("> Command Stuff")
+		logger.info("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
+		logger.info("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
+		logger.info("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
+		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
+		logger.info("locales.size: ${loritta.locales.size}")
+		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")
+		logger.info("userCooldown.size: ${loritta.userCooldown.size}")
+		logger.info("> Music Stuff")
+		logger.info("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
+		logger.info("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
+		logger.info("youTubeKeys.size: ${loritta.youtubeKeys.size}")
+		logger.info("> Tasks Stuff")
+		logger.info("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
+		logger.info("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
+		logger.info("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
+		logger.info("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
+		logger.info("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
+		logger.info("> Invite Stuff")
+		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
+		logger.info("detectedInviteLinks.size: ${InviteLinkModule.detectedInviteLinks.size}")
+		logger.info("> Misc Stuff")
+		logger.info("fanArts.size: ${loritta.fanArts.size}")
 	}
 
 	fun handleLine(line: String) {
@@ -60,11 +101,11 @@ object DebugLog {
 				println("Shards: ${lorittaShards.getShards().size}")
 				println("Total Servers: ${lorittaShards.getGuildCount()}")
 				println("Used Memory:"
-						+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
+						+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
 				println("Free Memory:"
-						+ runtime.freeMemory() / mb);
-				println("Total Memory:" + runtime.totalMemory() / mb);
-				println("Max Memory:" + runtime.maxMemory() / mb);
+						+ runtime.freeMemory() / mb)
+				println("Total Memory:" + runtime.totalMemory() / mb)
+				println("Max Memory:" + runtime.maxMemory() / mb)
 			}
 			"shards" -> {
 				val shards = lorittaShards.getShards()
@@ -74,28 +115,11 @@ object DebugLog {
 				}
 			}
 			"extendedinfo" -> {
-				println("===[ EXTENDED INFO ]===")
-				println("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
-				println("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
-				println("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
-				println("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
-				println("locales.size: ${loritta.locales.size}")
-				println("ignoreIds.size: ${loritta.ignoreIds.size}")
-				println("userCooldown.size: ${loritta.userCooldown.size}")
-				println("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
-				println("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
-				println("youTubeKeys.size: ${loritta.youtubeKeys.size}")
-				println("fanArts.size: ${loritta.fanArts.size}")
-				println("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
-				println("gameInfoCache.size: ${NewLivestreamThread.gameInfoCache.size}")
-				println("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
-				println("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
-				println("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
+				showExtendedInfo()
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
-				println("oldCorotuineExecutor: ${(loritta.oldCoroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
 			}

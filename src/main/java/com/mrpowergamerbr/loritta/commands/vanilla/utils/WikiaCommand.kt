@@ -130,7 +130,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

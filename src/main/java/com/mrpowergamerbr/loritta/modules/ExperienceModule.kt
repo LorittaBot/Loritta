@@ -4,11 +4,16 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import org.bson.conversions.Bson
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class ExperienceModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -30,7 +35,7 @@ class ExperienceModule : MessageReceivedModule {
 			val diff = System.currentTimeMillis() - lorittaProfile.lastMessageSentAt
 
 			if (diff > calculatedMessageSpeed * 1000) {
-				val nonRepeatedCharsMessage = event.message.contentStripped.replace(Regex("(.)\\1{1,}"), "$1")
+				val nonRepeatedCharsMessage = event.message.contentStripped.replace(Constants.REPEATING_CHARACTERS_REGEX, "$1")
 
 				if (nonRepeatedCharsMessage.length >= 12) {
 					val gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
@@ -51,13 +56,13 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = lorittaProfile.xp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					// profileUpdates.add(Updates.inc("xp", globalGainedXp))
-					// profileUpdates.add(Updates.set("lastMessageSentHash", event.message.contentStripped.hashCode()))
-
-					// val userData = serverConfig.getUserData(event.member!!.user.id)
-					// userData.xp = userData.xp + gainedXp
-					// loritta save serverConfig
-					// loritta.updateLorittaGuildUserData(serverConfig, userData.userId, Updates.inc("guildUserData.$.xp", gainedXp))
+					transaction(Databases.loritta) {
+						GuildProfiles.update({ (GuildProfiles.guildId eq event.guild!!.idLong) and (GuildProfiles.userId eq event.author.idLong) }) {
+							with(SqlExpressionBuilder) {
+								it.update(GuildProfiles.xp, GuildProfiles.xp + gainedXp.toLong())
+							}
+						}
+					}
 				}
 			}
 		}

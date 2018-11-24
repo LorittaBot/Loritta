@@ -17,10 +17,10 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
-			val monster = context.args[0].toLowerCase(); // ID
-			context.args[0] = "";
-			val reason = context.args.joinToString(" ");
-			val profile = LorittaLauncher.loritta.getLorittaProfile(monster);
+			val monster = context.args[0].toLowerCase() // ID
+			context.args[0] = ""
+			val reason = context.args.joinToString(" ")
+			val profile = LorittaLauncher.loritta.getLorittaProfile(monster)
 
 			if (profile == null) {
 				context.reply(
@@ -39,7 +39,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 
 			context.sendMessage(context.getAsMention(true) + "Usuário banido com sucesso!")
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

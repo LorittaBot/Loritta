@@ -20,11 +20,11 @@ class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepes
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -40,6 +40,6 @@ class PepeDreamCommand : AbstractCommand("pepedream", listOf("sonhopepe", "pepes
 		base.graphics.drawImage(scaled, 81, 2, null)
 		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
-		context.sendFile(base, "pepe_dream.png", context.getAsMention(true));
+		context.sendFile(base, "pepe_dream.png", context.getAsMention(true))
 	}
 }

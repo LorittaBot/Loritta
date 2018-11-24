@@ -16,11 +16,11 @@ class StudiopolisTvCommand : AbstractCommand("studiopolistv", category = Command
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -30,11 +30,11 @@ class StudiopolisTvCommand : AbstractCommand("studiopolistv", category = Command
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + "studiopolis.png")); // Template
+		val template = ImageIO.read(File(Loritta.ASSETS + "studiopolis.png")) // Template
 
 		val scaled = contextImage.getScaledInstance(190, 115, BufferedImage.SCALE_SMOOTH)
-		template.graphics.drawImage(scaled, 154, 61, null);
+		template.graphics.drawImage(scaled, 154, 61, null)
 
-		context.sendFile(template, "studiopolis_tv.png", context.getAsMention(true));
+		context.sendFile(template, "studiopolis_tv.png", context.getAsMention(true))
 	}
 }

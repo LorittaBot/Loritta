@@ -28,7 +28,7 @@ class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory
 	}
 
 	override fun getUsage(): String {
-		return "<texto>";
+		return "<texto>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {

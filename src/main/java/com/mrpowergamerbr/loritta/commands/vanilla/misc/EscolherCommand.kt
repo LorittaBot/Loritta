@@ -13,16 +13,16 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots");
+		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var joined = context.args.joinToString(separator = " "); // Vamos juntar tudo em uma string
-			var split = joined.split(","); // E vamos separar!
+			var joined = context.args.joinToString(separator = " ") // Vamos juntar tudo em uma string
+			var split = joined.split(",") // E vamos separar!
 
 			// Hora de escolher algo aleatório!
-			var chosen = split[Loritta.RANDOM.nextInt(split.size)];
+			var chosen = split[Loritta.RANDOM.nextInt(split.size)]
 			context.reply(
 					LoriReply(
 							message = "${context.locale["ESCOLHER_RESULT", chosen]}",

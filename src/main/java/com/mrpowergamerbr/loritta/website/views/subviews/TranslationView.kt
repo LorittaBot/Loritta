@@ -65,7 +65,7 @@ class TranslationView : AbstractView() {
 					return "$localeId foi salvo com sucesso!"
 				}
 			}
-			return "\uD83E\uDD37";
+			return "\uD83E\uDD37"
 		}
 		val localeStrings = mutableMapOf<String, String>()
 		for ((key, value) in locale.strings) {

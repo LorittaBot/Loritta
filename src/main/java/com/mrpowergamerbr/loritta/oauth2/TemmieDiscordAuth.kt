@@ -17,9 +17,9 @@ import java.net.URLEncoder
 class TemmieDiscordAuth {
 	companion object {
 		const val PREFIX = "https://discordapp.com/api"
-		const val USER_IDENTIFICATION_URL = "$PREFIX/users/@me";
-		const val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds";
-		const val TOKEN_BASE_URL = "$PREFIX/oauth2/token";
+		const val USER_IDENTIFICATION_URL = "$PREFIX/users/@me"
+		const val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
+		const val TOKEN_BASE_URL = "$PREFIX/oauth2/token"
 		const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0"
 		val gson = Gson()
 		val jsonParser = JsonParser()

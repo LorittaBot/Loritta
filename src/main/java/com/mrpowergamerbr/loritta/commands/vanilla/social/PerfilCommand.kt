@@ -267,7 +267,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				member
 		)
 
-		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}"); // E agora envie o arquivo
+		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}") // E agora envie o arquivo
 	}
 
 	class DiscordBotVote(

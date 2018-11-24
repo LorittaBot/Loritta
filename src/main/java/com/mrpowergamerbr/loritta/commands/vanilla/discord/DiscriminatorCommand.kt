@@ -22,7 +22,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
     }
 
 	override fun getExamples(): List<String> {
-		return listOf("", "@Loritta");
+		return listOf("", "@Loritta")
 	}
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {

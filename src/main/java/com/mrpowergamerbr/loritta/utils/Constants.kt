@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -39,6 +40,7 @@ object Constants {
 	const val ACTION_MALE_AND_MALE = "male_x_male"
 
 	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+	val YAML = Yaml()
 
 	const val PORTUGUESE_SUPPORT_GUILD_ID = "297732013006389252"
 	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
@@ -52,7 +54,9 @@ object Constants {
 	val LORITTA_AQUA = Color(0, 193, 223)
 	val ROBLOX_RED = Color(226, 35, 26)
 	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
-	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
+	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
+	val HTTP_URL_PATTERN = Pattern.compile("https?:\\/\\/[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
+	val REPEATING_CHARACTERS_REGEX = Regex("(.)\\1+")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }

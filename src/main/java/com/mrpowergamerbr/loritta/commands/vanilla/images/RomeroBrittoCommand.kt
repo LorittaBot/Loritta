@@ -16,15 +16,15 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["ROMEROBRITTO_DESCRIPTION"];
+		return locale["ROMEROBRITTO_DESCRIPTION"]
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -36,10 +36,10 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 
 		val image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 
-		val graphics = image.graphics;
-		val skewed = LorittaImage(contextImage);
+		val graphics = image.graphics
+		val skewed = LorittaImage(contextImage)
 
-		skewed.resize(300, 300);
+		skewed.resize(300, 300)
 
 		// skew image
 		skewed.setCorners(
@@ -50,12 +50,12 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 
 				208F,218F, // LR
 
-				52F, 294F); // LL
+				52F, 294F) // LL
 
-		graphics.drawImage(skewed.bufferedImage, 0, 0, null);
+		graphics.drawImage(skewed.bufferedImage, 0, 0, null)
 
-		graphics.drawImage(TEMPLATE, 0, 0, null); // Desenhe o template por cima!
+		graphics.drawImage(TEMPLATE, 0, 0, null) // Desenhe o template por cima!
 
-		context.sendFile(image, "romero_britto.png", context.getAsMention(true));
+		context.sendFile(image, "romero_britto.png", context.getAsMention(true))
 	}
 }

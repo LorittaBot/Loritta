@@ -13,7 +13,7 @@ import net.dv8tion.jda.core.entities.*
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
-class BomDiaECia() {
+class BomDiaECia {
 	companion object {
 		val randomTexts = listOf(
 				"amo o yudi!",

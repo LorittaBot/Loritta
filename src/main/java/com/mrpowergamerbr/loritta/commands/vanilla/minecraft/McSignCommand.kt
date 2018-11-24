@@ -19,11 +19,11 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("Isto é um texto | em uma placa! | | Legal né?");
+		return listOf("Isto é um texto | em uma placa! | | Legal né?")
 	}
 
 	override fun getUsage(): String {
-		return "texto";
+		return "texto"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -32,7 +32,7 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val lines = context.args.joinToString(" ").split("|");
+			val lines = context.args.joinToString(" ").split("|")
 			lines.forEach { it.trim() }
 			val template = ImageIO.read(File(Loritta.ASSETS + "sign.png")) // Template
 
@@ -41,13 +41,13 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 			val minecraftia = Constants.MINECRAFTIA
 					.deriveFont(17f) // A fonte para colocar na placa
 
-			graphics.font = minecraftia;
+			graphics.font = minecraftia
 			graphics.color = Color(0, 0, 0)
-			var currentY = 2;
+			var currentY = 2
 
 			for (i in 0 until lines.size) {
-				drawCenteredStringColored(graphics, lines[i], Rectangle(0, currentY, 192, 23), minecraftia);
-				currentY += 23;
+				drawCenteredStringColored(graphics, lines[i], Rectangle(0, currentY, 192, 23), minecraftia)
+				currentY += 23
 			}
 
 			context.sendFile(template, "placa.png", context.getAsMention(true))
@@ -84,8 +84,8 @@ class McSignCommand : AbstractCommand("mcsign", category = CommandCategory.MINEC
 		// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
 		val y = rect.y + (rect.height - metrics.height) / 2 + metrics.ascent
 
-		var currentX = x;
-		var nextIsColor = false;
+		var currentX = x
+		var nextIsColor = false
 		// Dar um loop em todos os chars da nossa string
 		for (char in colored) {
 			if (char == '§') { // Controlador de cor!

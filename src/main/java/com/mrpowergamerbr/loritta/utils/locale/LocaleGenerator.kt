@@ -4,7 +4,7 @@ import org.yaml.snakeyaml.Yaml
 import java.io.File
 
 fun main(args: Array<String>) {
-	val yaml = Yaml();
+	val yaml = Yaml()
 	val obj = yaml.load(File("./default.yml").readText()) as Map<String, Object>
 	System.out.println(obj)
 

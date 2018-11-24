@@ -14,11 +14,11 @@ class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES)
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot");
+		return listOf("@Loritta @SparklyBot")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true

@@ -15,8 +15,8 @@ object KnucklesThrowGIF {
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
 
-		val fileName = Loritta.TEMP + "knuxthrow-" + System.currentTimeMillis() + ".gif";
-		val output = FileImageOutputStream(File(fileName));
+		val fileName = Loritta.TEMP + "knuxthrow-" + System.currentTimeMillis() + ".gif"
+		val output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		val loriImage = LorittaImage(toUse)
@@ -50,7 +50,7 @@ object KnucklesThrowGIF {
 		for (i in 0..61) {
 			val file = File(Loritta.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				val ogImage = ImageIO.read(File(Loritta.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png"));
+				val ogImage = ImageIO.read(File(Loritta.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png"))
 				val graphics = ogImage.graphics
 
 				if (i in 2..19) {

@@ -131,7 +131,7 @@ class MixerCallbackController {
 								if (!textChannel.canTalk())
 									continue
 
-								var message = it.videoSentMessage ?: "{link}";
+								var message = it.videoSentMessage ?: "{link}"
 
 								if (message.isEmpty()) {
 									message = "{link}"

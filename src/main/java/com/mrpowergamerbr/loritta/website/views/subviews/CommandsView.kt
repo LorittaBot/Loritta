@@ -17,7 +17,7 @@ class CommandsView : AbstractView() {
 				aux += "${index + 1}. ${command::class.java.simpleName} — ${command.executedCount} vezes<br>"
 			}
 
-			return aux;
+			return aux
 		}
 
 		return evaluate("commands.html", variables)

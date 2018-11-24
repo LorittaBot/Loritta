@@ -26,11 +26,11 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Tatsumaki @Loritta");
+		return listOf("@Tatsumaki @Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>";
+		return "<usuário 1> <usuário 2>"
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -47,7 +47,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			val avatar2 = LorittaUtils.downloadImage(user.effectiveAvatarUrl)
 			val avatar3 = LorittaUtils.downloadImage(user2.effectiveAvatarUrl)
 
-			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")); // Template
+			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")) // Template
 
 			val graphics = template.graphics as Graphics2D // É necessário usar Graphics2D para usar gradients
 
@@ -64,24 +64,24 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			graphics.font = font
 			graphics.setRenderingHint(
 					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 			var fontMetrics = graphics.getFontMetrics(font)
 
 			val friendshipEnded = locale["AMIZADE_AMIZADE_COM", user.name]
 			var gp = GradientPaint(
 					0.0f, 0.0f,
                     Color(202, 72, 15),
-					0.0f, fontMetrics.getHeight().toFloat() + fontMetrics.getHeight().toFloat(),
-					Color(66, 181, 33));
-			graphics.paint = gp;
+					0.0f, fontMetrics.height.toFloat() + fontMetrics.height.toFloat(),
+					Color(66, 181, 33))
+			graphics.paint = gp
 
-			ImageUtils.drawCenteredStringOutlined(graphics, friendshipEnded, Rectangle(0, 10, 400, 30), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, friendshipEnded, Rectangle(0, 10, 400, 30), font)
 			graphics.color = Color.RED
 
-			font = font.deriveFont(30F);
+			font = font.deriveFont(30F)
 			graphics.font = font
 
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_ENDED"], Rectangle(0, 30, 400, 40), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_ENDED"], Rectangle(0, 30, 400, 40), font)
 
 			font = font.deriveFont(24F)
 			graphics.font = font
@@ -90,15 +90,15 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 					0.0f, 140f,
 					Color(206, 7, 129),
 					0.0f, 190f,
-					Color(103, 216, 11));
-			graphics.paint = gp;
+					Color(103, 216, 11))
+			graphics.paint = gp
 			// graphics.fillRect(0, 0, 400, 300); // debugging
-			ImageUtils.drawCenteredStringOutlined(graphics, "${locale["AMIZADE_NOW"]} " + user2.name, Rectangle(0, 100, 400, 110), font);
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_IS_MY"], Rectangle(0, 120, 400, 130), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, "${locale["AMIZADE_NOW"]} " + user2.name, Rectangle(0, 100, 400, 110), font)
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_IS_MY"], Rectangle(0, 120, 400, 130), font)
 			graphics.color = Color.MAGENTA
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_BEST_FRIEND"], Rectangle(0, 140, 400, 150), font);
+			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_BEST_FRIEND"], Rectangle(0, 140, 400, 150), font)
 
-			context.sendFile(template, "rip_amizade.png", context.getAsMention(true));
+			context.sendFile(template, "rip_amizade.png", context.getAsMention(true))
 		} else {
 			context.explain()
 		}

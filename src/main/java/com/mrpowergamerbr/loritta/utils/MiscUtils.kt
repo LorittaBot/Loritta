@@ -37,7 +37,7 @@ object MiscUtils {
 			var newUrl = url.removePrefix(".").removeSuffix(".")
 			val bitlyUrl = temmie.expand(url)
 			if (!bitlyUrl!!.contains("NOT_FOUND") && !bitlyUrl.contains("RATE_LIMIT_EXCEEDED")) {
-				newUrl = bitlyUrl!!
+				newUrl = bitlyUrl
 			}
 			val httpRequest = HttpRequest.get(newUrl)
 					.followRedirects(true)

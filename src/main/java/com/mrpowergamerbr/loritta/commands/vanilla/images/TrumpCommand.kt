@@ -14,11 +14,11 @@ class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES)
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("@Loritta");
+		return listOf("@Loritta")
 	}
 
 	override fun getUsage(): String {
-		return "<imagem>";
+		return "<imagem>"
 	}
 
 	override fun needsToUploadFiles() = true
@@ -27,9 +27,9 @@ class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES)
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val file = TrumpGIF.getGIF(contextImage2, contextImage);
+		val file = TrumpGIF.getGIF(contextImage2, contextImage)
 		MiscUtils.optimizeGIF(file)
-		context.sendFile(file, "trump.gif", context.getAsMention(true));
+		context.sendFile(file, "trump.gif", context.getAsMention(true))
 		file.delete()
 	}
 }

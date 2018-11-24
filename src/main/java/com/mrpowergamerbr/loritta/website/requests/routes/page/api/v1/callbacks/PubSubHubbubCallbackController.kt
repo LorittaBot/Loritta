@@ -91,7 +91,7 @@ class PubSubHubbubCallbackController {
 		val type = typeParam.value()
 
 		if (type == "ytvideo") {
-			val payload = Jsoup.parse(response, "", Parser.xmlParser());
+			val payload = Jsoup.parse(response, "", Parser.xmlParser())
 
 			val entries = payload.getElementsByTag("entry")
 
@@ -139,7 +139,7 @@ class PubSubHubbubCallbackController {
 						if (!textChannel.canTalk())
 							continue
 
-						var message = youTubeInfo.videoSentMessage ?: "{link}";
+						var message = youTubeInfo.videoSentMessage ?: "{link}"
 
 						if (message.isEmpty()) {
 							message = "{link}"
@@ -227,7 +227,7 @@ class PubSubHubbubCallbackController {
 
 								val storedUserLogin = channel.channelUrl!!.split("/").last()
 								if (storedUserLogin == userLogin) {
-									var message = channel.videoSentMessage ?: "{link}";
+									var message = channel.videoSentMessage ?: "{link}"
 
 									if (message.isEmpty()) {
 										message = "{link}"

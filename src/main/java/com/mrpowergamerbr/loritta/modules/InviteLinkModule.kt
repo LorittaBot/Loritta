@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -17,6 +17,7 @@ import java.util.regex.Matcher
 class InviteLinkModule : MessageReceivedModule {
 	companion object {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
+		val detectedInviteLinks = Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<String, String>().asMap()
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -108,30 +109,36 @@ class InviteLinkModule : MessageReceivedModule {
 								if (!isActive)
 									return@launch
 
-								val inviteId = MiscUtils.getInviteId("http://$url")
-										?: run { if (isActive) MiscUtils.getInviteId("https://$url") else return@launch } // Vamos evitar verificações inúteis, certo?
+								val inviteId = if (!detectedInviteLinks.contains(url)) { // Se não está no cache, vamos verificar!
+									val inviteId = MiscUtils.getInviteId("http://$url")
+											?: run { if (isActive) MiscUtils.getInviteId("https://$url") else return@launch } // Vamos evitar verificações inúteis, certo?
+											?: return@launch // Não é um convite! vlw flw fui
 
-								if (inviteId != null) { // INVITES DO DISCORD
 									if (!isActive)
 										return@launch
 
-									if (inviteId == "attachments" || inviteId == "forums")
-										return@launch
+									detectedInviteLinks[url] = inviteId
+									inviteId
+								} else {
+									detectedInviteLinks[url]!!
+								}
 
-									if (whitelisted.contains(inviteId))
-										return@launch
+								if (inviteId == "attachments" || inviteId == "forums")
+									return@launch
 
-									jobs.forEach { it.cancel() }
+								if (whitelisted.contains(inviteId))
+									return@launch
 
-									if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
-										message.delete().queue()
+								jobs.forEach { it.cancel() }
 
-									if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
-										val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
-												?: return@launch
+								if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
+									message.delete().queue()
 
-										message.textChannel.sendMessage(toBeSent).queue()
-									}
+								if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+									val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
+											?: return@launch
+
+									message.textChannel.sendMessage(toBeSent).queue()
 								}
 							}
 					)

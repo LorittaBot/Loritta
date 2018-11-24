@@ -32,27 +32,27 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var query = context.args.joinToString(" ");
+			var query = context.args.joinToString(" ")
 			val items = YouTubeUtils.searchOnYouTube(query, "youtube#video", "youtube#channel")
 
 			if (items.isNotEmpty()) {
-				var format = "";
+				var format = ""
 				var youtubeKey = loritta.youtubeKey
 				for (i in 0 until Math.min(10, items.size)) {
-					var item = items[i];
+					var item = items[i]
 					if (item.id.kind == "youtube#video") {
-						var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body();
+						var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body()
 						var parser = jsonParser
 						var json = parser.parse(response).asJsonObject
 						var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
 						var duration = java.time.Duration.parse(strDuration)
-						var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS); // Nós não podemos pegar o tempo diretamente porque é "unsupported"
-						var final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60));
-						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
+						var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS) // Nós não podemos pegar o tempo diretamente porque é "unsupported"
+						var final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60))
+						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n"
 					} else {
-						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n";
+						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n"
 					}
-					context.metadata.put(i.toString(), item);
+					context.metadata.put(i.toString(), item)
 				}
 
 				val embed = EmbedBuilder()
@@ -63,7 +63,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 				mensagem.onReactionAddByAuthor(context) {
 					if (context.metadata.contains("currentItem")) {
-						val item = context.metadata["currentItem"] as YouTubeItem;
+						val item = context.metadata["currentItem"] as YouTubeItem
 						if (it.reactionEmote.name == "▶") {
 							loritta.audioManager.loadAndPlay(context, "https://youtu.be/${item.id.videoId}")
 							context.metadata.remove("currentItem")
@@ -82,15 +82,15 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					// Remover todos os reactions
 					mensagem.clearReactions().queue {
 						if (item.id.kind == "youtube#video") { // Se é um vídeo...
-							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body();
-							val parser = JsonParser();
-							val json = parser.parse(response).asJsonObject;
+							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
+							val parser = JsonParser()
+							val json = parser.parse(response).asJsonObject
 							val jsonItem = json["items"][0]
 							val snippet = jsonItem["snippet"].obj
 							val statistics = jsonItem["statistics"].obj
 
-							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body();
-							var channelJson = parser.parse(channelResponse).obj;
+							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
+							var channelJson = parser.parse(channelResponse).obj
 
 							val viewCount = statistics["viewCount"].string
 							val likeCount = statistics["likeCount"].nullString ?: "???"
@@ -116,16 +116,16 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							embed.setThumbnail(thumbnail)
 							embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
 
-							embed.setColor(Color(217, 66, 52));
+							embed.setColor(Color(217, 66, 52))
 
 							// Criar novo embed!
-							mensagem.editMessage(embed.build()).queue();
+							mensagem.editMessage(embed.build()).queue()
 
-							context.metadata.put("currentItem", item);
+							context.metadata.put("currentItem", item)
 
 							if (context.config.musicConfig.isEnabled) {
 								// Se o sistema de músicas está ativado...
-								mensagem.addReaction("▶").queue(); // Vamos colocar um ícone para tocar!
+								mensagem.addReaction("▶").queue() // Vamos colocar um ícone para tocar!
 							}
 						} else {
 							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()

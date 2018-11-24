@@ -10,57 +10,57 @@ import javax.imageio.stream.FileImageOutputStream
 
 object TrumpGIF {
 	fun getGIF(toUse: BufferedImage, toUse2: BufferedImage): File {
-		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
-		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH));
+		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
+		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
 
-		var fileName = Loritta.TEMP + "trump-" + System.currentTimeMillis() + ".gif";
-		var output = FileImageOutputStream(File(fileName));
+		var fileName = Loritta.TEMP + "trump-" + System.currentTimeMillis() + ".gif"
+		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		for (i in 0..70) {
-			var ogImage = ImageIO.read(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"));
-			var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
-			image.graphics.drawImage(ogImage, 0, 0, null);
+			var ogImage = ImageIO.read(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"))
+			var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
+			image.graphics.drawImage(ogImage, 0, 0, null)
 			if (frames.size > i) {
-				var skew = frames[i];
+				var skew = frames[i]
 
-				var teste = BufferedImage(ogTeste.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
+				var teste = BufferedImage(ogTeste.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				teste.graphics.drawImage(ogTeste, 0, 0, null)
 
-				var ogGraph = image.graphics;
+				var ogGraph = image.graphics
 
-				var javaxt = LorittaImage(teste);
+				var javaxt = LorittaImage(teste)
 
 				javaxt.setCorners(skew.x0, skew.y0, // UL
 						skew.x1, skew.y1, // UR
 						skew.x2, skew.y2, // LR
-						skew.x3, skew.y3); // LL
+						skew.x3, skew.y3) // LL
 
-				ogGraph.drawImage(javaxt.bufferedImage, 0, 0, null);
+				ogGraph.drawImage(javaxt.bufferedImage, 0, 0, null)
 			}
 
 			if (frames2.size > i) {
-				var skew = frames2[i];
+				var skew = frames2[i]
 
-				var teste = BufferedImage(ogTeste2.width, ogImage.height, BufferedImage.TYPE_INT_ARGB);
+				var teste = BufferedImage(ogTeste2.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				teste.graphics.drawImage(ogTeste2, 0, 0, null)
 
-				var ogGraph = image.graphics;
+				var ogGraph = image.graphics
 
-				var javaxt = LorittaImage(teste);
+				var javaxt = LorittaImage(teste)
 
 				javaxt.setCorners(skew.x0, skew.y0, // UL
 						skew.x1, skew.y1, // UR
 						skew.x2, skew.y2, // LR
-						skew.x3, skew.y3); // LL
+						skew.x3, skew.y3) // LL
 
-				ogGraph.drawImage(javaxt.bufferedImage, 0, 0, null);
+				ogGraph.drawImage(javaxt.bufferedImage, 0, 0, null)
 			}
-			writer.writeToSequence(image);
+			writer.writeToSequence(image)
 		}
-		writer.close();
-		output.close();
-		return File(fileName);
+		writer.close()
+		output.close()
+		return File(fileName)
 	}
 
 	val frames = listOf(
@@ -349,7 +349,7 @@ object TrumpGIF {
 					0F, 0F, // LR
 					0F, 0F) // LL
 
-	);
+	)
 
 	val frames2 = listOf(
 			SkewCorners(95F, 76F, // UL

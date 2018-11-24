@@ -128,7 +128,7 @@ class UserReputationController {
 					.entries
 					.sortedByDescending { it.value }
 
-			var idx = 0;
+			var idx = 0
 			div(classes = "rank-title") {
 				+ "Placar de Reputações"
 			}
@@ -144,7 +144,7 @@ class UserReputationController {
 						}
 					}
 					for ((userId, count) in map) {
-						if (idx == 5) break;
+						if (idx == 5) break
 						val rankUser = lorittaShards.getUserById(userId.toString())
 
 						if (rankUser != null) {
@@ -171,7 +171,7 @@ class UserReputationController {
 									}
 								}
 							}
-							idx++;
+							idx++
 						}
 					}
 				}

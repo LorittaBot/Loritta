@@ -23,7 +23,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 
 	@NashornCommand.NashornDocs()
 	fun getIcon(): NashornImage? {
-		val image = LorittaUtils.downloadImage(guild.iconUrl) ?: return null;
+		val image = LorittaUtils.downloadImage(guild.iconUrl) ?: return null
 		return NashornImage(image)
 	}
 
@@ -32,7 +32,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 		val members = mutableListOf<NashornLorittaUser>()
 
 		guild.members.forEach {
-			members.add(NashornLorittaUser(it, serverConfig.getUserData(it.user.id), serverConfig))
+			members.add(NashornLorittaUser(it, serverConfig))
 		}
 
 		return members
@@ -56,7 +56,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: ServerCon
 
 	@NashornCommand.NashornDocs()
 	fun getMemberById(id: String): NashornLorittaUser {
-		return NashornLorittaUser(guild.getMemberById(id), serverConfig.getUserData(id), serverConfig)
+		return NashornLorittaUser(guild.getMemberById(id), serverConfig)
 	}
 
 	@NashornCommand.NashornDocs()

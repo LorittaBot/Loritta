@@ -15,17 +15,18 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
-import com.mongodb.client.result.UpdateResult
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.listeners.*
+import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
-import com.mrpowergamerbr.loritta.threads.*
+import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
+import com.mrpowergamerbr.loritta.threads.RaffleThread
+import com.mrpowergamerbr.loritta.threads.RemindersThread
+import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
-import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -44,18 +45,18 @@ import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.utils.cache.CacheFlag
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.bson.conversions.Bson
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
 import java.io.File
+import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -104,8 +105,6 @@ class Loritta(config: LorittaConfig) {
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
-	val oldCoroutineExecutor = createThreadPool("Old Coroutine Executor Thread %d")
-	val oldCoroutineDispatcher = oldCoroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
@@ -117,7 +116,7 @@ class Loritta(config: LorittaConfig) {
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<String, MessageInteractionFunctions>().asMap()
 
-	var locales = mutableMapOf<String, BaseLocale>()
+	var locales = mapOf<String, BaseLocale>()
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
@@ -189,6 +188,7 @@ class Loritta(config: LorittaConfig) {
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
@@ -266,8 +266,6 @@ class Loritta(config: LorittaConfig) {
 
 		RemindersThread().start()
 
-		MutedUsersThread().start() // Iniciar thread para desmutar usuários e desbanir usuários temporariamente banidos
-
 		bomDiaECia = BomDiaECia()
 
 		val raffleFile = File(FOLDER, "raffle.json")
@@ -327,6 +325,10 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
+		try { ServerSupportModule.loadResponses() } catch (e: FileNotFoundException) {
+			logger.error(e) { "Erro ao carregar as respostas automáticas!" }
+		}
+
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
@@ -342,7 +344,11 @@ class Loritta(config: LorittaConfig) {
 					Reputations,
 					UsernameChanges,
 					Dailies,
-					Marriages
+					Marriages,
+					RegisterConfigs,
+					Mutes,
+					Warns,
+					GuildProfiles
 			)
 		}
 	}
@@ -358,7 +364,7 @@ class Loritta(config: LorittaConfig) {
 		}
 
 		val options = mongoBuilder
-				.connectionsPerHost(750)
+				.connectionsPerHost(250)
 				.build()
 
 		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
@@ -382,43 +388,6 @@ class Loritta(config: LorittaConfig) {
 	fun getServerConfigForGuild(guildId: String): ServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
 		return serverConfig ?: ServerConfig(guildId)
-	}
-
-	fun updateServerConfig(guild: Guild, updates: List<Bson>): UpdateResult {
-		return serversColl.updateOne(
-				Filters.eq("_id", guild.id),
-				Updates.combine(updates)
-		)
-	}
-
-	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, update: Bson): UpdateResult {
-		return updateLorittaGuildUserData(serverConfig, userId, listOf(update))
-	}
-
-	fun updateLorittaGuildUserData(serverConfig: ServerConfig, userId: String, updates: List<Bson>): UpdateResult {
-		val hasUserData = serverConfig.hasUserData(userId)
-		if (!hasUserData) {
-			serversColl.updateOne(
-					Filters.and(
-							Filters.eq("_id", serverConfig.guildId),
-							Filters.ne("guildUserData.userId", userId)
-					),
-					Updates.push(
-							"guildUserData",
-							LorittaGuildUserData(userId)
-					)
-			)
-		}
-
-		return serversColl.updateOne(
-				Filters.and(
-						Filters.eq("_id", serverConfig.guildId),
-						Filters.eq("guildUserData.userId", userId)
-				),
-				Updates.combine(
-						updates
-				)
-		)
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
@@ -731,7 +700,6 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		this.locales.clear()
 		this.locales = locales
 	}
 

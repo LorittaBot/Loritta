@@ -48,7 +48,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 									TimeUnit.MILLISECONDS.toMinutes(manager.player.playingTrack.duration),
 									TimeUnit.MILLISECONDS.toSeconds(manager.player.playingTrack.duration) -
 											TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(manager.player.playingTrack.duration))
-							);
+							)
 
 							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("SEEK_TOO_BIG", fancy))
 						} else {
@@ -56,7 +56,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 									TimeUnit.MILLISECONDS.toMinutes(time),
 									TimeUnit.MILLISECONDS.toSeconds(time) -
 											TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))
-							);
+							)
 
 							manager.player.playingTrack.position = time
 

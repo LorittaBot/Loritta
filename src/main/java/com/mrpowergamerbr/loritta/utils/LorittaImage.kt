@@ -89,7 +89,7 @@ class LorittaImage {
 	 * maintained.
 	 */
 	var width: Int
-		get() = bufferedImage!!.width
+		get() = bufferedImage.width
 		set(Width) {
 			val ratio = Width.toDouble() / this.width.toDouble()
 
@@ -115,7 +115,7 @@ class LorittaImage {
 	 * maintained.
 	 */
 	var height: Int
-		get() = bufferedImage!!.height
+		get() = bufferedImage.height
 		set(Height) {
 			val ratio = Height.toDouble() / this.height.toDouble()
 
@@ -137,7 +137,7 @@ class LorittaImage {
 	val graphics: Graphics2D
 		get() {
 			if (g2d == null) {
-				g2d = this.bufferedImage!!.createGraphics()
+				g2d = this.bufferedImage.createGraphics()
 				g2d!!.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 						RenderingHints.VALUE_ANTIALIAS_ON)
 			}
@@ -227,7 +227,7 @@ class LorittaImage {
 	//**************************************************************************
 
 	private val imageType: Int
-		get() = getImageType(this.bufferedImage!!)
+		get() = getImageType(this.bufferedImage)
 
 
 	//**************************************************************************
@@ -391,7 +391,7 @@ class LorittaImage {
 	//**************************************************************************
 	/**  Creates a new instance of this class using an existing image  */
 
-	constructor(PathToImageFile: String) : this(java.io.File(PathToImageFile)) {}
+	constructor(PathToImageFile: String) : this(java.io.File(PathToImageFile))
 
 	constructor(file: java.io.File) {
 		try {
@@ -405,7 +405,7 @@ class LorittaImage {
 		createBufferedImage(InputStream)
 	}
 
-	constructor(byteArray: ByteArray) : this(ByteArrayInputStream(byteArray)) {}
+	constructor(byteArray: ByteArray) : this(ByteArrayInputStream(byteArray))
 
 	constructor(width: Int, height: Int) {
 		this.bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
@@ -451,7 +451,7 @@ class LorittaImage {
 	 * }
 	</pre> *
 	 */
-	constructor(text: String, fontName: String, fontSize: Int, r: Int, g: Int, b: Int) : this(text, Font(fontName, Font.TRUETYPE_FONT, fontSize), r, g, b) {}
+	constructor(text: String, fontName: String, fontSize: Int, r: Int, g: Int, b: Int) : this(text, Font(fontName, Font.TRUETYPE_FONT, fontSize), r, g, b)
 
 
 	constructor(text: String, font: Font, r: Int, g: Int, b: Int) {
@@ -471,7 +471,7 @@ class LorittaImage {
 
 		//Create Image
 		bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-		g2d = bufferedImage!!.createGraphics()
+		g2d = bufferedImage.createGraphics()
 		g2d!!.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON)
 
@@ -498,7 +498,7 @@ class LorittaImage {
         g2d.setColor(org);
         */
 
-		var imageType = bufferedImage!!.type
+		var imageType = bufferedImage.type
 		if (imageType == 0) {
 			imageType = BufferedImage.TYPE_INT_ARGB
 		}
@@ -599,7 +599,7 @@ class LorittaImage {
 	fun getColor(x: Int, y: Int): Color {
 		//return new Color(bufferedImage.getRGB(x, y)); //<--This will return an incorrect alpha value
 
-		val pixel = bufferedImage!!.getRGB(x, y)
+		val pixel = bufferedImage.getRGB(x, y)
 		val alpha = pixel shr 24 and 0xff
 		val red = pixel shr 16 and 0xff
 		val green = pixel shr 8 and 0xff
@@ -620,8 +620,8 @@ class LorittaImage {
 
 		var x2 = 0
 		var y2 = 0
-		var w = bufferedImage!!.width
-		var h = bufferedImage!!.height
+		var w = bufferedImage.width
+		var h = bufferedImage.height
 
 		if (expand) {
 
@@ -661,21 +661,21 @@ class LorittaImage {
 
 
 		//Create new image "collage"
-		if (w > bufferedImage!!.width || h > bufferedImage!!.height) {
-			var imageType = bufferedImage!!.type
+		if (w > bufferedImage.width || h > bufferedImage.height) {
+			var imageType = bufferedImage.type
 			if (imageType == 0 || imageType == 12) {
 				imageType = BufferedImage.TYPE_INT_ARGB
 			}
 			val bi = BufferedImage(w, h, imageType)
 			val g2d = bi.createGraphics()
-			var img = bufferedImage!!
+			var img = bufferedImage
 			g2d.drawImage(img, x2, y2, null)
 			img = `in`!!
 			g2d.drawImage(img, x, y, null)
 			g2d.dispose()
 			bufferedImage = bi
 		} else {
-			val g2d = bufferedImage!!.createGraphics()
+			val g2d = bufferedImage.createGraphics()
 			g2d.drawImage(`in`, x, y, null)
 			g2d.dispose()
 		}
@@ -916,7 +916,7 @@ class LorittaImage {
 
 
 		//Resize the image (create new buffered image)
-		var outputImage: java.awt.Image? = bufferedImage!!.getScaledInstance(outputWidth, outputHeight, BufferedImage.SCALE_AREA_AVERAGING)
+		var outputImage: java.awt.Image? = bufferedImage.getScaledInstance(outputWidth, outputHeight, BufferedImage.SCALE_AREA_AVERAGING)
 		var bi: BufferedImage? = BufferedImage(outputWidth, outputHeight, imageType)
 		var g2d: Graphics2D? = bi!!.createGraphics()
 		g2d!!.drawImage(outputImage, 0, 0, null)
@@ -941,7 +941,7 @@ class LorittaImage {
 	               x2: Float, y2: Float, //LR
 	               x3: Float, y3: Float) { //LL
 
-		val skew = Skew(this.bufferedImage!!)
+		val skew = Skew(this.bufferedImage)
 		this.bufferedImage = skew.setCorners(x0, y0, x1, y1, x2, y2, x3, y3)
 
 		if (corners == null)
@@ -987,7 +987,7 @@ class LorittaImage {
 		val arr = corners!!.toTypedArray()
 		val ret = FloatArray(arr.size)
 		for (i in arr.indices) {
-			val f = arr[i] as Float
+			val f = arr[i]
 			ret[i] = f
 		}
 		return ret
@@ -1015,7 +1015,7 @@ class LorittaImage {
 
 		//replace 2 pixel border created via convolution
 		val overlay = out.getSubimage(2, 2, width - 4, height - 4)
-		val g2d = bufferedImage!!.createGraphics()
+		val g2d = bufferedImage.createGraphics()
 		g2d.drawImage(overlay, 2, 2, null)
 		g2d.dispose()
 
@@ -1028,7 +1028,7 @@ class LorittaImage {
 	/**  Used to completely desaturate an image (creates a gray-scale image).  */
 
 	fun desaturate() {
-		bufferedImage = desaturate(bufferedImage!!)
+		bufferedImage = desaturate(bufferedImage)
 	}
 
 
@@ -1042,8 +1042,8 @@ class LorittaImage {
 
 	fun desaturate(percent: Double) {
 		val alpha = percent.toFloat()
-		val overlay = desaturate(bufferedImage!!)
-		val g2d = bufferedImage!!.createGraphics()
+		val overlay = desaturate(bufferedImage)
+		val g2d = bufferedImage.createGraphics()
 		g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)
 		g2d.drawImage(overlay, 0, 0, null)
 		g2d.dispose()
@@ -1071,7 +1071,7 @@ class LorittaImage {
 		var percent = percent
 		if (percent > 1) percent = percent / 100
 		val alpha = percent.toFloat()
-		var imageType = bufferedImage!!.type
+		var imageType = bufferedImage.type
 		if (imageType == 0) {
 			imageType = BufferedImage.TYPE_INT_ARGB
 		}
@@ -1093,9 +1093,9 @@ class LorittaImage {
 	fun flip() {
 		val out = BufferedImage(width, height, imageType)
 		val tx = AffineTransform.getScaleInstance(-1.0, 1.0)
-		tx.translate((-bufferedImage!!.width).toDouble(), 0.0)
+		tx.translate((-bufferedImage.width).toDouble(), 0.0)
 		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_BICUBIC)
-		bufferedImage = op.filter(bufferedImage!!, out)
+		bufferedImage = op.filter(bufferedImage, out)
 	}
 
 
@@ -1115,7 +1115,7 @@ class LorittaImage {
 	/** Returns a copy of the current image.  */
 
 	fun copy(): LorittaImage {
-		return LorittaImage(bufferedImage!!)
+		return LorittaImage(bufferedImage)
 	}
 
 
@@ -1139,19 +1139,19 @@ class LorittaImage {
 	 */
 	private fun getSubimage(x: Int, y: Int, width: Int, height: Int): BufferedImage {
 
-		val rect1 = Rectangle(0, 0, bufferedImage!!.width, bufferedImage!!.height)
+		val rect1 = Rectangle(0, 0, bufferedImage.width, bufferedImage.height)
 		val rect2 = Rectangle(x, y, width, height)
 
 
 		//If the requested rectangle falls inside the image bounds, simply return
 		//the subimage
 		if (rect1.contains(rect2)) {
-			return bufferedImage!!.getSubimage(x, y, width, height)
+			return bufferedImage.getSubimage(x, y, width, height)
 		} else { //requested rectangle falls outside the image bounds!
 
 
 			//Create buffered image
-			var imageType = bufferedImage!!.type
+			var imageType = bufferedImage.type
 			if (imageType == 0 || imageType == 12) {
 				imageType = BufferedImage.TYPE_INT_ARGB
 			}
@@ -1183,13 +1183,13 @@ class LorittaImage {
 						Y = 0
 					}
 
-					if (h + y1 > bufferedImage!!.height) h = bufferedImage!!.height - y1
+					if (h + y1 > bufferedImage.height) h = bufferedImage.height - y1
 
 					w = x + width
-					if (w > bufferedImage!!.width) w = bufferedImage!!.width
+					if (w > bufferedImage.width) w = bufferedImage.width
 
 
-					subImage = bufferedImage!!.getSubimage(x1, y1, w, h)
+					subImage = bufferedImage.getSubimage(x1, y1, w, h)
 
 					X = width - w
 				} else {
@@ -1207,14 +1207,14 @@ class LorittaImage {
 						Y = 0
 					}
 
-					if (h + y1 > bufferedImage!!.height) h = bufferedImage!!.height - y1
+					if (h + y1 > bufferedImage.height) h = bufferedImage.height - y1
 
 					w = width
-					if (w + x > bufferedImage!!.width) w = bufferedImage!!.width - x
+					if (w + x > bufferedImage.width) w = bufferedImage.width - x
 
 					X = 0
 
-					subImage = bufferedImage!!.getSubimage(x, y1, w, h)
+					subImage = bufferedImage.getSubimage(x, y1, w, h)
 				}
 
 
@@ -1246,36 +1246,36 @@ class LorittaImage {
 		var left = 0
 		var right = 0
 
-		for (y in 0 until bufferedImage!!.height) {
-			for (x in 0 until bufferedImage!!.width) {
-				if (hasColor(bufferedImage!!.getRGB(x, y), r, g, b)) {
+		for (y in 0 until bufferedImage.height) {
+			for (x in 0 until bufferedImage.width) {
+				if (hasColor(bufferedImage.getRGB(x, y), r, g, b)) {
 					bottom = y
 					break
 				}
 			}
 		}
 
-		for (y in bufferedImage!!.height - 1 downTo -1 + 1) {
-			for (x in 0 until bufferedImage!!.width) {
-				if (hasColor(bufferedImage!!.getRGB(x, y), r, g, b)) {
+		for (y in bufferedImage.height - 1 downTo -1 + 1) {
+			for (x in 0 until bufferedImage.width) {
+				if (hasColor(bufferedImage.getRGB(x, y), r, g, b)) {
 					top = y
 					break
 				}
 			}
 		}
 
-		for (x in 0 until bufferedImage!!.width) {
-			for (y in 0 until bufferedImage!!.height) {
-				if (hasColor(bufferedImage!!.getRGB(x, y), r, g, b)) {
+		for (x in 0 until bufferedImage.width) {
+			for (y in 0 until bufferedImage.height) {
+				if (hasColor(bufferedImage.getRGB(x, y), r, g, b)) {
 					right = x
 					break
 				}
 			}
 		}
 
-		for (x in bufferedImage!!.width - 1 downTo -1 + 1) {
-			for (y in 0 until bufferedImage!!.height) {
-				if (hasColor(bufferedImage!!.getRGB(x, y), r, g, b)) {
+		for (x in bufferedImage.width - 1 downTo -1 + 1) {
+			for (y in 0 until bufferedImage.height) {
+				if (hasColor(bufferedImage.getRGB(x, y), r, g, b)) {
 					left = x
 					break
 				}
@@ -1285,7 +1285,7 @@ class LorittaImage {
 		if (left == right || top == bottom) {
 			bufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 		} else {
-			bufferedImage = bufferedImage!!.getSubimage(left, top, right - left, bottom - top)
+			bufferedImage = bufferedImage.getSubimage(left, top, right - left, bottom - top)
 		}
 	}
 
@@ -1296,7 +1296,7 @@ class LorittaImage {
 	/**  Used to retrieve a scaled copy of the current image.  */
 
 	fun getBufferedImage(width: Int, height: Int, maintainRatio: Boolean): BufferedImage? {
-		val image = LorittaImage(bufferedImage!!)
+		val image = LorittaImage(bufferedImage)
 		image.resize(width, height, maintainRatio)
 		return image.bufferedImage
 	}
@@ -1321,7 +1321,7 @@ class LorittaImage {
 				rgb = getJPEGByteArray(outputQuality)
 			} else {
 				val bas = ByteArrayOutputStream()
-				ImageIO.write(bufferedImage!!, format.toLowerCase(), bas)
+				ImageIO.write(bufferedImage, format.toLowerCase(), bas)
 				rgb = bas.toByteArray()
 			}
 		} catch (e: Exception) {
@@ -1418,12 +1418,10 @@ class LorittaImage {
 	private fun isJPEG(FileExtension: String): Boolean {
 		var FileExtension = FileExtension
 		FileExtension = FileExtension.trim { it <= ' ' }.toLowerCase()
-		return if (FileExtension == "jpg" ||
+		return FileExtension == "jpg" ||
 				FileExtension == "jpeg" ||
 				FileExtension == "jpe" ||
-				FileExtension == "jff") {
-			true
-		} else false
+				FileExtension == "jff"
 	}
 
 
@@ -1435,12 +1433,10 @@ class LorittaImage {
 	private fun isJPEG2000(FileExtension: String): Boolean {
 		var FileExtension = FileExtension
 		FileExtension = FileExtension.trim { it <= ' ' }.toLowerCase()
-		return if (FileExtension == "jp2" ||
+		return FileExtension == "jp2" ||
 				FileExtension == "jpc" ||
 				FileExtension == "j2k" ||
-				FileExtension == "jpx") {
-			true
-		} else false
+				FileExtension == "jpx"
 	}
 
 
@@ -1455,7 +1451,7 @@ class LorittaImage {
 		if (outputQuality >= 0f && outputQuality <= 1.2f) {
 			val bas = ByteArrayOutputStream()
 			var bi = bufferedImage
-			val t = bufferedImage!!.transparency
+			val t = bufferedImage.transparency
 
 			//if (t==BufferedImage.BITMASK) System.out.println("BITMASK");
 			//if (t==BufferedImage.OPAQUE) System.out.println("OPAQUE");
@@ -1517,7 +1513,7 @@ class LorittaImage {
 				params.compressionMode = ImageWriteParam.MODE_EXPLICIT
 				params.compressionQuality = outputQuality
 				writer.output = ImageIO.createImageOutputStream(bas)
-				writer.write(null, IIOImage(bi!!, null, null), params)
+				writer.write(null, IIOImage(bi, null, null), params)
 			}
 
 
@@ -1562,9 +1558,7 @@ class LorittaImage {
 		val g = pixel shr 8 and 0xff
 		val b = pixel and 0xff
 
-		return if (r == red && g == green && b == blue || a == 0) {
-			false
-		} else true
+		return !(r == red && g == green && b == blue || a == 0)
 	}
 
 
@@ -2136,8 +2130,8 @@ class LorittaImage {
 		protected var edgeAction = ZERO
 		protected var interpolation = BILINEAR
 
-		lateinit protected var transformedSpace: Rectangle
-		lateinit protected var originalSpace: Rectangle
+		protected lateinit var transformedSpace: Rectangle
+		protected lateinit var originalSpace: Rectangle
 
 		private var x0: Float = 0.toFloat()
 		private var y0: Float = 0.toFloat()
@@ -2176,7 +2170,7 @@ class LorittaImage {
 			this.dst = BufferedImage(src.width, src.height, src.type)
 		}
 
-		constructor(src: LorittaImage) : this(src.bufferedImage!!) {}
+		constructor(src: LorittaImage) : this(src.bufferedImage)
 
 
 		fun setCorners(x0: Float, y0: Float,

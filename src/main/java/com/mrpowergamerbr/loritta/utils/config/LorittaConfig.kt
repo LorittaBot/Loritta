@@ -92,6 +92,8 @@ class LorittaConfig(
 		val vagalumeKey: String,
 		@JsonProperty("ghost-ids")
 		val ghostIds: List<String>,
+		@JsonProperty("anti-raid-ids")
+		val antiRaidIds: List<String>,
 		@JsonProperty("fan-art-extravaganza")
 		val fanArtExtravaganza: Boolean,
 		@JsonProperty("fan-arts")

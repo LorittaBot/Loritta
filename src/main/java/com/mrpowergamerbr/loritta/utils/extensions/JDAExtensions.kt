@@ -49,7 +49,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		MESSAGE_MANAGE -> locale.format { discord.permissions.messageManage }
 		MESSAGE_EMBED_LINKS -> locale.format { discord.permissions.messageEmbedLinks }
 		MESSAGE_ATTACH_FILES -> TODO()
-		MESSAGE_HISTORY -> TODO()
+		MESSAGE_HISTORY -> locale.format { discord.permissions.messageHistory }
 		MESSAGE_MENTION_EVERYONE -> TODO()
 		MESSAGE_EXT_EMOJI -> locale.format { discord.permissions.messageExtEmoji }
 		VOICE_CONNECT -> TODO()

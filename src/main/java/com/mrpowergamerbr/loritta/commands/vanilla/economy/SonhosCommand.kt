@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -15,7 +16,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		var retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
+		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
 			context.lorittaUser.profile
@@ -32,7 +33,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 
 		if (context.userHandle == retrieveDreamsFromUser) {
 			if (context.config.economyConfig.isEnabled) {
-				val localProfile = context.config.getUserData(lorittaProfile.userId.toString())
+				val localProfile = context.config.getUserData(lorittaProfile.userId)
 				context.reply(
 						true,
 						LoriReply(
@@ -41,7 +42,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 								mentionUser = false
 						),
 						LoriReply(
-								locale["SONHOS_YouHave", localProfile.money, if (localProfile.money == 1.0) { context.config.economyConfig.economyName } else { context.config.economyConfig.economyNamePlural }],
+								locale["SONHOS_YouHave", localProfile.money, if (localProfile.money == BigDecimal.ONE) { context.config.economyConfig.economyName } else { context.config.economyConfig.economyNamePlural }],
 								"\uD83D\uDCB5",
 								mentionUser = false
 						)
@@ -57,7 +58,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			logger.info("Usuário ${lorittaProfile.userId} possui ${lorittaProfile.money} sonhos!")
 		} else {
 			if (context.config.economyConfig.isEnabled) {
-				val localProfile = context.config.getUserData(lorittaProfile.userId.toString())
+				val localProfile = context.config.getUserData(lorittaProfile.userId)
 				context.reply(
 						true,
 						LoriReply(

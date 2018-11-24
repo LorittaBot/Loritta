@@ -161,7 +161,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						mentionUser = false
 				),
 				LoriReply(
-						"**${locale["BOTINFO_ThreadCount"]}:** ${Thread.getAllStackTraces().keys.size.toString()}",
+						"**${locale["BOTINFO_ThreadCount"]}:** ${Thread.getAllStackTraces().keys.size}",
 						"\uD83D\uDC4B",
 						mentionUser = false
 				),

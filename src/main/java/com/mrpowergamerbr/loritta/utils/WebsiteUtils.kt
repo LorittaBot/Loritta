@@ -176,7 +176,7 @@ object WebsiteUtils {
 					val simpleUserIdentification = SimpleUserIdentification(
 							user.name,
 							user.id,
-							user.effectiveAvatarUrl.split("/")[5].split(".")[0],
+							(user.avatarId ?: user.defaultAvatarId),
 							user.discriminator
 					)
 
@@ -391,13 +391,13 @@ object WebsiteUtils {
 
 	fun allowMethods(vararg methods: String) {
 		try {
-			val methodsField = HttpURLConnection::class.java!!.getDeclaredField("methods")
+			val methodsField = HttpURLConnection::class.java.getDeclaredField("methods")
 
-			val modifiersField = Field::class.java!!.getDeclaredField("modifiers")
-			modifiersField.setAccessible(true)
-			modifiersField.setInt(methodsField, methodsField.getModifiers() and Modifier.FINAL.inv())
+			val modifiersField = Field::class.java.getDeclaredField("modifiers")
+			modifiersField.isAccessible = true
+			modifiersField.setInt(methodsField, methodsField.modifiers and Modifier.FINAL.inv())
 
-			methodsField.setAccessible(true)
+			methodsField.isAccessible = true
 
 			val oldMethods = methodsField.get(null) as Array<String>
 			val methodsSet = LinkedHashSet(Arrays.asList(*oldMethods))

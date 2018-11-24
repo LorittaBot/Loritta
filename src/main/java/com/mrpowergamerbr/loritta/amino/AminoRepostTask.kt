@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.core.EmbedBuilder
@@ -57,7 +57,7 @@ class AminoRepostTask : Runnable {
 
 		// Agora iremos verificar os canais
 		val deferred = communityIds.map { communityId ->
-			GlobalScope.launch(loritta.oldCoroutineDispatcher, start = CoroutineStart.LAZY) {
+			GlobalScope.launch(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 				try {
 					logger.info("Verificando comunidade ${communityId}...")
 					val connection = Jsoup.connect("https://aminoapps.com/c/$communityId/recent/")
@@ -131,10 +131,12 @@ class AminoRepostTask : Runnable {
 							val nickname = titleDiv.getElementsByClass("overflow-hidden").first().getElementsByClass("nickname").text()
 							val avatar = titleDiv.getElementsByTag("section").first().getElementsByClass("avatar").firstOrNull()?.attr("data-src")
 
-							val richContent = titleDiv.getElementsByAttributeValue("data-vce", "post-content-body").first()
+							// <section>[0] = informações sobre o autor
+							// <section>[1] = informações sobre o post
+							val richContent = titleDiv.getElementsByTag("section").getOrNull(2)
 
 							if (richContent == null) {
-								logger.error("Post não tem post-content-body! $link")
+								logger.error("Post não tem tag de <section>! $link")
 								continue
 							}
 
@@ -167,7 +169,16 @@ class AminoRepostTask : Runnable {
 										}
 
 										setTitle("<:amino:375313236234469386> $title", link)
-										setDescription(richContent.text().substringIfNeeded())
+
+										if (richContent.hasClass("pollopt")) {
+											// POLLS
+											val pollItems = richContent.getElementsByClass("poll-item")
+											for (item in pollItems) {
+												appendDescription("\uD83D\uDCCC ${item.text()}\n")
+											}
+										} else {
+											setDescription(richContent.text().substringIfNeeded())
+										}
 
 										if (imageUrl != null) {
 											try {

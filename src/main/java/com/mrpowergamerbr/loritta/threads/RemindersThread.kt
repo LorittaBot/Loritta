@@ -16,11 +16,11 @@ class RemindersThread : Thread("Reminders Thread") {
 
 		while (true) {
 			try {
-				checkReminders();
+				checkReminders()
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			Thread.sleep(5000);
+			Thread.sleep(5000)
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.utils;
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -24,7 +24,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 	}
 
 	override fun getUsage(): String {
-		return "<texto>";
+		return "<texto>"
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
@@ -33,7 +33,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val query = context.args.joinToString(" ");
+			val query = context.args.joinToString(" ")
 
 			val jsoup = Jsoup.connect("http://anamariabraga.globo.com/Publicacao/Filtrar?term=" + URLEncoder.encode(query, "UTF-8") + "&pagina=1&quantidadePorPagina=30&tipoPublicacao=&idCategoria=10&videoOnly=false").get()
 
@@ -79,22 +79,22 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 						.content(context.getAsMention(true))
 						.build()
 
-				finalMessage = message;
+				finalMessage = message
 			}
 
 			if (finalMessage != null) {
-				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), finalMessage);
+				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), finalMessage)
 			} else {
 				var message = DiscordMessage.builder()
 						.username("Louro José")
 						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
 						.content(context.getAsMention(true) + context.locale["RECEITAS_COULDNT_FIND", query])
-						.build();
+						.build()
 
 				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), message)
 			}
 		} else {
-			this.explain(context);
+			this.explain(context)
 		}
 	}
 }

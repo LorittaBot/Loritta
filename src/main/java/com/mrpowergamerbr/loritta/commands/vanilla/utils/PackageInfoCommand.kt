@@ -46,7 +46,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 					return
 				}
 
-				var embed = EmbedBuilder();
+				var embed = EmbedBuilder()
 
 				var color = when (packageSource) {
 					CORREIOS -> Color(253, 220, 1)
@@ -62,9 +62,9 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 				embed.setTitle("${emoji} " + pair.first) // A categoria é o tipo da encomenda
 
-				embed.setDescription("```diff\n${pair.second}```");
+				embed.setDescription("```diff\n${pair.second}```")
 
-				context.sendMessage(context.getAsMention(true), embed.build());
+				context.sendMessage(context.getAsMention(true), embed.build())
 			} catch (e: Exception) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["PACKAGEINFO_INVALID", packageId])
 			}
@@ -82,18 +82,18 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 				// E sim, não importa qual é o usuário/senha/token, ele sempre retorna algo válido
 				.send("<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado><objetos>$packageId</objetos><lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>")
 
-		var correios = Loritta.GSON.fromJson(response.body(), CorreiosResponse::class.java);
+		var correios = Loritta.GSON.fromJson(response.body(), CorreiosResponse::class.java)
 
-		var objeto = correios.objeto[0];
+		var objeto = correios.objeto[0]
 
 		if (objeto.categoria == "ERRO: Objeto não encontrado na base de dados dos Correios.") {
 			return null
 		}
 
-		var str = "";
+		var str = ""
 		for (evento in objeto.evento) {
-			str += "+ " + evento.data + " - " + evento.hora;
-			str += " - " + evento.unidade.local + " (" + evento.unidade.cidade + ")\n- " + evento.descricao + "\n\n";
+			str += "+ " + evento.data + " - " + evento.hora
+			str += " - " + evento.unidade.local + " (" + evento.unidade.cidade + ")\n- " + evento.descricao + "\n\n"
 		}
 
 		return Pair(objeto.categoria, str)
@@ -108,10 +108,10 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 			return null
 		}
 
-		var str = "";
+		var str = ""
 		for (update in encRes.locations) {
 			str += "+ " + update.date.replace("-", "/") + " - " + update.time + " - ${update.location}\n"
-			str += "- " + update.state + "\n\n";
+			str += "- " + update.state + "\n\n"
 		}
 
 		return Pair("Encomenda", str)

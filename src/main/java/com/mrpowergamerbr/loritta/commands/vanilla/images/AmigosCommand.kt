@@ -65,7 +65,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 
 		graphics.drawImage(TEMPLATE, 0, 0, null)
 
-		context.sendFile(finalImage, "thx.png", context.getAsMention(true));
+		context.sendFile(finalImage, "thx.png", context.getAsMention(true))
 	}
 
 	fun getRandomAvatar(context: CommandContext, choosen: MutableList<Member>): BufferedImage {

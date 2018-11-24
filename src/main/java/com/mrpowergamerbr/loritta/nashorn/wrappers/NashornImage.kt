@@ -45,7 +45,7 @@ class NashornImage {
 			return null!!
 		}
 
-		graphics!!.color = cor
+		graphics.color = cor
 		ImageUtils.drawTextWrap(texto, x, y, 9999, 9999, graphics.fontMetrics, graphics)
 		return this
 	}

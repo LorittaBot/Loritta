@@ -22,12 +22,12 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("Loritta");
+		return listOf("Loritta")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val query = context.args.joinToString(" ");
+			val query = context.args.joinToString(" ")
 
 			val safeSearch = "on"
 

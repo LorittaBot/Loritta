@@ -4,16 +4,16 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
+import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.save
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -22,12 +22,15 @@ import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
+import net.dv8tion.jda.core.events.guild.GuildReadyEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	private val logger = KotlinLogging.logger {}
@@ -108,13 +111,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
-		MuteCommand.roleRemovalThreads.forEach { key, value ->
+		MuteCommand.roleRemovalJobs.forEach { key, value ->
 			if (key.startsWith(e.guild.id)) {
-				value.interrupt()
+				value.cancel()
 				toRemove.add(key)
 			}
 		}
-		toRemove.forEach { MuteCommand.roleRemovalThreads.remove(it) }
+		toRemove.forEach { MuteCommand.roleRemovalJobs.remove(it) }
 
 		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
@@ -201,18 +204,18 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					WelcomeModule.handleJoin(event, conf)
 				}
 
-				val userData = conf.getUserData(event.user.id)
-
-				if (userData.isMuted) {
-					var mutedRoles = event.guild.getRolesByName(loritta.getLocaleById(conf.localeId)["MUTE_ROLE_NAME"], false)
-					if (mutedRoles.isEmpty())
-						return@execute
-
-					event.guild.controller.addSingleRoleToMember(event.member, mutedRoles.first()).queue()
-
-					if (userData.temporaryMute)
-						MuteCommand.spawnRoleRemovalThread(event.guild, loritta.getLocaleById(conf.localeId), conf, conf.getUserData(event.user.id))
+				val mute = transaction(Databases.loritta) {
+					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
 				}
+
+				if (mute != null) {
+					val locale = loritta.getLocaleById(conf.localeId)
+					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(conf.localeId)) ?: return@execute
+
+					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
+
+					if (mute.isTemporary)
+						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!) }
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
@@ -225,10 +228,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		// Remover thread de role removal caso o usuário tenha saido do servidor
-		val thread = MuteCommand.roleRemovalThreads[event.guild.id + "#" + event.member.user.id]
-		if (thread != null)
-			thread.interrupt()
-		MuteCommand.roleRemovalThreads.remove(event.guild.id + "#" + event.member.user.id)
+		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + event.member.user.id]
+		if (job != null)
+			job.cancel()
+		MuteCommand.roleRemovalJobs.remove(event.guild.id + "#" + event.member.user.id)
 
 		loritta.executor.execute {
 			try {
@@ -261,6 +264,29 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
 			textChannel.manager.setTopic(formattedTopic).queue()
+		}
+	}
+
+	override fun onGuildReady(event: GuildReadyEvent) {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			val mutes = transaction(Databases.loritta) {
+				Mute.find {
+					(Mutes.isTemporary eq true) and (Mutes.guildId eq event.guild.idLong)
+				}.toMutableList()
+			}
+
+			for (mute in mutes) {
+				val guild = lorittaShards.getGuildById(mute.guildId)
+				if (guild == null) {
+					logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
+					continue
+				}
+
+				val member = guild.getMemberById(mute.userId) ?: continue
+
+				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
+				MuteCommand.spawnRoleRemovalThread(guild, com.mrpowergamerbr.loritta.utils.loritta.getLocaleById("default"), member.user, mute.expiresAt!!)
+			}
 		}
 	}
 }
