@@ -62,9 +62,8 @@ class DailyTaxTask : Runnable {
 				return
 			}
 
-			alreadySentDMs = false
-
 			if (hour == 19) {
+				alreadySentDMs = false
 				logger.info("Executando a taxa diária!")
 
 				lastDailyTax.writeText(
