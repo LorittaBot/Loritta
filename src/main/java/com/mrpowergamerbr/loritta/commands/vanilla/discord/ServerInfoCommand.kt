@@ -3,12 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Guild
@@ -50,8 +47,10 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.addField("👑 ${context.locale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild
 		embed.addField("🌎 ${context.locale["SERVERINFO_REGION"]}", guild.region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.locale["SERVERINFO_CHANNELS"]} (${guild.textChannels.size + guild.voiceChannels.size})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** ${guild.voiceChannels.size}", true) // Canais da Guild
-		embed.addField("\uD83D\uDCC5 ${context.locale["SERVERINFO_CREATED_IN"]}", guild.creationTime.humanize(locale), true)
-		embed.addField("\uD83C\uDF1F ${context.locale["SERVERINFO_JOINED_IN"]}", guild.selfMember.joinDate.humanize(locale), true)
+		val createdAtDiff = DateUtils.formatDateDiff(guild.creationTime.toInstant().toEpochMilli(), locale)
+		embed.addField("\uD83D\uDCC5 ${context.locale["SERVERINFO_CREATED_IN"]}", "${guild.creationTime.humanize(locale)} ($createdAtDiff)", true)
+		val joinedAtDiff = DateUtils.formatDateDiff(guild.selfMember.joinDate.toInstant().toEpochMilli(), locale)
+		embed.addField("\uD83C\uDF1F ${context.locale["SERVERINFO_JOINED_IN"]}", "${guild.selfMember.joinDate.humanize(locale)} ($joinedAtDiff)", true)
 		embed.addField("👥 ${context.locale["SERVERINFO_MEMBERS"]} (${guild.members.size})", "<:online:313956277808005120> **${context.locale.get("SERVERINFO_ONLINE")}:** ${guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.locale.get("SERVERINFO_AWAY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.locale.get("SERVERINFO_BUSY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.locale.get("SERVERINFO_OFFLINE")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.locale.get("SERVERINFO_PEOPLE")}:** ${guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.locale["SERVERINFO_BOTS"]}:** ${guild.members.count { it.user.isBot }}", true) // Membros da Guild
 		// val roles = guild.roles.filter { !it.isPublicRole }
 		// embed.addField("\uD83D\uDCBC ${context.locale["SERVERINFO_ROLES"]} (${roles.size})", roles.joinToString(", ", transform = { it.name }).substringIfNeeded(), true)
