@@ -67,9 +67,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				setDescription(alsoKnownAs)
 			} else {
 				val usernameChanges = transaction(Databases.loritta) { UsernameChange.find { UsernameChanges.userId eq user.idLong }.sortedBy { it.changedAt }.toMutableList() }
-				/* if (usernameChanges.isEmpty()) {
-					usernameChanges.add(MongoLorittaProfile.UsernameChange(user.creationTime.toEpochSecond() * 1000, user.name, user.discriminator))
-				} */
 
 				if (usernameChanges.isNotEmpty() && usernameChanges[0].discriminator == user.discriminator && usernameChanges[0].username == user.name) {
 					usernameChanges.removeAt(0)
@@ -98,10 +95,15 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_TAG_DO_DISCORD"), "${user.name}#${user.discriminator}", true)
 			addField("\uD83D\uDCBB " + context.locale.get("USERINFO_ID_DO_DISCORD"), user.id, true)
-			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), user.creationTime.humanize(locale), true)
-			if (member != null)
-				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(locale), true)
 
+			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), locale)
+			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), "${user.creationTime.humanize(locale)} ($accountCreatedDiff)", true)
+
+			if (member != null) {
+				val accountJoinedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), locale)
+				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), "${member.joinDate.humanize(locale)} ($accountJoinedDiff)", true)
+			}
+			
 			var sharedServersFieldTitle = locale.format { commands.discord.userInfo.sharedServers }
 			var servers: String?
 			val sharedServers = lorittaShards.getMutualGuilds(user)
