@@ -96,6 +96,14 @@ open class BaseLocale {
 		lateinit var xOfX: String
 	}
 	class Discord {
+		class Status {
+			lateinit var online: String
+			lateinit var idle: String
+			lateinit var doNotDisturb: String
+			lateinit var offline: String
+		}
+		var status = Status()
+
 		class Permissions {
 			lateinit var kickMembers: String
 			lateinit var banMembers: String
@@ -221,6 +229,15 @@ open class BaseLocale {
 
 		}
 		var moderation = Moderation()
+
+		class Discord {
+			class UserInfo {
+				lateinit var sharedServers: String
+			}
+			var userInfo = UserInfo()
+		}
+
+		var discord = Discord()
 
 		class Fanarts {
 			lateinit var description: String

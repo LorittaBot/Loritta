@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.OnlineStatus
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
@@ -101,23 +102,39 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (member != null)
 				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), member.joinDate.humanize(locale), true)
 
+			var sharedServersFieldTitle = locale.format { commands.discord.userInfo.sharedServers }
+			var servers: String?
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 
-			var servers = if (settings.hideSharedServers) {
-				"*${locale["USERINFO_PrivacyOn"]}*"
+			if (settings.hideSharedServers) {
+				servers = "*${locale["USERINFO_PrivacyOn"]}*"
 			} else {
-				sharedServers.joinToString(separator = ", ", transform = { "${it.name}"})
+				servers = sharedServers.joinToString(separator = ", ", transform = { it.name })
+				sharedServersFieldTitle = "$sharedServersFieldTitle (${sharedServers.size})"
 			}
 
 			if (servers.length >= 1024) {
 				servers = servers.substring(0..1020) + "..."
 			}
 
-			embed.addField("\uD83C\uDF0E " + context.locale["USERINFO_SHARED_SERVERS"] + " (${sharedServers.size})", servers, true)
+			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, true)
 			if (member != null) {
-				addField("\uD83D\uDCE1 " + context.locale["USERINFO_STATUS"], member.onlineStatus.name, true)
+				val statusEmote = when (member.onlineStatus) {
+					OnlineStatus.ONLINE -> Emotes.DISCORD_ONLINE
+					OnlineStatus.IDLE -> Emotes.DISCORD_IDLE
+					OnlineStatus.DO_NOT_DISTURB -> Emotes.DISCORD_DO_NOT_DISTURB
+					else -> Emotes.DISCORD_OFFLINE
+				}
+				val statusName = locale.format { when (member.onlineStatus) {
+					OnlineStatus.ONLINE -> discord.status.online
+					OnlineStatus.IDLE -> discord.status.idle
+					OnlineStatus.DO_NOT_DISTURB -> discord.status.doNotDisturb
+					else -> discord.status.offline
+				} }
 
-				val roles = member.roles.joinToString(separator = ", ", transform = { "${it.name}" })
+				addField("\uD83D\uDCE1 " + context.locale["USERINFO_STATUS"], "$statusEmote $statusName", true)
+
+				val roles = member.roles.joinToString(separator = ", ", transform = { it.name })
 
 				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
