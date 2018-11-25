@@ -100,10 +100,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDCC5 " + context.locale.get("USERINFO_ACCOUNT_CREATED"), "${user.creationTime.humanize(locale)} ($accountCreatedDiff)", true)
 
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), locale)
+				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), locale)
 				addField("\uD83C\uDF1F " + context.locale.get("USERINFO_ACCOUNT_JOINED"), "${member.joinDate.humanize(locale)} ($accountJoinedDiff)", true)
 			}
-			
+
 			var sharedServersFieldTitle = locale.format { commands.discord.userInfo.sharedServers }
 			var servers: String?
 			val sharedServers = lorittaShards.getMutualGuilds(user)
