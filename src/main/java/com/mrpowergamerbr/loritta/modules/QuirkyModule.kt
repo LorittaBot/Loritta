@@ -1,10 +1,12 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.TioDoPaveCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.chance
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.MessageType
@@ -37,6 +39,10 @@ class QuirkyModule : MessageReceivedModule {
 			12 -> message.addReaction("faustao_thinking:334378424091017218").queue()
 			13 -> message.addReaction("hyper_NOSA:450476856303419432").queue()
 			14 -> message.addReaction("idai:334709223588102144").queue()
+		}
+		
+		if (chance(0.50)) {
+			event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()}").queue()
 		}
 
 		if ((event.message.contentRaw.contains("esta é uma mensagem do criador", true) && event.message.contentRaw.contains("se tornou muito lenta", true) && event.message.contentRaw.contains("que não enviarem essa mensagem dentro de duas semanas", true)) || (event.message.contentRaw.contains("deve fechar", true) && event.message.contentRaw.contains("Vamos enviar esta mensagem para ver se os membros", true) && event.message.contentRaw.contains("isto é de acordo com o criador", true)))

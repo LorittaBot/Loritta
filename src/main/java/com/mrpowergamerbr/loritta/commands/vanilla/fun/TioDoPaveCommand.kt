@@ -20,10 +20,10 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 	override fun hasCommandFeedback(): Boolean {
 		return false
 	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	
+	companion object {
 		// https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
-		val piadas = listOf(
+		val PIADAS = listOf(
 				"Você pode até escrever uma carta para todos os cachorros do mundo...\n\n... mas só o Rottweiler",
 				"Porque a empregada não luta Jiu Jitsu?\n\nPorque ela luta capoeira",
 				"Por que o Brasil é cheiroso?\n\nPorque ele já foi colônia.",
@@ -326,13 +326,15 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Não vou contar a piada da nuvem...\n\nPorque é o cumulus ! PS: essa piada é passageira",
 				"Duas baleias entraram num bar\n\nComeçaram a discutir e se mataram com pistolas. No outro dia o jornal noticia a calamidade: Baleia baleia baleia",
 				"Qual a diferença entre ignorância e apatia?\n\nEu não sei e eu não me importo."
-				)
+		)
+	}
 
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
 
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Tio do Pavê")
-				.content(context.getAsMention(true) + piadas[RANDOM.nextInt(piadas.size)])
+				.content(context.getAsMention(true) + PIADAS.random())
 				.avatarUrl("https://loritta.website/assets/img/tio_do_pave.jpg")
 				.build())
 	}
