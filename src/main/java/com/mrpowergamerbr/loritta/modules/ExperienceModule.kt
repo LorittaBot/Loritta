@@ -4,16 +4,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import org.bson.conversions.Bson
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 class ExperienceModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -22,7 +17,6 @@ class ExperienceModule : MessageReceivedModule {
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		// (copyright Loritta™)
-		val profileUpdates = mutableListOf<Bson>()
 		var newProfileXp = lorittaProfile.xp
 		var lastMessageSentHash: Int? = null
 
@@ -56,13 +50,7 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = lorittaProfile.xp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					transaction(Databases.loritta) {
-						GuildProfiles.update({ (GuildProfiles.guildId eq event.guild!!.idLong) and (GuildProfiles.userId eq event.author.idLong) }) {
-							with(SqlExpressionBuilder) {
-								it.update(GuildProfiles.xp, GuildProfiles.xp + gainedXp.toLong())
-							}
-						}
-					}
+					val profile = serverConfig.getUserData(event.author.idLong)
 				}
 			}
 		}
