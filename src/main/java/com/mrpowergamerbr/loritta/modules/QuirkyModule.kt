@@ -42,7 +42,7 @@ class QuirkyModule : MessageReceivedModule {
 		}
 		
 		if (chance(0.50)) {
-			event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()}").queue()
+			event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()} <:lori_ok_hand:426183783008698391>").queue()
 		}
 
 		if ((event.message.contentRaw.contains("esta é uma mensagem do criador", true) && event.message.contentRaw.contains("se tornou muito lenta", true) && event.message.contentRaw.contains("que não enviarem essa mensagem dentro de duas semanas", true)) || (event.message.contentRaw.contains("deve fechar", true) && event.message.contentRaw.contains("Vamos enviar esta mensagem para ver se os membros", true) && event.message.contentRaw.contains("isto é de acordo com o criador", true)))
