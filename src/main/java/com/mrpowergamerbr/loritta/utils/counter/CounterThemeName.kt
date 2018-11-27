@@ -4,5 +4,7 @@ enum class CounterThemeName {
 	DEFAULT,
 	RED,
 	GREEN,
+	BLURPLE,
+	BLACK,
 	CUSTOM
 }

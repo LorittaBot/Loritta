@@ -21,8 +21,9 @@ fun main(args: Array<String>) {
 
 				if (hue in 200f..210f) {
 					// println("Changing hue!")
-					hue = (hue - 90)
-					saturation += 20
+					hue = (hue + 21)
+					saturation = 0f
+					brightness -= 65f
 					// brightness = brightness + 10
 				}
 
@@ -32,6 +33,6 @@ fun main(args: Array<String>) {
 			}
 		}
 
-		ImageIO.write(image, "png", File("C:\\Users\\Whistler\\Pictures\\Loritta\\counter_color\\green\\green_${it.name}"))
+		ImageIO.write(image, "png", File("C:\\Users\\Whistler\\Pictures\\Loritta\\counter_color\\black\\black_${it.name}"))
 	}
 }
