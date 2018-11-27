@@ -152,6 +152,7 @@ class Arguments {
     lateinit var text: String
     lateinit var number: String
     lateinit var user: String
+    lateinit var emote: String
     lateinit var image: String
 }
 var arguments = Arguments()
@@ -253,6 +254,11 @@ class UserInfo {
     lateinit var joinPlace: String
 }
 var userInfo = UserInfo()
+
+class EmojiInfo {
+    lateinit var description: String
+}
+var emojiInfo = EmojiInfo()
 
 }
 var discord = Discord()

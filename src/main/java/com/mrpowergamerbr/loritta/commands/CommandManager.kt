@@ -182,6 +182,7 @@ class CommandManager {
 		commandMap.add(RemoveEmojiCommand())
 		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
+		commandMap.add(EmojiInfoCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
