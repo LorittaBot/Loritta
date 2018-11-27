@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
@@ -74,6 +75,13 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			setTitle("$typeEmote$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
+
+			if (member != null) {
+				val highestRole = member.roles.sortedByDescending { it.positionRaw }.firstOrNull()
+				if (highestRole != null) {
+					setColor(highestRole.color)
+				}
+			}
 		}
 	}
 
@@ -111,10 +119,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			} */
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.locale)
-			addField("\uD83D\uDCC5 ${context.locale["USERINFO_ACCOUNT_CREATED"]}", accountCreatedDiff, true)
+			addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.userInfo.accountCreated }}", accountCreatedDiff, true)
 			if (member != null) {
 				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), context.locale)
-				addField("\uD83C\uDF1F ${context.locale["USERINFO_ACCOUNT_JOINED"]}", accountJoinedDiff, true)
+				addField("\uD83C\uDF1F ${context.locale.format { commands.discord.userInfo.accountJoined }}", accountJoinedDiff, true)
 			}
 
 			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime()
@@ -136,7 +144,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (settings.hideSharedServers) {
 				servers = "*${context.locale["USERINFO_PrivacyOn"]}*"
 			} else {
-				servers = sharedServers.joinToString(separator = ", ", transform = { it.name })
+				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				sharedServersFieldTitle = "$sharedServersFieldTitle (${sharedServers.size})"
 			}
 
@@ -203,8 +211,12 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			if (member != null) {
 				val memberIndex = member.guild.members.sortedBy { it.joinDate }.indexOf(member)
-				addField("\uD83D\uDC81 Posição de Entrada", "$memberIndex", true)
-			 	val roles = member.roles.joinToString(separator = ", ", transform = { it.name })
+				addField("\uD83D\uDC81 Posição de Entrada", "${memberIndex + 1}", true)
+
+				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(locale)}`" })
+				addField("\uD83D\uDEE1️ Permissões", permissions, true)
+
+			 	val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 		}

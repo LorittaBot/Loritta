@@ -27,15 +27,32 @@ fun main(args: Array<String>) {
 		return newVariable
 	}
 
+	fun String.yamlToClassName(): String {
+		var newVariable = ""
+		var nextShouldBeUppercase = true
+		for (ch in this) {
+			if (ch == '-') {
+				nextShouldBeUppercase = true
+				continue
+			}
+			var thisChar = ch
+			if (nextShouldBeUppercase)
+				thisChar = thisChar.toUpperCase()
+			newVariable += thisChar
+			nextShouldBeUppercase = false
+		}
+		return newVariable
+	}
+
 	fun handle(name: String, entries: Map<*, *>, isRoot: Boolean, tabs: Int) {
 		entries as Map<String, Any>
 
-		classes += "class ${name.capitalize()} {\n"
+		classes += "class ${name.yamlToClassName()} {\n"
 		for ((key, value) in entries) {
 			when {
 				value is Map<*, *> -> {
 					handle(key, value, true, tabs + 1)
-					classes += "var ${key.toLowerCase()} = ${key.capitalize()}()\n\n"
+					classes += "var ${key.yamlToVariable()} = ${key.yamlToClassName()}()\n\n"
 				}
 				value is List<*> -> {
 					classes += "    lateinit var ${key.yamlToVariable()}: List<String>\n"
@@ -57,4 +74,25 @@ fun main(args: Array<String>) {
 	}
 
 	println(classes)
+
+	println("Is this OK?")
+	readLine()
+	val baseLocaleFile = File("./LorittaBot/src/main/java/com/mrpowergamerbr/loritta/utils/locale/BaseLocale.kt")
+	baseLocaleFile.copyTo(File("./LorittaBot/src/main/java/com/mrpowergamerbr/loritta/utils/locale/BaseLocale.bak"))
+	val content = baseLocaleFile.readLines()
+	var newContent = ""
+	var autoGen = false
+	for (line in content) {
+		if (line.contains("// ===[ END  GENEREATED LOCALE ]==="))
+			autoGen = false
+
+		if (autoGen)
+			continue
+		newContent += line + "\n"
+		if (line.contains("// ===[ AUTO GENEREATED LOCALE ]===")) {
+			autoGen = true
+			newContent += classes
+		}
+	}
+	baseLocaleFile.writeText(newContent)
 }

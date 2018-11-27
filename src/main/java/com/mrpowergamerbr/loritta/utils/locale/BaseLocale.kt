@@ -123,6 +123,19 @@ open class BaseLocale {
 			lateinit var manageWebhooks: String
 			lateinit var manageEmotes: String
 			lateinit var createInstantInvite: String
+			lateinit var prioritySpeaker: String
+			lateinit var connect: String
+			lateinit var speak: String
+			lateinit var muteVoiceMembers: String
+			lateinit var disableVoiceAudio: String
+			lateinit var moveVoiceMembers: String
+			lateinit var useVoiceDetection: String
+			lateinit var changeNickname: String
+			lateinit var manageNicknames: String
+			lateinit var mentionEveryone: String
+			lateinit var attachFiles: String
+			lateinit var messageTts: String
+			lateinit var viewChannel: String
 		}
 		var permissions = Permissions()
 
@@ -233,10 +246,12 @@ open class BaseLocale {
 		class Discord {
 			class UserInfo {
 				lateinit var sharedServers: String
+				lateinit var accountCreated: String
+				lateinit var accountJoined: String
 			}
 			var userInfo = UserInfo()
-		}
 
+		}
 		var discord = Discord()
 
 		class Fanarts {
@@ -253,6 +268,7 @@ open class BaseLocale {
 			lateinit var error: String
 		}
 		var addEmoji = AddEmoji()
+
 	}
 	// ===[ END  GENEREATED LOCALE ]===
 	// !!!       DO NOT EDIT        !!!
