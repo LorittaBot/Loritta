@@ -91,185 +91,188 @@ open class BaseLocale {
 
 	// !!!       DO NOT EDIT        !!!
 	// ===[ AUTO GENEREATED LOCALE ]===
-	class Loritta {
-		lateinit var translationAuthors: List<String>
-		lateinit var xOfX: String
-	}
-	class Discord {
-		class Status {
-			lateinit var online: String
-			lateinit var idle: String
-			lateinit var doNotDisturb: String
-			lateinit var offline: String
-		}
-		var status = Status()
+class Loritta {
+    lateinit var translationAuthors: List<String>
+    lateinit var xOfX: String
+}
+class Discord {
+class Status {
+    lateinit var online: String
+    lateinit var idle: String
+    lateinit var doNotDisturb: String
+    lateinit var offline: String
+}
+var status = Status()
 
-		class Permissions {
-			lateinit var kickMembers: String
-			lateinit var banMembers: String
-			lateinit var administrator: String
-			lateinit var manageChannel: String
-			lateinit var manageServer: String
-			lateinit var addReactions: String
-			lateinit var messageHistory: String
-			lateinit var viewAuditLogs: String
-			lateinit var messageRead: String
-			lateinit var messageWrite: String
-			lateinit var messageManage: String
-			lateinit var messageExtEmoji: String
-			lateinit var messageEmbedLinks: String
-			lateinit var manageRoles: String
-			lateinit var managePermissions: String
-			lateinit var manageWebhooks: String
-			lateinit var manageEmotes: String
-			lateinit var createInstantInvite: String
-			lateinit var prioritySpeaker: String
-			lateinit var connect: String
-			lateinit var speak: String
-			lateinit var muteVoiceMembers: String
-			lateinit var disableVoiceAudio: String
-			lateinit var moveVoiceMembers: String
-			lateinit var useVoiceDetection: String
-			lateinit var changeNickname: String
-			lateinit var manageNicknames: String
-			lateinit var mentionEveryone: String
-			lateinit var attachFiles: String
-			lateinit var messageTts: String
-			lateinit var viewChannel: String
-		}
-		var permissions = Permissions()
+class Permissions {
+    lateinit var kickMembers: String
+    lateinit var banMembers: String
+    lateinit var administrator: String
+    lateinit var manageChannel: String
+    lateinit var manageServer: String
+    lateinit var addReactions: String
+    lateinit var messageHistory: String
+    lateinit var viewAuditLogs: String
+    lateinit var messageRead: String
+    lateinit var messageWrite: String
+    lateinit var messageManage: String
+    lateinit var messageExtEmoji: String
+    lateinit var messageEmbedLinks: String
+    lateinit var manageRoles: String
+    lateinit var managePermissions: String
+    lateinit var manageWebhooks: String
+    lateinit var manageEmotes: String
+    lateinit var createInstantInvite: String
+    lateinit var prioritySpeaker: String
+    lateinit var connect: String
+    lateinit var speak: String
+    lateinit var muteVoiceMembers: String
+    lateinit var disableVoiceAudio: String
+    lateinit var moveVoiceMembers: String
+    lateinit var useVoiceDetection: String
+    lateinit var changeNickname: String
+    lateinit var manageNicknames: String
+    lateinit var mentionEveryone: String
+    lateinit var attachFiles: String
+    lateinit var messageTts: String
+    lateinit var viewChannel: String
+}
+var permissions = Permissions()
 
-	}
-	class Commands {
-		lateinit var pleaseWaitCooldown: String
-		lateinit var errorWhileExecutingCommand: String
-		lateinit var cantUseInPrivate: String
-		lateinit var userDoesNotExists: String
-		lateinit var doesntHavePermissionDiscord: String
-		lateinit var loriDoesntHavePermissionDiscord: String
-		lateinit var commandOnlyForOwner: String
-		class Arguments {
-			lateinit var text: String
-			lateinit var number: String
-			lateinit var user: String
-			lateinit var image: String
-		}
-		var arguments = Arguments()
+}
+class Commands {
+    lateinit var pleaseWaitCooldown: String
+    lateinit var errorWhileExecutingCommand: String
+    lateinit var cantUseInPrivate: String
+    lateinit var userDoesNotExists: String
+    lateinit var doesntHavePermissionDiscord: String
+    lateinit var loriDoesntHavePermissionDiscord: String
+    lateinit var commandOnlyForOwner: String
+class Arguments {
+    lateinit var text: String
+    lateinit var number: String
+    lateinit var user: String
+    lateinit var image: String
+}
+var arguments = Arguments()
 
-		class Language {
-			lateinit var description: String
-			lateinit var pleaseSelectYourLanguage: String
-			lateinit var translatedBy: String
-			lateinit var languageChanged: String
-		}
-		var language = Language()
+class Language {
+    lateinit var description: String
+    lateinit var pleaseSelectYourLanguage: String
+    lateinit var translatedBy: String
+    lateinit var languageChanged: String
+}
+var language = Language()
 
-		class Ajuda {
-			lateinit var errorWhileOpeningDm: String
-		}
-		var ajuda = Ajuda()
+class Ajuda {
+    lateinit var errorWhileOpeningDm: String
+}
+var ajuda = Ajuda()
 
-		class Roll {
-			lateinit var description: String
-			lateinit var howMuchSides: String
-		}
-		var roll = Roll()
+class Roll {
+    lateinit var description: String
+    lateinit var howMuchSides: String
+}
+var roll = Roll()
 
-		class Vieirinha {
-			lateinit var description: String
-			lateinit var examples: List<String>
-			lateinit var responses: List<String>
-		}
-		var vieirinha = Vieirinha()
+class Vieirinha {
+    lateinit var description: String
+    lateinit var examples: List<String>
+    lateinit var responses: List<String>
+}
+var vieirinha = Vieirinha()
 
-		class Bolsonaro {
-			lateinit var description: String
-		}
-		var bolsonaro = Bolsonaro()
+class Bolsonaro {
+    lateinit var description: String
+}
+var bolsonaro = Bolsonaro()
 
-		class Vemdezap {
-			lateinit var description: String
-			lateinit var examples: List<String>
-		}
-		var vemdezap = Vemdezap()
+class Vemdezap {
+    lateinit var description: String
+    lateinit var examples: List<String>
+}
+var vemdezap = Vemdezap()
 
-		class Actions {
-			lateinit var examples: List<String>
-			class Slap {
-				lateinit var description: String
-				lateinit var response: String
-				lateinit var responseAntiIdiot: String
-			}
-			var slap = Slap()
+class Actions {
+    lateinit var examples: List<String>
+class Slap {
+    lateinit var description: String
+    lateinit var response: String
+    lateinit var responseAntiIdiot: String
+}
+var slap = Slap()
 
-			class Kiss {
-				lateinit var description: String
-				lateinit var response: String
-				lateinit var responseAntiIdiot: String
-			}
-			var kiss = Kiss()
+class Kiss {
+    lateinit var description: String
+    lateinit var response: String
+    lateinit var responseAntiIdiot: String
+}
+var kiss = Kiss()
 
-			class Attack {
-				lateinit var description: String
-				lateinit var response: String
-				lateinit var responseAntiIdiot: String
-			}
-			var attack = Attack()
+class Attack {
+    lateinit var description: String
+    lateinit var response: String
+    lateinit var responseAntiIdiot: String
+}
+var attack = Attack()
 
-			class Hug {
-				lateinit var description: String
-				lateinit var response: String
-			}
-			var hug = Hug()
+class Hug {
+    lateinit var description: String
+    lateinit var response: String
+}
+var hug = Hug()
 
-			class Dance {
-				lateinit var description: String
-				lateinit var response: String
-			}
-			var dance = Dance()
+class Dance {
+    lateinit var description: String
+    lateinit var response: String
+}
+var dance = Dance()
 
-		}
-		var actions = Actions()
+}
+var actions = Actions()
 
-		class Moderation {
-			class Unmute {
-				lateinit var punishAction: String
-				lateinit var punishName: String
-				lateinit var sucessfullyUnmuted: String
-				lateinit var automaticallyExpired: String
-			}
-			var unmute = Unmute()
+class Moderation {
+class Unmute {
+    lateinit var punishAction: String
+    lateinit var punishName: String
+    lateinit var sucessfullyUnmuted: String
+    lateinit var automaticallyExpired: String
+}
+var unmute = Unmute()
 
-		}
-		var moderation = Moderation()
+}
+var moderation = Moderation()
 
-		class Discord {
-			class UserInfo {
-				lateinit var sharedServers: String
-				lateinit var accountCreated: String
-				lateinit var accountJoined: String
-			}
-			var userInfo = UserInfo()
+class Discord {
+class UserInfo {
+    lateinit var sharedServers: String
+    lateinit var accountCreated: String
+    lateinit var accountJoined: String
+    lateinit var joinPosition: String
+    lateinit var permissions: String
+    lateinit var joinPlace: String
+}
+var userInfo = UserInfo()
 
-		}
-		var discord = Discord()
+}
+var discord = Discord()
 
-		class Fanarts {
-			lateinit var description: String
-			lateinit var madeBy: String
-			lateinit var thankYouAll: String
-		}
-		var fanarts = Fanarts()
+class Fanarts {
+    lateinit var description: String
+    lateinit var madeBy: String
+    lateinit var thankYouAll: String
+}
+var fanarts = Fanarts()
 
-		class AddEmoji {
-			lateinit var description: String
-			lateinit var success: String
-			lateinit var limitReached: String
-			lateinit var error: String
-		}
-		var addEmoji = AddEmoji()
+class AddEmoji {
+    lateinit var description: String
+    lateinit var success: String
+    lateinit var limitReached: String
+    lateinit var error: String
+}
+var addEmoji = AddEmoji()
 
-	}
+}
 	// ===[ END  GENEREATED LOCALE ]===
 	// !!!       DO NOT EDIT        !!!
 }

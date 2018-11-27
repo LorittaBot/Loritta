@@ -61,6 +61,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				nickname = member.effectiveName
 			}
 
+			val ownerEmote = when {
+				member?.isOwner == true -> "\uD83D\uDC51"
+				else -> ""
+			}
+
 			val typeEmote = when {
 				user.isBot -> Emotes.DISCORD_BOT_TAG
 				else -> Emotes.DISCORD_WUMPUS_BASIC
@@ -73,7 +78,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.DISCORD_OFFLINE
 			}
 
-			setTitle("$typeEmote$statusEmote $nickname", null)
+			setTitle("$ownerEmote$typeEmote$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -211,13 +216,17 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			if (member != null) {
 				val memberIndex = member.guild.members.sortedBy { it.joinDate }.indexOf(member)
-				addField("\uD83D\uDC81 Posição de Entrada", "${memberIndex + 1}", true)
+				addField(
+						"\uD83D\uDC81 ${locale.format { commands.discord.userInfo.joinPosition }}",
+						locale.format("${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º") { commands.discord.userInfo.joinPosition },
+						true
+				)
 
 				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(locale)}`" })
 				addField("\uD83D\uDEE1️ Permissões", permissions, true)
 
 			 	val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
-				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 		}
 
