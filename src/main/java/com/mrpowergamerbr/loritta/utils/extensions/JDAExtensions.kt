@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.Permission.*
+import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageChannel
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -30,6 +32,24 @@ suspend fun MessageChannel.sendFileAsync(file: File, fileName: String, message: 
 suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String) = this.sendFile(data, fileName).await()
 suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String, message: Message) = this.sendFile(data, fileName).await()
 suspend fun MessageChannel.sendFileAsync(data: InputStream, fileName: String, message: Message) = this.sendFile(data, fileName).await()
+
+suspend fun Message.edit(message: String, embed: MessageEmbed): Message {
+	return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+}
+
+suspend fun Message.edit(content: Message): Message {
+	if (this.isFromType(ChannelType.PRIVATE) || !this.guild.selfMember.hasPermission(this.textChannel, Permission.MESSAGE_MANAGE)) {
+		// Nós não podemos limpar as reações das mensagens caso a gente esteja em uma DM ou se a Lori não tem permissão para gerenciar mensagens
+		// Nestes casos, iremos apenas deletar a mensagem e reenviar
+		this.delete().queue()
+		return this.channel.sendMessage(content).await()
+	}
+
+	// Se não, vamos apagar as reações e editar a mensagem atual!
+	this.clearReactions().await()
+	this.editMessage(content).await()
+	return this
+}
 
 fun Permission.localized(locale: BaseLocale): String {
 	return when (this) {

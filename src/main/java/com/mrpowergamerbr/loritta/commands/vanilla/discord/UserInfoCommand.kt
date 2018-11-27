@@ -7,12 +7,14 @@ import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -49,7 +51,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			null
 		}
 
-		showQuickGlanceInfo(context, user, member)
+		showQuickGlanceInfo(null, context, user, member)
 	}
 
 	fun getEmbedBase(user: User, member: Member?): EmbedBuilder {
@@ -90,7 +92,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		}
 	}
 
-	suspend fun showQuickGlanceInfo(context: CommandContext, user: User, member: Member?) {
+	suspend fun showQuickGlanceInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
 		val embed = getEmbedBase(user, member)
 
 		embed.apply {
@@ -99,29 +101,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			addField("\uD83D\uDD16 ${context.locale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.locale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
-
-			/* var genericInformation = """
-				🔖 **${context.locale.get("USERINFO_TAG_DO_DISCORD")}:** `${user.name}#${user.discriminator}`
-				💻 **${context.locale.get("USERINFO_ID_DO_DISCORD")}:** `${user.id}`
-
-			""".trimIndent()
-
-			if (member != null) {
-				val statusEmote = when (member.onlineStatus) {
-					OnlineStatus.ONLINE -> Emotes.DISCORD_ONLINE
-					OnlineStatus.IDLE -> Emotes.DISCORD_IDLE
-					OnlineStatus.DO_NOT_DISTURB -> Emotes.DISCORD_DO_NOT_DISTURB
-					else -> Emotes.DISCORD_OFFLINE
-				}
-				val statusName = locale.format { when (member.onlineStatus) {
-					OnlineStatus.ONLINE -> discord.status.online
-					OnlineStatus.IDLE -> discord.status.idle
-					OnlineStatus.DO_NOT_DISTURB -> discord.status.doNotDisturb
-					else -> discord.status.offline
-				} }
-
-				genericInformation += "$statusEmote **${context.locale["USERINFO_STATUS"]}:** $statusName\n"
-			} */
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.locale)
 			addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.userInfo.accountCreated }}", accountCreatedDiff, true)
@@ -135,11 +114,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (lorittaProfile.lastMessageSentAt != 0L) {
 				val lastSeenDiff = DateUtils.formatDateDiff(lorittaProfile.lastMessageSentAt, context.locale)
 				addField("\uD83D\uDC40 ${context.locale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
-				// genericInformation += "\uD83D\uDC40 **${context.locale["USERINFO_LAST_SEEN"]}:** ${offset.humanize(locale)}\n"
-				// genericInformation += "⬆ Ou seja, *$lastSeenDiff* atrás!\n"
 			}
-
-			// embed.addField("ℹ️ Informações", genericInformation, false)
 
 			var sharedServersFieldTitle = context.locale.format { commands.discord.userInfo.sharedServers }
 			var servers: String?
@@ -158,24 +133,19 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, true)
-			// if (member != null) {
-			// 	val roles = member.roles.joinToString(separator = ", ", transform = { it.name })
-
-			// 	addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"], if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
-			// }
 
 			embed.setFooter(context.locale["USERINFO_PrivacyInfo"], null)
 		}
-
-		val message = context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
-		message.onReactionAddByAuthor(context) {
-			message.delete().queue()
-			showExtendedInfo(context, user, member)
+		
+		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		_message.onReactionAddByAuthor(context) {
+			showExtendedInfo(message, context, user, member)
 		}
-		message.addReaction("▶").queue()
+		_message.addReaction("▶").queue()
+		return _message
 	}
 
-	suspend fun showExtendedInfo(context: CommandContext, user: User, member: Member?) {
+	suspend fun showExtendedInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
 		val embed = getEmbedBase(user, member)
 		val locale = context.locale
 
@@ -215,7 +185,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			if (member != null) {
-				val memberIndex = member.guild.members.sortedBy { it.joinDate }.indexOf(member)
 				addField(
 						"\uD83D\uDC81 ${locale.format { commands.discord.userInfo.joinPosition }}",
 						locale.format("${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º") { commands.discord.userInfo.joinPlace },
@@ -230,11 +199,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val message = context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
-		message.onReactionAddByAuthor(context) {
-			message.delete().queue()
-			showQuickGlanceInfo(context, user, member)
+		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		_message.onReactionAddByAuthor(context) {
+			showQuickGlanceInfo(message, context, user, member)
 		}
-		message.addReaction("◀").queue()
+		_message.addReaction("◀").queue()
+		return _message
 	}
 }
