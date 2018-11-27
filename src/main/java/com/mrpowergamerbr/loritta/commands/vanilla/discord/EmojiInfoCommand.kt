@@ -56,11 +56,12 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 		embed.setColor(Constants.DISCORD_BLURPLE)
 		embed.setTitle("${emote.asMention} Sobre o Emoji")
 		embed.setThumbnail(emote.imageUrl)
-		embed.addField("\uD83D\uDD16 Nome do Emoji", "`${emote.name}", true)
-		embed.addField("\uD83D\uDCBB ID do Emoji", "`${emote.id}", true)
-		embed.addField("\uD83D\uDC40 Menção", "``${emote.asMention}`", true)
+		embed.addField("\uD83D\uDD16 Nome do Emoji", "`${emote.name}`", true)
+		embed.addField("\uD83D\uDCBB ID do Emoji", "`${emote.id}`", true)
+		embed.addField("\uD83D\uDC40 Menção", "`${emote.asMention}`", true)
 		embed.addField("\uD83D\uDCC5 Criado há", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
-		embed.addField("\uD83D\uDD0E Avistado em", "`${emote.guild?.name}", true)
+		if (emote.guild != null)
+			embed.addField("\uD83D\uDD0E Avistado em", "`${emote.guild.name}", true)
 
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
