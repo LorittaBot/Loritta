@@ -139,7 +139,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		
 		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
-			showExtendedInfo(message, context, user, member)
+			showExtendedInfo(_message, context, user, member)
 		}
 		_message.addReaction("▶").queue()
 		return _message
@@ -201,7 +201,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
-			showQuickGlanceInfo(message, context, user, member)
+			showQuickGlanceInfo(_message, context, user, member)
 		}
 		_message.addReaction("◀").queue()
 		return _message
