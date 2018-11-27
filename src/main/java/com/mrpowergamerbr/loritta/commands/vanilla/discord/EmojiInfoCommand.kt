@@ -61,5 +61,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 		embed.addField("\uD83D\uDC40 Menção", "``${emote.asMention}`", true)
 		embed.addField("\uD83D\uDCC5 Criado há", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
 		embed.addField("\uD83D\uDD0E Avistado em", "`${emote.guild?.name}", true)
+
+		context.sendMessage(context.getAsMention(true), embed.build())
 	}
 }
