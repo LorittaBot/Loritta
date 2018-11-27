@@ -218,7 +218,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				val memberIndex = member.guild.members.sortedBy { it.joinDate }.indexOf(member)
 				addField(
 						"\uD83D\uDC81 ${locale.format { commands.discord.userInfo.joinPosition }}",
-						locale.format("${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º") { commands.discord.userInfo.joinPosition },
+						locale.format("${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º") { commands.discord.userInfo.joinPlace },
 						true
 				)
 
