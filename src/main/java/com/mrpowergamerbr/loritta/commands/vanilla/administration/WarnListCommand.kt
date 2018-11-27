@@ -45,7 +45,7 @@ class WarnListCommand : AbstractCommand("warnlist", listOf("listadeavisos", "mod
 
 		if (user != null) {
 			val warns = transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toMutableList()
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.sortedBy { it.receivedAt } .toMutableList()
 			}
 
 			if (warns.isEmpty()) {
