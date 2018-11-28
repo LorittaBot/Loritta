@@ -61,9 +61,8 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				embed.setTitle("$arg0 ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
 				embed.setThumbnail(emojiUrl)
 
-				val input = "\uD83D\uDC76\uD83C\uDFFB"
 				val names = mutableListOf<String>()
-				input.codePoints().forEach {
+				arg0.codePoints().forEach {
 					val name = Character.getName(it)
 					if (name != null)
 						names.add(name)
