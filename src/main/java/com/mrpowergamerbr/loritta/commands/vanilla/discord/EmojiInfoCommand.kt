@@ -60,8 +60,20 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				embed.setColor(Constants.DISCORD_BLURPLE)
 				embed.setTitle("$arg0 ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
 				embed.setThumbnail(emojiUrl)
-				embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`$value`", true)
-				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.joinToString("\\")}`", true)
+
+				val input = "\uD83D\uDC76\uD83C\uDFFB"
+				val names = mutableListOf<String>()
+				input.codePoints().forEach {
+					val name = Character.getName(it)
+					if (name != null)
+						names.add(name)
+				}
+
+				if (names.isNotEmpty())
+					embed.addField("\uD83D\uDD16 ${context.locale.format { commands.discord.emojiInfo.emojiName }}", "`${names.joinToString(" + ")}`", true)
+
+				embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`$arg0`", true)
+				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
 
 				context.sendMessage(context.getAsMention(true), embed.build())
 			} else {
