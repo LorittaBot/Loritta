@@ -1,11 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.isValidSnowflake
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Emote
 
@@ -46,22 +43,51 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				showDiscordEmoteInfo(context, foundEmote)
 				return
 			}
+
+			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
+
+			if (isUnicodeEmoji) {
+				val codePoints = mutableListOf<String>()
+				for (idx in 0 until arg0.length step 2) {
+					val codePoint = LorittaUtils.toUnicode(arg0.codePointAt(idx)).substring(2)
+					codePoints += codePoint
+				}
+
+				val value = codePoints.joinToString(separator = "-")
+				val emojiUrl = "https://twemoji.maxcdn.com/2/72x72/$value.png"
+
+				val embed = EmbedBuilder()
+				embed.setColor(Constants.DISCORD_BLURPLE)
+				embed.setTitle("$arg0 ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
+				embed.setThumbnail(emojiUrl)
+				embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`$value`", true)
+				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.joinToString("\\")}`", true)
+
+				context.sendMessage(context.getAsMention(true), embed.build())
+			} else {
+				context.explain()
+			}
 		} else {
 			context.explain()
 		}
 	}
 
 	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: Emote) {
+		val canUse = lorittaShards.getEmoteById(emote.id) != null
+		val emoteTitle = if (canUse)
+			emote.asMention
+		else
+			"✨"
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE)
-		embed.setTitle("${emote.asMention} Sobre o Emoji")
+		embed.setTitle("$emoteTitle ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
 		embed.setThumbnail(emote.imageUrl)
-		embed.addField("\uD83D\uDD16 Nome do Emoji", "`${emote.name}`", true)
-		embed.addField("\uD83D\uDCBB ID do Emoji", "`${emote.id}`", true)
-		embed.addField("\uD83D\uDC40 Menção", "`${emote.asMention}`", true)
-		embed.addField("\uD83D\uDCC5 Criado há", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
+		embed.addField("\uD83D\uDD16 ${context.locale.format { commands.discord.emojiInfo.emojiName }}", "`${emote.name}`", true)
+		embed.addField("\uD83D\uDCBB ${context.locale.format { commands.discord.emojiInfo.emojiId }}", "`${emote.id}`", true)
+		embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`${emote.asMention}`", true)
+		embed.addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
 		if (emote.guild != null)
-			embed.addField("\uD83D\uDD0E Avistado em", "`${emote.guild.name}", true)
+			embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${emote.guild.name}`", true)
 
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
