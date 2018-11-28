@@ -305,7 +305,7 @@ object LorittaUtilsKotlin {
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
 		)
 
-		val elapsedMillis = manager.player.playingTrack.position
+		val elapsedMillis = manager.player.trackPosition
 
 		val elapsed = String.format("%02d:%02d",
 				TimeUnit.MILLISECONDS.toMinutes(elapsedMillis),
