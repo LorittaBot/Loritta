@@ -17,6 +17,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	CHANNEL_DOESNT_EXIST(722, "Channel doesn't exist"),
 	CANT_TALK_IN_CHANNEL(723, "Can't talk in channel"),
 	INVALID_MESSAGE(724, "Invalid message"),
+	RATE_LIMIT(799, "Rate limited!"),
 
 	MISSING_PAYLOAD_HANDLER(810, "Missing Payload Handler"),
 }
