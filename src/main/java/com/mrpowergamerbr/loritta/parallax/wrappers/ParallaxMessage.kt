@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import org.graalvm.polyglot.Value
 
 
 class ParallaxMessage(private val message: Message) {
@@ -57,7 +58,7 @@ class ParallaxMessage(private val message: Message) {
 		message.editMessage(embed.toDiscordEmbed()).complete()
 	}
 
-	fun edit(mirror: ScriptObjectMirror) {
+	fun edit(mirror: Value) {
 		edit(ParallaxUtils.toParallaxEmbed(mirror))
 	}
 

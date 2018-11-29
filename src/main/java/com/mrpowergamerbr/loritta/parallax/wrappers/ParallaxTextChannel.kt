@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import jdk.nashorn.api.scripting.ScriptObjectMirror
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
+import org.graalvm.polyglot.Value
 
 class ParallaxTextChannel(private val textChannel: TextChannel) {
 	val calculatedPosition get() = textChannel.positionRaw
@@ -44,7 +44,7 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: permissionsFor
 
 	fun send(content: Any) {
-		if (content is ScriptObjectMirror) {
+		if (content is Value) {
 			send(ParallaxUtils.toParallaxEmbed(content))
 			return
 		}
