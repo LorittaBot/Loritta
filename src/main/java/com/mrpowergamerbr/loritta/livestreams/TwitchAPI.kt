@@ -118,14 +118,18 @@ class TwitchAPI {
 			request.form(form)
 
 		if (request.code() == 429) { // too many requests
-			val resetsAt = (request.header("Ratelimit-Reset").toLong() * 1000) - System.currentTimeMillis()
-			logger.debug { "Rate limit atingido! Nós iremos continuar daqui ${resetsAt}ms" }
-			ratelimitResetsAt = resetsAt
-			delay(resetsAt)
+			ratelimitResetsAt = request.header("Ratelimit-Reset").toLong() * 1000
+			waitUntilRatelimitIsLifted()
 			return makeTwitchApiRequest(url, method, form)
 		}
 
 		return request
+	}
+
+	private suspend fun waitUntilRatelimitIsLifted() {
+		val delay = ratelimitResetsAt - System.currentTimeMillis()
+		logger.info { "Rate limit atingido! Nós iremos continuar daqui ${delay}ms" }
+		delay(delay)
 	}
 
 	class GameInfo(
