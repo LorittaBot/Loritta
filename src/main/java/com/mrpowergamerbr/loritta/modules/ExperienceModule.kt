@@ -51,6 +51,10 @@ class ExperienceModule : MessageReceivedModule {
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
 					val profile = serverConfig.getUserData(event.author.idLong)
+
+					transaction(Databases.loritta) {
+						profile.xp = newProfileXp
+					}
 				}
 			}
 		}
