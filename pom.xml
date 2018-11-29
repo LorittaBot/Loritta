@@ -47,6 +47,14 @@
             <id>maven-repo</id>
             <url>https://raw.githubusercontent.com/JRakNet/MavenRepository/master</url>
         </repository>
+        <repository>
+            <id>perfectdreams-repo</id>
+            <url>https://repo.perfectdreams.net/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -82,18 +90,14 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
-            <groupId>graaljs</groupId>
-            <artifactId>graaljs</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/graaljs.jar</systemPath>
+            <groupId>com.oracle.graaljs</groupId>
+            <artifactId>graal-js</artifactId>
+            <version>1.0.0-rc9</version>
         </dependency>
         <dependency>
-            <groupId>tregex</groupId>
+            <groupId>com.oracle.tregex</groupId>
             <artifactId>tregex</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/tregex.jar</systemPath>
+            <version>1.0.0-rc9</version>
         </dependency>
         <dependency>
             <groupId>com.oracle.truffle</groupId>
