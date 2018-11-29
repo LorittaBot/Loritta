@@ -118,7 +118,7 @@ class TwitchAPI {
 			request.form(form)
 
 		if (request.code() == 429) { // too many requests
-			ratelimitResetsAt = request.header("Ratelimit-Reset").toLong()
+			ratelimitResetsAt = request.header("Ratelimit-Reset").toLong() * 1000
 			waitUntilRatelimitIsLifted()
 			return makeTwitchApiRequest(url, method, form)
 		}
