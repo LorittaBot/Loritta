@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -326,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditEntry = event.guild.auditLogs.complete().firstOrNull()
+							val auditEntry = event.guild.auditLogs.await().firstOrNull()
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
 								if (auditEntry.targetIdLong == storedMessage.authorId) {
