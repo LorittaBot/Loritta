@@ -586,7 +586,7 @@ class CommandManager {
 				}
 				return true
 			} catch (e: Exception) {
-				AbstractCommand.logger.error("Exception ao executar comando ${this.javaClass.simpleName}", e)
+				AbstractCommand.logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado
