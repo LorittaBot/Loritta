@@ -41,7 +41,7 @@ class QuirkyModule : MessageReceivedModule {
 			14 -> message.addReaction("idai:334709223588102144").queue()
 		}
 		
-		if (chance(0.50)) {
+		if (chance(0.10)) {
 			event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()} <:lori_ok_hand:426183783008698391>").queue()
 		}
 
