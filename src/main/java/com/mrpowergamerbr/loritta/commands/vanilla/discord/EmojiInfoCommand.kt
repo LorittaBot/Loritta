@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Emote
+import net.dv8tion.jda.core.entities.MessageEmbed
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -84,22 +85,34 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 	}
 
 	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: Emote) {
-		val canUse = lorittaShards.getEmoteById(emote.id) != null
-		val emoteTitle = if (canUse)
-			emote.asMention
-		else
-			"✨"
-		val embed = EmbedBuilder()
-		embed.setColor(Constants.DISCORD_BLURPLE)
-		embed.setTitle("$emoteTitle ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
-		embed.setThumbnail(emote.imageUrl)
-		embed.addField("\uD83D\uDD16 ${context.locale.format { commands.discord.emojiInfo.emojiName }}", "`${emote.name}`", true)
-		embed.addField("\uD83D\uDCBB ${context.locale.format { commands.discord.emojiInfo.emojiId }}", "`${emote.id}`", true)
-		embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`${emote.asMention}`", true)
-		embed.addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
-		if (emote.guild != null)
-			embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${emote.guild.name}`", true)
+		context.sendMessage(context.getAsMention(true), getDiscordEmoteInfoEmbed(context, emote))
+	}
 
-		context.sendMessage(context.getAsMention(true), embed.build())
+	companion object {
+		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: Emote): MessageEmbed {
+			// Se o usuário usar um emoji de um servidor que a Lori NÃO compartilha, então ela não vai conseguir usar!
+			// Por isto, iremos pegar se ela conhece o emoji a partir das shards
+			val cachedEmote = lorittaShards.getEmoteById(emote.id)
+			val canUse = cachedEmote != null
+			// E vamos pegar a fonte da guild a partir do nosso emoji cacheado, já que ela pode conhecer em outra shard, mas não na atual!
+			val sourceGuild = cachedEmote?.guild
+
+			val emoteTitle = if (canUse)
+				emote.asMention
+			else
+				"✨"
+			val embed = EmbedBuilder()
+			embed.setColor(Constants.DISCORD_BLURPLE)
+			embed.setTitle("$emoteTitle ${context.locale.format { commands.discord.emojiInfo.aboutEmoji }}")
+			embed.setThumbnail(emote.imageUrl)
+			embed.addField("\uD83D\uDD16 ${context.locale.format { commands.discord.emojiInfo.emojiName }}", "`${emote.name}`", true)
+			embed.addField("\uD83D\uDCBB ${context.locale.format { commands.discord.emojiInfo.emojiId }}", "`${emote.id}`", true)
+			embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`${emote.asMention}`", true)
+			embed.addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
+			if (sourceGuild != null)
+				embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${emote.guild.name}`", true)
+
+			return embed.build()
+		}
 	}
 }
