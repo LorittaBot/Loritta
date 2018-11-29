@@ -14,7 +14,7 @@ class BomDiaECiaModule : MessageReceivedModule {
 	}
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(event.channel.id, BomDiaECia.YudiTextChannelInfo())
+		val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(event.channel.id, BomDiaECia.YudiTextChannelInfo(serverConfig.commandPrefix))
 		activeTextChannelInfo.lastMessageSent = System.currentTimeMillis()
 		activeTextChannelInfo.users.add(event.author)
 		loritta.bomDiaECia.activeTextChannels[event.channel.id] = activeTextChannelInfo
