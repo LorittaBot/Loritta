@@ -88,7 +88,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			try {
 				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
 				future.get(15, TimeUnit.SECONDS)
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				e.printStackTrace()
 				val builder = EmbedBuilder()
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
@@ -135,20 +135,18 @@ var getGuild=function() { return contexto.getGuild(); };"""
 						"$inlineMethods\n" +
 						"$javaScript\n })", ogContext, parallaxContext))
 				future.get(15, TimeUnit.SECONDS)
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				e.printStackTrace()
 				val builder = EmbedBuilder()
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 				var description = "Irineu, você não sabe e nem eu!"
-				if (e is ExecutionException) {
-					description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-				} else {
-					if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
-						description = (e.cause as Throwable).message!!.trim { it <= ' ' }
-					} else if (e != null) {
-						description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
-					}
+
+				if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
+					description = (e.cause as Throwable).message!!.trim { it <= ' ' }
+				} else if (e != null) {
+					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
 				}
+
 				builder.setDescription("```$description```")
 				builder.setFooter(
 						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)

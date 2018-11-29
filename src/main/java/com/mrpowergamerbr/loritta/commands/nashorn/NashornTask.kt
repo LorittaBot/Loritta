@@ -50,7 +50,7 @@ internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var
 			val invocable = engine as Invocable
 			engine.eval(javaScript)
 			invocable.invokeFunction("nashornCommand", context)
-		} catch (e: Exception) {
+		} catch (e: Throwable) {
 			e.printStackTrace()
 			val builder = EmbedBuilder()
 			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")

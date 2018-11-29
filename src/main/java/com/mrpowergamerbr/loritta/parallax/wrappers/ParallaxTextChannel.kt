@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.TextChannel
 import org.graalvm.polyglot.Value
 
@@ -44,11 +45,19 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: permissionsFor
 
 	fun send(content: Any) {
-		println("Sending $content")
-		if (content is Value) {
+		if (content is Value) { // Conteúdo passado diretamente pelo GraalJS (ao usar eval)
 			send(ParallaxUtils.toParallaxEmbed(content))
 			return
 		}
+		if (content is Map<*, *>) { // PolyglotMap do GraalJS (chamar a função pelo JS)
+			send(ParallaxUtils.toParallaxMessage(content))
+			return
+		}
+		if (content is Message) { // Mensagem do Discord
+			textChannel.sendMessage(content).complete()
+			return
+		}
+
 		if (content is ParallaxEmbed) {
 			textChannel.sendMessage(content.toDiscordEmbed()).complete()
 		} else {
