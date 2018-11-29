@@ -5,14 +5,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.livestreams.TwitchUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
 
 class NewLivestreamThread : Thread("Livestream Query Thread") {
@@ -167,7 +164,6 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 	companion object {
 		var isLivestreaming = mutableSetOf<String>()
-		val gameInfoCache = ConcurrentHashMap<String, GameInfo>()
 		val displayNameCache = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(NewLivestreamThread::class.java)
 
@@ -175,45 +171,6 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 		val isMixerLivestreaming = mutableSetOf<String>()
 		// Channel Username -> Channel ID
 		val mixerUsernameToId = ConcurrentHashMap<String, Long>()
-
-		fun getUserDisplayName(userLogin: String): String? {
-			val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/users?login=${URLEncoder.encode(userLogin.trim(), "UTF-8")}").body()
-
-			val response = jsonParser.parse(payload).obj
-
-			try {
-				val data = response["data"].array
-
-				logger.info("getUserDisplayName payload contém ${data.size()} objetos!")
-
-				if (data.size() == 0) {
-					return null
-				}
-
-				val channel = data[0].obj
-				return channel["display_name"].string
-			} catch (e: IllegalStateException) {
-				logger.error("Estado inválido ao manipular payload de getUserDisplayName!", e)
-				return null
-			}
-		}
-
-		fun getGameInfo(gameId: String): GameInfo? {
-			val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/games?id=$gameId")
-					.body()
-
-			val response = jsonParser.parse(payload).obj
-
-			val data = response["data"].array
-
-			if (data.size() == 0) {
-				return null
-			}
-
-			val channel = data[0].obj
-
-			return GSON.fromJson(channel)
-		}
 
 		class LivestreamInfo(
 				val id: String,
@@ -232,13 +189,6 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val language: String,
 				@SerializedName("thumbnail_url")
 				val thumbnailUrl: String
-		)
-
-		class GameInfo(
-				@SerializedName("box_art_url")
-				val boxArtUrl: String,
-				val id: String,
-				val name: String
 		)
 	}
 

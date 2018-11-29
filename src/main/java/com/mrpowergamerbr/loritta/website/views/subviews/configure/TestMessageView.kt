@@ -7,10 +7,11 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
@@ -58,7 +59,7 @@ class TestMessageView : ConfigureView() {
 			val channelUrl = receivedPayload["channelUrl"].string
 			val channelUserLogin = channelUrl.split("/").last()
 
-			val displayName = NewLivestreamThread.getUserDisplayName(channelUserLogin)
+			val displayName = runBlocking { loritta.twitch.getUserLogin(channelUserLogin) }?.displayName
 
 			if (displayName == null) {
 				response["error"] = "Canal inválido"

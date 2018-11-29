@@ -1,11 +1,10 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.livestreams.TwitchUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.runBlocking
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -27,17 +26,13 @@ class APIGetTwitchInfoView : NoVarsView() {
 		val channelLink = req.param("channelLink").value()
 
 		val userLogin = channelLink.split("/").last()
-		val payload = TwitchUtils.makeTwitchApiRequest("https://api.twitch.tv/helix/users?login=$userLogin").body()
+		val payload = runBlocking { loritta.twitch.getUserLogin(userLogin) }
 
-		val response = jsonParser.parse(payload).obj
-
-		val data = response["data"].array
-
-		if (data.size() == 0) {
+		if (payload == null) {
 			json["error"] = "Unknown channel"
 			return json.toString()
 		}
 
-		return data[0].toString()
+		return gson.toJson(payload)
 	}
 }
