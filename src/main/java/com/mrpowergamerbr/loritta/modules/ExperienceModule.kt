@@ -53,7 +53,7 @@ class ExperienceModule : MessageReceivedModule {
 					val profile = serverConfig.getUserData(event.author.idLong)
 
 					transaction(Databases.loritta) {
-						profile.xp = newProfileXp
+						profile.xp += gainedXp
 					}
 				}
 			}
