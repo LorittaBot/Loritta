@@ -44,6 +44,7 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: permissionsFor
 
 	fun send(content: Any) {
+		println("Sending $content")
 		if (content is Value) {
 			send(ParallaxUtils.toParallaxEmbed(content))
 			return
