@@ -82,6 +82,30 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
+            <groupId>graaljs</groupId>
+            <artifactId>graaljs</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/graaljs.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>tregex</groupId>
+            <artifactId>tregex</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/tregex.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.truffle</groupId>
+            <artifactId>truffle-api</artifactId>
+            <version>1.0.0-rc7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <version>1.0.0-rc7</version>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>1.0.1</version>

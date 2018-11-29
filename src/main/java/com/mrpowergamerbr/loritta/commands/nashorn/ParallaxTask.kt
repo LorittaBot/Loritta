@@ -7,13 +7,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.graalvm.polyglot.Context
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.Callable
-import javax.script.Invocable
-import javax.script.ScriptEngine
 
-internal class ParallaxTask(var engine: ScriptEngine, var javaScript: String, var ogContext: CommandContext, var context: ParallaxContext) : Callable<Void> {
+internal class ParallaxTask(var graalContext: Context, var javaScript: String, var ogContext: CommandContext, var context: ParallaxContext) : Callable<Void> {
 	var running = true
 	var autoKill = 0
 
@@ -47,9 +46,9 @@ internal class ParallaxTask(var engine: ScriptEngine, var javaScript: String, va
 				}
 			}
 			t.start()
-			val invocable = engine as Invocable
-			engine.eval(javaScript)
-			invocable.invokeFunction("parallaxCommand", context)
+
+			val value = graalContext.eval("js", javaScript)
+			value.execute(context)
 		} catch (e: Exception) {
 			e.printStackTrace()
 			val builder = EmbedBuilder()
