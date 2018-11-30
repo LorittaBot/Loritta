@@ -12,8 +12,8 @@ object ParallaxHttp {
 		val connection = imageUrl.openConnection() as HttpURLConnection
 		connection.setRequestProperty("User-Agent", Constants.USER_AGENT)
 
-		connection.readTimeout = 10
-		connection.connectTimeout = 10
+		connection.readTimeout = 10000
+		connection.connectTimeout = 10000
 
 		return ParallaxHttpResponse(connection)
 	}
