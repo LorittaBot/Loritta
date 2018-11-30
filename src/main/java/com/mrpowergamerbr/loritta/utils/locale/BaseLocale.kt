@@ -148,6 +148,7 @@ open class BaseLocale {
 		lateinit var doesntHavePermissionDiscord: String
 		lateinit var loriDoesntHavePermissionDiscord: String
 		lateinit var commandOnlyForOwner: String
+		lateinit var imageTooLarge: String
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String

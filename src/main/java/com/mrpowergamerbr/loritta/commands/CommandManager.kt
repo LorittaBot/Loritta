@@ -29,6 +29,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.util.*
 
 class CommandManager {
@@ -140,11 +141,11 @@ class CommandManager {
 			commandMap.add(RegisterCommand())
 
 		// =======[ ACTIONS ]======
-        commandMap.add(AttackCommand())
-        commandMap.add(DanceCommand())
+		commandMap.add(AttackCommand())
+		commandMap.add(DanceCommand())
 		commandMap.add(HugCommand())
-        commandMap.add(KissCommand())
-        commandMap.add(SlapCommand())
+		commandMap.add(KissCommand())
+		commandMap.add(SlapCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
@@ -337,21 +338,21 @@ class CommandManager {
 		}
 
 		if (valid) {
+			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
+			val start = System.currentTimeMillis()
+
+			var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
+			var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
+			var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
+			if (byMention) {
+				args = args.remove(0)
+				rawArgs = rawArgs.remove(0)
+				strippedArgs = strippedArgs.remove(0)
+			}
+
+			val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
+
 			try {
-				val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
-				val start = System.currentTimeMillis()
-
-				var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
-				if (byMention) {
-					args = args.remove(0)
-					rawArgs = rawArgs.remove(0)
-					strippedArgs = strippedArgs.remove(0)
-				}
-
-				val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
-
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					AbstractCommand.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				} else {
@@ -586,17 +587,30 @@ class CommandManager {
 				}
 				return true
 			} catch (e: Exception) {
+				if (e is ErrorResponseException) {
+					if (e.errorCode == 40005) { // Request entity too large
+						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
+							context.reply(
+									LoriReply(
+											context.locale.format("8MB", Emotes.LORI_TEMMIE) { commands.imageTooLarge },
+											"\uD83E\uDD37"
+									)
+							)
+						return true
+					}
+				}
+
 				AbstractCommand.logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
-				var reply = "\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]
+				val reply = "\uD83E\uDD37 **|** " + mention + locale["ERROR_WHILE_EXECUTING_COMMAND"]
 
 				if (!e.message.isNullOrEmpty())
 					reply + " ${e.message!!.escapeMentions()}"
 
-				if (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk())
+				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply).queue()
 				return true
 			}
