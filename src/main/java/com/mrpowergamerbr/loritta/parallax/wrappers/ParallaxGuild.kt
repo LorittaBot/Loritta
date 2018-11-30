@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.Guild
 
 class ParallaxGuild(private val guild: Guild) {
@@ -20,5 +22,25 @@ class ParallaxGuild(private val guild: Guild) {
 
 	fun getTextChannelsByName(name: String, ignoreCase: Boolean = false): List<ParallaxTextChannel> {
 		return guild.getTextChannelsByName(name, ignoreCase).map { ParallaxTextChannel(it) }
+	}
+
+	@JvmOverloads
+	fun ban(user: ParallaxUser, options: Map<String, Any> = mapOf()) {
+		ban(user, options)
+	}
+
+	@JvmOverloads
+	fun ban(user: ParallaxUser, punisher: ParallaxUser, options: Map<String, Any> = mapOf()) {
+		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+		BanCommand.ban(
+				loritta.getServerConfigForGuild(guild.id),
+				guild,
+				punisher.user,
+				loritta.getLocaleById(serverConfig.localeId),
+				user.user,
+				options["reason"] as String? ?: "",
+				options["isSilent"] as Boolean? ?: false,
+				options["days"] as Int? ?: 0
+		)
 	}
 }
