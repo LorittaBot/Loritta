@@ -127,6 +127,9 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var message = context.message;
 				var channel = context.message.channel;
 				var client = context.client;
+				var RichEmbed = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed')
+				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
+				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
 			""".trimIndent()
 			val executor = Executors.newSingleThreadExecutor()
 			try {

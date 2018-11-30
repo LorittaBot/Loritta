@@ -26,7 +26,7 @@ class ParallaxGuild(private val guild: Guild) {
 
 	@JvmOverloads
 	fun ban(user: ParallaxUser, options: Map<String, Any> = mapOf()) {
-		ban(user, options)
+		ban(user, ParallaxUser(guild.selfMember.user), options)
 	}
 
 	@JvmOverloads
