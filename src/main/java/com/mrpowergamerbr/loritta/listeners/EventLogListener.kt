@@ -470,7 +470,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.auditLogs.complete().first()
+					val auditLog = event.guild.auditLogs.await().first()
 
 					if (auditLog.type == ActionType.BAN) {
 						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}"
