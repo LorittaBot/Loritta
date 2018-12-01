@@ -28,6 +28,16 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ")
 
+			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
+				context.reply(
+						LoriReply(
+								context.locale["YOUTUBE_COULDNT_FIND", query],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
 			val payload = loritta.twitch.getUserLogin(query)
 
 			if (payload == null) {

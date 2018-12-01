@@ -69,6 +69,7 @@ object Constants {
 			"[\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA]\uFE0F?)+")
 
 	val REPEATING_CHARACTERS_REGEX = Regex("(.)\\1+")
+	val TWITCH_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9][\\w]{3,24}\$")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }

@@ -5,10 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -58,6 +55,10 @@ class CreateTwitchWebhooksTask : Runnable {
 
 						val userLogin = channel.channelUrl!!.split("/").last()
 						if (userLogin.isBlank())
+							continue
+
+						// Algumas verificações antes de adicionar
+						if (!Constants.TWITCH_USERNAME_PATTERN.matcher(userLogin).matches())
 							continue
 
 						userLogins.add(userLogin)
