@@ -157,7 +157,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
@@ -175,7 +175,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							false,
 							7
 					)
-					return@execute
+					return@launch
 				}
 
 				if (conf.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
@@ -189,7 +189,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							false,
 							7
 					)
-					return@execute
+					return@launch
 				}
 
 				for (eventHandler in conf.nashornEventHandlers) {
@@ -210,7 +210,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (mute != null) {
 					val locale = loritta.getLocaleById(conf.localeId)
-					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(conf.localeId)) ?: return@execute
+					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(conf.localeId)) ?: return@launch
 
 					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
 
@@ -229,14 +229,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		// Remover thread de role removal caso o usuário tenha saido do servidor
 		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + event.member.user.id]
-		if (job != null)
-			job.cancel()
+		job?.cancel()
 		MuteCommand.roleRemovalJobs.remove(event.guild.id + "#" + event.member.user.id)
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				if (event.user.id == Loritta.config.clientId) {
-					return@execute
+					return@launch
 				}
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
