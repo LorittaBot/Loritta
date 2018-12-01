@@ -30,7 +30,7 @@ class AutomodModule : MessageReceivedModule {
 		var SIMILAR_MESSAGE_MULTIPLIER = 0.0020
 		var SIMILARITY_THRESHOLD = 7
 		var IN_ROW_SAME_USER_SIMILAR_SCORE = 0.064
-		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.020
+		var IN_ROW_DIFFERENT_USER_SIMILAR_SCORE = 0.056
 		var DISTANCE_MULTIPLIER = 0.02
 		var ATTACHED_IMAGE_SCORE = 0.015
 		var SAME_LINK_SCORE = 0.005
@@ -112,7 +112,7 @@ class AutomodModule : MessageReceivedModule {
 						if (0 > streamFloodCounter)
 							streamFloodCounter = 0
 
-						val isStreamFlood = 2 > streamFloodCounter
+						val isStreamFlood = 3 > streamFloodCounter
 
 						val threshold = LevenshteinDistance.getDefaultInstance().apply(compareContent.toLowerCase(), content.toLowerCase())
 
@@ -121,11 +121,20 @@ class AutomodModule : MessageReceivedModule {
 						}
 
 						if (5 >= threshold && isStreamFlood) { // Vamos aumentar os pontos caso sejam mensagens parecidas em seguida
+							// threshold = 0..5
+							// vamos aumentar as chances caso o conteúdo seja similar
+							// 0 == * 1
+							// 1 == * 0.75
+							// etc
+							// 5 - 0 = 5
+							// 5 - 1 = 4
+							val similarityMultiplier = (5 - Math.min(5, threshold))
+
 							raidingPercentage += if (wrapper.author.id == message.author.id) {
 								AutomodModule.IN_ROW_SAME_USER_SIMILAR_SCORE
 							} else {
 								AutomodModule.IN_ROW_DIFFERENT_USER_SIMILAR_SCORE
-							} * distanceMultiplier * withoutEmoteBlankMultiplier
+							} * distanceMultiplier * withoutEmoteBlankMultiplier * (similarityMultiplier * 0.2)
 
 							// analysis(analysis, "+ Stream Flood (mesmo usuário: ${(wrapper.author.id == message.author.id)}) - Valor atual é $raidingPercentage")
 

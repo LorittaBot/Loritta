@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiInfoCommand
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -105,14 +106,9 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			if (index != -1) {
 				val emote = queriedEmotes[index]
 
-				val embed = EmbedBuilder().apply {
-					setTitle("${emote.asMention} ${emote.name}")
-					setThumbnail(emote.imageUrl)
-					setDescription(context.locale["EMOJISEARCH_FoundAt", emote.guild.name] + "\n\n[Download](${emote.imageUrl})")
-					setColor(Constants.DISCORD_BLURPLE)
-				}
+				val emojiInfoEmbed = EmojiInfoCommand.getDiscordEmoteInfoEmbed(context, emote)
 
-				val emoteInfo = context.sendMessage(embed.build())
+				val emoteInfo = context.sendMessage(emojiInfoEmbed)
 
 				emoteInfo.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "⏪") {

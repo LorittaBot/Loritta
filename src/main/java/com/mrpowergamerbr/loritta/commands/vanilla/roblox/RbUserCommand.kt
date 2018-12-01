@@ -116,7 +116,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 
 			val totalFriends = friendsResponse["TotalFriends"].int
 
-			var bufferedImage = BufferedImage(333, 250, BufferedImage.TYPE_INT_ARGB)
+			var bufferedImage = BufferedImage(333, 220, BufferedImage.TYPE_INT_ARGB)
 
 			var x = 0
 			var y = 0
@@ -128,7 +128,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 				for (coll in robloxCollections["CollectionsItems"].array) {
-					if (x >= 333) {
+					if (x > 275) {
 						y += 55
 						x = 0
 					}
@@ -150,7 +150,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
 				for (coll in robloxCollections["Assets"].array) {
-					if (x >= 333) {
+					if (x > 275) {
 						y += 55
 						x = 0
 					}
@@ -166,9 +166,9 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			y += 55
 			x = 0
 			run {
-				val gameCardsThumbnail = page.getElementsByClass("game-card-thumb")
+				val gameCardsThumbnail = page.getElementsByClass("game-cards").first().getElementsByClass("game-card-thumb")
 				for (gameCard in gameCardsThumbnail) {
-					if (x >= 333) {
+					if (x > 275) {
 						y += 55
 						x = 0
 					}

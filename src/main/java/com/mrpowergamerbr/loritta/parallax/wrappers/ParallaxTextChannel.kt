@@ -1,9 +1,14 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import jdk.nashorn.api.scripting.ScriptObjectMirror
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.TextChannel
+import org.graalvm.polyglot.Value
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 class ParallaxTextChannel(private val textChannel: TextChannel) {
 	val calculatedPosition get() = textChannel.positionRaw
@@ -43,16 +48,43 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: overwritePermissions
 	// TODO: permissionsFor
 
-	fun send(content: Any) {
-		if (content is ScriptObjectMirror) {
-			send(ParallaxUtils.toParallaxEmbed(content))
-			return
+	fun send(content: Any, attachment: ParallaxAttachment): ParallaxMessage {
+		return send(content, ParallaxMessageOptions(attachment))
+	}
+
+	@JvmOverloads
+	fun send(content: Any, options: ParallaxMessageOptions? = null): ParallaxMessage {
+		if (content is Value) { // Conteúdo passado diretamente pelo GraalJS (ao usar eval)
+			return send(ParallaxUtils.toParallaxEmbed(content), options)
 		}
+		if (content is Map<*, *>) { // PolyglotMap do GraalJS (chamar a função pelo JS)
+			return send(ParallaxUtils.toParallaxMessage(content), options)
+		}
+
+		if (content is Message) { // Mensagem do Discord
+			if (options?.attachment != null) {
+				val outputStream = ByteArrayOutputStream()
+				outputStream.use {
+					ImageIO.write(options.attachment.image.image, "png", it)
+				}
+
+				val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+
+				return ParallaxMessage(textChannel.sendFile(inputStream, "image.png", content).complete())
+			}
+			return ParallaxMessage(textChannel.sendMessage(content).complete())
+		}
+
+		val message = MessageBuilder()
+
 		if (content is ParallaxEmbed) {
-			textChannel.sendMessage(content.toDiscordEmbed()).complete()
+			message.setContent(" ")
+			message.setEmbed(content.toDiscordEmbed())
 		} else {
-			textChannel.sendMessage(content.toString()).complete()
+			message.setContent(content.toString())
 		}
+
+		return send(message.build(), options)
 	}
 
 	fun setName(name: String, reason: String? = null) {

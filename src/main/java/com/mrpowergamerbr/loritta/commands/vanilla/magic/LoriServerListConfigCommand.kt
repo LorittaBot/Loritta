@@ -69,6 +69,21 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			)
 		}
 
+		if (arg0 == "network_unban" && arg1 != null) {
+			val userId = arg1
+
+			val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.guildId == userId }
+					.toMutableList()
+
+			loritta.networkBanManager.networkBannedUsers = filtered
+
+			context.reply(
+					LoriReply(
+							"Usuário desbanido na Loritta Bans Network!"
+					)
+			)
+		}
+
 		if (arg0 == "set_sponsor" && arg1 != null && arg2 != null && arg3 != null) {
 			val guild = lorittaShards.getGuildById(arg1)!!
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)

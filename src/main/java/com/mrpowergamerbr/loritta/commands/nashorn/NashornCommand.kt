@@ -11,6 +11,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.bson.types.ObjectId
+import org.graalvm.polyglot.Context
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.ExecutionException
@@ -87,7 +88,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			try {
 				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
 				future.get(15, TimeUnit.SECONDS)
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				e.printStackTrace()
 				val builder = EmbedBuilder()
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
@@ -109,10 +110,13 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			}
 			executor.shutdownNow()
 		} else {
-			val factory = NashornScriptEngineFactory()
-
-			val engine = factory.getScriptEngine(arrayOf("-doe"), this::class.java.classLoader, NashornClassFilter())
-			val invocable = engine as Invocable
+			val graalContext = Context.newBuilder()
+					.hostClassFilter {
+						it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers")
+					}
+					.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
+					.option("js.nashorn-compat", "true")
+					.build()
 
 			// Funções inline para facilitar a programação de comandos
 			val inlineMethods = """
@@ -123,26 +127,29 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var message = context.message;
 				var channel = context.message.channel;
 				var client = context.client;
+				var RichEmbed = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed')
+				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
+				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
 			""".trimIndent()
 			val executor = Executors.newSingleThreadExecutor()
 			try {
 				val parallaxContext = ParallaxContext(ogContext)
-				val future = executor.submit(ParallaxTask(engine, "$blacklisted function parallaxCommand(context) {\n$inlineMethods\n$javaScript\n}", ogContext, parallaxContext))
+				val future = executor.submit(ParallaxTask(graalContext, "(function(context) { \n" +
+						"$inlineMethods\n" +
+						"$javaScript\n })", ogContext, parallaxContext))
 				future.get(15, TimeUnit.SECONDS)
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				e.printStackTrace()
 				val builder = EmbedBuilder()
 				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 				var description = "Irineu, você não sabe e nem eu!"
-				if (e is ExecutionException) {
-					description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-				} else {
-					if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
-						description = (e.cause as Throwable).message!!.trim { it <= ' ' }
-					} else if (e != null) {
-						description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
-					}
+
+				if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
+					description = (e.cause as Throwable).message!!.trim { it <= ' ' }
+				} else if (e != null) {
+					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
 				}
+
 				builder.setDescription("```$description```")
 				builder.setFooter(
 						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)

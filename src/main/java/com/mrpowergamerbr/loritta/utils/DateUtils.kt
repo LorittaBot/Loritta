@@ -64,7 +64,7 @@ object DateUtils {
 				sb.append(" ").append(diff).append(" ").append(names[i * 2 + (if (diff > 1) 1 else 0)])
 			}
 		}
-		return if (sb.length == 0) {
+		return if (sb.isEmpty()) {
 			locale["DATEUTILS_Now"]
 		} else sb.toString().trim { it <= ' ' }
 	}

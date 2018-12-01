@@ -7,12 +7,12 @@ import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
@@ -233,7 +233,7 @@ class PubSubHubbubCallbackController {
 										message = "{link}"
 									}
 
-									val gameInfo = NewLivestreamThread.getGameInfo(gameId)
+									val gameInfo = runBlocking { loritta.twitch.getGameInfo(gameId) }
 
 									val customTokens = mapOf(
 											"game" to (gameInfo?.name ?: "???"),

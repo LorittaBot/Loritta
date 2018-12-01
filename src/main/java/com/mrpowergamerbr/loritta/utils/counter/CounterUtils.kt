@@ -27,6 +27,10 @@ object CounterUtils {
 
 	fun getEmojis(theme: CounterThemeName): List<String> {
 		return when (theme) {
+			CounterThemeName.RED -> CounterThemes.RED
+			CounterThemeName.GREEN -> CounterThemes.GREEN
+			CounterThemeName.BLURPLE -> CounterThemes.BLURPLE
+			CounterThemeName.BLACK -> CounterThemes.BLACK
 			else -> CounterThemes.DEFAULT
 		}
 	}

@@ -2,10 +2,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
@@ -30,6 +27,22 @@ class SendMessageGuildController {
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
 	fun sendMessage(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local guild: Guild, @Body rawMessage: String) {
 		res.type(MediaType.json)
+
+		// Rate Limit
+		val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
+
+		val diff = System.currentTimeMillis() - last
+		if (2500 >= diff) {
+			res.send(
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.RATE_LIMIT,
+							"Rate limit!"
+					)
+			)
+			return
+		}
+
+		loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
 
 		val json = jsonParser.parse(rawMessage).obj
 		val channelId = json["channelId"].nullString

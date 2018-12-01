@@ -297,7 +297,7 @@ object LorittaUtilsKotlin {
 		val embed = EmbedBuilder()
 		embed.setTitle("\uD83C\uDFB5 ${playingTrack.info.title}", playingTrack.info.uri)
 		embed.setColor(Color(93, 173, 236))
-		val millis = playingTrack.duration
+		val millis = manager.player.playingTrack.duration
 
 		val fancy = String.format("%02d:%02d",
 				TimeUnit.MILLISECONDS.toMinutes(millis),
@@ -305,7 +305,7 @@ object LorittaUtilsKotlin {
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
 		)
 
-		val elapsedMillis = playingTrack.position
+		val elapsedMillis = manager.player.trackPosition
 
 		val elapsed = String.format("%02d:%02d",
 				TimeUnit.MILLISECONDS.toMinutes(elapsedMillis),

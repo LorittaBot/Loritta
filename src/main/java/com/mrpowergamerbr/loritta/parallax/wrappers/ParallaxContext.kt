@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import kotlinx.coroutines.runBlocking
 
 class ParallaxContext(private val context: CommandContext) {
 	private val rateLimiter = ParallaxRateLimiter()
@@ -12,4 +13,9 @@ class ParallaxContext(private val context: CommandContext) {
 	val args = context.args
 	val rawArgs = context.rawArgs
 	val strippedArgs = context.strippedArgs
+
+	fun getUserAt(argument: Int): ParallaxUser? {
+		val backed = runBlocking { context.getUserAt(argument) }
+		return backed?.let { ParallaxUser(it) }
+	}
 }

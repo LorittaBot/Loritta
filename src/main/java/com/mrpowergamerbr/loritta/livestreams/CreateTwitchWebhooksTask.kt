@@ -5,10 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -60,6 +57,10 @@ class CreateTwitchWebhooksTask : Runnable {
 						if (userLogin.isBlank())
 							continue
 
+						// Algumas verificações antes de adicionar
+						if (!Constants.TWITCH_USERNAME_PATTERN.matcher(userLogin).matches())
+							continue
+
 						userLogins.add(userLogin)
 					}
 					list.add(server)
@@ -67,7 +68,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			}
 
 			// Transformar todos os nossos user logins em user IDs, para que seja usado depois
-			TwitchUtils.queryUserLogins(userLogins.toMutableList())
+			val streamerInfos = runBlocking { loritta.twitch.getUserLogins(userLogins.toMutableList()) }
 
 			val twitchWebhookFile = File(Loritta.FOLDER, "twitch_webhook.json")
 			if (twitchWebhooks == null && twitchWebhookFile.exists()) {
@@ -101,13 +102,13 @@ class CreateTwitchWebhooksTask : Runnable {
 
 			val webhookCount = AtomicInteger()
 
-			val tasks = notCreatedYetChannels.filter { TwitchUtils.userLogin2Id[it] != null }.map { userLogin ->
+			val tasks = notCreatedYetChannels.filter { streamerInfos[it] != null }.map { userLogin ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
-						val userId = TwitchUtils.userLogin2Id[userLogin]!!
+						val userId = streamerInfos[userLogin]?.id ?: return@async null
 
 						// Iremos primeiro desregistrar todos os nossos testes marotos
-						TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						loritta.twitch.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
@@ -118,7 +119,7 @@ class CreateTwitchWebhooksTask : Runnable {
 								.ok()
 
 						// E agora realmente iremos criar!
-						val code = TwitchUtils.makeTwitchApiRequestSuspend("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						val code = loritta.twitch.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",

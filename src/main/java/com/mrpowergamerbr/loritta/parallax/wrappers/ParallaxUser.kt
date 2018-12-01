@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import net.dv8tion.jda.core.entities.User
 
-open class ParallaxUser(private val user: User) {
+open class ParallaxUser(internal val user: User) {
 	val avatar get() = user.avatarId
 	val avatarURL get() = user.avatarUrl
 	val bot get() = user.isBot

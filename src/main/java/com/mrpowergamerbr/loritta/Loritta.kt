@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.listeners.*
+import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
@@ -156,6 +157,8 @@ class Loritta(config: LorittaConfig) {
 
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
+
+	var twitch = TwitchAPI()
 
 	init {
 		FOLDER = config.lorittaFolder

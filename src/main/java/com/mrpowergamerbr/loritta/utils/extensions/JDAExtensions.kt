@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.Permission.*
+import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageChannel
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -31,6 +33,24 @@ suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String) = th
 suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String, message: Message) = this.sendFile(data, fileName).await()
 suspend fun MessageChannel.sendFileAsync(data: InputStream, fileName: String, message: Message) = this.sendFile(data, fileName).await()
 
+suspend fun Message.edit(message: String, embed: MessageEmbed): Message {
+	return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+}
+
+suspend fun Message.edit(content: Message): Message {
+	if (this.isFromType(ChannelType.PRIVATE) || !this.guild.selfMember.hasPermission(this.textChannel, Permission.MESSAGE_MANAGE)) {
+		// Nós não podemos limpar as reações das mensagens caso a gente esteja em uma DM ou se a Lori não tem permissão para gerenciar mensagens
+		// Nestes casos, iremos apenas deletar a mensagem e reenviar
+		this.delete().queue()
+		return this.channel.sendMessage(content).await()
+	}
+
+	// Se não, vamos apagar as reações e editar a mensagem atual!
+	this.clearReactions().await()
+	this.editMessage(content).await()
+	return this
+}
+
 fun Permission.localized(locale: BaseLocale): String {
 	return when (this) {
 		CREATE_INSTANT_INVITE -> locale.format { discord.permissions.createInstantInvite }
@@ -41,25 +61,25 @@ fun Permission.localized(locale: BaseLocale): String {
 		MANAGE_SERVER -> locale.format { discord.permissions.manageServer }
 		MESSAGE_ADD_REACTION -> locale.format { discord.permissions.addReactions }
 		VIEW_AUDIT_LOGS -> locale.format { discord.permissions.viewAuditLogs }
-		PRIORITY_SPEAKER -> TODO()
-		VIEW_CHANNEL -> TODO()
+		PRIORITY_SPEAKER -> locale.format { discord.permissions.prioritySpeaker }
+		VIEW_CHANNEL -> locale.format { discord.permissions.viewChannel }
 		MESSAGE_READ -> locale.format { discord.permissions.messageRead }
 		MESSAGE_WRITE -> locale.format { discord.permissions.messageWrite }
-		MESSAGE_TTS -> TODO()
+		MESSAGE_TTS -> locale.format { discord.permissions.attachFiles }
 		MESSAGE_MANAGE -> locale.format { discord.permissions.messageManage }
 		MESSAGE_EMBED_LINKS -> locale.format { discord.permissions.messageEmbedLinks }
-		MESSAGE_ATTACH_FILES -> TODO()
+		MESSAGE_ATTACH_FILES -> locale.format { discord.permissions.attachFiles }
 		MESSAGE_HISTORY -> locale.format { discord.permissions.messageHistory }
-		MESSAGE_MENTION_EVERYONE -> TODO()
+		MESSAGE_MENTION_EVERYONE -> locale.format { discord.permissions.mentionEveryone }
 		MESSAGE_EXT_EMOJI -> locale.format { discord.permissions.messageExtEmoji }
-		VOICE_CONNECT -> TODO()
-		VOICE_SPEAK -> TODO()
-		VOICE_MUTE_OTHERS -> TODO()
-		VOICE_DEAF_OTHERS -> TODO()
-		VOICE_MOVE_OTHERS -> TODO()
-		VOICE_USE_VAD -> TODO()
-		NICKNAME_CHANGE -> TODO()
-		NICKNAME_MANAGE -> TODO()
+		VOICE_CONNECT -> locale.format { discord.permissions.connect }
+		VOICE_SPEAK -> locale.format { discord.permissions.speak }
+		VOICE_MUTE_OTHERS -> locale.format { discord.permissions.muteVoiceMembers }
+		VOICE_DEAF_OTHERS -> locale.format { discord.permissions.disableVoiceAudio }
+		VOICE_MOVE_OTHERS -> locale.format { discord.permissions.moveVoiceMembers }
+		VOICE_USE_VAD -> locale.format { discord.permissions.useVoiceDetection }
+		NICKNAME_CHANGE -> locale.format { discord.permissions.changeNickname }
+		NICKNAME_MANAGE -> locale.format { discord.permissions.manageNicknames }
 		MANAGE_ROLES -> locale.format { discord.permissions.manageRoles }
 		MANAGE_PERMISSIONS -> locale.format { discord.permissions.managePermissions }
 		MANAGE_WEBHOOKS -> locale.format { discord.permissions.manageWebhooks }

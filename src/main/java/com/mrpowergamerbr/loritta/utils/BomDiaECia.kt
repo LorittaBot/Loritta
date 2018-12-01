@@ -9,7 +9,10 @@ import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.core.entities.User
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -73,13 +76,11 @@ class BomDiaECia {
 
 		available = true
 
-		val embedsForLocales = mutableMapOf<String, MessageEmbed>()
-
 		currentText = randomTexts[RANDOM.nextInt(randomTexts.size)]
 
 		val obfuscatedText = currentText.toCharArray()
 				.joinToString("", transform = {
-					var obfIdx = RANDOM.nextInt(3)
+					val obfIdx = RANDOM.nextInt(3)
 
 					if (obfIdx == 2)
 						"\u200B$it"
@@ -89,20 +90,16 @@ class BomDiaECia {
 						"\u200C$it"
 				})
 
-		loritta.locales.forEach { localeId, locale ->
-			val embed = EmbedBuilder()
-			embed.setTitle("<:sbt:447560158344904704> Bom Dia & Cia")
-			embed.setDescription("Você aí de casa querendo prêmios agora, neste instante? Então ligue para o Bom Dia & Cia! Corra que apenas a primeira pessoa que ligar irá ganhar prêmios! (Cada tentativa de ligação custa **75 Sonhos**!) `+ligar 4002-8922 ${obfuscatedText}`")
-			embed.setImage(randomImages.getRandom())
-			embed.setColor(Color(74, 39, 138))
-
-			embedsForLocales[localeId] = embed.build()
-		}
-
-		validTextChannels.forEach {
+		validTextChannels.forEach { textChannel ->
 			// TODO: Localization!
 			try {
-				it.sendMessage(embedsForLocales["default"]).queue()
+				val embed = EmbedBuilder()
+				embed.setTitle("<:sbt:447560158344904704> Bom Dia & Cia")
+				embed.setDescription("Você aí de casa querendo prêmios agora, neste instante? Então ligue para o Bom Dia & Cia! Corra que apenas a primeira pessoa que ligar irá ganhar prêmios! (Cada tentativa de ligação custa **75 Sonhos**!) `${activeTextChannels[textChannel.id]?.prefix ?: "+"}ligar 4002-8922 $obfuscatedText`")
+				embed.setImage(randomImages.getRandom())
+				embed.setColor(Color(74, 39, 138))
+
+				textChannel.sendMessage(embed.build()).queue()
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
@@ -152,7 +149,7 @@ class BomDiaECia {
 		return validTextChannels
 	}
 
-	class YudiTextChannelInfo {
+	class YudiTextChannelInfo(val prefix: String) {
 		val users = ConcurrentHashMap.newKeySet<User>()
 		var lastMessageSent = System.currentTimeMillis()
 	}

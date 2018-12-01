@@ -96,6 +96,14 @@ open class BaseLocale {
 		lateinit var xOfX: String
 	}
 	class Discord {
+		class Status {
+			lateinit var online: String
+			lateinit var idle: String
+			lateinit var doNotDisturb: String
+			lateinit var offline: String
+		}
+		var status = Status()
+
 		class Permissions {
 			lateinit var kickMembers: String
 			lateinit var banMembers: String
@@ -115,6 +123,19 @@ open class BaseLocale {
 			lateinit var manageWebhooks: String
 			lateinit var manageEmotes: String
 			lateinit var createInstantInvite: String
+			lateinit var prioritySpeaker: String
+			lateinit var connect: String
+			lateinit var speak: String
+			lateinit var muteVoiceMembers: String
+			lateinit var disableVoiceAudio: String
+			lateinit var moveVoiceMembers: String
+			lateinit var useVoiceDetection: String
+			lateinit var changeNickname: String
+			lateinit var manageNicknames: String
+			lateinit var mentionEveryone: String
+			lateinit var attachFiles: String
+			lateinit var messageTts: String
+			lateinit var viewChannel: String
 		}
 		var permissions = Permissions()
 
@@ -127,10 +148,12 @@ open class BaseLocale {
 		lateinit var doesntHavePermissionDiscord: String
 		lateinit var loriDoesntHavePermissionDiscord: String
 		lateinit var commandOnlyForOwner: String
+		lateinit var imageTooLarge: String
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String
 			lateinit var user: String
+			lateinit var emote: String
 			lateinit var image: String
 		}
 		var arguments = Arguments()
@@ -222,6 +245,31 @@ open class BaseLocale {
 		}
 		var moderation = Moderation()
 
+		class Discord {
+			class UserInfo {
+				lateinit var sharedServers: String
+				lateinit var accountCreated: String
+				lateinit var accountJoined: String
+				lateinit var joinPosition: String
+				lateinit var permissions: String
+				lateinit var joinPlace: String
+			}
+			var userInfo = UserInfo()
+
+			class EmojiInfo {
+				lateinit var description: String
+				lateinit var aboutEmoji: String
+				lateinit var emojiName: String
+				lateinit var emojiId: String
+				lateinit var mention: String
+				lateinit var emojiCreated: String
+				lateinit var seenAt: String
+			}
+			var emojiInfo = EmojiInfo()
+
+		}
+		var discord = Discord()
+
 		class Fanarts {
 			lateinit var description: String
 			lateinit var madeBy: String
@@ -236,6 +284,7 @@ open class BaseLocale {
 			lateinit var error: String
 		}
 		var addEmoji = AddEmoji()
+
 	}
 	// ===[ END  GENEREATED LOCALE ]===
 	// !!!       DO NOT EDIT        !!!

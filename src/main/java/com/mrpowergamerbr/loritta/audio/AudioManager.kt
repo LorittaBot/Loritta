@@ -293,6 +293,16 @@ class AudioManager(val loritta: Loritta) {
 	 */
 	suspend fun checkVoiceChannelState(context: CommandContext): Boolean {
 		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
+			if (context.config.musicConfig.musicGuildId == null) {
+				context.reply(
+						LoriReply(
+								context.locale["TOCAR_InvalidChannel"],
+								Constants.ERROR
+						)
+				)
+				return false
+			}
+
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
 			val channel = context.guild.getVoiceChannelById(context.config.musicConfig.musicGuildId)
 

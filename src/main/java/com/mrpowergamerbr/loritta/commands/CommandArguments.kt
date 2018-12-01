@@ -42,6 +42,7 @@ enum class ArgumentType {
 	TEXT,
 	NUMBER,
 	USER,
+	EMOTE,
 	IMAGE;
 
 	fun localized(locale: BaseLocale): String {
@@ -49,7 +50,9 @@ enum class ArgumentType {
 			TEXT ->   locale.format { commands.arguments.text }
 			NUMBER -> locale.format { commands.arguments.number }
 			USER ->   locale.format { commands.arguments.user }
+			EMOTE ->  locale.format { commands.arguments.emote }
 			IMAGE ->  locale.format { commands.arguments.image }
+			else -> "derp"
 		}
 	}
 }

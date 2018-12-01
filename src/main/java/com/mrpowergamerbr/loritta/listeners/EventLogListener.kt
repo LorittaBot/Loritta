@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -326,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditEntry = event.guild.auditLogs.complete().firstOrNull()
+							val auditEntry = event.guild.auditLogs.await().firstOrNull()
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
 								if (auditEntry.targetIdLong == storedMessage.authorId) {
@@ -424,13 +425,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de bans
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
 				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
-					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
+					if (relayTo.banList.await().firstOrNull { it.user == event.user } == null) {
 						relayTo.controller.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
 					}
 				}
@@ -439,7 +440,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
-					if (relayTo.banList.complete().firstOrNull { it.user == event.user } == null) {
+					if (relayTo.banList.await().firstOrNull { it.user == event.user } == null) {
 						relayTo.controller.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
 					}
 				}
@@ -449,17 +450,17 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@execute
+					return@launch
 
 				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -469,7 +470,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.auditLogs.complete().first()
+					val auditLog = event.guild.auditLogs.await().first()
 
 					if (auditLog.type == ActionType.BAN) {
 						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}"
@@ -481,7 +482,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 				textChannel.sendMessage(embed.build()).queue()
-				return@execute
+				return@launch
 			}
 		}
 	}
@@ -490,7 +491,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de unbans
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
 				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
@@ -507,16 +508,16 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@execute
+					return@launch
 
 				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -526,7 +527,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.auditLogs.complete().first()
+					val auditLog = event.guild.auditLogs.await().first()
 
 					if (auditLog.type == ActionType.UNBAN) {
 						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user?.asMention ?: "???"]}"
@@ -538,7 +539,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
 				textChannel.sendMessage(embed.build()).queue()
-				return@execute
+				return@launch
 			}
 		}
 	}
