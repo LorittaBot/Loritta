@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils.debug
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
+import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
@@ -69,6 +70,7 @@ object DebugLog {
 		logger.info("detectedInviteLinks.size: ${InviteLinkModule.detectedInviteLinks.size}")
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
+		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 	}
 
 	fun handleLine(line: String) {

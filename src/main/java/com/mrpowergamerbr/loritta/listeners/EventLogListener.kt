@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
@@ -48,12 +49,14 @@ import java.nio.charset.Charset
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 	}
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
 			.removalListener { k1: String?, v1: UserMetaHolder?, removalCause ->
@@ -70,7 +73,17 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		// Primeiro iremos baixar o avatar em uma task
+		// Para não precisar baixar (número de shards) vezes (na pior das hipóteses), vamos criar uma task separada que irá baixar apenas uma vez
+		// A task, ao finalizar, irá propagar para o resto dos servidores
+		if (downloadedAvatarJobs[event.entity.id] != null) { // Se já temos uma task ativa, vamos ignorar!
+			logger.info("Ignorando UserUpdateAvatarEvent de ${event.entity.id}, já estamos baixando para enviar no event log!")
+			return
+		}
+
+		downloadedAvatarJobs[event.entity.id] = GlobalScope.launch(loritta.coroutineDispatcher) {
+			logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
+
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
@@ -80,8 +93,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
 			val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
-			if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
-				return@execute
+			if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
+				downloadedAvatarJobs.remove(event.entity.id)
+				return@launch
+			}
 
 			val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 			val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
@@ -104,6 +119,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 									Filters.eq("eventLogConfig.enabled", true),
 									Filters.`in`("_id", guilds.map { it.id })
 							)
+
 					).iterator().use {
 						while (it.hasNext()) {
 							val config = it.next()
@@ -134,6 +150,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 			}
+			downloadedAvatarJobs.remove(event.entity.id)
 		}
 	}
 
