@@ -409,8 +409,7 @@ class CommandManager {
 
 				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
-				val isDonator = profile.isDonator && profile.donationExpiresIn > System.currentTimeMillis()
-				if (isDonator && profile.donatorPaid >= 19.99) {
+				if (profile.isActiveDonator() && profile.donatorPaid >= 19.99) {
 					cooldown /= 2
 				}
 

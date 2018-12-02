@@ -53,4 +53,9 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 
 		return Pair(System.currentTimeMillis() > tomorrow, tomorrow)
 	}
+
+	/**
+	 * Returns if the user is an active donator
+	 */
+	fun isActiveDonator() = isDonator && donationExpiresIn > System.currentTimeMillis()
 }

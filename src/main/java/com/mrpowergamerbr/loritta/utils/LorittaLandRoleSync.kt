@@ -158,12 +158,11 @@ class LorittaLandRoleSync : Runnable {
 			}
 
 			for ((profile, member) in donators) {
-				val isDonationStillValid = profile.isDonator && profile.donationExpiresIn > System.currentTimeMillis()
 				val donatorRole = originalGuild.getRoleById("364201981016801281")
 				val inactiveRole = originalGuild.getRoleById("435856512787677214")
 				val roles = member.roles.toMutableList()
 
-				if (isDonationStillValid) {
+				if (profile.isActiveDonator()) {
 					if (!roles.contains(donatorRole))
 						roles.add(donatorRole)
 

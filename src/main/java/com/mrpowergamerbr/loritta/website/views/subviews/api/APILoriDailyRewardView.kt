@@ -159,8 +159,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			else -> 2
 		}
 
-		val isDonator = lorittaProfile.isDonator && lorittaProfile.donationExpiresIn > System.currentTimeMillis()
-		if (isDonator) {
+		if (lorittaProfile.isActiveDonator()) {
 			when {
 				lorittaProfile.donatorPaid >= 79.99 -> multiplier += 4
 				lorittaProfile.donatorPaid >= 59.99 -> multiplier += 3
