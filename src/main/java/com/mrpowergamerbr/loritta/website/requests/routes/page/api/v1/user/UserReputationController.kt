@@ -206,7 +206,7 @@ class UserReputationController {
 				if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 					return
 
-				if (channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
+				if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
 					return
 
 				val serverConfig = loritta.getServerConfigForGuild(channelId)
