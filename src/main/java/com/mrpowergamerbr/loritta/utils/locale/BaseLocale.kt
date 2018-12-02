@@ -245,6 +245,15 @@ open class BaseLocale {
 		}
 		var moderation = Moderation()
 
+		class Social {
+			class Reputation {
+				lateinit var success: String
+			}
+			var reputation = Reputation()
+
+		}
+		var social = Social()
+
 		class Discord {
 			class UserInfo {
 				lateinit var sharedServers: String
