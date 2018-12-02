@@ -212,8 +212,9 @@ class UserReputationController {
 
 				val serverConfig = loritta.getServerConfigForGuild(channelId)
 				val profile = loritta.getOrCreateLorittaProfile(member.user.idLong)
-				val settings = transaction(Databases.loritta) {
-					profile.settings
+				val receiverProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
+				val receiverSettings = transaction(Databases.loritta) {
+					receiverProfile.settings
 				}
 
 				val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(member.user.idLong))
@@ -231,7 +232,7 @@ class UserReputationController {
 								reputationCount,
 								Emotes.LORI_OWO,
 								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>",
-								settings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@${userIdentification.id}>")
+								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
 						) { commands.social.reputation.success },
 						Emotes.LORI_HUG
 				)
