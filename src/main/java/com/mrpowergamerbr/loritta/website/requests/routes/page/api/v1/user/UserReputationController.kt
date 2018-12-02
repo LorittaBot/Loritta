@@ -224,7 +224,7 @@ class UserReputationController {
 								"<@$receiverId>",
 								reputationCount,
 								Emotes.LORI_OWO,
-								"<${Loritta.config.websiteUrl}user/${receiverId}/rep>"
+								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>"
 						) { commands.social.reputation.success },
 						Emotes.LORI_HUG
 				)
