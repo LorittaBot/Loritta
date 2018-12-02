@@ -21,6 +21,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.tables.Profiles.isDonator
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -531,7 +532,7 @@ class CommandManager {
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && !isDonator) {
+				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && !profile.isActiveDonator()) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
