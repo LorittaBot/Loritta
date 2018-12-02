@@ -94,6 +94,12 @@ open class BaseLocale {
 	class Loritta {
 		lateinit var translationAuthors: List<String>
 		lateinit var xOfX: String
+		class Pronoun {
+			lateinit var he: String
+			lateinit var she: String
+		}
+		var pronoun = Pronoun()
+
 	}
 	class Discord {
 		class Status {

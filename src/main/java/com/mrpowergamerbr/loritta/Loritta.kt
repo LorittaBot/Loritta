@@ -37,6 +37,7 @@ import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube

@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.tables
 
-import com.mrpowergamerbr.loritta.utils.Gender
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import org.jetbrains.exposed.dao.LongIdTable
 
 object UserSettings : LongIdTable() {

@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
+import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
@@ -210,6 +211,11 @@ class UserReputationController {
 					return
 
 				val serverConfig = loritta.getServerConfigForGuild(channelId)
+				val profile = loritta.getOrCreateLorittaProfile(member.user.idLong)
+				val settings = transaction(Databases.loritta) {
+					profile.settings
+				}
+
 				val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(member.user.idLong))
 
 				if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
@@ -224,10 +230,12 @@ class UserReputationController {
 								"<@$receiverId>",
 								reputationCount,
 								Emotes.LORI_OWO,
-								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>"
+								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>",
+								settings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@${userIdentification.id}>")
 						) { commands.social.reputation.success },
 						Emotes.LORI_HUG
 				)
+
 				channel.sendMessage(reply.build()).queue()
 			}
 		}

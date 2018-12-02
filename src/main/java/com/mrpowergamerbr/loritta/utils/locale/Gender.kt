@@ -1,4 +1,6 @@
-package com.mrpowergamerbr.loritta.utils
+package com.mrpowergamerbr.loritta.utils.locale
+
+import com.mrpowergamerbr.loritta.utils.Constants
 
 enum class Gender {
 	MALE,
@@ -61,5 +63,13 @@ enum class Gender {
 		}
 
 		return folderNames
+	}
+
+	fun getPersonalPronoun(locale: BaseLocale, type: PersonalPronoun, firstName: String): String {
+		return when (this) {
+			MALE -> locale.format { loritta.pronoun.he }
+			FEMALE -> locale.format { loritta.pronoun.she }
+			UNKNOWN -> firstName
+		}
 	}
 }

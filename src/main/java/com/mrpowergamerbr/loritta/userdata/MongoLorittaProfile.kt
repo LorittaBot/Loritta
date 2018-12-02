@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.profile.ProfileType
-import com.mrpowergamerbr.loritta.utils.Gender
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.reminders.Reminder
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
