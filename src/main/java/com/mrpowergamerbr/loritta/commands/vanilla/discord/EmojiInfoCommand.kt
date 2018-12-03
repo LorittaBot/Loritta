@@ -110,7 +110,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 			embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`${emote.asMention}`", true)
 			embed.addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
 			if (sourceGuild != null)
-				embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${emote.guild.name}`", true)
+				embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${sourceGuild.name}`", true)
 
 			return embed.build()
 		}
