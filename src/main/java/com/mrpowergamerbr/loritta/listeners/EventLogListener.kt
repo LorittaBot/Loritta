@@ -129,13 +129,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 								val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
 								if (textChannel != null && textChannel.canTalk()) {
-									if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
 										continue
-									if (!guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES))
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES))
 										continue
-									if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+									if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
 										continue
-									if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
 										continue
 
 									embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
