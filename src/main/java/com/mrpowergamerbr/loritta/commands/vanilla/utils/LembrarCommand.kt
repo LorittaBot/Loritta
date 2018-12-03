@@ -128,13 +128,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 			val textChannel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
-			val guild = if (textChannel != null) {
-				lorittaShards.getGuildById(textChannel.id)
-			} else {
-				null
-			}
-
-
+			val guild = textChannel?.guild
 
 			val embed = EmbedBuilder()
 			if (guild != null) {
