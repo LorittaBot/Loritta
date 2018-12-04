@@ -148,7 +148,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 			context.reply(
 					LoriReply(
-							"Usuário $userId (`${user.name}`) adicionado na lista de usuárioa a serem banidos na Loritta Bans Network! Use `+lslc commit_bans` para confirmar"
+							"Usuário $userId (`${user.name}`) adicionado na lista de usuários a serem banidos na Loritta Bans Network! Use `+lslc commit_bans` para confirmar"
 					)
 			)
 		}
