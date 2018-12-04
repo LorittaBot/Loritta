@@ -46,7 +46,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			val replies = mutableListOf<LoriReply>()
 			replies.add(
 					LoriReply(
-							"**Lista de usuários a serem banidos **GLOBALMENTE**...",
+							"**Lista de usuários a serem banidos *GLOBALMENTE*...**",
 							Emotes.DISCORD_ONLINE
 					)
 			)
@@ -91,7 +91,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			)
 
 			message.addReaction("✅").queue()
-			message.addReaction(Constants.ERROR).queue()
+			message.addReaction("error:412585701054611458").queue()
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.name == "✅") {
