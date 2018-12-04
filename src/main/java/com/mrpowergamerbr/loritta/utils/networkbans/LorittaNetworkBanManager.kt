@@ -19,6 +19,7 @@ class LorittaNetworkBanManager {
 	}
 
 	var networkBannedUsers = mutableListOf<NetworkBanEntry>()
+	var notVerifiedEntries = mutableListOf<NetworkBanEntry>()
 
 	fun punishUser(user: User, reason: String) {
 		val mutualGuilds = lorittaShards.getMutualGuilds(user).filter {
@@ -78,6 +79,27 @@ class LorittaNetworkBanManager {
 		return reason
 	}
 
+	fun addNonVerifiedEntry(entry: NetworkBanEntry) {
+		val userId = entry.id
+		logger.info { "Adicionando $userId na lista de usuários não verificados para serem banidos na Loritta Network..." }
+		val user = runBlocking { lorittaShards.retrieveUserById(entry.id) } ?: run {
+			logger.error("$userId não é um usuário válido!")
+			return
+		}
+
+		if (getNetworkBanEntry(userId) != null) {
+			logger.warn("$userId já está banido na Loritta Network!")
+			return
+		}
+
+		if (getNonVerifiedBanEntry(userId) != null) {
+			logger.warn("$userId já está na lista de usuários não verificados da Loritta Network!")
+			return
+		}
+
+		notVerifiedEntries.add(entry)
+	}
+
 	fun addBanEntry(entry: NetworkBanEntry) {
 		val userId = entry.id
 		logger.info { "Adicionando $userId na lista de usuários banidos na Loritta Network..." }
@@ -100,6 +122,10 @@ class LorittaNetworkBanManager {
 
 	fun getNetworkBanEntry(id: String): NetworkBanEntry? {
 		return networkBannedUsers.firstOrNull { it.id == id }
+	}
+
+	fun getNonVerifiedBanEntry(id: String): NetworkBanEntry? {
+		return notVerifiedEntries.firstOrNull { it.id == id }
 	}
 
 	fun loadNetworkBannedUsers() {
