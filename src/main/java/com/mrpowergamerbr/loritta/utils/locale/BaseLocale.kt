@@ -299,6 +299,16 @@ open class BaseLocale {
 			lateinit var error: String
 		}
 		var addEmoji = AddEmoji()
+		
+		class ChannelInfo {
+			lateinit var description: String
+			lateinit var channelMention: String
+			lateinit var channelCreated: String
+			lateinit var channelTopic: String
+			lateinit var undefined: String
+			lateinit var channelNotFound: String
+		}
+		var channelInfo = ChannelInfo()
 
 	}
 	// ===[ END  GENEREATED LOCALE ]===
