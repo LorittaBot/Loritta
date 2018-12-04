@@ -24,7 +24,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         val channel = if (context.args.isEmpty()) {
             context.message.textChannel
         } else {
-			getTextChannel(context, context.args[0])
+			getTextChannel(context, context.rawArgs[0])
         }
 
 		// TODO: Migrar para o sistema novo de locales + "embelezar" o comando
