@@ -80,6 +80,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				)
 			}
 
+			context.reply(*replies.toTypedArray())
+			replies.clear()
+
 			val message = context.reply(
 					LoriReply(
 							"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
