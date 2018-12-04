@@ -6,8 +6,10 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.entities.TextChannel
 
 class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
     override fun getDescription(locale: BaseLocale): String {
@@ -22,13 +24,10 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
         val channel = if (context.args.isEmpty()) {
             context.message.textChannel
         } else {
-            try {
-                context.guild.getTextChannelById(context.args[0])
-            } catch (e: Exception) {
-                null
-            }
+			getTextChannel(context, context.args[0])
         }
 
+		// TODO: Migrar para o sistema novo de locales + "embelezar" o comando
         if (channel == null) {
             context.reply(
                     LoriReply(
@@ -53,4 +52,31 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
 
         context.sendMessage(context.userHandle.asMention, builder.build())
     }
+	
+	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {
+		if (input == null)
+			return null
+		
+		val guild = context.guild
+		
+		val channels = guild.getTextChannelsByName(input, false)
+		if (channels.isNotEmpty()) {
+			return channels[0]
+		}
+		
+		val id = input
+				.replace("<", "")
+				.replace("#", "")
+				.replace(">", "")
+		
+		if (!id.isValidSnowflake())
+			return null
+		
+		val channel = guild.getTextChannelById(id)
+		if (channel != null) {
+			return channel
+		}
+		
+		return null
+	}
 }
