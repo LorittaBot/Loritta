@@ -33,6 +33,9 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.utils.Constants
 			import com.mrpowergamerbr.loritta.utils.LorittaImage
 			import com.mrpowergamerbr.loritta.utils.toBufferedImage
+			import com.mrpowergamerbr.loritta.dao.*
+			import com.mrpowergamerbr.loritta.tables.*
+			import com.mrpowergamerbr.loritta.network.*
 			import java.awt.image.BufferedImage
 			import java.io.File
 			import javax.imageio.ImageIO

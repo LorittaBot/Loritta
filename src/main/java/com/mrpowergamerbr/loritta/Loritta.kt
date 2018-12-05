@@ -352,7 +352,8 @@ class Loritta(config: LorittaConfig) {
 					RegisterConfigs,
 					Mutes,
 					Warns,
-					GuildProfiles
+					GuildProfiles,
+					Timers
 			)
 		}
 	}
