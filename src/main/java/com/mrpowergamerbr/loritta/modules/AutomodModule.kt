@@ -100,7 +100,7 @@ class AutomodModule : MessageReceivedModule {
 				val verySimilarMessages = mutableListOf<Message>()
 				var streamFloodCounter = 0
 
-				for ((index, message) in messages.reversed().withIndex()) {
+				messageLoop@for ((index, message) in messages.reversed().withIndex()) {
 					val distanceMultiplier = ((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)
 					if (message.contentRaw.isNotBlank()) {
 						var compareContent = message.contentRaw.toLowerCase()
@@ -159,6 +159,7 @@ class AutomodModule : MessageReceivedModule {
 						if (urlsDetected.contains(matcher2.group(0))) {
 							// analysis(analysis, "+ Mesmo link ~ ${AutomodModule.SAME_LINK_SCORE} - Valor atual é $raidingPercentage")
 							raidingPercentage += distanceMultiplier * AutomodModule.SAME_LINK_SCORE
+							continue@messageLoop
 						}
 					}
 				}
