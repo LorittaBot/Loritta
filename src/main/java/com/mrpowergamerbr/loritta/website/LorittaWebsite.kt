@@ -250,6 +250,7 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import com.mrpowergamerbr.loritta.utils.locale.*
 			import com.mrpowergamerbr.loritta.dao.*
 			import com.mrpowergamerbr.loritta.tables.*
+			import com.mrpowergamerbr.loritta.userdata.*
 			import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth.*
 			import com.mrpowergamerbr.loritta.website.*
 			import java.awt.image.BufferedImage
