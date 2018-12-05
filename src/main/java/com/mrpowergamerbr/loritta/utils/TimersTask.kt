@@ -24,12 +24,20 @@ class TimersTask : Runnable {
 				Timers.selectAll().map { Timer.wrapRow(it) }
 			}
 
+			logger.info("Timers: ${timers.size}")
+
 			for (timer in timers) {
+				logger.info("Timer ${timer.id} em guild ${timer.guildId}")
 				val guild = lorittaShards.getGuildById(timer.guildId) ?: continue
+				logger.info("Timer ${timer.id} em canal ${timer.channelId}")
 				val textChannel = guild.getTextChannelById(timer.channelId) ?: continue
+
+				logger.info("Verificando jobs atuais de ${timer.id}...")
 
 				if (timerJobs[timer.id.value] != null)
 					return
+
+				logger.info("Agora vai! Preparando timer ${timer.id}...")
 
 				timerJobs[timer.id.value] = GlobalScope.launch(loritta.coroutineDispatcher) {
 					timer.prepareTimer()

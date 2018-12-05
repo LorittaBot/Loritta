@@ -3,13 +3,16 @@ package com.mrpowergamerbr.loritta.dao
 import com.mrpowergamerbr.loritta.tables.Timers
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.delay
+import mu.KotlinLogging
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import java.util.*
 
 class Timer(id: EntityID<Long>) : LongEntity(id) {
-	companion object : LongEntityClass<Timer>(Timers)
+	companion object : LongEntityClass<Timer>(Timers) {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	var guildId by Timers.guildId
 	var channelId by Timers.channelId
@@ -38,7 +41,8 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 	}
 
 	suspend fun prepareTimer() {
-		println("prepareTimer()")
+		logger.info("prepareTimer() de ${id.value}...")
+
 		var simulatedTime = startsAt
 
 		var i = 0
@@ -47,12 +51,12 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 		} else { { repeatCount!! > i } }
 
 		while (compare.invoke()) {
-			println("${System.currentTimeMillis()} / $simulatedTime")
+			// println("${System.currentTimeMillis()} / $simulatedTime")
 
 			val relativeTimeNow = System.currentTimeMillis() - getStartOfDay()
 
 			if (simulatedTime > relativeTimeNow) {
-				println("$i - uwu!!! (Será executado daqui ${simulatedTime - relativeTimeNow}ms!)")
+				logger.info("$i - uwu!!! (Será executado daqui ${simulatedTime - relativeTimeNow}ms!)")
 
 				val start = System.currentTimeMillis()
 				delay(simulatedTime - relativeTimeNow)
@@ -63,7 +67,7 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 				prepareTimer()
 				return
 			} else {
-				println("$i - Passado...")
+				// logger("$i - Passado...")
 			}
 			simulatedTime += repeatDelay
 			i++
@@ -71,7 +75,7 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 	}
 
 	fun execute() {
-		println("Triggered timer $id!")
+		logger.info("Timer $id ativado!!")
 
 		val guild = lorittaShards.getGuildById(guildId) ?: return
 		val textChannel = guild.getTextChannelById(channelId) ?: return
