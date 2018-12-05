@@ -88,8 +88,9 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 		val guild = lorittaShards.getGuildById(guildId) ?: return
 		val textChannel = guild.getTextChannelById(channelId) ?: return
 
-		val effect = effects.random()
+		val _effect = effects.random()
 
+		val effect = gson.fromJson<TimerEffect>(_effect)
 		when (effect.type) {
 			TimerEffect.TimerEffectType.TEXT -> { // Texto
 				// Mensagens são salvas em um "TimerEffectText", dentro do "effect.contents"
