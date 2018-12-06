@@ -1,8 +1,13 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.guild.configure
 
+import com.mrpowergamerbr.loritta.dao.Timer
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Timers
 import com.mrpowergamerbr.loritta.website.*
 import kotlinx.html.div
 import kotlinx.html.stream.appendHTML
+import net.dv8tion.jda.core.entities.Guild
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -21,6 +26,10 @@ class ConfigureTimersController {
 		builder.appendHTML().div { result.invoke(this) }
 
 		variables["timers_html"] = builder.toString()
+
+		transaction(Databases.loritta) {
+			Timer.find { Timers.guildId eq (variables["guild"] as Guild).idLong }
+		}
 
 		return evaluate("configure_timers.html", variables)
 	}

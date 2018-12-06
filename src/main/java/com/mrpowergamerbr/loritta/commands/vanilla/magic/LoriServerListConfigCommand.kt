@@ -156,11 +156,13 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		if (arg0 == "network_unban" && arg1 != null) {
 			val userId = arg1
 
-			val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.guildId == userId }
+			val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.id != userId }
 					.toMutableList()
 
 			loritta.networkBanManager.networkBannedUsers = filtered
 
+			loritta.networkBanManager.saveNetworkBannedUsers()
+			
 			context.reply(
 					LoriReply(
 							"Usuário desbanido na Loritta Bans Network!"
