@@ -23,11 +23,6 @@ class ConfigureTimersController {
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
 		variables["saveType"] = "timers"
-		val result = evaluateKotlin("configure_timers.kts", "onLoad", variables)
-		val builder = StringBuilder()
-		builder.appendHTML().div { result.invoke(this) }
-
-		variables["timers_html"] = builder.toString()
 
 		val timers = transaction(Databases.loritta) {
 			Timer.find { Timers.guildId eq (variables["guild"] as Guild).idLong }.toMutableList()
@@ -36,7 +31,7 @@ class ConfigureTimersController {
 		val array = jsonArray()
 		for (timer in timers) {
 			val jsonObject = jsonArray(
-					"timerId" to timer.id.value,
+					"timerId" to timer.id.value.toString(),
 					"guildId" to timer.guildId,
 					"channelId" to timer.channelId,
 					"startsAt" to timer.startsAt,
@@ -48,6 +43,12 @@ class ConfigureTimersController {
 		}
 
 		variables["timers_json"] to gson.toJson(array)
+
+		val result = evaluateKotlin("configure_timers.kts", "onLoad", variables)
+		val builder = StringBuilder()
+		builder.appendHTML().div { result.invoke(this) }
+
+		variables["timers_html"] = builder.toString()
 
 		return evaluate("configure_timers.html", variables)
 	}
