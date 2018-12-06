@@ -44,8 +44,8 @@ class ConfigureTimersController {
 		}
 
 		println(gson.toJson(array))
-		
-		variables["timers_json"] to gson.toJson(array)
+
+		variables["timers_json"] = gson.toJson(array)
 
 		val result = evaluateKotlin("configure_timers.kts", "onLoad", variables)
 		val builder = StringBuilder()
