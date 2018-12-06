@@ -136,7 +136,8 @@ class UpdateServerConfigController {
 				"welcomer" to WelcomerPayload::class.java,
 				"miscellaneous" to MiscellaneousPayload::class.java,
 				"economy" to EconomyPayload::class.java,
-				"text_channels" to TextChannelsPayload::class.java
+				"text_channels" to TextChannelsPayload::class.java,
+				"timers" to TimersPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

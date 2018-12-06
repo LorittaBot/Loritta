@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.views
 
 import com.google.common.collect.Lists
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -110,15 +111,15 @@ object GlobalHandler {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("https://loritta.website/br${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("https://loritta.website/pt${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("https://loritta.website/es${req.path()}${queryString}")
+						res.redirect("${Loritta.config.websiteUrl}es${req.path()}${queryString}")
 					}
-					res.redirect("https://loritta.website/us${req.path()}${queryString}")
+					res.redirect("${Loritta.config.websiteUrl}us${req.path()}${queryString}")
 					return "Redirecting..."
 				}
 			}
