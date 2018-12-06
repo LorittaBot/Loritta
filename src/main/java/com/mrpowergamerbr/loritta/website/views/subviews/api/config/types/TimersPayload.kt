@@ -8,6 +8,10 @@ import com.mrpowergamerbr.loritta.dao.Timer
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Timers
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.TimersTask
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.entities.Guild
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -15,15 +19,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class TimersPayload : ConfigPayloadType("timers") {
 	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
 		val timers = payload["timers"].array
+
 		// Vamos primeiro remover TODOS os timers existentes da guild atual
 		transaction(Databases.loritta) {
+			val currentTimers = Timer.find { Timers.guildId eq guild.idLong }
+
+			currentTimers.forEach { // Vamos cancelar TODOS os Timers atuais da guild
+				TimersTask.timerJobs[it.id.value]?.cancel()
+			}
+
 			Timers.deleteWhere { Timers.guildId eq guild.idLong }
 		}
-		
+
 		// Certo? Agora vamos inserir os novos timers!
 		transaction(Databases.loritta) {
 			timers.forEach {
-				Timer.new {
+				val timer = Timer.new {
 					// o ID do Timer tanto faz, sempre vai ser reinserido na tabela
 					this.guildId = guild.idLong // Iremos sempre pegar o ID da guild do objeto, para evitar que alguém possa inserir um timer de outra guild
 					this.channelId = it["channelId"].long
@@ -31,6 +42,10 @@ class TimersPayload : ConfigPayloadType("timers") {
 					this.repeatDelay = it["repeatDelay"].long
 					this.effects = it["effects"].array.map { it.asString }.toTypedArray()
 					this.activeOnDays = arrayOf()
+				}
+
+				TimersTask.timerJobs[timer.id.value] = GlobalScope.launch(loritta.coroutineDispatcher) {
+					timer.prepareTimer()
 				}
 			}
 		}

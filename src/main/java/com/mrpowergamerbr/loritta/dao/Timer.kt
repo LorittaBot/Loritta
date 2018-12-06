@@ -6,12 +6,14 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import mu.KotlinLogging
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext
 
 class Timer(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<Timer>(Timers) {
@@ -45,7 +47,9 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 	}
 
 	suspend fun prepareTimer() {
-		logger.info("prepareTimer() de ${id.value}...")
+		if (!coroutineContext.isActive)
+			return
+		logger.info("prepareTimer() de ${id.value} $coroutineContext...")
 
 		var simulatedTime = startsAt
 
@@ -83,6 +87,9 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 	}
 
 	suspend fun execute() {
+		if (!coroutineContext.isActive)
+			return
+
 		logger.info("Timer $id ativado!!")
 
 		val guild = lorittaShards.getGuildById(guildId) ?: return
