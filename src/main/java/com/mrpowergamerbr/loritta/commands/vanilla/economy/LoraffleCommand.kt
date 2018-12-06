@@ -18,6 +18,7 @@ import java.util.concurrent.Executors
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+		const val MAX_TICKETS_BY_USER_PER_ROUND = 250
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
@@ -44,6 +45,36 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
+
+			if (quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
+				context.reply(
+						LoriReply(
+								"Você só pode apostar no máximo $MAX_TICKETS_BY_USER_PER_ROUND tickets por rodada!",
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			val currentUserTicketQuantity = RaffleThread.userIds.count { it.first == context.userHandle.id }
+			if (RaffleThread.userIds.count { it.first == context.userHandle.id } + quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
+				if (currentUserTicketQuantity == MAX_TICKETS_BY_USER_PER_ROUND) {
+					context.reply(
+							LoriReply(
+									"Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
+									Constants.ERROR
+							)
+					)
+				} else {
+					context.reply(
+							LoriReply(
+									"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - currentUserTicketQuantity} tickets!",
+									Constants.ERROR
+							)
+					)
+				}
+				return
+			}
 
 			val requiredCount = quantity.toLong() * 250
 			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
