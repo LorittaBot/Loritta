@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -41,6 +42,80 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			return
 		}
 
+		if (arg0 == "commit_bans") {
+			val replies = mutableListOf<LoriReply>()
+			replies.add(
+					LoriReply(
+							"**Lista de usuários a serem banidos *GLOBALMENTE*...**",
+							Emotes.DISCORD_ONLINE
+					)
+			)
+
+			loritta.networkBanManager.notVerifiedEntries.forEach {
+				if (replies.sumBy { it.build(context).length } >= 2000) {
+					context.reply(*replies.toTypedArray())
+					replies.clear()
+				}
+
+				val user = lorittaShards.getUserById(it.id)!!
+
+				val typeEmote = when {
+					user.isBot -> Emotes.DISCORD_BOT_TAG
+					else -> Emotes.DISCORD_WUMPUS_BASIC
+				}
+
+				val mutualGuilds = lorittaShards.getMutualGuilds(user)
+				val serverConfigs = loritta.serversColl.find(
+						Filters.and(
+								Filters.`in`("_id", mutualGuilds.map { it.id }),
+								Filters.eq("moderationConfig.useLorittaBansNetwork", true)
+						)
+				).toMutableList()
+
+				replies.add(
+						LoriReply(
+								"$typeEmote `${user.name.stripCodeMarks()}#${user.discriminator}` (${user.id}/${it.type.name}) — ${mutualGuilds.size} servidores compartilhados (${serverConfigs.size} com os bans globais ativados)",
+								mentionUser = false
+						)
+				)
+			}
+
+			context.reply(*replies.toTypedArray())
+			replies.clear()
+
+			val message = context.reply(
+					LoriReply(
+							"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
+							Emotes.DISCORD_DO_NOT_DISTURB
+					)
+			)
+
+			message.addReaction("✅").queue()
+			message.addReaction("error:412585701054611458").queue()
+
+			message.onReactionAddByAuthor(context) {
+				if (it.reactionEmote.name == "✅") {
+					loritta.networkBanManager.notVerifiedEntries.forEach {
+						loritta.networkBanManager.addBanEntry(it)
+					}
+					loritta.networkBanManager.notVerifiedEntries.clear()
+					context.reply(
+							LoriReply(
+									"Todos os usuários da lista foram adicionados na lista de bans globais, yay!"
+							)
+					)
+				} else {
+					loritta.networkBanManager.notVerifiedEntries.clear()
+					context.reply(
+							LoriReply(
+									"A lista de bans não verificados foi limpa, whoosh!"
+							)
+					)
+				}
+			}
+			return
+		}
+
 		if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
 			val userId = arg1
 			var guildId = arg2
@@ -53,7 +128,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			rawArgs.removeAt(0)
 			rawArgs.removeAt(0)
 
-			loritta.networkBanManager.addBanEntry(
+			loritta.networkBanManager.addNonVerifiedEntry(
 					NetworkBanEntry(
 							userId,
 							guildId,
@@ -62,9 +137,18 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					)
 			)
 
+			val user = lorittaShards.retrieveUserById(userId) ?: run {
+				context.reply(
+						LoriReply(
+								"Usuário ${userId} não existe!"
+						)
+				)
+				return
+			}
+
 			context.reply(
 					LoriReply(
-							"Usuário banido na Loritta Bans Network!"
+							"Usuário $userId (`${user.name}`) adicionado na lista de usuários a serem banidos na Loritta Bans Network! Use `+lslc commit_bans` para confirmar"
 					)
 			)
 		}
@@ -72,10 +156,12 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		if (arg0 == "network_unban" && arg1 != null) {
 			val userId = arg1
 
-			val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.guildId == userId }
+			val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.id != userId }
 					.toMutableList()
 
 			loritta.networkBanManager.networkBannedUsers = filtered
+
+			loritta.networkBanManager.saveNetworkBannedUsers()
 
 			context.reply(
 					LoriReply(

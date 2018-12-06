@@ -250,8 +250,11 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import com.mrpowergamerbr.loritta.utils.locale.*
 			import com.mrpowergamerbr.loritta.dao.*
 			import com.mrpowergamerbr.loritta.tables.*
+			import com.mrpowergamerbr.loritta.userdata.*
 			import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth.*
 			import com.mrpowergamerbr.loritta.website.*
+			import com.github.salomonbrys.kotson.*
+			import org.jetbrains.exposed.sql.transactions.*
 			import java.awt.image.BufferedImage
 			import java.io.File
 			import javax.imageio.ImageIO
