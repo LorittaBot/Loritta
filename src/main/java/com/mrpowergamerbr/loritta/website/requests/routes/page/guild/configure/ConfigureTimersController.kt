@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.guild.configure
 
 import com.github.salomonbrys.kotson.jsonArray
+import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.dao.Timer
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Timers
@@ -30,8 +31,8 @@ class ConfigureTimersController {
 
 		val array = jsonArray()
 		for (timer in timers) {
-			val jsonObject = jsonArray(
-					"timerId" to timer.id.value.toString(),
+			val jsonObject = jsonObject(
+					"timerId" to timer.id.value,
 					"guildId" to timer.guildId,
 					"channelId" to timer.channelId,
 					"startsAt" to timer.startsAt,
