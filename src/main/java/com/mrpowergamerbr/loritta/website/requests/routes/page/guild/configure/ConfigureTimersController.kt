@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.guild.configure
 
+import com.github.salomonbrys.kotson.jsonArray
 import com.mrpowergamerbr.loritta.dao.Timer
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Timers
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.website.*
 import kotlinx.html.div
 import kotlinx.html.stream.appendHTML
@@ -27,9 +29,25 @@ class ConfigureTimersController {
 
 		variables["timers_html"] = builder.toString()
 
-		transaction(Databases.loritta) {
-			Timer.find { Timers.guildId eq (variables["guild"] as Guild).idLong }
+		val timers = transaction(Databases.loritta) {
+			Timer.find { Timers.guildId eq (variables["guild"] as Guild).idLong }.toMutableList()
 		}
+
+		val array = jsonArray()
+		for (timer in timers) {
+			val jsonObject = jsonArray(
+					"timerId" to timer.id.value,
+					"guildId" to timer.guildId,
+					"channelId" to timer.channelId,
+					"startsAt" to timer.startsAt,
+					"repeatCount" to timer.repeatCount,
+					"repeatDelay" to timer.repeatDelay,
+					"effects" to gson.toJsonTree(timer.effects)
+			)
+			array.add(jsonObject)
+		}
+
+		variables["timers_json"] to gson.toJson(array)
 
 		return evaluate("configure_timers.html", variables)
 	}

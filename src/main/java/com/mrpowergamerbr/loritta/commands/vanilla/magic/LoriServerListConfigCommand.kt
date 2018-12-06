@@ -162,7 +162,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			loritta.networkBanManager.networkBannedUsers = filtered
 
 			loritta.networkBanManager.saveNetworkBannedUsers()
-			
+
 			context.reply(
 					LoriReply(
 							"Usuário desbanido na Loritta Bans Network!"
