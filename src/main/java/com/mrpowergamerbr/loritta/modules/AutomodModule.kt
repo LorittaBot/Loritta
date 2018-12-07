@@ -57,7 +57,22 @@ class AutomodModule : MessageReceivedModule {
 				"p-p",
 				"q-q",
 				"p-q",
-				"q-p"
+				"q-p",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"oi",
+				"olá",
+				"oie",
+				"oin",
+				"eu"
 		)
 
 		private val logger = KotlinLogging.logger {}
