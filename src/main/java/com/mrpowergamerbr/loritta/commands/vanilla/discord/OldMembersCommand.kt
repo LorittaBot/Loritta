@@ -64,7 +64,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 					else -> Emotes.DISCORD_OFFLINE
 				}
 
-				appendDescription("`${1 + index + (page * 20)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
+				appendDescription("`${1 + index + (page * 10)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
 				setFooter("${context.locale.format { loritta.page }} ${context.locale.format(page + 1, maxPage + 1) { loritta.xOfX }} | ${context.locale.format(userCurrentPage + 1) { loritta.youAreCurrentlyOnPage }}", null)
 			}
 		}
