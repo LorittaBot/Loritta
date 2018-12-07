@@ -183,6 +183,7 @@ class CommandManager {
 		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
 		commandMap.add(EmojiInfoCommand())
+		commandMap.add(OldMembersCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
