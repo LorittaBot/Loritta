@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.fanarts.description }
+		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.miscellaneous.fanArts.description }
 	}
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -32,7 +32,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 			val displayName = fanArt.fancyName ?: user?.name
 
-			setDescription("**" + locale.format(displayName) { commands.fanarts.madeBy } + "**")
+			setDescription("**" + locale.format(displayName) { commands.miscellaneous.fanArts.madeBy } + "**")
 			val artist = loritta.fanArtConfig.artists[fanArt.artistId]
 			if (artist != null) {
 				for (socialNetwork in artist.socialNetworks) {
@@ -43,7 +43,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 					appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
 				}
 			}
-			appendDescription("\n\n${locale.format(displayName) { commands.fanarts.thankYouAll }}")
+			appendDescription("\n\n${locale.format(displayName) { commands.miscellaneous.fanArts.thankYouAll }}")
 
 			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
 

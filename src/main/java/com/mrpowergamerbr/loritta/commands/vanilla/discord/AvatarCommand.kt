@@ -53,7 +53,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 				val displayName = fanArt.fancyName ?: user?.name
 
-				embed.appendDescription("\n\n**" + locale.format(displayName) { commands.fanarts.madeBy } + "**")
+				embed.appendDescription("\n\n**" + locale.format(displayName) { commands.miscellaneous.fanArts.madeBy } + "**")
 				val artist = loritta.fanArtConfig.artists[fanArt.artistId]
 				if (artist != null) {
 					for (socialNetwork in artist.socialNetworks) {

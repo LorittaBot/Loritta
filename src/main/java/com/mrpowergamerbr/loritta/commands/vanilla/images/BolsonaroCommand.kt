@@ -14,7 +14,7 @@ class BolsonaroCommand : AbstractCommand("bolsonaro", category = CommandCategory
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.bolsonaro.description }
+		return locale.format { commands.entertainment.bolsonaro.description }
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {

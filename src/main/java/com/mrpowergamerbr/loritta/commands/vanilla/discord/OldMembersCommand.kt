@@ -16,7 +16,7 @@ import net.dv8tion.jda.core.entities.Message
 
 class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos", "oldusers", "usuáriosantigos", "usuariosantigos"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.get("USERINFO_DESCRIPTION")
+		return locale.format { commands.discord.oldMembers.description }
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -39,7 +39,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
-			setTitle("\uD83C\uDF1F As pessoas mais antigas no ${guild.name}")
+			setTitle("\uD83C\uDF1F ${context.locale.format(guild.name) { commands.discord.oldMembers.theOldestPeople }}")
 
 			for ((index, member) in sortedMembersInCurrentPage.withIndex()) {
 				val ownerEmote = when {
@@ -65,7 +65,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 				}
 
 				appendDescription("`${1 + index + (page * 20)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
-				setFooter("Página ${page + 1} de ${maxPage + 1} | Você está na página ${userCurrentPage + 1}!", null)
+				setFooter("${context.locale.format { loritta.page }} ${context.locale.format(page + 1, maxPage + 1) { loritta.xOfX }} | ${context.locale.format(userCurrentPage + 1) { loritta.youAreCurrentlyOnPage }}", null)
 			}
 		}
 
@@ -93,6 +93,8 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 			}
 		}
 
+		_message.addReaction("\uD83D\uDC81").await()
+
 		if (page != 0) {
 			_message.addReaction("⏪").await()
 			_message.addReaction("◀").await()
@@ -101,6 +103,5 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 			_message.addReaction("▶").await()
 			_message.addReaction("⏩").await()
 		}
-		_message.addReaction("\uD83D\uDC81").await()
 	}
 }

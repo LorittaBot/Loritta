@@ -14,7 +14,7 @@ import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format("\uD83D\uDE0A") { commands.language.description }
+		return locale.format("\uD83D\uDE0A") { commands.miscellaneous.language.description }
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -53,14 +53,14 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				)
 		)
 
-		embed.setTitle("\uD83C\uDF0E " + locale.format { commands.language.pleaseSelectYourLanguage }, "")
+		embed.setTitle("\uD83C\uDF0E " + locale.format { commands.miscellaneous.language.pleaseSelectYourLanguage }, "")
 
 		for (wrapper in validLanguages) {
 			val translators = wrapper.locale.loritta.translationAuthors.mapNotNull { lorittaShards.getUserById(it) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
-					"**${locale.format { commands.language.translatedBy }}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+					"**${locale.format { commands.miscellaneous.language.translatedBy }}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true
 			)
 		}
@@ -88,7 +88,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}
-			context.reply(newLocale.format("`$localeId`") { commands.language.languageChanged }, "\uD83C\uDFA4")
+			context.reply(newLocale.format("`$localeId`") { commands.miscellaneous.language.languageChanged }, "\uD83C\uDFA4")
 			message.delete().queue()
 		}
 
