@@ -26,6 +26,7 @@ class TimersPayload : ConfigPayloadType("timers") {
 
 			currentTimers.forEach { // Vamos cancelar TODOS os Timers atuais da guild
 				TimersTask.timerJobs[it.id.value]?.cancel()
+				TimersTask.timerJobs.remove(it.id.value)
 			}
 
 			Timers.deleteWhere { Timers.guildId eq guild.idLong }
