@@ -20,7 +20,7 @@ class TwitchAPI {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	val cachedStreamerInfo = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(1000).build<String, StreamerInfo>().asMap()
+	val cachedStreamerInfo = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(7500).build<String, StreamerInfo>().asMap()
 	val cachedGames = Caffeine.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).maximumSize(1000).build<String, GameInfo>().asMap()
 
 	val isRatelimited: Boolean
