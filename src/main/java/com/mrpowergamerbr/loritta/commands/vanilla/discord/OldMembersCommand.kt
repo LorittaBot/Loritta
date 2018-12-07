@@ -30,7 +30,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val sortedMembers = guild.members.sortedBy { it.joinDate }
 
-		val sortedMembersInCurrentPage = sortedMembers.subList(page * 20, Math.max((page + 1) * 20, guild.members.size))
+		val sortedMembersInCurrentPage = sortedMembers.subList(page * 20, Math.min((page + 1) * 20, guild.members.size))
 
 		val maxPage = guild.members.size / 20
 		val userCurrentPage = sortedMembersInCurrentPage.indexOf(context.handle) / 20
