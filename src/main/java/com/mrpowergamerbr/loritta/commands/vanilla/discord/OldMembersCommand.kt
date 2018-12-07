@@ -35,7 +35,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 		val sortedMembersInCurrentPage = sortedMembers.subList(page * 10, Math.min((page + 1) * 10, guild.members.size))
 
 		val maxPage = guild.members.size / 10
-		val userCurrentPage = sortedMembersInCurrentPage.indexOfFirst { context.userHandle.idLong == it.user.idLong } / 10
+		val userCurrentPage = sortedMembers.indexOf(context.handle) / 10
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
