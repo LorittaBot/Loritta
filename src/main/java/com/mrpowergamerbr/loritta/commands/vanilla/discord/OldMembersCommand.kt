@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Message
@@ -30,10 +31,10 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val sortedMembers = guild.members.sortedBy { it.joinDate }
 
-		val sortedMembersInCurrentPage = sortedMembers.subList(page * 20, Math.min((page + 1) * 20, guild.members.size))
+		val sortedMembersInCurrentPage = sortedMembers.subList(page * 10, Math.min((page + 1) * 10, guild.members.size))
 
-		val maxPage = guild.members.size / 20
-		val userCurrentPage = sortedMembersInCurrentPage.indexOf(context.handle) / 20
+		val maxPage = guild.members.size / 10
+		val userCurrentPage = sortedMembersInCurrentPage.indexOf(context.handle) / 10
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
@@ -42,6 +43,11 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 			for ((index, member) in sortedMembersInCurrentPage.withIndex()) {
 				val ownerEmote = when {
 					member?.isOwner == true -> "\uD83D\uDC51"
+					else -> ""
+				}
+
+				val userEmote = when {
+					member == context.handle -> "\uD83D\uDC81"
 					else -> ""
 				}
 
@@ -57,7 +63,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 					else -> Emotes.DISCORD_OFFLINE
 				}
 
-				appendDescription("${index + (page * 20)}º $ownerEmote$typeEmote$statusEmote ${member.asMention}\n")
+				appendDescription("`${1 + index + (page * 20)}º` $ownerEmote$userEmote$typeEmote$statusEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
 				setFooter("Página ${page + 1} de ${maxPage + 1} | Você está na página ${userCurrentPage + 1}!", null)
 			}
 		}
