@@ -136,6 +136,8 @@ class PubSubHubbubCallbackController {
 					for (youTubeInfo in youTubeInfos) {
 						val textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId) ?: continue
 
+						guildIds.add(config.guildId)
+
 						if (!textChannel.canTalk())
 							continue
 
@@ -160,7 +162,6 @@ class PubSubHubbubCallbackController {
 						) ?: continue
 
 						textChannel.sendMessage(discordMessage).queue()
-						guildIds.add(config.guildId)
 					}
 				}
 			}
@@ -207,9 +208,11 @@ class PubSubHubbubCallbackController {
 
 					val servers = loritta.serversColl.find(
 							Filters.gt("livestreamConfig.channels", listOf<Any>())
-					)
+					).iterator()
 
-					servers.iterator().use {
+					val guildIds = mutableListOf<String>()
+
+					servers.use {
 						while (it.hasNext()) {
 							val server = it.next()
 							val guild = lorittaShards.getGuildById(server.guildId) ?: continue
@@ -222,11 +225,13 @@ class PubSubHubbubCallbackController {
 									continue
 								val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
 
-								if (!textChannel.canTalk())
-									continue
-
 								val storedUserLogin = channel.channelUrl!!.split("/").last()
 								if (storedUserLogin == userLogin) {
+									guildIds.add(server.guildId)
+
+									if (!textChannel.canTalk())
+										continue
+
 									var message = channel.videoSentMessage ?: "{link}"
 
 									if (message.isEmpty()) {
@@ -245,6 +250,17 @@ class PubSubHubbubCallbackController {
 								}
 							}
 						}
+					}
+
+					// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
+					val textChannel = lorittaShards.getTextChannelById(Constants.RELAY_TWITCH_STREAMS_CHANNEL)
+
+					if (textChannel != null) {
+						val guildNames = guildIds.mapNotNull { lorittaShards.getGuildById(it) }
+						textChannel.sendMessage("""${title.escapeMentions()} — https://www.twitch.tv/$userLogin
+					|**Enviado em...**
+					|${guildNames.joinToString("\n", transform = { "`${it.name.stripCodeMarks()}`" })}
+				""".trimMargin()).queue()
 					}
 				}
 			}
