@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.Emotes
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -34,7 +35,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 		val sortedMembersInCurrentPage = sortedMembers.subList(page * 10, Math.min((page + 1) * 10, guild.members.size))
 
 		val maxPage = guild.members.size / 10
-		val userCurrentPage = sortedMembersInCurrentPage.indexOf(context.handle) / 10
+		val userCurrentPage = sortedMembersInCurrentPage.indexOfFirst { context.userHandle.idLong == it.user.idLong } / 10
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
@@ -93,13 +94,13 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 		}
 
 		if (page != 0) {
-			_message.addReaction("⏪").queue()
-			_message.addReaction("◀").queue()
+			_message.addReaction("⏪").await()
+			_message.addReaction("◀").await()
 		}
 		if (maxPage != page) {
-			_message.addReaction("▶").queue()
-			_message.addReaction("⏩").queue()
+			_message.addReaction("▶").await()
+			_message.addReaction("⏩").await()
 		}
-		_message.addReaction("\uD83D\uDC81").queue()
+		_message.addReaction("\uD83D\uDC81").await()
 	}
 }
