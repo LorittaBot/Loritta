@@ -183,6 +183,7 @@ class CommandManager {
 		if (false && Loritta.config.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
 		commandMap.add(EmojiInfoCommand())
+		commandMap.add(OldMembersCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
@@ -349,6 +350,17 @@ class CommandManager {
 				strippedArgs = strippedArgs.remove(0)
 			}
 
+			var locale = locale
+			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
+				when (ev.channel.id) {
+					"414839559721975818" -> locale = loritta.getLocaleById("default") // português (default)
+					"404713176995987466" -> locale = loritta.getLocaleById("en-us") // inglês
+					"414847180285935622" -> locale = loritta.getLocaleById("es-es") // espanhol
+					"414847291669872661" -> locale = loritta.getLocaleById("pt-pt") // português de portugal
+					"414847379670564874" -> locale = loritta.getLocaleById("pt-funk") // português funk
+				}
+			}
+
 			val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
@@ -356,17 +368,6 @@ class CommandManager {
 					AbstractCommand.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				} else {
 					AbstractCommand.logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				}
-
-				var locale = locale
-				if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
-					when (ev.channel.id) {
-						"414839559721975818" -> locale = loritta.getLocaleById("default") // português (default)
-						"404713176995987466" -> locale = loritta.getLocaleById("en-us") // inglês
-						"414847180285935622" -> locale = loritta.getLocaleById("es-es") // espanhol
-						"414847291669872661" -> locale = loritta.getLocaleById("pt-pt") // português de portugal
-						"414847379670564874" -> locale = loritta.getLocaleById("pt-funk") // português funk
-					}
 				}
 
 				conf.lastCommandReceivedAt = System.currentTimeMillis()
@@ -409,8 +410,7 @@ class CommandManager {
 
 				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
-				val isDonator = profile.isDonator && profile.donationExpiresIn > System.currentTimeMillis()
-				if (isDonator && profile.donatorPaid >= 19.99) {
+				if (profile.isActiveDonator() && profile.donatorPaid >= 19.99) {
 					cooldown /= 2
 				}
 
@@ -532,7 +532,7 @@ class CommandManager {
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && !isDonator) {
+				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && !profile.isActiveDonator()) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],

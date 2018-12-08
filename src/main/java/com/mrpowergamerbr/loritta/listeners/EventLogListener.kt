@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
@@ -48,12 +49,14 @@ import java.nio.charset.Charset
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 	}
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
 			.removalListener { k1: String?, v1: UserMetaHolder?, removalCause ->
@@ -70,69 +73,86 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
-			val embed = EmbedBuilder()
-			embed.setTimestamp(Instant.now())
-			embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BLURPLE)
-			embed.setImage("attachment://avatar.png")
+		// Primeiro iremos baixar o avatar em uma task
+		// Para não precisar baixar (número de shards) vezes (na pior das hipóteses), vamos criar uma task separada que irá baixar apenas uma vez
+		// A task, ao finalizar, irá propagar para o resto dos servidores
+		if (downloadedAvatarJobs[event.entity.id] != null) // Se já temos uma task ativa, vamos ignorar!
+			return
 
-			val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
-			val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
+		downloadedAvatarJobs[event.entity.id] = GlobalScope.launch(loritta.coroutineDispatcher) {
+			try {
+				logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
 
-			if (rawOldAvatar == null || rawNewAvatar == null) // As vezes o avatar pode ser null
-				return@execute
+				val embed = EmbedBuilder()
+				embed.setTimestamp(Instant.now())
+				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+				embed.setColor(Constants.DISCORD_BLURPLE)
+				embed.setImage("attachment://avatar.png")
 
-			val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
-			val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+				val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
+				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
-			val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
-			val graphics = base.graphics
-			graphics.drawImage(oldAvatar, 0, 0, null)
-			graphics.drawImage(newAvatar, 128, 0, null)
+				if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
+					downloadedAvatarJobs.remove(event.entity.id)
+					return@launch
+				}
 
-			ByteArrayOutputStream().use { baos ->
-				ImageIO.write(base, "png", baos)
+				val oldAvatar = rawOldAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+				val newAvatar = rawNewAvatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 
-				ByteArrayInputStream(baos.toByteArray()).use { bais ->
-					// E agora nós iremos anunciar a troca para todos os servidores
-					val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+				val base = BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB_PRE)
+				val graphics = base.graphics
+				graphics.drawImage(oldAvatar, 0, 0, null)
+				graphics.drawImage(newAvatar, 128, 0, null)
 
-					loritta.serversColl.find(
-							Filters.and(
-									Filters.eq("eventLogConfig.avatarChanges", true),
-									Filters.eq("eventLogConfig.enabled", true),
-									Filters.`in`("_id", guilds.map { it.id })
-							)
-					).iterator().use {
-						while (it.hasNext()) {
-							val config = it.next()
-							val locale = loritta.getLocaleById(config.localeId)
+				ByteArrayOutputStream().use { baos ->
+					ImageIO.write(base, "png", baos)
 
-							val guild = guilds.first { it.id == config.guildId }
+					ByteArrayInputStream(baos.toByteArray()).use { bais ->
+						// E agora nós iremos anunciar a troca para todos os servidores
+						val guilds = event.jda.guilds.filter { it.isMember(event.user) }
 
-							val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+						loritta.serversColl.find(
+								Filters.and(
+										Filters.eq("eventLogConfig.avatarChanges", true),
+										Filters.eq("eventLogConfig.enabled", true),
+										Filters.`in`("_id", guilds.map { it.id })
+								)
 
-							if (textChannel != null && textChannel.canTalk()) {
-								if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-									continue
-								if (!guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES))
-									continue
-								if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-									continue
-								if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-									continue
+						).iterator().use {
+							while (it.hasNext()) {
+								val config = it.next()
+								val locale = loritta.getLocaleById(config.localeId)
 
-								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-								embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+								val guild = guilds.first { it.id == config.guildId }
 
-								val message = MessageBuilder().append(" ").setEmbed(embed.build())
+								val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
 
-								textChannel.sendFile(bais, "avatar.png", message.build()).queue()
+								if (textChannel != null && textChannel.canTalk()) {
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
+										continue
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES))
+										continue
+									if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
+										continue
+									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
+										continue
+
+									embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
+									embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+
+									val message = MessageBuilder().append(" ").setEmbed(embed.build())
+
+									textChannel.sendFile(bais, "avatar.png", message.build()).queue()
+								}
 							}
 						}
 					}
 				}
+				downloadedAvatarJobs.remove(event.entity.id)
+			} catch (e: Exception) {
+				logger.error(e) { "Erro ao fazer download do avatar de ${event.entity.id} (Antigo: ${event.oldAvatarId} / Novo: ${event.newAvatarId})" }
+				downloadedAvatarJobs.remove(event.entity.id)
 			}
 		}
 	}

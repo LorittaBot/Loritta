@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import net.dv8tion.jda.core.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File

@@ -103,6 +103,7 @@ object Constants {
 
 	// Canais de textos utilizados na Loritta
 	const val RELAY_YOUTUBE_VIDEOS_CHANNEL = "509043859792068609"
+	const val RELAY_TWITCH_STREAMS_CHANNEL = "520354012021784586"
 
 	/**
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image

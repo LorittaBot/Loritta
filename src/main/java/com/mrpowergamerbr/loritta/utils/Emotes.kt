@@ -8,4 +8,6 @@ object Emotes {
 	const val DISCORD_BOT_TAG = "<:bot:516314838541008906>"
 	const val DISCORD_WUMPUS_BASIC = "<:wumpus_basic:516315292821880832>"
 	const val LORI_TEMMIE = "<a:lori_temmie:515330130495799307>"
+	const val LORI_OWO = "<:lori_owo:417813932380520448>"
+	const val LORI_HUG = "<:lori_hug:515328576611155968>"
 }

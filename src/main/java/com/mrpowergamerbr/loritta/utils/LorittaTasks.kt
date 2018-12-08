@@ -28,10 +28,11 @@ object LorittaTasks {
 		scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(MutedUsersTask(), 0L, 3L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(TimersTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(ApplyBansTask(), 0L, 5L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(ApplyBansTask(), 0L, 15L, TimeUnit.MINUTES)
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {

@@ -29,9 +29,8 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
-	var locale = loritta.getLocaleById("default")
 
 	val isPrivateChannel: Boolean
 		get() = event.isFromType(ChannelType.PRIVATE)
@@ -56,9 +55,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, loc
 	val guild: Guild
 		get() = event.guild!!
 
-	init {
-		this.locale = locale
-	}
 
 	suspend fun explain() {
 		cmd.explain(this)

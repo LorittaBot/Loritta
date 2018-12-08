@@ -10,11 +10,11 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.vemdezap.description }
+		return locale.format { commands.entertainment.vemDeZap.description }
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.format { commands.vemdezap.examples }
+		return locale.format { commands.entertainment.vemDeZap.examples }
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {

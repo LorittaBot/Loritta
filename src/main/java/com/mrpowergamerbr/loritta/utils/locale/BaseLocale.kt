@@ -94,6 +94,14 @@ open class BaseLocale {
 	class Loritta {
 		lateinit var translationAuthors: List<String>
 		lateinit var xOfX: String
+		lateinit var page: String
+		lateinit var youAreCurrentlyOnPage: String
+		class Pronoun {
+			lateinit var he: String
+			lateinit var she: String
+		}
+		var pronoun = Pronoun()
+
 	}
 	class Discord {
 		class Status {
@@ -158,42 +166,33 @@ open class BaseLocale {
 		}
 		var arguments = Arguments()
 
-		class Language {
-			lateinit var description: String
-			lateinit var pleaseSelectYourLanguage: String
-			lateinit var translatedBy: String
-			lateinit var languageChanged: String
-		}
-		var language = Language()
+		class Entertainment {
+			class Roll {
+				lateinit var description: String
+				lateinit var howMuchSides: String
+			}
+			var roll = Roll()
 
-		class Ajuda {
-			lateinit var errorWhileOpeningDm: String
-		}
-		var ajuda = Ajuda()
+			class Vieirinha {
+				lateinit var description: String
+				lateinit var examples: List<String>
+				lateinit var responses: List<String>
+			}
+			var vieirinha = Vieirinha()
 
-		class Roll {
-			lateinit var description: String
-			lateinit var howMuchSides: String
-		}
-		var roll = Roll()
+			class Bolsonaro {
+				lateinit var description: String
+			}
+			var bolsonaro = Bolsonaro()
 
-		class Vieirinha {
-			lateinit var description: String
-			lateinit var examples: List<String>
-			lateinit var responses: List<String>
-		}
-		var vieirinha = Vieirinha()
+			class VemDeZap {
+				lateinit var description: String
+				lateinit var examples: List<String>
+			}
+			var vemDeZap = VemDeZap()
 
-		class Bolsonaro {
-			lateinit var description: String
 		}
-		var bolsonaro = Bolsonaro()
-
-		class Vemdezap {
-			lateinit var description: String
-			lateinit var examples: List<String>
-		}
-		var vemdezap = Vemdezap()
+		var entertainment = Entertainment()
 
 		class Actions {
 			lateinit var examples: List<String>
@@ -245,7 +244,24 @@ open class BaseLocale {
 		}
 		var moderation = Moderation()
 
+		class Social {
+			class Reputation {
+				lateinit var success: String
+			}
+			var reputation = Reputation()
+
+		}
+		var social = Social()
+
 		class Discord {
+			class AddEmoji {
+				lateinit var description: String
+				lateinit var success: String
+				lateinit var limitReached: String
+				lateinit var error: String
+			}
+			var addEmoji = AddEmoji()
+
 			class UserInfo {
 				lateinit var sharedServers: String
 				lateinit var accountCreated: String
@@ -267,23 +283,59 @@ open class BaseLocale {
 			}
 			var emojiInfo = EmojiInfo()
 
+			class OldMembers {
+				lateinit var description: String
+				lateinit var theOldestPeople: String
+			}
+			var oldMembers = OldMembers()
+
+			class ChannelInfo {
+				lateinit var description: String
+				lateinit var channelMention: String
+				lateinit var channelCreated: String
+				lateinit var channelTopic: String
+				lateinit var undefined: String
+				lateinit var channelNotFound: String
+			}
+			var channelInfo = ChannelInfo()
+
 		}
 		var discord = Discord()
 
-		class Fanarts {
-			lateinit var description: String
-			lateinit var madeBy: String
-			lateinit var thankYouAll: String
-		}
-		var fanarts = Fanarts()
+		class Economy {
+			class Raffle {
+				lateinit var quantityBiggerThanAllowed: String
+				lateinit var hasTooManyTickets: String
+				lateinit var cantBuyTooManyTickets: String
+			}
+			var raffle = Raffle()
 
-		class AddEmoji {
-			lateinit var description: String
-			lateinit var success: String
-			lateinit var limitReached: String
-			lateinit var error: String
 		}
-		var addEmoji = AddEmoji()
+		var economy = Economy()
+
+		class Miscellaneous {
+			class Ajuda {
+				lateinit var errorWhileOpeningDm: String
+			}
+			var ajuda = Ajuda()
+
+			class FanArts {
+				lateinit var description: String
+				lateinit var madeBy: String
+				lateinit var thankYouAll: String
+			}
+			var fanArts = FanArts()
+
+			class Language {
+				lateinit var description: String
+				lateinit var pleaseSelectYourLanguage: String
+				lateinit var translatedBy: String
+				lateinit var languageChanged: String
+			}
+			var language = Language()
+
+		}
+		var miscellaneous = Miscellaneous()
 
 	}
 	// ===[ END  GENEREATED LOCALE ]===

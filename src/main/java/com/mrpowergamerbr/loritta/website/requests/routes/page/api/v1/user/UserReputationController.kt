@@ -2,18 +2,25 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
+import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
+import net.dv8tion.jda.core.Permission
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -71,6 +78,8 @@ class UserReputationController {
 		val json = jsonParser.parse(rawMessage)
 		val content = json["content"].string
 		val token = json["token"].string
+		val channelId = json["channelId"].nullString
+
 		if (!MiscUtils.checkRecaptcha(Loritta.config.invisibleRecaptchaToken, token))
 			throw WebsiteAPIException(
 					Status.FORBIDDEN,
@@ -106,14 +115,39 @@ class UserReputationController {
 		logger.info { "IP: $ip" }
 		MiscUtils.handleVerification(status)
 
-		transaction(Databases.loritta) {
-			Reputation.new {
-				this.givenById = userIdentification.id.toLong()
-				this.givenByIp = ip
-				this.givenByEmail = userIdentification.email!!
-				this.receivedById = receiver.toLong()
-				this.content = content
-				this.receivedAt = System.currentTimeMillis()
+		giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
+
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+
+		var randomChance = 0.75
+		if (profile.isActiveDonator()) {
+			randomChance = when {
+				profile.donatorPaid >= 39.99 -> 25.0
+				profile.donatorPaid >= 19.99 -> 5.0
+				else -> randomChance
+			}
+		}
+
+		if (chance(randomChance)) { // Lori é fofis e retribu reputações :eu_te_moido:
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				delay(Loritta.RANDOM.nextInt(8000, 15001)) // Delay aleatório para ficar mais "real"
+
+				giveReputation(
+						Loritta.config.clientId.toLong(),
+						"127.0.0.1",
+						"me@loritta.website",
+						userIdentification.id.toLong(),
+						"Stay awesome :3"
+				)
+
+				val reputationCount = transaction(Databases.loritta) {
+					Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
+				}
+
+				if (channelId != null) {
+					val lorittaProfile = loritta.getOrCreateLorittaProfile(Loritta.config.clientId.toLong())
+					sendReputationReceivedMessage(channelId, Loritta.config.clientId, lorittaProfile, userIdentification.id, reputationCount)
+				}
 			}
 		}
 
@@ -122,6 +156,9 @@ class UserReputationController {
 		}
 
 		res.status(Status.OK)
+
+		if (channelId != null)
+			sendReputationReceivedMessage(channelId, userIdentification.id, profile, receiver, reputations.size)
 
 		val rank = StringBuilder().appendHTML().div(classes = "box-item") {
 			val map = reputations.groupingBy { it.givenById }.eachCount()
@@ -184,5 +221,65 @@ class UserReputationController {
 				"rank" to rank.toString()
 		)
 		res.send(gson.toJson(response))
+	}
+
+	fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
+		logger.info("$giver ($giverIp/$giverEmail) deu uma reputação para $receiver! Motivo: $content")
+		transaction(Databases.loritta) {
+			Reputation.new {
+				this.givenById = giver
+				this.givenByIp = giverIp
+				this.givenByEmail = giverEmail
+				this.receivedById = receiver
+				this.content = content
+				this.receivedAt = System.currentTimeMillis()
+			}
+		}
+	}
+
+	fun sendReputationReceivedMessage(channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+		if (channelId.isValidSnowflake()) {
+			// Iremos verificar se o usuário *pode* usar comandos no canal especificado
+			val channel = lorittaShards.getTextChannelById(channelId)
+
+			if (channel != null) {
+				if (!channel.canTalk()) // Eu não posso falar!
+					return
+				val member = channel.guild.getMemberById(giverId)
+				if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
+					return
+
+				if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
+					return
+
+				val serverConfig = loritta.getServerConfigForGuild(channelId)
+				val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
+				val receiverSettings = transaction(Databases.loritta) {
+					receiverProfile.settings
+				}
+
+				val lorittaUser = GuildLorittaUser(member, serverConfig, giverProfile)
+
+				if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
+					return
+
+				val locale = loritta.getLocaleById(serverConfig.localeId)
+
+				// Tudo certo? Então vamos enviar!
+				val reply = LoriReply(
+						locale.format(
+								"<@${giverId}>",
+								"<@$receiverId>",
+								reputationCount,
+								Emotes.LORI_OWO,
+								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>",
+								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+						) { commands.social.reputation.success },
+						Emotes.LORI_HUG
+				)
+
+				channel.sendMessage(reply.build()).queue()
+			}
+		}
 	}
 }

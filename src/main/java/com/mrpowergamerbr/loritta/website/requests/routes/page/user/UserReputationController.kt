@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
@@ -46,7 +47,7 @@ class UserReputationController {
 			}
 		} else { null }
 
-		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations)
+		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("channel").valueOrNull())
 		val builder = StringBuilder()
 		builder.appendHTML().html {
 			Page.getHead(

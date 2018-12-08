@@ -94,7 +94,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Por que Hitler não conquistou a Rússia?\n\nPorque ele Moscou",
 				"Vocês sabiam?\n\nSe o Hino for cantado de trás pra frente, ele deixar de ser Hino e passa a se chamar \"Voltano\".",
 				"Porque a fita isolante é melhor que a fita crepe?\n\nPorque ela é faixa preta 🥋",
-				"O vocalista do linkin park era chester\n\nmas agora virou presunto.",
 				"Um gordo irritado sai com uma arma na mão\n\nEle passa por uma construção e dá um tiro num saco. No dia seguinte, o jornal relata o acontecimento: GORDO BALEIA SACO DE AREIA",
 				"O cadeirante vira para o cego e diz...\n\nolha que mulher gostosa passando o cego: corre atrás dela",
 				"Depois que o meu sobrinho virou mulher, nunca mais o vi.\n\nEle tornou-se transparente!",

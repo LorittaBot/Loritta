@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
+import org.jooby.Mutant
 import org.jooby.Request
 
 /**
@@ -23,4 +24,14 @@ val Request.urlQueryString: String get() {
 	} else {
 		""
 	}
+}
+
+/**
+ * Returns the value of the mutant, or null, if missing
+ */
+fun Mutant.valueOrNull(): String? {
+	return if (this.isSet)
+		this.value()
+	else
+		null
 }

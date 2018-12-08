@@ -57,7 +57,22 @@ class AutomodModule : MessageReceivedModule {
 				"p-p",
 				"q-q",
 				"p-q",
-				"q-p"
+				"q-p",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"oi",
+				"olá",
+				"oie",
+				"oin",
+				"eu"
 		)
 
 		private val logger = KotlinLogging.logger {}
@@ -100,7 +115,7 @@ class AutomodModule : MessageReceivedModule {
 				val verySimilarMessages = mutableListOf<Message>()
 				var streamFloodCounter = 0
 
-				for ((index, message) in messages.reversed().withIndex()) {
+				messageLoop@for ((index, message) in messages.reversed().withIndex()) {
 					val distanceMultiplier = ((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)
 					if (message.contentRaw.isNotBlank()) {
 						var compareContent = message.contentRaw.toLowerCase()
@@ -159,6 +174,7 @@ class AutomodModule : MessageReceivedModule {
 						if (urlsDetected.contains(matcher2.group(0))) {
 							// analysis(analysis, "+ Mesmo link ~ ${AutomodModule.SAME_LINK_SCORE} - Valor atual é $raidingPercentage")
 							raidingPercentage += distanceMultiplier * AutomodModule.SAME_LINK_SCORE
+							continue@messageLoop
 						}
 					}
 				}
@@ -213,16 +229,20 @@ class AutomodModule : MessageReceivedModule {
 
 						if (percentage >= BAN_THRESHOLD) {
 							alreadyBanned.add(storedMessage.author)
-							logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
-							BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+							if (event.guild.selfMember.canInteract(event.member)) {
+								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
+								BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+							}
 						}
 					}
 
 					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 						return true
 
-					logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
-					BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+					if (event.guild.selfMember.canInteract(event.member)) {
+						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
+						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+					}
 				}
 				return true
 			}

@@ -8,7 +8,7 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.vieirinha.description }
+		return locale.format { commands.entertainment.vieirinha.description }
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {
@@ -20,7 +20,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.format { commands.vieirinha.examples }
+		return locale.format { commands.entertainment.vieirinha.examples }
 	}
 
 	override fun hasCommandFeedback(): Boolean {
@@ -37,7 +37,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + locale.commands.vieirinha.responses.getRandom())
+					.content(context.getAsMention(true) + locale.commands.entertainment.vieirinha.responses.getRandom())
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {
