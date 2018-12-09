@@ -182,7 +182,7 @@ object MessageUtils {
  * @return         the message object for chaining
  */
 fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
 }
@@ -195,7 +195,7 @@ fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageRea
  * @return         the message object for chaining
  */
 fun Message.onReactionRemove(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionRemove = function
 	return this
 }
@@ -208,7 +208,7 @@ fun Message.onReactionRemove(context: CommandContext, function: suspend (Message
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
@@ -221,7 +221,7 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (Me
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(userId: String, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(null, userId) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(null, userId) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
@@ -234,7 +234,7 @@ fun Message.onReactionAddByAuthor(userId: String, function: suspend (MessageReac
  * @return         the message object for chaining
  */
 fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
 	return this
 }
@@ -247,7 +247,7 @@ fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend 
  * @return         the message object for chaining
  */
 fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onResponse = function
 	return this
 }
@@ -260,7 +260,7 @@ fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessag
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onResponseByAuthor = function
 	return this
 }
@@ -273,12 +273,12 @@ fun Message.onResponseByAuthor(context: CommandContext, function: suspend (Lorit
  * @return         the message object for chaining
  */
 fun Message.onMessageReceived(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.id) { MessageInteractionFunctions(this.guild?.id, context.userHandle.id) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this
 }
 
-class MessageInteractionFunctions(val guild: String?, val originalAuthor: String) {
+class MessageInteractionFunctions(val guildId: Long?, val originalAuthor: String) {
 	// Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
 	var onReactionAdd: (suspend (MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemove: (suspend (MessageReactionRemoveEvent) -> Unit)? = null

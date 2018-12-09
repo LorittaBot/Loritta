@@ -42,8 +42,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
-			val functions = loritta.messageInteractionCache[e.messageId]!!
+		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
+			val functions = loritta.messageInteractionCache[e.messageIdLong]!!
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {

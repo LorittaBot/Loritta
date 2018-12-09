@@ -45,7 +45,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			)
 
 			reply.onResponseByAuthor(context) {
-				loritta.messageInteractionCache.remove(reply.id)
+				loritta.messageInteractionCache.remove(reply.idLong)
 				reply.delete().queue()
 				val inMillis = it.message.contentDisplay.convertToEpochMillis()
 				val calendar = Calendar.getInstance()
@@ -75,7 +75,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			}
 
 			reply.onReactionAddByAuthor(context) {
-				loritta.messageInteractionCache.remove(reply.id)
+				loritta.messageInteractionCache.remove(reply.idLong)
 				reply.delete().queue()
 				context.reply(
 						LoriReply(
