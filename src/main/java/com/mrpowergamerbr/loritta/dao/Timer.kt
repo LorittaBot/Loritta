@@ -123,7 +123,7 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 
 				action.queue {
 					if (deleteAfter != null)
-						it.delete().queueAfter(deleteAfter, TimeUnit.SECONDS)
+						it.delete().queueAfter(deleteAfter, TimeUnit.MILLISECONDS)
 				}
 			}
 			TimerEffect.TimerEffectType.COMMAND -> {

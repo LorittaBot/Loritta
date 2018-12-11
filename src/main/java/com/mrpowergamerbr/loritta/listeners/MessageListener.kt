@@ -181,7 +181,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
 
-					if (it.guild == event.guild.id) {
+					if (it.guildId == event.guild.idLong) {
 						if (it.onResponse != null)
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
@@ -280,7 +280,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onMessageDelete(event: MessageDeleteEvent) {
-		loritta.messageInteractionCache.remove(event.messageId)
+		loritta.messageInteractionCache.remove(event.messageIdLong)
 	}
 
 	/**

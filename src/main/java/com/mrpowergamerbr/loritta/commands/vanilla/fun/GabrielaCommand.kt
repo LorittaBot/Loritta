@@ -198,7 +198,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 								true
 						) {
 							val messageId = it["id"].string
-							val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+							val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.userHandle.id) }
 							context.message.textChannel.getMessageById(messageId).queue { message ->
 								if (message != null) {
 									learnGabriela(pergunta, message, context, functions, true, document, answer)
@@ -218,7 +218,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 					true
 			) {
 				val messageId = it["id"].string
-				val functions = loritta.messageInteractionCache.getOrPut(messageId) { MessageInteractionFunctions(context.guild.id, context.userHandle.id) }
+				val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.userHandle.id) }
 				context.message.textChannel.getMessageById(messageId).queue { message ->
 					if (message != null) {
 						learnGabriela(pergunta, message, context, functions)
