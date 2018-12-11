@@ -187,7 +187,7 @@ class InviteLinkModule : MessageReceivedModule {
 			val everything = matcher.group(0)
 			val afterSlash = matcher.group(1)
 			val uri = everything.replace(afterSlash, "")
-			if (uri == "youtube.com" || uri == "youtu.be")
+			if (uri.endsWith("youtube.com") || uri.endsWith("youtu.be"))
 				return null
 
 			matcher.reset()
