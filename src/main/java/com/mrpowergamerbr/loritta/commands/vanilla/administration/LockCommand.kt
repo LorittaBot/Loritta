@@ -33,24 +33,34 @@ class LockCommand : AbstractCommand("lock", listOf("trancar"), CommandCategory.A
     }
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
       if (context.args.isNotEmpty()) {
-        val channel = context.event.channel
-        if (context.guild.selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL)) {
-          val everyoneRole = contex.guild.getPublicRole
-          val permissionOverride = channel.getPermissionOverride(everyoneRole)
-          if (permissionOverride == null) {
-            channel.createPermissionOverride(everyoneRole)
-                      .setDeny(Permission.MESSAGE_WRITE)
-                      .queue()
-          } else {
-            if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-              permissionOverride.manager
-                .deny(Permission.MESSAGE_WRITE)
-                .queue()
+        val textChannel = context.event.textChannel
+        if (textChannel != null) {
+            if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+                val everyoneRole = context.guild.publicRole
+                val permissionOverride = textChannel.getPermissionOverride(everyoneRole)
+                if (permissionOverride == null) {
+                    textChannel.createPermissionOverride(everyoneRole)
+                            .setDeny(Permission.MESSAGE_WRITE)
+                            .queue()
+                } else {
+                    if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
+                        permissionOverride.manager
+                                .deny(Permission.MESSAGE_WRITE)
+                                .queue()
+                    }
+                }
+            } else {
+                context.reply(
+                        LoriReply(
+                                locale["BAN_UserDoesntExist"],
+                                Constants.ERROR
+                        )
+                )
             }
-          }
-        } else {
-          this.explain(context)
         }
+      } else {
+          this.explain(context)
       }
+
     }
 }
