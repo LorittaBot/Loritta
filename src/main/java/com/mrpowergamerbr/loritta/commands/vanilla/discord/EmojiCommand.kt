@@ -6,8 +6,11 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.Emote
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -28,33 +31,37 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
-			var emoji = context.args[0]
+			val arg0 = context.rawArgs[0]
+			val firstEmote = context.message.emotes.firstOrNull()
+			if (arg0 == firstEmote?.asMention) {
+				// Emoji do Discord (via menção)
+				downloadAndSendDiscordEmote(context, firstEmote)
+				return
+			}
 
-			if (emoji.startsWith(":") && emoji.endsWith(":")) { // Emoji customizado?
-				// Sim!
-				val customEmotes = context.message.emotes
-				if (!customEmotes.isEmpty()) {
-					val emote = customEmotes[0]
-					val emojiUrl = emote.imageUrl
-
-					try {
-						val emojiImage = LorittaUtils.downloadFile(emojiUrl, 5000)
-						var fileName = emote.name
-						if (emote.isAnimated) {
-							fileName += ".gif"
-						} else {
-							fileName += ".png"
-						}
-						context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
-					} catch (e: Exception) {
-						e.printStackTrace()
-					}
+			if (arg0.isValidSnowflake()) {
+				val emote = lorittaShards.getEmoteById(arg0)
+				if (emote != null) {
+					// Emoji do Discord (via ID)
+					downloadAndSendDiscordEmote(context, emote)
+					return
 				}
-			} else {
-				// Na verdade é um emoji padrão...
+			}
+
+			val guild = context.guild
+			val foundEmote = guild.getEmotesByName(arg0, true).firstOrNull()
+			if (foundEmote != null) {
+				// Emoji do Discord (via nome)
+				downloadAndSendDiscordEmote(context, foundEmote)
+				return
+			}
+
+			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
+
+			if (isUnicodeEmoji) {
 				val codePoints = mutableListOf<String>()
-				for (idx in 0 until emoji.length step 2) {
-					var codePoint = LorittaUtils.toUnicode(emoji.codePointAt(idx)).substring(2)
+				for (idx in 0 until arg0.length step 2) {
+					var codePoint = LorittaUtils.toUnicode(arg0.codePointAt(idx)).substring(2)
 					codePoints += codePoint
 				}
 				// Vamos usar codepoints porque emojis
@@ -72,6 +79,23 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 			}
 		} else {
 			context.explain()
+		}
+	}
+
+	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: Emote) {
+		val emojiUrl = emote.imageUrl
+
+		try {
+			val emojiImage = LorittaUtils.downloadFile(emojiUrl, 5000)
+			var fileName = emote.name
+			if (emote.isAnimated) {
+				fileName += ".gif"
+			} else {
+				fileName += ".png"
+			}
+			context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
+		} catch (e: Exception) {
+			e.printStackTrace()
 		}
 	}
 }
