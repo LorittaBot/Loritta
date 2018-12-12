@@ -41,6 +41,8 @@ open class BaseLocale {
 	var loritta = Loritta()
 	@Transient
 	var discord = Discord()
+	@Transient
+	var modules = Modules()
 
 	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
@@ -151,6 +153,15 @@ open class BaseLocale {
 		}
 
 		var permissions = Permissions()
+
+	}
+
+	class Modules {
+		class MemberCounter {
+			lateinit var auditLogReason: String
+		}
+
+		var memberCounter = MemberCounter()
 
 	}
 

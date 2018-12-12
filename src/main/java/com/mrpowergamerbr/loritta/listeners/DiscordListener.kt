@@ -279,7 +279,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
 				memberCounterJoinLeftCache.add(guild.idLong)
-			textChannel.manager.setTopic(formattedTopic).queue()
+
+			val locale = loritta.getLocaleById(serverConfig.localeId)
+			textChannel.manager.setTopic(formattedTopic).reason(locale.format { modules.memberCounter.auditLogReason }).queue()
 		}
 	}
 
