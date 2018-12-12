@@ -5,6 +5,9 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -60,6 +63,8 @@ class BomDiaECia {
 	}
 
 	var activeTextChannels = ConcurrentHashMap<String, YudiTextChannelInfo>()
+	var triedToCall = mutableSetOf<Long>()
+	var lastBomDiaECia = 0L
 	var available = false
 
 	var currentText = randomTexts[0]
@@ -77,6 +82,8 @@ class BomDiaECia {
 		available = true
 
 		currentText = randomTexts[RANDOM.nextInt(randomTexts.size)]
+
+		lastBomDiaECia = System.currentTimeMillis()
 
 		val obfuscatedText = currentText.toCharArray()
 				.joinToString("", transform = {
@@ -110,7 +117,7 @@ class BomDiaECia {
 	}
 
 	@Synchronized
-	fun announceWinner(guild: Guild, user: User) {
+	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
 		val validTextChannels = getActiveTextChannels()
 
 		activeTextChannels.clear()
@@ -126,6 +133,13 @@ class BomDiaECia {
 		validTextChannels.forEach {
 			// TODO: Localization!
 			it.sendMessage(messageForLocales["default"]).queue()
+		}
+
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			delay(30000)
+			if (triedToCall.isNotEmpty())
+				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue()
+			triedToCall.clear()
 		}
 	}
 
