@@ -34,6 +34,14 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 					// Emoji do Discord (via ID)
 					showDiscordEmoteInfo(context, emote)
 					return
+				} else {
+					context.reply(
+							LoriReply(
+									locale.format("`$arg0`") { commands.discord.emoji.notFoundId },
+									Constants.ERROR
+							)
+					)
+					return
 				}
 			}
 

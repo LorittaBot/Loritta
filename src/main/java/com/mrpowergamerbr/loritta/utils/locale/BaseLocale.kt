@@ -299,6 +299,11 @@ open class BaseLocale {
 			}
 			var channelInfo = ChannelInfo()
 
+			class Emoji {
+				lateinit var notFoundId: String
+			}
+			var emoji = Emoji()
+
 		}
 		var discord = Discord()
 
