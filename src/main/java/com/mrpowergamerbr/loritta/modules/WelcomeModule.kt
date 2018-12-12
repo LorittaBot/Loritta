@@ -50,7 +50,7 @@ object WelcomeModule {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent("Quanta gente saindo! Para não encher o canal de mensagens, aqui está a lista de todos que sairam ${Emotes.LORI_OWO}").build())
+											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent("Quanta gente saindo! Para não encher o canal de mensagens, aqui está a lista de todos que sairam ${Emotes.LORI_OWO}").build()).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
