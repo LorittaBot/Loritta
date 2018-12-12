@@ -101,6 +101,7 @@ class CommandManager {
 		commandMap.add(LoriSignCommand())
 		commandMap.add(TextCraftCommand())
 		commandMap.add(BolsonaroCommand())
+		commandMap.add(BolsoDrakeCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(CongaParrotCommand())

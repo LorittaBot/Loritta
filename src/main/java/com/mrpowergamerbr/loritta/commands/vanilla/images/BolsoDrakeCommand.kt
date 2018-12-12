@@ -9,9 +9,9 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES) {
+class BolsoDrakeCommand : AbstractCommand("bolsodrake", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["DRAKE_DESCRIPTION"]
+		return locale.format { commands.images.bolsoDrake.description }
 	}
 
 	override fun getExamples(): List<String> {
@@ -30,7 +30,7 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val bi = ImageIO.read(File(Loritta.ASSETS + "drake.png")) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.ASSETS + "bolsodrake.png")) // Primeiro iremos carregar o nosso template
 		val graph = bi.graphics
 
 		run {
@@ -45,6 +45,6 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 			graph.drawImage(image, 150, 150, null)
 		}
 
-		context.sendFile(bi, "drake.png", context.getAsMention(true))
+		context.sendFile(bi, "bolsodrake.png", context.getAsMention(true))
 	}
 }
