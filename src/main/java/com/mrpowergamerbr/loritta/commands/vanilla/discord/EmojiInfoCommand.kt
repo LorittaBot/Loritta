@@ -74,6 +74,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 
 				embed.addField("\uD83D\uDC40 ${context.locale.format { commands.discord.emojiInfo.mention }}", "`$arg0`", true)
 				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
+				embed.addField("⛓ Link", emojiUrl, true)
 
 				context.sendMessage(context.getAsMention(true), embed.build())
 			} else {
@@ -111,7 +112,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 			embed.addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.locale), true)
 			if (sourceGuild != null)
 				embed.addField("\uD83D\uDD0E ${context.locale.format { commands.discord.emojiInfo.seenAt }}", "`${sourceGuild.name}`", true)
-
+			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
 			return embed.build()
 		}
 	}
