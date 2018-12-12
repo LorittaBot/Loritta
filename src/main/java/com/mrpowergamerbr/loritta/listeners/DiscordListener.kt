@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
@@ -31,9 +32,23 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		/**
+		 * Utilizado para não enviar mudanças do contador no event log
+		 */
+		val memberCounterJoinLeftCache = Collections.newSetFromMap(
+				Caffeine.newBuilder()
+						.expireAfterWrite(5, TimeUnit.SECONDS)
+						.build<Long, Boolean>()
+						.asMap()
+		)
+
+		private val logger = KotlinLogging.logger {}
+	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		if (e.user.isBot) // Ignorar reactions de bots
@@ -161,7 +176,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf)
+				updateTextChannelsTopic(event.guild, conf, true)
 
 				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
 					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
@@ -240,7 +255,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf)
+				updateTextChannelsTopic(event.guild, conf, true)
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberLeave(event)
@@ -256,12 +271,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig) {
+	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig, hideInEventLog: Boolean = false) {
 		for (textChannel in guild.textChannels) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				continue
 			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
+			if (hideInEventLog)
+				memberCounterJoinLeftCache.add(guild.idLong)
 			textChannel.manager.setTopic(formattedTopic).queue()
 		}
 	}

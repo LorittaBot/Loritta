@@ -62,7 +62,6 @@ object WelcomeModule {
 			}
 			.build<Long, CopyOnWriteArrayList<User>>()
 
-
 	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig) {
 		if (Loritta.config.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
 			return

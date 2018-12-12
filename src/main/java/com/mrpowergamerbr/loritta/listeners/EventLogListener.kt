@@ -255,6 +255,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		// Detectar se é apenas uma mudança no contador ou se o tópico alterou
+		if (event is TextChannelUpdateTopicEvent) {
+			if (DiscordListener.memberCounterJoinLeftCache.contains(event.guild.idLong)) {
+				DiscordListener.memberCounterJoinLeftCache.remove(event.guild.idLong)
+				return
+			}
+		}
+
 		loritta.executor.execute {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
