@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN){
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.administration.lock.description }
+		return locale.format { commands.moderation.lock.description }
 	}
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
@@ -30,7 +30,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 						.queue()
 						context.reply(
 							LoriReply(
-								locale.format { commands.administration.lock.denied }
+								locale.format { commands.moderation.lock.denied }
 							)
 						)
 					} else {
@@ -40,7 +40,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 							.queue()
 							context.reply(
 								LoriReply(
-									locale.format { commands.administration.lock.allowed }
+									locale.format { commands.moderation.lock.allowed }
 								)
 							)
 						}
