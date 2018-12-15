@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DrawnMaskCommand : AbstractCommand("drawnmask", category = CommandCategory.IMAGES) {
+class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca"), category = CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "drawn_mask_placa.png")) }
 	}
@@ -62,8 +62,8 @@ class DrawnMaskCommand : AbstractCommand("drawnmask", category = CommandCategory
 		path.closePath()
 
 		clippedSignGraphics.clip = path
-
-		base.graphics.drawImage(transformedSignImage, 0, 0, null)
+		clippedSignGraphics.drawImage(transformedSignImage, 0, 0, null)
+		base.graphics.drawImage(clippedSignImage, 0, 0, null)
 		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
 		context.sendFile(base, "drawn_mask_placa.png", context.getAsMention(true))
