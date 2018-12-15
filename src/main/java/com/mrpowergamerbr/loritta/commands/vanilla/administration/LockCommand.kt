@@ -5,19 +5,9 @@ import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.core.Permission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class LockCommand : AbstractCommand("lock", listOf("trancar"), CommandCategory.ADMIN){
+class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN){
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["MUTE_DESCRIPTION"]
-	}
-	override fun getUsage(locale: BaseLocale): CommandArguments {
-		return arguments {
-			argument(ArgumentType.USER) {
-				optional = false
-			}
-			argument(ArgumentType.TEXT) {
-				optional = true
-			}
-		}
+		return locale.format { commands.administration.lock.description }
 	}
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
@@ -38,16 +28,26 @@ class LockCommand : AbstractCommand("lock", listOf("trancar"), CommandCategory.A
 						textChannel.createPermissionOverride(everyoneRole)
 						.setDeny(Permission.MESSAGE_WRITE)
 						.queue()
+						contex.reply(
+							LoriReply(
+								locale.format { commands.administration.lock.denied }
+							)
+						)
 					} else {
 						if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
 							permissionOverride.manager
-							.deny(Permission.MESSAGE_WRITE)
+							.allow(Permission.MESSAGE_WRITE)
 							.queue()
+							contex.reply(
+								LoriReply(
+									locale.format { commands.administration.lock.allowed }
+								)
+							)
 						}
 					}
 				}
 		} else {
-			this.explain(context)
+			context.explain()
 		}
 	}
 }
