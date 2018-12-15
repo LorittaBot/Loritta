@@ -28,7 +28,7 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 						textChannel.createPermissionOverride(everyoneRole)
 						.setAllow(Permission.MESSAGE_WRITE)
 						.queue()
-						contex.reply(
+						context.reply(
 							LoriReply(
 								locale.format { commands.administration.unlock.success }
 							)
