@@ -19,7 +19,6 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 	}
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
 			val textChannel = context.event.textChannel
 			if (textChannel != null) {
 					val everyoneRole = context.guild.publicRole
@@ -46,8 +45,6 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 						}
 					}
 				}
-		} else {
-			context.explain()
-		}
+		} 
 	}
 }
