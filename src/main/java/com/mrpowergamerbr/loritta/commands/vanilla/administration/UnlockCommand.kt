@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCategory.ADMIN){
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.administration.unlock.description }
+		return locale.format { commands.moderation.unlock.description }
 	}
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
@@ -30,7 +30,7 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 						.queue()
 						context.reply(
 							LoriReply(
-								locale.format { commands.administration.unlock.success }
+								locale.format { commands.moderation.lock.allowed }
 							)
 						)
 					} 
