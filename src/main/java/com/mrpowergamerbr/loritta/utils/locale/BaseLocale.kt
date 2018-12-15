@@ -98,16 +98,13 @@ open class BaseLocale {
 		lateinit var xOfX: String
 		lateinit var page: String
 		lateinit var youAreCurrentlyOnPage: String
-
 		class Pronoun {
 			lateinit var he: String
 			lateinit var she: String
 		}
-
 		var pronoun = Pronoun()
 
 	}
-
 	class Discord {
 		class Status {
 			lateinit var online: String
@@ -115,7 +112,6 @@ open class BaseLocale {
 			lateinit var doNotDisturb: String
 			lateinit var offline: String
 		}
-
 		var status = Status()
 
 		class Permissions {
@@ -151,20 +147,16 @@ open class BaseLocale {
 			lateinit var messageTts: String
 			lateinit var viewChannel: String
 		}
-
 		var permissions = Permissions()
 
 	}
-
 	class Modules {
 		class MemberCounter {
 			lateinit var auditLogReason: String
 		}
-
 		var memberCounter = MemberCounter()
 
 	}
-
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
 		lateinit var errorWhileExecutingCommand: String
@@ -174,7 +166,6 @@ open class BaseLocale {
 		lateinit var loriDoesntHavePermissionDiscord: String
 		lateinit var commandOnlyForOwner: String
 		lateinit var imageTooLarge: String
-
 		class Arguments {
 			lateinit var text: String
 			lateinit var number: String
@@ -182,7 +173,6 @@ open class BaseLocale {
 			lateinit var emote: String
 			lateinit var image: String
 		}
-
 		var arguments = Arguments()
 
 		class Entertainment {
@@ -190,7 +180,6 @@ open class BaseLocale {
 				lateinit var description: String
 				lateinit var howMuchSides: String
 			}
-
 			var roll = Roll()
 
 			class Vieirinha {
@@ -198,46 +187,43 @@ open class BaseLocale {
 				lateinit var examples: List<String>
 				lateinit var responses: List<String>
 			}
-
 			var vieirinha = Vieirinha()
 
 			class Bolsonaro {
 				lateinit var description: String
 			}
-
 			var bolsonaro = Bolsonaro()
 
 			class VemDeZap {
 				lateinit var description: String
 				lateinit var examples: List<String>
 			}
-
 			var vemDeZap = VemDeZap()
 
 		}
-
 		var entertainment = Entertainment()
 
 		class Images {
 			class BolsoDrake {
 				lateinit var description: String
 			}
-
 			var bolsoDrake = BolsoDrake()
 
-		}
+			class DrawnMaskSign {
+				lateinit var description: String
+			}
+			var drawnMaskSign = DrawnMaskSign()
 
+		}
 		var images = Images()
 
 		class Actions {
 			lateinit var examples: List<String>
-
 			class Slap {
 				lateinit var description: String
 				lateinit var response: String
 				lateinit var responseAntiIdiot: String
 			}
-
 			var slap = Slap()
 
 			class Kiss {
@@ -245,7 +231,6 @@ open class BaseLocale {
 				lateinit var response: String
 				lateinit var responseAntiIdiot: String
 			}
-
 			var kiss = Kiss()
 
 			class Attack {
@@ -253,25 +238,21 @@ open class BaseLocale {
 				lateinit var response: String
 				lateinit var responseAntiIdiot: String
 			}
-
 			var attack = Attack()
 
 			class Hug {
 				lateinit var description: String
 				lateinit var response: String
 			}
-
 			var hug = Hug()
 
 			class Dance {
 				lateinit var description: String
 				lateinit var response: String
 			}
-
 			var dance = Dance()
 
 		}
-
 		var actions = Actions()
 
 		class Moderation {
@@ -281,22 +262,30 @@ open class BaseLocale {
 				lateinit var sucessfullyUnmuted: String
 				lateinit var automaticallyExpired: String
 			}
-
 			var unmute = Unmute()
 
-		}
+			class Lock {
+				lateinit var description: String
+				lateinit var denied: String
+				lateinit var allowed: String
+			}
+			var lock = Lock()
 
+			class Unlock {
+				lateinit var description: String
+			}
+			var unlock = Unlock()
+
+		}
 		var moderation = Moderation()
 
 		class Social {
 			class Reputation {
 				lateinit var success: String
 			}
-
 			var reputation = Reputation()
 
 		}
-
 		var social = Social()
 
 		class Discord {
@@ -306,7 +295,6 @@ open class BaseLocale {
 				lateinit var limitReached: String
 				lateinit var error: String
 			}
-
 			var addEmoji = AddEmoji()
 
 			class UserInfo {
@@ -317,7 +305,6 @@ open class BaseLocale {
 				lateinit var permissions: String
 				lateinit var joinPlace: String
 			}
-
 			var userInfo = UserInfo()
 
 			class EmojiInfo {
@@ -329,14 +316,12 @@ open class BaseLocale {
 				lateinit var emojiCreated: String
 				lateinit var seenAt: String
 			}
-
 			var emojiInfo = EmojiInfo()
 
 			class OldMembers {
 				lateinit var description: String
 				lateinit var theOldestPeople: String
 			}
-
 			var oldMembers = OldMembers()
 
 			class ChannelInfo {
@@ -347,17 +332,14 @@ open class BaseLocale {
 				lateinit var undefined: String
 				lateinit var channelNotFound: String
 			}
-
 			var channelInfo = ChannelInfo()
 
 			class Emoji {
 				lateinit var notFoundId: String
 			}
-
 			var emoji = Emoji()
 
 		}
-
 		var discord = Discord()
 
 		class Economy {
@@ -366,18 +348,15 @@ open class BaseLocale {
 				lateinit var hasTooManyTickets: String
 				lateinit var cantBuyTooManyTickets: String
 			}
-
 			var raffle = Raffle()
 
 		}
-
 		var economy = Economy()
 
 		class Miscellaneous {
 			class Ajuda {
 				lateinit var errorWhileOpeningDm: String
 			}
-
 			var ajuda = Ajuda()
 
 			class FanArts {
@@ -385,7 +364,6 @@ open class BaseLocale {
 				lateinit var madeBy: String
 				lateinit var thankYouAll: String
 			}
-
 			var fanArts = FanArts()
 
 			class Language {
@@ -394,11 +372,9 @@ open class BaseLocale {
 				lateinit var translatedBy: String
 				lateinit var languageChanged: String
 			}
-
 			var language = Language()
 
 		}
-
 		var miscellaneous = Miscellaneous()
 
 	}

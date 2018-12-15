@@ -18,7 +18,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmask", category = CommandCategory
 	}
 
 	override fun getDescription(locale: BaseLocale): String {
-		return locale["LORISIGN_Description"]
+		return locale.format("(Drawn Mask)[https://bit.ly/drawnmask]") { commands.images.drawnMaskSign.description }
 	}
 
 	override fun getExamples(): List<String> {
@@ -45,6 +45,8 @@ class DrawnMaskCommand : AbstractCommand("drawnmask", category = CommandCategory
 				179f, 436f)
 
 		val transformedSignImage = transformed.bufferedImage
+		val clippedSignImage = BufferedImage(405, 550, BufferedImage.TYPE_INT_ARGB)
+		val clippedSignGraphics = clippedSignImage.graphics
 
 		// Para ficar a imagem perfeitamente na mão do Luca, vamos fazer uns snip snip nela!
 		val path = Path2D.Double()
@@ -59,10 +61,11 @@ class DrawnMaskCommand : AbstractCommand("drawnmask", category = CommandCategory
 		path.lineTo(177.0, 437.0)
 		path.closePath()
 
-		transformedSignImage.graphics.clip = path
+		clippedSignGraphics.clip = path
+
 		base.graphics.drawImage(transformedSignImage, 0, 0, null)
 		base.graphics.drawImage(TEMPLATE, 0, 0, null)
 
-		context.sendFile(base, "drawn_mask.png", context.getAsMention(true))
+		context.sendFile(base, "drawn_mask_placa.png", context.getAsMention(true))
 	}
 }
