@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.core.Permission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
-class UnLockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCategory.ADMIN){
+class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCategory.ADMIN){
 	override fun getDescription(locale: BaseLocale): String {
 		return locale.format { commands.administration.unlock.description }
 	}
