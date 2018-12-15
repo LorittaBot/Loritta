@@ -38,7 +38,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 							permissionOverride.manager
 							.allow(Permission.MESSAGE_WRITE)
 							.queue()
-							contex.reply(
+							context.reply(
 								LoriReply(
 									locale.format { commands.administration.lock.allowed }
 								)
