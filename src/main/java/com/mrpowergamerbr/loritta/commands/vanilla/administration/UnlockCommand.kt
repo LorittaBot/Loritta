@@ -19,7 +19,6 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 	}
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
 			val textChannel = context.event.textChannel
 			if (textChannel != null) {
 					val everyoneRole = context.guild.publicRole
@@ -35,8 +34,6 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 						)
 					} 
 				}
-		} else {
-			context.explain()
-		}
+		} 
 	}
 }
