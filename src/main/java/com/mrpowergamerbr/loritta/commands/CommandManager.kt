@@ -234,8 +234,10 @@ class CommandManager {
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
 		commandMap.add(QuickPunishmentCommand())
-		commandMap.add(LockCommand())
-		commandMap.add(UnlockCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(LockCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(UnlockCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
