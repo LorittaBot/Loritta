@@ -393,7 +393,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	 */
 	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
 		var toBeDownloaded = getImageUrlAt(argument, 0, avatarSize)
-s
+
 		if (toBeDownloaded == null) {
 			if (rawArgs.isNotEmpty()) {
 				return ImageUtils.createTextAsImage(256, 256, rawArgs.joinToString(" "))
