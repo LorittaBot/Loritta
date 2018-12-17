@@ -51,24 +51,15 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 			val permissionOverride = textChannel.getPermissionOverride(everyoneRole)
 
 			if (permissionOverride == null) {
-				textChannel.createPermissionOverride(everyoneRole)
+			} else {
+				    	textChannel.createPermissionOverride(everyoneRole)
 						.setDeny(Permission.MESSAGE_WRITE)
 						.queue()
 
-				context.reply(
+					context.reply(
 						LoriReply(
 								locale.format { commands.moderation.lock.denied }
 						)
-				)
-			} else {
-				if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-					permissionOverride.manager
-							.clear(Permission.MESSAGE_WRITE)
-							.queue()
-					context.reply(
-							LoriReply(
-									locale.format { commands.moderation.lock.allowed }
-							)
 					)
 				}
 			}
