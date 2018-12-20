@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
@@ -29,9 +30,11 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
      */
     open fun canUseCommand(context: CommandContext): Boolean {
 	    // A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
-	    if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
-		    return false
-	    }
+	   if (context.cmd is AbstractCommand) {
+		   if ((context.cmd as AbstractCommand).onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+			   return false
+		   }
+	   }
 
         return true
     }
@@ -64,16 +67,18 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
 		    return false
 
         // Primeiro iremos verificar as roles
-        for (role in member.roles) {
+        /* for (role in member.roles) {
             if (role.name == "Comando: " + context.cmd.label) { // Se o cara tem uma role chamada "Comando: labeldocomando"
                 return true
             }
-        }
+        } */
 
         // E, finalmente, iremos verificar as permissões do usuário
-        if (member.hasPermission(context.event.textChannel, context.cmd.getDiscordPermissions())) {
-            return true
-        }
+	    if (context.cmd is AbstractCommand) {
+		    if (member.hasPermission(context.event.textChannel, (context.cmd as AbstractCommand).getDiscordPermissions())) {
+			    return true
+		    }
+	    }
 
         return false
     }

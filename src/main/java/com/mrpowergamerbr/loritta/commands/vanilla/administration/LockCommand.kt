@@ -3,9 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.core.Permission
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN){
@@ -22,7 +20,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 	}
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
+		/* if (context.args.isNotEmpty()) {
 			var args = context.rawArgs
 			val channelId = context.rawArgs[0]
 
@@ -65,6 +63,6 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 			}
 		} else {
 			context.explain()
-		}
+		} */
 	}
 }
