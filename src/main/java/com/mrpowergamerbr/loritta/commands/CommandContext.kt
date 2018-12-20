@@ -29,7 +29,7 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: Any, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -57,7 +57,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 
 	suspend fun explain() {
-		cmd.explain(this)
+		(cmd as AbstractCommand).explain(this)
 	}
 
 	/**
@@ -68,13 +68,17 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	fun getAsMention(addSpace: Boolean): String {
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		return if (cmdOptions.override) {
-			if (cmdOptions.mentionOnCommandOutput)
-				lorittaUser.user.asMention + (if (addSpace) " " else "")
-			else
-				""
-		} else lorittaUser.getAsMention(true)
+		return if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override) {
+				if (cmdOptions.mentionOnCommandOutput)
+					lorittaUser.user.asMention + (if (addSpace) " " else "")
+				else
+					""
+			} else lorittaUser.getAsMention(true)
+		} else {
+			lorittaUser.getAsMention(true)
+		}
 	}
 
 	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
@@ -125,9 +129,11 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendMessage(message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
+		if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+				privateReply = cmdOptions.commandOutputInPrivate
+			}
 		}
 		if (privateReply || cmd is AjudaCommand) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
@@ -230,9 +236,11 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
+		if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+				privateReply = cmdOptions.commandOutputInPrivate
+			}
 		}
 		if (privateReply || cmd is AjudaCommand) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()

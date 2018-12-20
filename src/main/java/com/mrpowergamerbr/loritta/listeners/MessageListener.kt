@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -156,7 +157,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						event.channel,
-						event.channel
+						event.channel,
+						serverConfig,
+						locale,
+						lorittaUser
 				)
 
 				for (module in MESSAGE_RECEIVED_MODULES) {
@@ -176,6 +180,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				// Executar comandos
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 					return@launch
+
+				if (Loritta.config.environment == EnvironmentType.CANARY) {
+					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@launch
+					}
+				}
 
 				loritta.messageInteractionCache.values.forEach {
 					if (it.onMessageReceived != null)
@@ -232,7 +242,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					event.messageId,
 					null,
 					event.channel,
-					null
+					null,
+					serverConfig,
+					locale,
+					lorittaUser
 			)
 
 			// Comandos vanilla da Loritta
@@ -264,7 +277,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						event.channel,
-						event.channel
+						event.channel,
+						serverConfig,
+						locale,
+						lorittaUser
 				)
 
 				for (module in MESSAGE_EDITED_MODULES) {
