@@ -124,6 +124,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 
 		val labels = command.labels.toMutableList()
 
+		println("Labels de $command: $labels")
 		// if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
 		// 	labels.addAll(cmdOptions.aliases)
 
@@ -136,6 +137,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 			valid = labels.any { rawArguments[1].equals(it, true) }
 			byMention = true
 		}
+
+		println("Vàlido? $valid $rawArguments[0]")
 
 		if (valid) {
 			var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
