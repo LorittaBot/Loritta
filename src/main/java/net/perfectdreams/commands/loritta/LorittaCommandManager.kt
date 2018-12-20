@@ -3,6 +3,7 @@ package net.perfectdreams.commands.loritta
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -19,6 +20,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 	val commands = mutableListOf<LorittaCommand>()
 
 	init {
+		registerCommand(MagicPingCommand())
+
 		contextManager.registerContext<BaseLocale>(
 				{ clazz: KClass<*> -> clazz.isSubclassOf(BaseLocale::class) || clazz == BaseLocale::class },
 				{ sender, clazz, stack ->
