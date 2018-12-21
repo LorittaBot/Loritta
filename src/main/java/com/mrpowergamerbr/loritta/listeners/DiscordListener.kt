@@ -6,11 +6,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -230,7 +232,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
 
 					if (mute.isTemporary)
-						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!) }
+						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
+				}
+
+				val profile = transaction(Databases.loritta) {
+					Profile.find { (Profiles.id eq event.member.user.idLong) }.firstOrNull()
+				}
+
+				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
+				if (channel != null && (profile == null || (profile.lastMessageSentAt == 0L || profile.lastMessageSentAt >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
+					AdminUtils.sendSuspectInfo(event.user, profile)
+				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
