@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.commands.loritta.LorittaCommand
+import net.perfectdreams.commands.loritta.notNull
+import kotlin.contracts.ExperimentalContracts
 
 class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
 	@Subcommand
@@ -17,8 +19,11 @@ class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
 		)
 	}
 
+	@ExperimentalContracts
 	@Subcommand(["mention"])
-	suspend fun mentionUser(context: CommandContext, locale: BaseLocale, user: User) {
+	suspend fun mentionUser(context: CommandContext, locale: BaseLocale, user: User?) {
+		notNull(user, "that ain't a user dawg")
+
 		context.reply(
 				LoriReply(
 						"Você mencionou ${user.asMention}!",

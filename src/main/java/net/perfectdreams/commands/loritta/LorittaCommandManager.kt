@@ -6,12 +6,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.commands.dsl.BaseDSLCommand
+import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -22,6 +24,18 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 	init {
 		registerCommand(MagicPingCommand())
 
+		commandListeners.addThrowableListener { context, command, throwable ->
+			if (throwable is CommandException) {
+				context.reply(
+						LoriReply(
+								throwable.localizedMessage,
+								throwable.prefix
+						)
+				)
+				return@addThrowableListener CommandContinuationType.CANCEL
+			}
+			return@addThrowableListener CommandContinuationType.CONTINUE
+		}
 		contextManager.registerContext<BaseLocale>(
 				{ clazz: KClass<*> -> clazz.isSubclassOf(BaseLocale::class) || clazz == BaseLocale::class },
 				{ sender, clazz, stack ->
@@ -33,6 +47,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 				{ clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
 				{ sender, clazz, stack ->
 					val link = stack.pop() // Ok, será que isto é uma URL?
+
+					println("user context: $link")
 
 					// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
 					for (user in sender.message.mentionedUsers) {
@@ -105,14 +121,21 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in getRegisteredCommands()) {
-			for (subCommand in command.subcommands) {
-				if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, conf, locale, lorittaUser, true))
-					return true
-			}
-
-			if (dispatch(command, rawArguments, ev, conf, locale, lorittaUser, false))
+			if (verifyAndDispatch(command, rawArguments, ev, conf, locale, lorittaUser))
 				return true
 		}
+
+		return false
+	}
+
+	suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+		for (subCommand in command.subcommands) {
+			if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, conf, locale, lorittaUser, true))
+				return true
+		}
+
+		if (dispatch(command, rawArguments, ev, conf, locale, lorittaUser, false))
+			return true
 
 		return false
 	}
@@ -127,7 +150,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 
 		val labels = command.labels.toMutableList()
 
-		println("Labels de $command: $labels")
+		// println("Labels de $command: $labels")
 		// if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
 		// 	labels.addAll(cmdOptions.aliases)
 
@@ -141,7 +164,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 			byMention = true
 		}
 
-		println("Vàlido? $valid $rawArguments[0]")
+		// println("Vàlido? $valid $rawArguments[0]")
 
 		if (valid) {
 			var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
@@ -155,7 +178,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 
 			val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 
-			println("Executing $command ^-^")
+			println("Executing $command with ${rawArgs.joinToString(", ")} ^-^")
 			return execute(context, command, rawArgs)
 		}
 		return false
