@@ -207,7 +207,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").queue {
+						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}
