@@ -240,8 +240,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
-				if (channel != null && (profile == null || (profile.lastMessageSentAt == 0L || profile.lastMessageSentAt >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
-					AdminUtils.sendSuspectInfo(event.user, profile)
+				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || profile.lastMessageSentAt >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
+					AdminUtils.sendSuspectInfo(channel, event.user, profile)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
