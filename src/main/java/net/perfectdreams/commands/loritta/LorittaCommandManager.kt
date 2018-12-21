@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
+import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -50,6 +51,15 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				{ clazz: KClass<*> -> clazz.isSubclassOf(BaseLocale::class) || clazz == BaseLocale::class },
 				{ sender, clazz, stack ->
 					sender.locale
+				}
+		)
+
+		contextManager.registerContext<Image>(
+				{ clazz: KClass<*> -> clazz.isSubclassOf(Image::class) || clazz == Image::class },
+				{ sender, clazz, stack ->
+					val pop = stack.pop()
+
+					sender.getImage(pop)
 				}
 		)
 

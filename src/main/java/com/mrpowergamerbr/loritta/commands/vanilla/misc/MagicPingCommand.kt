@@ -7,6 +7,7 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.commands.loritta.LorittaCommand
 import net.perfectdreams.commands.loritta.LorittaCommandContext
 import net.perfectdreams.commands.loritta.notNull
+import java.awt.image.BufferedImage
 import kotlin.contracts.ExperimentalContracts
 
 class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
@@ -30,5 +31,13 @@ class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
 						"<:ralsei_surprise:525274650473791489>"
 				)
 		)
+	}
+
+	@ExperimentalContracts
+	@Subcommand(["image"])
+	suspend fun mentionUser(context: LorittaCommandContext, locale: BaseLocale, image: BufferedImage?) {
+		notNull(image, "that ain't a image dawg")
+
+		context.sendFile(image, "owo.png", "Não sei se é verdade, só to repassando")
 	}
 }

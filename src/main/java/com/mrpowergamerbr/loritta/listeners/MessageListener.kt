@@ -251,6 +251,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			// Comandos vanilla da Loritta
 			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 				return@launch
+
+			if (Loritta.config.environment == EnvironmentType.CANARY) {
+				if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+					return@launch
+				}
+			}
 		}
 	}
 
@@ -291,6 +297,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				// Executar comandos
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 					return@launch
+
+				if (Loritta.config.environment == EnvironmentType.CANARY) {
+					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@launch
+					}
+				}
 			}
 		}
 	}
