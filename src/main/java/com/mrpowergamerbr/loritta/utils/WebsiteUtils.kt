@@ -517,7 +517,7 @@ object WebsiteUtils {
 				title("Login • Loritta")
 				setMetaProperty("og:site_name", "Loritta")
 				setMetaProperty("og:title", "Painel da Loritta")
-				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para me deixar o seu servidor único e incrível!")
+				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
 				setMetaProperty("og:image", Loritta.config.websiteUrl + "assets/img/loritta_dashboard.png")
 				setMetaProperty("og:image:width", "320")
 				setMetaProperty("og:ttl", "660")
