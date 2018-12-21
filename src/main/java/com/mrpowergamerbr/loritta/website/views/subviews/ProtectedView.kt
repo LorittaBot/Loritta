@@ -25,6 +25,7 @@ abstract class ProtectedView : AbstractView() {
 			val state = req.param("state")
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
+					if (re)
 					val state = JsonObject()
 					state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
 					res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")

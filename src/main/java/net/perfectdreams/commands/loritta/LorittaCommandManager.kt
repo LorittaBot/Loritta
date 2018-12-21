@@ -275,7 +275,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					return true
 				}
 
-				com.mrpowergamerbr.loritta.utils.loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
+				loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
 				LorittaUtilsKotlin.executedCommands++
 				command.executedCount++
