@@ -523,6 +523,7 @@ object WebsiteUtils {
 				setMetaProperty("og:ttl", "660")
 				setMetaProperty("og:image:width", "320")
 				setMetaProperty("theme-color", "#7289da")
+				meta("twitter:card", "summary_large_image")
 			}
 			body {
 				p {
