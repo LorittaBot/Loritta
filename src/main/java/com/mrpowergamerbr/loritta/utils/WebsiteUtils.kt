@@ -262,7 +262,7 @@ object WebsiteUtils {
 			res.status(Status.UNAUTHORIZED)
 			if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
 				// Caso seja o Crawler do Discord, vamos mudar o conteúdo enviado! :3
-				res.send("abc")
+				res.send(getDiscordCrawlerAuthenticationPage())
 			} else {
 				val state = JsonObject()
 				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
