@@ -7,13 +7,10 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
-import java.awt.Color
-import java.time.Instant
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -140,19 +137,10 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			if (!isSilent) {
 				if (serverConfig.moderationConfig.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
-						val embed = EmbedBuilder()
-
-						embed.setTimestamp(Instant.now())
-						embed.setColor(Color(221, 0, 0))
-
-						embed.setThumbnail(guild.iconUrl)
-						embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
-						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["BAN_PunishAction"].toLowerCase(), guild.name]}!")
-						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
-						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale["BAN_PunishAction"], reason)
 
 						user.openPrivateChannel().queue {
-							it.sendMessage(embed.build()).queue()
+							it.sendMessage(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()

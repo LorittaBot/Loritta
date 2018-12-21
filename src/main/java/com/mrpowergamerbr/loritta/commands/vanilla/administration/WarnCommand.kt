@@ -7,14 +7,11 @@ import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
-import java.time.Instant
 
 class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -93,19 +90,10 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				if (!isSilent) {
 					if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 						try {
-							val embed = EmbedBuilder()
-
-							embed.setTimestamp(Instant.now())
-							embed.setColor(Color(221, 0, 0))
-
-							embed.setThumbnail(context.guild.iconUrl)
-							embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-							embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["WARN_PunishAction"].toLowerCase(), context.guild.name]}!")
-							embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
-							embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+							val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["WARN_PunishAction"], reason)
 
 							user.openPrivateChannel().queue {
-								it.sendMessage(embed.build()).queue()
+								it.sendMessage(embed).queue()
 							}
 						} catch (e: Exception) {
 							e.printStackTrace()
