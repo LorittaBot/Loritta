@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.MiscUtil
+import net.perfectdreams.commands.loritta.LorittaCommandContext
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jsoup.nodes.Element
@@ -194,6 +195,22 @@ object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
 	fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
+		if (profile.isBanned) {
+			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
+
+			// Se um usuário está banido...
+			context.userHandle
+					.openPrivateChannel()
+					.queue (
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+					)
+			return true
+		}
+		return false
+	}
+
+	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
 		if (profile.isBanned) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 

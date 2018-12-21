@@ -488,7 +488,7 @@ class CommandManager {
 					return true
 				}
 
-				if ((context.cmd as AbstractCommand).onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+				if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 					context.reply(
 							LoriReply(
 									locale.format { commands.commandOnlyForOwner },
