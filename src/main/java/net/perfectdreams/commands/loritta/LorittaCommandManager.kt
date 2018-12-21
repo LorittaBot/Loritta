@@ -28,7 +28,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<CommandContex
 			if (throwable is CommandException) {
 				context.reply(
 						LoriReply(
-								throwable.localizedMessage,
+								throwable.reason,
 								throwable.prefix
 						)
 				)
