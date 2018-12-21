@@ -128,6 +128,9 @@ abstract class ProtectedView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
+		if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT)
+			return WebsiteUtils.getDiscordCrawlerAuthenticationPage()
+
 		if (!req.session().isSet("discordAuth")) { // Caso discordAuth não exista, vamos redirecionar para a tela de autenticação
 			res.redirect(Loritta.config.authorizationUrl)
 			return "Redirecionando..."
