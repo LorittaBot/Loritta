@@ -566,16 +566,12 @@ class Loritta(config: LorittaConfig) {
 
 		val localeFolder = File(Loritta.LOCALES, id)
 
-		println(localeFolder)
-
 		if (localeFolder.exists()) {
-			println("Arquivo eixste!")
 			localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
 				val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
 
 				fun transformIntoFlatMap(map: MutableMap<String, Any?>, prefix: String) {
 					map.forEach { (key, value) ->
-						println(key + " - " + value)
 						if (value is Map<*, *>) {
 							transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
 						} else {

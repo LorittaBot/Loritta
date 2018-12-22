@@ -12,7 +12,7 @@ class BaseLocale(val id: String) {
 
 	operator fun get(key: String, vararg arguments: Any?): String {
 		try {
-			return getWithType<String>(key).f(arguments)
+			return getWithType<String>(key).f(*arguments)
 		} catch (e: RuntimeException) {
 			logger.error(e) { "Error when trying to retrieve $key" }
 		}
