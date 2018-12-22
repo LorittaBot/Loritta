@@ -13,7 +13,8 @@ import kotlin.contracts.contract
 
 open class LorittaCommand(override val labels: Array<String>, val category: CommandCategory) : Command() {
 	open val onlyOwner: Boolean = false
-	open val cooldown: Int = 5000
+	open val cooldown: Int
+		get() = if (needsToUploadFiles) 10000 else 5000
 	open var executedCount: Int = 0
 	open val hasCommandFeedback: Boolean = true
 	open val botPermissions = listOf<Permission>()
@@ -21,6 +22,7 @@ open class LorittaCommand(override val labels: Array<String>, val category: Comm
 	open val lorittaPermissions = listOf<LorittaPermission>()
 	open val canUseInPrivateChannel: Boolean = true
 	open val requiresMusic: Boolean = false
+	open val needsToUploadFiles = false
 
 	open fun getDescription(locale: BaseLocale): String? {
 		return null
