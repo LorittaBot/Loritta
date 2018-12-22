@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
+import net.perfectdreams.commands.loritta.LorittaCommandContext
 
 object MessageUtils {
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
@@ -273,6 +274,97 @@ fun Message.onResponseByAuthor(context: CommandContext, function: suspend (Lorit
  * @return         the message object for chaining
  */
 fun Message.onMessageReceived(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onMessageReceived = function
+	return this
+}
+
+/**
+ * When an user adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionAdd(context: LorittaCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onReactionAdd = function
+	return this
+}
+
+/**
+ * When an user removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionRemove(context: LorittaCommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onReactionRemove = function
+	return this
+}
+
+/**
+ * When the command executor adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionAddByAuthor(context: LorittaCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onReactionAddByAuthor = function
+	return this
+}
+
+/**
+ * When the command executor removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionRemoveByAuthor(context: LorittaCommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onReactionRemoveByAuthor = function
+	return this
+}
+
+/**
+ * When an user sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponse(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onResponse = function
+	return this
+}
+
+/**
+ * When the command executor sends a message on the same text channel as the executed command
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
+	functions.onResponseByAuthor = function
+	return this
+}
+
+/**
+ * When a message is received in any guild
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onMessageReceived(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this

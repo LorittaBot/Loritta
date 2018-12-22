@@ -1,11 +1,13 @@
 package net.perfectdreams.commands.loritta
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -16,11 +18,13 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.PermissionException
 import org.jsoup.Jsoup
+import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -53,12 +57,6 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 
 	val guild: Guild
 		get() = event.guild!!
-
-
-	suspend fun explain() {
-		// TODO: Implementar
-		// (cmd as AbstractCommand).explain(this)
-	}
 
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
@@ -257,6 +255,162 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
+			}
+		}
+	}
+
+	/**
+	 * Sends an embed explaining what the command does
+	 *
+	 * @param context the context of the command
+	 */
+	suspend fun explain() {
+		val conf = config
+		val ev = event
+		val command = cmd
+
+		if (conf.explainOnCommandRun) {
+			val rawArguments = message.contentRaw.split(" ")
+			var commandLabel = rawArguments[0]
+			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
+				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
+				commandLabel = rawArguments[1]
+			}
+			commandLabel = commandLabel.toLowerCase()
+
+			val embed = EmbedBuilder()
+			embed.setColor(Color(0, 193, 223))
+			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
+
+			val commandArguments = cmd.getUsage(locale)
+			val usage = when {
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
+				else -> ""
+			}
+
+			var cmdInfo = cmd.getDescription(locale) + "\n\n"
+
+			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
+
+			for (argument in commandArguments.arguments) {
+				if (argument.explanation != null) {
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
+					if (argument.defaultValue != null) {
+						cmdInfo += "(Padrão: ${argument.defaultValue}) "
+					}
+					cmdInfo += "${argument.explanation}\n"
+				}
+			}
+
+			cmdInfo += "\n"
+
+			// Criar uma lista de exemplos
+			val examples = ArrayList<String>()
+			for (example in command.getExamples(locale)) { // Adicionar todos os exemplos simples
+				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+			}
+
+			if (examples.isEmpty()) {
+				embed.addField(
+						"\uD83D\uDCD6 " + locale["EXAMPLE"],
+						commandLabel,
+						false
+				)
+			} else {
+				var exampleList = ""
+				for (example in examples) {
+					exampleList += example + "\n"
+				}
+				embed.addField(
+						"\uD83D\uDCD6 " + locale["EXAMPLE"] + (if (command.getExamples(locale).size == 1) "" else "s"),
+						exampleList,
+						false
+				)
+			}
+
+			if (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty()) {
+				var field = ""
+				if (command.discordPermissions.isNotEmpty()) {
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
+				}
+				if (command.botPermissions.isNotEmpty()) {
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
+				}
+				embed.addField(
+						"\uD83D\uDCDB Permissões",
+						field,
+						false
+				)
+			}
+
+			val aliases = mutableSetOf<String>()
+			aliases.addAll(command.labels)
+
+			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(config.commandPrefix, "") }
+			if (onlyUnusedAliases.isNotEmpty()) {
+				embed.addField(
+						"\uD83D\uDD00 ${locale["CommandAliases"]}",
+						onlyUnusedAliases.joinToString(", ", transform = { "`" + config.commandPrefix + it + "`" }),
+						true
+				)
+			}
+
+			embed.setDescription(cmdInfo)
+			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
+			embed.setFooter(locale[command.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setTimestamp(Instant.now())
+
+			if (conf.explainInPrivate) {
+				ev.author.openPrivateChannel().queue {
+					it.sendMessage(embed.build()).queue()
+				}
+			} else {
+				val message = sendMessage(getAsMention(true), embed.build())
+				message.addReaction("❓").queue()
+				message.onReactionAddByAuthor(this) {
+					if (it.reactionEmote.name == "❓") {
+						message.delete().queue()
+						explainArguments()
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends an embed explaining how the argument works
+	 *
+	 * @param context the context of the command
+	 */
+	suspend fun explainArguments() {
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.setTitle("\uD83E\uDD14 Como os argumentos funcionam?")
+		embed.addField(
+				"Estilos de Argumentos",
+				"""
+					`<argumento>` - Argumento obrigatório
+					`[argumento]` - Argumento opcional
+				""".trimIndent(),
+				false
+		)
+
+		embed.addField(
+				"Tipos de Argumentos",
+				"""
+					`texto` - Um texto qualquer
+					`usuário` - Menção, nome de um usuário ou ID de um usuário
+					`imagem` - URL da imagem,  menção, nome de um usuário, ID de um usuário e, caso nada tenha sido encontrado, será pego a primeira imagem encontrada nas últimas 25 mensagens.
+				""".trimIndent(),
+				false
+		)
+
+		val message = sendMessage(getAsMention(true), embed.build())
+		message.addReaction("❓").queue()
+		message.onReactionAddByAuthor(this) {
+			if (it.reactionEmote.name == "❓") {
+				message.delete().queue()
+				explain()
 			}
 		}
 	}
