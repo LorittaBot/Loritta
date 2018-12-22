@@ -31,6 +31,14 @@ open class BaseLocale(val localeId: String) {
 	@Transient
 	var strings = mutableMapOf<String, String>()
 	@Transient
+	var commands = Commands()
+	@Transient
+	var loritta = Loritta()
+	@Transient
+	var discord = Discord()
+	@Transient
+	var modules = Modules()
+	@Transient
 	var parsedYamls = mutableMapOf<String, Map<String, Any?>>()
 
 	operator fun get(fileAndKey: String, vararg arguments: Any?): String {
