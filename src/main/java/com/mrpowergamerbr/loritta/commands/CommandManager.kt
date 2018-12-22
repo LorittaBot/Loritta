@@ -424,7 +424,7 @@ class CommandManager {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), locale)
 					context.reply(
 							LoriReply(
-									locale.format(fancy, "\uD83D\uDE45") { commands.pleaseWaitCooldown },
+									locale["commands:please-wait-cooldown", fancy, "\uD83D\uDE45"],
 									"\uD83D\uDD25"
 							)
 					)
@@ -455,7 +455,7 @@ class CommandManager {
 						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
 								LoriReply(
-										locale.format(required, "\uD83D\uDE22", "\uD83D\uDE42") { commands.loriDoesntHavePermissionDiscord },
+										locale["commands:lori-doesnt-have-permission-discord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
 										Constants.ERROR
 								)
 						)
@@ -491,7 +491,7 @@ class CommandManager {
 				if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 					context.reply(
 							LoriReply(
-									locale.format { commands.commandOnlyForOwner },
+									locale["commands:command-only-for-owner"],
 									Constants.ERROR
 							)
 					)
@@ -503,7 +503,7 @@ class CommandManager {
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
 							LoriReply(
-									locale.format(required) { commands.doesntHavePermissionDiscord },
+									locale["commands:doesnt-have-permission-discord", required],
 									Constants.ERROR
 							)
 					)
@@ -597,7 +597,7 @@ class CommandManager {
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
 									LoriReply(
-											context.locale.format("8MB", Emotes.LORI_TEMMIE) { commands.imageTooLarge },
+											context.locale["commands:image-too-large", "8MB", Emotes.LORI_TEMMIE],
 											"\uD83E\uDD37"
 									)
 							)

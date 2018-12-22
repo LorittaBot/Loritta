@@ -4,10 +4,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.dv8tion.jda.core.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -30,7 +33,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 	}
 
 	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.commands.actions.examples.map { it.toString() }
+		return locale.getWithType("commands:actions.examples")
 	}
 
 	private fun getGifsFor(userGender: Gender, receiverGender: Gender): List<File> {
@@ -57,7 +60,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		if (this is KissCommand && receiver.id == Loritta.config.clientId) {
 			context.reply(
 					LoriReply(
-							locale.commands.actions.kiss.responseAntiIdiot,
+							locale["commands:response-anti-idiot"],
 							"\uD83D\uDE45"
 					)
 			)
@@ -106,7 +109,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 			if (user == null) {
 				context.reply(
 						LoriReply(
-								locale.commands.userDoesNotExists,
+								locale["commands:user-does-not-exists"],
 								Constants.ERROR
 						)
 				)

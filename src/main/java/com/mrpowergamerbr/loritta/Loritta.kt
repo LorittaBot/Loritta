@@ -57,7 +57,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
@@ -560,17 +559,23 @@ class Loritta(config: LorittaConfig) {
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
-		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
+		val defaultLocale = BaseLocale("default")
 		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
 
 		defaultJsonLocale.entrySet().forEach { (key, value) ->
 			if (!value.isJsonArray) { // TODO: Listas!
-				defaultLocale.strings.put(key, value.string)
+				defaultLocale.strings[key] = value.string
 			}
 		}
 
+		// E agora parsear a pasta "default" também
+		val defaultFolder = File(Loritta.LOCALES, "default")
+		defaultFolder.listFiles().filter { it.extension == "yml" }.forEach {
+			defaultLocale.parsedYamls[it.name] = Constants.YAML.load<Map<String, Any?>>(it.readText())
+		}
+
 		// E depois guardar o nosso default locale
-		locales.put("default", defaultLocale)
+		locales["default"] = defaultLocale
 
 		// Carregar todos os locales
 		val localesFolder = File(LOCALES)
@@ -578,10 +583,9 @@ class Loritta(config: LorittaConfig) {
 		for (file in localesFolder.listFiles()) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
 				// Carregar o BaseLocale baseado no locale atual
-				val localeAsText = file.readText(Charsets.UTF_8)
-				val locale = prettyGson.fromJson(localeAsText, BaseLocale::class.java)
+				val locale = BaseLocale(file.name)
 				locale.strings = HashMap<String, String>(defaultLocale.strings) // Clonar strings do default locale
-				locales.put(file.nameWithoutExtension, locale)
+				locales[file.nameWithoutExtension] = locale
 				// Yay!
 			}
 		}
@@ -640,70 +644,14 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		// Nós também suportamos locales em YAML
-		for ((key, locale) in locales) {
-			val yaml = Yaml()
-
-			val defaultYaml = File(LOCALES, "default.yml")
-			val localeYaml = File(LOCALES, "$key.yml")
-
-			fun String.yamlToVariable(): String {
-				var newVariable = ""
-				var nextShouldBeUppercase = false
-				for (ch in this) {
-					if (ch == '-') {
-						nextShouldBeUppercase = true
-						continue
-					}
-					var thisChar = ch
-					if (nextShouldBeUppercase)
-						thisChar = thisChar.toUpperCase()
-					newVariable += thisChar
-					nextShouldBeUppercase = false
+		// E agora finalmente carregar do "novo jeito"
+		for ((id, locale) in locales) {
+			if (id != "default") {
+				locale.parsedYamls = defaultLocale.parsedYamls.toMutableMap()
+				val localeFolder = File(Loritta.LOCALES, id)
+				localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
+					locale.parsedYamls[it.name] = Constants.YAML.load<Map<String, Any?>>(it.readText())
 				}
-				return newVariable
-			}
-
-			fun applyValues(file: File) {
-				val obj = yaml.load(file.readText()) as Map<String, Object>
-
-				fun handle(root: Any, name: String, entries: Map<*, *>) {
-					entries as Map<String, Any>
-
-					val field = root::class.java.getDeclaredField(name)
-					field.isAccessible = true
-					for ((key, value) in entries) {
-						try {
-                            when (value) {
-                                is Map<*, *> -> {
-                                    handle(field.get(root), key.yamlToVariable(), value)
-                                }
-                                else -> {
-                                    val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
-                                    entryField.isAccessible = true
-	                                entryField.set(field.get(root), value)
-                                }
-                            }
-                        } catch (e: NoSuchFieldException) {
-                            logger.warn { "O campo $key não existe." }
-                        }
-					}
-				}
-
-				for ((key, value) in obj) {
-					if (value is Map<*, *>)
-						handle(locale, key.yamlToVariable(), value)
-					else {
-						logger.error { "Posição inválida para $key em $value"}
-					}
-				}
-			}
-
-			applyValues(defaultYaml)
-			if (localeYaml.exists()) {
-				applyValues(localeYaml)
-			} else {
-				logger.error { "Locale $key não possui YAML! Fix it, fix it, fix it!!!" }
 			}
 		}
 

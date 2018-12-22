@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.User
 
 class AttackCommand : ActionCommand("attack", listOf("atacar")) {
 	override fun getDescription(locale: BaseLocale): String {
-		return locale.format { commands.actions.attack.description }
+		return locale["commands:actions.attack.description"]
 	}
 
 	override fun getResponse(locale: BaseLocale, first: User, second: User): String {
