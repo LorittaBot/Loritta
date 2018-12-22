@@ -8,14 +8,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
 class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["MONEY_DESCRIPTION"]
 	}
 
@@ -23,7 +23,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size >= 2) {
 			var multiply: Double? = 1.0
 			if (context.args.size > 2) {

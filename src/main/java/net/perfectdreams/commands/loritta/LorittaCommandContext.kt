@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.core.EmbedBuilder
@@ -32,7 +32,7 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean

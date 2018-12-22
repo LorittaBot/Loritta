@@ -5,19 +5,19 @@ import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.escapeMentions
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.entertainment.vemDeZap.description }
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
+	override fun getExamples(locale: LegacyBaseLocale): List<String> {
 		return locale.format { commands.entertainment.vemDeZap.examples }
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -25,7 +25,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 		}
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		// Baseado em http://vemdezapbe.be/ / https://github.com/vmarchesin/vemdezapbe.be
 		// Que até agora eu não entendi porque fizeram uma API externa em vez de deixar tudo client-sided... mas vida que segue né
 		// E pelo ou menos a versão da nossa querida Loritta não tem gemidão do zap aleatório ao fazer zap, quem coloca gemidão nas coisas

@@ -4,12 +4,12 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 
 class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCategory.MUSIC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("PLAYLIST_DESCRIPTION")
 	}
 
@@ -21,7 +21,7 @@ class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCateg
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		val embed = LorittaUtilsKotlin.createPlaylistInfoEmbed(context)
 		val message = context.sendMessage(embed)

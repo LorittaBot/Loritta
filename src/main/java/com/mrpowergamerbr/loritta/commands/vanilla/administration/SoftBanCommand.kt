@@ -2,17 +2,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
 
 class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["SOFTBAN_DESCRIPTION"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -45,7 +45,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			try {
 				val user = context.getUserAt(0)
@@ -155,7 +155,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	}
 
 	companion object {
-		fun softBan(context: CommandContext, locale: BaseLocale, member: Member, days: Int, user: User, reason: String, isSilent: Boolean) {
+		fun softBan(context: CommandContext, locale: LegacyBaseLocale, member: Member, days: Int, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {

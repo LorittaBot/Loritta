@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.User
@@ -17,7 +17,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		return "<usuário>"
 	}
 
-    override fun getDescription(locale: BaseLocale): String {
+    override fun getDescription(locale: LegacyBaseLocale): String {
         return locale["DISCRIM_DESCRIPTION"]
     }
 
@@ -25,7 +25,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		return listOf("", "@Loritta")
 	}
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var user = context.userHandle
 		var discriminator = user.discriminator
 
@@ -55,7 +55,7 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		sendDiscriminatorEmbed(context, locale, user, discriminator, users, 0)
     }
 
-	suspend fun sendDiscriminatorEmbed(context: CommandContext, locale: BaseLocale, user: User, discriminator: String, users: List<User>, page: Int) {
+	suspend fun sendDiscriminatorEmbed(context: CommandContext, locale: LegacyBaseLocale, user: User, discriminator: String, users: List<User>, page: Int) {
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
 			setTitle("\uD83D\uDC81 ${locale["DISCRIM_UsersWithDiscriminator", discriminator]}")

@@ -26,7 +26,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
@@ -289,7 +289,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -319,7 +319,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
 

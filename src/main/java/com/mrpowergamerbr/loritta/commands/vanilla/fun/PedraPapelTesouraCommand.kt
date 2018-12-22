@@ -7,12 +7,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Jankenpon
 import com.mrpowergamerbr.loritta.utils.Jankenpon.JankenponStatus
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.io.File
 import java.io.IOException
 
 class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["PPT_DESCRIPTION"]
 	}
 
@@ -28,7 +28,7 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 		return mapOf("sua escolha" to "Pedra, Papel ou Tesoura")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val playerValue = context.args[0]
 

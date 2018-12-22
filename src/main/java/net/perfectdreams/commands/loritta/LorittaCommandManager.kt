@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -47,8 +47,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 			}
 			return@addThrowableListener CommandContinuationType.CONTINUE
 		}
-		contextManager.registerContext<BaseLocale>(
-				{ clazz: KClass<*> -> clazz.isSubclassOf(BaseLocale::class) || clazz == BaseLocale::class },
+		contextManager.registerContext<LegacyBaseLocale>(
+				{ clazz: KClass<*> -> clazz.isSubclassOf(LegacyBaseLocale::class) || clazz == LegacyBaseLocale::class },
 				{ sender, clazz, stack ->
 					sender.locale
 				}
@@ -134,7 +134,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -149,7 +149,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		return false
 	}
 
-	suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		for (subCommand in command.subcommands) {
 			if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, conf, locale, lorittaUser, true))
 				return true
@@ -161,7 +161,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		return false
 	}
 
-	suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
+	suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
 

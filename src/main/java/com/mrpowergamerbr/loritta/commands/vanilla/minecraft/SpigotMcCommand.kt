@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
@@ -20,7 +20,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("SPIGOTMC_DESCRIPTION")
 	}
 
@@ -32,7 +32,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		return Arrays.asList("EssentialsX", "FastAsyncWorldEdit", "ProtocolSupport", "ProtocolSupportStuff")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 
@@ -98,7 +98,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		}
 	}
 
-	fun createResourceEmbed(context: CommandContext, resourceId: String, locale: BaseLocale) : EmbedBuilder {
+	fun createResourceEmbed(context: CommandContext, resourceId: String, locale: LegacyBaseLocale) : EmbedBuilder {
 		val embed = EmbedBuilder()
 		embed.setTitle("<:spigotmc:375314413357629440> Spigot")
 		embed.setColor(Color(227, 156, 17))

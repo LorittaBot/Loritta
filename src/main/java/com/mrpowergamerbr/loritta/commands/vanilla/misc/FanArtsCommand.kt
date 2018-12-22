@@ -6,22 +6,22 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.miscellaneous.fanArts.description }
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		sendFanArtEmbed(context, locale, loritta.fanArts, Loritta.RANDOM.nextInt(loritta.fanArts.size))
 	}
 
-	suspend fun sendFanArtEmbed(context: CommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int) {
+	suspend fun sendFanArtEmbed(context: CommandContext, locale: LegacyBaseLocale, list: List<LorittaFanArt>, item: Int) {
 		val fanArt = list[item]
 		val index = loritta.fanArts.indexOf(fanArt) + 1
 

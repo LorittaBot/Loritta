@@ -3,14 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinner"), category = CommandCategory.FUN) {
 	var spinningSpinners: MutableMap<String, FidgetSpinner> = mutableMapOf<String, FidgetSpinner>()
 
 	data class FidgetSpinner(var emoji: String, var threadId: Long, var forTime: Int, var spinnedAt: Long, var lastRerotation: Long)
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["SPINNER_DESCRIPTION"]
 	}
 
@@ -18,7 +18,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		// TODO: Fix
 		/* if (context.args.isNotEmpty()) {
 			val arg = context.args[0]

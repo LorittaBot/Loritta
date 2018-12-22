@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import org.apache.commons.lang3.RandomStringUtils
@@ -16,11 +16,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)

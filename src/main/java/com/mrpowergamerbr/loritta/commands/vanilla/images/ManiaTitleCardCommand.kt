@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -12,7 +12,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("MANIATITLECARD_DESCRIPTION")
 	}
 
@@ -28,7 +28,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val split = context.args.joinToString(" ").split("|").onEach { it.trim() }
 			val text1 = split[0]

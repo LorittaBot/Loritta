@@ -38,6 +38,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -120,6 +121,7 @@ class Loritta(config: LorittaConfig) {
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
+	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	var locales = mapOf<String, BaseLocale>()
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<Long, Long>().asMap()
@@ -171,6 +173,7 @@ class Loritta(config: LorittaConfig) {
 		FRONTEND = config.frontendFolder
 		Loritta.config = config
 		loadLocales()
+		loadLegacyLocales()
 		temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
@@ -550,6 +553,41 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
+	 * Initializes the [id] locale and adds missing translation strings to non-default languages
+	 *
+	 * @see BaseLocale
+	 */
+	fun loadLocale(id: String, defaultLocale: BaseLocale?): BaseLocale {
+		val locale = BaseLocale(id)
+		if (defaultLocale != null) {
+			// Colocar todos os valores padrões
+			locale.localeEntries.putAll(defaultLocale.localeEntries)
+		}
+
+		val localeFolder = File(Loritta.ASSETS, id)
+
+		if (localeFolder.exists()) {
+			localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
+				val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
+
+				fun transformIntoFlatMap(map: MutableMap<String, Any?>, prefix: String) {
+					map.forEach { (key, value) ->
+						if (value is Map<*, *>) {
+							transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
+						} else {
+							locale.localeEntries[prefix + key] = value
+						}
+					}
+				}
+
+				transformIntoFlatMap(entries, "")
+			}
+		}
+
+		return locale
+	}
+
+	/**
 	 * Initializes the available locales and adds missing translation strings to non-default languages
 	 *
 	 * @see BaseLocale
@@ -557,10 +595,29 @@ class Loritta(config: LorittaConfig) {
 	fun loadLocales() {
 		val locales = mutableMapOf<String, BaseLocale>()
 
+		val defaultLocale = loadLocale("default", null)
+		locales["default"] = defaultLocale
+
+		val localeFolder = File(Loritta.LOCALES)
+		localeFolder.listFiles().filter { it.isDirectory && it.name != "default" } .forEach {
+			locales[it.name] = loadLocale(it.name, defaultLocale)
+		}
+
+		this.locales = locales
+	}
+
+	/**
+	 * Initializes the available locales and adds missing translation strings to non-default languages
+	 *
+	 * @see LegacyBaseLocale
+	 */
+	fun loadLegacyLocales() {
+		val locales = mutableMapOf<String, LegacyBaseLocale>()
+
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
-		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
+		val defaultLocale = GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
 
 		defaultJsonLocale.entrySet().forEach { (key, value) ->
@@ -579,7 +636,7 @@ class Loritta(config: LorittaConfig) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
 				// Carregar o BaseLocale baseado no locale atual
 				val localeAsText = file.readText(Charsets.UTF_8)
-				val locale = prettyGson.fromJson(localeAsText, BaseLocale::class.java)
+				val locale = prettyGson.fromJson(localeAsText, LegacyBaseLocale::class.java)
 				locale.strings = HashMap<String, String>(defaultLocale.strings) // Clonar strings do default locale
 				locales.put(file.nameWithoutExtension, locale)
 				// Yay!
@@ -707,7 +764,7 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		this.locales = locales
+		this.legacyLocales = locales
 	}
 
 	/**
@@ -715,10 +772,10 @@ class Loritta(config: LorittaConfig) {
 	 *
 	 * @param localeId the ID of the locale
 	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
-	 * @see            BaseLocale
+	 * @see            LegacyBaseLocale
 	 */
-	fun getLocaleById(localeId: String): BaseLocale {
-		return locales.getOrDefault(localeId, locales["default"]!!)
+	fun getLocaleById(localeId: String): LegacyBaseLocale {
+		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 
 	/**

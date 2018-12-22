@@ -50,7 +50,7 @@ object DebugLog {
 		logger.info("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
 		logger.info("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
-		logger.info("locales.size: ${loritta.locales.size}")
+		logger.info("locales.size: ${loritta.legacyLocales.size}")
 		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")
 		logger.info("userCooldown.size: ${loritta.userCooldown.size}")
 		logger.info("> Music Stuff")

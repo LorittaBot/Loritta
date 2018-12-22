@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.util.*
 
 object DateUtils {
@@ -27,14 +27,14 @@ object DateUtils {
 		return diff
 	}
 
-	fun formatDateDiff(date: Long, locale: BaseLocale): String {
+	fun formatDateDiff(date: Long, locale: LegacyBaseLocale): String {
 		val c = GregorianCalendar()
 		c.timeInMillis = date
 		val now = GregorianCalendar()
 		return formatDateDiff(now, c, locale)
 	}
 
-	fun formatDateDiff(fromDate: Long, toDate: Long, locale: BaseLocale): String {
+	fun formatDateDiff(fromDate: Long, toDate: Long, locale: LegacyBaseLocale): String {
 		val c = GregorianCalendar()
 		c.timeInMillis = fromDate
 		val now = GregorianCalendar()
@@ -42,7 +42,7 @@ object DateUtils {
 		return formatDateDiff(now, c, locale)
 	}
 
-	fun formatDateDiff(fromDate: Calendar, toDate: Calendar, locale: BaseLocale): String {
+	fun formatDateDiff(fromDate: Calendar, toDate: Calendar, locale: LegacyBaseLocale): String {
 		var future = false
 		if (toDate == fromDate) {
 			return locale["DATEUTILS_Now"]

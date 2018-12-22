@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.whirvis.jraknet.RakNet
 import com.whirvis.jraknet.identifier.MinecraftIdentifier
 import net.dv8tion.jda.core.EmbedBuilder
@@ -14,7 +14,7 @@ import java.net.UnknownHostException
 import java.util.*
 
 class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["MCQUERY_DESCRIPTION"]
 	}
 
@@ -26,7 +26,7 @@ class PeQueryCommand : AbstractCommand("pequery", category = CommandCategory.MIN
 		return Arrays.asList("PvP.PigRaid.com")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

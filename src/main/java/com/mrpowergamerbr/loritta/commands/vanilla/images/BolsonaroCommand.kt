@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -13,11 +13,11 @@ class BolsonaroCommand : AbstractCommand("bolsonaro", category = CommandCategory
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "bolsonaro_tv.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.entertainment.bolsonaro.description }
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.IMAGE) {}
 		}
@@ -31,7 +31,7 @@ class BolsonaroCommand : AbstractCommand("bolsonaro", category = CommandCategory
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val image = BufferedImage(400, 230, BufferedImage.TYPE_INT_ARGB)

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.utils.eventlog
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
@@ -45,7 +45,7 @@ object EventLog {
 		}
 	}
 
-	fun onMessageUpdate(serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
+	fun onMessageUpdate(serverConfig: ServerConfig, locale: LegacyBaseLocale, message: Message) {
 		val eventLogConfig = serverConfig.eventLogConfig
 
 		try {

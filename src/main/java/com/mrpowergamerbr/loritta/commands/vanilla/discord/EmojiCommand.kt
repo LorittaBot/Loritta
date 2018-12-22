@@ -8,15 +8,14 @@ import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Emote
 
-import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["EMOJI_DESCRIPTION"]
 	}
 
@@ -32,7 +31,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size == 1) {
 			val arg0 = context.rawArgs[0]
 			val firstEmote = context.message.emotes.firstOrNull()

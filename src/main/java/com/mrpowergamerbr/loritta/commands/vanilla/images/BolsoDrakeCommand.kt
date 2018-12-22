@@ -3,14 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Image
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
 class BolsoDrakeCommand : AbstractCommand("bolsodrake", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.images.bolsoDrake.description }
 	}
 
@@ -18,7 +18,7 @@ class BolsoDrakeCommand : AbstractCommand("bolsodrake", category = CommandCatego
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {}
 			argument(ArgumentType.USER) {}
@@ -29,7 +29,7 @@ class BolsoDrakeCommand : AbstractCommand("bolsodrake", category = CommandCatego
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val bi = ImageIO.read(File(Loritta.ASSETS + "bolsodrake.png")) // Primeiro iremos carregar o nosso template
 		val graph = bi.graphics
 

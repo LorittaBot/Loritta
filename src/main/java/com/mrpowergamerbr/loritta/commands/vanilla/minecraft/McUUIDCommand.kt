@@ -8,11 +8,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.util.*
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: BaseLocale): String {
+    override fun getDescription(locale: LegacyBaseLocale): String {
         return locale["MCUUID_DESCRIPTION"]
     }
 
@@ -24,7 +24,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
         return Arrays.asList("Monerk")
     }
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
         if (context.args.size > 0) {
             val player = context.args[0]
 

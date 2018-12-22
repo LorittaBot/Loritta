@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN){
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.moderation.lock.description }
 	}
 	override fun getDiscordPermissions(): List<Permission> {
@@ -19,7 +19,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 	override fun getBotPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 	}
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		/* if (context.args.isNotEmpty()) {
 			var args = context.rawArgs
 			val channelId = context.rawArgs[0]

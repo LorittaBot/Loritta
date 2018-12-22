@@ -6,10 +6,10 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.gifs.GetOverHereGIF
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("GETOVERHERE_DESCRIPTION")
 	}
 
@@ -23,7 +23,7 @@ class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCate
 
 	override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = GetOverHereGIF.getGIF(contextImage)
 		MiscUtils.optimizeGIF(file)

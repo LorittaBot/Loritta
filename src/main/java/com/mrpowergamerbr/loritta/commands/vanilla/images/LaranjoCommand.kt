@@ -5,14 +5,14 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.io.File
 import javax.imageio.ImageIO
 
 class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["LARANJO_DESCRIPTION"]
 	}
 
@@ -28,7 +28,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")) // Template
 			val texto = context.args.joinToString(" ")

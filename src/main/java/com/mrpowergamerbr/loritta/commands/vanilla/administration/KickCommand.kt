@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
@@ -12,11 +12,11 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
 
 class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["KICK_Description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -43,7 +43,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		return listOf(Permission.KICK_MEMBERS)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -140,7 +140,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	}
 
 	companion object {
-		fun kick(context: CommandContext, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+		fun kick(context: CommandContext, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {

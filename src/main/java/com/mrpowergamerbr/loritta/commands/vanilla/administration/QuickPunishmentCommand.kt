@@ -5,11 +5,11 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["QUICKPUNISHMENT_Description"]
 	}
 
@@ -21,7 +21,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val userData = context.config.getUserData(context.userHandle.idLong)
 
 		if (userData.quickPunishment) {

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -13,7 +13,7 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
+	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
 		val embed = EmbedBuilder()
 
 		embed.setTimestamp(Instant.now())

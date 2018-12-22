@@ -5,12 +5,12 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["EDITARXP_DESCRIPTION"]
 	}
 
@@ -26,7 +26,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val user = context.getUserAt(0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()

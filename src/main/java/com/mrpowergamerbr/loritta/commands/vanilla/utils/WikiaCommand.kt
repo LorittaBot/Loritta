@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
@@ -20,7 +20,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("WIKIA_DESCRIPTION")
 	}
 
@@ -37,7 +37,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 				"conteúdo" to "O que você deseja procurar na Wikia")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size >= 2) {
 			val websiteId = context.args[0]
 
