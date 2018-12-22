@@ -1,8 +1,7 @@
-package com.mrpowergamerbr.loritta.commands
+package net.perfectdreams.commands.loritta
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -29,7 +28,7 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -57,7 +56,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 
 	suspend fun explain() {
-		cmd.explain(this)
+		// TODO: Implementar
+		// (cmd as AbstractCommand).explain(this)
 	}
 
 	/**
@@ -68,13 +68,17 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	fun getAsMention(addSpace: Boolean): String {
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		return if (cmdOptions.override) {
-			if (cmdOptions.mentionOnCommandOutput)
-				lorittaUser.user.asMention + (if (addSpace) " " else "")
-			else
-				""
-		} else lorittaUser.getAsMention(true)
+		return lorittaUser.getAsMention(true) /* if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override) {
+				if (cmdOptions.mentionOnCommandOutput)
+					lorittaUser.user.asMention + (if (addSpace) " " else "")
+				else
+					""
+			} else lorittaUser.getAsMention(true)
+		} else {
+			lorittaUser.getAsMention(true)
+		} */
 	}
 
 	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
@@ -125,11 +129,13 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendMessage(message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
-		}
-		if (privateReply || cmd is AjudaCommand) {
+		/* if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+				privateReply = cmdOptions.commandOutputInPrivate
+			}
+		} */
+		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			return privateChannel.sendMessageAsync(message)
 		} else {
@@ -230,11 +236,13 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
-		}
-		if (privateReply || cmd is AjudaCommand) {
+		/* if (cmd is AbstractCommand) {
+			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+				privateReply = cmdOptions.commandOutputInPrivate
+			}
+		} */
+		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
 			inputStream.close()
@@ -317,6 +325,68 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	/**
+	 * Gets an user from the argument index via mentions, username#oldDiscriminator, effective name, username and user ID
+	 *
+	 * @param argument the argument index on the rawArgs array
+	 * @return         the user object or null, if nothing was found
+	 * @see            User
+	 */
+	suspend fun getUser(link: String?): User? {
+		if (link != null) {
+			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
+			for (user in this.message.mentionedUsers) {
+				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
+					// Diferente de null? Então vamos usar o avatar do usuário!
+					return user
+				}
+			}
+
+			// Vamos tentar procurar pelo username + discriminator
+			if (!this.isPrivateChannel && !link.isEmpty()) {
+				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
+
+				if (split.size == 2 && split[0].isNotEmpty()) {
+					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
+
+					if (matchedMember.isPresent) {
+						return matchedMember.get().user
+					}
+				}
+			}
+
+			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+			if (!this.isPrivateChannel && !link.isEmpty()) {
+				val matchedMembers = this.guild.getMembersByEffectiveName(link, true)
+
+				if (!matchedMembers.isEmpty()) {
+					return matchedMembers[0].user
+				}
+			}
+
+			// Se não, vamos procurar só pelo username mesmo
+			if (!this.isPrivateChannel && !link.isEmpty()) {
+				val matchedMembers = this.guild.getMembersByName(link, true)
+
+				if (!matchedMembers.isEmpty()) {
+					return matchedMembers[0].user
+				}
+			}
+
+			// Ok, então só pode ser um ID do Discord!
+			try {
+				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
+
+				if (user != null) { // Pelo visto é!
+					return user
+				}
+			} catch (e: Exception) {
+			}
+		}
+
+		return null
+	}
+
+	/**
 	 * Gets an image URL from the argument index via valid URLs at the specified index
 	 *
 	 * @param argument   the argument index on the rawArgs array
@@ -324,15 +394,23 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String? {
-		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
-			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
+	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048) = getImageUrl(this.rawArgs.getOrNull(argument))
 
+	/**
+	 * Gets an image URL from the argument index via valid URLs at the specified index
+	 *
+	 * @param argument   the argument index on the rawArgs array
+	 * @param search     how many messages will be retrieved from the past to get images (default: 25)
+	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
+	 * @return           the image URL or null, if nothing was found
+	 */
+	suspend fun getImageUrl(link: String?, search: Int = 25, avatarSize: Int = 2048): String? {
+		if (link != null) {
 			if (LorittaUtils.isValidUrl(link))
 				return link // Se é um link, vamos enviar para o usuário agora
 
 			// Vamos verificar por usuários no argumento especificado
-			val user = getUserAt(argument)
+			val user = getUser(link)
 			if (user != null)
 				return user.effectiveAvatarUrl + "?size=" + avatarSize
 
@@ -347,7 +425,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			// Se não é nada... então talvez seja um emoji padrão do Discordão!
 			// Na verdade é um emoji padrão...
 			try {
-				var unicodeEmoji = LorittaUtils.toUnicode(this.rawArgs[argument].codePointAt(0)) // Vamos usar codepoints porque emojis
+				var unicodeEmoji = LorittaUtils.toUnicode(link.codePointAt(0)) // Vamos usar codepoints porque emojis
 				unicodeEmoji = unicodeEmoji.substring(2) // Remover coisas desnecessárias
 				val toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/$unicodeEmoji.png"
 				if (HttpRequest.get(toBeDownloaded).code() == 200) {
@@ -400,6 +478,45 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			}
 
 			toBeDownloaded = getImageUrlAt(argument, search, avatarSize)
+		}
+
+		if (toBeDownloaded == null)
+			return null
+
+		// Vamos baixar a imagem!
+		try {
+			// Workaround para imagens do prnt.scr/prntscr.com (mesmo que o Lightshot seja um lixo)
+			if (toBeDownloaded.contains("prnt.sc") || toBeDownloaded.contains("prntscr.com")) {
+				val document = Jsoup.connect(toBeDownloaded).get()
+				val elements = document.getElementsByAttributeValue("property", "og:image")
+				if (!elements.isEmpty()) {
+					toBeDownloaded = elements.attr("content")
+				}
+			}
+			return LorittaUtils.downloadImage(toBeDownloaded ?: return null)
+		} catch (e: Exception) {
+			return null
+		}
+	}
+
+	/**
+	 * Gets an image from the argument index via valid URLs at the specified index
+	 *
+	 * @param argument   the argument index on the rawArgs array
+	 * @param search     how many messages will be retrieved from the past to get images (default: 25)
+	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
+	 * @return           the image object or null, if nothing was found
+	 * @see              BufferedImage
+	 */
+	suspend fun getImage(text: String, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
+		var toBeDownloaded = getImageUrl(text, 0, avatarSize)
+
+		if (toBeDownloaded == null) {
+			if (rawArgs.isNotEmpty()) {
+				return ImageUtils.createTextAsImage(256, 256, rawArgs.joinToString(" "))
+			}
+
+			toBeDownloaded = getImageUrl(text, search, avatarSize)
 		}
 
 		if (toBeDownloaded == null)

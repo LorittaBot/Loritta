@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.*
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.HierarchyException
@@ -16,7 +15,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
-import java.time.Instant
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -193,18 +191,9 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = EmbedBuilder()
+						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
 
-						embed.setTimestamp(Instant.now())
-						embed.setColor(Color(221, 0, 0))
-
-						embed.setThumbnail(context.guild.iconUrl)
-						embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["MUTE_PunishAction"].toLowerCase(), context.guild.name]}!")
-						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
-						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
-
-						user.openPrivateChannel().await().sendMessage(embed.build()).queue()
+						user.openPrivateChannel().await().sendMessage(embed).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}

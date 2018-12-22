@@ -121,9 +121,12 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 				else
 					textChannel.sendMessage(message)
 
+				logger.info("Mensagem $message será enviada em ${guild.id}... Será deletada daqui a $deleteAfter ms!")
+
 				action.queue {
+					logger.info("Mensagem enviada! Ela será deletada daqui a $deleteAfter millisegundos...")
 					if (deleteAfter != null)
-						it.delete().queueAfter(deleteAfter, TimeUnit.SECONDS)
+						it.delete().queueAfter(deleteAfter, TimeUnit.MILLISECONDS)
 				}
 			}
 			TimerEffect.TimerEffectType.COMMAND -> {

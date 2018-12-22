@@ -46,12 +46,12 @@ object LorittaAnalytics {
 	 */
 	fun createPayload(service: AnalyticProcessorService): JsonObject {
 		when (service) {
-			DISCORD_BOTS, DISCORD_BOT_LIST -> {
+			DISCORD_BOT_LIST -> {
 				return jsonObject(
 						"server_count" to lorittaShards.getCachedGuildCount()
 				)
 			}
-			VESPERTINE_BOT_LIST -> {
+			DISCORD_BOTS, VESPERTINE_BOT_LIST -> {
 				return jsonObject(
 						"guildCount" to lorittaShards.getCachedGuildCount()
 				)

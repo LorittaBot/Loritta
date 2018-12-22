@@ -1,6 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -15,18 +18,19 @@ class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.M
     }
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
-        var body = HttpRequest.get("https://use.gameapis.net/mc/extra/status").body()
+        val body = HttpRequest.get("https://status.mojang.com/check").body()
 
-	    var builder = EmbedBuilder()
+	    val builder = EmbedBuilder()
                 .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
                 .setColor(Color.GREEN)
 
-	    var json = jsonParser.parse(body)
-	    for (section in json.asJsonObject.entrySet()) {
-            var status = section.value.asJsonObject.get("status").asString
-	        var prefix = if (section.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
-            var emoji = if (status == "Online") "✅" else "❌"
-	        builder.addField(prefix + section.key, "${emoji} ${status}", true)
+	    val json = jsonParser.parse(body)
+	    for (section in json.array) {
+		    val service = section.obj.entrySet().first()
+		    val status = service.value.string
+		    val prefix = if (service.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
+		    val emoji = if (status == "green") "✅" else "❌"
+	        builder.addField(prefix + service.key, "${emoji} ${status}", true)
         }
 
         context.sendMessage(builder.build())

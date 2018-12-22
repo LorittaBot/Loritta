@@ -8,10 +8,8 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.core.Permission
@@ -25,9 +23,13 @@ abstract class ProtectedView : AbstractView() {
 			val state = req.param("state")
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
-					val state = JsonObject()
-					state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-					res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+					if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
+						res.send(WebsiteUtils.getDiscordCrawlerAuthenticationPage())
+					} else {
+						val state = JsonObject()
+						state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+						res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+					}
 					return false
 				}
 			} else {
@@ -126,6 +128,9 @@ abstract class ProtectedView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
+		if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT)
+			return WebsiteUtils.getDiscordCrawlerAuthenticationPage()
+
 		if (!req.session().isSet("discordAuth")) { // Caso discordAuth não exista, vamos redirecionar para a tela de autenticação
 			res.redirect(Loritta.config.authorizationUrl)
 			return "Redirecionando..."

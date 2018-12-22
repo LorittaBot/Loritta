@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -156,7 +157,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						event.channel,
-						event.channel
+						event.channel,
+						serverConfig,
+						locale,
+						lorittaUser
 				)
 
 				for (module in MESSAGE_RECEIVED_MODULES) {
@@ -177,11 +181,17 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 					return@launch
 
+				if (Loritta.config.environment == EnvironmentType.CANARY) {
+					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@launch
+					}
+				}
+
 				loritta.messageInteractionCache.values.forEach {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
 
-					if (it.guild == event.guild.id) {
+					if (it.guildId == event.guild.idLong) {
 						if (it.onResponse != null)
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
@@ -197,7 +207,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} <:blobBlush:357977010771066890>").queue {
+						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}
@@ -232,12 +242,21 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					event.messageId,
 					null,
 					event.channel,
-					null
+					null,
+					serverConfig,
+					locale,
+					lorittaUser
 			)
 
 			// Comandos vanilla da Loritta
 			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 				return@launch
+
+			if (Loritta.config.environment == EnvironmentType.CANARY) {
+				if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+					return@launch
+				}
+			}
 		}
 	}
 
@@ -264,7 +283,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						event.channel,
-						event.channel
+						event.channel,
+						serverConfig,
+						locale,
+						lorittaUser
 				)
 
 				for (module in MESSAGE_EDITED_MODULES) {
@@ -275,12 +297,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				// Executar comandos
 				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
 					return@launch
+
+				if (Loritta.config.environment == EnvironmentType.CANARY) {
+					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
+						return@launch
+					}
+				}
 			}
 		}
 	}
 
 	override fun onMessageDelete(event: MessageDeleteEvent) {
-		loritta.messageInteractionCache.remove(event.messageId)
+		loritta.messageInteractionCache.remove(event.messageIdLong)
 	}
 
 	/**

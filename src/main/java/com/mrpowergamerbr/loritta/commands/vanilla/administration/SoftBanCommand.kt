@@ -3,12 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
-import java.awt.Color
-import java.time.Instant
 
 class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -162,19 +159,10 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = EmbedBuilder()
-
-						embed.setTimestamp(Instant.now())
-						embed.setColor(Color(221, 0, 0))
-
-						embed.setThumbnail(context.guild.iconUrl)
-						embed.setAuthor(context.userHandle.name + "#" + context.userHandle.discriminator, null, context.userHandle.avatarUrl)
-						embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", locale["SOFTBAN_PunishAction"].toLowerCase(), context.guild.name]}!")
-						embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", context.userHandle.name + "#" + context.userHandle.discriminator, false)
-						embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["SOFTBAN_PunishAction"], reason)
 
 						user.openPrivateChannel().queue {
-							it.sendMessage(embed.build()).queue()
+							it.sendMessage(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()

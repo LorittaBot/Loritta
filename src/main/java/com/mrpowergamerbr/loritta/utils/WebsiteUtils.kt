@@ -11,10 +11,13 @@ import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
+import kotlinx.html.*
+import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
@@ -257,9 +260,14 @@ object WebsiteUtils {
 
 		if (userIdentification == null) { // Unauthorized (Discord)
 			res.status(Status.UNAUTHORIZED)
-			val state = JsonObject()
-			state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-			res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+			if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
+				// Caso seja o Crawler do Discord, vamos mudar o conteúdo enviado! :3
+				res.send(getDiscordCrawlerAuthenticationPage())
+			} else {
+				val state = JsonObject()
+				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+				res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+			}
 			return false
 		}
 
@@ -498,5 +506,30 @@ object WebsiteUtils {
 		jsonObject["money"] = profile.money
 		jsonObject["dreams"] = profile.money // Deprecated
 		return jsonObject
+	}
+
+	fun getDiscordCrawlerAuthenticationPage(): String {
+		return createHTML().html {
+			head {
+				fun setMetaProperty(property: String, content: String) {
+					meta(content = content) { attributes["property"] = property }
+				}
+				title("Login • Loritta")
+				setMetaProperty("og:site_name", "Loritta")
+				setMetaProperty("og:title", "Painel da Loritta")
+				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
+				setMetaProperty("og:image", Loritta.config.websiteUrl + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("og:ttl", "660")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("theme-color", "#7289da")
+				meta("twitter:card", "summary_large_image")
+			}
+			body {
+				p {
+					+ "Parabéns, você encontrou um easter egg!"
+				}
+			}
+		}
 	}
 }

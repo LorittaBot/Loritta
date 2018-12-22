@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2018.12.07-SNAPSHOT</loritta.version>
+        <loritta.version>2018.12.21-SNAPSHOT</loritta.version>
         <kotlin.version>1.3.0</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +17,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>3.8.1_439</jda.version>
+        <jda.version>3.8.1_447</jda.version>
     </properties>
 
     <repositories>
@@ -88,6 +88,11 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-script-util</artifactId>
             <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.perfectdreams.commands</groupId>
+            <artifactId>command-framework-core</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.oracle.graaljs</groupId>
@@ -240,22 +245,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.7</version>
+            <version>2.9.8</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.7</version>
+            <version>2.9.8</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.9.7</version>
+            <version>2.9.8</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
-            <version>2.9.7</version>
+            <version>2.9.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.FredBoat</groupId>
@@ -357,7 +362,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <archive>
                         <manifest>

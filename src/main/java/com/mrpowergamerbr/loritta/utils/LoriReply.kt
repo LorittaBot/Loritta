@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.dv8tion.jda.core.entities.User
+import net.perfectdreams.commands.loritta.LorittaCommandContext
 
 class LoriReply(
 		val message: String = " ",
@@ -10,44 +11,27 @@ class LoriReply(
 		val hasPadding: Boolean = true,
 		val mentionUser: Boolean = true
 ) {
-	fun build(commandContext: CommandContext): String {
+	fun build(commandContext: CommandContext) = build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
+
+	fun build(commandContext: LorittaCommandContext) = build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
+
+	fun build(user: User) = build(user.asMention, null)
+
+	fun build() = build(null, null)
+
+	fun build(mention: String? = null, contextAsMention: String? = null): String {
 		var send = ""
 		if (prefix != null) {
-			send = prefix + " **|** "
+			send = "$prefix **|** "
 		} else if (hasPadding) {
 			send = Constants.LEFT_PADDING + " **|** "
 		}
-		if (mentionUser) {
-			send = if (forceMention) {
-				send + commandContext.userHandle.asMention + " "
+		if (mentionUser && mention != null) {
+			send = if (forceMention || contextAsMention == null) {
+				"$send$mention "
 			} else {
-				send + commandContext.getAsMention(true)
+				send + contextAsMention
 			}
-		}
-		send += message
-		return send
-	}
-
-	fun build(user: User): String {
-		var send = ""
-		if (prefix != null) {
-			send = prefix + " **|** "
-		} else if (hasPadding) {
-			send = Constants.LEFT_PADDING + " **|** "
-		}
-		if (mentionUser) {
-			send = send + user.asMention + " "
-		}
-		send += message
-		return send
-	}
-
-	fun build(): String {
-		var send = ""
-		if (prefix != null) {
-			send = prefix + " **|** "
-		} else if (hasPadding) {
-			send = Constants.LEFT_PADDING + " **|** "
 		}
 		send += message
 		return send

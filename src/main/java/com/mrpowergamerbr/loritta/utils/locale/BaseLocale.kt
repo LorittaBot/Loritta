@@ -41,11 +41,13 @@ open class BaseLocale {
 	var loritta = Loritta()
 	@Transient
 	var discord = Discord()
+	@Transient
+	var modules = Modules()
 
 	@Deprecated("Please use the inner classes")
 	operator fun get(key: String, vararg arguments: Any?): String {
 		if (!strings.containsKey(key)) {
-			logger.warn {"Missing translation key! $key" }
+			logger.warn { "Missing translation key! $key" }
 			return key
 		}
 		return strings[key]!!.f(*arguments)
@@ -148,6 +150,13 @@ open class BaseLocale {
 		var permissions = Permissions()
 
 	}
+	class Modules {
+		class MemberCounter {
+			lateinit var auditLogReason: String
+		}
+		var memberCounter = MemberCounter()
+
+	}
 	class Commands {
 		lateinit var pleaseWaitCooldown: String
 		lateinit var errorWhileExecutingCommand: String
@@ -193,6 +202,20 @@ open class BaseLocale {
 
 		}
 		var entertainment = Entertainment()
+
+		class Images {
+			class BolsoDrake {
+				lateinit var description: String
+			}
+			var bolsoDrake = BolsoDrake()
+
+			class DrawnMaskSign {
+				lateinit var description: String
+			}
+			var drawnMaskSign = DrawnMaskSign()
+
+		}
+		var images = Images()
 
 		class Actions {
 			lateinit var examples: List<String>
@@ -240,6 +263,18 @@ open class BaseLocale {
 				lateinit var automaticallyExpired: String
 			}
 			var unmute = Unmute()
+
+			class Lock {
+				lateinit var description: String
+				lateinit var denied: String
+				lateinit var allowed: String
+			}
+			var lock = Lock()
+
+			class Unlock {
+				lateinit var description: String
+			}
+			var unlock = Unlock()
 
 		}
 		var moderation = Moderation()
@@ -298,6 +333,11 @@ open class BaseLocale {
 				lateinit var channelNotFound: String
 			}
 			var channelInfo = ChannelInfo()
+
+			class Emoji {
+				lateinit var notFoundId: String
+			}
+			var emoji = Emoji()
 
 		}
 		var discord = Discord()

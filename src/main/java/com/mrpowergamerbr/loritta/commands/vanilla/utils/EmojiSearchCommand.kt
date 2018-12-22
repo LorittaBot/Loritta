@@ -28,7 +28,11 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		return locale["EMOJISEARCH_Description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override fun needsToUploadFiles(): Boolean {
+		return true
+	}
+
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.rawArgs[0]
 

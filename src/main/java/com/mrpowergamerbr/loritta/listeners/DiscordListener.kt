@@ -1,15 +1,19 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -31,9 +35,23 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		/**
+		 * Utilizado para não enviar mudanças do contador no event log
+		 */
+		val memberCounterJoinLeftCache = Collections.newSetFromMap(
+				Caffeine.newBuilder()
+						.expireAfterWrite(5, TimeUnit.SECONDS)
+						.build<Long, Boolean>()
+						.asMap()
+		)
+
+		private val logger = KotlinLogging.logger {}
+	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		if (e.user.isBot) // Ignorar reactions de bots
@@ -42,8 +60,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.messageInteractionCache.containsKey(e.messageId)) {
-			val functions = loritta.messageInteractionCache[e.messageId]!!
+		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
+			val functions = loritta.messageInteractionCache[e.messageIdLong]!!
 
 			if (e is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
@@ -161,7 +179,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf)
+				updateTextChannelsTopic(event.guild, conf, true)
 
 				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
 					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
@@ -215,7 +233,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
 
 					if (mute.isTemporary)
-						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!) }
+						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
+				}
+
+				val profile = transaction(Databases.loritta) {
+					Profile.find { (Profiles.id eq event.member.user.idLong) }.firstOrNull()
+				}
+
+				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
+				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || profile.lastMessageSentAt >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
+					AdminUtils.sendSuspectInfo(channel, event.user, profile)
+				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
@@ -240,7 +268,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf)
+				updateTextChannelsTopic(event.guild, conf, true)
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberLeave(event)
@@ -256,13 +284,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig) {
+	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig, hideInEventLog: Boolean = false) {
 		for (textChannel in guild.textChannels) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				continue
 			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
-			textChannel.manager.setTopic(formattedTopic).queue()
+			if (hideInEventLog)
+				memberCounterJoinLeftCache.add(guild.idLong)
+
+			val locale = loritta.getLocaleById(serverConfig.localeId)
+			textChannel.manager.setTopic(formattedTopic).reason(locale.format { modules.memberCounter.auditLogReason }).queue()
 		}
 	}
 

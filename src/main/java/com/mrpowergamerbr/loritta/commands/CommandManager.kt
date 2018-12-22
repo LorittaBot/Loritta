@@ -101,6 +101,8 @@ class CommandManager {
 		commandMap.add(LoriSignCommand())
 		commandMap.add(TextCraftCommand())
 		commandMap.add(BolsonaroCommand())
+		commandMap.add(BolsoDrakeCommand())
+		commandMap.add(DrawnMaskCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(CongaParrotCommand())
@@ -232,6 +234,10 @@ class CommandManager {
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
 		commandMap.add(QuickPunishmentCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(LockCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			commandMap.add(UnlockCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
@@ -401,10 +407,10 @@ class CommandManager {
 					return true // Ignorar canais bloqueados
 
 				// Cooldown
-				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.id, 0L) as Long
+				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.idLong, 0L)
 
 				if (1250 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
-					loritta.userCooldown.put(ev.author.id, System.currentTimeMillis()) // E vamos guardar o tempo atual
+					loritta.userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
 
@@ -425,7 +431,7 @@ class CommandManager {
 					return true
 				}
 
-				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
+				loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
 				LorittaUtilsKotlin.executedCommands++
 				command.executedCount++
@@ -576,7 +582,7 @@ class CommandManager {
 					}
 				}
 
-				loritta.userCooldown.put(ev.author.id, System.currentTimeMillis())
+				loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {

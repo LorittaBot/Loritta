@@ -24,7 +24,11 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 		return "Experimental"
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override fun canUseInPrivateChannel(): Boolean {
+		return false
+	}
+
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val phoneNumber = context.args.getOrNull(0)?.replace("-", "")
 
 		if (phoneNumber != null) {
@@ -57,6 +61,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 											"<:yudi:446394608256024597>"
 									)
 							)
+							loritta.bomDiaECia.triedToCall.add(context.userHandle.idLong)
 							return@launch
 						}
 
@@ -67,6 +72,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 											"<:yudi:446394608256024597>"
 									)
 							)
+							loritta.bomDiaECia.triedToCall.add(context.userHandle.idLong)
 							return@launch
 						}
 
@@ -87,7 +93,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 								)
 						)
 
-						loritta.bomDiaECia.announceWinner(context.guild, context.userHandle)
+						loritta.bomDiaECia.announceWinner(context.message.textChannel, context.guild, context.userHandle)
 					} else {
 						context.reply(
 								LoriReply(
@@ -95,6 +101,8 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 										"<:yudi:446394608256024597>"
 								)
 						)
+						if (30000 > System.currentTimeMillis() - loritta.bomDiaECia.lastBomDiaECia)
+							loritta.bomDiaECia.triedToCall.add(context.userHandle.idLong)
 					}
 				}
 			} else {

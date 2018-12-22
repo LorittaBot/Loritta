@@ -57,7 +57,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					replies.clear()
 				}
 
-				val user = lorittaShards.getUserById(it.id)!!
+				val user = lorittaShards.getUserById(it.id) ?: return
 
 				val typeEmote = when {
 					user.isBot -> Emotes.DISCORD_BOT_TAG
@@ -230,7 +230,11 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		}
 
 		if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
-			val user = lorittaShards.getUserById(arg1)!!
+			val user = lorittaShards.getUserById(arg1) ?: run {
+				context.sendMessage("Usuário não existe parça, talvez eu não compartilhe nenhum servidor com ele?")
+				return
+			}
+
 			val userConfig = loritta.getOrCreateLorittaProfile(user.id)
 			val isDonator = arg2.toBoolean()
 

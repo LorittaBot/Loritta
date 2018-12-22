@@ -31,6 +31,10 @@ class SlowModeModule : MessageReceivedModule {
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val delay = serverConfig.slowModeChannels[event.channel.id]!!
 
+		if (delay in 0..120 && event.textChannel!!.slowmode == delay) {
+			return false
+		}
+		
 		if (delay in 0..120 && event.textChannel!!.slowmode != delay && event.guild!!.selfMember.hasPermission(event.textChannel, Permission.MANAGE_CHANNEL)) {
 			event.textChannel.manager.setSlowmode(delay).queue()
 		}

@@ -20,6 +20,11 @@ import javax.imageio.ImageIO
 object Constants {
 	const val ERROR = "<:error:412585701054611458>"
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
+	/**
+	 * Discord's URL Crawler User Agent
+	 */
+	const val DISCORD_CRAWLER_USER_AGENT = "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)"
+
 	const val LEFT_PADDING = "\uD83D\uDD39"
 	val INDEXES = listOf("1⃣",
 			"2⃣",
@@ -104,6 +109,7 @@ object Constants {
 	// Canais de textos utilizados na Loritta
 	const val RELAY_YOUTUBE_VIDEOS_CHANNEL = "509043859792068609"
 	const val RELAY_TWITCH_STREAMS_CHANNEL = "520354012021784586"
+	const val SUSPECTS_CHANNEL = "525358836383744010"
 
 	/**
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image
