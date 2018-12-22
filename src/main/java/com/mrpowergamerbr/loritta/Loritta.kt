@@ -581,6 +581,8 @@ class Loritta(config: LorittaConfig) {
 				}
 
 				transformIntoFlatMap(entries, "")
+
+				locale.localeEntries.putAll(entries)
 			}
 		}
 
