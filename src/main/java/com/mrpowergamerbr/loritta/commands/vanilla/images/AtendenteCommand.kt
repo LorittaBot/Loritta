@@ -114,7 +114,7 @@ class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IM
 
 			context.sendFile(template, "atendente.png", context.getAsMention(true))
 		} else {
-
+			context.explain()
 		}
 	}
 }
