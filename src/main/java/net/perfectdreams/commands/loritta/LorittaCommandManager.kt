@@ -123,6 +123,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				}
 		)
 	}
+
 	override fun getRegisteredCommands() = commands
 
 	override fun registerCommand(command: LorittaCommand) {
