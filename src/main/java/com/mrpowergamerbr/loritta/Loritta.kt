@@ -564,7 +564,7 @@ class Loritta(config: LorittaConfig) {
 			locale.localeEntries.putAll(defaultLocale.localeEntries)
 		}
 
-		val localeFolder = File(Loritta.ASSETS, id)
+		val localeFolder = File(Loritta.LOCALES, id)
 
 		println(localeFolder)
 
@@ -603,7 +603,7 @@ class Loritta(config: LorittaConfig) {
 		locales["default"] = defaultLocale
 
 		val localeFolder = File(Loritta.LOCALES)
-		localeFolder.listFiles().filter { it.isDirectory && it.name != "default" } .forEach {
+		localeFolder.listFiles().filter { it.isDirectory && it.name != "default" && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
 			locales[it.name] = loadLocale(it.name, defaultLocale)
 		}
 
