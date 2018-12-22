@@ -5,6 +5,7 @@ import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.images.AtendenteCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -33,7 +34,12 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 	val commands = mutableListOf<LorittaCommand>()
 
 	init {
-		registerCommand(MagicPingCommand())
+		registerCommands(
+				// IMAGENS
+				AtendenteCommand(),
+				// MISC
+				MagicPingCommand()
+		)
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
