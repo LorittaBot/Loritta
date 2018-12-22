@@ -359,11 +359,11 @@ class CommandManager {
 			var locale = locale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 				when (ev.channel.id) {
-					"414839559721975818" -> locale = loritta.getLocaleById("default") // português (default)
-					"404713176995987466" -> locale = loritta.getLocaleById("en-us") // inglês
-					"414847180285935622" -> locale = loritta.getLocaleById("es-es") // espanhol
-					"414847291669872661" -> locale = loritta.getLocaleById("pt-pt") // português de portugal
-					"414847379670564874" -> locale = loritta.getLocaleById("pt-funk") // português funk
+					"414839559721975818" -> locale = loritta.getLegacyLocaleById("default") // português (default)
+					"404713176995987466" -> locale = loritta.getLegacyLocaleById("en-us") // inglês
+					"414847180285935622" -> locale = loritta.getLegacyLocaleById("es-es") // espanhol
+					"414847291669872661" -> locale = loritta.getLegacyLocaleById("pt-pt") // português de portugal
+					"414847379670564874" -> locale = loritta.getLegacyLocaleById("pt-funk") // português funk
 				}
 			}
 

@@ -122,7 +122,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						).iterator().use {
 							while (it.hasNext()) {
 								val config = it.next()
-								val locale = loritta.getLocaleById(config.localeId)
+								val locale = loritta.getLegacyLocaleById(config.localeId)
 
 								val guild = guilds.first { it.id == config.guildId }
 
@@ -227,7 +227,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		).iterator().use {
 			while (it.hasNext()) {
 				val config = it.next()
-				val locale = loritta.getLocaleById(config.localeId)
+				val locale = loritta.getLegacyLocaleById(config.localeId)
 
 				val guild = guilds.first { it.id == config.guildId }
 
@@ -270,7 +270,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			embed.setAuthor(event.guild.name, null, event.guild.iconUrl)
 
 			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLocaleById(config.localeId)
+			val locale = loritta.getLegacyLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 			if (eventLogConfig.isEnabled) {
 				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
@@ -325,7 +325,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLocaleById(config.localeId)
+			val locale = loritta.getLegacyLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
@@ -388,7 +388,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLocaleById(config.localeId)
+			val locale = loritta.getLegacyLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
@@ -479,7 +479,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return@launch
@@ -537,7 +537,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -581,7 +581,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))
 				embed.setTimestamp(Instant.now())

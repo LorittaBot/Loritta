@@ -36,7 +36,7 @@ class ParallaxGuild(private val guild: Guild) {
 				loritta.getServerConfigForGuild(guild.id),
 				guild,
 				punisher.user,
-				loritta.getLocaleById(serverConfig.localeId),
+				loritta.getLegacyLocaleById(serverConfig.localeId),
 				user.user,
 				options["reason"] as String? ?: "",
 				options["isSilent"] as Boolean? ?: false,

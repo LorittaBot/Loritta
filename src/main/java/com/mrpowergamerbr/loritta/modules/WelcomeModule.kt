@@ -68,7 +68,7 @@ object WelcomeModule {
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 		val tokens = mapOf(
-				"humanized-date" to event.member.joinDate.humanize(loritta.getLocaleById(serverConfig.localeId))
+				"humanized-date" to event.member.joinDate.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
 		)
 
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?

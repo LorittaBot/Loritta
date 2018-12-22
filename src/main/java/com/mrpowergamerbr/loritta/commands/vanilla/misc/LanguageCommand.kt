@@ -28,27 +28,27 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		val validLanguages = listOf(
 				LocaleWrapper(
 						"Português-Brasil",
-						loritta.getLocaleById("default"),
+						loritta.getLegacyLocaleById("default"),
 						"\uD83C\uDDE7\uD83C\uDDF7"
 				),
 				LocaleWrapper(
 						"Português-Funk",
-						loritta.getLocaleById("pt-funk"),
+						loritta.getLegacyLocaleById("pt-funk"),
 						"<:loritta_quebrada:338679008210190336>"
 				),
 				LocaleWrapper(
 						"Português-Portugal",
-						loritta.getLocaleById("pt-pt"),
+						loritta.getLegacyLocaleById("pt-pt"),
 						"\uD83C\uDDF5\uD83C\uDDF9"
 				),
 				LocaleWrapper(
 						"English-US",
-						loritta.getLocaleById("en-us"),
+						loritta.getLegacyLocaleById("en-us"),
 						"\uD83C\uDDFA\uD83C\uDDF8"
 				),
 				LocaleWrapper(
 						"Español",
-						loritta.getLocaleById("es-es"),
+						loritta.getLegacyLocaleById("es-es"),
 						"\uD83C\uDDEA\uD83C\uDDF8"
 				)
 		)
@@ -84,7 +84,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
 			context.config.localeId = localeId
 			loritta save context.config
-			val newLocale = loritta.getLocaleById(localeId)
+			val newLocale = loritta.getLegacyLocaleById(localeId)
 			if (localeId == "default") {
 				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 			}

@@ -24,7 +24,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.Loritta
 			import com.mrpowergamerbr.loritta.LorittaLauncher
 			import com.mrpowergamerbr.loritta.commands.CommandContext
-			import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+			import com.mrpowergamerbr.loritta.utils.locale.*
 			import com.mrpowergamerbr.loritta.utils.loritta
 			import com.mrpowergamerbr.loritta.utils.lorittaShards
 			import com.mrpowergamerbr.loritta.utils.save
@@ -42,7 +42,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import kotlinx.coroutines.GlobalScope
 			import kotlinx.coroutines.launch
 
-			fun loritta(context: CommandContext, locale: BaseLocale) {
+			fun loritta(context: CommandContext, locale: LegacyBaseLocale) {
 			    GlobalScope.launch(loritta.coroutineDispatcher) {
 					$kotlinCode
 				}

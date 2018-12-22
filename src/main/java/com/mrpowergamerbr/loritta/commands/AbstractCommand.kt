@@ -42,7 +42,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	@Deprecated("Please use getExamples(locale)")
 	open fun getExamples(): List<String> {
-		return getExamples(loritta.getLocaleById("default"))
+		return getExamples(loritta.getLegacyLocaleById("default"))
 	}
 
 	open fun getExamples(locale: LegacyBaseLocale): List<String> {

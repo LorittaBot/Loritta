@@ -774,7 +774,18 @@ class Loritta(config: LorittaConfig) {
 	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
 	 * @see            LegacyBaseLocale
 	 */
-	fun getLocaleById(localeId: String): LegacyBaseLocale {
+	fun getLocaleById(localeId: String): BaseLocale {
+		return locales.getOrDefault(localeId, locales["default"]!!)
+	}
+
+	/**
+	 * Gets the BaseLocale from the ID, if the locale doesn't exist, the default locale ("default") will be retrieved
+	 *
+	 * @param localeId the ID of the locale
+	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
+	 * @see            LegacyBaseLocale
+	 */
+	fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 

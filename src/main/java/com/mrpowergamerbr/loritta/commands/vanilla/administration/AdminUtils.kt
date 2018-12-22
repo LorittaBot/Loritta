@@ -29,7 +29,7 @@ object AdminUtils {
 	}
 
 	fun sendSuspectInfo(channel: TextChannel, user: User, profile: Profile?) {
-		val locale = loritta.getLocaleById("default")
+		val locale = loritta.getLegacyLocaleById("default")
 		val builder = EmbedBuilder()
 				.setTitle("<:blobcatgooglypolice:525643372317114383> Usuário suspeito")
 				.setAuthor(user.name + "#" + user.discriminator)

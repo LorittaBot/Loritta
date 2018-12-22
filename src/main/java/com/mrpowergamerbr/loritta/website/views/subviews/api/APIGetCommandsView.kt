@@ -25,8 +25,8 @@ class APIGetCommandsView : NoVarsView() {
 		// Vamos parsear!
 		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
 
-		val defaultLocale = LorittaLauncher.loritta.getLocaleById("default")
-		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
+		val defaultLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
+		var lorittaLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
 
 		for (range in ranges) {
 			var localeId = range.range.toLowerCase()
@@ -38,7 +38,7 @@ class APIGetCommandsView : NoVarsView() {
 			if (localeId == "en") {
 				localeId = "en-us"
 			}
-			val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
+			val parsedLocale = LorittaLauncher.loritta.getLegacyLocaleById(localeId)
 			if (bypassCheck || defaultLocale !== parsedLocale) {
 				lorittaLocale = parsedLocale
 			}
@@ -49,11 +49,11 @@ class APIGetCommandsView : NoVarsView() {
 		}
 
 		if (req.session().isSet("forceLocale")) {
-			lorittaLocale  = LorittaLauncher.loritta.getLocaleById(req.session()["forceLocale"].value())
+			lorittaLocale  = LorittaLauncher.loritta.getLegacyLocaleById(req.session()["forceLocale"].value())
 		}
 
 		if (req.param("locale").isSet) {
-			lorittaLocale = LorittaLauncher.loritta.getLocaleById(req.param("locale").value())
+			lorittaLocale = LorittaLauncher.loritta.getLegacyLocaleById(req.param("locale").value())
 		}
 
 		val array = JsonArray()

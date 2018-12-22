@@ -23,12 +23,12 @@ class TranslationView : AbstractView() {
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		val split = path.split("/")
 		var localeId = "default"
-		val defaultLocale = loritta.getLocaleById("default")
+		val defaultLocale = loritta.getLegacyLocaleById("default")
 		var locale = if (split.size >= 3) {
 			localeId = split[2]
-			loritta.getLocaleById(split[2])
+			loritta.getLegacyLocaleById(split[2])
 		} else {
-			loritta.getLocaleById("default")
+			loritta.getLegacyLocaleById("default")
 		}
 		if (req.ifFile("uploaded-json").isPresent) {
 			val upload = req.file("uploaded-json")
