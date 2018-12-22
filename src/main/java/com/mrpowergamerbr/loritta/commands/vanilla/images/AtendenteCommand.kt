@@ -1,6 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.ArgumentType
+import com.mrpowergamerbr.loritta.commands.CommandArguments
+import com.mrpowergamerbr.loritta.commands.CommandCategory
+import com.mrpowergamerbr.loritta.commands.arguments
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
@@ -15,7 +19,23 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AtendenteCommand : LorittaCommand(arrayOf("atendente")) {
+class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IMAGES) {
+	override fun getDescription(locale: BaseLocale): String? {
+		return "Atendente dos vídeos do Drawn Mask"
+	}
+
+	override fun getUsage(locale: BaseLocale): CommandArguments {
+		return arguments {
+			argument(ArgumentType.TEXT) {}
+		}
+	}
+
+	override fun getExamples(locale: BaseLocale): List<String> {
+		return listOf(
+				"Pega a vassoura."
+		)
+	}
+
 	@Subcommand
 	suspend fun root(context: LorittaCommandContext, locale: BaseLocale, args: Array<String>) {
 		if (args.isNotEmpty()) {
