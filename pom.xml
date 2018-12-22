@@ -323,7 +323,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>1.8.13</version>
+            <version>1.8.13.kotlin13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
