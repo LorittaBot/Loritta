@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.dv8tion.jda.core.entities.User
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 
 class LoriReply(
 		val message: String = " ",

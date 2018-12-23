@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 
 /**
  * Um usuário que está comunicando com a Loritta

@@ -5,8 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.commands.annotation.Subcommand
-import net.perfectdreams.commands.loritta.LorittaCommand
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import java.io.File
 
 class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCategory.MAGIC) {
