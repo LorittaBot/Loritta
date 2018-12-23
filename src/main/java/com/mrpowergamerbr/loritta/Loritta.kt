@@ -595,11 +595,11 @@ class Loritta(config: LorittaConfig) {
 	fun loadLocales() {
 		val locales = mutableMapOf<String, BaseLocale>()
 
-		val defaultLocale = loadLocale("default", null)
-		locales["default"] = defaultLocale
+		val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
+		locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
 
 		val localeFolder = File(Loritta.LOCALES)
-		localeFolder.listFiles().filter { it.isDirectory && it.name != "default" && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
+		localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
 			locales[it.name] = loadLocale(it.name, defaultLocale)
 		}
 
@@ -775,7 +775,7 @@ class Loritta(config: LorittaConfig) {
 	 * @see            LegacyBaseLocale
 	 */
 	fun getLocaleById(localeId: String): BaseLocale {
-		return locales.getOrDefault(localeId, locales["default"]!!)
+		return locales.getOrDefault(localeId, locales[Constants.DEFAULT_LOCALE_ID]!!)
 	}
 
 	/**
