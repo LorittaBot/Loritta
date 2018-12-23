@@ -32,6 +32,7 @@ class PluginManager {
 		plugin.onDisable()
 		loritta.lorittaCommandManager.unregisterCommands(*plugin.commands.toTypedArray())
 		plugin.commands.clear()
+		plugins.remove(plugin)
 	}
 
 	fun loadPlugins() {
@@ -63,7 +64,7 @@ class PluginManager {
 
 		plugin.onEnable()
 		plugins.add(plugin)
-		
+
 		logger.info("${info.pluginName} loaded successfully!")
 	}
 
