@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
@@ -32,7 +33,7 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, val legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -282,19 +283,19 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			embed.setColor(Color(0, 193, 223))
 			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val commandArguments = cmd.getUsage(locale)
+			val commandArguments = cmd.getUsage(legacyLocale)
 			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(legacyLocale)}`"
 				else -> ""
 			}
 
-			var cmdInfo = cmd.getDescription(locale) + "\n\n"
+			var cmdInfo = cmd.getDescription(legacyLocale) + "\n\n"
 
-			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
+			cmdInfo += "\uD83D\uDC81 **" + legacyLocale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
 			for (argument in commandArguments.arguments) {
 				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(legacyLocale)}` - "
 					if (argument.defaultValue != null) {
 						cmdInfo += "(Padrão: ${argument.defaultValue}) "
 					}
@@ -306,13 +307,13 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
-			for (example in command.getExamples(locale)) { // Adicionar todos os exemplos simples
+			for (example in command.getExamples(legacyLocale)) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
 
 			if (examples.isEmpty()) {
 				embed.addField(
-						"\uD83D\uDCD6 " + locale["EXAMPLE"],
+						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"],
 						commandLabel,
 						false
 				)
@@ -322,7 +323,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 					exampleList += example + "\n"
 				}
 				embed.addField(
-						"\uD83D\uDCD6 " + locale["EXAMPLE"] + (if (command.getExamples(locale).size == 1) "" else "s"),
+						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"] + (if (command.getExamples(legacyLocale).size == 1) "" else "s"),
 						exampleList,
 						false
 				)
@@ -331,10 +332,10 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			if (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty()) {
 				var field = ""
 				if (command.discordPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para utilizar este comando!\n"
 				}
 				if (command.botPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",
@@ -349,7 +350,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
 				embed.addField(
-						"\uD83D\uDD00 ${locale["CommandAliases"]}",
+						"\uD83D\uDD00 ${legacyLocale["CommandAliases"]}",
 						onlyUnusedAliases.joinToString(", ", transform = { "`" + config.commandPrefix + it + "`" }),
 						true
 				)
@@ -357,7 +358,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(locale[command.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(legacyLocale[command.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {
