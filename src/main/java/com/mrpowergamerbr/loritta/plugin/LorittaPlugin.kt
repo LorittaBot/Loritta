@@ -6,7 +6,11 @@ import net.perfectdreams.commands.loritta.LorittaCommand
 import java.io.File
 import java.net.URLClassLoader
 
-open class LorittaPlugin(val name: String, val classLoader: URLClassLoader, val pluginFile: File) {
+open class LorittaPlugin {
+	lateinit var name: String
+	lateinit var classLoader: URLClassLoader
+	lateinit var pluginFile: File
+
 	val commands = mutableListOf<LorittaCommand>()
 	val dataFolder = File(Loritta.FOLDER, "plugins/$name")
 

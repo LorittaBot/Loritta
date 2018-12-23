@@ -28,6 +28,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 						"Carregando plugin `$pluginName.jar`..."
 				)
 		)
+
 		loritta.pluginManager.loadPlugin(File(Loritta.FOLDER, "plugins/$pluginName.jar"))
 		context.reply(
 				LoriReply(
@@ -71,7 +72,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		if (plugin == null) {
 			context.reply(
 					LoriReply(
-							"Plugin não existe! Como você vai descarregar algo que não existe?"
+							"Plugin não existe! Como você vai recarregar algo que não existe?"
 					)
 			)
 			return
