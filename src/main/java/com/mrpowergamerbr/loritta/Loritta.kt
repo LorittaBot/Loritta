@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -156,6 +157,7 @@ class Loritta(config: LorittaConfig) {
 	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
+	var pluginManager = PluginManager()
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
@@ -297,6 +299,7 @@ class Loritta(config: LorittaConfig) {
 		DebugLog.startCommandListenerThread()
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
+		pluginManager.loadPlugins()
 
 		thread {
 			socket.start()
