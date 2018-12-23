@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.perfectdreams.commands.loritta.LorittaCommand
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.io.File
 import java.net.URLClassLoader
 

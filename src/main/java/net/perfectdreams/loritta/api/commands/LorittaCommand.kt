@@ -1,4 +1,4 @@
-package net.perfectdreams.commands.loritta
+package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.commands.CommandArguments
 import com.mrpowergamerbr.loritta.commands.CommandCategory

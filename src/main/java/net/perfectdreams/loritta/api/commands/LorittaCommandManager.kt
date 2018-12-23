@@ -1,4 +1,4 @@
-package net.perfectdreams.commands.loritta
+package net.perfectdreams.loritta.api.commands
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates

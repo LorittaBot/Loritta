@@ -1,4 +1,4 @@
-package net.perfectdreams.commands.loritta
+package net.perfectdreams.loritta.api.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.PermissionException
+import net.perfectdreams.loritta.api.impl.DiscordUser
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -80,7 +81,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		} */
 	}
 
-	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
+	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): net.perfectdreams.loritta.api.entities.Message {
 		var send = ""
 		if (prefix != null) {
 			send = "$prefix **|** "
@@ -89,11 +90,11 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendMessage(send)
 	}
 
-	suspend fun reply(vararg loriReplies: LoriReply): Message {
+	suspend fun reply(vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		return reply(false, *loriReplies)
 	}
 
-	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
+	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
 			message.append(LoriReply().build(this))
@@ -106,7 +107,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendMessage(message.toString())
 	}
 
-	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message {
+	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")
@@ -114,19 +115,19 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendFile(image, fileName, message.toString())
 	}
 
-	suspend fun sendMessage(message: String): Message {
+	suspend fun sendMessage(message: String): net.perfectdreams.loritta.api.entities.Message {
 		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
 	}
 
-	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
+	suspend fun sendMessage(message: String, embed: MessageEmbed): net.perfectdreams.loritta.api.entities.Message {
 		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed): Message {
+	suspend fun sendMessage(embed: MessageEmbed): net.perfectdreams.loritta.api.entities.Message {
 		return sendMessage(MessageBuilder().append(getAsMention(true)).setEmbed(embed).build())
 	}
 
-	suspend fun sendMessage(message: Message): Message {
+	suspend fun sendMessage(message: Message): net.perfectdreams.loritta.api.entities.Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		/* if (cmd is AbstractCommand) {
 			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
@@ -136,13 +137,13 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		} */
 		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			return privateChannel.sendMessageAsync(message)
+			return net.perfectdreams.loritta.api.impl.DiscordMessage(privateChannel.sendMessageAsync(message))
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(message).await()
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
+				return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -175,7 +176,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		}
 	}
 
-	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.api.entities.Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
@@ -184,16 +185,16 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendFile(file, name, builder.build())
 	}
 
-	suspend fun sendFile(file: File, name: String, message: Message): Message {
+	suspend fun sendFile(file: File, name: String, message: Message): net.perfectdreams.loritta.api.entities.Message {
 		val inputStream = file.inputStream()
 		return sendFile(inputStream, name, message)
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): net.perfectdreams.loritta.api.entities.Message {
 		return sendFile(image, name, "", embed)
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.api.entities.Message {
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
@@ -202,7 +203,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendFile(image, name, builder.build())
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, message: Message): net.perfectdreams.loritta.api.entities.Message {
 		val outputStream = ByteArrayOutputStream()
 		outputStream.use {
 			ImageIO.write(image, "png", it)
@@ -213,18 +214,18 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendFile(inputStream, name, message)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: String): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: String): net.perfectdreams.loritta.api.entities.Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): net.perfectdreams.loritta.api.entities.Message {
 		return sendFile(inputStream, name, "", embed)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.api.entities.Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
@@ -233,7 +234,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.api.entities.Message {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		/* if (cmd is AbstractCommand) {
 			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
@@ -245,14 +246,14 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
 			inputStream.close()
-			return sentMessage
+			return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
 				inputStream.close()
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
+				return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
 			} else {
 				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -366,7 +367,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 					it.sendMessage(embed.build()).queue()
 				}
 			} else {
-				val message = sendMessage(getAsMention(true), embed.build())
+				val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.api.impl.DiscordMessage).handle
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(this) {
 					if (it.reactionEmote.name == "❓") {
@@ -406,7 +407,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 				false
 		)
 
-		val message = sendMessage(getAsMention(true), embed.build())
+		val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.api.impl.DiscordMessage).handle
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(this) {
 			if (it.reactionEmote.name == "❓") {
@@ -486,13 +487,13 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	suspend fun getUser(link: String?): User? {
+	suspend fun getUser(link: String?): net.perfectdreams.loritta.api.entities.User? {
 		if (link != null) {
 			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
 			for (user in this.message.mentionedUsers) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
-					return user
+					return DiscordUser(user)
 				}
 			}
 
@@ -504,7 +505,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
 					if (matchedMember.isPresent) {
-						return matchedMember.get().user
+						return DiscordUser(matchedMember.get().user)
 					}
 				}
 			}
@@ -514,7 +515,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 				val matchedMembers = this.guild.getMembersByEffectiveName(link, true)
 
 				if (!matchedMembers.isEmpty()) {
-					return matchedMembers[0].user
+					return DiscordUser(matchedMembers[0].user)
 				}
 			}
 
@@ -523,7 +524,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 				val matchedMembers = this.guild.getMembersByName(link, true)
 
 				if (!matchedMembers.isEmpty()) {
-					return matchedMembers[0].user
+					return DiscordUser(matchedMembers[0].user)
 				}
 			}
 
@@ -532,7 +533,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
 
 				if (user != null) { // Pelo visto é!
-					return user
+					return DiscordUser(user)
 				}
 			} catch (e: Exception) {
 			}
@@ -567,7 +568,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			// Vamos verificar por usuários no argumento especificado
 			val user = getUser(link)
 			if (user != null)
-				return user.effectiveAvatarUrl + "?size=" + avatarSize
+				return user.avatarUrl + "?size=" + avatarSize
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>

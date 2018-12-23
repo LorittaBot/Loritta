@@ -1,3 +1,3 @@
-package net.perfectdreams.commands.loritta.annotation
+package net.perfectdreams.loritta.api.commands.annotation
 
 annotation class InjectLoritta(val type: LorittaArgumentType)

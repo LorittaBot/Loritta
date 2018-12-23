@@ -50,7 +50,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.utils.cache.CacheFlag
-import net.perfectdreams.commands.loritta.LorittaCommandManager
+import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
