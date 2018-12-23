@@ -55,7 +55,7 @@ class PluginManager {
 
 		val clazz = Class.forName(info.main, true, classLoader)
 
-		val plugin = clazz.getConstructor(String::class.java, URLClassLoader::class.java).newInstance(info.pluginName, classLoader) as LorittaPlugin
+		val plugin = clazz.getConstructor(String::class.java, URLClassLoader::class.java, File::class.java).newInstance(info.pluginName, classLoader, file) as LorittaPlugin
 		plugins.add(plugin)
 		plugin.onEnable()
 
