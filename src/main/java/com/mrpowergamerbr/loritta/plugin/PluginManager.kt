@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.plugin
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -77,7 +78,7 @@ class PluginManager {
 		stream.close()
 		jar.close()
 
-		return Constants.YAML.load<PluginDescription>(result)
+		return Constants.MAPPER.readValue(result)
 	}
 
 	class PluginDescription @JsonCreator constructor(
