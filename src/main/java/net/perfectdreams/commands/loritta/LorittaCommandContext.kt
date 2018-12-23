@@ -283,13 +283,13 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			embed.setColor(Color(0, 193, 223))
 			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val commandArguments = cmd.getUsage(legacyLocale)
+			val commandArguments = cmd.getUsage(locale)
 			val usage = when {
 				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(legacyLocale)}`"
 				else -> ""
 			}
 
-			var cmdInfo = cmd.getDescription(legacyLocale) + "\n\n"
+			var cmdInfo = cmd.getDescription(locale) + "\n\n"
 
 			cmdInfo += "\uD83D\uDC81 **" + legacyLocale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
@@ -307,7 +307,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 
 			// Criar uma lista de exemplos
 			val examples = ArrayList<String>()
-			for (example in command.getExamples(legacyLocale)) { // Adicionar todos os exemplos simples
+			for (example in command.getExamples(locale)) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
 
@@ -323,7 +323,7 @@ class LorittaCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 					exampleList += example + "\n"
 				}
 				embed.addField(
-						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"] + (if (command.getExamples(legacyLocale).size == 1) "" else "s"),
+						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"] + (if (command.getExamples(locale).size == 1) "" else "s"),
 						exampleList,
 						false
 				)
