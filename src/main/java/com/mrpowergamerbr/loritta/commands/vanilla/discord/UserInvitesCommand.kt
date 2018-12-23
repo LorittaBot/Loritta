@@ -6,12 +6,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 
 class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["USERINVITES_Description"]
 	}
 
@@ -19,7 +19,7 @@ class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCate
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val invites = context.guild.invites.await().filter { it.inviter == context.userHandle }
 
 		if (invites.isEmpty()) {

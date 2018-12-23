@@ -52,6 +52,7 @@ object Constants {
 	const val SPARKLYPOWER_GUILD_ID = "320248230917046282"
 	const val LORI_STICKERS_ROLE_ID = "510788363264196638"
 
+	const val DEFAULT_LOCALE_ID = "default"
 	const val MAX_TRACKS_ON_PLAYLIST = 25
 
 	// ===[ COLORS ]===

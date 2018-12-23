@@ -4,11 +4,11 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.entities.TextChannel
 
 class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "" // locale.commands.channelInfo.description
 	}
 	
@@ -16,7 +16,7 @@ class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), Com
 		return false
 	}
 	
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val channel = if (context.args.isEmpty()) {
 			context.message.textChannel
 		} else {

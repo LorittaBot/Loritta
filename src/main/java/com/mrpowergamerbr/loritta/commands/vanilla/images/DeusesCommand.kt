@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -18,7 +18,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "deuses.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["DEUSES_DESCRIPTION"]
 	}
 
@@ -34,7 +34,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val texto = context.args.joinToString(" ")
 

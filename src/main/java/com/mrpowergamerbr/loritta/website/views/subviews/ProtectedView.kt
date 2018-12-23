@@ -62,7 +62,7 @@ abstract class ProtectedView : AbstractView() {
 						val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
 						// Agora nós iremos pegar o locale do servidor
-						val locale = loritta.getLocaleById(serverConfig.localeId)
+						val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 						val userId = auth.getUserIdentification().id
 

@@ -26,7 +26,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
@@ -289,7 +289,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -319,7 +319,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
 
@@ -359,11 +359,11 @@ class CommandManager {
 			var locale = locale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 				when (ev.channel.id) {
-					"414839559721975818" -> locale = loritta.getLocaleById("default") // português (default)
-					"404713176995987466" -> locale = loritta.getLocaleById("en-us") // inglês
-					"414847180285935622" -> locale = loritta.getLocaleById("es-es") // espanhol
-					"414847291669872661" -> locale = loritta.getLocaleById("pt-pt") // português de portugal
-					"414847379670564874" -> locale = loritta.getLocaleById("pt-funk") // português funk
+					"414839559721975818" -> locale = loritta.getLegacyLocaleById("default") // português (default)
+					"404713176995987466" -> locale = loritta.getLegacyLocaleById("en-us") // inglês
+					"414847180285935622" -> locale = loritta.getLegacyLocaleById("es-es") // espanhol
+					"414847291669872661" -> locale = loritta.getLegacyLocaleById("pt-pt") // português de portugal
+					"414847379670564874" -> locale = loritta.getLegacyLocaleById("pt-funk") // português funk
 				}
 			}
 

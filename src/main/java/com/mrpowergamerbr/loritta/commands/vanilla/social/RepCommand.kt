@@ -10,11 +10,11 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["REP_DESCRIPTON"]
 	}
 
@@ -26,7 +26,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val user = context.getUserAt(0)
 		val lastReputationGiven = transaction(Databases.loritta) {
 			Reputation.find {

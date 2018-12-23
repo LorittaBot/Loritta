@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.User
 import java.awt.Color
@@ -19,7 +19,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristerealidade"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["TRISTEREALIDADE_DESCRIPTION"]
 	}
 
@@ -27,7 +27,7 @@ class TristeRealidadeCommand : AbstractCommand("sadreality", listOf("tristereali
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val cmdOpti = context.config.getCommandOptionsFor(this) as TristeRealidadeCommandOptions
 
 		val bi = ImageIO.read(File(Loritta.ASSETS + context.locale["TRISTEREALIDADE_FILE"])) // Primeiro iremos carregar o nosso template

@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 
@@ -15,7 +15,7 @@ class SlowModeModule : MessageReceivedModule {
 		val slowModeDelay = Caffeine.newBuilder().expireAfterAccess(1L, TimeUnit.HOURS).build<String, Long>().asMap()
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (!serverConfig.slowModeChannels.contains(event.channel.id))
 			return false
 
@@ -28,7 +28,7 @@ class SlowModeModule : MessageReceivedModule {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		val delay = serverConfig.slowModeChannels[event.channel.id]!!
 
 		if (delay in 0..120 && event.textChannel!!.slowmode == delay) {

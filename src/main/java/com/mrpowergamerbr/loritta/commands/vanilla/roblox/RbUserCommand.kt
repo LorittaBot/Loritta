@@ -8,14 +8,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("RBUSER_DESCRIPTION")
 	}
 
@@ -27,7 +27,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return listOf("cazum8", "lol738236")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val username = context.args.joinToString(separator = " ")
 

@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
@@ -17,7 +17,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", "reverselava"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["LAVAREVERSO_DESCRIPTION"]
 	}
 
@@ -33,7 +33,7 @@ class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", 
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 			val template = ImageIO.read(File(Loritta.ASSETS + "lavareverso.png")) // Template

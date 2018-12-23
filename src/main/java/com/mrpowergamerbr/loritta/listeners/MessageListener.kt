@@ -76,7 +76,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val ownerProfile = loritta.getLorittaProfile(event.guild.owner.user.idLong)
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
 				if (lorittaProfile.isAfk) {
@@ -225,7 +225,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
-			val locale = loritta.getLocaleById("default")
+			val locale = loritta.getLegacyLocaleById("default")
 
 			if (isUserStillBanned(profile))
 				return@launch
@@ -271,7 +271,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
 				EventLog.onMessageUpdate(serverConfig, locale, event.message)

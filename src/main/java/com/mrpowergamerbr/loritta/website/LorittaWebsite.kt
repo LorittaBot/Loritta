@@ -98,17 +98,17 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 			}
 		}
 
-		var lorittaLocale = loritta.getLocaleById(localeId ?: "default")
+		var lorittaLocale = loritta.getLegacyLocaleById(localeId ?: "default")
 
 		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
 			lorittaLocale = when (languageCode) {
-				"br" -> LorittaLauncher.loritta.getLocaleById("default")
-				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
-				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
-				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLegacyLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLegacyLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLegacyLocaleById("es-es")
 				else -> lorittaLocale
 			}
 		}

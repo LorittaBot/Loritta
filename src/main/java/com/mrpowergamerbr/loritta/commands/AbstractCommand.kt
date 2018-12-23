@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
@@ -23,7 +23,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	var executedCount = 0
 
-	open fun getDescription(locale: BaseLocale): String {
+	open fun getDescription(locale: LegacyBaseLocale): String {
 		return "Insira descrição do comando aqui!"
 	}
 
@@ -32,7 +32,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return null
 	}
 
-	open fun getUsage(locale: BaseLocale): CommandArguments {
+	open fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {}
 	}
 
@@ -42,10 +42,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	@Deprecated("Please use getExamples(locale)")
 	open fun getExamples(): List<String> {
-		return getExamples(loritta.getLocaleById("default"))
+		return getExamples(loritta.getLegacyLocaleById("default"))
 	}
 
-	open fun getExamples(locale: BaseLocale): List<String> {
+	open fun getExamples(locale: LegacyBaseLocale): List<String> {
 		return listOf()
 	}
 
@@ -102,7 +102,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	 * @param context the context of the command
 	 * @param locale  the language the command should use
 	 */
-	abstract suspend fun run(context: CommandContext, locale: BaseLocale)
+	abstract suspend fun run(context: CommandContext, locale: LegacyBaseLocale)
 
 	/**
 	 * Sends an embed explaining what the command does

@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -17,7 +17,7 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 		return "pesquisa"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["GOOGLE_Description"]
 	}
 
@@ -25,7 +25,7 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 		return listOf("Loritta")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 

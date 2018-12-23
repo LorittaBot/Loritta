@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 
 class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCategory.UTILS) {
@@ -14,7 +14,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 		return "palavra"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["ANAGRAMA_DESCRIPTION"]
 	}
 
@@ -23,7 +23,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val palavra = context.args.joinToString(separator = " ")
 

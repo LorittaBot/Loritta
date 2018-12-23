@@ -18,7 +18,7 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -30,11 +30,11 @@ import java.io.File
 import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Recarrega a Loritta"
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
 		if (arg0 == "dailytax") {
@@ -75,7 +75,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 		if (arg0 == "locales") {
-			loritta.loadLocales()
+			loritta.loadLegacyLocales()
 			context.reply(
 					LoriReply(
 							message = "Locales recarregadas!"
@@ -368,7 +368,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
-		loritta.loadLocales()
+		loritta.loadLegacyLocales()
 		loritta.loadFanArts()
 
 		loritta.initMongo()

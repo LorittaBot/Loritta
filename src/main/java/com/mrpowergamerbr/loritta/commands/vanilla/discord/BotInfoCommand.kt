@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
@@ -18,11 +18,11 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 
 class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais" || arg0 == "extendedinfo") {
 			showExtendedInfo(context, locale)
@@ -74,7 +74,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		message.addReaction("loritta:331179879582269451").queue()
 	}
 
-	suspend fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
+	suspend fun showExtendedInfo(context: CommandContext, locale: LegacyBaseLocale) {
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
 		val mf = jar.manifest

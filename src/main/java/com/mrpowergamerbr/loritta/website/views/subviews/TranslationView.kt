@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.Request
@@ -23,18 +23,18 @@ class TranslationView : AbstractView() {
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		val split = path.split("/")
 		var localeId = "default"
-		val defaultLocale = loritta.getLocaleById("default")
+		val defaultLocale = loritta.getLegacyLocaleById("default")
 		var locale = if (split.size >= 3) {
 			localeId = split[2]
-			loritta.getLocaleById(split[2])
+			loritta.getLegacyLocaleById(split[2])
 		} else {
-			loritta.getLocaleById("default")
+			loritta.getLegacyLocaleById("default")
 		}
 		if (req.ifFile("uploaded-json").isPresent) {
 			val upload = req.file("uploaded-json")
 			val file = upload.file()
 			val json = jsonParser.parse(file.readText()).obj
-			locale = BaseLocale()
+			locale = LegacyBaseLocale()
 			json.entrySet()
 					.filter { it.value.isJsonPrimitive && it.value.asJsonPrimitive.isString }
 					.forEach { locale.strings[it.key.replace("[Translate!]", "")] = it.value.string }
@@ -61,7 +61,7 @@ class TranslationView : AbstractView() {
 					val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 					outputFile.writeText(prettyGson.toJson(originalLocale))
 
-					loritta.loadLocales()
+					loritta.loadLegacyLocales()
 					return "$localeId foi salvo com sucesso!"
 				}
 			}

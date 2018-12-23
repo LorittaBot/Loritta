@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -17,7 +17,7 @@ import java.io.IOException
 import javax.imageio.ImageIO
 
 class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["UTBOX_DESCRIPTION"]
 	}
 
@@ -33,7 +33,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		try {
 			if (context.args.size >= 1) {
 				var member = context.handle

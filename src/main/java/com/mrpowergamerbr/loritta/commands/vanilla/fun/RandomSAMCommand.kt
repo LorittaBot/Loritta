@@ -9,11 +9,11 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import org.jsoup.Jsoup
 
 class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamericamemes", "rsam", "rsouthamericamemes"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Pega uma postagem aleatória do South America Memes"
 	}
 
@@ -21,7 +21,7 @@ class RandomSAMCommand : AbstractCommand("randomsam", listOf("randomsouthamerica
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		// TODO: Migrar para a API do Twitter após o Twitter remover a suspensão da minha conta @mrpowergamerbr
 		val upperBound = (System.currentTimeMillis().toBigInteger().multiply(1039952060005920769.toBigInteger())).divide(1536938490000.toBigInteger())
 		val lowerBound = upperBound - 1183800219463680.toBigInteger()

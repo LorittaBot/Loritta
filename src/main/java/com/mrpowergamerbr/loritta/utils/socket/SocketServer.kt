@@ -46,7 +46,7 @@ class SocketServer(val socketPort: Int) {
 								val guild = lorittaShards.getGuildById(jsonObject["guildId"].string)
 								if (guild != null) {
 									val serverConfig = loritta.getServerConfigForGuild(jsonObject["guildId"].string)
-									val locale = loritta.getLocaleById(serverConfig.localeId)
+									val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 									BanCommand.ban(
 											serverConfig,
 											guild,

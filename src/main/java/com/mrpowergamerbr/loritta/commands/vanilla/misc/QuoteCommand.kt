@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.AuthorEmbed
@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import java.util.*
 
 class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "r", "reply"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("MENCIONAR_DESCRIPTION")
 	}
 
@@ -31,7 +31,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 		return Arrays.asList("msgId Olá!")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isEmpty()) {
 			context.explain()
 			return

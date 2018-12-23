@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.Permission.*
@@ -51,7 +51,7 @@ suspend fun Message.edit(content: Message): Message {
 	return this
 }
 
-fun Permission.localized(locale: BaseLocale): String {
+fun Permission.localized(locale: LegacyBaseLocale): String {
 	return when (this) {
 		CREATE_INSTANT_INVITE -> locale.format { discord.permissions.createInstantInvite }
 		KICK_MEMBERS -> locale.format { discord.permissions.kickMembers }

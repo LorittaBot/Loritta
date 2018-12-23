@@ -3,14 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar", "lsx", "lsxs"), CommandCategory.ECONOMY) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["EXCHANGE_Description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		// TODO: Fix
 		/* if (context.config.economyConfig.exchangeRate != null) {
 			val arg0 = context.rawArgs.getOrNull(0)

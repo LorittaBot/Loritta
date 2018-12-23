@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -307,7 +307,7 @@ object LorittaUtilsKotlin {
 	}
 
 	@JvmStatic
-	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
+	fun createTrackInfoEmbed(guild: Guild, locale: LegacyBaseLocale, stripSkipInfo: Boolean): MessageEmbed {
 		val manager = loritta.audioManager.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack
 		val metaTrack = manager.scheduler.currentTrack

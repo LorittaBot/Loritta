@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 enum class Jankenpon(var lang: String, var emoji: String, var wins: String, var loses: String) {
 	// Os wins e os loses precisam ser uma string já que os enums ainda não foram inicializados
@@ -25,7 +25,7 @@ enum class Jankenpon(var lang: String, var emoji: String, var wins: String, var 
 	}
 
 	companion object {
-		fun getFromLangString(str: String, locale: BaseLocale): Jankenpon? {
+		fun getFromLangString(str: String, locale: LegacyBaseLocale): Jankenpon? {
 			for (janken in Jankenpon.values()) {
 				if (str == locale[janken.lang]) {
 					return janken

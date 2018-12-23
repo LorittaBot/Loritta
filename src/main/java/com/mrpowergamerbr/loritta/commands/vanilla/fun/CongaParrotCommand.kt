@@ -5,10 +5,10 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["CONGAPARROT_Description"]
 	}
 
@@ -20,7 +20,7 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 		return listOf("5", "10")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var arg0 = context.args.getOrNull(0)
 
 		if (arg0 == null) {

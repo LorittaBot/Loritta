@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -15,7 +15,7 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "romero_britto.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["ROMEROBRITTO_DESCRIPTION"]
 	}
 
@@ -31,7 +31,7 @@ class RomeroBrittoCommand : AbstractCommand("romerobritto", listOf("pintura", "p
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0, 25, 256) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val image = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)

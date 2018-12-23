@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -17,7 +17,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 		return "palavra"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["DICIO_Description"]
 	}
 
@@ -25,7 +25,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 		return listOf("sonho")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size == 1) {
 			val palavra = URLEncoder.encode(context.args[0], "UTF-8")
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")

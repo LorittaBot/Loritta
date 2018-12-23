@@ -39,7 +39,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@execute)
 					if (currentTrack!!.metadata.isNotEmpty()) {
-						val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLocaleById(serverConfig.localeId), true)
+						val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLegacyLocaleById(serverConfig.localeId), true)
 
 						textChannel.sendMessage(embed).queue()
 					}

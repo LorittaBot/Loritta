@@ -5,17 +5,16 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed
 import org.jsoup.Jsoup
 import java.net.URLEncoder
-import java.util.*
 
 class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["RECEITAS_DESCRIPTION"]
 	}
 
@@ -31,7 +30,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 		return mapOf("bolo" to "Procura \"bolo\" no livro de receitas da Ana Maria Braga™")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 

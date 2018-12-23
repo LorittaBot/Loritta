@@ -17,7 +17,7 @@ import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
@@ -114,7 +114,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["PERFIL_DESCRIPTION"]
 	}
 
@@ -126,7 +126,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)

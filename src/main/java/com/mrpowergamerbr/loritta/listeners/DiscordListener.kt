@@ -187,7 +187,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							conf,
 							event.guild,
 							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(conf.localeId),
+							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(conf.localeId),
 							event.user,
 							entry.reason,
 							false,
@@ -201,7 +201,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							conf,
 							event.guild,
 							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(conf.localeId),
+							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(conf.localeId),
 							event.user,
 							"Sim, eu também tenho sentimentos. (Usar nomes inapropriados que ofendem outros usuários!)",
 							false,
@@ -227,8 +227,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (mute != null) {
-					val locale = loritta.getLocaleById(conf.localeId)
-					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(conf.localeId)) ?: return@launch
+					val locale = loritta.getLegacyLocaleById(conf.localeId)
+					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLegacyLocaleById(conf.localeId)) ?: return@launch
 
 					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
 
@@ -293,7 +293,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (hideInEventLog)
 				memberCounterJoinLeftCache.add(guild.idLong)
 
-			val locale = loritta.getLocaleById(serverConfig.localeId)
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 			textChannel.manager.setTopic(formattedTopic).reason(locale.format { modules.memberCounter.auditLogReason }).queue()
 		}
 	}
@@ -316,7 +316,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val member = guild.getMemberById(mute.userId) ?: continue
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-				MuteCommand.spawnRoleRemovalThread(guild, com.mrpowergamerbr.loritta.utils.loritta.getLocaleById("default"), member.user, mute.expiresAt!!)
+				MuteCommand.spawnRoleRemovalThread(guild, com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById("default"), member.user, mute.expiresAt!!)
 			}
 		}
 	}
