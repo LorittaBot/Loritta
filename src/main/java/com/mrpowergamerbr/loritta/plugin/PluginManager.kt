@@ -61,9 +61,9 @@ class PluginManager {
 		plugin.classLoader = classLoader
 		plugin.pluginFile = file
 
-		plugins.add(plugin)
 		plugin.onEnable()
-
+		plugins.add(plugin)
+		
 		logger.info("${info.pluginName} loaded successfully!")
 	}
 

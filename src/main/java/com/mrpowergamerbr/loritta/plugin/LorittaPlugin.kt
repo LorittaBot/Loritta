@@ -12,7 +12,7 @@ open class LorittaPlugin {
 	lateinit var pluginFile: File
 
 	val commands = mutableListOf<LorittaCommand>()
-	val dataFolder = File(Loritta.FOLDER, "plugins/$name")
+	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 
 	open fun onEnable() {
 
