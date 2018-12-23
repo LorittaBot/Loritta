@@ -16,7 +16,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 	suspend fun pluginList(context: LorittaCommandContext) {
 		context.reply(
 				LoriReply(
-						"**Plugins (${loritta.pluginManager.plugins.size}**: ${loritta.pluginManager.plugins.joinToString(", ", transform = { it.name })}"
+						"**Plugins (${loritta.pluginManager.plugins.size}):** ${loritta.pluginManager.plugins.joinToString(", ", transform = { it.name })}"
 				)
 		)
 	}
