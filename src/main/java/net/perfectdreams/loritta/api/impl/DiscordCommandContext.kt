@@ -68,8 +68,8 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		return lorittaUser.canUseCommand(this)
 	}
 
-	fun getAsMention(addSpace: Boolean): String {
-		return lorittaUser.getAsMention(true) /* if (cmd is AbstractCommand) {
+	override fun getAsMention(addSpace: Boolean): String {
+		return lorittaUser.getAsMention(addSpace) /* if (cmd is AbstractCommand) {
 			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
 			if (cmdOptions.override) {
 				if (cmdOptions.mentionOnCommandOutput)
@@ -275,7 +275,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 	 *
 	 * @param context the context of the command
 	 */
-	suspend fun explain() {
+	override suspend fun explain() {
 		val conf = config
 		val ev = event
 		val command = cmd

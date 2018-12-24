@@ -15,6 +15,8 @@ import java.io.InputStream
 abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: LegacyBaseLocale) {
 	abstract val message: Message
 
+	abstract fun getAsMention(addSpace: Boolean): String
+
 	abstract suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message
 
 	abstract suspend fun reply(vararg loriReplies: LoriReply): Message
@@ -708,4 +710,6 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	abstract suspend fun getImageUrl(link: String?, search: Int, avatarSize: Int): String?
 
 	abstract suspend fun getImageAt(argument: Int, search: Int, avatarSize: Int): BufferedImage?
+
+	abstract suspend fun explain()
 }
