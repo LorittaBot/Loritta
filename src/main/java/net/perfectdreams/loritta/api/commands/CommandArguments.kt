@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands
+package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.commands.annotation.Subcommand

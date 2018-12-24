@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
+import net.perfectdreams.loritta.api.impl.DiscordCommandContext
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -80,55 +81,57 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				{ sender, clazz, stack ->
 					val link = stack.pop() // Ok, será que isto é uma URL?
 
-					println("user context: $link")
+					if (sender is DiscordCommandContext) {
+						val message = sender.discordMessage
 
-					// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-					for (user in sender.message.mentionedUsers) {
-						if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
-							// Diferente de null? Então vamos usar o avatar do usuário!
-							return@registerContext user
-						}
-					}
-
-					// Vamos tentar procurar pelo username + discriminator
-					if (!sender.isPrivateChannel && !link.isEmpty()) {
-						val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
-
-						if (split.size == 2 && split[0].isNotEmpty()) {
-							val matchedMember = sender.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
-
-							if (matchedMember.isPresent) {
-								return@registerContext matchedMember.get().user
+						// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
+						for (user in message.mentionedUsers) {
+							if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
+								// Diferente de null? Então vamos usar o avatar do usuário!
+								return@registerContext user
 							}
 						}
-					}
 
-					// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-					if (!sender.isPrivateChannel && !link.isEmpty()) {
-						val matchedMembers = sender.guild.getMembersByEffectiveName(link, true)
+						// Vamos tentar procurar pelo username + discriminator
+						if (!sender.isPrivateChannel && !link.isEmpty()) {
+							val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
-						if (!matchedMembers.isEmpty()) {
-							return@registerContext matchedMembers[0].user
+							if (split.size == 2 && split[0].isNotEmpty()) {
+								val matchedMember = sender.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
+
+								if (matchedMember.isPresent) {
+									return@registerContext matchedMember.get().user
+								}
+							}
 						}
-					}
 
-					// Se não, vamos procurar só pelo username mesmo
-					if (!sender.isPrivateChannel && !link.isEmpty()) {
-						val matchedMembers = sender.guild.getMembersByName(link, true)
+						// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+						if (!sender.isPrivateChannel && !link.isEmpty()) {
+							val matchedMembers = sender.guild.getMembersByEffectiveName(link, true)
 
-						if (!matchedMembers.isEmpty()) {
-							return@registerContext matchedMembers[0].user
+							if (!matchedMembers.isEmpty()) {
+								return@registerContext matchedMembers[0].user
+							}
 						}
-					}
 
-					// Ok, então só pode ser um ID do Discord!
-					try {
-						val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
+						// Se não, vamos procurar só pelo username mesmo
+						if (!sender.isPrivateChannel && !link.isEmpty()) {
+							val matchedMembers = sender.guild.getMembersByName(link, true)
 
-						if (user != null) { // Pelo visto é!
-							return@registerContext user
+							if (!matchedMembers.isEmpty()) {
+								return@registerContext matchedMembers[0].user
+							}
 						}
-					} catch (e: Exception) {
+
+						// Ok, então só pode ser um ID do Discord!
+						try {
+							val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
+
+							if (user != null) { // Pelo visto é!
+								return@registerContext user
+							}
+						} catch (e: Exception) {
+						}
 					}
 
 					return@registerContext null
@@ -224,7 +227,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				}
 			}
 
-			val context = LorittaCommandContext(conf, lorittaUser, locale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = DiscordCommandContext(conf, lorittaUser, locale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {
 				logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")

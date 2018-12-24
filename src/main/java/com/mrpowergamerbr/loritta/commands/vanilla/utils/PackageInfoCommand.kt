@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CTT

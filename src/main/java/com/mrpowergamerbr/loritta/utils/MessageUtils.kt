@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.impl.DiscordCommandContext
 
 object MessageUtils {
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
@@ -287,6 +288,9 @@ fun Message.onMessageReceived(context: CommandContext, function: suspend (Loritt
  * @return         the message object for chaining
  */
 fun Message.onReactionAdd(context: LorittaCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
@@ -300,6 +304,9 @@ fun Message.onReactionAdd(context: LorittaCommandContext, function: suspend (Mes
  * @return         the message object for chaining
  */
 fun Message.onReactionRemove(context: LorittaCommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionRemove = function
 	return this
@@ -313,6 +320,9 @@ fun Message.onReactionRemove(context: LorittaCommandContext, function: suspend (
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(context: LorittaCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionAddByAuthor = function
 	return this
@@ -326,6 +336,9 @@ fun Message.onReactionAddByAuthor(context: LorittaCommandContext, function: susp
  * @return         the message object for chaining
  */
 fun Message.onReactionRemoveByAuthor(context: LorittaCommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onReactionRemoveByAuthor = function
 	return this
@@ -339,6 +352,9 @@ fun Message.onReactionRemoveByAuthor(context: LorittaCommandContext, function: s
  * @return         the message object for chaining
  */
 fun Message.onResponse(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onResponse = function
 	return this
@@ -352,6 +368,9 @@ fun Message.onResponse(context: LorittaCommandContext, function: suspend (Loritt
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onResponseByAuthor = function
 	return this
@@ -365,6 +384,9 @@ fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend
  * @return         the message object for chaining
  */
 fun Message.onMessageReceived(context: LorittaCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, context.userHandle.id) }
 	functions.onMessageReceived = function
 	return this

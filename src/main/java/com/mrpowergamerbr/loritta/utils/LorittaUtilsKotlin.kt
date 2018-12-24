@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.impl.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jsoup.nodes.Element
@@ -211,6 +212,9 @@ object LorittaUtilsKotlin {
 	}
 
 	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
+		if (context !is DiscordCommandContext)
+			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 		if (profile.isBanned) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 

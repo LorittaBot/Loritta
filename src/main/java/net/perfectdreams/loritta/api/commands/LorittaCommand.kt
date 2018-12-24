@@ -1,8 +1,5 @@
 package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.commands.CommandArguments
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.arguments
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale

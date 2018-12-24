@@ -1,29 +1,47 @@
-package net.perfectdreams.loritta.api.commands
+package net.perfectdreams.loritta.api.impl
 
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.github.kevinsawicki.http.HttpRequest
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.entities.User
-import net.perfectdreams.loritta.api.entities.Message
+import com.mrpowergamerbr.temmiewebhook.DiscordMessage
+import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
+import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.core.exceptions.PermissionException
+import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import org.jsoup.Jsoup
+import java.awt.Color
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.TimeUnit
+import javax.imageio.ImageIO
 
-/**
- * Contexto do comando executado
- */
-abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: LegacyBaseLocale) {
-	abstract val message: Message
-
-	abstract suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message
-
-	abstract suspend fun reply(vararg loriReplies: LoriReply): Message
-/* 	var metadata = HashMap<String, Any>()
+class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: LorittaCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) : LorittaCommandContext(locale, legacyLocale) {
+	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
 		get() = event.isFromType(ChannelType.PRIVATE)
 
-	val message: Message
+	override val message: net.perfectdreams.loritta.api.entities.Message
+		get() = DiscordMessage(event.message)
+
+	val discordMessage: Message
 		get() = event.message
 
 	val handle: Member
@@ -64,7 +82,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		} */
 	}
 
-	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun reply(message: String, prefix: String?, forceMention: Boolean): net.perfectdreams.loritta.api.entities.Message {
 		var send = ""
 		if (prefix != null) {
 			send = "$prefix **|** "
@@ -73,11 +91,11 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		return sendMessage(send)
 	}
 
-	suspend fun reply(vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun reply(vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		return reply(false, *loriReplies)
 	}
 
-	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
 			message.append(LoriReply().build(this))
@@ -90,7 +108,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		return sendMessage(message.toString())
 	}
 
-	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): net.perfectdreams.loritta.api.entities.Message {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")
@@ -98,7 +116,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		return sendFile(image, fileName, message.toString())
 	}
 
-	suspend fun sendMessage(message: String): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun sendMessage(message: String): net.perfectdreams.loritta.api.entities.Message {
 		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
 	}
 
@@ -159,6 +177,10 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		}
 	}
 
+	override suspend fun sendFile(file: File, name: String, message: String): net.perfectdreams.loritta.api.entities.Message {
+		return sendFile(file, name, message, null)
+	}
+
 	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.api.entities.Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
@@ -175,6 +197,10 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 
 	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): net.perfectdreams.loritta.api.entities.Message {
 		return sendFile(image, name, "", embed)
+	}
+
+	override suspend fun sendFile(image: BufferedImage, name: String, message: String): net.perfectdreams.loritta.api.entities.Message {
+		return sendFile(image, name, message, null)
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.api.entities.Message {
@@ -197,7 +223,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		return sendFile(inputStream, name, message)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: String): net.perfectdreams.loritta.api.entities.Message {
+	override suspend fun sendFile(inputStream: InputStream, name: String, message: String): net.perfectdreams.loritta.api.entities.Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
@@ -255,7 +281,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		val command = cmd
 
 		if (conf.explainOnCommandRun) {
-			val rawArguments = message.contentRaw.split(" ")
+			val rawArguments = discordMessage.contentRaw.split(" ")
 			var commandLabel = rawArguments[0]
 			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
 				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
@@ -407,12 +433,12 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	suspend fun getUserAt(argument: Int): User? {
+	override suspend fun getUserAt(argument: Int): User? {
 		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
 			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.message.mentionedUsers) {
+			for (user in this.discordMessage.mentionedUsers) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
 					return user
@@ -470,10 +496,10 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	suspend fun getUser(link: String?): net.perfectdreams.loritta.api.entities.User? {
+	override suspend fun getUser(link: String?): net.perfectdreams.loritta.api.entities.User? {
 		if (link != null) {
 			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.message.mentionedUsers) {
+			for (user in this.discordMessage.mentionedUsers) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
 					return DiscordUser(user)
@@ -533,7 +559,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048) = getImageUrl(this.rawArgs.getOrNull(argument))
+	override suspend fun getImageUrlAt(argument: Int, search: Int, avatarSize: Int) = getImageUrl(this.rawArgs.getOrNull(argument), search, avatarSize)
 
 	/**
 	 * Gets an image URL from the argument index via valid URLs at the specified index
@@ -543,7 +569,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	suspend fun getImageUrl(link: String?, search: Int = 25, avatarSize: Int = 2048): String? {
+	override suspend fun getImageUrl(link: String?, search: Int, avatarSize: Int): String? {
 		if (link != null) {
 			if (LorittaUtils.isValidUrl(link))
 				return link // Se é um link, vamos enviar para o usuário agora
@@ -555,7 +581,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
-			for (emote in this.message.emotes) {
+			for (emote in this.discordMessage.emotes) {
 				if (link.equals(emote.asMention, ignoreCase = true)) {
 					return emote.imageUrl
 				}
@@ -577,7 +603,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel, Permission.MESSAGE_HISTORY)) {
 			try {
-				val message = this.message.channel.history.retrievePast(search).await()
+				val message = this.discordMessage.channel.history.retrievePast(search).await()
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
@@ -608,7 +634,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
+	override suspend fun getImageAt(argument: Int, search: Int, avatarSize: Int): BufferedImage? {
 		var toBeDownloaded = getImageUrlAt(argument, 0, avatarSize)
 
 		if (toBeDownloaded == null) {
@@ -647,7 +673,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	suspend fun getImage(text: String, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
+	override suspend fun getImage(text: String, search: Int, avatarSize: Int): BufferedImage? {
 		var toBeDownloaded = getImageUrl(text, 0, avatarSize)
 
 		if (toBeDownloaded == null) {
@@ -675,37 +701,5 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 		} catch (e: Exception) {
 			return null
 		}
-	} */
-	abstract suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message
-
-	abstract suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message
-
-	abstract suspend fun sendMessage(message: String): Message
-
-	abstract suspend fun sendFile(file: File, name: String, message: String): Message
-
-	abstract suspend fun sendFile(image: BufferedImage, name: String, message: String): Message
-
-	abstract suspend fun sendFile(inputStream: InputStream, name: String, message: String): Message
-
-	/**
-	 * Gets an image from the argument index via valid URLs at the specified index
-	 *
-	 * @param argument   the argument index on the rawArgs array
-	 * @param search     how many messages will be retrieved from the past to get images (default: 25)
-	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
-	 * @return           the image object or null, if nothing was found
-	 * @see              BufferedImage
-	 */
-	abstract suspend fun getImage(text: String, search: Int = 25, avatarSize: Int = 2048): BufferedImage?
-
-	abstract suspend fun getUserAt(argument: Int): User?
-
-	abstract suspend fun getUser(link: String?): net.perfectdreams.loritta.api.entities.User?
-
-	abstract suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String?
-
-	abstract suspend fun getImageUrl(link: String?, search: Int, avatarSize: Int): String?
-
-	abstract suspend fun getImageAt(argument: Int, search: Int, avatarSize: Int): BufferedImage?
+	}
 }
