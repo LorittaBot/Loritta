@@ -48,7 +48,7 @@ class CommandManager {
 		commandMap.add(VaporondaCommand())
 		commandMap.add(QualidadeCommand())
 		commandMap.add(VaporQualidadeCommand())
-		commandMap.add(TristeRealidadeCommand())
+		// commandMap.add(TristeRealidadeCommand())
 		commandMap.add(TretaNewsCommand())
 		commandMap.add(MagicBallCommand())
 		commandMap.add(SAMCommand())
@@ -280,9 +280,7 @@ class CommandManager {
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions[cmdBase.javaClass.simpleName] = CommandOptions::class.java
 		}
-
-		// Custom Options
-		defaultCmdOptions[TristeRealidadeCommand::class.java.simpleName] = TristeRealidadeCommand.TristeRealidadeCommandOptions::class.java
+		
 	}
 
 	fun getCommandsDisabledIn(conf: ServerConfig): List<AbstractCommand> {
