@@ -280,7 +280,7 @@ class CommandManager {
 		for (cmdBase in this.commandMap) {
 			defaultCmdOptions[cmdBase.javaClass.simpleName] = CommandOptions::class.java
 		}
-		
+
 	}
 
 	fun getCommandsDisabledIn(conf: ServerConfig): List<AbstractCommand> {
