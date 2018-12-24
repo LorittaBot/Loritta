@@ -44,28 +44,32 @@ class PluginManager {
 	}
 
 	fun loadPlugin(file: File) {
-		val info = getPluginInfo(file)
+		try {
+			val info = getPluginInfo(file)
 
-		logger.info("Loading ${info.pluginName}...")
+			logger.info("Loading ${info.pluginName}...")
 
-		val url = file.toURI().toURL()
+			val url = file.toURI().toURL()
 
-		val classLoader = URLClassLoader.newInstance(arrayOf<URL>(url))
-		val method = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java)
-		method.isAccessible = true
-		method.invoke(classLoader, url)
+			val classLoader = URLClassLoader.newInstance(arrayOf<URL>(url))
+			val method = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java)
+			method.isAccessible = true
+			method.invoke(classLoader, url)
 
-		val clazz = Class.forName(info.main, true, classLoader)
+			val clazz = Class.forName(info.main, true, classLoader)
 
-		val plugin = clazz.newInstance() as LorittaPlugin
-		plugin.name = info.pluginName
-		plugin.classLoader = classLoader
-		plugin.pluginFile = file
+			val plugin = clazz.newInstance() as LorittaPlugin
+			plugin.name = info.pluginName
+			plugin.classLoader = classLoader
+			plugin.pluginFile = file
 
-		plugin.onEnable()
-		plugins.add(plugin)
+			plugin.onEnable()
+			plugins.add(plugin)
 
-		logger.info("${info.pluginName} loaded successfully!")
+			logger.info("${info.pluginName} loaded successfully!")
+		} catch (e: Exception) {
+			logger.error(e) { "Exception while loading plugin $file"}
+		}
 	}
 
 	fun getPluginInfo(file: File): PluginDescription {
