@@ -206,6 +206,13 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						)
 				)
 			}
+		} else {
+			context.reply(
+					LoriReply(
+							locale.format { commands.commandOnlyForOwner },
+							Constants.ERROR
+					)
+			)
 		}
 		
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
@@ -263,6 +270,13 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						)
 				)
 			}
+		} else {
+			context.reply(
+					LoriReply(
+							locale.format { commands.commandOnlyForOwner },
+							Constants.ERROR
+					)
+			)
 		}
 	}
 }
