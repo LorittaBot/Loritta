@@ -218,6 +218,7 @@ class CommandManager {
 		// commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
+		commandMap.add(DashboardCommand())
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
 		commandMap.add(SoftBanCommand())
