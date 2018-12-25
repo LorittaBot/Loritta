@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -36,7 +37,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 	val commands = mutableListOf<LorittaCommand>()
 
 	init {
-		registerCommand(MagicPingCommand())
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			registerCommand(MagicPingCommand())
 		registerCommand(PluginsCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
