@@ -118,7 +118,7 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
-	val commandManager = LorittaCommandManager(this)
+	lateinit var commandManager: LorittaCommandManager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
@@ -546,6 +546,7 @@ class Loritta(config: LorittaConfig) {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		legacyCommandManager = CommandManager()
+		commandManager = LorittaCommandManager(this)
 	}
 
 	/**
