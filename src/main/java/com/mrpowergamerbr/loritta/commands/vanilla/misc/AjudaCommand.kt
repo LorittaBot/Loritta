@@ -149,7 +149,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
 					val toBeAdded = when (cmd) {
 						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
-						is LorittaCommand -> "**" + conf.commandPrefix + cmd.labels.firstOrNull() + "**" + " `" + cmd.getUsage(loritta.getLocaleById(conf.localeId)) + "`" + " » " + cmd.getDescription(loritta.getLocaleById(conf.localeId)) + "\n"
+						is LorittaCommand -> "**" + conf.commandPrefix + cmd.labels.firstOrNull() + "**" + " `" + cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale) + "`" + " » " + cmd.getDescription(loritta.getLocaleById(conf.localeId)) + "\n"
 						else -> throw UnsupportedOperationException()
 					}
 					if ((description + toBeAdded).length > 2048) {
