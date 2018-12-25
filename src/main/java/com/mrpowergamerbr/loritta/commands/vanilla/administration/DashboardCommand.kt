@@ -19,31 +19,41 @@ class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configur
         return true
     }
 
-    }
+
     @Subcommand
     suspend fun root (context: LorittaCommandContext, locale: BaseLocale) {
+
         var guild: String = context.guild.id.toString()
         var url = "${Loritta.config.websiteUrl}dashboard/configure/{$guild}"
 
         if (!context.isPrivateChannel) {
+
             /*
             Se o comando for executado em guildas,
             e o autor tem permissão de alterar configurações no Dashboard (ou tem permissão de Gerenciar servidor),
             dê o url do dashboard diretamente pro servidor.
             */
+
             if (context.lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)) {
                 context.sendMessage(url)
             }
+
             else if (context.guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
                 context.sendMessage(url)
             }
+
             else {
                 // Se o autor não tem nenhuma das permissões, dê a ele o url do dashboard para selecionar o servidor.
-                        context.sendMessage("${Loritta.config.websiteUrl}dashboard")
+
+                context.sendMessage("${Loritta.config.websiteUrl}dashboard")
             }
+
         }
         else {
             // Se o comando for executado em mensagem privada, dê o url do dashboard para selecionar o servidor.
+
             context.sendMessage("${Loritta.config.websiteUrl}dashboard")
         }
-        }
+
+    }
+}
