@@ -23,7 +23,7 @@ open class LorittaPlugin {
 	}
 
 	fun registerCommand(command: LorittaCommand) {
-		loritta.lorittaCommandManager.registerCommand(command)
+		loritta.commandManager.registerCommand(command)
 		commands.add(command)
 	}
 }

@@ -85,11 +85,11 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "commands") {
-			val oldCommandCount = loritta.commandManager.commandMap.size
+			val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 			LorittaLauncher.loritta.loadCommandManager()
 			context.reply(
 					LoriReply(
-							"Comandos recarregados com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+							"Comandos recarregados com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
 					)
 			)
 			return
@@ -360,7 +360,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 			return
 		}
-		val oldCommandCount = loritta.commandManager.commandMap.size
+		val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 
 		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 		val file = File(System.getProperty("conf") ?: "./config.yml")
@@ -377,7 +377,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		context.reply(
 				LoriReply(
-						"Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+						"Fui recarregada com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
 				)
 		)
 	}

@@ -13,7 +13,7 @@ class CommandsView : AbstractView() {
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
 		if (path == "/commands/count") {
 			var aux = ""
-			for ((index, command) in loritta.commandManager.commandMap.sortedByDescending { it.executedCount }.withIndex()) {
+			for ((index, command) in loritta.legacyCommandManager.commandMap.sortedByDescending { it.executedCount }.withIndex()) {
 				aux += "${index + 1}. ${command::class.java.simpleName} — ${command.executedCount} vezes<br>"
 			}
 

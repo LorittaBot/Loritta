@@ -46,8 +46,8 @@ object DebugLog {
 		logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("> Command Stuff")
-		logger.info("commandManager.commandMap.size: ${loritta.commandManager.commandMap.size}")
-		logger.info("commandManager.defaultCmdOptions.size: ${loritta.commandManager.defaultCmdOptions.size}")
+		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
+		logger.info("commandManager.defaultCmdOptions.size: ${loritta.legacyCommandManager.defaultCmdOptions.size}")
 		logger.info("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 		logger.info("locales.size: ${loritta.legacyLocales.size}")
@@ -89,7 +89,7 @@ object DebugLog {
 
 				if (arg0 == "commands") {
 					LorittaLauncher.loritta.loadCommandManager()
-					println("${com.mrpowergamerbr.loritta.utils.loritta.commandManager.commandMap.size} comandos carregados")
+					println("${com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size} comandos carregados")
 					return
 				}
 				if (arg0 == "mongo") {

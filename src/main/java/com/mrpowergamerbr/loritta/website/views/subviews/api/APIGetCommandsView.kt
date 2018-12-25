@@ -58,7 +58,7 @@ class APIGetCommandsView : NoVarsView() {
 
 		val array = JsonArray()
 
-		loritta.commandManager.commandMap.forEach {
+		loritta.legacyCommandManager.commandMap.forEach {
 			val obj = JsonObject()
 			obj["name"] = it::class.java.simpleName
 			obj["label"] = it.label

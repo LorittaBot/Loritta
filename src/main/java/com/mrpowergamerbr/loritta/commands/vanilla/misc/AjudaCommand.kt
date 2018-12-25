@@ -135,7 +135,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		embed.setThumbnail(image)
 
 		var description = "*" + context.locale[cat.description] + "*\n\n"
-		val categoryCmds = loritta.commandManager.commandMap.filter { cmd -> cmd.category == cat }
+		val categoryCmds = loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
 			for (cmd in categoryCmds.sortedBy { it.label }) {
@@ -160,7 +160,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	}
 
 	fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
-		val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
+		val disabledCommands = loritta.legacyCommandManager.getCommandsDisabledIn(context.config)
 		var description = ""
 
 		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
@@ -170,7 +170,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.commandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
+		categories = categories.filter { category -> loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
 
 		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
@@ -191,7 +191,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		)
 
 		for (category in categories) {
-			val cmdsInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
+			val cmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
 			val cmdCountInCategory = cmdsInCategory.count()
 			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
 			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }

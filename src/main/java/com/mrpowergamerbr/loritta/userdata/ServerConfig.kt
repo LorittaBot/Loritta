@@ -112,7 +112,7 @@ class ServerConfig @BsonCreator constructor(
 			// Se a configuração do servidor tem opções de comandos...
 			commandOptions.containsKey(simpleName) -> commandOptions[simpleName]!!
 			// Se as opções padrões de comandos possui uma opção "específica" para o comando
-			loritta.commandManager.defaultCmdOptions.containsKey(simpleName) -> loritta.commandManager.defaultCmdOptions[simpleName]!!.newInstance() as CommandOptions
+			loritta.legacyCommandManager.defaultCmdOptions.containsKey(simpleName) -> loritta.legacyCommandManager.defaultCmdOptions[simpleName]!!.newInstance() as CommandOptions
 			// Se não, retorne as opções padrões
 			else -> CommandManager.DEFAULT_COMMAND_OPTIONS
 		}

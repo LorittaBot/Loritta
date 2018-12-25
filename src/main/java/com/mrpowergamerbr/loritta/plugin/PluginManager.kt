@@ -30,7 +30,7 @@ class PluginManager {
 
 	fun unloadPlugin(plugin: LorittaPlugin) {
 		plugin.onDisable()
-		loritta.lorittaCommandManager.unregisterCommands(*plugin.commands.toTypedArray())
+		loritta.commandManager.unregisterCommands(*plugin.commands.toTypedArray())
 		plugin.commands.clear()
 		plugins.remove(plugin)
 	}
