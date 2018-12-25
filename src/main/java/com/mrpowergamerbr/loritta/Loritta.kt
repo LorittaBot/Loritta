@@ -157,7 +157,7 @@ class Loritta(config: LorittaConfig) {
 	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
-	var pluginManager = PluginManager()
+	var pluginManager = PluginManager(this)
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
