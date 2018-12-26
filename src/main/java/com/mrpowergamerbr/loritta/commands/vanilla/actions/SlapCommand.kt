@@ -14,7 +14,7 @@ class SlapCommand : ActionCommand("slap", listOf("tapa")) {
 			locale.format(first.asMention, second.asMention) { commands.actions.slap.response }
 		} else {
 			// Quem tentar estapear a Loritta, vai ser estapeado
-			locale.format(first.asMention, second.asMention) { commands.actions.slap.responseAntiIdiot }
+			locale.format(second.asMention, first.asMention) { commands.actions.slap.responseAntiIdiot }
 		}
 	}
 
