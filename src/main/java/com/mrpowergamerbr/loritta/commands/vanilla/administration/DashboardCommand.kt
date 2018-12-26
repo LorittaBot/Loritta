@@ -15,10 +15,7 @@ class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configur
 		return locale.format { commands.moderation.dashboard.description }
 	}
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return true
-	}
-
+	override val canUseInPrivateChannel: Boolean = true
 
 	@Subcommand
 	suspend fun root (context: LorittaCommandContext, locale: BaseLocale) {
