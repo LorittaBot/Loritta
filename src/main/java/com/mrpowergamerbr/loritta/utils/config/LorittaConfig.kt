@@ -129,10 +129,13 @@ class LorittaConfig(
 	)
 
 	class TwitterConfig(
-			@JsonProperty
+			@JsonProperty("consumer-key")
 			val oAuthConsumerKey: String,
+			@JsonProperty("consumer-secret")
 			val oAuthConsumerSecret: String,
+			@JsonProperty("access-token")
 			val oAuthAccessToken: String,
+			@JsonProperty("access-token-secret")
 			val oAuthAccessTokenSecret: String
 	)
 }
