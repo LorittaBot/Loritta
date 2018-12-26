@@ -168,4 +168,10 @@ object Constants {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
+
+	val KOMIKA: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "komika.ttf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
 }

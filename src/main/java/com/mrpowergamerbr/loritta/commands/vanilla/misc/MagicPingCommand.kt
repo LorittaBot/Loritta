@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.entities.User
@@ -10,7 +11,7 @@ import net.perfectdreams.commands.loritta.notNull
 import java.awt.image.BufferedImage
 import kotlin.contracts.ExperimentalContracts
 
-class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
+class MagicPingCommand : LorittaCommand(arrayOf("magicping"), CommandCategory.MISC) {
 	@Subcommand
 	suspend fun root(context: LorittaCommandContext, locale: BaseLocale) {
 		context.reply(
