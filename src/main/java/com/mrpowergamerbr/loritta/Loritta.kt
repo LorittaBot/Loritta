@@ -51,6 +51,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
+import net.perfectdreams.loritta.api.platform.LorittaBot
+import net.perfectdreams.loritta.api.platform.PlatformFeature
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -74,7 +76,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(config: LorittaConfig) {
+class Loritta(config: LorittaConfig) : LorittaBot {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -107,6 +109,9 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	// ===[ LORITTA ]===
+	// All features!!! :3
+	override val supportedFeatures = PlatformFeature.values().toMutableList()
+
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads

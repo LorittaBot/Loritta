@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
-import net.perfectdreams.loritta.api.impl.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -95,11 +95,11 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						}
 
 						// Vamos tentar procurar pelo username + discriminator
-						if (!sender.isPrivateChannel && !link.isEmpty()) {
+						if (!sender.isPrivateChannel && !link.isEmpty() && sender.discordGuild != null) {
 							val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
 							if (split.size == 2 && split[0].isNotEmpty()) {
-								val matchedMember = sender.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
+								val matchedMember = sender.discordGuild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
 								if (matchedMember.isPresent) {
 									return@registerContext matchedMember.get().user
@@ -108,8 +108,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						}
 
 						// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-						if (!sender.isPrivateChannel && !link.isEmpty()) {
-							val matchedMembers = sender.guild.getMembersByEffectiveName(link, true)
+						if (!sender.isPrivateChannel && !link.isEmpty() && sender.discordGuild != null) {
+							val matchedMembers = sender.discordGuild.getMembersByEffectiveName(link, true)
 
 							if (!matchedMembers.isEmpty()) {
 								return@registerContext matchedMembers[0].user
@@ -117,8 +117,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						}
 
 						// Se não, vamos procurar só pelo username mesmo
-						if (!sender.isPrivateChannel && !link.isEmpty()) {
-							val matchedMembers = sender.guild.getMembersByName(link, true)
+						if (!sender.isPrivateChannel && !link.isEmpty() && sender.discordGuild != null) {
+							val matchedMembers = sender.discordGuild.getMembersByName(link, true)
 
 							if (!matchedMembers.isEmpty()) {
 								return@registerContext matchedMembers[0].user
@@ -341,10 +341,10 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					}
 				}
 
-				/* if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
-					command.explain(context)
+				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
+					context.explain()
 					return true
-				} */
+				}
 
 				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
 					return true
@@ -409,8 +409,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					)
 				}
 
-				if (!context.isPrivateChannel) {
-					val nickname = context.guild.selfMember.nickname
+				if (!context.isPrivateChannel && ev.guild != null) {
+					val nickname = ev.guild.selfMember.nickname
 
 					if (nickname != null) {
 						// #LoritaTambémTemSentimentos
@@ -423,8 +423,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 											"<:lori_triste:370344565967814659>"
 									)
 							)
-							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
-								context.guild.controller.setNickname(context.guild.selfMember, null).queue()
+							if (ev.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
+								ev.guild.controller.setNickname(ev.guild.selfMember, null).queue()
 							} else {
 								return true
 							}

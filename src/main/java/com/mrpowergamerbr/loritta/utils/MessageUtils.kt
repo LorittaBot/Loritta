@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
-import net.perfectdreams.loritta.api.impl.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 object MessageUtils {
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {

@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.api.entities
 
-interface User {
+interface User : Mentionable, Unique {
 	val name: String
-	val avatarUrl: String
+	val effectiveAvatarUrl: String
+	val avatarUrl: String?
+	val isBot: Boolean
 }
