@@ -70,7 +70,6 @@ class CommandManager {
 		commandMap.add(CepoCommand())
 		commandMap.add(DeusesCommand())
 		commandMap.add(GangueCommand())
-		commandMap.add(RandomSAMCommand())
 		commandMap.add(AmigosCommand())
 		commandMap.add(DiscordiaCommand())
 		commandMap.add(AmizadeCommand())

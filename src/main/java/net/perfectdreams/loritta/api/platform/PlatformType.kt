@@ -7,7 +7,8 @@ enum class PlatformType(val supportedFeatures: Array<PlatformFeature>) {
 	TWITTER(
 			arrayOf(
 					PlatformFeature.FILE_UPLOAD,
-					PlatformFeature.IMAGE_UPLOAD
+					PlatformFeature.IMAGE_UPLOAD,
+					PlatformFeature.EMBED_LINKS
 			)
 	),
 	TELEGRAM(
@@ -15,6 +16,7 @@ enum class PlatformType(val supportedFeatures: Array<PlatformFeature>) {
 					PlatformFeature.FILE_UPLOAD,
 					PlatformFeature.IMAGE_UPLOAD,
 					PlatformFeature.INLINE_KEYBOARD,
+					PlatformFeature.EMBED_LINKS,
 					PlatformFeature.TYPING_STATUS
 			)
 	),
@@ -22,7 +24,14 @@ enum class PlatformType(val supportedFeatures: Array<PlatformFeature>) {
 			arrayOf(
 					PlatformFeature.FILE_UPLOAD,
 					PlatformFeature.IMAGE_UPLOAD,
+					PlatformFeature.EMBED_LINKS,
 					PlatformFeature.TYPING_STATUS
+			)
+	),
+	MINECRAFT(
+			arrayOf( // Tecnicamente...?
+					PlatformFeature.IMAGE_UPLOAD,
+					PlatformFeature.EMBED_LINKS
 			)
 	),
 	UNKNOWN(
