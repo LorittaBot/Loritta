@@ -29,19 +29,14 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 	}
 	
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
-		if (context.args.isEmpty()) {
-			context.explain()
-			return
-		}
-		
-		val channel = getTextChannel(context, context.args[0]) ?: context.event.textChannel!! // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
+		val channel = getTextChannel(context, context.args.getOrNull(0)) ?: context.event.textChannel!! // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
 		
 		val publicRole = context.guild.publicRole
 		val override = channel.getPermissionOverride(publicRole)
 		
 		if (override != null) {
 			if (Permission.MESSAGE_WRITE !in override.denied) {
-				channel.createPermissionOverride(publicRole)
+				channel.putPermissionOverride(publicRole)
 						.setDeny(Permission.MESSAGE_WRITE)
 						.queue()
 			}
