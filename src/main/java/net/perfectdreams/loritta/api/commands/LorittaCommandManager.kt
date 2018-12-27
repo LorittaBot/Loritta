@@ -18,12 +18,13 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
+import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -90,7 +91,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						for (user in message.mentionedUsers) {
 							if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 								// Diferente de null? Então vamos usar o avatar do usuário!
-								return@registerContext user
+								return@registerContext DiscordUser(user)
 							}
 						}
 
@@ -102,7 +103,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 								val matchedMember = sender.discordGuild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
 								if (matchedMember.isPresent) {
-									return@registerContext matchedMember.get().user
+									return@registerContext DiscordUser(matchedMember.get().user)
 								}
 							}
 						}
@@ -112,7 +113,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 							val matchedMembers = sender.discordGuild.getMembersByEffectiveName(link, true)
 
 							if (!matchedMembers.isEmpty()) {
-								return@registerContext matchedMembers[0].user
+								return@registerContext DiscordUser(matchedMembers[0].user)
 							}
 						}
 
@@ -121,7 +122,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 							val matchedMembers = sender.discordGuild.getMembersByName(link, true)
 
 							if (!matchedMembers.isEmpty()) {
-								return@registerContext matchedMembers[0].user
+								return@registerContext DiscordUser(matchedMembers[0].user)
 							}
 						}
 
@@ -130,7 +131,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 							val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
 
 							if (user != null) { // Pelo visto é!
-								return@registerContext user
+								return@registerContext DiscordUser(user)
 							}
 						} catch (e: Exception) {
 						}
