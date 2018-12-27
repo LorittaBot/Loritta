@@ -37,8 +37,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		if (override != null) {
 			if (Permission.MESSAGE_WRITE !in override.denied) {
 				channel.putPermissionOverride(publicRole)
-						.setDeny(override.denied)
-						.setDeny(Permission.MESSAGE_WRITE)
+						.setDeny(*override.denied.toTypedArray(), Permission.MESSAGE_WRITE)
 						.queue()
 			}
 		} else {
