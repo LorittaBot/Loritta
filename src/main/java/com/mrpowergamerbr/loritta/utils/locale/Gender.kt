@@ -72,4 +72,12 @@ enum class Gender {
 			UNKNOWN -> firstName
 		}
 	}
+
+	fun getPossessivePronoun(locale: BaseLocale, type: PersonalPronoun, firstName: String): String {
+		return when (this) {
+			MALE -> locale["loritta.pronoun.his"]
+			FEMALE -> locale["loritta.pronoun.her"]
+			UNKNOWN -> firstName
+		}
+	}
 }

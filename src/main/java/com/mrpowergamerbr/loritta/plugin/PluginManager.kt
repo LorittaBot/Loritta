@@ -5,14 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.jar.JarFile
 
-class PluginManager {
+class PluginManager(val loritta: Loritta) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -30,7 +29,7 @@ class PluginManager {
 
 	fun unloadPlugin(plugin: LorittaPlugin) {
 		plugin.onDisable()
-		loritta.lorittaCommandManager.unregisterCommands(*plugin.commands.toTypedArray())
+		loritta.commandManager.unregisterCommands(*plugin.commands.toTypedArray())
 		plugin.commands.clear()
 		plugins.remove(plugin)
 	}
@@ -59,6 +58,7 @@ class PluginManager {
 			val clazz = Class.forName(info.main, true, classLoader)
 
 			val plugin = clazz.newInstance() as LorittaPlugin
+			plugin.loritta = loritta
 			plugin.name = info.pluginName
 			plugin.classLoader = classLoader
 			plugin.pluginFile = file

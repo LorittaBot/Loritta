@@ -51,6 +51,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
+import net.perfectdreams.loritta.api.platform.LorittaBot
+import net.perfectdreams.loritta.api.platform.PlatformFeature
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -74,7 +76,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(config: LorittaConfig) {
+class Loritta(config: LorittaConfig) : LorittaBot {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -107,6 +109,9 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	// ===[ LORITTA ]===
+	// All features!!! :3
+	override val supportedFeatures = PlatformFeature.values().toMutableList()
+
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
@@ -117,8 +122,8 @@ class Loritta(config: LorittaConfig) {
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	lateinit var commandManager: CommandManager // Nosso command manager
-	val lorittaCommandManager = LorittaCommandManager(this)
+	lateinit var legacyCommandManager: CommandManager // Nosso command manager
+	lateinit var commandManager: LorittaCommandManager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
@@ -157,7 +162,7 @@ class Loritta(config: LorittaConfig) {
 	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
-	var pluginManager = PluginManager()
+	var pluginManager = PluginManager(this)
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
@@ -545,7 +550,8 @@ class Loritta(config: LorittaConfig) {
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
-		commandManager = CommandManager()
+		legacyCommandManager = CommandManager()
+		commandManager = LorittaCommandManager(this)
 	}
 
 	/**

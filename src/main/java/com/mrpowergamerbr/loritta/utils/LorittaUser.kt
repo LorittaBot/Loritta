@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
-import net.perfectdreams.loritta.api.impl.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 /**
  * Um usuário que está comunicando com a Loritta

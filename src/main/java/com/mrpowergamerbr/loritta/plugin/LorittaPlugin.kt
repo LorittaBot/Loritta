@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.io.File
 import java.net.URLClassLoader
 
 open class LorittaPlugin {
+	lateinit var loritta: Loritta
 	lateinit var name: String
 	lateinit var classLoader: URLClassLoader
 	lateinit var pluginFile: File
@@ -23,7 +23,7 @@ open class LorittaPlugin {
 	}
 
 	fun registerCommand(command: LorittaCommand) {
-		loritta.lorittaCommandManager.registerCommand(command)
+		loritta.commandManager.registerCommand(command)
 		commands.add(command)
 	}
 }

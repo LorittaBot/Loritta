@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.api.impl
+package net.perfectdreams.loritta.platform.discord.entities
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
@@ -58,8 +58,13 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 	val asMention: String
 		get() = lorittaUser.asMention
 
-	val guild: Guild
-		get() = event.guild!!
+	override val guild: net.perfectdreams.loritta.api.entities.Guild?
+		get() = if (event.guild != null)
+			DiscordGuild(event.guild!!)
+		else
+			null
+
+	val discordGuild = event.guild
 
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
@@ -138,15 +143,15 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 		} */
 		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			return net.perfectdreams.loritta.api.impl.DiscordMessage(privateChannel.sendMessageAsync(message))
+			return DiscordMessage(privateChannel.sendMessageAsync(message))
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendMessage(message).await()
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
+				return DiscordMessage(sentMessage)
 			} else {
-				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+				LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
 			}
 		}
@@ -255,16 +260,16 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
 			inputStream.close()
-			return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
+			return DiscordMessage(sentMessage)
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
 				inputStream.close()
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return net.perfectdreams.loritta.api.impl.DiscordMessage(sentMessage)
+				return DiscordMessage(sentMessage)
 			} else {
-				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+				LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
 				throw RuntimeException("Sem permissão para enviar uma mensagem!")
 			}
 		}
@@ -376,7 +381,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 					it.sendMessage(embed.build()).queue()
 				}
 			} else {
-				val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.api.impl.DiscordMessage).handle
+				val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(this) {
 					if (it.reactionEmote.name == "❓") {
@@ -416,7 +421,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 				false
 		)
 
-		val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.api.impl.DiscordMessage).handle
+		val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(this) {
 			if (it.reactionEmote.name == "❓") {
@@ -446,33 +451,36 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			}
 
 			// Vamos tentar procurar pelo username + discriminator
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
+			if (this.guild is DiscordGuild) {
+				val handle = (this.guild as DiscordGuild).handle
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
-				if (split.size == 2 && split[0].isNotEmpty()) {
-					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
+					if (split.size == 2 && split[0].isNotEmpty()) {
+						val matchedMember = handle.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
-					if (matchedMember.isPresent) {
-						return matchedMember.get().user
+						if (matchedMember.isPresent) {
+							return matchedMember.get().user
+						}
 					}
 				}
-			}
 
-			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val matchedMembers = this.guild.getMembersByEffectiveName(link, true)
+				// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val matchedMembers = handle.getMembersByEffectiveName(link, true)
 
-				if (!matchedMembers.isEmpty()) {
-					return matchedMembers[0].user
+					if (!matchedMembers.isEmpty()) {
+						return matchedMembers[0].user
+					}
 				}
-			}
 
-			// Se não, vamos procurar só pelo username mesmo
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val matchedMembers = this.guild.getMembersByName(link, true)
+				// Se não, vamos procurar só pelo username mesmo
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val matchedMembers = handle.getMembersByName(link, true)
 
-				if (!matchedMembers.isEmpty()) {
-					return matchedMembers[0].user
+					if (!matchedMembers.isEmpty()) {
+						return matchedMembers[0].user
+					}
 				}
 			}
 
@@ -507,33 +515,36 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			}
 
 			// Vamos tentar procurar pelo username + discriminator
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
+			if (this.guild is DiscordGuild) {
+				val handle = (this.guild as DiscordGuild).handle
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
-				if (split.size == 2 && split[0].isNotEmpty()) {
-					val matchedMember = this.guild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
+					if (split.size == 2 && split[0].isNotEmpty()) {
+						val matchedMember = handle.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
-					if (matchedMember.isPresent) {
-						return DiscordUser(matchedMember.get().user)
+						if (matchedMember.isPresent) {
+							return DiscordUser(matchedMember.get().user)
+						}
 					}
 				}
-			}
 
-			// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val matchedMembers = this.guild.getMembersByEffectiveName(link, true)
+				// Ok então... se não é link e nem menção... Que tal então verificar por nome?
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val matchedMembers = handle.getMembersByEffectiveName(link, true)
 
-				if (!matchedMembers.isEmpty()) {
-					return DiscordUser(matchedMembers[0].user)
+					if (!matchedMembers.isEmpty()) {
+						return DiscordUser(matchedMembers[0].user)
+					}
 				}
-			}
 
-			// Se não, vamos procurar só pelo username mesmo
-			if (!this.isPrivateChannel && !link.isEmpty()) {
-				val matchedMembers = this.guild.getMembersByName(link, true)
+				// Se não, vamos procurar só pelo username mesmo
+				if (!this.isPrivateChannel && !link.isEmpty()) {
+					val matchedMembers = handle.getMembersByName(link, true)
 
-				if (!matchedMembers.isEmpty()) {
-					return DiscordUser(matchedMembers[0].user)
+					if (!matchedMembers.isEmpty()) {
+						return DiscordUser(matchedMembers[0].user)
+					}
 				}
 			}
 
@@ -577,7 +588,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			// Vamos verificar por usuários no argumento especificado
 			val user = getUser(link)
 			if (user != null)
-				return user.avatarUrl + "?size=" + avatarSize
+				return user.effectiveAvatarUrl + "?size=" + avatarSize
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
@@ -600,26 +611,28 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			}
 		}
 
-		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel, Permission.MESSAGE_HISTORY)) {
-			try {
-				val message = this.discordMessage.channel.history.retrievePast(search).await()
+		if (this.guild is DiscordGuild) {
+			val handle = (this.guild as DiscordGuild).handle
+			// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
+			if (search > 0 && !this.isPrivateChannel && handle.selfMember.hasPermission(this.event.textChannel, Permission.MESSAGE_HISTORY)) {
+				try {
+					val message = this.discordMessage.channel.history.retrievePast(search).await()
 
-				attach@ for (msg in message) {
-					for (embed in msg.embeds) {
-						if (embed.image != null) {
-							return embed.image.url
+					attach@ for (msg in message) {
+						for (embed in msg.embeds) {
+							if (embed.image != null) {
+								return embed.image.url
+							}
+						}
+						for (attachment in msg.attachments) {
+							if (attachment.isImage) {
+								return attachment.url
+							}
 						}
 					}
-					for (attachment in msg.attachments) {
-						if (attachment.isImage) {
-							return attachment.url
-						}
-					}
+				} catch (e: PermissionException) {
 				}
-			} catch (e: PermissionException) {
 			}
-
 		}
 
 		return null

@@ -17,9 +17,9 @@ class ConfigureCommandsView : ConfigureView() {
 	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
 		variables["saveType"] = "vanilla_commands"
 
-		variables["commands"] = loritta.commandManager.commandMap
-		variables["enabledCommands"] = loritta.commandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
-		variables["disabledCommands"] = loritta.commandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["commands"] = loritta.legacyCommandManager.commandMap
+		variables["enabledCommands"] = loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["disabledCommands"] = loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 
 		return evaluate("configure_commands.html", variables)
 	}

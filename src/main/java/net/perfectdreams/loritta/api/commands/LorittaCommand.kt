@@ -5,10 +5,12 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
 import net.perfectdreams.commands.Command
+import net.perfectdreams.loritta.api.platform.PlatformFeature
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 open class LorittaCommand(override val labels: Array<String>, val category: CommandCategory) : Command() {
+	open val requiresFeatures = listOf<PlatformFeature>()
 	open val onlyOwner: Boolean = false
 	open val cooldown: Int
 		get() = if (needsToUploadFiles) 10000 else 5000

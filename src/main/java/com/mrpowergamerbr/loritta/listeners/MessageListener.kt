@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -179,13 +178,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				// Executar comandos
-				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 					return@launch
 
-				if (Loritta.config.environment == EnvironmentType.CANARY) {
-					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
-						return@launch
-					}
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+					return@launch
 				}
 
 				loritta.messageInteractionCache.values.forEach {
@@ -251,13 +248,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			)
 
 			// Comandos vanilla da Loritta
-			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 				return@launch
 
-			if (Loritta.config.environment == EnvironmentType.CANARY) {
-				if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
-					return@launch
-				}
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+				return@launch
 			}
 		}
 	}
@@ -298,13 +293,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// Executar comandos
-				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 					return@launch
 
-				if (Loritta.config.environment == EnvironmentType.CANARY) {
-					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
-						return@launch
-					}
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+					return@launch
 				}
 			}
 		}
