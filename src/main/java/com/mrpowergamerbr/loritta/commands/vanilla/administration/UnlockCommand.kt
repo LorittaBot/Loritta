@@ -36,6 +36,7 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 		if (override != null) {
 			if (Permission.MESSAGE_WRITE in override.denied) {
 				channel.putPermissionOverride(publicRole)
+						.setAllow(override.allowed)
 						.setAllow(Permission.MESSAGE_WRITE)
 						.queue()
 			}
