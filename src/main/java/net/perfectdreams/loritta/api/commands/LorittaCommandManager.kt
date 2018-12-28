@@ -5,8 +5,8 @@ import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.DashboardCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.images.AtendenteCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
@@ -39,14 +40,11 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 	val commands = mutableListOf<LorittaCommand>()
 
 	init {
-		registerCommands(
-				// IMAGENS
-				AtendenteCommand(),
-				// MISC
-				MagicPingCommand(),
-		        // ADMIN
-		        DashboardCommand()
-		)
+		if (Loritta.config.environment == EnvironmentType.CANARY)
+			registerCommand(MagicPingCommand())
+		registerCommand(PluginsCommand())
+		
+		registerCommand(ChannelInfoCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
@@ -143,6 +141,35 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						}
 					}
 
+					return@registerContext null
+				}
+		)
+		
+		contextManager.registerContext<TextChannel>(
+				{ clazz: KClass<*> -> clazz.isSubclassOf(TextChannel::class) || clazz == TextChannel::class },
+				{ context, clazz, stack ->
+					val pop = stack.pop()
+					
+					val guild = (context as DiscordCommandContext).discordGuild!!
+					
+					val channels = guild.getTextChannelsByName(pop, false)
+					if (channels.isNotEmpty()) {
+						return@registerContext channels[0]
+					}
+					
+					val id = pop
+							.replace("<", "")
+							.replace("#", "")
+							.replace(">", "")
+					
+					if (!id.isValidSnowflake())
+						return@registerContext null
+					
+					val channel = loritta.lorittaShards.shardManager.getTextChannelById(id)
+					if (channel != null) {
+						return@registerContext channel
+					}
+					
 					return@registerContext null
 				}
 		)
