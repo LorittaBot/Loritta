@@ -15,7 +15,7 @@ import kotlin.contracts.ExperimentalContracts
 class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), category = CommandCategory.DISCORD) {
 	
 	override fun getDescription(locale: BaseLocale): String? {
-		return locale["commands.channelInfo.description"]
+		return locale["commands.channelinfo.description"]
 	}
 	
 	override val canUseInPrivateChannel: Boolean
@@ -24,20 +24,20 @@ class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), cat
 	@Subcommand
 	@ExperimentalContracts
 	suspend fun channelInfo(context: DiscordCommandContext, channel: TextChannel? = context.event.textChannel!!) {
-		notNull(channel, context.locale["commands.channelinfo.notFound"])
+		notNull(channel, context.locale["commands.discord.channelinfo.notFound"])
 		
 		val channelCreatedDiff = DateUtils.formatDateDiff(channel.creationTime.toInstant().toEpochMilli(), context.legacyLocale)
 		
 		val builder = EmbedBuilder()
 		
 		builder.setColor(Constants.DISCORD_BLURPLE)
-		builder.setTitle("\uD83D\uDC81 ${context.legacyLocale["CHANNELINFO_ChannelInformation", "#${channel.name}"]}")
+		builder.setTitle("\uD83D\uDC81 ${context.legacyLocale["channelinfo_channelinformation", "#${channel.name}"]}")
 		
-		builder.addField("\uD83D\uDD39 ${context.locale["commands.channelInfo.channelMention"]}", channel.asMention, true)
+		builder.addField("\uD83D\uDD39 ${context.locale["commands.discord.channelinfo.channelMention"]}", channel.asMention, true)
 		builder.addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${channel.id}`", true)
 		builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.legacyLocale["LORITTA_Yes"] else context.legacyLocale["LORITTA_No"], true)
-		builder.addField("\uD83D\uDCC5 ${context.locale["commands.channelInfo.channelCreated"]}", channelCreatedDiff, true)
-		builder.addField("\uD83D\uDCD8 ${context.locale["commands.channelInfo.channelTopic"]}", if (channel.topic.isNullOrEmpty()) context.locale["commands.channelInfo.undefined"] else "```${channel.topic}```", true)
+		builder.addField("\uD83D\uDCC5 ${context.locale["commands.discord.channelinfo.channelCreated"]}", channelCreatedDiff, true)
+		builder.addField("\uD83D\uDCD8 ${context.locale["commands.discord.channelinfo.channelTopic"]}", if (channel.topic.isNullOrEmpty()) context.locale["commands.discord.channelinfo.undefined"] else "```${channel.topic}```", true)
 		
 		context.sendMessage(context.userHandle.asMention, builder.build())
 	}
