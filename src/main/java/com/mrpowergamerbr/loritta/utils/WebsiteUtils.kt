@@ -154,7 +154,13 @@ object WebsiteUtils {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["baseLocale"] = Loritta.GSON.toJson(locale)
+
+		// Já que Reflection não existe em Kotlin/JS, o Kotlin Serialization não suporta "Any?" em JavaScript.
+		// Então vamos fazer algumas pequenas gambiarras para retirar as listas antes de enviar para o website
+		val patchedLocales = BaseLocale(locale.id)
+		patchedLocales.localeEntries.putAll(locale.localeEntries.filter { it.value is String })
+
+		variables["baseLocale"] = Loritta.GSON.toJson(patchedLocales)
 		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
