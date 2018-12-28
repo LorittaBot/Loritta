@@ -32,13 +32,14 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 			}
 
 			val obj = entry.obj
-			if (obj.has("memberCountConfig")) {
-				val memberCounterConfig = obj["memberCountConfig"].obj
+			if (obj.has("memberCounterConfig")) {
+				val memberCounterConfig = obj["memberCounterConfig"].obj
 				val topic = memberCounterConfig["topic"].string
+				val theme = memberCounterConfig["theme"].string
 
 				config.memberCounterConfig = MemberCounterConfig(
 						topic,
-						CounterThemeName.DEFAULT
+						CounterThemeName.valueOf(theme)
 				)
 
 				for (textChannel in guild.textChannels) {
