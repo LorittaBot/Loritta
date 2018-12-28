@@ -65,4 +65,17 @@ object CounterThemes {
 			"<:black_eight:517089811908264097>",
 			"<:black_nine:517089811916652616>"
 	)
+
+	val DELUXE = listOf(
+			"<a:deluxe_zero:528323607433183242>",
+			"<a:deluxe_one:528323712055902210>",
+			"<a:deluxe_two:528323760881795096>",
+			"<a:deluxe_three:528323825864015873>",
+			"<a:deluxe_four:528323887033876491>",
+			"<a:deluxe_five:528323921397940245>",
+			"<a:deluxe_six:528323973428019200>",
+			"<a:deluxe_seven:528324015291367446>",
+			"<a:deluxe_eight:528324053732294687>",
+			"<a:deluxe_nine:528324101518000138>"
+	)
 }

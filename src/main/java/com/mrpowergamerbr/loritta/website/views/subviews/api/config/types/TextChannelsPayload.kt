@@ -36,11 +36,14 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 				val memberCounterConfig = obj["memberCounterConfig"].obj
 				val topic = memberCounterConfig["topic"].string
 				val theme = memberCounterConfig["theme"].string
+				val padding = memberCounterConfig["padding"].int
 
 				config.memberCounterConfig = MemberCounterConfig(
 						topic,
 						CounterThemeName.valueOf(theme)
-				)
+				).apply {
+					this.padding = padding
+				}
 
 				for (textChannel in guild.textChannels) {
 					val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
