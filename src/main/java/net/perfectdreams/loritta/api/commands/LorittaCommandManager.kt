@@ -165,7 +165,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					if (!id.isValidSnowflake())
 						return@registerContext null
 					
-					val channel = guild.getTextChannelById(id)
+					val channel = loritta.lorittaShards.shardManager.getTextChannelById(id)
 					if (channel != null) {
 						return@registerContext channel
 					}
