@@ -31,7 +31,7 @@ class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), cat
 		val builder = EmbedBuilder()
 		
 		builder.setColor(Constants.DISCORD_BLURPLE)
-		builder.setTitle("\uD83D\uDC81 ${context.legacyLocale["channelinfo_channelinformation", "#${channel.name}"]}")
+		builder.setTitle("\uD83D\uDC81 ${context.legacyLocale["CHANNELINFO_ChannelInformation", "#${channel.name}"]}")
 		
 		builder.addField("\uD83D\uDD39 ${context.locale["commands.discord.channelinfo.channelMention"]}", channel.asMention, true)
 		builder.addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${channel.id}`", true)
