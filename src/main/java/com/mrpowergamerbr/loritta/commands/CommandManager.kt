@@ -178,7 +178,6 @@ class CommandManager {
 		commandMap.add(UserInfoCommand())
 		commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
-		commandMap.add(ChannelInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
 		if (false && Loritta.config.environment == EnvironmentType.CANARY)
