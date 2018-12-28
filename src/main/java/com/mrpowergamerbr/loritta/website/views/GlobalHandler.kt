@@ -58,6 +58,7 @@ object GlobalHandler {
 
 		val defaultLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
 		var lorittaLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
+		var locale = LorittaLauncher.loritta.getLocaleById("default")
 
 		var localeId: String? = null
 
@@ -85,6 +86,14 @@ object GlobalHandler {
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
+			locale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> locale
+			}
+
 			lorittaLocale = when (languageCode) {
 				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
 				"pt" -> LorittaLauncher.loritta.getLegacyLocaleById("pt-pt")
@@ -94,7 +103,7 @@ object GlobalHandler {
 			}
 		}
 
-		WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, false)
+		WebsiteUtils.initializeVariables(req, locale, lorittaLocale, languageCode, false)
 
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()

@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -93,7 +94,7 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, locale: LegacyBaseLocale, languageCode: String?, forceReauthentication: Boolean) {
+	fun initializeVariables(req: Request, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?, forceReauthentication: Boolean) {
 		val variables = mutableMapOf(
 				"discordAuth" to null,
 				"userIdentification" to null,
@@ -115,7 +116,7 @@ object WebsiteUtils {
 			req.session().destroy()
 		}
 
-		for ((key, rawMessage) in locale.strings) {
+		for ((key, rawMessage) in legacyLocale.strings) {
 			variables[key] = MessageFormat.format(rawMessage)
 		}
 
@@ -153,7 +154,8 @@ object WebsiteUtils {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["localeAsJson"] = Loritta.GSON.toJson(locale.strings)
+		variables["baseLocale"] = Loritta.GSON.toJson(locale)
+		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {
