@@ -267,12 +267,12 @@ open class LegacyBaseLocale {
 			class Lock {
 				lateinit var description: String
 				lateinit var denied: String
-				lateinit var allowed: String
 			}
 			var lock = Lock()
 
 			class Unlock {
 				lateinit var description: String
+				lateinit var allowed: String
 			}
 			var unlock = Unlock()
 

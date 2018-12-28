@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
@@ -48,7 +49,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		
 		context.reply(
 				LoriReply(
-						locale.format { commands.moderation.lock.denied },
+						locale.format { commands.moderation.lock.denied.f(context.config.commandPrefix) },
 						"\uD83C\uDF89"
 				)
 		)
