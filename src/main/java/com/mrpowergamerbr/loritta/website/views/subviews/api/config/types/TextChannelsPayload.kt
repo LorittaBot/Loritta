@@ -33,7 +33,7 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 
 			val obj = entry.obj
 			if (obj.has("memberCounterConfig")) {
-				val memberCounterConfig = obj["memberCountConfig"].obj
+				val memberCounterConfig = obj["memberCounterConfig"].obj
 				val topic = memberCounterConfig["topic"].string
 				val theme = memberCounterConfig["theme"].string
 
