@@ -39,6 +39,10 @@ class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), cat
 		builder.addField("\uD83D\uDCC5 ${context.locale["commands.discord.channelinfo.channelCreated"]}", channelCreatedDiff, true)
 		builder.addField("\uD83D\uDCD8 ${context.locale["commands.discord.channelinfo.channelTopic"]}", if (channel.topic.isNullOrEmpty()) context.locale["commands.discord.channelinfo.undefined"] else "```${channel.topic}```", true)
 		
+		if (channel.guild != context.guild!!) {
+			builder.addField("\uD83D\uDD39 Guild", channel.guild.name, true)
+		}
+		
 		context.sendMessage(context.userHandle.asMention, builder.build())
 	}
 }
