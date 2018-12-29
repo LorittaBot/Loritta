@@ -241,7 +241,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
-				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || profile.lastMessageSentAt >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
+				val lastMessageSentDiff = System.currentTimeMillis() - (profile?.lastMessageSentAt ?: 0)
+				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || lastMessageSentDiff >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
 					AdminUtils.sendSuspectInfo(channel, event.user, profile)
 				}
 			} catch (e: Exception) {
