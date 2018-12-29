@@ -5,13 +5,17 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Icon
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 
 class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), CommandCategory.DISCORD) {
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -22,7 +26,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.discord.addEmoji.description }
 	}
 
@@ -34,7 +38,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		return listOf(Permission.MANAGE_EMOTES)
 	}
 	
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val imageUrl = context.getImageUrlAt(1, 0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		
 		try {

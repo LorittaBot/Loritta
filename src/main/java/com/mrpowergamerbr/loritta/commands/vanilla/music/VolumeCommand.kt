@@ -1,18 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 import java.util.*
 
 class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("VOLUME_DESCRIPTION")
 	}
 
@@ -32,7 +32,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val premiumKey = loritta.getPremiumKey(context.config.premiumKey)
 
 		if (premiumKey == null || 10 > premiumKey.paid) {

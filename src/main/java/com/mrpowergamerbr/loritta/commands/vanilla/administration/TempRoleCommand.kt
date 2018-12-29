@@ -1,20 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.remove
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.entities.User
 
 class TempRoleCommand : AbstractCommand("temprole", listOf("cargotemp"), CommandCategory.MAGIC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["HACKBAN_DESCRIPTION"]
 	}
 
@@ -30,7 +26,7 @@ class TempRoleCommand : AbstractCommand("temprole", listOf("cargotemp"), Command
 		return listOf(Permission.MANAGE_ROLES)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val split = context.rawArgs.joinToString(" ").split("|").map { it.trim() }
 			val type = split.getOrNull(0)

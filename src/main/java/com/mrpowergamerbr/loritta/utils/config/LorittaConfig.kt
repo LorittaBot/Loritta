@@ -90,6 +90,8 @@ class LorittaConfig(
 		val pomfSpaceToken: String,
 		@JsonProperty("vagalume-key")
 		val vagalumeKey: String,
+		@JsonProperty("twitter")
+		val twitterConfig: TwitterConfig,
 		@JsonProperty("ghost-ids")
 		val ghostIds: List<String>,
 		@JsonProperty("anti-raid-ids")
@@ -123,5 +125,17 @@ class LorittaConfig(
 			@JsonProperty("description")
 			val description: String,
 			@JsonProperty("allowed")
-			val allowed: List<String>)
+			val allowed: List<String>
+	)
+
+	class TwitterConfig(
+			@JsonProperty("consumer-key")
+			val oAuthConsumerKey: String,
+			@JsonProperty("consumer-secret")
+			val oAuthConsumerSecret: String,
+			@JsonProperty("access-token")
+			val oAuthAccessToken: String,
+			@JsonProperty("access-token-secret")
+			val oAuthAccessTokenSecret: String
+	)
 }

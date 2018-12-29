@@ -1,17 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.utils.MiscUtil
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("SERVERINFO_DESCRIPTION")
 	}
 
@@ -19,7 +20,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder()
 
 		var guild: Guild? = context.guild
@@ -44,6 +45,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
 		embed.addField("💻 ID", guild.id, true) // ID da Guild
+		embed.addField("\uD83D\uDCBB Shard ID", "${MiscUtil.getShardForGuild(guild, loritta.lorittaShards.shardManager.shards.size)}", true)
 		embed.addField("👑 ${context.locale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild
 		embed.addField("🌎 ${context.locale["SERVERINFO_REGION"]}", guild.region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.locale["SERVERINFO_CHANNELS"]} (${guild.textChannels.size + guild.voiceChannels.size})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** ${guild.voiceChannels.size}", true) // Canais da Guild

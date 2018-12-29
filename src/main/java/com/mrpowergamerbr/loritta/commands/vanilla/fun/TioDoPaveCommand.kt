@@ -1,19 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import org.jsoup.Jsoup
-import java.io.File
-import java.util.*
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["TIODOPAVE_Description"]
 	}
 
@@ -328,7 +324,7 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 		)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
 
 		context.sendMessage(temmie, DiscordMessage.builder()

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.gifs
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
@@ -13,7 +13,7 @@ import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object GumballGIF {
-	fun getGIF(_toUse: BufferedImage, locale: BaseLocale): File {
+	fun getGIF(_toUse: BufferedImage, locale: LegacyBaseLocale): File {
 		var toUse = BufferedImage(_toUse.width, _toUse.height, BufferedImage.TYPE_INT_ARGB)
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()

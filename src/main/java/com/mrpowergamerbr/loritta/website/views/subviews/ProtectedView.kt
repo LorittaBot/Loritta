@@ -62,7 +62,7 @@ abstract class ProtectedView : AbstractView() {
 						val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
 						// Agora nós iremos pegar o locale do servidor
-						val locale = loritta.getLocaleById(serverConfig.localeId)
+						val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 						val userId = auth.getUserIdentification().id
 
@@ -106,7 +106,7 @@ abstract class ProtectedView : AbstractView() {
 									}
 
 									// Envie via DM uma mensagem falando sobre a Loritta!
-									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.commandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
+									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
 
 									user.openPrivateChannel().queue {
 										it.sendMessage(message).queue()

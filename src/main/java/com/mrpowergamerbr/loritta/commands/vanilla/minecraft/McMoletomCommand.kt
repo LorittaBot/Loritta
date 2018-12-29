@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import java.awt.Color
 import java.awt.Graphics2D
@@ -16,7 +16,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("MCMOLETOM_Description")
 	}
 
@@ -32,7 +32,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val attached = context.message.attachments.firstOrNull { it.isImage }
 
 		var skin: BufferedImage? = null

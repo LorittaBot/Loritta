@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
@@ -12,11 +12,11 @@ import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
 class EvalCommand : AbstractCommand("evaljs", listOf("evaljavascript", "evaluatejs", "evaluatejavascript"), category = CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Executa códigos em JavaScript"
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var javaScript = context.args.joinToString(" ")
 
 		// Agora vamos mudar um pouquinho o nosso código

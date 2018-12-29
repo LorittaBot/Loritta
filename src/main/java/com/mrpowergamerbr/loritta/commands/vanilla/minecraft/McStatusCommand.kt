@@ -5,19 +5,19 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 
 class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: BaseLocale): String {
+    override fun getDescription(locale: LegacyBaseLocale): String {
         return locale["MCSTATUS_DESCRIPTION"]
     }
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
         val body = HttpRequest.get("https://status.mojang.com/check").body()
 
 	    val builder = EmbedBuilder()

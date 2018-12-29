@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands
+package net.perfectdreams.loritta.api.commands
 
 enum class CommandCategory constructor(val fancyTitle: String, var description: String) {
 	FUN("CommandCategory_FUN_Name", "CommandCategory_FUN_Description"),

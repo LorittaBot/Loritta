@@ -3,11 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
@@ -16,14 +15,16 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.entities.PrivateChannel
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.awt.Color
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["AJUDA_DESCRIPTION"]
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		try {
 			val privateChannel = context.userHandle.openPrivateChannel().await()
 
@@ -135,12 +136,22 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		embed.setThumbnail(image)
 
 		var description = "*" + context.locale[cat.description] + "*\n\n"
-		val categoryCmds = loritta.commandManager.commandMap.filter { cmd -> cmd.category == cat }
+		val categoryCmds = loritta.commandManager.getRegisteredCommands().filter { cmd -> cmd.category == cat } + loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
-			for (cmd in categoryCmds.sortedBy { it.label }) {
+			for (cmd in categoryCmds.sortedBy {
+				when (it) {
+					is AbstractCommand -> it.label
+					is LorittaCommand -> it.labels.first()
+					else -> throw UnsupportedOperationException()
+				}
+			}) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					val toBeAdded = "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
+					val toBeAdded = when (cmd) {
+						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
+						is LorittaCommand -> "**" + conf.commandPrefix + cmd.labels.firstOrNull() + "**" + " `" + cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale) + "`" + " » " + cmd.getDescription(loritta.getLocaleById(conf.localeId)) + "\n"
+						else -> throw UnsupportedOperationException()
+					}
 					if ((description + toBeAdded).length > 2048) {
 						embed.setDescription(description)
 						embeds.add(embed.build())
@@ -160,7 +171,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	}
 
 	fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
-		val disabledCommands = loritta.commandManager.getCommandsDisabledIn(context.config)
+		val disabledCommands = loritta.legacyCommandManager.getCommandsDisabledIn(context.config)
 		var description = ""
 
 		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
@@ -170,7 +181,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.commandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
+		categories = categories.filter { category -> loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
 
 		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
@@ -191,7 +202,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		)
 
 		for (category in categories) {
-			val cmdsInCategory = loritta.commandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
+			val cmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
 			val cmdCountInCategory = cmdsInCategory.count()
 			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
 			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }

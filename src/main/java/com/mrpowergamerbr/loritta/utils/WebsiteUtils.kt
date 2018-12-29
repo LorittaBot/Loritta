@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
@@ -93,15 +94,15 @@ object WebsiteUtils {
 		return query.joinToString("&")
 	}
 
-	fun initializeVariables(req: Request, locale: BaseLocale, languageCode: String?, forceReauthentication: Boolean) {
+	fun initializeVariables(req: Request, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?, forceReauthentication: Boolean) {
 		val variables = mutableMapOf(
 				"discordAuth" to null,
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
 				"guildCount" to lorittaShards.getCachedGuildCount(),
 				"userCount" to lorittaShards.getCachedUserCount(),
-				"availableCommandsCount" to loritta.commandManager.commandMap.size,
-				"commandMap" to loritta.commandManager.commandMap,
+				"availableCommandsCount" to loritta.legacyCommandManager.commandMap.size,
+				"commandMap" to loritta.legacyCommandManager.commandMap,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
 				"clientId" to Loritta.config.clientId,
@@ -115,7 +116,7 @@ object WebsiteUtils {
 			req.session().destroy()
 		}
 
-		for ((key, rawMessage) in locale.strings) {
+		for ((key, rawMessage) in legacyLocale.strings) {
 			variables[key] = MessageFormat.format(rawMessage)
 		}
 
@@ -153,7 +154,14 @@ object WebsiteUtils {
 		variables["uptimeMinutes"] = minutes
 		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
-		variables["localeAsJson"] = Loritta.GSON.toJson(locale.strings)
+
+		// Já que Reflection não existe em Kotlin/JS, o Kotlin Serialization não suporta "Any?" em JavaScript.
+		// Então vamos fazer algumas pequenas gambiarras para retirar as listas antes de enviar para o website
+		val patchedLocales = BaseLocale(locale.id)
+		patchedLocales.localeEntries.putAll(locale.localeEntries.filter { it.value is String })
+
+		variables["baseLocale"] = Loritta.GSON.toJson(patchedLocales)
+		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 
 		if (req.session().isSet("discordAuth")) {

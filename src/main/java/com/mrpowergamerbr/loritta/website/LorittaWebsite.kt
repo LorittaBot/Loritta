@@ -98,17 +98,26 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 			}
 		}
 
-		var lorittaLocale = loritta.getLocaleById(localeId ?: "default")
+		var lorittaLocale = loritta.getLegacyLocaleById(localeId ?: "default")
+		var locale = loritta.getLocaleById(localeId ?: "default")
 
 		// Para deixar tudo organizadinho (o Google não gosta de locales que usem query strings ou cookies), nós iremos usar subdomínios!
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
-			lorittaLocale = when (languageCode) {
+			locale = when (languageCode) {
 				"br" -> LorittaLauncher.loritta.getLocaleById("default")
 				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
 				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
 				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> locale
+			}
+
+			lorittaLocale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLegacyLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLegacyLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLegacyLocaleById("es-es")
 				else -> lorittaLocale
 			}
 		}
@@ -141,7 +150,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
 
 		if (requiresVariables != null)
-			WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, req.route().attributes().entries.any { it.key == "loriForceReauthentication" })
+			WebsiteUtils.initializeVariables(req, locale, lorittaLocale, languageCode, req.route().attributes().entries.any { it.key == "loriForceReauthentication" })
 
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 

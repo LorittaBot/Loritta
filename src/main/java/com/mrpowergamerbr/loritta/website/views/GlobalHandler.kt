@@ -56,8 +56,9 @@ object GlobalHandler {
 		// Vamos parsear!
 		val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
 
-		val defaultLocale = LorittaLauncher.loritta.getLocaleById("default")
-		var lorittaLocale = LorittaLauncher.loritta.getLocaleById("default")
+		val defaultLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
+		var lorittaLocale = LorittaLauncher.loritta.getLegacyLocaleById("default")
+		var locale = LorittaLauncher.loritta.getLocaleById("default")
 
 		var localeId: String? = null
 
@@ -71,7 +72,7 @@ object GlobalHandler {
 			if (localeId == "en") {
 				localeId = "en-us"
 			}
-			val parsedLocale = LorittaLauncher.loritta.getLocaleById(localeId)
+			val parsedLocale = LorittaLauncher.loritta.getLegacyLocaleById(localeId)
 			if (bypassCheck || defaultLocale !== parsedLocale) {
 				lorittaLocale = parsedLocale
 			}
@@ -85,16 +86,24 @@ object GlobalHandler {
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
-			lorittaLocale = when (languageCode) {
+			locale = when (languageCode) {
 				"br" -> LorittaLauncher.loritta.getLocaleById("default")
 				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
 				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
 				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
+				else -> locale
+			}
+
+			lorittaLocale = when (languageCode) {
+				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
+				"pt" -> LorittaLauncher.loritta.getLegacyLocaleById("pt-pt")
+				"us" -> LorittaLauncher.loritta.getLegacyLocaleById("en-us")
+				"es" -> LorittaLauncher.loritta.getLegacyLocaleById("es-es")
 				else -> lorittaLocale
 			}
 		}
 
-		WebsiteUtils.initializeVariables(req, lorittaLocale, languageCode, false)
+		WebsiteUtils.initializeVariables(req, locale, lorittaLocale, languageCode, false)
 
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()

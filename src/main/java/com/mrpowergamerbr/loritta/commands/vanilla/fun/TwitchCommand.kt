@@ -1,18 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["TWITCH_Description"]
 	}
 
@@ -24,7 +24,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ")
 

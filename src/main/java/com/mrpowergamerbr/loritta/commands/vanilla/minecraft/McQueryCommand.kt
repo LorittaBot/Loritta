@@ -2,17 +2,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCServerPinger
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
 class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["MCQUERY_DESCRIPTION"]
 	}
 
@@ -24,7 +24,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 		return Arrays.asList("mc.hypixel.net")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size == 1) {
 			val ip = context.args[0]
 			var hostname = ip

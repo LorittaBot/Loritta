@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -26,7 +26,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		val DOG_EARS by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("NYANCAT_DESCRIPTION")
 	}
 
@@ -42,7 +42,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var times = 0
 		var isDog = false
 		if (context.args.size == 1) {

@@ -6,19 +6,23 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WARN_Description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -46,7 +50,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 		return listOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 

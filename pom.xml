@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2018.12.21-SNAPSHOT</loritta.version>
+        <loritta.version>2018.12.28-SNAPSHOT</loritta.version>
         <kotlin.version>1.3.0</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>net.perfectdreams.commands</groupId>
             <artifactId>command-framework-core</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.oracle.graaljs</groupId>
@@ -125,9 +125,34 @@
             <version>0.6.11</version>
         </dependency>
         <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>[4.0,)</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>net.dv8tion</groupId>
@@ -303,7 +328,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>1.8.13</version>
+            <version>1.8.13.kotlin13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -346,6 +371,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.platform</groupId>

@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.utils.counter
 
 object CounterUtils {
-	fun generatePrettyCounter(count: Int, theme: CounterThemeName, padding: Int = 5): String {
+	fun generatePrettyCounter(count: Int, theme: CounterThemeName, padding: Int): String {
 		return generatePrettyCounter(count, getEmojis(theme), padding)
 	}
 
-	fun generatePrettyCounter(count: Int, list: List<String>, padding: Int = 5): String {
+	fun generatePrettyCounter(count: Int, list: List<String>, padding: Int): String {
 		var counter = ""
 
 		for (char in count.toString()) {
@@ -14,7 +14,7 @@ object CounterUtils {
 			counter += emote
 		}
 
-		val paddingCount = 5 - count.toString().length
+		val paddingCount = padding - count.toString().length
 
 		if (paddingCount > 0) {
 			for (i in 0 until paddingCount) {
@@ -31,6 +31,7 @@ object CounterUtils {
 			CounterThemeName.GREEN -> CounterThemes.GREEN
 			CounterThemeName.BLURPLE -> CounterThemes.BLURPLE
 			CounterThemeName.BLACK -> CounterThemes.BLACK
+			CounterThemeName.DELUXE -> CounterThemes.DELUXE
 			else -> CounterThemes.DEFAULT
 		}
 	}

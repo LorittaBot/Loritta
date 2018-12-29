@@ -1,15 +1,15 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 
 class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("TOCARAGORA_Description")
 	}
 
@@ -29,7 +29,7 @@ class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), Comma
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!

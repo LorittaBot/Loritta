@@ -7,13 +7,13 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomnaoentreaki", "randomnea", "rneaki", "rnea", "rnaoentreaki"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Pega uma postagem aleatória do Não Entre Aki"
 	}
 
@@ -21,7 +21,7 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (!context.isPrivateChannel && !context.message.textChannel.isNSFW) {
 			context.reply(
 					LoriReply(

@@ -1,17 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["ENCODE_Description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
 	}
 
@@ -28,7 +28,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val args = context.rawArgs.toMutableList()
 		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
 

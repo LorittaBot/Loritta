@@ -6,12 +6,12 @@ import com.mongodb.client.model.UpdateOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaAnswer
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
@@ -234,7 +234,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		)
 	}
 
-	override fun getDescription(locale: BaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
+	override fun getDescription(locale: LegacyBaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
 
 	override fun getExamples(): List<String> = listOf("Como vai você?")
 
@@ -248,7 +248,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		return listOf(Permission.MANAGE_WEBHOOKS)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val webhook = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, locale["FRASETOSCA_GABRIELA"])
 

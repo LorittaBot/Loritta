@@ -7,7 +7,6 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
@@ -18,23 +17,24 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.core.entities.Guild
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return "Recarrega a Loritta"
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
 		if (arg0 == "dailytax") {
@@ -76,6 +76,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 		if (arg0 == "locales") {
 			loritta.loadLocales()
+			loritta.loadLegacyLocales()
 			context.reply(
 					LoriReply(
 							message = "Locales recarregadas!"
@@ -85,11 +86,11 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "commands") {
-			val oldCommandCount = loritta.commandManager.commandMap.size
+			val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 			LorittaLauncher.loritta.loadCommandManager()
 			context.reply(
 					LoriReply(
-							"Comandos recarregados com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+							"Comandos recarregados com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
 					)
 			)
 			return
@@ -360,7 +361,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 			return
 		}
-		val oldCommandCount = loritta.commandManager.commandMap.size
+		val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 
 		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 		val file = File(System.getProperty("conf") ?: "./config.yml")
@@ -368,7 +369,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
-		loritta.loadLocales()
+		loritta.loadLegacyLocales()
 		loritta.loadFanArts()
 
 		loritta.initMongo()
@@ -377,7 +378,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		context.reply(
 				LoriReply(
-						"Fui recarregada com sucesso! **(${loritta.commandManager.commandMap.size} comandos ativados, ${loritta.commandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+						"Fui recarregada com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
 				)
 		)
 	}

@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -38,6 +39,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -48,7 +50,9 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.utils.cache.CacheFlag
-import net.perfectdreams.commands.loritta.LorittaCommandManager
+import net.perfectdreams.loritta.api.commands.LorittaCommandManager
+import net.perfectdreams.loritta.api.platform.LorittaBot
+import net.perfectdreams.loritta.api.platform.PlatformFeature
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -72,7 +76,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(config: LorittaConfig) {
+class Loritta(config: LorittaConfig) : LorittaBot {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -105,6 +109,9 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	// ===[ LORITTA ]===
+	// All features!!! :3
+	override val supportedFeatures = PlatformFeature.values().toMutableList()
+
 	var lorittaShards = LorittaShards() // Shards da Loritta
 	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
@@ -115,11 +122,12 @@ class Loritta(config: LorittaConfig) {
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	lateinit var commandManager: CommandManager // Nosso command manager
-	val lorittaCommandManager = LorittaCommandManager(this)
+	lateinit var legacyCommandManager: CommandManager // Nosso command manager
+	lateinit var commandManager: LorittaCommandManager
 	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
+	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	var locales = mapOf<String, BaseLocale>()
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<Long, Long>().asMap()
@@ -154,6 +162,7 @@ class Loritta(config: LorittaConfig) {
 	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
+	var pluginManager = PluginManager(this)
 
 	var isPatreon = mutableMapOf<String, Boolean>()
 	var isDonator = mutableMapOf<String, Boolean>()
@@ -171,6 +180,7 @@ class Loritta(config: LorittaConfig) {
 		FRONTEND = config.frontendFolder
 		Loritta.config = config
 		loadLocales()
+		loadLegacyLocales()
 		temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
@@ -294,6 +304,7 @@ class Loritta(config: LorittaConfig) {
 		DebugLog.startCommandListenerThread()
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
+		pluginManager.loadPlugins()
 
 		thread {
 			socket.start()
@@ -539,7 +550,8 @@ class Loritta(config: LorittaConfig) {
 	fun loadCommandManager() {
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
-		commandManager = CommandManager()
+		legacyCommandManager = CommandManager()
+		commandManager = LorittaCommandManager(this)
 	}
 
 	/**
@@ -550,6 +562,41 @@ class Loritta(config: LorittaConfig) {
 	}
 
 	/**
+	 * Initializes the [id] locale and adds missing translation strings to non-default languages
+	 *
+	 * @see BaseLocale
+	 */
+	fun loadLocale(id: String, defaultLocale: BaseLocale?): BaseLocale {
+		val locale = BaseLocale(id)
+		if (defaultLocale != null) {
+			// Colocar todos os valores padrões
+			locale.localeEntries.putAll(defaultLocale.localeEntries)
+		}
+
+		val localeFolder = File(Loritta.LOCALES, id)
+
+		if (localeFolder.exists()) {
+			localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
+				val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
+
+				fun transformIntoFlatMap(map: MutableMap<String, Any?>, prefix: String) {
+					map.forEach { (key, value) ->
+						if (value is Map<*, *>) {
+							transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
+						} else {
+							locale.localeEntries[prefix + key] = value
+						}
+					}
+				}
+
+				transformIntoFlatMap(entries, "")
+			}
+		}
+
+		return locale
+	}
+
+	/**
 	 * Initializes the available locales and adds missing translation strings to non-default languages
 	 *
 	 * @see BaseLocale
@@ -557,10 +604,29 @@ class Loritta(config: LorittaConfig) {
 	fun loadLocales() {
 		val locales = mutableMapOf<String, BaseLocale>()
 
+		val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
+		locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
+
+		val localeFolder = File(Loritta.LOCALES)
+		localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
+			locales[it.name] = loadLocale(it.name, defaultLocale)
+		}
+
+		this.locales = locales
+	}
+
+	/**
+	 * Initializes the available locales and adds missing translation strings to non-default languages
+	 *
+	 * @see LegacyBaseLocale
+	 */
+	fun loadLegacyLocales() {
+		val locales = mutableMapOf<String, LegacyBaseLocale>()
+
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(LOCALES, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
-		val defaultLocale = GSON.fromJson(localeAsText, BaseLocale::class.java) // Carregar locale do jeito velho
+		val defaultLocale = GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
 
 		defaultJsonLocale.entrySet().forEach { (key, value) ->
@@ -579,7 +645,7 @@ class Loritta(config: LorittaConfig) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
 				// Carregar o BaseLocale baseado no locale atual
 				val localeAsText = file.readText(Charsets.UTF_8)
-				val locale = prettyGson.fromJson(localeAsText, BaseLocale::class.java)
+				val locale = prettyGson.fromJson(localeAsText, LegacyBaseLocale::class.java)
 				locale.strings = HashMap<String, String>(defaultLocale.strings) // Clonar strings do default locale
 				locales.put(file.nameWithoutExtension, locale)
 				// Yay!
@@ -707,7 +773,7 @@ class Loritta(config: LorittaConfig) {
 			}
 		}
 
-		this.locales = locales
+		this.legacyLocales = locales
 	}
 
 	/**
@@ -715,10 +781,21 @@ class Loritta(config: LorittaConfig) {
 	 *
 	 * @param localeId the ID of the locale
 	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
-	 * @see            BaseLocale
+	 * @see            LegacyBaseLocale
 	 */
 	fun getLocaleById(localeId: String): BaseLocale {
-		return locales.getOrDefault(localeId, locales["default"]!!)
+		return locales.getOrDefault(localeId, locales[Constants.DEFAULT_LOCALE_ID]!!)
+	}
+
+	/**
+	 * Gets the BaseLocale from the ID, if the locale doesn't exist, the default locale ("default") will be retrieved
+	 *
+	 * @param localeId the ID of the locale
+	 * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
+	 * @see            LegacyBaseLocale
+	 */
+	fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
+		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 
 	/**

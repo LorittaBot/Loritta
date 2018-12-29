@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Graphics2D
@@ -21,7 +21,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "amizade_overlay.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("AMIZADE_DESCRIPTION")
 	}
 
@@ -37,7 +37,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.message.mentionedUsers.size == 2) {
 			// Não podemos usar context...
 			val user = context.message.mentionedUsers[0]

@@ -2,22 +2,22 @@ package com.mrpowergamerbr.loritta.commands.vanilla.roblox
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jsoup.Jsoup
 
 class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["RBGAME_Description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 

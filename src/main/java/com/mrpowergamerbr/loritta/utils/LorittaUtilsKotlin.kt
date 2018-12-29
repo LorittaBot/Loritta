@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -23,7 +23,8 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.utils.MiscUtil
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jsoup.nodes.Element
@@ -211,6 +212,9 @@ object LorittaUtilsKotlin {
 	}
 
 	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
+		if (context !is DiscordCommandContext)
+			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 		if (profile.isBanned) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 
@@ -218,8 +222,8 @@ object LorittaUtilsKotlin {
 			context.userHandle
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
 					)
 			return true
 		}
@@ -307,7 +311,7 @@ object LorittaUtilsKotlin {
 	}
 
 	@JvmStatic
-	fun createTrackInfoEmbed(guild: Guild, locale: BaseLocale, stripSkipInfo: Boolean): MessageEmbed {
+	fun createTrackInfoEmbed(guild: Guild, locale: LegacyBaseLocale, stripSkipInfo: Boolean): MessageEmbed {
 		val manager = loritta.audioManager.getGuildAudioPlayer(guild)
 		val playingTrack = manager.player.playingTrack
 		val metaTrack = manager.scheduler.currentTrack

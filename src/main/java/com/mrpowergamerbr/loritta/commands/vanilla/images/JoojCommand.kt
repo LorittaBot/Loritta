@@ -2,16 +2,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.util.*
 
 class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("JOOJ_DESCRIPTION")
 	}
 
@@ -29,7 +29,7 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)

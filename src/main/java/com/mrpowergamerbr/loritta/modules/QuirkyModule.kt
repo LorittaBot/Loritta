@@ -7,16 +7,16 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.MessageType
 
 class QuirkyModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return serverConfig.miscellaneousConfig.enableQuirky && event.guild?.selfMember?.hasPermission(event.textChannel, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE) == true && event.message.type == MessageType.DEFAULT
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		// uwu u are sooo quirky
 		val message = event.message
 
@@ -28,7 +28,7 @@ class QuirkyModule : MessageReceivedModule {
 			1 -> message.addReaction("daora:375321168632086529").queue()
 			2 -> message.addReaction("wow:432531424671694849").queue()
 			3 -> message.addReaction("rip:473621981619552267").queue()
-			4 -> message.addReaction("osama:325332212255948802").queue()
+			4 -> message.addReaction("gesso:523233744656662548").queue()
 			5 -> message.addReaction("a:revolving_think:417382964364836864").queue()
 			6 -> message.addReaction("thonk:413425726369431552").queue()
 			7 -> message.addReaction("pepe_morre_diabo:473622072770297857").queue()
@@ -39,6 +39,8 @@ class QuirkyModule : MessageReceivedModule {
 			12 -> message.addReaction("faustao_thinking:334378424091017218").queue()
 			13 -> message.addReaction("hyper_NOSA:450476856303419432").queue()
 			14 -> message.addReaction("idai:334709223588102144").queue()
+			15 -> message.addReaction("a:lori_happy:521721811298156558").queue()
+			16 -> message.addReaction("a:ralseinite:508811387175436291").queue()
 		}
 		
 		if (chance(0.10)) {

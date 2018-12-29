@@ -1,18 +1,19 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.commands.annotation.Subcommand
-import net.perfectdreams.commands.loritta.LorittaCommand
-import net.perfectdreams.commands.loritta.LorittaCommandContext
-import net.perfectdreams.commands.loritta.notNull
+import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.notNull
 import java.awt.image.BufferedImage
 import kotlin.contracts.ExperimentalContracts
 
-class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
+class MagicPingCommand : LorittaCommand(arrayOf("magicping"), CommandCategory.MISC) {
 	@Subcommand
-	suspend fun root(context: LorittaCommandContext, locale: BaseLocale) {
+	suspend fun root(context: LorittaCommandContext, locale: LegacyBaseLocale) {
 		context.reply(
 				LoriReply(
 						"Na verdade isto é só um comando para testes... yay?"
@@ -22,7 +23,7 @@ class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
 
 	@ExperimentalContracts
 	@Subcommand(["mention"])
-	suspend fun mentionUser(context: LorittaCommandContext, locale: BaseLocale, user: User?) {
+	suspend fun mentionUser(context: LorittaCommandContext, locale: LegacyBaseLocale, user: User?) {
 		notNull(user, "that ain't a user dawg")
 
 		context.reply(
@@ -35,7 +36,7 @@ class MagicPingCommand : LorittaCommand(arrayOf("magicping")) {
 
 	@ExperimentalContracts
 	@Subcommand(["image"])
-	suspend fun mentionUser(context: LorittaCommandContext, locale: BaseLocale, image: BufferedImage?) {
+	suspend fun mentionUser(context: LorittaCommandContext, locale: LegacyBaseLocale, image: BufferedImage?) {
 		notNull(image, "that ain't a image dawg")
 
 		context.sendFile(image, "owo.png", "Não sei se é verdade, só to repassando")

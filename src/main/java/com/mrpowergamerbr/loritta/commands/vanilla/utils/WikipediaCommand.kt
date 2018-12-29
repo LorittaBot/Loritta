@@ -9,11 +9,11 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WIKIPEDIA_DESCRIPTION"]
 	}
 
@@ -38,7 +38,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 				"conteúdo" to "O que você deseja procurar no Wikipédia")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var languageId = when (context.config.localeId) {
 				"default" -> "pt"

@@ -7,7 +7,8 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 /**
  * Um usuário que está comunicando com a Loritta
@@ -41,6 +42,9 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
 	 * Verifica se o usuário tem permissão para utilizar um comando
 	 */
 	open fun canUseCommand(context: LorittaCommandContext): Boolean {
+		if (context !is DiscordCommandContext)
+			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
 		// A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
 		if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 			return false

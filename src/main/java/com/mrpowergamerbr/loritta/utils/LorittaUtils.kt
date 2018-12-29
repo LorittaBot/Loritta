@@ -35,7 +35,7 @@ object LorittaUtils {
 			for (member in guild.members) {
 				if (!member.user.isBot && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
 					try {
-						val locale = LorittaLauncher.loritta.getLocaleById(serverConf.localeId)
+						val locale = LorittaLauncher.loritta.getLegacyLocaleById(serverConf.localeId)
 						member.user.openPrivateChannel().queue { channel -> channel.sendMessage(locale["LORITTA_HeyIDontHavePermission", textChannel.asMention, guild.name]).queue() }
 					} catch (e: ErrorResponseException) {
 						// Usuário tem as DMs desativadas

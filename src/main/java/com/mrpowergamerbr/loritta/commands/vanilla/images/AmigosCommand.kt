@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.core.entities.Member
 import java.awt.image.BufferedImage
@@ -19,7 +19,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["AMIGOS_DESCRIPTION"]
 	}
 
@@ -27,7 +27,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val choosen = mutableListOf<Member>()
 
 		var contextImage = context.getImageAt(0, 0, 128) ?: getRandomAvatar(context, choosen)

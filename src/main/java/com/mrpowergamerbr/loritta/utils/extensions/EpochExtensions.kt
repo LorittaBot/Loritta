@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import java.text.DateFormatSymbols
 import java.time.Instant
@@ -13,10 +13,10 @@ import java.time.ZoneId
  * @param locale the language that should be used to humanize the date
  * @return       the humanized date
  */
-fun OffsetDateTime.humanize(locale: BaseLocale): String {
-	val localeId = loritta.locales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
+fun OffsetDateTime.humanize(locale: LegacyBaseLocale): String {
+	val localeId = loritta.legacyLocales.entries.firstOrNull { it.value == locale }?.key ?: throw RuntimeException("Missing locale for ${locale}!")
 	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols(BaseLocale.toJavaLocale(locale)).months
+	val months = DateFormatSymbols(LegacyBaseLocale.toJavaLocale(locale)).months
 
 	return if (localeId == "en-us") {
 		val fancy = when (this.dayOfMonth) {
@@ -37,6 +37,6 @@ fun OffsetDateTime.humanize(locale: BaseLocale): String {
  * @param locale the language that should be used to humanize the date
  * @return       the humanized date
  */
-fun Long.humanize(locale: BaseLocale): String {
+fun Long.humanize(locale: LegacyBaseLocale): String {
 	return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale)
 }

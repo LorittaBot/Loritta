@@ -4,11 +4,11 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -18,7 +18,7 @@ import java.awt.Color
 import java.util.*
 
 class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["YOUTUBE_DESCRIPTION"]
 	}
 
@@ -30,7 +30,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ")
 			val items = YouTubeUtils.searchOnYouTube(query, "youtube#video", "youtube#channel")

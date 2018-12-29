@@ -3,14 +3,18 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import java.awt.Image
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
 class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["DRAKE_DESCRIPTION"]
 	}
 
@@ -18,7 +22,7 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {}
 			argument(ArgumentType.USER) {}
@@ -29,7 +33,7 @@ class DrakeCommand : AbstractCommand("drake", category = CommandCategory.IMAGES)
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val bi = ImageIO.read(File(Loritta.ASSETS + "drake.png")) // Primeiro iremos carregar o nosso template
 		val graph = bi.graphics
 

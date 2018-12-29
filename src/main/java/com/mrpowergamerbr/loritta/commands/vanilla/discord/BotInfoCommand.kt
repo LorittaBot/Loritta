@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
@@ -18,11 +18,11 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 
 class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais" || arg0 == "extendedinfo") {
 			showExtendedInfo(context, locale)
@@ -54,7 +54,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", Loritta.config.websiteUrl, "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), LorittaLauncher.loritta.lorittaShards.getCachedUserCount(), sb.toString(), LorittaLauncher.loritta.commandManager.commandMap.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
+		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), LorittaLauncher.loritta.lorittaShards.getCachedUserCount(), sb.toString(), LorittaLauncher.loritta.legacyCommandManager.commandMap.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
 		embed.addField("\uD83C\uDF80 ${context.locale["WEBSITE_DONATE"]}", "${Loritta.config.websiteUrl}donate", true)
 		embed.addField("<:loritta:331179879582269451> ${context.locale["WEBSITE_ADD_ME"]}", "${Loritta.config.websiteUrl}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.locale["WEBSITE_COMMANDS"]}", "${Loritta.config.websiteUrl}commands", true)
@@ -74,7 +74,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		message.addReaction("loritta:331179879582269451").queue()
 	}
 
-	suspend fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
+	suspend fun showExtendedInfo(context: CommandContext, locale: LegacyBaseLocale) {
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
 		val mf = jar.manifest

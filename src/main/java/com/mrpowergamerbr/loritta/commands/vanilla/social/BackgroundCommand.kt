@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.MessageEmbed
@@ -17,7 +17,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		return "<novo background>"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["BACKGROUND_DESCRIPTION"]
 	}
 
@@ -29,7 +29,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val link = context.getImageUrlAt(0, 1, 2048)
 
 		if (link != null) {

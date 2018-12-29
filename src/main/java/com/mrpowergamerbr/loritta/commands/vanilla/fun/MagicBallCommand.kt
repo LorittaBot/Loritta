@@ -3,15 +3,19 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.entertainment.vieirinha.description }
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -19,7 +23,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		}
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
+	override fun getExamples(locale: LegacyBaseLocale): List<String> {
 		return locale.format { commands.entertainment.vieirinha.examples }
 	}
 
@@ -31,7 +35,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")
 

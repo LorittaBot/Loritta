@@ -6,18 +6,22 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import net.dv8tion.jda.core.entities.User
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 abstract class ActionCommand(name: String, aliases: List<String>) : AbstractCommand(name, aliases, CommandCategory.ACTION) {
-	abstract fun getResponse(locale: BaseLocale, first: User, second: User): String
+	abstract fun getResponse(locale: LegacyBaseLocale, first: User, second: User): String
 	abstract fun getFolderName(): String
 	abstract fun getEmoji(): String
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -29,7 +33,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		return true
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
+	override fun getExamples(locale: LegacyBaseLocale): List<String> {
 		return locale.commands.actions.examples.map { it.toString() }
 	}
 
@@ -99,7 +103,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 		}
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			val user = context.getUserAt(0)
 

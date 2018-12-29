@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 
 class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji"), CommandCategory.DISCORD) {
@@ -13,7 +13,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		return ":emoji1: :emoji2:"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["REMOVEEMOJI_Description"]
 	}
 
@@ -25,7 +25,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		return listOf(Permission.MANAGE_EMOTES)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var deletedEmotes = 0
 
 		context.message.emotes.forEach {

@@ -2,7 +2,8 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.dv8tion.jda.core.entities.User
-import net.perfectdreams.commands.loritta.LorittaCommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 class LoriReply(
 		val message: String = " ",
@@ -13,7 +14,11 @@ class LoriReply(
 ) {
 	fun build(commandContext: CommandContext) = build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
 
-	fun build(commandContext: LorittaCommandContext) = build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
+	fun build(commandContext: LorittaCommandContext): String {
+		if (commandContext !is DiscordCommandContext)
+			throw UnsupportedOperationException("I don't know how to handle a $commandContext yet!")
+		return build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
+	}
 
 	fun build(user: User) = build(user.asMention, null)
 

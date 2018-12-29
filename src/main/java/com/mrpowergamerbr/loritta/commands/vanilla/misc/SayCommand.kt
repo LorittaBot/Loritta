@@ -1,17 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["SAY_Description"]
 	}
 
@@ -23,7 +23,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 		return Arrays.asList("Eu sou fofa! :3")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			var args = context.rawArgs
 			val channelId = context.rawArgs[0]

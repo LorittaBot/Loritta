@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.obj
 import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.io.StringReader
@@ -21,7 +21,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 		return "cidade"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["TEMPO_DESCRIPTION"]
 	}
 
@@ -29,7 +29,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 		return listOf("São Paulo")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var cidade = context.args.joinToString(separator = " ")
 

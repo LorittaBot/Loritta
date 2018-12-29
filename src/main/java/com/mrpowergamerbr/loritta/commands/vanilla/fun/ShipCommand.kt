@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
 import java.awt.Color
@@ -17,7 +17,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-    override fun getDescription(locale: BaseLocale): String {
+    override fun getDescription(locale: LegacyBaseLocale): String {
         return locale["SHIP_DESCRIPTION"]
     }
 
@@ -33,7 +33,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		return true
 	}
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var user1Name: String? = context.rawArgs.getOrNull(0)
 		var user2Name: String? = context.rawArgs.getOrNull(1)
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl

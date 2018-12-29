@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator"), CommandCategory.UTILS) {
@@ -13,7 +13,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		return "conta"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["CALC_DESCRIPTION"]
 	}
 
@@ -21,7 +21,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		return listOf("2 + 2")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ")
 			try {

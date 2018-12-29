@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 
 class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), CommandCategory.UTILS) {
@@ -17,11 +17,11 @@ class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), 
 		return listOf("https://mrpowergamerbr.com/", "https://loritta.website/")
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["BITLY_DESCRIPTION"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
 			var url = context.args[0]

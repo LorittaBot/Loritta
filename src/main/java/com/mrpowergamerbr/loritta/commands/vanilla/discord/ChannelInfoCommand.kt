@@ -1,78 +1,45 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
-import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.isValidSnowflake
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.TextChannel
+import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.notNull
+import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import kotlin.contracts.ExperimentalContracts
 
-class ChannelInfoCommand : AbstractCommand("channelinfo", listOf("channel"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return "" // locale.commands.channelInfo.description
+class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), category = CommandCategory.DISCORD) {
+	
+	override fun getDescription(locale: BaseLocale): String? {
+		return locale["commands.channelinfo.description"]
 	}
 	
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
+	override val canUseInPrivateChannel: Boolean
+		get() = false
 	
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		val channel = if (context.args.isEmpty()) {
-			context.message.textChannel
-		} else {
-			getTextChannel(context, context.rawArgs[0])
-		}
+	@Subcommand
+	@ExperimentalContracts
+	suspend fun channelInfo(context: DiscordCommandContext, channel: TextChannel? = context.event.textChannel!!) {
+		notNull(channel, context.locale["commands.discord.channelinfo.notFound"])
 		
-		/* if (channel == null) {
-			context.reply(
-					LoriReply(
-							message = "" // locale.commands.channelInfo.channelNotFound,
-							prefix = Constants.ERROR
-					)
-			)
-			return
-		} */
+		val channelCreatedDiff = DateUtils.formatDateDiff(channel.creationTime.toInstant().toEpochMilli(), context.legacyLocale)
 		
-		// val channelCreatedDiff = DateUtils.formatDateDiff(channel.creationTime.toInstant().toEpochMilli(), context.locale)
+		val builder = EmbedBuilder()
 		
-		// val builder = EmbedBuilder()
+		builder.setColor(Constants.DISCORD_BLURPLE)
+		builder.setTitle("\uD83D\uDC81 ${context.locale["commands.discord.channelinfo.channelInfo", "#${channel.name}"]}")
 		
-		// builder.setColor(Constants.DISCORD_BLURPLE)
-		// builder.setTitle("\uD83D\uDC81 ${locale["CHANNELINFO_ChannelInformation", "#${channel.name}"]}")
+		builder.addField("\uD83D\uDD39 ${context.locale["commands.discord.channelinfo.channelMention"]}", channel.asMention, true)
+		builder.addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${channel.id}`", true)
+		builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.legacyLocale["LORITTA_Yes"] else context.legacyLocale["LORITTA_No"], true)
+		builder.addField("\uD83D\uDCC5 ${context.locale["commands.discord.channelinfo.channelCreated"]}", channelCreatedDiff, true)
+		builder.addField("\uD83D\uDCD8 ${context.locale["commands.discord.channelinfo.channelTopic"]}", if (channel.topic.isNullOrEmpty()) context.locale["commands.discord.channelinfo.undefined"] else "```${channel.topic}```", true)
+		builder.addField("\uD83D\uDD39 Guild", "`${channel.guild.name}`", true)
 		
-		// builder.addField("\uD83D\uDD39 ${context.locale.commands.channelInfo.channelMention}", channel.asMention, true)
-		// builder.addField("\uD83D\uDCBB ${context.locale.get("USERINFO_ID_DO_DISCORD")}", "`${channel.id}`", true)
-		// builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) locale["LORITTA_Yes"] else locale["LORITTA_No"], true)
-		// builder.addField("\uD83D\uDCC5 ${context.locale.commands.channelInfo.channelCreated}", channelCreatedDiff, true)
-		// builder.addField("\uD83D\uDCD8 ${context.locale.commands.channelInfo.channelTopic}", if (channel.topic.isNullOrEmpty()) context.locale.commands.channelInfo.undefined else "```${channel.topic}```", true)
-		
-		// context.sendMessage(context.userHandle.asMention, builder.build())
-	}
-	
-	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {
-		if (input == null)
-			return null
-		
-		val guild = context.guild
-		
-		val channels = guild.getTextChannelsByName(input, false)
-		if (channels.isNotEmpty()) {
-			return channels[0]
-		}
-		
-		val id = input
-				.replace("<", "")
-				.replace("#", "")
-				.replace(">", "")
-		
-		if (!id.isValidSnowflake())
-			return null
-		
-		val channel = guild.getTextChannelById(id)
-		if (channel != null) {
-			return channel
-		}
-		
-		return null
+		context.sendMessage(context.userHandle.asMention, builder.build())
 	}
 }

@@ -6,22 +6,26 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.HierarchyException
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["MUTE_DESCRIPTION"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -48,7 +52,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = context.getUserAt(0)
 
@@ -187,7 +191,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		// 297732013006389252#123170274651668480
 		val roleRemovalJobs = mutableMapOf<String, Job>()
 
-		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
@@ -343,11 +347,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			return true
 		}
 
-		fun getMutedRole(guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["MUTE_ROLE_NAME"], false).getOrNull(0)
+		fun getMutedRole(guild: Guild, locale: LegacyBaseLocale) = guild.getRolesByName(locale["MUTE_ROLE_NAME"], false).getOrNull(0)
 
-		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
+		fun spawnRoleRemovalThread(guild: Guild, locale: LegacyBaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
 
-		fun spawnRoleRemovalThread(guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
+		fun spawnRoleRemovalThread(guildId: Long, locale: LegacyBaseLocale, userId: Long, expiresAt: Long) {
 			val jobId = "$guildId#$userId"
 			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
 

@@ -7,18 +7,22 @@ import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WARNLIST_Description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -38,7 +42,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val user = context.getUserAt(0)
 
 		if (user != null) {

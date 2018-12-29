@@ -5,15 +5,19 @@ import com.mrpowergamerbr.loritta.commands.*
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.entertainment.roll.description }
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = true
@@ -23,11 +27,11 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		}
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
+	override fun getExamples(locale: LegacyBaseLocale): List<String> {
 		return listOf("", "12", "24", "2d20", "3d5", "4d10", "5..10", "5..10d10")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var quantity = 1L
 		var lowerBound = 1L
 		var upperBound = 6L

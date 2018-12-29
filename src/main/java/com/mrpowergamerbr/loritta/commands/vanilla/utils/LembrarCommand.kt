@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -20,7 +20,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		return "tempo mensagem"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["LEMBRAR_DESCRIPTION"]
 	}
 
@@ -28,7 +28,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		return listOf("dar comida para o dog", "lista")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var message = context.strippedArgs.joinToString(separator = " ")
 
@@ -91,7 +91,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		}
 	}
 
-	suspend fun handleReminderList(context: CommandContext, page: Int, locale: BaseLocale) {
+	suspend fun handleReminderList(context: CommandContext, page: Int, locale: LegacyBaseLocale) {
 		val reminders = transaction(Databases.loritta) {
 			Reminder.find { Reminders.userId eq context.userHandle.idLong }.toMutableList()
 		}

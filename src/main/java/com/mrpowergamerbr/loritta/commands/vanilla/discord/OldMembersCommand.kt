@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.edit
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Message
 
 class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos", "oldusers", "usuáriosantigos", "usuariosantigos"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.format { commands.discord.oldMembers.description }
 	}
 
@@ -23,7 +23,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		showOldMembers(null, context, 0)
 	}
 

@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -77,6 +76,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val ownerProfile = loritta.getLorittaProfile(event.guild.owner.user.idLong)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
 
 				if (lorittaProfile.isAfk) {
@@ -99,7 +99,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
-					var response = locale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
+					var response = legacyLocale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
 						// Usuário não pode usar comandos
@@ -124,9 +124,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 
 						if (ignoringCommandsRole == event.guild.publicRole)
-							response = locale["MENTION_ResponseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
+							response = legacyLocale["MENTION_ResponseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
 						else
-							response = locale["MENTION_ResponseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
+							response = legacyLocale["MENTION_ResponseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
 					} else {
 						if (serverConfig.blacklistedChannels.contains(event.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 							// Vamos pegar um canal que seja possível usar comandos
@@ -134,10 +134,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 							response = if (useCommandsIn != null) {
 								// Canal não bloqueado!
-								locale["MENTION_ResponseBlocked", event.message.author.asMention, serverConfig.commandPrefix, useCommandsIn.asMention]
+								legacyLocale["MENTION_ResponseBlocked", event.message.author.asMention, serverConfig.commandPrefix, useCommandsIn.asMention]
 							} else {
 								// Nenhum canal disponível...
-								locale["MENTION_ResponseBlockedNoChannels", event.message.author.asMention, serverConfig.commandPrefix]
+								legacyLocale["MENTION_ResponseBlockedNoChannels", event.message.author.asMention, serverConfig.commandPrefix]
 							}
 						}
 					}
@@ -159,12 +159,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						locale,
+						legacyLocale,
 						lorittaUser
 				)
 
 				for (module in MESSAGE_RECEIVED_MODULES) {
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
 
@@ -178,13 +178,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				// Executar comandos
-				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 					return@launch
 
-				if (Loritta.config.environment == EnvironmentType.CANARY) {
-					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@launch
-					}
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+					return@launch
 				}
 
 				loritta.messageInteractionCache.values.forEach {
@@ -207,7 +205,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${locale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${locale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
+						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}
@@ -225,13 +223,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, serverConfig, profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
-			val locale = loritta.getLocaleById("default")
+			val locale = loritta.getLocaleById(serverConfig.localeId)
+			val legacyLocale = loritta.getLegacyLocaleById("default")
 
 			if (isUserStillBanned(profile))
 				return@launch
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
-				event.channel.sendMessage(locale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, locale["AJUDA_CommandName"]]).queue()
+				event.channel.sendMessage(legacyLocale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, legacyLocale["AJUDA_CommandName"]]).queue()
 				return@launch
 			}
 
@@ -244,18 +243,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					event.channel,
 					null,
 					serverConfig,
-					locale,
+					legacyLocale,
 					lorittaUser
 			)
 
 			// Comandos vanilla da Loritta
-			if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 				return@launch
 
-			if (Loritta.config.environment == EnvironmentType.CANARY) {
-				if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-					return@launch
-				}
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+				return@launch
 			}
 		}
 	}
@@ -271,10 +268,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
+				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
 
-				EventLog.onMessageUpdate(serverConfig, locale, event.message)
+				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
@@ -285,23 +283,21 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						locale,
+						legacyLocale,
 						lorittaUser
 				)
 
 				for (module in MESSAGE_EDITED_MODULES) {
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
 
 				// Executar comandos
-				if (loritta.commandManager.matches(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
 					return@launch
 
-				if (Loritta.config.environment == EnvironmentType.CANARY) {
-					if (loritta.lorittaCommandManager.dispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
-						return@launch
-					}
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+					return@launch
 				}
 			}
 		}

@@ -49,7 +49,7 @@ class LorittaNetworkBanManager {
 						serverConfig,
 						guild,
 						guild.selfMember.user,
-						loritta.getLocaleById(serverConfig.localeId),
+						loritta.getLegacyLocaleById(serverConfig.localeId),
 						user,
 						reason,
 						false,

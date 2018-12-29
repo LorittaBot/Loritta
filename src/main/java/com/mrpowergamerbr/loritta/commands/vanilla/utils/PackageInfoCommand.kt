@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CTT
@@ -11,13 +11,13 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.awt.Color
 import java.util.*
 
 class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["PACKAGEINFO_DESCRIPTION"]
 	}
 
@@ -25,7 +25,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 		return Arrays.asList("correios")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size == 1) {
 			val packageId = context.args[0]
 			try {

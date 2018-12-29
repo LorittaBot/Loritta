@@ -65,10 +65,18 @@ enum class Gender {
 		return folderNames
 	}
 
-	fun getPersonalPronoun(locale: BaseLocale, type: PersonalPronoun, firstName: String): String {
+	fun getPersonalPronoun(locale: LegacyBaseLocale, type: PersonalPronoun, firstName: String): String {
 		return when (this) {
 			MALE -> locale.format { loritta.pronoun.he }
 			FEMALE -> locale.format { loritta.pronoun.she }
+			UNKNOWN -> firstName
+		}
+	}
+
+	fun getPossessivePronoun(locale: BaseLocale, type: PersonalPronoun, firstName: String): String {
+		return when (this) {
+			MALE -> locale["loritta.pronoun.his"]
+			FEMALE -> locale["loritta.pronoun.her"]
 			UNKNOWN -> firstName
 		}
 	}

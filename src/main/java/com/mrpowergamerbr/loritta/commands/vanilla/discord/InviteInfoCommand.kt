@@ -3,15 +3,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["INVITEINFO_Description"]
 	}
 
@@ -23,7 +23,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/coredasantigas")
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var inviteId = context.args.getOrNull(0)
 
 		if (inviteId != null) {

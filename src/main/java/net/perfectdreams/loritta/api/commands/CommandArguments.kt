@@ -1,9 +1,9 @@
-package com.mrpowergamerbr.loritta.commands
+package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 
 data class CommandArguments(val arguments: List<CommandArgument>) {
-	fun build(locale: BaseLocale): String {
+	fun build(locale: LegacyBaseLocale): String {
 		val builder = StringBuilder()
 		for (argument in arguments) {
 			argument.build(builder, locale)
@@ -20,11 +20,11 @@ data class CommandArgument(
 		val text: String? = null,
 		val explanation: String? = null
 ) {
-	fun build(locale: BaseLocale): String {
+	fun build(locale: LegacyBaseLocale): String {
 		return build(StringBuilder(), locale).toString()
 	}
 
-	fun build(builder: StringBuilder, locale: BaseLocale): StringBuilder {
+	fun build(builder: StringBuilder, locale: LegacyBaseLocale): StringBuilder {
 		if (this.optional)
 			builder.append('[')
 		else
@@ -45,7 +45,7 @@ enum class ArgumentType {
 	EMOTE,
 	IMAGE;
 
-	fun localized(locale: BaseLocale): String {
+	fun localized(locale: LegacyBaseLocale): String {
 		return when (this) {
 			TEXT ->   locale.format { commands.arguments.text }
 			NUMBER -> locale.format { commands.arguments.number }

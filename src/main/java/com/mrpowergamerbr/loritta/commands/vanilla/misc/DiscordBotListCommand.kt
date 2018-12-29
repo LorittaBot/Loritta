@@ -2,22 +2,19 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 
 class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "upvote"), category = CommandCategory.MISC) {
-    override fun getDescription(locale: BaseLocale): String {
+    override fun getDescription(locale: LegacyBaseLocale): String {
         return locale["DBL_Description"]
     }
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.LORITTA_AQUA)
 			setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_star.png")

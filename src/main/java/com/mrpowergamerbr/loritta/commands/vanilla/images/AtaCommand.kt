@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import java.awt.image.BufferedImage
 import java.io.File
@@ -16,7 +16,7 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "ata.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
+	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("ATA_DESCRIPTION")
 	}
 
@@ -32,7 +32,7 @@ class AtaCommand : AbstractCommand("ata", category = CommandCategory.IMAGES) {
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val base = BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(300, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage()
