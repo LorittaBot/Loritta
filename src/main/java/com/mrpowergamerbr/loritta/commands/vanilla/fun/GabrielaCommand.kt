@@ -262,17 +262,18 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 			pergunta = StringUtils.stripAccents(pergunta)
 
-			val hasOnlyNiceWords = WORD_BLACKLIST.any {
+			val hasBadWords = WORD_BLACKLIST.any {
 				pergunta.contains(Regex("(?i)\b($it)\b"))
 			}
 
-			if (!hasOnlyNiceWords) {
+			if (hasBadWords) {
 				context.reply(
 						LoriReply(
 								context.locale["commands.fun.gabriela.hasBadWord"],
 								Constants.ERROR
 						)
 				)
+				return
 			}
 
 			val split = pergunta.split(" ")
