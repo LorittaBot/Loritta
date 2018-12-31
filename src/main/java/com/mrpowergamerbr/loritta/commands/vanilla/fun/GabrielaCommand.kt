@@ -263,7 +263,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			pergunta = StringUtils.stripAccents(pergunta)
 
 			val hasBadWords = WORD_BLACKLIST.any {
-				pergunta.contains(Regex("(?i)\b($it)\b"))
+				pergunta.contains(Regex("(?i)\\b($it)\\b"))
 			}
 
 			if (hasBadWords) {
