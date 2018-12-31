@@ -46,10 +46,10 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 					if (it.reactionEmote.name == "⏯") {
 						if (manager.player.isPaused) {
 							manager.player.isPaused = false
-							context.sendMessage("▶ **|** " + context.getAsMention(true) + context.locale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
+							context.sendMessage("▶ **|** " + context.getAsMention(true) + context.legacyLocale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
 						} else {
 							manager.player.isPaused = true
-							context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
+							context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.legacyLocale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
 						}
 					}
 					if (it.reactionEmote.name == "⏩") {

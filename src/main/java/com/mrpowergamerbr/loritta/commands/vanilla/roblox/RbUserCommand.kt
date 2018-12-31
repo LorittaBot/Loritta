@@ -71,7 +71,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			}
 
 			if (userId == null || name == null || blurb == null || isOnline == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.locale["RBUSER_COULDNT_FIND", username] + " \uD83D\uDE22")
+				context.sendMessage(Constants.ERROR + " **|** " + context.legacyLocale["RBUSER_COULDNT_FIND", username] + " \uD83D\uDE22")
 				return
 			}
 
@@ -191,10 +191,10 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 					setDescription(blurb)
 				}
 				setColor(Constants.ROBLOX_RED)
-				addField("\uD83D\uDCBB ${context.locale.get("RBUSER_ID_DO_ROBLOX")}", userId.toString(), true)
-				addField("\uD83D\uDCC5 ${context.locale.get("RBUSER_JOIN_DATE")}", joinDate, true)
-				addField("\uD83D\uDC40 ${context.locale.get("RBUSER_PLACE_VISITS")}", placeVisits, true)
-				addField("\uD83D\uDE4B ${context.locale.get("RBUSER_SOCIAL")}", "**\uD83D\uDC3E ${context.locale.get("RBUSER_FOLLOWING")}**: $totalFollowing\n**<:twitt_starstruck:352216844603752450> ${context.locale.get("RBUSER_FOLLOWERS")}**: $totalFollowers\n**\uD83D\uDE0E ${context.locale.get("RBUSER_FRIENDS")}**: $totalFriends\n", true)
+				addField("\uD83D\uDCBB ${context.legacyLocale.get("RBUSER_ID_DO_ROBLOX")}", userId.toString(), true)
+				addField("\uD83D\uDCC5 ${context.legacyLocale.get("RBUSER_JOIN_DATE")}", joinDate, true)
+				addField("\uD83D\uDC40 ${context.legacyLocale.get("RBUSER_PLACE_VISITS")}", placeVisits, true)
+				addField("\uD83D\uDE4B ${context.legacyLocale.get("RBUSER_SOCIAL")}", "**\uD83D\uDC3E ${context.legacyLocale.get("RBUSER_FOLLOWING")}**: $totalFollowing\n**<:twitt_starstruck:352216844603752450> ${context.legacyLocale.get("RBUSER_FOLLOWERS")}**: $totalFollowers\n**\uD83D\uDE0E ${context.legacyLocale.get("RBUSER_FRIENDS")}**: $totalFriends\n", true)
 				setImage("attachment://roblox.png")
 				setThumbnail(avatar)
 			}

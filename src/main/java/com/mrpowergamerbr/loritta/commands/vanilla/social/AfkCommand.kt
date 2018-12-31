@@ -27,7 +27,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
 					LoriReply(
-							message = context.locale["AFK_AfkOff"],
+							message = context.legacyLocale["AFK_AfkOff"],
 							prefix = "\uD83D\uDC24"
 					)
 			)
@@ -46,7 +46,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
 					LoriReply(
-							message = context.locale["AFK_AfkOn"],
+							message = context.legacyLocale["AFK_AfkOn"],
 							prefix = "\uD83D\uDE34"
 					)
 			)

@@ -26,6 +26,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -284,7 +285,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -292,13 +293,13 @@ class CommandManager {
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap.filter { !conf.disabledCommands.contains(it.javaClass.simpleName) }) {
-			if (matches(command, rawArguments, ev, conf, locale, lorittaUser))
+			if (matches(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
 		// E depois os comandos usando JavaScript (Nashorn)
 		for (command in conf.nashornCommands) {
-			if (matches(command, rawArguments, ev, conf, locale, lorittaUser))
+			if (matches(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -310,13 +311,14 @@ class CommandManager {
 	 *
 	 * @param ev          the event wrapped in a LorittaMessageEvent
 	 * @param conf        the server configuration
-	 * @param locale      the language of the server
+	 * @param legacyLocale      the language of the server
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
+		val baseLocale = locale
 
 		// Carregar as opções de comandos
 		val cmdOptions = conf.getCommandOptionsFor(command)
@@ -351,7 +353,7 @@ class CommandManager {
 				strippedArgs = strippedArgs.remove(0)
 			}
 
-			var locale = locale
+			var locale = legacyLocale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 				when (ev.channel.id) {
 					"414839559721975818" -> locale = loritta.getLegacyLocaleById("default") // português (default)
@@ -362,7 +364,7 @@ class CommandManager {
 				}
 			}
 
-			val context = CommandContext(conf, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(conf, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -565,7 +567,7 @@ class CommandManager {
 					}
 				}
 
-				command.run(context, context.locale)
+				command.run(context, context.legacyLocale)
 
 				val cmdOpti = context.config.getCommandOptionsFor(command)
 				if (!isPrivateChannel && ev.guild != null) {
@@ -592,7 +594,7 @@ class CommandManager {
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
 									LoriReply(
-											context.locale.format("8MB", Emotes.LORI_TEMMIE) { commands.imageTooLarge },
+											context.legacyLocale.format("8MB", Emotes.LORI_TEMMIE) { commands.imageTooLarge },
 											"\uD83E\uDD37"
 									)
 							)

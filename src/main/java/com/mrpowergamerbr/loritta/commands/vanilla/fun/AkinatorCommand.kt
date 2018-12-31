@@ -137,7 +137,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 				if (jsonResult["COMPLETION"].string == "KO - TIMEOUT") {
 					val builder = EmbedBuilder().apply {
 						setTitle("<:akinator:383613256939470849> Akinator")
-						setDescription(context.locale.get("AKINATOR_TIMEOUT"))
+						setDescription(context.legacyLocale.get("AKINATOR_TIMEOUT"))
 						setColor(Color(20, 158, 255))
 					}
 
@@ -154,7 +154,7 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 				if (jsonResult["COMPLETION"].string == "WARN - NO QUESTION") {
 					val builder = EmbedBuilder().apply {
 						setTitle("<:akinator:383613256939470849> Akinator")
-						setDescription(context.locale.get("AKINATOR_NoQuestion"))
+						setDescription(context.legacyLocale.get("AKINATOR_NoQuestion"))
 						setColor(Color(20, 158, 255))
 					}
 

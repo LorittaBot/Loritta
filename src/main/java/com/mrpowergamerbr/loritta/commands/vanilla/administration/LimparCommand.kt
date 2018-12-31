@@ -50,12 +50,12 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			val toClear = context.args[0].toIntOrNull()
 
 			if (toClear == null) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["INVALID_NUMBER", context.args[0]]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.legacyLocale["INVALID_NUMBER", context.args[0]]}")
 				return
 			}
 
 			if (toClear !in 2..100) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["LIMPAR_INVALID_RANGE"]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.legacyLocale["LIMPAR_INVALID_RANGE"]}")
 				return
 			}
 
@@ -80,12 +80,12 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			}.toList()
 
 			if (allowedMessages.isEmpty()) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.legacyLocale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 				return
 			}
 
 			if (allowedMessages.size !in 2..100) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.locale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${context.legacyLocale["LIMPAR_COUDLNT_FIND_MESSAGES"]}")
 				return
 			}
 
@@ -93,9 +93,9 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			context.message.textChannel.deleteMessages(allowedMessages).await()
 
 			if (allowedMessages.size == messages.size) {
-				context.sendMessage(context.locale["LIMPAR_SUCCESS", context.userHandle.asMention])
+				context.sendMessage(context.legacyLocale["LIMPAR_SUCCESS", context.userHandle.asMention])
 			} else if (hasTooOldMessages) {
-				context.sendMessage(context.locale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
+				context.sendMessage(context.legacyLocale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
 			}
 		} else {
 			this.explain(context)

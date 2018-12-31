@@ -87,7 +87,7 @@ class ReceitasCommand : AbstractCommand("receitas", listOf("anamaria"), CommandC
 				var message = DiscordMessage.builder()
 						.username("Louro José")
 						.avatarUrl("http://s2.glbimg.com/bcMLrkFsNfZn_ySj2P1IZCwjSLQ=/s.glbimg.com/et/pr/f/original/2014/03/05/louro.jpg")
-						.content(context.getAsMention(true) + context.locale["RECEITAS_COULDNT_FIND", query])
+						.content(context.getAsMention(true) + context.legacyLocale["RECEITAS_COULDNT_FIND", query])
 						.build()
 
 				context.sendMessage(getOrCreateWebhook(context.event.textChannel!!, "Louro José"), message)

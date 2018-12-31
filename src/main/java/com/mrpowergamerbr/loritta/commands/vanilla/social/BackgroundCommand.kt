@@ -52,7 +52,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				val imageUrl = if (file.exists()) "${Loritta.config.websiteUrl}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png"
 
 				var builder = net.dv8tion.jda.core.EmbedBuilder()
-						.setTitle("\uD83D\uDDBC ${context.locale["BACKGROUND_YOUR_CURRENT_BG"]}")
+						.setTitle("\uD83D\uDDBC ${context.legacyLocale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
 				message.editMessage(builder.build()).await()
@@ -94,7 +94,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				context.metadata.put("templateIdx", index)
 				var builder = EmbedBuilder()
 						.setTitle("\uD83D\uDED2 Templates")
-						.setDescription(context.locale["BACKGROUND_TEMPLATE_INFO"])
+						.setDescription(context.legacyLocale["BACKGROUND_TEMPLATE_INFO"])
 						.setImage(currentUrl)
 						.setColor(Color(0, 223, 142))
 
@@ -116,7 +116,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 	suspend fun setAsBackground(link0: String, context: CommandContext) {
 		var link = link0
-		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.locale["PROCESSING"]}...")
+		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.legacyLocale["PROCESSING"]}...")
 
 		val params = getQueryParameters(link)
 
@@ -127,12 +127,12 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		val status = LorittaUtilsKotlin.getImageStatus(link)
 
 		if (status == NSFWResponse.ERROR) {
-			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BACKGROUND_INVALID_IMAGE"]).queue()
+			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_INVALID_IMAGE"]).queue()
 			return
 		}
 
 		if (status == NSFWResponse.NSFW) {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.locale["NSFW_IMAGE", context.asMention]).queue()
+			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.legacyLocale["NSFW_IMAGE", context.asMention]).queue()
 			return
 		}
 
@@ -155,14 +155,14 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		}
 		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"))
 
-		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.locale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.locale["BACKGROUND_EDITED"]}!" else "")
+		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.legacyLocale["BACKGROUND_EDITED"]}!" else "")
 		return
 	}
 
 	fun getFirstPageEmbed(context: CommandContext): MessageEmbed {
 		var builder = net.dv8tion.jda.core.EmbedBuilder()
-				.setTitle("\uD83D\uDE4B ${context.locale["BACKGROUND_CENTRAL"]}")
-				.setDescription(context.locale["BACKGROUND_INFO", context.config.commandPrefix])
+				.setTitle("\uD83D\uDE4B ${context.legacyLocale["BACKGROUND_CENTRAL"]}")
+				.setDescription(context.legacyLocale["BACKGROUND_INFO", context.config.commandPrefix])
 				.setColor(Color(0, 223, 142))
 		return builder.build()
 	}

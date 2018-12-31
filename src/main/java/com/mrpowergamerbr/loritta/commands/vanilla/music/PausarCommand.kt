@@ -25,10 +25,10 @@ class PausarCommand : AbstractCommand("pause", listOf("pausar"), CommandCategory
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (manager.player.isPaused) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_ALREADY_PAUSED", context.config.commandPrefix))
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("PAUSAR_ALREADY_PAUSED", context.config.commandPrefix))
 		} else {
 			manager.player.isPaused = true
-			context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.locale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
+			context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.legacyLocale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
 		}
 	}
 }

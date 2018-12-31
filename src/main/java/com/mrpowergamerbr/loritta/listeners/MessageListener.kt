@@ -178,7 +178,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				// Executar comandos
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
 				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
@@ -248,7 +248,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			)
 
 			// Comandos vanilla da Loritta
-			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
 			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
@@ -293,7 +293,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// Executar comandos
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
 				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {

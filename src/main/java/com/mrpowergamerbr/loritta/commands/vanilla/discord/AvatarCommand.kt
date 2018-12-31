@@ -40,16 +40,16 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		embed.setDescription("**${context.locale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**")
+		embed.setDescription("**${context.legacyLocale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**")
 
 		if (getAvatar.id == "390927821997998081")
-			embed.appendDescription("\n*${context.locale["AVATAR_PantufaCute"]}* \uD83D\uDE0A")
+			embed.appendDescription("\n*${context.legacyLocale["AVATAR_PantufaCute"]}* \uD83D\uDE0A")
 
 		if (getAvatar.id == Loritta.config.clientId) {
 			val calendar = Calendar.getInstance()
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
-			embed.appendDescription("\n*${context.locale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
+			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
 			if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
 				val fanArt = UpdateStatusThread.currentFanArt
 

@@ -30,11 +30,11 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + context.locale.get("RIPVIDA_FILE"))) // Template
+		val template = ImageIO.read(File(Loritta.ASSETS + context.legacyLocale.get("RIPVIDA_FILE"))) // Template
 
 		val scaled = contextImage.getScaledInstance(133, 133, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 133, 0, null)
 
-		context.sendFile(template, context.locale.get("RIPVIDA_FILE"), context.getAsMention(true))
+		context.sendFile(template, context.legacyLocale.get("RIPVIDA_FILE"), context.getAsMention(true))
 	}
 }

@@ -79,7 +79,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 
 			embed.addField(locale["POKEDEX_ABILITIES"], strAbilities, true)
 
-	        var strTraining = "**${context.locale["POKEDEX_BASE_EXP"]}:** ${trainingInfoValue[0].text()}" +
+	        var strTraining = "**${context.legacyLocale["POKEDEX_BASE_EXP"]}:** ${trainingInfoValue[0].text()}" +
 					"\n**${locale["POKEDEX_EFFORT_POINTS"]}:** ${trainingInfoValue[1].text()}" +
 					"\n**${locale["POKEDEX_CAPTURE_RATE"]}:** ${trainingInfoValue[2].text()}" +
 					"\n**${locale["POKEDEX_BASE_HAPPINESS"]}:** ${trainingInfoValue[3].text()}" +

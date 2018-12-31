@@ -39,7 +39,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 			if (3_600_000 > diff) {
 				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["REP_WAIT", fancy])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["REP_WAIT", fancy])
 				return
 			}
 		}

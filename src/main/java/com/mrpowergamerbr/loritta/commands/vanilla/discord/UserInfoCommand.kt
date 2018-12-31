@@ -99,30 +99,30 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
 			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 
-			addField("\uD83D\uDD16 ${context.locale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
-			addField("\uD83D\uDCBB ${context.locale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
+			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
+			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
 
-			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.locale)
-			addField("\uD83D\uDCC5 ${context.locale.format { commands.discord.userInfo.accountCreated }}", accountCreatedDiff, true)
+			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.legacyLocale)
+			addField("\uD83D\uDCC5 ${context.legacyLocale.format { commands.discord.userInfo.accountCreated }}", accountCreatedDiff, true)
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), context.locale)
-				addField("\uD83C\uDF1F ${context.locale.format { commands.discord.userInfo.accountJoined }}", accountJoinedDiff, true)
+				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), context.legacyLocale)
+				addField("\uD83C\uDF1F ${context.legacyLocale.format { commands.discord.userInfo.accountJoined }}", accountJoinedDiff, true)
 			}
 
 			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime()
 
 			if (lorittaProfile.lastMessageSentAt != 0L) {
-				val lastSeenDiff = DateUtils.formatDateDiff(lorittaProfile.lastMessageSentAt, context.locale)
-				addField("\uD83D\uDC40 ${context.locale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
+				val lastSeenDiff = DateUtils.formatDateDiff(lorittaProfile.lastMessageSentAt, context.legacyLocale)
+				addField("\uD83D\uDC40 ${context.legacyLocale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
 			}
 
-			var sharedServersFieldTitle = context.locale.format { commands.discord.userInfo.sharedServers }
+			var sharedServersFieldTitle = context.legacyLocale.format { commands.discord.userInfo.sharedServers }
 			var servers: String?
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 					.sortedByDescending { it.members.size }
 
 			if (settings.hideSharedServers) {
-				servers = "*${context.locale["USERINFO_PrivacyOn"]}*"
+				servers = "*${context.legacyLocale["USERINFO_PrivacyOn"]}*"
 			} else {
 				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				sharedServersFieldTitle = "$sharedServersFieldTitle (${sharedServers.size})"
@@ -134,7 +134,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, true)
 
-			embed.setFooter(context.locale["USERINFO_PrivacyInfo"], null)
+			embed.setFooter(context.legacyLocale["USERINFO_PrivacyInfo"], null)
 		}
 		
 		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
@@ -147,14 +147,14 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 	suspend fun showExtendedInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
 		val embed = getEmbedBase(user, member)
-		val locale = context.locale
+		val locale = context.legacyLocale
 
 		embed.apply {
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
 			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 
 			if (settings.hidePreviousUsernames) {
-				val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
+				val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {
 				val usernameChanges = transaction(Databases.loritta) { UsernameChange.find { UsernameChanges.userId eq user.idLong }.sortedBy { it.changedAt }.toMutableList() }
@@ -164,7 +164,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				}
 
 				if (usernameChanges.isNotEmpty()) {
-					val alsoKnownAs = "**" + context.locale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + usernameChanges.joinToString(separator = "\n", transform = {
+					val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + usernameChanges.joinToString(separator = "\n", transform = {
 						"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale) + ")"
 					})
 					// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
@@ -195,7 +195,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addField("\uD83D\uDEE1️ Permissões", permissions, true)
 
 			 	val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
-				addField("\uD83D\uDCBC " + context.locale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 		}
 

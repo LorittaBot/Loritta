@@ -31,7 +31,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		if (guild == null) {
 			context.reply(
 					LoriReply(
-							message = context.locale["SERVERINFO_UnknownGuild", context.args[0]],
+							message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
 							prefix = Constants.ERROR
 					)
 			)
@@ -41,7 +41,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		if (guild.iconUrl == null) {
 			context.reply(
 					LoriReply(
-							message = context.locale["SERVERICON_NoIcon"],
+							message = context.legacyLocale["SERVERICON_NoIcon"],
 							prefix = Constants.ERROR
 					)
 			)
@@ -50,7 +50,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		val description = "**${context.locale["AVATAR_CLICKHERE", guild.iconUrl + "?size=2048"]}**"
+		val description = "**${context.legacyLocale["AVATAR_CLICKHERE", guild.iconUrl + "?size=2048"]}**"
 
 		embed.setDescription(description)
 		embed.setImage(guild.iconUrl) // Ícone da Guild

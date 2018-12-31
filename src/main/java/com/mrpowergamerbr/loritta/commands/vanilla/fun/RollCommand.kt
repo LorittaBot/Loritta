@@ -66,7 +66,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					try {
 						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("CALC_INVALID", expression))
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("CALC_INVALID", expression))
 						return
 					}
 					if (!expression.startsWith(" ")) {
@@ -115,7 +115,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			response = "`${finalResult.toInt()}` **»** $response"
 		}
 
-		var message = context.locale["ROLL_RESULT", upperBound, finalResult.toInt()]
+		var message = context.legacyLocale["ROLL_RESULT", upperBound, finalResult.toInt()]
 
 		val list = mutableListOf<LoriReply>()
 		list.add(LoriReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))

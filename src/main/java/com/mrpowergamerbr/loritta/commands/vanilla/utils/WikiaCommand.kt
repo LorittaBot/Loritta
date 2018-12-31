@@ -68,7 +68,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 			}
 
 			if (body == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["WIKIA_COULDNT_FIND", query, websiteId])
 				return
 			}
 
@@ -77,7 +77,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 				val wikiaResponse = jsonParser.parse(body).obj // Base
 
 				if (wikiaResponse.has("exception")) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["WIKIA_COULDNT_FIND", query, websiteId])
 				} else {
 					val item = wikiaResponse.get("items").array[0].obj // Nós iremos pegar o 0, já que é o primeiro resultado
 
@@ -127,7 +127,7 @@ class WikiaCommand : AbstractCommand("wikia", category = CommandCategory.UTILS) 
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["WIKIA_COULDNT_FIND", query, websiteId])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["WIKIA_COULDNT_FIND", query, websiteId])
 			}
 		} else {
 			this.explain(context)

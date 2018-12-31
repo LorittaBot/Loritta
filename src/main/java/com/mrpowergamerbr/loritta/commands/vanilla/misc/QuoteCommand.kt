@@ -57,7 +57,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 				val embed = DiscordEmbed
 						.builder()
 						.description(msg.contentRaw)
-						.author(AuthorEmbed(msg.author.name + " ${context.locale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
+						.author(AuthorEmbed(msg.author.name + " ${context.legacyLocale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
 						// .color(msg.member.color.rgb)
 						.footer(FooterEmbed("em #" + context.message.textChannel.name + if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) "" else " | Não tenho permissão para deletar mensagens!", null, null))
 						.build()
@@ -77,10 +77,10 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 
 				temmie!!.sendMessage(dm)
 			} else {
-				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_UNKNOWN_MESSAGE"))
+				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.legacyLocale.get("MENCIONAR_UNKNOWN_MESSAGE"))
 			}
 		} else {
-			context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale.get("MENCIONAR_NOT_VALID_SNOWFLAKE", context.args[0]))
+			context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.legacyLocale.get("MENCIONAR_NOT_VALID_SNOWFLAKE", context.args[0]))
 		}
 	}
 }

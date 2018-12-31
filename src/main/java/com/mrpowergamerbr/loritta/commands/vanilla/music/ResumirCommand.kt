@@ -25,10 +25,10 @@ class ResumirCommand : AbstractCommand("unpause", listOf("resumir", "despausar",
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
 		if (!manager.player.isPaused) {
-			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("UNPAUSE_UNPAUSED", context.config.commandPrefix))
+			context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("UNPAUSE_UNPAUSED", context.config.commandPrefix))
 		} else {
 			manager.player.isPaused = false
-			context.sendMessage("▶ **|** " + context.getAsMention(true) + context.locale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
+			context.sendMessage("▶ **|** " + context.getAsMention(true) + context.legacyLocale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
 		}
 	}
 }

@@ -43,7 +43,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 				val response = MCServerPinger.ping(hostname, port)
 
 				if (response == null) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCQUERY_OFFLINE", ip, port])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MCQUERY_OFFLINE", ip, port])
 					return
 				}
 
@@ -62,7 +62,7 @@ class McQueryCommand : AbstractCommand("mcquery", category = CommandCategory.MIN
 				context.sendMessage(context.getAsMention(true), builder.build())
 			} catch (e: Exception) {
 				e.printStackTrace()
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MCQUERY_OFFLINE", ip, port])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MCQUERY_OFFLINE", ip, port])
 			}
 		} else {
 			context.explain()

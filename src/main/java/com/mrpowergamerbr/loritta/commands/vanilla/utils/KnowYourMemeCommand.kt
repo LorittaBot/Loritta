@@ -36,7 +36,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["KYM_COULDNT_FIND", query])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["KYM_COULDNT_FIND", query])
 				return
 			} else {
 				// Algo foi encontrado!
@@ -48,7 +48,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 				val summary = if (meme.obj.has("summary")) {
 					meme["summary"].string
 				} else {
-					context.locale["KYM_NO_DESCRIPTION"]
+					context.legacyLocale["KYM_NO_DESCRIPTION"]
 				}
 				val url = meme["url"].string
 
@@ -57,8 +57,8 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 				embed.setTitle("<:kym:375313574085787648> $name", "http://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
-				embed.addField("\uD83C\uDF1F ${locale["KYM_ORIGIN"]}", if (origin.isNotBlank()) origin else context.locale["KYM_UNKNOWN"], true)
-				embed.addField("\uD83D\uDCC6 ${locale["KYM_DATE"]}", if (originDate.isNotBlank()) originDate else context.locale["KYM_UNKNOWN"], true)
+				embed.addField("\uD83C\uDF1F ${locale["KYM_ORIGIN"]}", if (origin.isNotBlank()) origin else context.legacyLocale["KYM_UNKNOWN"], true)
+				embed.addField("\uD83D\uDCC6 ${locale["KYM_DATE"]}", if (originDate.isNotBlank()) originDate else context.legacyLocale["KYM_UNKNOWN"], true)
 				embed.setColor(Color(18, 19, 63))
 
 				context.sendMessage(embed.build())

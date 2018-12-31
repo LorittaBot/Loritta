@@ -53,7 +53,7 @@ abstract class ActionCommand(name: String, aliases: List<String>) : AbstractComm
 	suspend fun runAction(context: CommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
 		val response: String
 		var files: List<File>
-		val locale = context.locale
+		val locale = context.legacyLocale
 		val senderProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
 		val recProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
 

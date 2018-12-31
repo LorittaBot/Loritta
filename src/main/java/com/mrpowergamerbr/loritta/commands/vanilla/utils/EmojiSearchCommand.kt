@@ -86,11 +86,11 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		}
 
 		val embed = EmbedBuilder().apply {
-			setTitle("<:lori_pac:503600573741006863> ${context.locale["EMOJISEARCH_Title"]}")
-			setDescription(context.locale["EMOJISEARCH_Results", _queriedEmotes.size, query])
+			setTitle("<:lori_pac:503600573741006863> ${context.legacyLocale["EMOJISEARCH_Title"]}")
+			setDescription(context.legacyLocale["EMOJISEARCH_Results", _queriedEmotes.size, query])
 			setColor(Constants.DISCORD_BLURPLE)
 			setImage("attachment://emotes.png")
-			setFooter("${context.locale["LORITTA_PageOf", page + 1, totalPages + 1]} | ${queriedEmotes.size} emojis", null)
+			setFooter("${context.legacyLocale["LORITTA_PageOf", page + 1, totalPages + 1]} | ${queriedEmotes.size} emojis", null)
 		}
 
 		val message = context.sendFile(emotesPreview, "emotes.png", embed.build())
@@ -130,7 +130,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
 										context.reply(
 												LoriReply(
-														context.locale["EMOJISEARCH_AddSuccess"],
+														context.legacyLocale["EMOJISEARCH_AddSuccess"],
 														sentEmote.asMention
 												)
 										)
@@ -139,7 +139,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 							} catch (e: Exception) {
 								context.reply(
 										LoriReply(
-												context.locale["EMOJISEARCH_AddError"],
+												context.legacyLocale["EMOJISEARCH_AddError"],
 												Constants.ERROR
 										)
 								)

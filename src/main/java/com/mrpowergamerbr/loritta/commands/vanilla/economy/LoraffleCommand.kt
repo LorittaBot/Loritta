@@ -97,18 +97,18 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 					context.reply(
 							LoriReply(
-									context.locale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
+									context.legacyLocale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
 									"\uD83C\uDFAB"
 							),
 							LoriReply(
-									context.locale["RAFFLE_WantMoreChances", context.config.commandPrefix],
+									context.legacyLocale["RAFFLE_WantMoreChances", context.config.commandPrefix],
 									mentionUser = false
 							)
 					)
 				} else {
 					context.reply(
 							LoriReply(
-									context.locale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.money, quantity, if (quantity == 1) "" else "s"],
+									context.legacyLocale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.money, quantity, if (quantity == 1) "" else "s"],
 									Constants.ERROR
 							)
 					)
@@ -138,32 +138,32 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						"<:loritta:331179879582269451>"
 				),
 				LoriReply(
-						context.locale["RAFFLE_CurrentPrize", (RaffleThread.userIds.size * 250).toString()],
+						context.legacyLocale["RAFFLE_CurrentPrize", (RaffleThread.userIds.size * 250).toString()],
 						"<:twitt_starstruck:352216844603752450>",
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["RAFFLE_BoughtTickets", RaffleThread.userIds.size],
+						context.legacyLocale["RAFFLE_BoughtTickets", RaffleThread.userIds.size],
 						"\uD83C\uDFAB",
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["RAFFLE_UsersParticipating", RaffleThread.userIds.distinctBy { it.first }.size],
+						context.legacyLocale["RAFFLE_UsersParticipating", RaffleThread.userIds.distinctBy { it.first }.size],
 						"\uD83D\uDC65",
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["RAFFLE_LastWinner", nameAndDiscriminator.stripCodeMarks(), RaffleThread.lastWinnerPrize],
+						context.legacyLocale["RAFFLE_LastWinner", nameAndDiscriminator.stripCodeMarks(), RaffleThread.lastWinnerPrize],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["RAFFLE_ResultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
+						context.legacyLocale["RAFFLE_ResultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
 						prefix = "\uD83D\uDD52",
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["RAFFLE_BuyAnTicketFor", context.config.commandPrefix],
+						context.legacyLocale["RAFFLE_BuyAnTicketFor", context.config.commandPrefix],
 						prefix = "\uD83D\uDCB5",
 						mentionUser = false
 				)

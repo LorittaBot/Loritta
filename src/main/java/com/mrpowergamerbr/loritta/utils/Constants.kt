@@ -126,7 +126,7 @@ object Constants {
 		} else {
 			context.reply(
 					LoriReply(
-							message = context.locale["NO_VALID_IMAGE"],
+							message = context.legacyLocale["NO_VALID_IMAGE"],
 							prefix = Constants.ERROR
 					)
 			)

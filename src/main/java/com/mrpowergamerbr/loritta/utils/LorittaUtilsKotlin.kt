@@ -203,8 +203,8 @@ object LorittaUtilsKotlin {
 			context.userHandle
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.locale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
 					)
 			return true
 		}
@@ -307,7 +307,7 @@ object LorittaUtilsKotlin {
 	}
 
 	fun createTrackInfoEmbed(context: CommandContext): MessageEmbed {
-		return createTrackInfoEmbed(context.guild, context.locale, context.config.musicConfig.voteToSkip)
+		return createTrackInfoEmbed(context.guild, context.legacyLocale, context.config.musicConfig.voteToSkip)
 	}
 
 	@JvmStatic
@@ -361,20 +361,20 @@ object LorittaUtilsKotlin {
 		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 		val embed = EmbedBuilder()
 
-		embed.setTitle("\uD83C\uDFB6 ${context.locale["MUSICINFO_INQUEUE"]}")
+		embed.setTitle("\uD83C\uDFB6 ${context.legacyLocale["MUSICINFO_INQUEUE"]}")
 		embed.setColor(Color(93, 173, 236))
 
 		val songs = manager.scheduler.queue.toList()
 		val currentTrack = manager.scheduler.currentTrack
 		if (currentTrack != null) {
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n"
-			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.locale["MUSICINFO_REQUESTED_BY"]} ${it.user.asMention})" })
+			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.legacyLocale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n"
+			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.legacyLocale["MUSICINFO_REQUESTED_BY"]} ${it.user.asMention})" })
 			if (text.length >= 2048) {
 				text = text.substring(0, 2047)
 			}
 			embed.setDescription(text)
 		} else {
-			embed.setDescription(context.locale["MUSICINFO_NOMUSIC_SHORT"])
+			embed.setDescription(context.legacyLocale["MUSICINFO_NOMUSIC_SHORT"])
 		}
 		return embed.build()
 	}

@@ -25,7 +25,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 			var chosen = split[Loritta.RANDOM.nextInt(split.size)]
 			context.reply(
 					LoriReply(
-							message = "${context.locale["ESCOLHER_RESULT", chosen]}",
+							message = "${context.legacyLocale["ESCOLHER_RESULT", chosen]}",
 							prefix = "\uD83E\uDD14"
 					)
 			)

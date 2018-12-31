@@ -23,7 +23,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
 	            settings.aboutMe = context.args.joinToString(" ")
             }
 
-            context.sendMessage(context.getAsMention(true) + context.locale["SOBREMIM_CHANGED", settings.aboutMe])
+            context.sendMessage(context.getAsMention(true) + context.legacyLocale["SOBREMIM_CHANGED", settings.aboutMe])
         } else {
             this.explain(context)
         }

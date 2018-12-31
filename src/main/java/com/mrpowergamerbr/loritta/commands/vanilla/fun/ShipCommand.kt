@@ -53,7 +53,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		}
 
 		if (user1Name != null && user2Name != null && user1Name.isNotEmpty() && user2Name.isNotEmpty()) {
-			var texto = context.getAsMention(true) + "\n💖 **${context.locale["SHIP_NEW_COUPLE"]}** 💖\n"
+			var texto = context.getAsMention(true) + "\n💖 **${context.legacyLocale["SHIP_NEW_COUPLE"]}** 💖\n"
 
 			texto += "`${user1Name}`\n`${user2Name}`\n"
 
@@ -109,25 +109,25 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			var messages = listOf("Isto nunca deverá aparecer!")
 			if (percentage >= 90) {
-				messages = context.locale.SHIP_valor90
+				messages = context.legacyLocale.SHIP_valor90
 			} else if (percentage >= 80) {
-				messages = context.locale.SHIP_valor80
+				messages = context.legacyLocale.SHIP_valor80
 			} else if (percentage >= 70) {
-				messages = context.locale.SHIP_valor70
+				messages = context.legacyLocale.SHIP_valor70
 			} else if (percentage >= 60) {
-				messages = context.locale.SHIP_valor60
+				messages = context.legacyLocale.SHIP_valor60
 			} else if (percentage >= 50) {
-				messages = context.locale.SHIP_valor50
+				messages = context.legacyLocale.SHIP_valor50
 			} else if (percentage >= 40) {
-				messages = context.locale.SHIP_valor40
+				messages = context.legacyLocale.SHIP_valor40
 			} else if (percentage >= 30) {
-				messages = context.locale.SHIP_valor30
+				messages = context.legacyLocale.SHIP_valor30
 			} else if (percentage >= 20) {
-				messages = context.locale.SHIP_valor20
+				messages = context.legacyLocale.SHIP_valor20
 			} else if (percentage >= 10) {
-				messages = context.locale.SHIP_valor10
+				messages = context.legacyLocale.SHIP_valor10
 			} else if (percentage >= 0) {
-				messages = context.locale.SHIP_valor0
+				messages = context.legacyLocale.SHIP_valor0
 			}
 
 			var emoji: BufferedImage

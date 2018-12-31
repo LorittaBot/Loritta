@@ -33,7 +33,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		if (guild == null) {
 			context.reply(
 					LoriReply(
-							message = context.locale["SERVERINFO_UnknownGuild", context.args[0]],
+							message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
 							prefix = Constants.ERROR
 					)
 			)
@@ -46,14 +46,14 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
 		embed.addField("💻 ID", guild.id, true) // ID da Guild
 		embed.addField("\uD83D\uDCBB Shard ID", "${MiscUtil.getShardForGuild(guild, loritta.lorittaShards.shardManager.shards.size)}", true)
-		embed.addField("👑 ${context.locale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild
-		embed.addField("🌎 ${context.locale["SERVERINFO_REGION"]}", guild.region.getName(), true) // Região da Guild
-		embed.addField("\uD83D\uDCAC ${context.locale["SERVERINFO_CHANNELS"]} (${guild.textChannels.size + guild.voiceChannels.size})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** ${guild.voiceChannels.size}", true) // Canais da Guild
+		embed.addField("👑 ${context.legacyLocale["SERVERINFO_OWNER"]}", guild.owner.asMention, true) // Dono da Guild
+		embed.addField("🌎 ${context.legacyLocale["SERVERINFO_REGION"]}", guild.region.getName(), true) // Região da Guild
+		embed.addField("\uD83D\uDCAC ${context.legacyLocale["SERVERINFO_CHANNELS"]} (${guild.textChannels.size + guild.voiceChannels.size})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${guild.textChannels.size}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** ${guild.voiceChannels.size}", true) // Canais da Guild
 		val createdAtDiff = DateUtils.formatDateDiff(guild.creationTime.toInstant().toEpochMilli(), locale)
-		embed.addField("\uD83D\uDCC5 ${context.locale["SERVERINFO_CREATED_IN"]}", "${guild.creationTime.humanize(locale)} ($createdAtDiff)", true)
+		embed.addField("\uD83D\uDCC5 ${context.legacyLocale["SERVERINFO_CREATED_IN"]}", "${guild.creationTime.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(guild.selfMember.joinDate.toInstant().toEpochMilli(), locale)
-		embed.addField("\uD83C\uDF1F ${context.locale["SERVERINFO_JOINED_IN"]}", "${guild.selfMember.joinDate.humanize(locale)} ($joinedAtDiff)", true)
-		embed.addField("👥 ${context.locale["SERVERINFO_MEMBERS"]} (${guild.members.size})", "<:online:313956277808005120> **${context.locale.get("SERVERINFO_ONLINE")}:** ${guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.locale.get("SERVERINFO_AWAY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.locale.get("SERVERINFO_BUSY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.locale.get("SERVERINFO_OFFLINE")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.locale.get("SERVERINFO_PEOPLE")}:** ${guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.locale["SERVERINFO_BOTS"]}:** ${guild.members.count { it.user.isBot }}", true) // Membros da Guild
+		embed.addField("\uD83C\uDF1F ${context.legacyLocale["SERVERINFO_JOINED_IN"]}", "${guild.selfMember.joinDate.humanize(locale)} ($joinedAtDiff)", true)
+		embed.addField("👥 ${context.legacyLocale["SERVERINFO_MEMBERS"]} (${guild.members.size})", "<:online:313956277808005120> **${context.legacyLocale.get("SERVERINFO_ONLINE")}:** ${guild.members.filter{ it.onlineStatus == OnlineStatus.ONLINE }.size} |<:away:313956277220802560> **${context.legacyLocale.get("SERVERINFO_AWAY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.IDLE }.size} |<:dnd:313956276893646850> **${context.legacyLocale.get("SERVERINFO_BUSY")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size} |<:offline:313956277237710868> **${context.legacyLocale.get("SERVERINFO_OFFLINE")}:** ${guild.members.filter { it.onlineStatus == OnlineStatus.OFFLINE }.size}\n\uD83D\uDE4B **${context.legacyLocale.get("SERVERINFO_PEOPLE")}:** ${guild.members.filter{ !it.user.isBot }.size}\n\uD83E\uDD16 **${context.legacyLocale["SERVERINFO_BOTS"]}:** ${guild.members.count { it.user.isBot }}", true) // Membros da Guild
 		// val roles = guild.roles.filter { !it.isPublicRole }
 		// embed.addField("\uD83D\uDCBC ${context.locale["SERVERINFO_ROLES"]} (${roles.size})", roles.joinToString(", ", transform = { it.name }).substringIfNeeded(), true)
 
