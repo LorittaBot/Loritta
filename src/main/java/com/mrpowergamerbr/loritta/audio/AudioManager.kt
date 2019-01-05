@@ -98,11 +98,11 @@ class AudioManager(val loritta: Loritta) {
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60))
-						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_MAX", final]).queue()
+						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_MAX", final]).queue()
 						return
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
 				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
 			}
@@ -125,11 +125,11 @@ class AudioManager(val loritta: Loritta) {
 						return
 					}
 				}
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_NOTFOUND", trackUrl]).queue()
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
 			}
 
 			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["MUSIC_ERROR", exception.message]).queue()
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ERROR", exception.message]).queue()
 			}
 		})
 	}
@@ -153,7 +153,7 @@ class AudioManager(val loritta: Loritta) {
 				track = playlist.tracks[0]
 			}
 
-			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
+			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
 
 			play(context, musicManager, AudioTrackWrapper(track.makeClone(), false, context.userHandle, HashMap<String, String>()), override)
 		} else { // Mas se ela aceita...
@@ -170,9 +170,9 @@ class AudioManager(val loritta: Loritta) {
 			}
 
 			if (ignored == 0) {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED", playlist.tracks.size]).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_PLAYLIST_ADDED", playlist.tracks.size]).queue()
 			} else {
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.locale["MUSIC_PLAYLIST_ADDED_IGNORED", playlist.tracks.size, ignored]).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_PLAYLIST_ADDED_IGNORED", playlist.tracks.size, ignored]).queue()
 			}
 		}
 	}
@@ -256,7 +256,7 @@ class AudioManager(val loritta: Loritta) {
 
 		context.reply(
 				LoriReply(
-						context.locale["PULAR_MUSICSKIPPED"],
+						context.legacyLocale["PULAR_MUSICSKIPPED"],
 						"\uD83E\uDD39"
 				)
 		)
@@ -296,7 +296,7 @@ class AudioManager(val loritta: Loritta) {
 			if (context.config.musicConfig.musicGuildId == null) {
 				context.reply(
 						LoriReply(
-								context.locale["TOCAR_InvalidChannel"],
+								context.legacyLocale["TOCAR_InvalidChannel"],
 								Constants.ERROR
 						)
 				)
@@ -309,14 +309,14 @@ class AudioManager(val loritta: Loritta) {
 			if (channel != null) {
 				context.reply(
 						LoriReply(
-								context.locale["TOCAR_NOTINCHANNEL", channel.name.stripCodeMarks()],
+								context.legacyLocale["TOCAR_NOTINCHANNEL", channel.name.stripCodeMarks()],
 								Constants.ERROR
 						)
 				)
 			} else {
 				context.reply(
 						LoriReply(
-								context.locale["TOCAR_InvalidChannel"],
+								context.legacyLocale["TOCAR_InvalidChannel"],
 								Constants.ERROR
 						)
 				)

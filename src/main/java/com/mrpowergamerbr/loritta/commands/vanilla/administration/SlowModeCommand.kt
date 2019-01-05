@@ -45,7 +45,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 			val seconds = context.args[0].toIntOrNull()
 
 			if (seconds == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["INVALID_NUMBER", context.args[0]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["INVALID_NUMBER", context.args[0]])
 				return
 			}
 
@@ -56,7 +56,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 
 				loritta save context.config
 
-				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
+				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
 
@@ -66,7 +66,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 
 			loritta save context.config
 
-			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
+			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {
 			this.explain(context)
 		}

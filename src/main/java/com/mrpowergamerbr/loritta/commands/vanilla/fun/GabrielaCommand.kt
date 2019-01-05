@@ -262,6 +262,20 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 			pergunta = StringUtils.stripAccents(pergunta)
 
+			val hasBadWords = WORD_BLACKLIST.any {
+				pergunta.contains(Regex("(?i)\\b($it)\\b"))
+			}
+
+			if (hasBadWords) {
+				context.reply(
+						LoriReply(
+								context.locale["commands.fun.gabriela.hasBadWord"],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
 			val split = pergunta.split(" ")
 
 			val perguntas = mutableSetOf<String>()
@@ -303,7 +317,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 				val answers = document.answers.filter { raw ->
 					WORD_BLACKLIST.forEach {
-						if (raw.answer.contains(it, true)) {
+						if (raw.answer.contains(Regex("(?i)\b($it)\b"))) {
 							return@filter false
 						}
 					}
@@ -346,7 +360,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 						discordWebhook.send(
 								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
-										context.locale["FRASETOSCA_GABRIELA"],
+										context.legacyLocale["FRASETOSCA_GABRIELA"],
 										context.getAsMention(true) + answer.answer.escapeMentions(),
 										"${Loritta.config.websiteUrl}assets/img/gabriela_avatar.png"
 								),
@@ -366,7 +380,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			}
 			discordWebhook.send(
 					com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
-							context.locale["FRASETOSCA_GABRIELA"],
+							context.legacyLocale["FRASETOSCA_GABRIELA"],
 							context.getAsMention(true) + locale["FRASETOSCA_DontKnow"],
 							"https://loritta.website/assets/img/gabriela_avatar.png"
 					),
@@ -443,7 +457,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			if (it.reactionEmote.name == "\uD83D\uDCA1") {
 				val ask = context.reply(
 						LoriReply(
-								context.locale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],
+								context.legacyLocale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],
 								"\uD83E\uDD14"
 						)
 				)
@@ -490,7 +504,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						if (5 > levensteinDistance.apply(deveResponder, it.answer)) {
 							context.reply(
 									LoriReply(
-											context.locale["FRASETOSCA_TooSimilar"],
+											context.legacyLocale["FRASETOSCA_TooSimilar"],
 											Constants.ERROR
 									)
 							)
@@ -514,7 +528,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 					context.reply(
 							LoriReply(
-									context.locale["FRASETOSCA_ThanksForHelping"],
+									context.legacyLocale["FRASETOSCA_ThanksForHelping"],
 									"\uD83D\uDCA1"
 							)
 					)

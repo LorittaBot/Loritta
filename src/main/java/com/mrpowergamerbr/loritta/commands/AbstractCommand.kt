@@ -115,7 +115,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	suspend fun explain(context: CommandContext) {
 		val conf = context.config
 		val ev = context.event
-		val locale = context.locale
+		val locale = context.legacyLocale
 
 		if (conf.explainOnCommandRun) {
 			val rawArguments = context.message.contentRaw.split(" ")
@@ -137,7 +137,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				else -> ""
 			}
 
-			var cmdInfo = getDescription(context.locale) + "\n\n"
+			var cmdInfo = getDescription(context.legacyLocale) + "\n\n"
 
 			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
@@ -158,9 +158,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			for (example in this.getExamples()) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
-			if (this.getExamples(context.locale).isNotEmpty()) {
+			if (this.getExamples(context.legacyLocale).isNotEmpty()) {
 				examples.clear()
-				for (example in this.getExamples(context.locale)) { // Adicionar todos os exemplos simples
+				for (example in this.getExamples(context.legacyLocale)) { // Adicionar todos os exemplos simples
 					examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 				}
 			}
@@ -170,7 +170,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			if (examples.isEmpty()) {
 				embed.addField(
-						"\uD83D\uDCD6 " + context.locale["EXAMPLE"],
+						"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"],
 						commandLabel,
 						false
 				)
@@ -180,7 +180,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					exampleList += example + "\n"
 				}
 				embed.addField(
-						"\uD83D\uDCD6 " + context.locale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
+						"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
 						exampleList,
 						false
 				)
@@ -208,7 +208,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
 				embed.addField(
-						"\uD83D\uDD00 ${context.locale["CommandAliases"]}",
+						"\uD83D\uDD00 ${context.legacyLocale["CommandAliases"]}",
 						onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
 						true
 				)
@@ -216,7 +216,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(context.locale[this.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(context.legacyLocale[this.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

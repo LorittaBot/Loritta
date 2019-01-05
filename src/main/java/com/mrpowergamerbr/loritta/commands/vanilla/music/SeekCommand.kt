@@ -50,7 +50,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 											TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(manager.player.playingTrack.duration))
 							)
 
-							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale.get("SEEK_TOO_BIG", fancy))
+							context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("SEEK_TOO_BIG", fancy))
 						} else {
 							val fancy = String.format("%02d:%02d",
 									TimeUnit.MILLISECONDS.toMinutes(time),
@@ -60,7 +60,7 @@ class SeekCommand : AbstractCommand("seek", category = CommandCategory.MUSIC, lo
 
 							manager.player.playingTrack.position = time
 
-							context.sendMessage(context.getAsMention(true) + context.locale.get("SEEK_CHANGED", fancy))
+							context.sendMessage(context.getAsMention(true) + context.legacyLocale.get("SEEK_CHANGED", fancy))
 						}
 					} else {
 						context.explain()

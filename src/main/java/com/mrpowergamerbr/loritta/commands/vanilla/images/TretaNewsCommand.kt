@@ -69,7 +69,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 						mentionUser = false
 				),
 				LoriReply(
-						message = "\uD83D\uDCFA `${base.views}` **${context.locale["MUSICINFO_VIEWS"]}**, \uD83D\uDE0D `${base.likes}` **${context.locale["MUSICINFO_LIKES"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.locale["MUSICINFO_DISLIKES"]}**",
+						message = "\uD83D\uDCFA `${base.views}` **${context.legacyLocale["MUSICINFO_VIEWS"]}**, \uD83D\uDE0D `${base.likes}` **${context.legacyLocale["MUSICINFO_LIKES"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.legacyLocale["MUSICINFO_DISLIKES"]}**",
 						prefix = "\uD83D\uDCC8",
 						mentionUser = false
 				)

@@ -245,12 +245,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			// Vamos pegar se a nossa role existe
-			val mutedRoles = context.guild.getRolesByName(context.locale["MUTE_ROLE_NAME"], false)
+			val mutedRoles = context.guild.getRolesByName(context.legacyLocale["MUTE_ROLE_NAME"], false)
 			val mutedRole: Role?
 			if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
 				mutedRole = context.guild.controller.createRole()
-						.setName(context.locale["MUTE_ROLE_NAME"])
+						.setName(context.legacyLocale["MUTE_ROLE_NAME"])
 						.setColor(Color.BLACK)
 						.await()
 			} else {
@@ -284,7 +284,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (!context.guild.isMember(member.user)) {
 				context.reply(
 						LoriReply(
-								context.locale["BAN_UserNotInThisServer"],
+								context.legacyLocale["BAN_UserNotInThisServer"],
 								Constants.ERROR
 						)
 				)
@@ -294,7 +294,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (couldntEditChannels.isNotEmpty()) {
 				context.reply(
 						LoriReply(
-								context.locale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
+								context.legacyLocale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
 								Constants.ERROR
 						)
 				)
@@ -333,12 +333,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 							break
 						Thread.sleep(250)
 					}
-					spawnRoleRemovalThread(context.guild, context.locale, user, time!!)
+					spawnRoleRemovalThread(context.guild, context.legacyLocale, user, time!!)
 				}
 			} catch (e: HierarchyException) {
 				context.reply(
 						LoriReply(
-								context.locale["BAN_RoleTooLow"],
+								context.legacyLocale["BAN_RoleTooLow"],
 								Constants.ERROR
 						)
 				)

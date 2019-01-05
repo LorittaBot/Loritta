@@ -58,7 +58,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				val embed = EmbedBuilder()
 				embed.setColor(Color(217, 66, 52))
 				embed.setDescription(format)
-				embed.setTitle("<:youtube:314349922885566475> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
+				embed.setTitle("<:youtube:314349922885566475> ${context.legacyLocale["YOUTUBE_RESULTS_FOR", query]}")
 				val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 				mensagem.onReactionAddByAuthor(context) {
@@ -109,10 +109,10 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							embed.setDescription(item.snippet.description)
 							embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
 
-							embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
-							embed.addField("\uD83D\uDE0D ${context.locale["MUSICINFO_LIKES"]}", likeCount, true)
-							embed.addField("\uD83D\uDE20 ${context.locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
-							embed.addField("\uD83D\uDCAC ${context.locale["MUSICINFO_COMMENTS"]}", commentCount, true)
+							embed.addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount, true)
+							embed.addField("\uD83D\uDE0D ${context.legacyLocale["MUSICINFO_LIKES"]}", likeCount, true)
+							embed.addField("\uD83D\uDE20 ${context.legacyLocale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
+							embed.addField("\uD83D\uDCAC ${context.legacyLocale["MUSICINFO_COMMENTS"]}", commentCount, true)
 							embed.setThumbnail(thumbnail)
 							embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
 
@@ -178,14 +178,14 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							embed.setThumbnail(channelIcon)
 							embed.setDescription(description)
 							embed.setColor(Color(217, 66, 52))
-							embed.addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount, true)
-							embed.addField("\uD83D\uDC3E ${context.locale["YOUTUBE_Subscribers"]}", subscriberCount, true)
-							embed.addField("\uD83C\uDFA5 ${context.locale["YOUTUBE_Videos"]}", videoCount, true)
+							embed.addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount, true)
+							embed.addField("\uD83D\uDC3E ${context.legacyLocale["YOUTUBE_Subscribers"]}", subscriberCount, true)
+							embed.addField("\uD83C\uDFA5 ${context.legacyLocale["YOUTUBE_Videos"]}", videoCount, true)
 
 							if (lastUploadedVideoName != null)
-								embed.addField("\uD83D\uDCE5 ${context.locale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
+								embed.addField("\uD83D\uDCE5 ${context.legacyLocale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
 							if (lastLikedVideoName != null)
-								embed.addField("<:twitt_starstruck:352216844603752450> ${context.locale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
+								embed.addField("<:twitt_starstruck:352216844603752450> ${context.legacyLocale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
 
 							embed.addField("⛓ Link", "https://youtube.com/channel/${item.snippet.channelId}", true)
 							// Criar novo embed!

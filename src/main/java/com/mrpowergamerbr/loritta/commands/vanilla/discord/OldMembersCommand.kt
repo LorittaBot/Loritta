@@ -39,7 +39,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
-			setTitle("\uD83C\uDF1F ${context.locale.format(guild.name) { commands.discord.oldMembers.theOldestPeople }}")
+			setTitle("\uD83C\uDF1F ${context.legacyLocale.format(guild.name) { commands.discord.oldMembers.theOldestPeople }}")
 
 			for ((index, member) in sortedMembersInCurrentPage.withIndex()) {
 				val ownerEmote = when {
@@ -65,7 +65,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 				}
 
 				appendDescription("`${1 + index + (page * 10)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
-				setFooter("${context.locale.format { loritta.page }} ${context.locale.format(page + 1, maxPage + 1) { loritta.xOfX }} | ${context.locale.format(userCurrentPage + 1) { loritta.youAreCurrentlyOnPage }}", null)
+				setFooter("${context.legacyLocale.format { loritta.page }} ${context.legacyLocale.format(page + 1, maxPage + 1) { loritta.xOfX }} | ${context.legacyLocale.format(userCurrentPage + 1) { loritta.youAreCurrentlyOnPage }}", null)
 			}
 		}
 

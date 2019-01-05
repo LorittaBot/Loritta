@@ -25,7 +25,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val bi = ImageIO.read(File(Loritta.ASSETS + context.locale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
+		val bi = ImageIO.read(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics as Graphics2D

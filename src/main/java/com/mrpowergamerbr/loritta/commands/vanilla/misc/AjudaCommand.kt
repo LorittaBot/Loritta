@@ -32,7 +32,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").queue()
 			}
 
-			val description = context.locale[
+			val description = context.legacyLocale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
 					Loritta.config.addBotUrl,
@@ -40,7 +40,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 			val builder = EmbedBuilder()
 					.setColor(Color(0, 193, 223))
-					.setTitle("💁 ${context.locale.get("AJUDA_MY_HELP")}")
+					.setTitle("💁 ${context.legacyLocale.get("AJUDA_MY_HELP")}")
 					.setDescription(description)
 					.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 
@@ -78,7 +78,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			sendInfoBox(context, privateChannel)
 		} catch (e: ErrorResponseException) {
 			if (e.errorCode == 50007) // Cannot send messages to this user
-				context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.locale["AJUDA_ERROR_WHEN_OPENING_DM"]).queue()
+				context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.legacyLocale["AJUDA_ERROR_WHEN_OPENING_DM"]).queue()
 		}
 	}
 
@@ -103,7 +103,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 		val embeds = ArrayList<MessageEmbed>()
 		var embed = EmbedBuilder()
-		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.locale[cat.fancyTitle], null)
+		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.legacyLocale[cat.fancyTitle], null)
 		val conf = context.config
 
 		val color = when (cat) {
@@ -135,7 +135,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		embed.setColor(color)
 		embed.setThumbnail(image)
 
-		var description = "*" + context.locale[cat.description] + "*\n\n"
+		var description = "*" + context.legacyLocale[cat.description] + "*\n\n"
 		val categoryCmds = loritta.commandManager.getRegisteredCommands().filter { cmd -> cmd.category == cat } + loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 		if (!categoryCmds.isEmpty()) {
@@ -148,8 +148,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			}) {
 				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
 					val toBeAdded = when (cmd) {
-						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.locale) + "\n"
-						is LorittaCommand -> "**" + conf.commandPrefix + cmd.labels.firstOrNull() + "**" + " `" + cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale) + "`" + " » " + cmd.getDescription(loritta.getLocaleById(conf.localeId)) + "\n"
+						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.legacyLocale) + "\n"
+						is LorittaCommand -> "**" + conf.commandPrefix + cmd.labels.firstOrNull() + "**" + " `" + cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.legacyLocale) + "`" + " » " + cmd.getDescription(loritta.getLocaleById(conf.localeId)) + "\n"
 						else -> throw UnsupportedOperationException()
 					}
 					if ((description + toBeAdded).length > 2048) {
@@ -207,7 +207,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
 			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }
 			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
-			description += "$emoji **" + context.locale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
+			description += "$emoji **" + context.legacyLocale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
 			// Exemplos de comandos, iremos pegar os comandos mais usados e mostrar lá
 			val mostUsedCommands = cmdsInCategory.sortedByDescending { it.executedCount }
 			val subList = mostUsedCommands.subList(0, Math.min(5, mostUsedCommands.size))
@@ -215,7 +215,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		val embed = EmbedBuilder().apply {
-			setTitle(context.locale["AJUDA_SelectCategory"])
+			setTitle(context.legacyLocale["AJUDA_SelectCategory"])
 			setDescription(description)
 			setColor(Color(0, 193, 223))
 		}

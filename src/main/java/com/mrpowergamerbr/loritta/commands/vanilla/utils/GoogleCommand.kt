@@ -42,7 +42,7 @@ class GoogleCommand : AbstractCommand("google", listOf("g", "search", "procurar"
 			val elements = document.getElementsByClass("rc")
 
 			val embed = EmbedBuilder().apply {
-				setTitle("<:google:378210839171170305> ${context.locale["YOUTUBE_RESULTS_FOR", query]}")
+				setTitle("<:google:378210839171170305> ${context.legacyLocale["YOUTUBE_RESULTS_FOR", query]}")
 				setColor(Color(21, 101, 192))
 				setFooter(resultStats, null)
 			}

@@ -48,7 +48,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
 				context.reply(
 						LoriReply(
-								context.locale.format { commands.discord.addEmoji.success },
+								context.legacyLocale.format { commands.discord.addEmoji.success },
 								emote.asMention
 						)
 				)
@@ -58,7 +58,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				if (e.errorCode == 30008) {
 					context.reply(
 							LoriReply(
-									context.locale.format { commands.discord.addEmoji.limitReached },
+									context.legacyLocale.format { commands.discord.addEmoji.limitReached },
 									Constants.ERROR
 							)
 					)
@@ -69,7 +69,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 			
 			context.reply(
 					LoriReply(
-							context.locale.format { commands.discord.addEmoji.error },
+							context.legacyLocale.format { commands.discord.addEmoji.error },
 							Constants.ERROR
 					)
 			)

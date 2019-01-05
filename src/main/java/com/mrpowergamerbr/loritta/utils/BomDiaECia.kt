@@ -75,6 +75,8 @@ class BomDiaECia {
 		if (forced)
 			thread.interrupt()
 
+		triedToCall.clear()
+
 		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
 
 		val validTextChannels = getActiveTextChannels()
@@ -137,9 +139,17 @@ class BomDiaECia {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			delay(30000)
-			if (triedToCall.isNotEmpty())
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue()
-			triedToCall.clear()
+			if (triedToCall.isNotEmpty()) {
+				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue {
+					if (it.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+						it.onReactionAddByAuthor(user.id) {
+							val triedToCall = triedToCall.mapNotNull { lorittaShards.getUserById(it) }
+							channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
+						}
+						it.addReaction("⁉").queue()
+					}
+				}
+			}
 		}
 	}
 

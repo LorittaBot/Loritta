@@ -32,7 +32,7 @@ class SendMessageGuildController {
 		val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
 
 		val diff = System.currentTimeMillis() - last
-		if (2500 >= diff) {
+		if (4000 >= diff) {
 			res.send(
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.RATE_LIMIT,

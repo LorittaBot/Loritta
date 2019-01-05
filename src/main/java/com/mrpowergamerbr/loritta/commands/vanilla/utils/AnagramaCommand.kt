@@ -45,11 +45,11 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 			context.reply(
 					LoriReply(
-							message = context.locale["ANAGRAMA_RESULT", shuffledWord] + " \uD83D\uDE4B",
+							message = context.legacyLocale["ANAGRAMA_RESULT", shuffledWord] + " \uD83D\uDE4B",
 							prefix = "✍"
 					),
 					LoriReply(
-							message = context.locale["ANAGRAMA_Stats", palavra, max],
+							message = context.legacyLocale["ANAGRAMA_Stats", palavra, max],
 							prefix = "\uD83E\uDD13"
 					)
 			)

@@ -94,11 +94,11 @@ object AdminUtils {
 					delDays = it.split(" ")[0].toIntOrNull() ?: 0
 
 					if (delDays > 7) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
 						return null
 					}
 					if (0 > delDays) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
 						return null
 					}
 

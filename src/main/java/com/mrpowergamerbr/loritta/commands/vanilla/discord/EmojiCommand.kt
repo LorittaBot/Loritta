@@ -78,7 +78,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				val value = codePoints.joinToString(separator = "-")
 				try {
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
-						context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}${context.locale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")
+						context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}${context.legacyLocale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")
 						return
 					}
 					val emojiImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/$value.png")

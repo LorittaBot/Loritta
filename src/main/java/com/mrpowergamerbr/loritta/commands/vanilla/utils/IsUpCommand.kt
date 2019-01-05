@@ -35,16 +35,16 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 						.code()
 
 				if (response in 100..308) {
-					context.sendMessage(context.getAsMention(true) + context.locale["ISUP_ONLINE", url, response])
+					context.sendMessage(context.getAsMention(true) + context.legacyLocale["ISUP_ONLINE", url, response])
 				} else {
-					context.sendMessage(context.getAsMention(true) + context.locale["ISUP_OFFLINE", url, response])
+					context.sendMessage(context.getAsMention(true) + context.legacyLocale["ISUP_OFFLINE", url, response])
 				}
 			} catch (e: Exception) {
 				var reason = e.message
 				if (e.cause is UnknownHostException) {
-					reason = context.locale["ISUP_UNKNOWN_HOST", url]
+					reason = context.legacyLocale["ISUP_UNKNOWN_HOST", url]
 				}
-				context.sendMessage(context.getAsMention(true) + context.locale["ISUP_OFFLINE", url, reason])
+				context.sendMessage(context.getAsMention(true) + context.legacyLocale["ISUP_OFFLINE", url, reason])
 			}
 		} else {
 			this.explain(context)

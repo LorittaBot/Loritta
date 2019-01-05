@@ -31,7 +31,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(
 						LoriReply(
-								context.locale["YOUTUBE_COULDNT_FIND", query],
+								context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
 								Constants.ERROR
 						)
 				)
@@ -43,7 +43,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (payload == null) {
 				context.reply(
 						LoriReply(
-								context.locale["YOUTUBE_COULDNT_FIND", query],
+								context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
 								Constants.ERROR
 						)
 				)
@@ -67,7 +67,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 				if (offlineImageUrl.isNotEmpty()) {
 					setImage(offlineImageUrl)
 				}
-				addField("\uD83D\uDCFA ${context.locale["MUSICINFO_VIEWS"]}", viewCount.toString(), true)
+				addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount.toString(), true)
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build())

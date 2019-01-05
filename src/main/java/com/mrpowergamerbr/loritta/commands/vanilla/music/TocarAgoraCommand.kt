@@ -33,11 +33,11 @@ class TocarAgoraCommand : AbstractCommand("playnow", listOf("tocaragora"), Comma
 		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember
 			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_MUTED"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["TOCAR_MUTED"])
 				return
 			}
 			if (selfMember.voiceState.isSuppressed) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["TOCAR_CANTTALK"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["TOCAR_CANTTALK"])
 				return
 			}
 		}

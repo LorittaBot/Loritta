@@ -37,7 +37,7 @@ class EncurtarCommand : AbstractCommand("shorten", listOf("bitly", "encurtar"), 
 						)
 				)
 			} else {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["BITLY_INVALID", context.args[0]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["BITLY_INVALID", context.args[0]])
 			}
 		} else {
 			context.explain()

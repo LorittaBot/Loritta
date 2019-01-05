@@ -57,10 +57,10 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 
 		val embed = EmbedBuilder().apply {
 			setThumbnail("https://i.imgur.com/Vl9ejFk.png")
-			setTitle("<:loritta:331179879582269451> " + context.locale["PATREON_THANKS"])
+			setTitle("<:loritta:331179879582269451> " + context.legacyLocale["PATREON_THANKS"])
 			setColor(Color(0, 193, 223))
 			setDescription(patrons)
-			addField("\uD83C\uDF80 " + context.locale["PATREON_DO_YOU_WANNA_HELP"], context.locale["PATREON_HOW_TO_HELP", "https://www.patreon.com/mrpowergamerbr", "${Loritta.config.websiteUrl}donate", "https://apoia.se/mrpowergamerbr"], false)
+			addField("\uD83C\uDF80 " + context.legacyLocale["PATREON_DO_YOU_WANNA_HELP"], context.legacyLocale["PATREON_HOW_TO_HELP", "https://www.patreon.com/mrpowergamerbr", "${Loritta.config.websiteUrl}donate", "https://apoia.se/mrpowergamerbr"], false)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build())
