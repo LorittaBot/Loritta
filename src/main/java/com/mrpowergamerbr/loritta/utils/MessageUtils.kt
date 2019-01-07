@@ -138,6 +138,7 @@ object MessageUtils {
 		message = message.replace("{nickname}", nickname.escapeMentions())
 		message = message.replace("{guild}", guildName.escapeMentions())
 		message = message.replace("{guildsize}", guildSize)
+		message = message.replace("{guild-size}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner.escapeMentions())
 
