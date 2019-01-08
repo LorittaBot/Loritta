@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
@@ -11,7 +12,9 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
 class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
-    override val discordPermissions = listOf(Permission.MANAGE_CHANNEL)
+    override val discordPermissions = listOf(
+            Permission.MESSAGE_MANAGE
+    )
 
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.fun.giveaway.description"]
@@ -79,7 +82,53 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                         )
 
                         giveawayWhere.onResponseByAuthor(context) {
-                            val channel = it.message.contentRaw
+                            val pop = it.message.contentRaw
+                            var channel: TextChannel? = null
+
+                            val channels = context.discordGuild!!.getTextChannelsByName(pop, false)
+
+                            if (channels.isNotEmpty()) {
+                                channel = channels[0]
+                            } else {
+                                val id = pop
+                                        .replace("<", "")
+                                        .replace("#", "")
+                                        .replace(">", "")
+
+                                if (id.isValidSnowflake()) {
+                                    channel = context.discordGuild.getTextChannelById(id)
+                                }
+                            }
+
+                            if (channel == null) {
+                                context.reply(
+                                        LoriReply(
+                                                "Canal inválido!",
+                                                Constants.ERROR
+                                        )
+                                )
+                                return@onResponseByAuthor
+                            }
+
+                            if (!channel.canTalk()) {
+                                context.reply(
+                                        LoriReply(
+                                                "Eu não posso falar no canal de texto!",
+                                                Constants.ERROR
+                                        )
+                                )
+                                return@onResponseByAuthor
+                            }
+
+                            if (!channel.canTalk(context.handle)) {
+                                context.reply(
+                                        LoriReply(
+                                                "Você não pode falar no canal de texto!",
+                                                Constants.ERROR
+                                        )
+                                )
+                                return@onResponseByAuthor
+                            }
 
                             giveawayWhere.invalidateInteraction()
                             giveawayWhere.delete()
@@ -138,7 +187,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                 giveawayCount.delete()
 
                                 GiveawayManager.spawnGiveaway(
-                                        it.textChannel!!, /* it.guild!!.getTextChannelsByName(where, true)[0] */
+                                        channel,
                                         reason,
                                         description,
                                         reaction,
