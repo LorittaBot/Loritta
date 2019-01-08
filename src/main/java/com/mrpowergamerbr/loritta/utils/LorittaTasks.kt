@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import net.perfectdreams.loritta.utils.giveaway.SpawnGiveawayTask
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -33,6 +34,7 @@ object LorittaTasks {
 		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 15L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.MINUTES)
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {

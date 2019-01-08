@@ -25,6 +25,7 @@ import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import net.perfectdreams.loritta.api.entities.User
+import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
 import java.awt.Image
@@ -45,6 +46,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		registerCommand(PluginsCommand())
 		
 		registerCommand(ChannelInfoCommand())
+		registerCommand(GiveawayCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
@@ -384,7 +386,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					return true
 				}
 
-				if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+				if (context.command.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 					context.reply(
 							LoriReply(
 									legacyLocale.format { commands.commandOnlyForOwner },

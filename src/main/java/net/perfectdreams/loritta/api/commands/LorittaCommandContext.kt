@@ -12,7 +12,7 @@ import java.io.InputStream
 /**
  * Contexto do comando executado
  */
-abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: LegacyBaseLocale) {
+abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: LegacyBaseLocale, val command: LorittaCommand, val args: Array<String>) {
 	abstract val message: Message
 
 	abstract val guild: net.perfectdreams.loritta.api.entities.Guild?

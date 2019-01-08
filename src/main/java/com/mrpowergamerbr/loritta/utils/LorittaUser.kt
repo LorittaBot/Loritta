@@ -46,7 +46,7 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
 
 		// A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
-		if (context.cmd.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+		if (context.command.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 			return false
 		}
 
