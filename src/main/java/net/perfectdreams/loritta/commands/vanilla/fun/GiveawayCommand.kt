@@ -16,6 +16,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
             Permission.MESSAGE_MANAGE
     )
 
+    override val canUseInPrivateChannel = false
+
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.fun.giveaway.description"]
     }

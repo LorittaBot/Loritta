@@ -94,4 +94,21 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
 
 		return false
 	}
+
+	/**
+	 * Verifica se o usuário tem permissão para utilizar um comando
+	 */
+	override fun canUseCommand(context: LorittaCommandContext): Boolean {
+		if (!super.canUseCommand(context))
+			return false
+
+		if (context is DiscordCommandContext) {
+			// E, finalmente, iremos verificar as permissões do usuário
+			if (member.hasPermission(context.event.textChannel, context.command.discordPermissions)) {
+				return true
+			}
+		}
+
+		return false
+	}
 }
