@@ -21,17 +21,24 @@ object GiveawayManager {
     var giveawayTasks = mutableMapOf<Long, Job>()
     private val logger = KotlinLogging.logger {}
 
+    fun getReactionMention(reaction: String): String {
+        val emoteId = reaction.toLongOrNull()
+
+        if (emoteId != null) {
+            val mention = lorittaShards.getEmoteById(emoteId.toString())?.asMention
+            if (mention != null)
+                return mention
+        }
+
+        return reaction
+    }
+
     fun createEmbed(reason: String, description: String, reaction: String, epoch: Long): MessageEmbed {
         val secondsRemaining = (epoch - System.currentTimeMillis()) / 1000
-        val messageReaction = if (reaction.contains(":")) {
-            "<:$reaction>"
-        } else {
-            reaction
-        }
 
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 $reason")
-            setDescription("$description\n\nUse $messageReaction para entrar!\nTempo restante: **$secondsRemaining** segundos")
+            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!\nTempo restante: **$secondsRemaining** segundos")
             setColor(Constants.DISCORD_BLURPLE)
             setFooter("Acabará em", null)
             setTimestamp(Instant.ofEpochMilli(epoch))
@@ -46,7 +53,14 @@ object GiveawayManager {
         val message = channel.sendMessage(embed).await()
         val messageId = message.idLong
 
-        message.addReaction(reaction).await()
+        val emoteId = reaction.toLongOrNull()
+
+        if (emoteId != null) {
+            val mention = lorittaShards.getEmoteById(emoteId.toString())
+            message.addReaction(mention).await()
+        } else {
+            message.addReaction(reaction).await()
+        }
 
         val giveaway = transaction(Databases.loritta) {
             Giveaway.new {
