@@ -150,11 +150,12 @@ object GiveawayManager {
     }
 
     suspend fun cancelGiveaway(giveaway: Giveaway) {
-        if (lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED })
-            return
-
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
+
+        // Se a Lori ainda não iniciou, vamos apenas ignorar por enquanto
+        if (lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED })
+            return
 
         transaction(Databases.loritta) {
             giveaway.delete()
