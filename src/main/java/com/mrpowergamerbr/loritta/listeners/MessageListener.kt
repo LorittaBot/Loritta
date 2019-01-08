@@ -185,7 +185,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 				}
 
-				loritta.messageInteractionCache.values.forEach {
+				loritta.messageInteractionCache.values.toMutableList().forEach {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
 
