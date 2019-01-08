@@ -64,7 +64,7 @@ object GiveawayManager {
 
         val giveaway = transaction(Databases.loritta) {
             Giveaway.new {
-                this.guildId = channel.idLong
+                this.guildId = channel.guild.idLong
                 this.textChannelId = channel.idLong
                 this.messageId = messageId
 
