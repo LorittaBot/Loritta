@@ -220,4 +220,4 @@ object GiveawayManager {
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
     }
-}p
+}
