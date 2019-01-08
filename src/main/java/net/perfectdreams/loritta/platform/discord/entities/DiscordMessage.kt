@@ -33,4 +33,8 @@ class DiscordMessage(val handle: net.dv8tion.jda.core.entities.Message) : Messag
 		functions.onResponseByAuthor = function
 		return this
 	}
+
+	fun invalidateInteraction() {
+		loritta.messageInteractionCache.remove(this.handle.idLong)
+	}
 }

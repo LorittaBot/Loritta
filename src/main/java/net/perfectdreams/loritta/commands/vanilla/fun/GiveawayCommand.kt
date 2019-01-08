@@ -29,6 +29,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
         createGiveaway.onResponseByAuthor(context) {
             val reason = it.message.contentRaw
 
+            createGiveaway.invalidateInteraction()
             createGiveaway.delete()
 
             val giveawayDescription = context.reply(
@@ -40,6 +41,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
 
             giveawayDescription.onResponseByAuthor(context) {
                 val description = it.message.contentRaw
+
+                giveawayDescription.invalidateInteraction()
                 giveawayDescription.delete()
 
                 val giveawayTime = context.reply(
@@ -51,6 +54,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
 
                 giveawayTime.onResponseByAuthor(context) {
                     val time = it.message.contentRaw
+
+                    giveawayTime.invalidateInteraction()
                     giveawayTime.delete()
 
                     val giveawayReaction = context.reply(
@@ -63,6 +68,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                     giveawayReaction.onResponseByAuthor(context) {
                         var reaction = it.message.emotes.firstOrNull()?.id ?: it.message.contentRaw
 
+                        giveawayReaction.invalidateInteraction()
                         giveawayReaction.delete()
 
                         val giveawayWhere = context.reply(
@@ -75,6 +81,9 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                         giveawayWhere.onResponseByAuthor(context) {
                             val channel = it.message.contentRaw
 
+                            giveawayWhere.invalidateInteraction()
+                            giveawayWhere.delete()
+
                             val giveawayCount = context.reply(
                                     LoriReply(
                                             message = locale["commands.fun.giveaway.giveawayWinnerCount"],
@@ -82,7 +91,6 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                     )
                             )
 
-                            giveawayWhere.delete()
 
                             giveawayCount.onResponseByAuthor(context) {
                                 val numberOfWinners = it.message.contentRaw.toIntOrNull()

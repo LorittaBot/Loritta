@@ -129,9 +129,18 @@ object GiveawayManager {
                     delay(1000)
                 }
 
-                val guild = lorittaShards.getGuildById(giveaway.guildId)
-                val channel = guild!!.getTextChannelById(giveaway.textChannelId)
-                val message = channel.getMessageById(giveaway.messageId).await()
+                val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+                    cancelGiveaway(giveaway)
+                    return@launch
+                }
+                val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+                    cancelGiveaway(giveaway)
+                    return@launch
+                }
+                val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                    cancelGiveaway(giveaway)
+                    return@launch
+                }
 
                 GiveawayManager.finishGiveaway(message, giveaway)
             } catch (e: Exception) {
