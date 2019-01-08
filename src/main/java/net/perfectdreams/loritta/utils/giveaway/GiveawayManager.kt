@@ -209,8 +209,8 @@ object GiveawayManager {
             setFooter("Encerrado!", null)
         }
 
-        message.editMessage(embed).await()
-        
+        message.editMessage(embed.build()).await()
+
         transaction(Databases.loritta) {
             giveaway.delete()
         }
