@@ -117,7 +117,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
-			GuildProfiles.select { (Profiles.id eq user.idLong) and (Profiles.money greaterEq userProfile.money) }.count()
+			Profiles.select { (Profiles.id eq user.idLong) and (Profiles.money greaterEq userProfile.money) }.count()
 		}
 
 		graphics.font = whitneyBold20
