@@ -29,7 +29,7 @@ class DiscordMessage(val handle: net.dv8tion.jda.core.entities.Message) : Messag
 		if (context !is DiscordCommandContext)
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
 
-		val functions = loritta.messageInteractionCache.getOrPut(this.handle.idLong) { MessageInteractionFunctions(this.handle.guild?.idLong, context.userHandle.id) }
+		val functions = loritta.messageInteractionCache.getOrPut(this.handle.idLong) { MessageInteractionFunctions(this.handle.guild?.idLong, this.handle.channel?.idLong, context.userHandle.id) }
 		functions.onResponseByAuthor = function
 		return this
 	}
