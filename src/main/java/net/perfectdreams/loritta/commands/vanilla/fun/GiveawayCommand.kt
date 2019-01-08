@@ -1,11 +1,8 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.convertToEpochMillis
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.Permission
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -72,38 +69,71 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
                         )
 
                         giveawayWhere.onResponseByAuthor(context) {
-                            val where = it.message.contentRaw
-                            val epoch = time.convertToEpochMillis()
+                            val channel = it.message.contentRaw
 
-                            context.sendMessage("$reason, $time, $reaction, $where")
-
-                            try {
-                                // Testar se é possível usar o emoticon atual
-                                val emoteId = reaction.toLongOrNull()
-                                if (emoteId != null) {
-                                    val emote = lorittaShards.getEmoteById(emoteId.toString())
-
-                                    if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
-                                        reaction = "\uD83C\uDF89"
-                                    } else {
-                                        giveawayWhere.handle.addReaction(emote).await()
-                                    }
-                                } else {
-                                    giveawayWhere.handle.addReaction(reaction).await()
-                                }
-                            } catch (e: Exception) {
-                                reaction = "\uD83C\uDF89"
-                            }
+                            val giveawayCount = context.reply(
+                                    LoriReply(
+                                            message = "Quantas pessoas vão poder ganhar o giveaway?",
+                                            prefix = "\uD83E\uDD14"
+                                    )
+                            )
 
                             giveawayWhere.delete()
 
-                            GiveawayManager.spawnGiveaway(
-                                    it.textChannel!!, /* it.guild!!.getTextChannelsByName(where, true)[0] */
-                                    reason,
-                                    description,
-                                    reaction,
-                                    epoch
-                            )
+                            giveawayCount.onResponseByAuthor(context) {
+                                val numberOfWinners = it.message.contentRaw.toIntOrNull()
+
+                                if (numberOfWinners == null) {
+                                    context.reply(
+                                            LoriReply(
+                                                    "Eu não sei o que você colocou aí, mas tenho certeza que não é um número.",
+                                                    Constants.ERROR
+                                            )
+                                    )
+                                    return@onResponseByAuthor
+                                }
+
+                                if (numberOfWinners !in 1..20) {
+                                    context.reply(
+                                            LoriReply(
+                                                    "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
+                                                    Constants.ERROR
+                                            )
+                                    )
+                                    return@onResponseByAuthor
+                                }
+
+                                val epoch = time.convertToEpochMillis()
+
+                                try {
+                                    // Testar se é possível usar o emoticon atual
+                                    val emoteId = reaction.toLongOrNull()
+                                    if (emoteId != null) {
+                                        val emote = lorittaShards.getEmoteById(emoteId.toString())
+
+                                        if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
+                                            reaction = "\uD83C\uDF89"
+                                        } else {
+                                            giveawayCount.handle.addReaction(emote).await()
+                                        }
+                                    } else {
+                                        giveawayCount.handle.addReaction(reaction).await()
+                                    }
+                                } catch (e: Exception) {
+                                    reaction = "\uD83C\uDF89"
+                                }
+
+                                giveawayCount.delete()
+
+                                GiveawayManager.spawnGiveaway(
+                                        it.textChannel!!, /* it.guild!!.getTextChannelsByName(where, true)[0] */
+                                        reason,
+                                        description,
+                                        reaction,
+                                        epoch,
+                                        numberOfWinners
+                                )
+                            }
                         }
                     }
                 }

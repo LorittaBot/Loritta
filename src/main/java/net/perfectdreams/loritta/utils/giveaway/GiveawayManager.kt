@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.utils.giveaway
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
@@ -9,10 +11,8 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.MessageReaction
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.entities.*
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -34,11 +34,28 @@ object GiveawayManager {
     }
 
     fun createEmbed(reason: String, description: String, reaction: String, epoch: Long): MessageEmbed {
-        val secondsRemaining = (epoch - System.currentTimeMillis()) / 1000
+        val diff = (epoch - System.currentTimeMillis()) / 1000
+        val diffSeconds = diff / 1000 % 60
+        val diffMinutes = diff / (60 * 1000) % 60
+        val diffHours = diff / (60 * 60 * 1000) % 24
+        val diffDays = diff / (24 * 60 * 60 * 1000)
+
+        val message = if (diffDays >= 1) {
+            "$diffDays dias"
+        } else if (diffHours >= 1) {
+            "$diffHours horas"
+        } else if (diffMinutes >= 1) {
+            "$diffDays minutos"
+        } else if (diffSeconds >= 1) {
+            "$diffMinutes segundos"
+        } else {
+            "¯\\_(ツ)_/¯"
+        }
 
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 $reason")
-            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!\nTempo restante: **$secondsRemaining** segundos")
+            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
+            addField("⏰⏰ Tempo restante", message, true)
             setColor(Constants.DISCORD_BLURPLE)
             setFooter("Acabará em", null)
             setTimestamp(Instant.ofEpochMilli(epoch))
@@ -47,7 +64,7 @@ object GiveawayManager {
         return embed.build()
     }
 
-    suspend fun spawnGiveaway(channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long): Giveaway {
+    suspend fun spawnGiveaway(channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int): Giveaway {
         val embed = createEmbed(reason, description, reaction, epoch)
 
         val message = channel.sendMessage(embed).await()
@@ -68,7 +85,7 @@ object GiveawayManager {
                 this.textChannelId = channel.idLong
                 this.messageId = messageId
 
-                this.numberOfWinners = 1
+                this.numberOfWinners = numberOfWinners
                 this.reason = reason
                 this.description = description
                 this.finishAt = epoch
@@ -88,21 +105,31 @@ object GiveawayManager {
                     if (!this.isActive) // Oh no, o giveaway acabou então a task não é mais necessária! Ignore...
                         return@launch
 
-                    logger.info("Atualizando giveaway ${giveaway.id.value}")
+                    val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+                        cancelGiveaway(giveaway)
+                        return@launch
+                    }
+                    val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+                        cancelGiveaway(giveaway)
+                        return@launch
+                    }
+                    val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                        cancelGiveaway(giveaway)
+                        return@launch
+                    }
 
-                    val guild = lorittaShards.getGuildById(giveaway.guildId)
-                    val channel = guild!!.getTextChannelById(giveaway.textChannelId)
-                    val message = channel.getMessageById(giveaway.messageId).await()
-
-                    message.editMessage(GiveawayManager.createEmbed(
+                    val embed = GiveawayManager.createEmbed(
                             giveaway.reason,
                             giveaway.description,
                             giveaway.reaction,
                             giveaway.finishAt
-                    )).await()
+                    )
 
+                    if (embed.fields.firstOrNull { it.name == " Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == " Tempo restante" }?.value) {
+                        message.editMessage(embed)
+                    }
 
-                    delay(5000)
+                    delay(1000)
                 }
 
                 val guild = lorittaShards.getGuildById(giveaway.guildId)
@@ -113,6 +140,18 @@ object GiveawayManager {
             } catch (e: Exception) {
                 logger.error(e) { "Error when processing giveaway ${giveaway.id.value}" }
             }
+        }
+    }
+
+    suspend fun cancelGiveaway(giveaway: Giveaway) {
+        if (lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED })
+            return
+
+        giveawayTasks[giveaway.id.value]?.cancel()
+        giveawayTasks.remove(giveaway.id.value)
+
+        transaction(Databases.loritta) {
+            giveaway.delete()
         }
     }
 
@@ -128,10 +167,50 @@ object GiveawayManager {
         }
 
         if (messageReaction != null) {
-            val winner = messageReaction.users.await().getRandom()
-            message.channel.sendMessageAsync("Parabéns ${winner.asMention} por ganhar o giveaway!")
+            val users = messageReaction.users.await()
+
+            if (users.size == 1 && users[0].id == Loritta.config.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
+                return
+            } else {
+                val winners = mutableListOf<User>()
+                val reactedUsers = messageReaction.users.await().filter { it.id != Loritta.config.clientId }.toMutableList()
+
+                repeat(giveaway.numberOfWinners) {
+                    if (reactedUsers.isEmpty())
+                        return@repeat
+
+                    val user = reactedUsers.getRandom()
+                    winners.add(user)
+                    reactedUsers.remove(user)
+                }
+
+                if (winners.size == 1) { // Apenas um ganhador
+                    val winner = winners.first()
+                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** Parabéns ${winner.asMention} por ganhar o giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
+                } else { // Mais de um ganhador
+                    val replies = mutableListOf("\uD83C\uDF89 **|** Parabéns aos ganhadores do giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
+
+                    repeat(giveaway.numberOfWinners) {
+                        val user = reactedUsers[it]
+
+                        if (user != null) {
+                            replies.add("⭐ **|** ${user.asMention}")
+                        } else {
+                            replies.add("⭐ **|** ¯\\_(ツ)_/¯")
+                        }
+                    }
+
+                    message.channel.sendMessageAsync(replies.joinToString("\n"))
+                }
+            }
         } else {
-            message.channel.sendMessageAsync("Nenhuma reação válida na mensagem")
+            message.channel.sendMessageAsync("Nenhuma reação válida na mensagem...")
+        }
+
+        val embed = EmbedBuilder().apply {
+            setTitle("\uD83C\uDF81 ${giveaway.reason}")
+            setDescription(giveaway.description)
+            setFooter("Encerrado!", null)
         }
 
         transaction(Databases.loritta) {
