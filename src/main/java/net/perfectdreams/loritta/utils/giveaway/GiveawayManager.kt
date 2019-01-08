@@ -40,16 +40,12 @@ object GiveawayManager {
         val diffHours = diff / (60 * 60 * 1000) % 24
         val diffDays = diff / (24 * 60 * 60 * 1000)
 
-        val message = if (diffDays >= 1) {
-            "$diffDays dias"
-        } else if (diffHours >= 1) {
-            "$diffHours horas"
-        } else if (diffMinutes >= 1) {
-            "$diffDays minutos"
-        } else if (diffSeconds >= 1) {
-            "$diffMinutes segundos"
-        } else {
-            "¯\\_(ツ)_/¯"
+        val message = when {
+            diffDays >= 1 -> "$diffDays dias"
+            diffHours >= 1 -> "$diffHours horas"
+            diffMinutes >= 1 -> "$diffDays minutos"
+            diffSeconds >= 1 -> "$diffMinutes segundos"
+            else -> "¯\\_(ツ)_/¯"
         }
 
         val embed = EmbedBuilder().apply {
@@ -126,7 +122,7 @@ object GiveawayManager {
                     )
 
                     if (embed.fields.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value) {
-                        message.editMessage(embed)
+                        message.editMessage(embed).await()
                     }
 
                     delay(1000)
@@ -213,6 +209,8 @@ object GiveawayManager {
             setFooter("Encerrado!", null)
         }
 
+        message.editMessage(embed).await()
+        
         transaction(Databases.loritta) {
             giveaway.delete()
         }
