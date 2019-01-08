@@ -189,7 +189,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
 
-					if (it.guildId == event.guild.idLong) {
+					if (it.guildId == event.guild.idLong && it.channelId == event.channel.idLong) {
 						if (it.onResponse != null)
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
