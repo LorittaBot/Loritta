@@ -38,7 +38,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 	val isPrivateChannel: Boolean
 		get() = event.isFromType(ChannelType.PRIVATE)
 
-	override val message: net.perfectdreams.loritta.api.entities.Message
+	override val message: net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 		get() = DiscordMessage(event.message)
 
 	val discordMessage: Message
