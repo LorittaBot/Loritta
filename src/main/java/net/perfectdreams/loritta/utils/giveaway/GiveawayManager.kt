@@ -51,7 +51,7 @@ object GiveawayManager {
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 $reason")
             setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!\n\n$diff")
-            addField("⏰⏰ Tempo restante", message, true)
+            addField("⏰ Tempo restante", message, true)
             setColor(Constants.DISCORD_BLURPLE)
             setFooter("Acabará em", null)
             setTimestamp(Instant.ofEpochMilli(epoch))
@@ -121,7 +121,7 @@ object GiveawayManager {
                             giveaway.finishAt
                     )
 
-                    if (embed.fields.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value) {
+                    if (embed.fields.firstOrNull { it.name == "⏰ Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == "⏰ Tempo restante" }?.value) {
                         message.editMessage(embed).await()
                     }
 
@@ -187,7 +187,7 @@ object GiveawayManager {
                     val replies = mutableListOf("\uD83C\uDF89 **|** Parabéns aos ganhadores do giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
-                        val user = reactedUsers[it]
+                        val user = reactedUsers.getOrNull(it)
 
                         if (user != null) {
                             replies.add("⭐ **|** ${user.asMention}")
