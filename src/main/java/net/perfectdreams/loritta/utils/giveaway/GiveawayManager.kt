@@ -54,7 +54,7 @@ object GiveawayManager {
 
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 $reason")
-            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
+            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!\n\n$diff")
             addField("⏰⏰ Tempo restante", message, true)
             setColor(Constants.DISCORD_BLURPLE)
             setFooter("Acabará em", null)
@@ -220,4 +220,4 @@ object GiveawayManager {
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
     }
-}
+}p
