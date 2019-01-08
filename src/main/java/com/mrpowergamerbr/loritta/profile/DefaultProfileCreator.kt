@@ -109,10 +109,14 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.font = whitneySemiBold20
 		graphics.drawText("$reputations reps", 562, 120, 800 - 6)
 
+		val globalEconomyPosition = transaction(Databases.loritta) {
+			GuildProfiles.select { (Profiles.id eq user.idLong) and (Profiles.money greaterEq userProfile.money) }.count()
+		}
+
 		graphics.font = whitneyBold20
 		graphics.drawText(locale["ECONOMY_NamePlural"], 562, 492, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("${userProfile.money}", 562, 511, 800 - 6)
+		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 562, 511, 800 - 6)
 
 		graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		graphics.font = whitneyMedium22

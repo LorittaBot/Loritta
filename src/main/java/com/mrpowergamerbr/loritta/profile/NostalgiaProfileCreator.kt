@@ -116,10 +116,14 @@ class NostalgiaProfileCreator : ProfileCreator {
 			graphics.drawText("???", 159, 78 + shiftY, 800 - 6)
 		}
 
+		val globalEconomyPosition = transaction(Databases.loritta) {
+			GuildProfiles.select { (Profiles.id eq user.idLong) and (Profiles.money greaterEq userProfile.money) }.count()
+		}
+
 		graphics.font = whitneyBold20
 		graphics.drawText("Sonhos", 159, 98  + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText(userProfile.money.toString(), 159, 116  + shiftY, 800 - 6)
+		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
 		if (marriage != null) {
