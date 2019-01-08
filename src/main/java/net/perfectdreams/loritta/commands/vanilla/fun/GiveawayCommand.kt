@@ -94,25 +94,6 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
                                     reaction,
                                     epoch
                             )
-
-                            /* val channel = it.guild!!.getTextChannelsByName(where, true)[0]
-
-                            val embed = createEmbed(reason, description, reaction, epoch)
-
-                            val message = channel.sendMessage(embed).complete()
-                            val messageId = message.id
-
-                            message.addReaction(reaction).complete()
-
-                            val giveaway = Giveaway(reason, description, 1, epoch, reaction, channel.id, messageId)
-
-                            /* thread {
-                                val config = loritta.getServerConfigForGuild(context.guild.id)
-
-                                config.giveaways.add(giveaway)
-
-                                loritta save config
-                            } */ */
                         }
                     }
                 }
