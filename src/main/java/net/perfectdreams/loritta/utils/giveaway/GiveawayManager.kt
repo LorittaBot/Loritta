@@ -43,8 +43,8 @@ object GiveawayManager {
         val message = when {
             diffDays >= 1 -> "$diffDays dias"
             diffHours >= 1 -> "$diffHours horas"
-            diffMinutes >= 1 -> "$diffDays minutos"
-            diffSeconds >= 1 -> "$diffMinutes segundos"
+            diffMinutes >= 1 -> "$diffMinutes minutos"
+            diffSeconds >= 1 -> "$diffSeconds segundos"
             else -> "¯\\_(ツ)_/¯"
         }
 
