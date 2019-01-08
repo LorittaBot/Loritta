@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.core.entities.MessageReaction
 import net.dv8tion.jda.core.entities.TextChannel
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -102,10 +103,18 @@ object GiveawayManager {
     }
 
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
-        val reaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
+        val emoteId = giveaway.reaction.toLongOrNull()
 
-        if (reaction != null) {
-            val winner = reaction.users.await().getRandom()
+        val messageReaction: MessageReaction?
+
+        if (emoteId != null) {
+            messageReaction = message.reactions.firstOrNull { it.reactionEmote.emote?.idLong == emoteId }
+        } else {
+            messageReaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
+        }
+
+        if (messageReaction != null) {
+            val winner = messageReaction.users.await().getRandom()
             message.channel.sendMessageAsync("Parabéns ${winner.asMention} por ganhar o giveaway!")
         } else {
             message.channel.sendMessageAsync("Nenhuma reação válida na mensagem")

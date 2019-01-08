@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.convertToEpochMillis
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.core.Permission
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -59,11 +60,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
                     )
 
                     giveawayReaction.onResponseByAuthor(context) {
-                        var reaction = it.message.contentRaw
+                        var reaction = it.message.emotes.firstOrNull()?.id ?: it.message.contentRaw
 
-                        if (reaction.startsWith("<")) {
-                            reaction = reaction.substring(2, reaction.length - 1)
-                        }
                         giveawayReaction.delete()
 
                         val giveawayWhere = context.reply(
@@ -80,7 +78,19 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
                             context.sendMessage("$reason, $time, $reaction, $where")
 
                             try {
-                                giveawayWhere.handle.addReaction(reaction).await()
+                                // Testar se é possível usar o emoticon atual
+                                val emoteId = reaction.toLongOrNull()
+                                if (emoteId != null) {
+                                    val emote = lorittaShards.getEmoteById(emoteId.toString())
+
+                                    if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
+                                        reaction = "\uD83C\uDF89"
+                                    } else {
+                                        giveawayWhere.handle.addReaction(emote).await()
+                                    }
+                                } else {
+                                    giveawayWhere.handle.addReaction(reaction).await()
+                                }
                             } catch (e: Exception) {
                                 reaction = "\uD83C\uDF89"
                             }
