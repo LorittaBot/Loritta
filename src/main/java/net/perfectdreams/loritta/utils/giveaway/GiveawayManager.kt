@@ -187,7 +187,7 @@ object GiveawayManager {
                     val replies = mutableListOf("\uD83C\uDF89 **|** Parabéns aos ganhadores do giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
-                        val user = reactedUsers.getOrNull(it)
+                        val user = winners.getOrNull(it)
 
                         if (user != null) {
                             replies.add("⭐ **|** ${user.asMention}")
