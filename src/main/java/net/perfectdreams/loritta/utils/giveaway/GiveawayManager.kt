@@ -34,7 +34,7 @@ object GiveawayManager {
     }
 
     fun createEmbed(reason: String, description: String, reaction: String, epoch: Long): MessageEmbed {
-        val diff = (epoch - System.currentTimeMillis()) / 1000
+        val diff = epoch - System.currentTimeMillis()
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
         val diffHours = diff / (60 * 60 * 1000) % 24
@@ -125,7 +125,7 @@ object GiveawayManager {
                             giveaway.finishAt
                     )
 
-                    if (embed.fields.firstOrNull { it.name == " Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == " Tempo restante" }?.value) {
+                    if (embed.fields.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == "⏰⏰ Tempo restante" }?.value) {
                         message.editMessage(embed)
                     }
 
