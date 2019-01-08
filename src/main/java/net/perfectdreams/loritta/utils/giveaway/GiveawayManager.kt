@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -45,7 +46,7 @@ object GiveawayManager {
             diffHours >= 1 -> "$diffHours horas"
             diffMinutes >= 1 -> "$diffMinutes minutos"
             diffSeconds >= 1 -> "$diffSeconds segundos"
-            else -> "¯\\_(ツ)_/¯"
+            else -> "Alguns millissegundos!"
         }
 
         val embed = EmbedBuilder().apply {
@@ -121,7 +122,7 @@ object GiveawayManager {
                             giveaway.finishAt
                     )
 
-                    if (embed.fields.firstOrNull { it.name == "⏰ Tempo restante" }?.value != message.embeds.firstOrNull()?.fields?.firstOrNull { it.name == "⏰ Tempo restante" }?.value) {
+                    if (embed.fields.first().value != message.embeds.first().fields.first().value) {
                         message.editMessage(embed).await()
                     }
 
@@ -162,6 +163,9 @@ object GiveawayManager {
             messageReaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }
 
+        val serverConfig = loritta.getServerConfigForGuild(message.guild.id)
+        val locale = loritta.getLocaleById(serverConfig.localeId)
+
         if (messageReaction != null) {
             val users = messageReaction.users.await()
 
@@ -182,9 +186,9 @@ object GiveawayManager {
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
-                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** Parabéns ${winner.asMention} por ganhar o giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
+                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "`${giveaway.reason}`"]} ${Emotes.LORI_HAPPY}")
                 } else { // Mais de um ganhador
-                    val replies = mutableListOf("\uD83C\uDF89 **|** Parabéns aos ganhadores do giveaway `${giveaway.reason}`! ${Emotes.LORI_HAPPY}")
+                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "`${giveaway.reason}`"]} ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
                         val user = winners.getOrNull(it)
@@ -206,7 +210,7 @@ object GiveawayManager {
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 ${giveaway.reason}")
             setDescription(giveaway.description)
-            setFooter("Encerrado!", null)
+            setFooter(locale["commands.fun.giveaway.giveawayEnded"], null)
         }
 
         message.editMessage(embed.build()).await()

@@ -10,14 +10,18 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
-class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN) {
+class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
     override val discordPermissions = listOf(Permission.MANAGE_CHANNEL)
+
+    override fun getDescription(locale: BaseLocale): String? {
+        return locale["commands.fun.giveaway.description"]
+    }
 
     @Subcommand
     suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
         val createGiveaway = context.reply(
                 LoriReply(
-                        message = "Qual será o nome do giveaway?",
+                        message = locale["commands.fun.giveaway.giveawayName"],
                         prefix = "\uD83E\uDD14"
                 )
         )
@@ -29,7 +33,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
 
             val giveawayDescription = context.reply(
                     LoriReply(
-                            message = "Qual será a descrição do giveaway?",
+                            message = locale["commands.fun.giveaway.giveawayDescription"],
                             prefix = "\uD83E\uDD14"
                     )
             )
@@ -40,7 +44,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
 
                 val giveawayTime = context.reply(
                         LoriReply(
-                                message = "Por enquanto tempo irá durar o giveaway?",
+                                message = locale["commands.fun.giveaway.giveawayDuration"],
                                 prefix = "\uD83E\uDD14"
                         )
                 )
@@ -51,7 +55,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
 
                     val giveawayReaction = context.reply(
                             LoriReply(
-                                    message = "Qual emoji deverá ser usado nas reações?",
+                                    message = locale["commands.fun.giveaway.giveawayReaction"],
                                     prefix = "\uD83E\uDD14"
                             )
                     )
@@ -63,7 +67,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
 
                         val giveawayWhere = context.reply(
                                 LoriReply(
-                                        message = "Em qual canal deverá acontecer o giveaway?",
+                                        message = locale["commands.fun.giveaway.giveawayChannel"],
                                         prefix = "\uD83E\uDD14"
                                 )
                         )
@@ -73,7 +77,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway"), CommandCategory.FUN)
 
                             val giveawayCount = context.reply(
                                     LoriReply(
-                                            message = "Quantas pessoas vão poder ganhar o giveaway?",
+                                            message = locale["commands.fun.giveaway.giveawayWinnerCount"],
                                             prefix = "\uD83E\uDD14"
                                     )
                             )
