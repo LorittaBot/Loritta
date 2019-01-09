@@ -167,7 +167,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 			setHour.onResponseByAuthor(context) {
 				setHour.delete().queue()
-				val time = it.message.contentDisplay.convertToEpochMillis()
+				val time = it.message.contentDisplay.convertToEpochMillisRelativeToNow()
 				punishUser(time)
 			}
 

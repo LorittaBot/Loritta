@@ -141,7 +141,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN) SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK) KickCommand.kick(context, locale, member, user, reason, isSilent)
 					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE) {
-						val time = punishment.customMetadata0?.convertToEpochMillis()
+						val time = punishment.customMetadata0?.convertToEpochMillisRelativeToNow()
 						MuteCommand.muteUser(context, member, time, locale, user, reason, isSilent)
 					}
 				}

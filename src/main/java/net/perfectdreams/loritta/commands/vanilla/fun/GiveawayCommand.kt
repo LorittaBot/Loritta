@@ -166,7 +166,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                     return@onResponseByAuthor
                                 }
 
-                                val epoch = time.convertToEpochMillis()
+                                val epoch = time.convertToEpochMillisRelativeToNow()
 
                                 try {
                                     // Testar se é possível usar o emoticon atual
