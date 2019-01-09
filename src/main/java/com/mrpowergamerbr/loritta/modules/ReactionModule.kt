@@ -116,6 +116,9 @@ object ReactionModule {
         // Para ficar mais fácil, vamos verificar se a gente já tem um lock na mesma canal-mensagem
         // Processar locks
         for (lock in locks) {
+            if (option.id.value == lock.id.value) // Ignorar caso seja o lock que estamos processando (a gente não liga se o cara já tem o cargo, ou algo assim)
+                continue
+
             val hasRoles = member.roles.any { lock.roleIds.contains(it.id) }
             if (hasRoles) { // Lock!
                 reaction.removeReaction(member.user).await()
