@@ -180,7 +180,7 @@ object GiveawayManager {
             val users = messageReaction.users.await()
 
             if (users.size == 1 && users[0].id == Loritta.config.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
-                return
+                message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
                 val reactedUsers = messageReaction.users.await().filter { it.id != Loritta.config.clientId }.toMutableList()
