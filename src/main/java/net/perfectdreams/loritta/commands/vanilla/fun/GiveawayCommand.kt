@@ -22,6 +22,14 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
         return locale["commands.fun.giveaway.description"]
     }
 
+    fun slowpoke(iterations: Int): Double {
+        var d = 0.0
+        for (j in 1 until iterations) {
+            d += Math.log(Math.E * j)
+        }
+        return d
+    }
+
     @Subcommand
     suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
         val createGiveaway = context.reply(

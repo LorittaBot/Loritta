@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
  * Um usuário que está comunicando com a Loritta
  */
 open class LorittaUser(val user: User, val config: ServerConfig, val profile: Profile) {
-
 	val asMention: String
 		get() = getAsMention(false)
 

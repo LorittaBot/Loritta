@@ -57,7 +57,7 @@ constructor(
 				root,
 				"GraphicControlExtension")
 
-		graphicsControlExtensionNode.setAttribute("disposalMethod", "none")
+		graphicsControlExtensionNode.setAttribute("disposalMethod", "Background")
 		graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE")
 		graphicsControlExtensionNode.setAttribute(
 				"transparentColorFlag",

@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
+import com.mrpowergamerbr.loritta.modules.ReactionModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
@@ -29,6 +30,9 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
@@ -51,6 +55,24 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		)
 
 		private val logger = KotlinLogging.logger {}
+	}
+
+	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
+		if (event.user.isBot)
+			return
+
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			ReactionModule.onReactionAdd(event)
+		}
+	}
+
+	override fun onGuildMessageReactionRemove(event: GuildMessageReactionRemoveEvent) {
+		if (event.user.isBot)
+			return
+
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			ReactionModule.onReactionRemove(event)
+		}
 	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {

@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.core.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.dao.ReactionOption
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -179,6 +180,23 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.sendMessage("Adicionado configuração genérica para o registro!")
 			return
 		}
+
+		if (arg0 == "inject_unsafe2") {
+			val reactionRole = transaction(Databases.loritta) {
+				ReactionOption.new {
+					this.guildId = 297732013006389252L
+					this.textChannelId = 532653936188850177L
+					this.messageId = 532654456878268433L
+					this.reaction = "331179879582269451"
+					this.roleIds = arrayOf("334734175531696128")
+					this.locks = arrayOf()
+				}
+			}
+
+			context.sendMessage("Adicionado configuração genérica para o reaction role! ID: ${reactionRole.id.value}")
+			return
+		}
+
 		if (arg0 == "website") {
 			GlobalHandler.generateViews()
 			context.reply(
