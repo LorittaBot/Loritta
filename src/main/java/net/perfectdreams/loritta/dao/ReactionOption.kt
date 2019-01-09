@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.dao
 
-import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
-import net.perfectdreams.loritta.tables.ReactionRoleConfigs
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
