@@ -73,7 +73,7 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
 			for (role in roles) {
 				val permissionConfig = config.permissionsConfig.roles.getOrDefault(role.id, PermissionsConfig.PermissionRole())
 				if (!permissionConfig.permissions.contains(lorittaPermission))
-					return true
+					return false
 			}
 		}
 
