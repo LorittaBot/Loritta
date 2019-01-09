@@ -68,6 +68,15 @@ class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profil
 
 		roles.sortByDescending { it.position }
 
+		if (lorittaPermission == LorittaPermission.IGNORE_COMMANDS) {
+			// Caso seja IGNORE_COMMANDS, vamos processar de uma maneira diferente
+			for (role in roles) {
+				val permissionConfig = config.permissionsConfig.roles.getOrDefault(role.id, PermissionsConfig.PermissionRole())
+				if (!permissionConfig.permissions.contains(lorittaPermission))
+					return true
+			}
+		}
+
 		return roles
 				.map { config.permissionsConfig.roles.getOrDefault(it.id, PermissionsConfig.PermissionRole()) }
 				.any { it.permissions.contains(lorittaPermission) }

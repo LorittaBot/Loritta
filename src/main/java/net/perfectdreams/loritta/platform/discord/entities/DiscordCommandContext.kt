@@ -58,7 +58,7 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 	val asMention: String
 		get() = lorittaUser.asMention
 
-	override val guild: net.perfectdreams.loritta.api.entities.Guild?
+	override val guild: DiscordGuild?
 		get() = if (event.guild != null)
 			DiscordGuild(event.guild!!)
 		else
