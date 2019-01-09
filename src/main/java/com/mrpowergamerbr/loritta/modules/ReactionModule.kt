@@ -50,14 +50,14 @@ object ReactionModule {
                         (ReactionOptions.guildId eq event.guild.idLong) and
                                 (ReactionOptions.textChannelId eq split[0].toLong()) and
                                 (ReactionOptions.messageId eq split[1].toLong())
-                    }
+                    }.toMutableList()
                 }
                 locks.addAll(channelOptionLock)
             } else { // Lock por option ID, esse daqui é mais complicado!
                 val idOptionLock = transaction(Databases.loritta) {
                     ReactionOption.find {
                         (ReactionOptions.id eq lock.toLong())
-                    }
+                    }.toMutableList()
                 }
                 locks.addAll(idOptionLock)
             }
@@ -76,7 +76,7 @@ object ReactionModule {
             if (member != null)
                 giveRolesToMember(member, event.reaction, option, locks, roles)
         }
-    } 
+    }
 
     suspend fun onReactionRemove(event: GuildMessageReactionRemoveEvent) {
         // Ao remover uma reação, vamos pegar se existe algum reaction role baseado nesta reação escolhida
