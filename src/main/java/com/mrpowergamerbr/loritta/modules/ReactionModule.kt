@@ -70,7 +70,7 @@ object ReactionModule {
         giveRolesToMember(event.member, event.reaction, option, locks, roles)
 
         // E é claro, dê os cargos para o resto do povo (vai se a Lori caiu!)
-        event.reaction.users.await().forEach {
+        event.reaction.users.await().filter { !it.isBot }.forEach {
             val member = event.guild.getMember(it)
 
             if (member != null)
@@ -100,7 +100,7 @@ object ReactionModule {
         removeRolesFromMember(event.member, option, roles)
 
         // E é claro, dê os cargos para o resto do povo (vai se a Lori caiu!)
-        event.reaction.users.await().forEach {
+        event.reaction.users.await().filter { !it.isBot }.forEach {
             val member = event.guild.getMember(it)
 
             if (member != null)
