@@ -59,7 +59,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
-				if (member == null) {
+				if (member == null) { // Isto parece estúpido, mas realmente funciona
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
 					return@launch
 				}
@@ -173,9 +173,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
-				}
 
 				loritta.messageInteractionCache.values.toMutableList().forEach {
 					if (it.onMessageReceived != null)
@@ -243,9 +242,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
-			}
 		}
 	}
 
