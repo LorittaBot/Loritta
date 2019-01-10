@@ -48,7 +48,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				Modules.SERVER_SUPPORT
 		)
 	}
-	
+
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
@@ -74,7 +74,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (lorittaProfile.isAfk) {
 					transaction(Databases.loritta) {
 						lorittaProfile.isAfk = false
-						lorittaProfile.afkReason
+						lorittaProfile.afkReason = null
 					}
 				}
 
