@@ -359,7 +359,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val messages = mutableMapOf<Long, Message?>()
 
 			for (option in reactionRoles) {
-				val textChannel = event.guild.getTextChannelById(option.textChannelId) ?: return@launch
+				val textChannel = event.guild.getTextChannelById(option.textChannelId) ?: continue
 				val message = messages.getOrPutNullable(option.messageId) {
 					try {
 						textChannel.getMessageById(option.messageId).await()
@@ -408,7 +408,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (reaction != null) { // Reaction existe!
-						reaction.users.await().asSequence().filter { !it.isBot }.map { event.guild.getMember(it) }.forEach {
+						reaction.users.await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
 							ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
 						}
 					}
