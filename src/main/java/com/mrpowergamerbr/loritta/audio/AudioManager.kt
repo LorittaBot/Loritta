@@ -34,8 +34,7 @@ class AudioManager(val loritta: Loritta) {
 	}
 
 	init {
-		playerManager.frameBufferDuration = 1000
-		playerManager.setItemLoaderThreadPoolSize(1000)
+		playerManager.setItemLoaderThreadPoolSize(500)
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
 		AudioSourceManagers.registerLocalSource(playerManager)
