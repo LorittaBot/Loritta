@@ -273,7 +273,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
     suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
                 LoriReply(
-                        message = locale["commands.fun.giveaway.giveawayChannel"],
+                        message = locale["commands.fun.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
                 )
         )
@@ -302,6 +302,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                 )
                 return@onResponseByAuthor
             }
+
+            message.delete()
 
             builder.numberOfWinners = numberOfWinners
 
