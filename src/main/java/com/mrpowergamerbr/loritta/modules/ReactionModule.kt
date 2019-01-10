@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.modules
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.MessageReaction
@@ -12,9 +15,21 @@ import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 object ReactionModule {
     private val logger = KotlinLogging.logger {}
+    private val removedReactionByLorittaCache = Collections.newSetFromMap(
+            Caffeine.newBuilder()
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .build<String, Boolean>()
+            .asMap()
+    )
+    private val mutexes = Caffeine.newBuilder()
+                    .expireAfterAccess(60, TimeUnit.SECONDS)
+                    .build<Long, Mutex>()
+                    .asMap()
 
     suspend fun onReactionAdd(event: GuildMessageReactionAddEvent) {
         // Ao adicionar uma reação, vamos pegar se existe algum reaction role baseado nesta reação escolhida
@@ -67,14 +82,10 @@ object ReactionModule {
 
         // Agora nós já temos a opção desejada, só dar os cargos para o usuário!
         val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
-        giveRolesToMember(event.member, event.reaction, option, locks, roles)
 
-        // E é claro, dê os cargos para o resto do povo (vai se a Lori caiu!)
-        event.reaction.users.await().filter { !it.isBot && it.idLong != event.member.user.idLong }.forEach {
-            val member = event.guild.getMember(it)
-
-            if (member != null)
-                giveRolesToMember(member, event.reaction, option, locks, roles)
+        val mutex = mutexes.getOrPut(event.member.user.idLong) { Mutex() }
+        mutex.withLock {
+            giveRolesToMember(event.member, event.reaction, option, locks, roles)
         }
     }
 
@@ -95,16 +106,17 @@ object ReactionModule {
             }.firstOrNull()
         } ?: return
 
+        if (removedReactionByLorittaCache.contains("${event.member.user.id}-${option.id.value}")) { // Caso tenha sido a própria Lori que tenha removido a reação, só ignore! A gente não liga!
+            removedReactionByLorittaCache.remove("${event.member.user.id}-${option.id.value}")
+            return
+        }
+
         // Agora nós já temos a opção desejada, só remover os cargos para o usuário!
         val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
-        removeRolesFromMember(event.member, option, roles)
-
-        // E é claro, dê os cargos para o resto do povo (vai se a Lori caiu!)
-        event.reaction.users.await().filter { !it.isBot && it.idLong != event.member.user.idLong }.forEach {
-            val member = event.guild.getMember(it)
-
-            if (member != null)
-                removeRolesFromMember(member, option, roles)
+        
+        val mutex = mutexes.getOrPut(event.member.user.idLong) { Mutex() }
+        mutex.withLock {
+            removeRolesFromMember(event.member, option, roles)
         }
     }
 
@@ -121,6 +133,7 @@ object ReactionModule {
 
             val hasRoles = member.roles.any { lock.roleIds.contains(it.id) }
             if (hasRoles) { // Lock!
+                removedReactionByLorittaCache.add("${member.user.id}-${option.id.value}")
                 reaction.removeReaction(member.user).await()
                 return
             }
