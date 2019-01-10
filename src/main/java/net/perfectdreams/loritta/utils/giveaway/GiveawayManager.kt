@@ -14,6 +14,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -144,6 +145,12 @@ object GiveawayManager {
 
                 GiveawayManager.finishGiveaway(message, giveaway)
             } catch (e: Exception) {
+                if (e is ErrorResponseException) {
+                    if (e.errorCode == 10008) { // Mensagem não existe, vamos cancelar o giveaway!
+                        cancelGiveaway(giveaway)
+                        return@launch
+                    }
+                }
                 logger.error(e) { "Error when processing giveaway ${giveaway.id.value}" }
             }
         }

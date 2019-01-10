@@ -113,7 +113,7 @@ object ReactionModule {
 
         // Agora nós já temos a opção desejada, só remover os cargos para o usuário!
         val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
-        
+
         val mutex = mutexes.getOrPut(event.member.user.idLong) { Mutex() }
         mutex.withLock {
             removeRolesFromMember(event.member, option, roles)
