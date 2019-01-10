@@ -205,6 +205,9 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                 )
         )
 
+        message.handle.addReaction("✅").queue()
+        message.handle.addReaction("\uD83D\uDE45").queue()
+
         message.handle.onReactionAddByAuthor(context) {
             message.delete()
 

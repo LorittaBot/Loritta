@@ -254,23 +254,22 @@ object GiveawayManager {
                             replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                         }
                     }
+                    message.channel.sendMessageAsync(replies.joinToString("\n"))
+                }
 
-                    if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
-                        val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
-                        
-                        winners.forEach { user ->
-                            val member = message.guild.getMember(user)
-                            val rolesToBeGiven = roles.filter {
-                                !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
-                            }
+                if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
+                    val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
 
-                            if (rolesToBeGiven.isNotEmpty()) {
-                                message.guild.controller.addRolesToMember(member, rolesToBeGiven).queue()
-                            }
+                    winners.forEach { user ->
+                        val member = message.guild.getMember(user)
+                        val rolesToBeGiven = roles.filter {
+                            !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
+                        }
+
+                        if (rolesToBeGiven.isNotEmpty()) {
+                            message.guild.controller.addRolesToMember(member, rolesToBeGiven).queue()
                         }
                     }
-
-                    message.channel.sendMessageAsync(replies.joinToString("\n"))
                 }
             }
         } else {
