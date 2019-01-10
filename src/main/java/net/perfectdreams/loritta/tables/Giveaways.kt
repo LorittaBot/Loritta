@@ -12,4 +12,6 @@ object Giveaways : LongIdTable() {
 	val numberOfWinners = integer("number_of_winners")
 	val reaction = text("reaction")
 	val finishAt = long("finish_at")
+	val customMessage = text("custom_message").nullable()
+	val locale = text("locale")
 }

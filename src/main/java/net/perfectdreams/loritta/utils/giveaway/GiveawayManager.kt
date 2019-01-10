@@ -2,17 +2,16 @@ package net.perfectdreams.loritta.utils.giveaway
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.Emotes
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.Giveaway
@@ -35,7 +34,7 @@ object GiveawayManager {
         return reaction
     }
 
-    fun createEmbed(reason: String, description: String, reaction: String, epoch: Long): MessageEmbed {
+    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): Message {
         val diff = epoch - System.currentTimeMillis()
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
@@ -50,22 +49,43 @@ object GiveawayManager {
             else -> "Alguns millissegundos!"
         }
 
-        val embed = EmbedBuilder().apply {
-            setTitle("\uD83C\uDF81 $reason")
-            setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!\n\n$diff")
-            addField("⏰ Tempo restante", message, true)
-            setColor(Constants.DISCORD_BLURPLE)
-            setFooter("Acabará em", null)
-            setTimestamp(Instant.ofEpochMilli(epoch))
+        val builder = MessageBuilder()
+                .setContent(" ")
+
+        val customResult = customMessage?.let {
+            MessageUtils.generateMessage(
+                    it,
+                    listOf(),
+                    guild,
+                    mapOf("time-until-giveaway" to message),
+                    true
+            )
         }
 
-        return embed.build()
+        if (customResult?.contentRaw?.isNotBlank() == true)
+            builder.setContent(customResult.contentRaw)
+
+        if (customResult?.embeds?.isNotEmpty() == true)
+            builder.setEmbed(customResult.embeds.first())
+        else
+            builder.setEmbed(
+                    EmbedBuilder().apply {
+                        setTitle("\uD83C\uDF81 $reason")
+                        setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
+                        addField("⏰ Tempo restante", message, true)
+                        setColor(Constants.DISCORD_BLURPLE)
+                        setFooter("Acabará em", null)
+                        setTimestamp(Instant.ofEpochMilli(epoch))
+                    }.build()
+            )
+
+        return builder.build()
     }
 
-    suspend fun spawnGiveaway(channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int): Giveaway {
-        val embed = createEmbed(reason, description, reaction, epoch)
+    suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?): Giveaway {
+        val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
 
-        val message = channel.sendMessage(embed).await()
+        val message = channel.sendMessage(giveawayMessage).await()
         val messageId = message.idLong
 
         val emoteId = reaction.toLongOrNull()
@@ -88,6 +108,8 @@ object GiveawayManager {
                 this.description = description
                 this.finishAt = epoch
                 this.reaction = reaction
+                this.customMessage = customMessage
+                this.locale = locale.id
             }
         }
 
@@ -111,23 +133,38 @@ object GiveawayManager {
                         cancelGiveaway(giveaway)
                         return@launch
                     }
+
+                    val diff = System.currentTimeMillis() - giveaway.finishAt
+
                     val message = channel.getMessageById(giveaway.messageId).await() ?: run {
                         cancelGiveaway(giveaway)
                         return@launch
                     }
 
-                    val embed = GiveawayManager.createEmbed(
+                    val locale = loritta.getLocaleById(giveaway.locale)
+
+                    val giveawayMessage = GiveawayManager.createGiveawayMessage(
+                            locale,
                             giveaway.reason,
                             giveaway.description,
                             giveaway.reaction,
-                            giveaway.finishAt
+                            giveaway.finishAt,
+                            guild,
+                            giveaway.customMessage
                     )
 
-                    if (embed.fields.first().value != message.embeds.first().fields.first().value) {
-                        message.editMessage(embed).await()
-                    }
+                    // if (embed.fields.first().value != message.embeds.first().fields.first().value) {
+                    message.editMessage(giveawayMessage).await()
+                    // }
 
-                    delay(1000)
+                    if (60_000 >= diff) { // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
+                        delay(1000) // a cada um segundo
+                    } else {
+                        // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
+                        // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
+                        // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
+                        delay(60_000 - (System.currentTimeMillis() % 60_000))
+                    }
                 }
 
                 val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {

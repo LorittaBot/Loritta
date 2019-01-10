@@ -4,11 +4,13 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
 class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
@@ -22,22 +24,46 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
         return locale["commands.fun.giveaway.description"]
     }
 
-    fun slowpoke(iterations: Int): Double {
-        var d = 0.0
-        for (j in 1 until iterations) {
-            d += Math.log(Math.E * j)
-        }
-        return d
-    }
-
     @Subcommand
-    suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
+    suspend fun root(context: DiscordCommandContext, locale: BaseLocale, args: Array<String>) {
+        var customGiveawayMessage: String? = null
+
+        if (args.isNotEmpty()) {
+            val customMessage = args.joinToString(" ")
+
+            val message = MessageUtils.generateMessage(args.joinToString(" "), listOf(), context.discordGuild, mapOf(), true)
+
+            if (message != null) {
+                context.reply(
+                        LoriReply(
+                                message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
+                                prefix = Emotes.LORI_TEMMIE
+                        )
+                )
+
+                val giveawayMessage = GiveawayManager.createGiveawayMessage(
+                        context.locale,
+                        "Exemplo de Giveaway",
+                        "Apenas um exemplo!",
+                        "\uD83C\uDF89",
+                        System.currentTimeMillis() + 120_000,
+                        context.discordGuild!!,
+                        customMessage
+                )
+
+                context.sendMessage(giveawayMessage)
+                customGiveawayMessage = customMessage
+            }
+        }
+
         val createGiveaway = context.reply(
                 LoriReply(
                         message = locale["commands.fun.giveaway.giveawayName"],
                         prefix = "\uD83E\uDD14"
                 )
         )
+
+        addCancelOption(context, createGiveaway)
 
         createGiveaway.onResponseByAuthor(context) {
             val reason = it.message.contentRaw
@@ -52,6 +78,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                     )
             )
 
+            addCancelOption(context, giveawayDescription)
+
             giveawayDescription.onResponseByAuthor(context) {
                 val description = it.message.contentRaw
 
@@ -64,6 +92,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                 prefix = "\uD83E\uDD14"
                         )
                 )
+
+                addCancelOption(context, giveawayTime)
 
                 giveawayTime.onResponseByAuthor(context) {
                     val time = it.message.contentRaw
@@ -78,6 +108,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                             )
                     )
 
+                    addCancelOption(context, giveawayReaction)
+
                     giveawayReaction.onResponseByAuthor(context) {
                         var reaction = it.message.emotes.firstOrNull()?.id ?: it.message.contentRaw
 
@@ -90,6 +122,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                         prefix = "\uD83E\uDD14"
                                 )
                         )
+
+                        addCancelOption(context, giveawayWhere)
 
                         giveawayWhere.onResponseByAuthor(context) {
                             val pop = it.message.contentRaw
@@ -150,6 +184,8 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                     )
                             )
 
+                            addCancelOption(context, giveawayCount)
+
 
                             giveawayCount.onResponseByAuthor(context) {
                                 val numberOfWinners = it.message.contentRaw.toIntOrNull()
@@ -197,17 +233,32 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                                 giveawayCount.delete()
 
                                 GiveawayManager.spawnGiveaway(
+                                        loritta.getLocaleById(context.config.localeId),
                                         channel,
                                         reason,
                                         description,
                                         reaction,
                                         epoch,
-                                        numberOfWinners
+                                        numberOfWinners,
+                                        customGiveawayMessage
                                 )
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun addCancelOption(context: DiscordCommandContext, message: DiscordMessage) {
+        message.handle.onReactionAddByAuthor(context) {
+            if (it.reactionEmote.idLong == 412585701054611458L) {
+                message.delete()
+                context.reply(
+                        LoriReply(
+                                context.locale["commands.fun.giveaway.giveawaySetupCancelled"]
+                        )
+                )
             }
         }
     }

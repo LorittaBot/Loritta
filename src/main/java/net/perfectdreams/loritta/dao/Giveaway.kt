@@ -18,4 +18,6 @@ class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     var description by Giveaways.description
     var reaction by Giveaways.reaction
     var finishAt by Giveaways.finishAt
+    var customMessage by Giveaways.customMessage
+    var locale by Giveaways.locale
 }
