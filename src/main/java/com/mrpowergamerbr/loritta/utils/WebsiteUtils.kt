@@ -428,6 +428,62 @@ object WebsiteUtils {
 		}
 	}
 
+	fun getGuildAsJson(guild: Guild): JsonObject {
+		val guildJson = jsonObject(
+				"name" to guild.name
+		)
+
+		val textChannels = JsonArray()
+		for (textChannel in guild.textChannels) {
+			val json = JsonObject()
+
+			json["id"] = textChannel.id
+			json["canTalk"] = textChannel.canTalk()
+			json["name"] = textChannel.name
+			json["topic"] = textChannel.topic
+
+			textChannels.add(json)
+		}
+
+		guildJson["textChannels"] = textChannels
+
+		val roles = JsonArray()
+		for (role in guild.roles) {
+			val json = JsonObject()
+
+			json["id"] = role.id
+			json["name"] = role.name
+			json["isPublicRole"] = role.isPublicRole
+			json["isManaged"] = role.isManaged
+			json["canInteract"] = guild.selfMember.canInteract(role)
+
+			if (role.color != null) {
+				json["color"] = jsonObject(
+						"red" to role.color.red,
+						"green" to role.color.green,
+						"blue" to role.color.blue
+				)
+			}
+
+			roles.add(json)
+		}
+
+		val emotes = JsonArray()
+		for (emote in guild.emotes) {
+			val json = JsonObject()
+
+			json["id"] = emote.id
+			json["name"] = emote.name
+
+			emotes.add(json)
+		}
+
+		guildJson["roles"] = roles
+		guildJson["emotes"] = emotes
+		guildJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
+		return guildJson
+	}
+
 	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
