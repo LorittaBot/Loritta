@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.tables
 
+import com.mrpowergamerbr.loritta.utils.exposed.array
 import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.sql.TextColumnType
 
 object Giveaways : LongIdTable() {
 	val guildId = long("guild").index()
@@ -14,4 +16,5 @@ object Giveaways : LongIdTable() {
 	val finishAt = long("finish_at")
 	val customMessage = text("custom_message").nullable()
 	val locale = text("locale")
+	val roleIds = array<String>("roles", TextColumnType()).nullable()
 }

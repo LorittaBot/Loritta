@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.Role
 import net.dv8tion.jda.core.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -12,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import org.jsoup.Connection
 
 class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
     override val discordPermissions = listOf(
@@ -56,198 +59,295 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
             }
         }
 
-        val createGiveaway = context.reply(
+
+        getGiveawayName(context, locale, GiveawayBuilder().apply { this.customGiveawayMessage = customGiveawayMessage })
+    }
+
+    suspend fun getGiveawayName(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
                 LoriReply(
                         message = locale["commands.fun.giveaway.giveawayName"],
                         prefix = "\uD83E\uDD14"
                 )
         )
 
-        addCancelOption(context, createGiveaway)
+        addCancelOption(context, message)
 
-        createGiveaway.onResponseByAuthor(context) {
-            val reason = it.message.contentRaw
+        message.onResponseByAuthor(context) {
+            builder.name = it.message.contentRaw
+            message.delete()
+            getGiveawayDescription(context, locale, builder)
+        }
+    }
 
-            createGiveaway.invalidateInteraction()
-            createGiveaway.delete()
+    suspend fun getGiveawayDescription(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayDescription"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
 
-            val giveawayDescription = context.reply(
-                    LoriReply(
-                            message = locale["commands.fun.giveaway.giveawayDescription"],
-                            prefix = "\uD83E\uDD14"
-                    )
-            )
+        addCancelOption(context, message)
 
-            addCancelOption(context, giveawayDescription)
+        message.onResponseByAuthor(context) {
+            builder.description = it.message.contentRaw
+            message.delete()
+            getGiveawayDuration(context, locale, builder)
+        }
+    }
 
-            giveawayDescription.onResponseByAuthor(context) {
-                val description = it.message.contentRaw
+    suspend fun getGiveawayDuration(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayDuration"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
 
-                giveawayDescription.invalidateInteraction()
-                giveawayDescription.delete()
+        addCancelOption(context, message)
 
-                val giveawayTime = context.reply(
+        message.onResponseByAuthor(context) {
+            builder.duration = it.message.contentRaw
+            message.delete()
+            getGiveawayReaction(context, locale, builder)
+        }
+    }
+
+    suspend fun getGiveawayReaction(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayReaction"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
+
+        addCancelOption(context, message)
+
+        message.onResponseByAuthor(context) {
+            builder.reaction = it.message.contentRaw
+            message.delete()
+            getGiveawayChannel(context, locale, builder)
+        }
+    }
+
+    suspend fun getGiveawayChannel(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayChannel"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
+
+        addCancelOption(context, message)
+
+        message.onResponseByAuthor(context) {
+            val pop = it.message.contentRaw
+            var channel: TextChannel? = null
+
+            val channels = context.discordGuild!!.getTextChannelsByName(pop, true)
+
+            if (channels.isNotEmpty()) {
+                channel = channels[0]
+            } else {
+                val id = pop
+                        .replace("<", "")
+                        .replace("#", "")
+                        .replace(">", "")
+
+                if (id.isValidSnowflake()) {
+                    channel = context.discordGuild.getTextChannelById(id)
+                }
+            }
+
+            if (channel == null) {
+                context.reply(
                         LoriReply(
-                                message = locale["commands.fun.giveaway.giveawayDuration"],
+                                "Canal inválido!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!channel.canTalk()) {
+                context.reply(
+                        LoriReply(
+                                "Eu não posso falar no canal de texto!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!channel.canTalk(context.handle)) {
+                context.reply(
+                        LoriReply(
+                                "Você não pode falar no canal de texto!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            builder.channel = channel
+
+            message.delete()
+            getGiveawayWinningRoles(context, locale, builder)
+        }
+    }
+
+    suspend fun getGiveawayWinningRoles(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayDoYouWantAutomaticRole"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
+
+        message.handle.onReactionAddByAuthor(context) {
+            message.delete()
+
+            if (it.reactionEmote.name == "✅") {
+                val message = context.reply(
+                        LoriReply(
+                                message = locale["commands.fun.giveaway.giveawayMentionRoles"],
                                 prefix = "\uD83E\uDD14"
                         )
                 )
 
-                addCancelOption(context, giveawayTime)
+                addCancelOption(context, message)
 
-                giveawayTime.onResponseByAuthor(context) {
-                    val time = it.message.contentRaw
+                message.onResponseByAuthor(context) {
+                    val roles = mutableSetOf<Role>()
 
-                    giveawayTime.invalidateInteraction()
-                    giveawayTime.delete()
+                    it.message.mentionedRoles.forEach {
+                        roles.add(it) // Vamos adicionar os cargos marcados, quick and easy
+                    }
 
-                    val giveawayReaction = context.reply(
-                            LoriReply(
-                                    message = locale["commands.fun.giveaway.giveawayReaction"],
-                                    prefix = "\uD83E\uDD14"
-                            )
-                    )
+                    // Tentar pegar pelo nome
+                    var roleName = it.message.contentRaw
+                    if (it.message.contentRaw.startsWith("@")) {
+                        roleName = it.message.contentRaw.substring(1)
+                    }
 
-                    addCancelOption(context, giveawayReaction)
+                    val role = context.discordGuild!!.getRolesByName(roleName, true).firstOrNull()
 
-                    giveawayReaction.onResponseByAuthor(context) {
-                        var reaction = it.message.emotes.firstOrNull()?.id ?: it.message.contentRaw
+                    if (role != null)
+                        roles.add(role)
 
-                        giveawayReaction.invalidateInteraction()
-                        giveawayReaction.delete()
-
-                        val giveawayWhere = context.reply(
+                    if (roles.isEmpty()) {
+                        context.reply(
                                 LoriReply(
-                                        message = locale["commands.fun.giveaway.giveawayChannel"],
-                                        prefix = "\uD83E\uDD14"
+                                        locale["commands.fun.giveaway.giveawayNoValidRoles"],
+                                        Constants.ERROR
                                 )
                         )
+                        return@onResponseByAuthor
+                    }
 
-                        addCancelOption(context, giveawayWhere)
-
-                        giveawayWhere.onResponseByAuthor(context) {
-                            val pop = it.message.contentRaw
-                            var channel: TextChannel? = null
-
-                            val channels = context.discordGuild!!.getTextChannelsByName(pop, false)
-
-                            if (channels.isNotEmpty()) {
-                                channel = channels[0]
-                            } else {
-                                val id = pop
-                                        .replace("<", "")
-                                        .replace("#", "")
-                                        .replace(">", "")
-
-                                if (id.isValidSnowflake()) {
-                                    channel = context.discordGuild.getTextChannelById(id)
-                                }
-                            }
-
-                            if (channel == null) {
-                                context.reply(
-                                        LoriReply(
-                                                "Canal inválido!",
-                                                Constants.ERROR
-                                        )
-                                )
-                                return@onResponseByAuthor
-                            }
-
-                            if (!channel.canTalk()) {
-                                context.reply(
-                                        LoriReply(
-                                                "Eu não posso falar no canal de texto!",
-                                                Constants.ERROR
-                                        )
-                                )
-                                return@onResponseByAuthor
-                            }
-
-                            if (!channel.canTalk(context.handle)) {
-                                context.reply(
-                                        LoriReply(
-                                                "Você não pode falar no canal de texto!",
-                                                Constants.ERROR
-                                        )
-                                )
-                                return@onResponseByAuthor
-                            }
-
-                            giveawayWhere.invalidateInteraction()
-                            giveawayWhere.delete()
-
-                            val giveawayCount = context.reply(
+                    for (role in roles) {
+                        if (!context.discordGuild.selfMember.canInteract(role) || role.isManaged) {
+                            context.reply(
                                     LoriReply(
-                                            message = locale["commands.fun.giveaway.giveawayWinnerCount"],
-                                            prefix = "\uD83E\uDD14"
+                                            locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`" + role.name + "`"],
+                                            Constants.ERROR
                                     )
                             )
-
-                            addCancelOption(context, giveawayCount)
-
-
-                            giveawayCount.onResponseByAuthor(context) {
-                                val numberOfWinners = it.message.contentRaw.toIntOrNull()
-
-                                if (numberOfWinners == null) {
-                                    context.reply(
-                                            LoriReply(
-                                                    "Eu não sei o que você colocou aí, mas tenho certeza que não é um número.",
-                                                    Constants.ERROR
-                                            )
-                                    )
-                                    return@onResponseByAuthor
-                                }
-
-                                if (numberOfWinners !in 1..20) {
-                                    context.reply(
-                                            LoriReply(
-                                                    "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
-                                                    Constants.ERROR
-                                            )
-                                    )
-                                    return@onResponseByAuthor
-                                }
-
-                                val epoch = time.convertToEpochMillisRelativeToNow()
-
-                                try {
-                                    // Testar se é possível usar o emoticon atual
-                                    val emoteId = reaction.toLongOrNull()
-                                    if (emoteId != null) {
-                                        val emote = lorittaShards.getEmoteById(emoteId.toString())
-
-                                        if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
-                                            reaction = "\uD83C\uDF89"
-                                        } else {
-                                            giveawayCount.handle.addReaction(emote).await()
-                                        }
-                                    } else {
-                                        giveawayCount.handle.addReaction(reaction).await()
-                                    }
-                                } catch (e: Exception) {
-                                    reaction = "\uD83C\uDF89"
-                                }
-
-                                giveawayCount.delete()
-
-                                GiveawayManager.spawnGiveaway(
-                                        loritta.getLocaleById(context.config.localeId),
-                                        channel,
-                                        reason,
-                                        description,
-                                        reaction,
-                                        epoch,
-                                        numberOfWinners,
-                                        customGiveawayMessage
-                                )
-                            }
+                            return@onResponseByAuthor
                         }
                     }
+
+                    message.delete()
+
+                    builder.roleIds = roles.map { it.id }
+
+                    getGiveawayWinnerCount(context, locale, builder)
                 }
+            } else {
+                getGiveawayWinnerCount(context, locale, builder)
             }
         }
+    }
+
+    suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val message = context.reply(
+                LoriReply(
+                        message = locale["commands.fun.giveaway.giveawayChannel"],
+                        prefix = "\uD83E\uDD14"
+                )
+        )
+
+        addCancelOption(context, message)
+
+        message.onResponseByAuthor(context) {
+            val numberOfWinners = it.message.contentRaw.toIntOrNull()
+
+            if (numberOfWinners == null) {
+                context.reply(
+                        LoriReply(
+                                "Eu não sei o que você colocou aí, mas tenho certeza que não é um número.",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (numberOfWinners !in 1..20) {
+                context.reply(
+                        LoriReply(
+                                "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            builder.numberOfWinners = numberOfWinners
+
+            buildGiveaway(it.message, context, locale, builder)
+        }
+    }
+
+    suspend fun buildGiveaway(message: Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        val (reason, description, time, _reaction, channel, numberOfWinners, roleIds) = builder
+        var reaction = _reaction
+
+        val epoch = time.convertToEpochMillisRelativeToNow()
+
+        try {
+            // Testar se é possível usar o emoticon atual
+            val emoteId = reaction.toLongOrNull()
+            if (emoteId != null) {
+                val emote = lorittaShards.getEmoteById(emoteId.toString())
+
+                if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
+                    reaction = "\uD83C\uDF89"
+                } else {
+                    message.addReaction(emote).await()
+                }
+            } else {
+                message.addReaction(reaction).await()
+            }
+        } catch (e: Exception) {
+            reaction = "\uD83C\uDF89"
+        }
+
+        builder.numberOfWinners = numberOfWinners
+
+        message.delete()
+
+        GiveawayManager.spawnGiveaway(
+                loritta.getLocaleById(context.config.localeId),
+                channel,
+                reason,
+                description,
+                reaction,
+                epoch,
+                numberOfWinners,
+                builder.customGiveawayMessage,
+                roleIds
+        )
     }
 
     fun addCancelOption(context: DiscordCommandContext, message: DiscordMessage) {
@@ -260,6 +360,47 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                         )
                 )
             }
+        }
+
+        message.handle.addReaction("412585701054611458").queue()
+    }
+
+    class GiveawayBuilder {
+        var customGiveawayMessage: String? = null
+        var name: String? = null
+        var description: String? = null
+        var duration: String? = null
+        var reaction: String? = null
+        var channel: TextChannel? = null
+        var numberOfWinners: Int? = null
+        var roleIds: List<String>? = null
+
+        operator fun component1(): String {
+            return name!!
+        }
+
+        operator fun component2(): String {
+            return description!!
+        }
+
+        operator fun component3(): String {
+            return duration!!
+        }
+
+        operator fun component4(): String {
+            return reaction!!
+        }
+
+        operator fun component5(): TextChannel {
+            return channel!!
+        }
+
+        operator fun component6(): Int {
+            return numberOfWinners!!
+        }
+
+        operator fun component7(): List<Role>? {
+            return roleIds
         }
     }
 }

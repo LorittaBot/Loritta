@@ -82,7 +82,7 @@ object GiveawayManager {
         return builder.build()
     }
 
-    suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?): Giveaway {
+    suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
         val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
 
         val message = channel.sendMessage(giveawayMessage).await()
@@ -110,6 +110,7 @@ object GiveawayManager {
                 this.reaction = reaction
                 this.customMessage = customMessage
                 this.locale = locale.id
+                this.roleIds = roleIds?.toTypedArray()
             }
         }
 
@@ -249,6 +250,19 @@ object GiveawayManager {
 
                         if (user != null) {
                             replies.add("⭐ **|** ${user.asMention}")
+
+                            if (giveaway.roleIds != null) {
+                                val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
+
+                                val member = message.guild.getMember(user)
+                                val rolesToBeGiven = roles.filter {
+                                    !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
+                                }
+
+                                if (rolesToBeGiven.isNotEmpty()) {
+                                    message.guild.controller.addRolesToMember(member, rolesToBeGiven).queue()
+                                }
+                            }
                         } else {
                             replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                         }
