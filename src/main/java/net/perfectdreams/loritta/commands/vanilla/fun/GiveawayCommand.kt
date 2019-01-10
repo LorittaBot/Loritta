@@ -399,7 +399,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
             return numberOfWinners!!
         }
 
-        operator fun component7(): List<Role>? {
+        operator fun component7(): List<String>? {
             return roleIds
         }
     }
