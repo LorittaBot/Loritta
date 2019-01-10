@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.LorittaCommand
-import org.graalvm.compiler.nodes.java.AbstractCompareAndSwapNode
 import org.jooby.Request
 import org.jooby.Response
 
