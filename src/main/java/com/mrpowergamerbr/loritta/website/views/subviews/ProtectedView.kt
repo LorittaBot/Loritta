@@ -145,7 +145,13 @@ abstract class ProtectedView : AbstractView() {
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth
-		return renderProtected(req, res, path, variables, discordAuth)
+		return try {
+			renderProtected(req, res, path, variables, discordAuth)
+		} catch (e: TemmieDiscordAuth.TokenExchangeException) {
+			req.session().unset("discordAuth")
+			res.redirect(Loritta.config.authorizationUrl)
+			"Redirecionando..."
+		}
 	}
 
 	abstract fun renderProtected(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth): String
