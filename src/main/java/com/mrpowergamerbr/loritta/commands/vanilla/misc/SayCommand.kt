@@ -109,10 +109,10 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 				}
 			}
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(Permission.MESSAGE_MENTION_EVERYONE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(Permission.MESSAGE_MANAGE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MANAGE))
 				message = "**${context.handle.asMention} me forçou a falar...** $message"
 
 			val discordMessage = try {
