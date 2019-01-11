@@ -12,5 +12,5 @@ class DiscordGuild(val handle: net.dv8tion.jda.core.entities.Guild) : Guild {
 	override val members: List<Member>
 		get() = handle.members.map { DiscordMember(it) }
 	override val messageChannels: List<MessageChannel>
-		get() = handle.textChannels.map { DiscordMessageChannel(this, it) }
+		get() = handle.textChannels.map { DiscordMessageChannel(it) }
 }
