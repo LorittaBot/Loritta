@@ -201,6 +201,7 @@ object GiveawayManager {
                     }
                 }
                 logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
+                cancelGiveaway(giveaway)
             }
         }
     }
