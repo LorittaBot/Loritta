@@ -16,6 +16,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	abstract val message: Message
 
 	abstract val guild: net.perfectdreams.loritta.api.entities.Guild?
+	abstract val channel: net.perfectdreams.loritta.api.entities.MessageChannel
 
 	abstract fun getAsMention(addSpace: Boolean): String
 
