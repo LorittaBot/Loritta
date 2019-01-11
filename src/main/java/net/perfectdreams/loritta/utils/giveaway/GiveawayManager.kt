@@ -17,9 +17,10 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 
 object GiveawayManager {
-    var giveawayTasks = mutableMapOf<Long, Job>()
+    var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
 
     fun getReactionMention(reaction: String): String {
@@ -120,6 +121,7 @@ object GiveawayManager {
     }
 
     fun createGiveawayJob(giveaway: Giveaway) {
+        logger.warn { "Creating giveaway ${giveaway.id.value} job..." }
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
                 while (giveaway.finishAt > System.currentTimeMillis()) {
@@ -127,10 +129,12 @@ object GiveawayManager {
                         return@launch
 
                     val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
                         cancelGiveaway(giveaway)
                         return@launch
                     }
                     val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
                         cancelGiveaway(giveaway)
                         return@launch
                     }
@@ -138,6 +142,7 @@ object GiveawayManager {
                     val diff = System.currentTimeMillis() - giveaway.finishAt
 
                     val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                         cancelGiveaway(giveaway)
                         return@launch
                     }
@@ -159,24 +164,30 @@ object GiveawayManager {
                     // }
 
                     if (60_000 >= diff) { // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
+                        logger.info { "Delaying ${giveaway.id.value} for 1000ms (will be finished in less than 60s!)" }
                         delay(1000) // a cada um segundo
                     } else {
                         // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
                         // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
                         // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
+                        val delay = 60_000 - (System.currentTimeMillis() % 60_000)
+                        logger.info { "Delaying ${giveaway.id.value} for ${delay}ms" }
                         delay(60_000 - (System.currentTimeMillis() % 60_000))
                     }
                 }
 
                 val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
                     cancelGiveaway(giveaway)
                     return@launch
                 }
                 val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
                     cancelGiveaway(giveaway)
                     return@launch
                 }
                 val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                     cancelGiveaway(giveaway)
                     return@launch
                 }
@@ -189,7 +200,7 @@ object GiveawayManager {
                         return@launch
                     }
                 }
-                logger.error(e) { "Error when processing giveaway ${giveaway.id.value}" }
+                logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
             }
         }
     }
@@ -208,6 +219,7 @@ object GiveawayManager {
     }
 
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
+        logger.warn { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
         val emoteId = giveaway.reaction.toLongOrNull()
 
         val messageReaction: MessageReaction?

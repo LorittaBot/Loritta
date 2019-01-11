@@ -42,8 +42,12 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
 import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.utils.giveaway.SpawnGiveawayTask
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
@@ -411,6 +415,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						reaction.users.await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
 							ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
 						}
+					}
+				}
+
+				val allActiveGiveaways = Giveaway.find { Giveaways.guildId eq event.guild.idLong }
+
+				allActiveGiveaways.forEach {
+					try {
+						if (GiveawayManager.giveawayTasks[it.id.value] == null)
+							GiveawayManager.createGiveawayJob(it)
+					} catch (e: Exception) {
+						logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
 					}
 				}
 			}
