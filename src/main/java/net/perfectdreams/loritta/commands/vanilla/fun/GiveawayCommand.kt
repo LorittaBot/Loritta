@@ -253,7 +253,17 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                         if (!context.discordGuild.selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
                                     LoriReply(
-                                            locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`" + role.name + "`"],
+                                            locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
+                                            Constants.ERROR
+                                    )
+                            )
+                            return@onResponseByAuthor
+                        }
+
+                        if (!context.discordMessage.member.canInteract(role)) {
+                            context.reply(
+                                    LoriReply(
+                                            locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
                             )
