@@ -505,20 +505,8 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 							whitelisted.add(it)
 						}
 
-						val matcher = Constants.URL_PATTERN.matcher(output)
-
-						while (matcher.find()) {
-							var url = matcher.group()
-							if (url.contains("discord") && url.contains("gg")) {
-								url = "discord.gg" + matcher.group(1).replace(".", "")
-							}
-
-							val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
-
-							if (inviteId != null) { // INVITES DO DISCORD
-								if (inviteId != "attachments" && inviteId != "forums" && !whitelisted.contains(inviteId))
-									return@onReactionAddByAuthor // Tem convites válidos? Apenas ignore! A Lori irá aplicar as punições necessárias logo depois...
-							}
+						if (MiscUtils.hasInvite(output, whitelisted)) {
+							return@onReactionAddByAuthor
 						}
 					}
 

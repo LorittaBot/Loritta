@@ -94,6 +94,10 @@ fun String.stripCodeMarks(): String {
 	return this.replace("`", "")
 }
 
+fun String.stripZeroWidthSpace(): String {
+	return this.replace("\u200B", "")
+}
+
 fun String.msgFormat(vararg arguments: Any?): String {
 	return MessageFormat.format(this, *arguments)
 }
