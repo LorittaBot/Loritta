@@ -377,7 +377,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
             }
         }
 
-        message.handle.addReaction("412585701054611458").queue()
+        message.handle.addReaction("error:412585701054611458").queue()
     }
 
     class GiveawayBuilder {

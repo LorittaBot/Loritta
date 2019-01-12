@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.entities.MessageChannel
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -63,6 +64,8 @@ class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUs
 			DiscordGuild(event.guild!!)
 		else
 			null
+
+	override val channel: MessageChannel = DiscordMessageChannel(event.channel)
 
 	val discordGuild = event.guild
 
