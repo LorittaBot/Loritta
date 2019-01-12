@@ -39,8 +39,6 @@ object ReactionModule {
             event.reactionEmote.name
         }
 
-        logger.info { "Usuário ${event.user.idLong} reagiu com $reaction em ${event.messageIdLong} @ ${event.channel.idLong}" }
-
         val option = transaction(Databases.loritta) {
             ReactionOption.find {
                 (ReactionOptions.guildId eq event.guild.idLong) and
