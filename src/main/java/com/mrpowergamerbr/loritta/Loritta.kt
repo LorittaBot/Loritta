@@ -53,6 +53,8 @@ import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
+import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.ReactionOptions
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -366,7 +368,9 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					Mutes,
 					Warns,
 					GuildProfiles,
-					Timers
+					Timers,
+					Giveaways,
+					ReactionOptions
 			)
 		}
 	}

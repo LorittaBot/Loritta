@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import com.mrpowergamerbr.loritta.website.LoriWebCode
@@ -257,6 +258,26 @@ object MiscUtils {
 		return Constants.BAD_NICKNAME_WORDS.any {
 			lowerCaseNickname.contains(it)
 		}
+	}
+
+	fun hasInvite(string: String, whitelistedInvites: List<String> = listOf()): Boolean {
+		val matcher = Constants.URL_PATTERN.matcher(string)
+
+		while (matcher.find()) {
+			var url = matcher.group()
+			if (url.contains("discord") && url.contains("gg")) {
+				url = "discord.gg" + matcher.group(1).replace(".", "")
+			}
+
+			val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
+
+			if (inviteId != null) { // INVITES DO DISCORD
+				if (inviteId != "attachments" && inviteId != "forums" && !whitelistedInvites.contains(inviteId))
+					return true // Tem convites válidos?
+			}
+		}
+
+		return false
 	}
 
 	enum class AccountCheckResult(val canAccess: Boolean) {

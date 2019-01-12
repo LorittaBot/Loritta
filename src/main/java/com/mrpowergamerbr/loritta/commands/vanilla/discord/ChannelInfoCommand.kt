@@ -15,11 +15,10 @@ import kotlin.contracts.ExperimentalContracts
 class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), category = CommandCategory.DISCORD) {
 	
 	override fun getDescription(locale: BaseLocale): String? {
-		return locale["commands.channelinfo.description"]
+		return locale["commands.discord.channelinfo.description"]
 	}
 	
-	override val canUseInPrivateChannel: Boolean
-		get() = false
+	override val canUseInPrivateChannel = false
 	
 	@Subcommand
 	@ExperimentalContracts

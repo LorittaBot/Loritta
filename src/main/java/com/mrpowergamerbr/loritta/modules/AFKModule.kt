@@ -24,17 +24,7 @@ class AFKModule : MessageReceivedModule {
 				var reason = lorittaProfile.afkReason
 
 				if (reason != null) {
-					val matcher = Constants.URL_PATTERN.matcher(reason
-							.replace("\u200B", "")
-							.replace("\\", ""))
-
-					while (matcher.find()) {
-						var url = matcher.group()
-						if (url.contains("discord") && url.contains("gg")) {
-							url = "discord.gg" + matcher.group(1).replace(".", "")
-						}
-						val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url") ?: break
-
+					if (MiscUtils.hasInvite(reason.stripZeroWidthSpace())) {
 						reason = "¯\\_(ツ)_/¯"
 					}
 				}

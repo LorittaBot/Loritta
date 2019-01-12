@@ -35,7 +35,8 @@ constructor(
 		outputStream: ImageOutputStream,
 		imageType: Int,
 		timeBetweenFramesMS: Int,
-		loopContinuously: Boolean) {
+		loopContinuously: Boolean,
+		clearBackground: Boolean = false) {
 	protected var gifWriter: ImageWriter
 	protected var imageWriteParam: ImageWriteParam
 	protected var imageMetaData: IIOMetadata
@@ -57,7 +58,12 @@ constructor(
 				root,
 				"GraphicControlExtension")
 
-		graphicsControlExtensionNode.setAttribute("disposalMethod", "none")
+		if (clearBackground) {
+			graphicsControlExtensionNode.setAttribute("disposalMethod", "restoreToBackgroundColor")
+		} else {
+			graphicsControlExtensionNode.setAttribute("disposalMethod", "none")
+		}
+
 		graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE")
 		graphicsControlExtensionNode.setAttribute(
 				"transparentColorFlag",

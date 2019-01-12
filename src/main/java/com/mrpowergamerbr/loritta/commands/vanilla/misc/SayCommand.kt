@@ -92,27 +92,15 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 					whitelisted.add(it)
 				}
 
-				val matcher = Constants.URL_PATTERN.matcher(message)
-
-				while (matcher.find()) {
-					var url = matcher.group()
-					if (url.contains("discord") && url.contains("gg")) {
-						url = "discord.gg" + matcher.group(1).replace(".", "")
-					}
-
-					val inviteId = MiscUtils.getInviteId("http://$url") ?: MiscUtils.getInviteId("https://$url")
-
-					if (inviteId != null) { // INVITES DO DISCORD
-						if (inviteId != "attachments" && inviteId != "forums" && !whitelisted.contains(inviteId))
-							return // Tem convites válidos? Apenas ignore! A Lori irá aplicar as punições necessárias logo depois...
-					}
+				if (MiscUtils.hasInvite(message, whitelisted)) {
+					return
 				}
 			}
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(Permission.MESSAGE_MENTION_EVERYONE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(Permission.MESSAGE_MANAGE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MANAGE))
 				message = "**${context.handle.asMention} me forçou a falar...** $message"
 
 			val discordMessage = try {

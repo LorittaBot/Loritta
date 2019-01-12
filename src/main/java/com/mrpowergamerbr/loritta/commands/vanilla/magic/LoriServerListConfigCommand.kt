@@ -133,7 +133,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 				
-				serverConfig.serverListConfig.sponsoredUntil = rawArgs.joinToString(" ").convertToEpochMillis()
+				serverConfig.serverListConfig.sponsoredUntil = rawArgs.joinToString(" ").convertToEpochMillisRelativeToNow()
 				
 				loritta save serverConfig
 				
@@ -156,7 +156,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val price = args[0].toDouble()
 				val reason = args[1]
 				
-				val time = args[2].convertToEpochMillis()
+				val time = args[2].convertToEpochMillisRelativeToNow()
 				
 				val key = RandomStringUtils.random(32, 0, 66, true, true, *"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@!$&".toCharArray())
 				
@@ -196,7 +196,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				transaction(Databases.loritta) {
 					userConfig.isDonator = isDonator
 					userConfig.donatorPaid = arg3.toDouble()
-					userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillis()
+					userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillisRelativeToNow()
 					userConfig.donatedAt
 				}
 				

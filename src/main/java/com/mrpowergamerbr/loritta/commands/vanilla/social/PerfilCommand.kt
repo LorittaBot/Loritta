@@ -107,7 +107,12 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
 			val marriage = transaction(Databases.loritta) { profile.marriage }
-			if (marriage != null) badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
+			if (marriage != null) {
+				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
+					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
+				}
+				badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
+			}
 			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
 			return badges

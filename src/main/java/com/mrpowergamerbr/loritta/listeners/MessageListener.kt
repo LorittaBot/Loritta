@@ -49,8 +49,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		)
 	}
 
-	val warnedBadLoadedGuilds = mutableSetOf<String>()
-
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
@@ -61,14 +59,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
-				if (member == null) {
+				if (member == null) { // Isto parece estúpido, mas realmente funciona
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
-					return@launch
-				}
-
-				if (event.guild.owner == null && !warnedBadLoadedGuilds.contains(event.guild.id)) {
-					warnedBadLoadedGuilds.add(event.guild.id)
-					logger.warn { "Guild ${event.guild.id} não foi iniciada corretamente, owner == null!" }
 					return@launch
 				}
 
@@ -82,7 +74,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (lorittaProfile.isAfk) {
 					transaction(Databases.loritta) {
 						lorittaProfile.isAfk = false
-						lorittaProfile.afkReason
+						lorittaProfile.afkReason = null
 					}
 				}
 
@@ -181,15 +173,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
-				}
 
-				loritta.messageInteractionCache.values.forEach {
+				loritta.messageInteractionCache.values.toMutableList().forEach {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
 
-					if (it.guildId == event.guild.idLong) {
+					if (it.guildId == event.guild.idLong && it.channelId == event.channel.idLong) {
 						if (it.onResponse != null)
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
@@ -251,9 +242,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
-			}
 		}
 	}
 

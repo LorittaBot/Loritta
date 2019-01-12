@@ -2,11 +2,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.escapeMentions
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -493,6 +491,22 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 									output += "${moodEmojis[RANDOM.nextInt(moodEmojis.size)]} "
 								}
 							}
+						}
+					}
+
+					val inviteBlockerConfig = context.config.inviteBlockerConfig
+					val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
+
+					if (checkInviteLinks) {
+						val whitelisted = mutableListOf<String>()
+						whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
+
+						InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
+							whitelisted.add(it)
+						}
+
+						if (MiscUtils.hasInvite(output, whitelisted)) {
+							return@onReactionAddByAuthor
 						}
 					}
 

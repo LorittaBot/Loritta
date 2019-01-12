@@ -44,7 +44,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Uma vez uma menina chamada Guerra se olhou no espelho. Sabe o que aconteceu?\n\nGuerra civil.",
 				"qual o contrário de \"paixão\"?\n\nMãeteto",
 				"Fui numa vidente e ela me exigiu de pagamento meu carro...\n\nEla realmente é uma excelente car tomante.",
-				"Ta na hora da gente atualizar o tiodopavê\n\nCriar um tema e mudar essa imagem de fundo(esqueci como se chama isso, é a parte superior do sub onde fica a foto do cazalbé) Criação de flairs para os tipos de piadas, essas são minhas sugestões iniciais: Longa (para piadas longas) Original (para piadas originais) Inédita (para piadas batidas ex: é pavê ou pacumê?) E por favor continue com o sub somente de textos, não autorizem para imagens/videos/link. Assim o sub fica muito mais gostoso e prático de ler. Quem manjar e puder ajudar avise e também deem sugestões.",
 				"Qual o alimento que tem a melhor bunda de todas?\n\nA better raba",
 				"Sabe qual o rapper brasileiro que sempre abre portas?\n\nGabriel opens a door",
 				"O que que é uma rena + uma rena?\n\nUm cálculo renal",

@@ -94,6 +94,10 @@ fun String.stripCodeMarks(): String {
 	return this.replace("`", "")
 }
 
+fun String.stripZeroWidthSpace(): String {
+	return this.replace("\u200B", "")
+}
+
 fun String.msgFormat(vararg arguments: Any?): String {
 	return MessageFormat.format(this, *arguments)
 }
@@ -116,7 +120,7 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
 val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
 
-fun String.convertToEpochMillis(): Long {
+fun String.convertToEpochMillisRelativeToNow(): Long {
 	val content = this.toLowerCase()
 	val calendar = Calendar.getInstance()
 

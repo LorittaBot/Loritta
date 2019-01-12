@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
+import com.mrpowergamerbr.loritta.modules.ReactionModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
@@ -18,23 +19,38 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.utils.giveaway.SpawnGiveawayTask
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -51,6 +67,24 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		)
 
 		private val logger = KotlinLogging.logger {}
+	}
+
+	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
+		if (event.user.isBot)
+			return
+
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			ReactionModule.onReactionAdd(event)
+		}
+	}
+
+	override fun onGuildMessageReactionRemove(event: GuildMessageReactionRemoveEvent) {
+		if (event.user.isBot)
+			return
+
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			ReactionModule.onReactionRemove(event)
+		}
 	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
@@ -318,6 +352,82 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
 				MuteCommand.spawnRoleRemovalThread(guild, com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById("default"), member.user, mute.expiresAt!!)
+			}
+
+			// Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
+			val reactionRoles = transaction(Databases.loritta) {
+				ReactionOption.find { ReactionOptions.guildId eq event.guild.idLong }.toMutableList()
+			}
+
+			// Vamos fazer cache das mensagens para evitar pegando a mesma mensagem várias vezes
+			val messages = mutableMapOf<Long, Message?>()
+
+			for (option in reactionRoles) {
+				val textChannel = event.guild.getTextChannelById(option.textChannelId) ?: continue
+				val message = messages.getOrPutNullable(option.messageId) {
+					try {
+						textChannel.getMessageById(option.messageId).await()
+					} catch (e: ErrorResponseException) {
+						null
+					}
+				}
+
+				messages[option.messageId] = message
+
+				if (message == null)
+					continue
+
+				// Verificar locks
+				// Existem vários tipos de locks: Locks de opções (via ID), locks de mensagens (via... mensagens), etc.
+				// Para ficar mais fácil, vamos verificar TODOS os locks da mensagem
+				val locks = mutableListOf<ReactionOption>()
+
+				for (lock in option.locks) {
+					if (lock.contains("-")) {
+						val split = lock.split("-")
+						val channelOptionLock = transaction(Databases.loritta) {
+							ReactionOption.find {
+								(ReactionOptions.guildId eq event.guild.idLong) and
+										(ReactionOptions.textChannelId eq split[0].toLong()) and
+										(ReactionOptions.messageId eq split[1].toLong())
+							}.toMutableList()
+						}
+						locks.addAll(channelOptionLock)
+					} else { // Lock por option ID, esse daqui é mais complicado!
+						val idOptionLock = transaction(Databases.loritta) {
+							ReactionOption.find {
+								(ReactionOptions.id eq lock.toLong())
+							}.toMutableList()
+						}
+						locks.addAll(idOptionLock)
+					}
+				}
+
+				// Agora nós já temos a opção desejada, só dar os cargos para o usuário!
+				val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
+
+				if (roles.isNotEmpty()) {
+					val reaction = message.reactions.firstOrNull {
+						it.reactionEmote.name == option.reaction || it.reactionEmote.emote?.id == option.reaction
+					}
+
+					if (reaction != null) { // Reaction existe!
+						reaction.users.await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
+							ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
+						}
+					}
+				}
+
+				val allActiveGiveaways = Giveaway.find { Giveaways.guildId eq event.guild.idLong }
+
+				allActiveGiveaways.forEach {
+					try {
+						if (GiveawayManager.giveawayTasks[it.id.value] == null)
+							GiveawayManager.createGiveawayJob(it)
+					} catch (e: Exception) {
+						logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
+					}
+				}
 			}
 		}
 	}
