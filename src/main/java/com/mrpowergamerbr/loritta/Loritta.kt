@@ -55,6 +55,7 @@ import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.ConnectionManager
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -142,6 +143,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
+	val connectionManager = ConnectionManager()
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0

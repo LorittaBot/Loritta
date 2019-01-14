@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.rometools.rome.io.SyndFeedInput
+import net.perfectdreams.loritta.utils.doSafeConnection
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -26,6 +27,7 @@ class APIGetRssFeedTitleView : NoVarsView() {
 		val channelLink = req.param("feedLink").value()
 
 		val request = HttpRequest.get(channelLink)
+				.doSafeConnection()
 				.userAgent(Constants.USER_AGENT)
 
 		val statusCode = request.code()
@@ -39,6 +41,7 @@ class APIGetRssFeedTitleView : NoVarsView() {
 		val feed = SyndFeedInput().build(body.reader())
 
 		val httpRequest = HttpRequest.get(channelLink)
+				.doSafeConnection()
 				.header("Cookie", "YSC=g_0DTrOsgy8; PREF=f1=50000000&f6=7; VISITOR_INFO1_LIVE=r8qTZn_IpAs")
 				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
 

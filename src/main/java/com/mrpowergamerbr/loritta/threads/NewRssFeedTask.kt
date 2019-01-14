@@ -12,6 +12,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.loritta.utils.doSafeConnection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
@@ -66,6 +67,7 @@ class NewRssFeedTask : Runnable {
 				try {
 					logger.info { "Verificando link $rssFeedLink..." }
 					val request = HttpRequest.get(rssFeedLink)
+							.doSafeConnection()
 							.connectTimeout(15000)
 							.readTimeout(15000)
 							.userAgent(Constants.USER_AGENT)

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.utils.doSafeConnection
 import java.net.UnknownHostException
 import java.util.*
 
@@ -29,6 +30,7 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 
 			try {
 				var response = HttpRequest.get(url)
+						.doSafeConnection()
 						.userAgent(Constants.USER_AGENT)
 						.connectTimeout(5000)
 						.readTimeout(5000)

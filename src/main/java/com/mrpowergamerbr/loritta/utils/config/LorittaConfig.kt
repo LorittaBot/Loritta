@@ -92,6 +92,8 @@ class LorittaConfig(
 		val vagalumeKey: String,
 		@JsonProperty("twitter")
 		val twitterConfig: TwitterConfig,
+		@JsonProperty("connection-manager")
+		val connectionManagerConfig: ConnectionManagerConfig,
 		@JsonProperty("ghost-ids")
 		val ghostIds: List<String>,
 		@JsonProperty("anti-raid-ids")
@@ -137,5 +139,14 @@ class LorittaConfig(
 			val oAuthAccessToken: String,
 			@JsonProperty("access-token-secret")
 			val oAuthAccessTokenSecret: String
+	)
+
+	class ConnectionManagerConfig(
+			@JsonProperty("trusted-domains")
+			val trustedDomains: List<String>,
+			@JsonProperty("proxy-ip")
+			val proxyIp: String,
+			@JsonProperty("proxy-port")
+			val proxyPort: Int
 	)
 }

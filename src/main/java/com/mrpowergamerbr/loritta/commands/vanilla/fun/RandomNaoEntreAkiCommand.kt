@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.utils.doSafeConnection
 
 class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomnaoentreaki", "randomnea", "rneaki", "rnea", "rnaoentreaki"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -33,6 +34,7 @@ class RandomNaoEntreAkiCommand : AbstractCommand("randomneaki", listOf("randomna
 		}
 
 		val body = HttpRequest.get("http://www.naoentreaki.com.br/api/v1/posts/destaques/?order=semana&allowNsfw=false&limit=1&skip=${RANDOM.nextInt(0, 100000)}&random=true")
+				.doSafeConnection()
 				.userAgent(Constants.USER_AGENT)
 				.body()
 

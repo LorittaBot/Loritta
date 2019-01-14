@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import net.perfectdreams.loritta.utils.doSafeConnection
 import org.jooby.Status
 import org.json.XML
 import org.slf4j.LoggerFactory
@@ -41,6 +41,7 @@ object MiscUtils {
 				newUrl = bitlyUrl
 			}
 			val httpRequest = HttpRequest.get(newUrl)
+					.doSafeConnection()
 					.followRedirects(true)
 					.connectTimeout(2500)
 					.readTimeout(2500)
@@ -122,6 +123,7 @@ object MiscUtils {
 		// mailto.space
 		try {
 			val body = HttpRequest.get("https://mailto.space/get/inbox/c785304469fbf265b6c71965f194e653e4c4951c/wbydvhbby")
+					.doSafeConnection()
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
