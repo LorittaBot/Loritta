@@ -32,7 +32,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
     field.isAccessible = true
     val url = field.get(this) as URL
 
-    if (!loritta.connectionManager.isTrusted(url.toString())) {
+    if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections && !loritta.connectionManager.isTrusted(url.toString())) {
         // This ain't trusted dawg!
         ConnectionManager.logger.info { "Doing untrusted connection $url, that ain't trusted dawg! Let's proxy it!!" }
         this.useProxy(Loritta.config.connectionManagerConfig.proxyIp, Loritta.config.connectionManagerConfig.proxyPort)
