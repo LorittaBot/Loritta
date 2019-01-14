@@ -47,7 +47,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
     val url = field.get(this) as URL
 
     if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections) {
-        if (!loritta.connectionManager.isTrusted(url.toString())) {
+        if (loritta.connectionManager.isBlocked(url.toString())) {
             // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
             ConnectionManager.logger.info { "IP Logger detected $url, redirecing to somewhere else!" }
             return HttpRequest.get("https://loritta.website")
@@ -59,6 +59,6 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
             this.useProxy(Loritta.config.connectionManagerConfig.proxyIp, Loritta.config.connectionManagerConfig.proxyPort)
         }
     }
-    
+
     return this
 }

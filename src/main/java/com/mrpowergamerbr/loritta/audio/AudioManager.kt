@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
@@ -37,7 +38,6 @@ class AudioManager(val loritta: Loritta) {
 		playerManager.setItemLoaderThreadPoolSize(500)
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
-		AudioSourceManagers.registerLocalSource(playerManager)
 
 		lavalink.addNode(URI("ws://${Loritta.config.lavalinkIp}:2334"), Loritta.config.mixerWebhookSecret)
 	}
@@ -89,6 +89,11 @@ class AudioManager(val loritta: Loritta) {
 
 		if (playlistCache.containsKey(trackUrl)) {
 			playPlaylist(context, musicManager, playlistCache[trackUrl]!!, override)
+			return
+		}
+
+		if (trackUrl.isValidUrl() && !loritta.connectionManager.isTrusted(trackUrl)) {
+			channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
 			return
 		}
 
@@ -189,6 +194,10 @@ class AudioManager(val loritta: Loritta) {
 		if (playlistCache.contains(trackUrl)) {
 			val playlist = playlistCache[trackUrl]!!
 			loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
+			return
+		}
+
+		if (trackUrl.isValidUrl() && !loritta.connectionManager.isTrusted(trackUrl)) {
 			return
 		}
 
