@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import net.perfectdreams.loritta.utils.doSafeConnection
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -33,6 +34,7 @@ class APIGetCommunityInfoView : NoVarsView() {
 		}
 
 		val httpRequest = HttpRequest.get(aminoInviteLink)
+				.doSafeConnection()
 				.followRedirects(true)
 
 		if (httpRequest.code() == 404) {

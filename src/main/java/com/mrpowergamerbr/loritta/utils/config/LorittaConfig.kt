@@ -146,6 +146,8 @@ class LorittaConfig(
 			val proxyUntrustedConnections: Boolean,
 			@JsonProperty("trusted-domains")
 			val trustedDomains: List<String>,
+			@JsonProperty("blocked-domains")
+			val blockedDomains: List<String>,
 			@JsonProperty("proxy-ip")
 			val proxyIp: String,
 			@JsonProperty("proxy-port")
