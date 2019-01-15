@@ -37,7 +37,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			donators.forEach {
 				val lorittaProfile = lorittaProfiles.firstOrNull { profile -> it.user.idLong == profile.userId }
 				val isBold = if (lorittaProfile != null) {
-					lorittaProfile.donatorPaid >= 19.99
+					lorittaProfile.donatorPaid >= 59.99
 				} else {
 					false
 				}
