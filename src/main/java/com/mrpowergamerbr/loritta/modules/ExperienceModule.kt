@@ -38,10 +38,13 @@ class ExperienceModule : MessageReceivedModule {
 
 					if (lorittaProfile.isActiveDonator()) {
 						globalGainedXp = when {
-							lorittaProfile.donatorPaid >= 89.99 -> (globalGainedXp * 1.75).toInt()
-							lorittaProfile.donatorPaid >= 69.99 -> (globalGainedXp * 1.75).toInt()
-							lorittaProfile.donatorPaid >= 49.99 -> (globalGainedXp * 1.5).toInt()
-							lorittaProfile.donatorPaid >= 29.99 -> (globalGainedXp * 1.25).toInt()
+							lorittaProfile.donatorPaid >= 159.99 -> (globalGainedXp * 2.5).toInt()
+							lorittaProfile.donatorPaid >= 139.99 -> (globalGainedXp * 2.25).toInt()
+							lorittaProfile.donatorPaid >= 119.99 -> (globalGainedXp * 2.0).toInt()
+							lorittaProfile.donatorPaid >= 99.99 -> (globalGainedXp * 1.75).toInt()
+							lorittaProfile.donatorPaid >= 79.99 -> (globalGainedXp * 1.5).toInt()
+							lorittaProfile.donatorPaid >= 59.99 -> (globalGainedXp * 1.25).toInt()
+							lorittaProfile.donatorPaid >= 39.99 -> (globalGainedXp * 1.1).toInt()
 							else -> globalGainedXp
 						}
 					}
