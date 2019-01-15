@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -9,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
 class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC) {
@@ -47,7 +47,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 		if (context.args.isNotEmpty()) {
 			try {
 				val vol = Integer.valueOf(context.args[0])
-				if (vol > 100) {
+				if (vol > 500) {
 					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["VOLUME_TOOHIGH"])
 					return
 				}
