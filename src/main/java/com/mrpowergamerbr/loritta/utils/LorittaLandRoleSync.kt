@@ -159,6 +159,8 @@ class LorittaLandRoleSync : Runnable {
 
 			for ((profile, member) in donators) {
 				val donatorRole = originalGuild.getRoleById("364201981016801281")
+				val superDonatorRole = originalGuild.getRoleById("463652112656629760")
+				val megaDonatorRole = originalGuild.getRoleById("534659343656681474")
 				val inactiveRole = originalGuild.getRoleById("435856512787677214")
 				val roles = member.roles.toMutableList()
 
@@ -168,9 +170,31 @@ class LorittaLandRoleSync : Runnable {
 
 					if (roles.contains(inactiveRole))
 						roles.remove(inactiveRole)
+
+					if (profile.donatorPaid >= 99.99) {
+						if (!roles.contains(megaDonatorRole))
+							roles.add(megaDonatorRole)
+					} else {
+						if (roles.contains(megaDonatorRole))
+							roles.remove(megaDonatorRole)
+					}
+
+					if (profile.donatorPaid >= 59.99) {
+						if (!roles.contains(superDonatorRole))
+							roles.add(superDonatorRole)
+					} else {
+						if (roles.contains(superDonatorRole))
+							roles.remove(superDonatorRole)
+					}
 				} else {
 					if (roles.contains(donatorRole))
 						roles.remove(donatorRole)
+
+					if (roles.contains(superDonatorRole))
+						roles.remove(superDonatorRole)
+
+					if (roles.contains(megaDonatorRole))
+						roles.remove(megaDonatorRole)
 
 					if (!roles.contains(inactiveRole))
 						roles.add(inactiveRole)
