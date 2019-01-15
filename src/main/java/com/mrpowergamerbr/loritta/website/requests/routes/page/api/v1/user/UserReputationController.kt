@@ -122,8 +122,13 @@ class UserReputationController {
 		var randomChance = 2.5
 		if (profile.isActiveDonator()) {
 			randomChance = when {
-				profile.donatorPaid >= 39.99 -> 25.0
-				profile.donatorPaid >= 19.99 -> 5.0
+				profile.donatorPaid >= 159.99 -> 20.0
+				profile.donatorPaid >= 139.99 -> 17.5
+				profile.donatorPaid >= 119.99 -> 15.0
+				profile.donatorPaid >= 99.99 -> 12.5
+				profile.donatorPaid >= 79.99 -> 10.0
+				profile.donatorPaid >= 59.99 -> 7.5
+				profile.donatorPaid >= 39.99 -> 5.0
 				else -> randomChance
 			}
 		}
