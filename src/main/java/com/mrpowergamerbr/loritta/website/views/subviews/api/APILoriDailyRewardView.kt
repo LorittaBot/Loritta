@@ -152,23 +152,26 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		val random = RANDOM.nextInt(0, 30)
 		var multiplier = when (random) {
-			in 8..14 -> 3
-			in 15..20 -> 4
-			in 21..25 -> 5
-			in 26..29 -> 6
-			else -> 2
+			in 8..14 -> 3.0
+			in 15..20 -> 4.0
+			in 21..25 -> 5.0
+			in 26..29 -> 6.0
+			else -> 2.0
 		}
 
 		if (lorittaProfile.isActiveDonator()) {
 			when {
-				lorittaProfile.donatorPaid >= 79.99 -> multiplier += 4
-				lorittaProfile.donatorPaid >= 59.99 -> multiplier += 3
-				lorittaProfile.donatorPaid >= 39.99 -> multiplier += 2
-				lorittaProfile.donatorPaid >= 19.99 -> multiplier += 1
+				lorittaProfile.donatorPaid >= 159.99 -> multiplier += 22.55
+				lorittaProfile.donatorPaid >= 139.99 -> multiplier += 16.85
+				lorittaProfile.donatorPaid >= 119.99 -> multiplier += 12.292
+				lorittaProfile.donatorPaid >= 99.99 -> multiplier += 8.634
+				lorittaProfile.donatorPaid >= 79.99 -> multiplier += 5.717
+				lorittaProfile.donatorPaid >= 59.99 -> multiplier += 3.375
+				lorittaProfile.donatorPaid >= 39.99 -> multiplier += 1.5
 			}
 		}
 
-		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, (555 * multiplier) + 1) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
+		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 
 		val receivedDailyAt = System.currentTimeMillis()
 		val payload = JsonObject()
