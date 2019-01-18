@@ -5,16 +5,19 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.tables.DonationConfigs
+import com.mrpowergamerbr.loritta.tables.DonationKeys
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -159,22 +162,83 @@ class APILoriDailyRewardView : NoVarsView() {
 			else -> 2.0
 		}
 
-		if (lorittaProfile.isActiveDonator()) {
+		val donatorPaid = loritta.getMoneyFromDonations(userIdentification.id.toLong())
+
+		if (donatorPaid != 0.0) {
 			when {
-				lorittaProfile.donatorPaid >= 159.99 -> multiplier += 22.55
-				lorittaProfile.donatorPaid >= 139.99 -> multiplier += 16.85
-				lorittaProfile.donatorPaid >= 119.99 -> multiplier += 12.292
-				lorittaProfile.donatorPaid >= 99.99 -> multiplier += 8.634
-				lorittaProfile.donatorPaid >= 79.99 -> multiplier += 5.717
-				lorittaProfile.donatorPaid >= 59.99 -> multiplier += 3.375
-				lorittaProfile.donatorPaid >= 39.99 -> multiplier += 1.5
+				donatorPaid >= 159.99 -> multiplier += 22.55
+				donatorPaid >= 139.99 -> multiplier += 16.85
+				donatorPaid >= 119.99 -> multiplier += 12.292
+				donatorPaid >= 99.99 -> multiplier += 8.634
+				donatorPaid >= 79.99 -> multiplier += 5.717
+				donatorPaid >= 59.99 -> multiplier += 3.375
+				donatorPaid >= 39.99 -> multiplier += 1.5
 			}
 		}
 
-		val dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
+		var dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
+		val originalPayout = dailyPayout
+
+		val mutualGuilds = lorittaShards.getMutualGuilds(lorittaShards.getUserById(userIdentification.id)!!)
+		var sponsoredBy: Guild? = null
+		var multipliedBy: Double? = null
+		var sponsoredByUser: User? = null
+
+		transaction(Databases.loritta) {
+			addLogger(StdOutSqlLogger)
+
+			// Pegar todos os servidores com sonhos patrocinados
+			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
+				(ServerConfigs.id inList mutualGuilds.map { it.idLong }) and
+				(DonationConfigs.dailyMultiplier eq true) and
+						(ServerConfigs.donationKey.isNotNull()) and
+						(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and
+						(DonationKeys.value greaterEq 59.99)
+			}.orderBy(DonationKeys.value to false)
+
+			val serverConfigs = ServerConfig.wrapRows(results)
+
+			val bestServer = serverConfigs.firstOrNull { lorittaShards.getGuildById(it.guildId) != null }
+
+			if (bestServer != null) {
+				val donationConfig = bestServer.donationConfig
+				val donationKey = bestServer.donationKey
+
+				if (donationConfig != null && donationKey != null && donationKey.value >= 59.99) {
+					multipliedBy = when {
+						donationKey.value >= 139.99 -> 1.75
+						donationKey.value >= 99.99 -> 1.5
+						donationKey.value >= 59.99 -> 1.25
+						else -> 1.0
+					}
+					sponsoredBy = lorittaShards.getGuildById(bestServer.guildId)
+					sponsoredByUser = lorittaShards.getUserById(donationKey.userId)
+				}
+			}
+		}
 
 		val receivedDailyAt = System.currentTimeMillis()
 		val payload = JsonObject()
+
+		if (sponsoredBy != null && multipliedBy != null) {
+			val sponsor = jsonObject(
+					"multipliedBy" to multipliedBy,
+					"guild" to jsonObject(
+							"name" to sponsoredBy!!.name,
+							"iconUrl" to sponsoredBy!!.iconUrl,
+							"id" to sponsoredBy!!.id
+					),
+					"originalPayout" to originalPayout
+			)
+
+			if (sponsoredByUser != null)
+				sponsor["user"] = WebsiteUtils.transformToJson(sponsoredByUser!!)
+
+			payload["sponsoredBy"] = sponsor
+
+			dailyPayout = (dailyPayout * multipliedBy!!).toInt()
+		}
+
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["receivedDailyAt"] = receivedDailyAt
 		payload["dailyPayout"] = dailyPayout
@@ -198,7 +262,7 @@ class APILoriDailyRewardView : NoVarsView() {
 		}
 
 
-		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip}" }
+		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 		return payload.toString()
 	}
 }

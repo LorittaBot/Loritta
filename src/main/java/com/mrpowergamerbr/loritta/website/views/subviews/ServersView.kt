@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.APIGetServerSampleView
 import org.jooby.Request
 import org.jooby.Response
 
@@ -120,11 +119,11 @@ class ServersView : AbstractView() {
 								)
 						)
 
-		val sponsoredArray = APIGetServerSampleView.transformToJsonArray(sponsoredConfigs.toMutableList(), userIdentification)
-		val partnerArray = APIGetServerSampleView.transformToJsonArray(partnerConfigs.toMutableList(), userIdentification)
-		val topArray = APIGetServerSampleView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
-		val randomArray = APIGetServerSampleView.transformToJsonArray(randomConfigs.toMutableList(), userIdentification)
-		val recentlyArray = APIGetServerSampleView.transformToJsonArray(recentlyBumped.toMutableList(), userIdentification)
+		val sponsoredArray = LoriPartnerView.transformToJsonArray(sponsoredConfigs.toMutableList(), userIdentification)
+		val partnerArray = LoriPartnerView.transformToJsonArray(partnerConfigs.toMutableList(), userIdentification)
+		val topArray = LoriPartnerView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+		val randomArray = LoriPartnerView.transformToJsonArray(randomConfigs.toMutableList(), userIdentification)
+		val recentlyArray = LoriPartnerView.transformToJsonArray(recentlyBumped.toMutableList(), userIdentification)
 
 		val samples = JsonObject()
 		samples["sponsored"] = sponsoredArray

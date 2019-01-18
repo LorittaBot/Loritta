@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
@@ -168,7 +168,7 @@ val jsonParser get() = Loritta.JSON_PARSER
  */
 infix fun <T> Loritta.save(obj: T) {
 	val updateOptions = ReplaceOptions().upsert(true)
-	if (obj is ServerConfig) {
+	if (obj is MongoServerConfig) {
 		loritta.serversColl.replaceOne(
 				Filters.eq("_id", obj.guildId),
 				obj,
@@ -576,7 +576,7 @@ object LorittaUtilsKotlin {
 
 	var executedCommands = 0
 
-	fun startRandomSong(guild: Guild, conf: ServerConfig) {
+	fun startRandomSong(guild: Guild, conf: MongoServerConfig) {
 		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)
 
 		if (5000 > diff)

@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.TextChannel
@@ -27,7 +27,7 @@ object LorittaUtils {
 		return true
 	}
 
-	fun warnOwnerNoPermission(guild: Guild?, textChannel: TextChannel?, serverConf: ServerConfig) {
+	fun warnOwnerNoPermission(guild: Guild?, textChannel: TextChannel?, serverConf: MongoServerConfig) {
 		if (textChannel == null || guild == null)
 			return
 

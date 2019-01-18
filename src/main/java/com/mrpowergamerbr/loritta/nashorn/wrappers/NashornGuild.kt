@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.Guild
@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.entities.Guild
 /**
  * Wrapper para a Guild, usado para imagens de comandos Nashorn
  */
-class NashornGuild(private val guild: Guild, private val serverConfig: ServerConfig) {
+class NashornGuild(private val guild: Guild, private val serverConfig: MongoServerConfig) {
 	@NashornCommand.NashornDocs()
 	fun getName(): String {
 		return guild.name

@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
@@ -12,6 +11,8 @@ import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.RandomStringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -26,7 +27,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)
 		val arg3 = context.rawArgs.getOrNull(3)
-		
+
 		// Sub-comandos que só o Dono pode usar
 		if (context.userHandle.id == Loritta.config.ownerId) {
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
@@ -36,7 +37,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						it[money] = arg1.toDouble()
 					}
 				}
-				
+
 				context.reply(
 						LoriReply(
 								"Sonhos de ${user.asMention} foram editados com sucesso!"
@@ -44,7 +45,31 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				)
 				return
 			}
-			
+
+			if (arg0 == "allow_any_payment" && arg1 != null) {
+				MercadoPagoCallbackController.allowAnyPayment = arg1.toBoolean()
+
+				context.reply(
+						LoriReply(
+								"Todos os pagamentos serão aprovados sem confirmação? ${MercadoPagoCallbackController.allowAnyPayment}"
+						)
+				)
+				return
+			}
+
+			if (arg0 == "inspect_donations" && arg1 != null) {
+				val id = arg1.toLong()
+
+				val moneyFromDonations = loritta.getMoneyFromDonations(id)
+
+				context.reply(
+						LoriReply(
+								"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+						)
+				)
+				return
+			}
+
 			if (arg0 == "commit_bans") {
 				val replies = mutableListOf<LoriReply>()
 				replies.add(
@@ -53,20 +78,20 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 								Emotes.DISCORD_ONLINE
 						)
 				)
-				
+
 				loritta.networkBanManager.notVerifiedEntries.forEach {
 					if (replies.sumBy { it.build(context).length } >= 2000) {
 						context.reply(*replies.toTypedArray())
 						replies.clear()
 					}
-					
+
 					val user = lorittaShards.getUserById(it.id) ?: return
-					
+
 					val typeEmote = when {
 						user.isBot -> Emotes.DISCORD_BOT_TAG
 						else -> Emotes.DISCORD_WUMPUS_BASIC
 					}
-					
+
 					val mutualGuilds = lorittaShards.getMutualGuilds(user)
 					val serverConfigs = loritta.serversColl.find(
 							Filters.and(
@@ -74,7 +99,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 									Filters.eq("moderationConfig.useLorittaBansNetwork", true)
 							)
 					).toMutableList()
-					
+
 					replies.add(
 							LoriReply(
 									"$typeEmote `${user.name.stripCodeMarks()}#${user.discriminator}` (${user.id}/${it.type.name}) — ${mutualGuilds.size} servidores compartilhados (${serverConfigs.size} com os bans globais ativados)",
@@ -82,20 +107,20 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 							)
 					)
 				}
-				
+
 				context.reply(*replies.toTypedArray())
 				replies.clear()
-				
+
 				val message = context.reply(
 						LoriReply(
 								"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
 								Emotes.DISCORD_DO_NOT_DISTURB
 						)
 				)
-				
+
 				message.addReaction("✅").queue()
 				message.addReaction("error:412585701054611458").queue()
-				
+
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
 						loritta.networkBanManager.notVerifiedEntries.forEach {
@@ -118,96 +143,67 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 				return
 			}
-			
+
 			if (arg0 == "set_sponsor" && arg1 != null && arg2 != null && arg3 != null) {
 				val guild = lorittaShards.getGuildById(arg1)!!
 				val serverConfig = loritta.getServerConfigForGuild(guild.id)
 				val isSponsor = arg2.toBoolean()
-				
+
 				serverConfig.serverListConfig.isSponsored = isSponsor
 				serverConfig.serverListConfig.sponsorPaid = arg3.toDouble()
-				
+
 				val rawArgs = context.rawArgs.toMutableList()
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
-				
+
 				serverConfig.serverListConfig.sponsoredUntil = rawArgs.joinToString(" ").convertToEpochMillisRelativeToNow()
-				
+
 				loritta save serverConfig
-				
+
 				context.reply(
 						LoriReply(
 								"Servidor `${guild.name}` foi marcado como patrociado até `${serverConfig.serverListConfig.sponsoredUntil.humanize(locale)}`"
 						)
 				)
 			}
-			
+
 			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
 				val rawArgs = context.rawArgs.toMutableList()
 				rawArgs.removeAt(0)
-				
+
 				val args = rawArgs.joinToString(" ")
 						.split("|")
 						.map { it.trim() }
 						.toMutableList()
-				
+
 				val price = args[0].toDouble()
 				val reason = args[1]
-				
+
 				val time = args[2].convertToEpochMillisRelativeToNow()
-				
+
 				val key = RandomStringUtils.random(32, 0, 66, true, true, *"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@!$&".toCharArray())
-				
+
 				val premiumKey = PremiumKey(
 						key,
 						reason,
 						time,
 						price
 				)
-				
+
 				loritta.premiumKeys.add(premiumKey)
-				
+
 				loritta.savePremiumKeys()
-				
+
 				context.reply(
 						LoriReply(
 								"Key gerada! `${premiumKey.name}`"
 						)
 				)
 			}
-			
-			if (arg0 == "set_donator" && arg1 != null && arg2 != null && arg3 != null) {
-				val user = lorittaShards.getUserById(arg1) ?: run {
-					context.sendMessage("Usuário não existe parça, talvez eu não compartilhe nenhum servidor com ele?")
-					return
-				}
-				
-				val userConfig = loritta.getOrCreateLorittaProfile(user.id)
-				val isDonator = arg2.toBoolean()
-				
-				val rawArgs = context.rawArgs.toMutableList()
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-				
-				transaction(Databases.loritta) {
-					userConfig.isDonator = isDonator
-					userConfig.donatorPaid = arg3.toDouble()
-					userConfig.donationExpiresIn = rawArgs.joinToString(" ").convertToEpochMillisRelativeToNow()
-					userConfig.donatedAt
-				}
-				
-				context.reply(
-						LoriReply(
-								"Usuário `${user.name}` foi marcado como doador até `${userConfig.donationExpiresIn.humanize(locale)}`"
-						)
-				)
-			}
 		}
-		
+
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
 		if (context.userHandle.id == Loritta.config.ownerId || context.userHandle.lorittaSupervisor) {
 			if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
@@ -215,13 +211,13 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				var guildId = arg2
 				if (guildId == "null")
 					guildId = null
-				
+
 				val rawArgs = context.rawArgs.toMutableList()
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
-				
+
 				loritta.networkBanManager.addNonVerifiedEntry(
 						NetworkBanEntry(
 								userId,
@@ -230,7 +226,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 								rawArgs.joinToString(" ")
 						)
 				)
-				
+
 				val user = lorittaShards.retrieveUserById(userId) ?: run {
 					context.reply(
 							LoriReply(
@@ -239,24 +235,24 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					)
 					return
 				}
-				
+
 				context.reply(
 						LoriReply(
 								"Usuário $userId (`${user.name}`) adicionado na lista de usuários a serem banidos na Loritta Bans Network! Use `+lslc commit_bans` para confirmar"
 						)
 				)
 			}
-			
+
 			if (arg0 == "network_unban" && arg1 != null) {
 				val userId = arg1
-				
+
 				val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.id != userId }
 						.toMutableList()
-				
+
 				loritta.networkBanManager.networkBannedUsers = filtered
-				
+
 				loritta.networkBanManager.saveNetworkBannedUsers()
-				
+
 				context.reply(
 						LoriReply(
 								"Usuário desbanido na Loritta Bans Network!"

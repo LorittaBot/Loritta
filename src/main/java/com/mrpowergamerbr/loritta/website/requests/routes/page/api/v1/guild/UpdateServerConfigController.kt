@@ -4,8 +4,9 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
@@ -27,7 +28,7 @@ class UpdateServerConfigController {
 	@GET
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
-	fun getConfig(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local serverConfig: ServerConfig, @Local guild: Guild) {
+	fun getConfig(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local serverConfig: MongoServerConfig, @Local guild: Guild) {
 		res.type(MediaType.json)
 
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
@@ -122,7 +123,7 @@ class UpdateServerConfigController {
 	@PATCH
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
-	fun patchConfig(req: Request, res: Response, guildId: String, @Local guild: Guild, @Local serverConfig: ServerConfig, @Body rawConfig: String) {
+	fun patchConfig(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local guild: Guild, @Local newServerConfig: ServerConfig, @Local serverConfig: MongoServerConfig, @Body rawConfig: String) {
 		res.type(MediaType.json)
 
 		val payload = jsonParser.parse(rawConfig).obj
@@ -137,15 +138,26 @@ class UpdateServerConfigController {
 				"miscellaneous" to MiscellaneousPayload::class.java,
 				"economy" to EconomyPayload::class.java,
 				"text_channels" to TextChannelsPayload::class.java,
-				"timers" to TimersPayload::class.java
+				"timers" to TimersPayload::class.java,
+				"premium" to PremiumKeyPayload::class.java,
+				"badge" to CustomBadgePayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]
 
 		if (payloadHandlerClass != null) {
-			val payloadHandler = payloadHandlerClass.newInstance()
-			payloadHandler.process(config, serverConfig, guild)
+			val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
+			payloadHandler.process(config, userIdentification, newServerConfig, serverConfig, guild)
 			loritta save serverConfig
+			res.status(Status.OK)
+			res.send(
+					WebsiteUtils.transformToDashboardConfigurationJson(
+							userIdentification,
+							guild,
+							newServerConfig,
+							serverConfig
+					)
+			)
 		} else {
 			res.status(Status.NOT_IMPLEMENTED)
 			res.send(

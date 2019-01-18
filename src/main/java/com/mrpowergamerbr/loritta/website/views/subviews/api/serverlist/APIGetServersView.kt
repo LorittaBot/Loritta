@@ -2,11 +2,14 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mongodb.client.model.*
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.website.views.subviews.LoriPartnerView
+import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -48,7 +51,7 @@ class APIGetServersView : NoVarsView() {
 					)
 
 
-			val topArray = APIGetServerSampleView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+			val topArray = LoriPartnerView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 
 			val samples = JsonObject()
 
@@ -72,7 +75,7 @@ class APIGetServersView : NoVarsView() {
 					)
 
 
-			val topArray = APIGetServerSampleView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
+			val topArray = LoriPartnerView.transformToJsonArray(topConfigs.toMutableList(), userIdentification)
 
 			val samples = JsonObject()
 

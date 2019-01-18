@@ -4,18 +4,19 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ExperienceModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		// (copyright Loritta™)
 		var newProfileXp = lorittaProfile.xp
 		var lastMessageSentHash: Int? = null
@@ -36,15 +37,16 @@ class ExperienceModule : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					if (lorittaProfile.isActiveDonator()) {
+					val donatorPaid = loritta.getMoneyFromDonations(event.author.idLong)
+					if (donatorPaid != 0.0) {
 						globalGainedXp = when {
-							lorittaProfile.donatorPaid >= 159.99 -> (globalGainedXp * 2.5).toInt()
-							lorittaProfile.donatorPaid >= 139.99 -> (globalGainedXp * 2.25).toInt()
-							lorittaProfile.donatorPaid >= 119.99 -> (globalGainedXp * 2.0).toInt()
-							lorittaProfile.donatorPaid >= 99.99 -> (globalGainedXp * 1.75).toInt()
-							lorittaProfile.donatorPaid >= 79.99 -> (globalGainedXp * 1.5).toInt()
-							lorittaProfile.donatorPaid >= 59.99 -> (globalGainedXp * 1.25).toInt()
-							lorittaProfile.donatorPaid >= 39.99 -> (globalGainedXp * 1.1).toInt()
+							donatorPaid >= 159.99 -> (globalGainedXp * 2.5).toInt()
+							donatorPaid >= 139.99 -> (globalGainedXp * 2.25).toInt()
+							donatorPaid >= 119.99 -> (globalGainedXp * 2.0).toInt()
+							donatorPaid >= 99.99 -> (globalGainedXp * 1.75).toInt()
+							donatorPaid >= 79.99 -> (globalGainedXp * 1.5).toInt()
+							donatorPaid >= 59.99 -> (globalGainedXp * 1.25).toInt()
+							donatorPaid >= 39.99 -> (globalGainedXp * 1.1).toInt()
 							else -> globalGainedXp
 						}
 					}

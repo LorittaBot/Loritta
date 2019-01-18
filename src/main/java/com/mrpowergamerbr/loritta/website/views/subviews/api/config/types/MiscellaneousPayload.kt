@@ -1,11 +1,13 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api.config.types
 
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.core.entities.Guild
 
 class MiscellaneousPayload : ConfigPayloadType("miscellaneous") {
-	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
-		applyReflection(payload, serverConfig.miscellaneousConfig)
+	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+		applyReflection(payload, legacyServerConfig.miscellaneousConfig)
 	}
 }

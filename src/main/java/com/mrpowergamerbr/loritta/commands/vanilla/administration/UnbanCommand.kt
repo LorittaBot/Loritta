@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
@@ -134,7 +134,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 	}
 
 	companion object {
-		fun unban(serverConfig: ServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unban(serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (serverConfig.moderationConfig.sendToPunishLog) {
 					val textChannel = guild.getTextChannelById(serverConfig.moderationConfig.punishmentLogChannelId)

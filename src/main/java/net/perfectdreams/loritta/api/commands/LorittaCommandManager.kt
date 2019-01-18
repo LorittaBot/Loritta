@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -187,7 +187,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -202,7 +202,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		return false
 	}
 
-	suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		for (subCommand in command.subcommands) {
 			if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, conf, locale, legacyLocale, lorittaUser, true))
 				return true
@@ -214,7 +214,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		return false
 	}
 
-	suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
+	suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
 
@@ -314,7 +314,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 
 				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
-				if (profile.isActiveDonator() && profile.donatorPaid >= 39.99) {
+				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getMoneyFromDonations(ev.author.idLong)
+				if (donatorPaid >= 39.99) {
 					cooldown /= 2
 				}
 
@@ -436,7 +437,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (!profile.isActiveDonator() || 39.99 > profile.donatorPaid)) {
+				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
 					context.reply(
 							LoriReply(
 									legacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -9,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC) {
@@ -33,9 +35,15 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val premiumKey = loritta.getPremiumKey(context.config.premiumKey)
+		val serverConfig = loritta.getOrCreateServerConfig(context.guild.idLong)
 
-		if (premiumKey == null || 10 > premiumKey.paid) {
+		val donationKey = transaction(Databases.loritta) {
+			serverConfig.donationKey
+		}
+
+		val donatedMoney = loritta.getMoneyFromDonations(context.userHandle.idLong)
+
+		if ((donationKey == null || !donationKey.isActive() || 19.99 > donationKey.value) || 19.99 > donatedMoney) {
 			context.reply(
 					locale["PREMIUM_CantUseFeature"],
 					"\uD83D\uDCB8"

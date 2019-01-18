@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
@@ -33,7 +33,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			// User Logins dos canais a serem verificados
 			val userLogins = mutableSetOf<String>()
 
-			val list = mutableListOf<ServerConfig>()
+			val list = mutableListOf<MongoServerConfig>()
 
 			logger.info("Verificando canais da Twitch de ${servers.count()} servidores...")
 

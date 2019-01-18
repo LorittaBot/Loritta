@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils.eventlog
 
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
@@ -18,7 +18,7 @@ import java.time.Instant
 object EventLog {
 	val logger = KotlinLogging.logger {}
 
-	fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
+	fun onMessageReceived(serverConfig: MongoServerConfig, message: Message) {
 		try {
 			val eventLogConfig = serverConfig.eventLogConfig
 
@@ -45,7 +45,7 @@ object EventLog {
 		}
 	}
 
-	fun onMessageUpdate(serverConfig: ServerConfig, locale: LegacyBaseLocale, message: Message) {
+	fun onMessageUpdate(serverConfig: MongoServerConfig, locale: LegacyBaseLocale, message: Message) {
 		val eventLogConfig = serverConfig.eventLogConfig
 
 		try {
@@ -88,7 +88,7 @@ object EventLog {
 		}
 	}
 
-	fun onVoiceJoin(serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
+	fun onVoiceJoin(serverConfig: MongoServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
 			val eventLogConfig = serverConfig.eventLogConfig
 
@@ -122,7 +122,7 @@ object EventLog {
 		}
 	}
 
-	fun onVoiceLeave(serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
+	fun onVoiceLeave(serverConfig: MongoServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
 			val eventLogConfig = serverConfig.eventLogConfig
 

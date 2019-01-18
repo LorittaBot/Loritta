@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.modules
 
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 
 object StarboardModule {
-	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: ServerConfig) {
+	fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: MongoServerConfig) {
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
 
@@ -84,7 +84,7 @@ object StarboardModule {
 						starboardMessage = textChannel.sendMessage(starCountMessage.build()).complete()
 					}
 					if (starboardMessage != null) {
-						serverConfig.starboardEmbedMessages.add(ServerConfig.StarboardMessage(starboardMessage.id, msg.id))
+						serverConfig.starboardEmbedMessages.add(MongoServerConfig.StarboardMessage(starboardMessage.id, msg.id))
 						loritta save serverConfig
 					}
 				}

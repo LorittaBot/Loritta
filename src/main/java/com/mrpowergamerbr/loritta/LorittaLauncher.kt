@@ -80,8 +80,6 @@ object LorittaLauncher {
 			val tool = MigrationTool(config)
 
 			when (arg1) {
-				"warns" -> tool.migrateWarns()
-				"local" -> tool.migrateLocalProfiles()
 			}
 			return
 		}

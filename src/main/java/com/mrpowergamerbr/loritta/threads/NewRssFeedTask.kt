@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.github.kevinsawicki.http.HttpRequest
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta.Companion.config
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
 import com.rometools.rome.io.SyndFeedInput
@@ -30,7 +30,7 @@ class NewRssFeedTask : Runnable {
 
 		// IDs das comunidades a serem verificados
 		val rssFeedLinks = mutableSetOf<String>()
-		val list = mutableListOf<ServerConfig>()
+		val list = mutableListOf<MongoServerConfig>()
 
 		servers.use {
 			while (it.hasNext()) {

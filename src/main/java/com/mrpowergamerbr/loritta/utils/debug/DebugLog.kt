@@ -48,7 +48,6 @@ object DebugLog {
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("commandManager.defaultCmdOptions.size: ${loritta.legacyCommandManager.defaultCmdOptions.size}")
-		logger.info("dummyServerConfig.guildUserData.size: ${loritta.dummyServerConfig.guildUserData.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 		logger.info("locales.size: ${loritta.legacyLocales.size}")
 		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")
@@ -150,19 +149,13 @@ object DebugLog {
 			}
 			"databases" -> {
 				val findProfilePostgreAvg = loritta.findProfilePostgre.toTypedArray().mapNotNull { it }.average()
-				val findProfileMongoAvg = loritta.findProfileMongo.toTypedArray().mapNotNull { it }.average()
 				val newProfilePostgreAvg = loritta.newProfilePostgre.toTypedArray().mapNotNull { it }.average()
 
 				println("findProfilePostgre (${loritta.idx0}): $findProfilePostgreAvg nanosegundos (${findProfilePostgreAvg / 1000000})")
-				println("findProfileMongo (${loritta.idx1}): $findProfileMongoAvg nanosegundos (${findProfileMongoAvg / 1000000})")
 				println("newProfilePostgre (${loritta.idx2}): $newProfilePostgreAvg nanosegundos (${newProfilePostgreAvg / 1000000})")
 
 				var text = "===[ findProfilePostgre ($findProfilePostgreAvg nanosegundos) ]===\n"
 				loritta.findProfilePostgre.toTypedArray().mapNotNull { it }.forEach {
-					text += "$it nanosegundos\n"
-				}
-				text += "\n\n===[ findProfileMongo ($findProfileMongoAvg nanosegundos) ]===\n"
-				loritta.findProfileMongo.toTypedArray().mapNotNull { it }.forEach {
 					text += "$it nanosegundos\n"
 				}
 				text += "\n\n===[ newProfilePostgre ($newProfilePostgreAvg nanosegundos) ]===\n"

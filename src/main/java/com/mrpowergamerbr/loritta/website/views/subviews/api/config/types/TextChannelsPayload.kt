@@ -2,31 +2,33 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api.config.types
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemeName
 import net.dv8tion.jda.core.entities.Guild
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
-	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
 		// por enquanto não iremos apagar as configurações atuais
 		// para não limpar as coisas de anti spam
 		val entries = payload["entries"].array
 
-		serverConfig.textChannelConfigs.clear() // oof anti spam is broken
+		legacyServerConfig.textChannelConfigs.clear() // oof anti spam is broken
 		for (entry in entries) {
 			val id = entry["id"].nullString ?: continue
 
 			val config = if (id == "default") {
 				// Config default
-				serverConfig.defaultTextChannelConfig
+				legacyServerConfig.defaultTextChannelConfig
 			} else {
-				if (serverConfig.hasTextChannelConfig(id)) {
-					serverConfig.getTextChannelConfig(id)
+				if (legacyServerConfig.hasTextChannelConfig(id)) {
+					legacyServerConfig.getTextChannelConfig(id)
 				} else {
 					val textChannelConfig = TextChannelConfig(id)
-					serverConfig.textChannelConfigs.add(textChannelConfig)
+					legacyServerConfig.textChannelConfigs.add(textChannelConfig)
 					textChannelConfig
 				}
 			}
@@ -46,7 +48,7 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 				}
 
 				for (textChannel in guild.textChannels) {
-					val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
+					val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 					val formattedTopic = memberCountConfig.getFormattedTopic(guild)
 					textChannel.manager.setTopic(formattedTopic).queue()
 				}

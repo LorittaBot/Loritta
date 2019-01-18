@@ -130,12 +130,12 @@ object GiveawayManager {
 
                     val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
                         logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
-                        cancelGiveaway(giveaway)
+                        cancelGiveaway(giveaway, true)
                         return@launch
                     }
                     val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
                         logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
-                        cancelGiveaway(giveaway)
+                        cancelGiveaway(giveaway, true)
                         return@launch
                     }
 
@@ -143,7 +143,7 @@ object GiveawayManager {
 
                     val message = channel.getMessageById(giveaway.messageId).await() ?: run {
                         logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
-                        cancelGiveaway(giveaway)
+                        cancelGiveaway(giveaway, true)
                         return@launch
                     }
 
@@ -178,17 +178,17 @@ object GiveawayManager {
 
                 val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
                     logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
-                    cancelGiveaway(giveaway)
+                    cancelGiveaway(giveaway, true)
                     return@launch
                 }
                 val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
                     logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
-                    cancelGiveaway(giveaway)
+                    cancelGiveaway(giveaway, true)
                     return@launch
                 }
                 val message = channel.getMessageById(giveaway.messageId).await() ?: run {
                     logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
-                    cancelGiveaway(giveaway)
+                    cancelGiveaway(giveaway, true)
                     return@launch
                 }
 
@@ -196,17 +196,17 @@ object GiveawayManager {
             } catch (e: Exception) {
                 if (e is ErrorResponseException) {
                     if (e.errorCode == 10008) { // Mensagem não existe, vamos cancelar o giveaway!
-                        cancelGiveaway(giveaway)
+                        cancelGiveaway(giveaway, true)
                         return@launch
                     }
                 }
                 logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
-                cancelGiveaway(giveaway)
+                cancelGiveaway(giveaway, false)
             }
         }
     }
 
-    suspend fun cancelGiveaway(giveaway: Giveaway) {
+    suspend fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean) {
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
 
@@ -214,8 +214,10 @@ object GiveawayManager {
         if (lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED })
             return
 
-        transaction(Databases.loritta) {
-            giveaway.delete()
+        if (deleteFromDatabase) {
+            transaction(Databases.loritta) {
+                giveaway.delete()
+            }
         }
     }
 

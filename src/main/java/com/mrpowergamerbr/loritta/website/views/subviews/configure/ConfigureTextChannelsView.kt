@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.configure
 
 import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import net.dv8tion.jda.core.entities.Guild
@@ -16,7 +16,7 @@ class ConfigureTextChannelsView : ConfigureView() {
 		return path.matches(Regex("^/dashboard/configure/[0-9]+/textchannels"))
 	}
 
-	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
+	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: MongoServerConfig): String {
 		variables["saveType"] = "text_channels"
 		val textChannelConfigs = mutableMapOf<TextChannel, TextChannelConfig>()
 
