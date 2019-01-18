@@ -27,7 +27,7 @@ class MigrationTool(val config: LorittaConfig) {
             profiles.forEach {
                 if (it.isActiveDonator()) {
                     Payment.new {
-                        this.money = (it.money + 10).toBigDecimal()
+                        this.money = (it.donatorPaid + 10).toBigDecimal()
                         this.createdAt = it.donatedAt
                         this.paidAt = it.donatedAt
                         this.expiresAt = it.donatedAt + Constants.DONATION_ACTIVE_MILLIS
@@ -36,10 +36,10 @@ class MigrationTool(val config: LorittaConfig) {
                         this.reason = PaymentReason.DONATION
                     }
 
-                    if (it.money + 10 >= 19.99) {
+                    if (it.donatorPaid + 10 >= 19.99) {
                         DonationKey.new {
                             this.userId = it.userId
-                            this.value = (it.money + 10)
+                            this.value = (it.donatorPaid + 10)
                             this.expiresAt = it.donatedAt + 2_764_800_000
                         }
                     }
