@@ -314,7 +314,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 
 				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
-				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getMoneyFromDonations(ev.author.idLong)
+				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
 				if (donatorPaid >= 39.99) {
 					cooldown /= 2
 				}

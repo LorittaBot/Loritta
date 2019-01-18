@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -74,6 +75,7 @@ class MercadoPagoCallbackController {
 						logger.info { "Setting Payment $internalTransactionId as paid! (via MercadoPago payment $id) - Payment made by ${internalPayment.userId}" }
 						transaction(Databases.loritta) { // Pagamento aprovado
 							internalPayment.paidAt = System.currentTimeMillis()
+							internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 
 							if (isKeyRenewal) {
 								val donationKeyId = payment.externalReference.split("-").dropLast(1).last()

@@ -41,7 +41,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 			serverConfig.donationKey
 		}
 
-		val donatedMoney = loritta.getMoneyFromDonations(context.userHandle.idLong)
+		val donatedMoney = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 
 		if ((donationKey == null || !donationKey.isActive() || 19.99 > donationKey.value) || 19.99 > donatedMoney) {
 			context.reply(

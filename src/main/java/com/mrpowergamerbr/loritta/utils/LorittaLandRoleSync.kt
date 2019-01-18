@@ -149,7 +149,7 @@ class LorittaLandRoleSync : Runnable {
 			// Apply donators roles
 			val activePayments = transaction(Databases.loritta) {
 				Payment.find {
-					(Payments.paidAt greaterEq System.currentTimeMillis()) and
+					(Payments.expiresAt greaterEq System.currentTimeMillis()) and
 							(Payments.reason eq PaymentReason.DONATION)
 				}.toMutableList()
 			}

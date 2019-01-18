@@ -120,7 +120,7 @@ class UserReputationController {
 		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 		var randomChance = 2.5
-		val donatorPaid = loritta.getMoneyFromDonations(userIdentification.id.toLong())
+		val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
 		if (donatorPaid != 0.0) {
 			randomChance = when {
 				donatorPaid >= 159.99 -> 20.0

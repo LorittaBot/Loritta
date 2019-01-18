@@ -454,10 +454,10 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		return getOrCreateLorittaProfile(userId.toLong())
 	}
 
-	fun getMoneyFromDonations(userId: Long): Double {
+	fun getActiveMoneyFromDonations(userId: Long): Double {
 		return transaction(Databases.loritta) {
 			Payment.find {
-				((Payments.paidAt + 2_764_800_000) greaterEq System.currentTimeMillis()) and
+				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
 						(Payments.reason eq PaymentReason.DONATION) and
 						(Payments.userId eq userId)
 			}.sumByDouble { it.money.toDouble() }

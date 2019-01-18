@@ -37,7 +37,7 @@ class ExperienceModule : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					val donatorPaid = loritta.getMoneyFromDonations(event.author.idLong)
+					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
 					if (donatorPaid != 0.0) {
 						globalGainedXp = when {
 							donatorPaid >= 159.99 -> (globalGainedXp * 2.5).toInt()

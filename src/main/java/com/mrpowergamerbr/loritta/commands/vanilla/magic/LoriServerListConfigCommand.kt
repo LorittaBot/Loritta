@@ -56,6 +56,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						this.createdAt = System.currentTimeMillis()
 						this.discount = 0.0
 						this.paidAt = System.currentTimeMillis()
+						this.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 						this.userId = arg1.toLong()
 						this.gateway = PaymentGateway.OTHER
 						this.reason = PaymentReason.DONATION
@@ -102,7 +103,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = loritta.getMoneyFromDonations(id)
+				val moneyFromDonations = loritta.getActiveMoneyFromDonations(id)
 
 				context.reply(
 						LoriReply(

@@ -30,6 +30,7 @@ class MigrationTool(val config: LorittaConfig) {
                         this.money = (it.money + 10).toBigDecimal()
                         this.createdAt = it.donatedAt
                         this.paidAt = it.donatedAt
+                        this.expiresAt = it.donatedAt + Constants.DONATION_ACTIVE_MILLIS
                         this.gateway = PaymentGateway.OTHER
                         this.userId = it.userId
                         this.reason = PaymentReason.DONATION

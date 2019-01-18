@@ -11,5 +11,6 @@ object Payments : LongIdTable() {
     val money = decimal("money", 19, 14).index()
     val createdAt = long("created_at")
     val paidAt = long("paid_at").nullable()
+    val expiresAt = long("expires_at").nullable()
     val discount = double("discount").nullable()
 }

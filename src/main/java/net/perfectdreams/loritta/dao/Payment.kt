@@ -14,5 +14,6 @@ class Payment(id: EntityID<Long>) : LongEntity(id) {
     var money by Payments.money
     var createdAt by Payments.createdAt
     var paidAt by Payments.paidAt
+    var expiresAt by Payments.expiresAt
     var discount by Payments.discount
 }

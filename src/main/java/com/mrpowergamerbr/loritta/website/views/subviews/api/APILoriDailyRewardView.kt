@@ -162,7 +162,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			else -> 2.0
 		}
 
-		val donatorPaid = loritta.getMoneyFromDonations(userIdentification.id.toLong())
+		val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
 
 		if (donatorPaid != 0.0) {
 			when {

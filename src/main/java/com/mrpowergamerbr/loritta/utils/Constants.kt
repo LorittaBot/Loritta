@@ -55,6 +55,8 @@ object Constants {
 	const val DEFAULT_LOCALE_ID = "default"
 	const val MAX_TRACKS_ON_PLAYLIST = 25
 
+	const val DONATION_ACTIVE_MILLIS = 2_764_800_000 // 32 dias
+
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(0, 193, 223)
