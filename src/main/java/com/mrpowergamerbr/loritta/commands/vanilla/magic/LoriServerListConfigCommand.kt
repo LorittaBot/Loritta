@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
@@ -13,6 +14,9 @@ import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
 import org.apache.commons.lang3.RandomStringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -41,6 +45,44 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				context.reply(
 						LoriReply(
 								"Sonhos de ${user.asMention} foram editados com sucesso!"
+						)
+				)
+				return
+			}
+
+			if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
+				transaction(Databases.loritta) {
+					Payment.new {
+						this.createdAt = System.currentTimeMillis()
+						this.discount = 0.0
+						this.paidAt = System.currentTimeMillis()
+						this.userId = arg1.toLong()
+						this.gateway = PaymentGateway.OTHER
+						this.reason = PaymentReason.DONATION
+						this.money = arg2.toBigDecimal()
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Pagamento criado com sucesso!"
+						)
+				)
+				return
+			}
+
+			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
+				transaction(Databases.loritta) {
+					DonationKey.new {
+						this.userId = arg1.toLong()
+						this.expiresAt = System.currentTimeMillis() + 2_764_800_000
+						this.value = arg2.toDouble()
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Key criada com sucesso!"
 						)
 				)
 				return
