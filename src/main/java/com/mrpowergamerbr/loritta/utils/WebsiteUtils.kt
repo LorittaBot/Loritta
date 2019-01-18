@@ -496,7 +496,8 @@ object WebsiteUtils {
 		guildJson["donationConfig"] = transaction(Databases.loritta) {
 			val donationConfig = serverConfig.donationConfig
 			jsonObject(
-					"customBadge" to (donationConfig?.customBadge ?: false)
+					"customBadge" to (donationConfig?.customBadge ?: false),
+					"dailyMultiplier" to (donationConfig?.dailyMultiplier ?: false)
 			)
 		}
 
