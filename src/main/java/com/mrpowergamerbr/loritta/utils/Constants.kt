@@ -106,7 +106,11 @@ object Constants {
 			"viada",
 			"vadia",
 			"putiane",
-			"fdp"
+			"fdp",
+			"xereca",
+			"pepeca",
+			"pepeka",
+			"ppk"
 	)
 
 	// Canais de textos utilizados na Loritta
