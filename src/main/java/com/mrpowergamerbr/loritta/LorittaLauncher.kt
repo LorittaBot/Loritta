@@ -80,6 +80,7 @@ object LorittaLauncher {
 			val tool = MigrationTool(config)
 
 			when (arg1) {
+				"donators" -> tool.migrateDonators()
 			}
 			return
 		}
