@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.audio
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
@@ -53,7 +53,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 	 *
 	 * @param track The track to play or add to queue.
 	 */
-	fun queue(track: AudioTrackWrapper, config: ServerConfig) {
+	fun queue(track: AudioTrackWrapper, config: MongoServerConfig) {
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.

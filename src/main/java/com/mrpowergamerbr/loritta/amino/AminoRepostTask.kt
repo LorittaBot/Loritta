@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.amino
 
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -31,7 +31,7 @@ class AminoRepostTask : Runnable {
 
 		// IDs das comunidades a serem verificados
 		val communityIds = mutableSetOf<String>()
-		val list = mutableListOf<ServerConfig>()
+		val list = mutableListOf<MongoServerConfig>()
 
 		val pattern = Regex("aminoapps\\.com/c/([A-z0-9\\-_]+)")
 				.toPattern()

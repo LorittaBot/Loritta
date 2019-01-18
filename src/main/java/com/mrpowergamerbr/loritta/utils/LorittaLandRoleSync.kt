@@ -1,13 +1,15 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Profiles
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
+import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
@@ -145,32 +147,60 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 
 			// Apply donators roles
-			val donatorsProfiles = transaction(Databases.loritta) {
-				Profile.find { Profiles.isDonator eq true }.toMutableList()
+			val activePayments = transaction(Databases.loritta) {
+				Payment.find {
+					(Payments.expiresAt greaterEq System.currentTimeMillis()) and
+							(Payments.reason eq PaymentReason.DONATION)
+				}.toMutableList()
 			}
 
-			val donators = donatorsProfiles.mapNotNull {
-				val member = originalGuild.getMemberById(it.userId)
-				if (member != null)
-					Pair(it, member)
-				else
-					null
+			val donatorsPlusQuantity = mutableMapOf<Long, Double>()
+
+			for (payment in activePayments) {
+				donatorsPlusQuantity[payment.userId] = payment.money.toDouble() + donatorsPlusQuantity.getOrDefault(payment.userId,  0.0)
 			}
 
-			for ((profile, member) in donators) {
-				val donatorRole = originalGuild.getRoleById("364201981016801281")
-				val inactiveRole = originalGuild.getRoleById("435856512787677214")
+			val donatorRole = originalGuild.getRoleById("364201981016801281")
+			val superDonatorRole = originalGuild.getRoleById("463652112656629760")
+			val megaDonatorRole = originalGuild.getRoleById("534659343656681474")
+			val inactiveRole = originalGuild.getRoleById("435856512787677214")
+
+			for (member in originalGuild.members) {
 				val roles = member.roles.toMutableList()
 
-				if (profile.isActiveDonator()) {
+				val donated = donatorsPlusQuantity[member.user.idLong] ?: 0.0
+
+				if (donated != 0.0) {
 					if (!roles.contains(donatorRole))
 						roles.add(donatorRole)
 
 					if (roles.contains(inactiveRole))
 						roles.remove(inactiveRole)
+
+					if (donated >= 99.99) {
+						if (!roles.contains(megaDonatorRole))
+							roles.add(megaDonatorRole)
+					} else {
+						if (roles.contains(megaDonatorRole))
+							roles.remove(megaDonatorRole)
+					}
+
+					if (donated >= 59.99) {
+						if (!roles.contains(superDonatorRole))
+							roles.add(superDonatorRole)
+					} else {
+						if (roles.contains(superDonatorRole))
+							roles.remove(superDonatorRole)
+					}
 				} else {
 					if (roles.contains(donatorRole))
 						roles.remove(donatorRole)
+
+					if (roles.contains(superDonatorRole))
+						roles.remove(superDonatorRole)
+
+					if (roles.contains(megaDonatorRole))
+						roles.remove(megaDonatorRole)
 
 					if (!roles.contains(inactiveRole))
 						roles.add(inactiveRole)

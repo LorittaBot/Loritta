@@ -1,73 +1,54 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.GuildProfile
-import com.mrpowergamerbr.loritta.dao.Warn
+import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.math.BigDecimal
 
 class MigrationTool(val config: LorittaConfig) {
-	fun migrateWarns() {
-		val loritta = Loritta(config)
-		loritta.initMongo()
-		loritta.initPostgreSql()
+    fun migrateDonators() {
+        val loritta = Loritta(config)
+        loritta.initMongo()
+        loritta.initPostgreSql()
 
-		println("Migrando avisos...")
+        println("Migrando doadores...")
 
-		val servers = loritta.serversColl.find()
+        transaction(Databases.loritta) {
+            val profiles = Profile.find {
+                Profiles.isDonator eq true
+            }
 
-		servers.iterator().use {
-			while (it.hasNext()) {
-				val next = it.next()
+            profiles.forEach {
+                if (it.isActiveDonator()) {
+                    Payment.new {
+                        this.money = (it.money + 10).toBigDecimal()
+                        this.createdAt = it.donatedAt
+                        this.paidAt = it.donatedAt
+                        this.expiresAt = it.donatedAt + Constants.DONATION_ACTIVE_MILLIS
+                        this.gateway = PaymentGateway.OTHER
+                        this.userId = it.userId
+                        this.reason = PaymentReason.DONATION
+                    }
 
-				transaction(Databases.loritta) {
-					next.guildUserData.filter { it.warns.isNotEmpty() }.forEach { userData ->
-						userData.warns.forEach {
-							Warn.new {
-								this.guildId = next.guildId.toLong()
-								this.userId = userData.userId.toLong()
-								this.receivedAt = it.time
-								this.punishedById = it.punishedBy.toLong()
-								this.content = it.reason
-							}
-						}
-					}
-				}
-			}
-		}
+                    if (it.money + 10 >= 19.99) {
+                        DonationKey.new {
+                            this.userId = it.userId
+                            this.value = (it.money + 10)
+                            this.expiresAt = it.donatedAt + 2_764_800_000
+                        }
+                    }
+                }
+            }
+        }
 
-		println("Avisos migrados com sucesso!")
-	}
 
-	fun migrateLocalProfiles() {
-		val loritta = Loritta(config)
-		loritta.initMongo()
-		loritta.initPostgreSql()
+        println("Doadores migrados com sucesso!")
+    }
 
-		println("Migrando perfis locais...")
-
-		val servers = loritta.serversColl.find()
-
-		servers.iterator().use {
-			while (it.hasNext()) {
-				val next = it.next()
-
-				transaction(Databases.loritta) {
-					next.guildUserData.forEach { userData ->
-						GuildProfile.new {
-							this.guildId = next.guildId.toLong()
-							this.userId = userData.userId.toLong()
-							this.money = BigDecimal.ZERO
-							this.quickPunishment = userData.quickPunishment
-							this.xp = userData.xp
-						}
-					}
-				}
-			}
-		}
-
-		println("Perfis locais migrados com sucesso!")
-	}
 }

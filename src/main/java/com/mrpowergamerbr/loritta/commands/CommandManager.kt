@@ -21,7 +21,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -281,11 +281,11 @@ class CommandManager {
 
 	}
 
-	fun getCommandsDisabledIn(conf: ServerConfig): List<AbstractCommand> {
+	fun getCommandsDisabledIn(conf: MongoServerConfig): List<AbstractCommand> {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -315,7 +315,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val member = ev.message.member
 		val baseLocale = locale
@@ -413,7 +413,9 @@ class CommandManager {
 
 				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
-				if (profile.isActiveDonator() && profile.donatorPaid >= 19.99) {
+				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+
+				if (donatorPaid >= 39.99) {
 					cooldown /= 2
 				}
 
@@ -535,7 +537,7 @@ class CommandManager {
 									"\uD83D\uDE0A"
 							)
 					)
-				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && !profile.isActiveDonator()) {
+				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],

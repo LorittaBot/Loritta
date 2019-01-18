@@ -10,4 +10,5 @@ object Modules {
 	val AFK = AFKModule()
 	val BOM_DIA_E_CIA = BomDiaECiaModule()
 	val QUIRKY = QuirkyModule()
+	val THANK_YOU_LORI = ThankYouLoriModule()
 }

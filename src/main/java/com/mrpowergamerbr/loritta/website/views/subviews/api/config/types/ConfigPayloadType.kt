@@ -2,13 +2,15 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api.config.types
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.AllowReflection
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.gson
 import net.dv8tion.jda.core.entities.Guild
 
 abstract class ConfigPayloadType(val type: String) {
-	abstract fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild)
+	abstract fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild)
 
 	fun applyReflection(payload: JsonObject, type: Any) {
 		for ((key, value) in payload.entrySet()) {

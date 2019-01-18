@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.audio
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
@@ -183,7 +183,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param config     the configuration of the guild
 	 * @param trackUrl the track URL
 	 */
-	fun loadAndPlayNoFeedback(guild: Guild, config: ServerConfig, trackUrl: String) {
+	fun loadAndPlayNoFeedback(guild: Guild, config: MongoServerConfig, trackUrl: String) {
 		val musicManager = getGuildAudioPlayer(guild)
 
 		if (playlistCache.contains(trackUrl)) {
@@ -223,7 +223,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @param trackWrapper the wrapped instance of the track
 	 * @param override     (optional) forces the song to be played
 	 */
-	fun play(guild: Guild, conf: ServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
+	fun play(guild: Guild, conf: MongoServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {

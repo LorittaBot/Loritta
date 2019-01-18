@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.userdata.LorittaGuildUserData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import org.jetbrains.exposed.sql.select
@@ -146,8 +145,4 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		}
 		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
 	}
-
-	data class RankWrapper(
-			val id: String,
-			val userData: LorittaGuildUserData)
 }

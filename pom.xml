@@ -191,11 +191,6 @@
             <version>59de40c3b6</version>
         </dependency>
         <dependency>
-            <groupId>com.github.MrPowerGamerBR</groupId>
-            <artifactId>TemmieMercadoPago</artifactId>
-            <version>-7b09c6218d-1</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>

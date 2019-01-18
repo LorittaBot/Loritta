@@ -1,10 +1,15 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import mu.KotlinLogging
+import net.dv8tion.jda.core.EmbedBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -44,6 +49,41 @@ class DailyTaxTask : Runnable {
 		try {
 			if (hour == 18 && !alreadySentDMs) {
 				logger.info("Avisando sobre a taxa diária!")
+
+				// Dar aquela reaproveitada aqui na moralzinha
+				val soonToBeExpiredMatchingKeys = transaction(Databases.loritta) {
+					val soonToBeExpiredKeys = DonationKey.find {
+						DonationKeys.expiresAt lessEq (System.currentTimeMillis() + 259_200_000)  // 3 dias
+					}.toMutableList()
+					val soonToBeExpiredMatchingKeys = mutableListOf<Pair<DonationKey, Long>>()
+
+					for (key in soonToBeExpiredKeys) {
+						val serverUsingTheKey = ServerConfig.find {
+							ServerConfigs.donationKey eq key.id
+						}.firstOrNull()
+
+						if (serverUsingTheKey != null) {
+							soonToBeExpiredMatchingKeys.add(Pair(key, serverUsingTheKey.guildId))
+						}
+					}
+
+					return@transaction soonToBeExpiredMatchingKeys
+				}
+
+				for ((donationKey, guildId) in soonToBeExpiredMatchingKeys) {
+					val user = lorittaShards.getUserById(donationKey.userId) ?: continue // Ignorar caso o usuário não exista
+					val guild = lorittaShards.getGuildById(guildId) ?: continue // Apenas avise caso a key esteja sendo usada em algum servidor
+
+					val embed = EmbedBuilder()
+							.setTitle("\uD83D\uDC4B Hey!")
+							.setDescription("Só estou aqui passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${Loritta.config.websiteUrl}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}")
+							.setThumbnail("https://i.imgur.com/HSmy9yK.png")
+							.setColor(Constants.LORITTA_AQUA)
+
+					user.openPrivateChannel().queue {
+						it.sendMessage(embed.build()).queue()
+					}
+				}
 
 				val documents = transaction(Databases.loritta) {
 					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()

@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.guild.configure
 
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
@@ -22,7 +22,7 @@ class ConfigureMemberCounterController {
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
 		variables["saveType"] = "member_counter"
 		val guild = variables["guild"] as Guild
-		val serverConfig = variables["serverConfig"] as ServerConfig
+		val serverConfig = variables["serverConfig"] as MongoServerConfig
 
 		val textChannelConfigs = mutableMapOf<TextChannel, TextChannelConfig>()
 

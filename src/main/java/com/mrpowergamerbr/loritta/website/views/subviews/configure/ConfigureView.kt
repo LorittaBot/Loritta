@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews.configure
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
 import net.dv8tion.jda.core.Permission
@@ -52,5 +52,5 @@ abstract class ConfigureView : ProtectedView() {
 		return renderConfiguration(req, res, path, variables, discordAuth, jdaGuild, serverConfig)
 	}
 
-	abstract fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String
+	abstract fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: MongoServerConfig): String
 }

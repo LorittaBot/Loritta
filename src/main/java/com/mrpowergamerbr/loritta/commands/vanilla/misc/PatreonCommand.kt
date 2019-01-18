@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
@@ -10,6 +9,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
@@ -37,7 +37,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			donators.forEach {
 				val lorittaProfile = lorittaProfiles.firstOrNull { profile -> it.user.idLong == profile.userId }
 				val isBold = if (lorittaProfile != null) {
-					lorittaProfile.donatorPaid >= 19.99
+					lorittaProfile.donatorPaid >= 59.99
 				} else {
 					false
 				}

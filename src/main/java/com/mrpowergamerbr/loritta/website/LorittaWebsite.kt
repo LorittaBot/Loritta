@@ -47,19 +47,6 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		res.send(gson.toJson(cause.payload))
 	}
 
-	// Mostrar conexões realizadas ao website
-	before { req, res ->
-		req.set("start", System.currentTimeMillis())
-		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString")
-	}
-	// Mostrar o tempo que demorou para processar tal request
-	complete("*") { req, rsp, cause ->
-		val start = req.get<Long>("start")
-		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
-	}
-
 	ws("/lorisocket") { handler, ws ->
 		println("WEBSOCKET BOIS")
 		val _field = Jooby::class.java.getDeclaredField("injector")
@@ -82,7 +69,28 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 		WebSocketHandler.onSocketConnected(ws, session)
 	}
+
+	ws("/api/v1/lorisocket") { handler, ws ->	}
+
+	// Mostrar conexões realizadas ao website
+	before { req, res ->
+		req.set("start", System.currentTimeMillis())
+		val queryString = req.urlQueryString
+		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString")
+	}
+	// Mostrar o tempo que demorou para processar tal request
+	complete("*") { req, rsp, cause ->
+		val start = req.get<Long>("start")
+		val queryString = req.urlQueryString
+		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+	}
+
 	use("*") { req, res, chain ->
+		if (req.path() == "/api/v1/lorisocket" || req.path() == "/lorisocket") {
+			chain.next(req, res)
+			return@use
+		}
+
 		val doNotLocaleRedirect = req.route().attributes().entries.any { it.key == "loriDoNotLocaleRedirect" } || req.route().path().startsWith("/api/v1/") // TODO: Remover esta verificação após toda a API ser migrada para MVC paths
 
 		var localeId: String? = null
@@ -175,6 +183,8 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use(UserRoute())
 	use(GuildRoute())
 	get("/**") { req, res ->
+		if (req.path() == "/lorisocket")
+			return@get
 		res.send(GlobalHandler.render(req, res))
 	}
 	post("/**") { req, res ->
@@ -260,12 +270,18 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import com.mrpowergamerbr.loritta.dao.*
 			import com.mrpowergamerbr.loritta.tables.*
 			import com.mrpowergamerbr.loritta.userdata.*
+			import com.mrpowergamerbr.loritta.oauth2.*
 			import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth.*
 			import com.mrpowergamerbr.loritta.website.*
+            import com.mrpowergamerbr.loritta.network.*
+            import net.perfectdreams.loritta.tables.*
+            import net.perfectdreams.loritta.dao.*
 			import com.github.salomonbrys.kotson.*
 			import org.jetbrains.exposed.sql.transactions.*
+            import org.jetbrains.exposed.sql.*
 			import java.awt.image.BufferedImage
 			import java.io.File
+            import java.lang.*
 			import javax.imageio.ImageIO
 			import kotlinx.coroutines.GlobalScope
 			import kotlinx.coroutines.launch
