@@ -90,7 +90,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
 								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and
 								(ShipEffects.expiresAt greaterEq System.currentTimeMillis())
-					}.firstOrNull()
+					}.sortedByDescending { it.expiresAt } .firstOrNull()
 				}
 
 				if (effect != null) {

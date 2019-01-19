@@ -115,14 +115,35 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val mutualGuilds = lorittaShards.getMutualGuilds(user)
 
 			transaction(Databases.loritta) {
-				val results = (ServerConfigs innerJoin DonationConfigs)
-						.select {
-                            DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it.idLong })
-                        }
+				var specialCase = false
+
+				val results = if (user.idLong == Loritta.config.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
+					(ServerConfigs innerJoin DonationConfigs)
+							.select {
+								// Então iremos pegar apenas
+								DonationConfigs.customBadge eq true
+							}
+				} else if (30_000 > mutualGuilds.size) { // Se está em menos de 30k servidores, o PostgreSQL ainda suporta pegar via inList
+					(ServerConfigs innerJoin DonationConfigs)
+							.select {
+								DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it.idLong })
+							}
+				} else {
+					specialCase = true
+					// Aqui temos bots grandes demais para suportar, nós *iremos* pegar todos, mas iremos filtrar client side (oof)
+					(ServerConfigs innerJoin DonationConfigs)
+							.select {
+								// Então iremos pegar apenas
+								DonationConfigs.customBadge eq true
+							}
+				}
 
 				val configs = ServerConfig.wrapRows(results)
 
 				for (config in configs) {
+					if (specialCase && mutualGuilds.any { it.idLong == config.id.value })
+						continue
+
 					val donationKey = config.donationKey
 					if (donationKey != null && donationKey.isActive() && donationKey.value >= LorittaPrices.CUSTOM_BADGE) {
 						val badgeFile = File(Loritta.ASSETS, "badges/custom/${config.guildId}.png")
