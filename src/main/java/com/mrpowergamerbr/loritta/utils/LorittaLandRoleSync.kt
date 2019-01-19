@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
@@ -147,17 +146,21 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 
 			// Apply donators roles
-			val activePayments = transaction(Databases.loritta) {
+			val payments = transaction(Databases.loritta) {
 				Payment.find {
-					(Payments.expiresAt greaterEq System.currentTimeMillis()) and
-							(Payments.reason eq PaymentReason.DONATION)
+					(Payments.reason eq PaymentReason.DONATION)
 				}.toMutableList()
 			}
 
 			val donatorsPlusQuantity = mutableMapOf<Long, Double>()
+			val inactiveDonators = mutableSetOf<Long>()
 
-			for (payment in activePayments) {
-				donatorsPlusQuantity[payment.userId] = payment.money.toDouble() + donatorsPlusQuantity.getOrDefault(payment.userId,  0.0)
+			for (payment in payments) {
+				if (System.currentTimeMillis() >= payment.expiresAt ?: 0) {
+					donatorsPlusQuantity[payment.userId] = payment.money.toDouble() + donatorsPlusQuantity.getOrDefault(payment.userId, 0.0)
+				} else {
+					inactiveDonators.add(payment.userId)
+				}
 			}
 
 			val donatorRole = originalGuild.getRoleById("364201981016801281")
@@ -168,9 +171,9 @@ class LorittaLandRoleSync : Runnable {
 			for (member in originalGuild.members) {
 				val roles = member.roles.toMutableList()
 
-				val donated = donatorsPlusQuantity[member.user.idLong] ?: 0.0
+				if (donatorsPlusQuantity.containsKey(member.user.idLong)) {
+					val donated = donatorsPlusQuantity[member.user.idLong] ?: 0.0
 
-				if (donated != 0.0) {
 					if (!roles.contains(donatorRole))
 						roles.add(donatorRole)
 
@@ -202,12 +205,14 @@ class LorittaLandRoleSync : Runnable {
 					if (roles.contains(megaDonatorRole))
 						roles.remove(megaDonatorRole)
 
-					if (!roles.contains(inactiveRole))
+					if (!roles.contains(inactiveRole) && inactiveDonators.contains(member.user.idLong))
 						roles.add(inactiveRole)
 				}
 
-				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) // Novos cargos foram adicionados
+				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) {// Novos cargos foram adicionados
+					logger.info("Alterando cargos de ${member}, novos cargos serão $roles")
 					member.guild.controller.modifyMemberRoles(member, roles).queue()
+				}
 			}
 		} catch (e: Exception) {
 			logger.error("Erro ao sincronizar cargos!", e)
