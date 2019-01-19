@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.utils.giveaway.payments
+package net.perfectdreams.loritta.utils.payments
 
 enum class PaymentReason {
     OTHER,

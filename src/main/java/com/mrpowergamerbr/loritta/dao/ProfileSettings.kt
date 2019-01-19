@@ -13,4 +13,6 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var hidePreviousUsernames by UserSettings.hidePreviousUsernames
 	var hideSharedServers by UserSettings.hideSharedServers
 	var hideLastSeen by UserSettings.hideLastSeen
+	var activeProfile by UserSettings.activeProfile
+	var boughtProfiles by UserSettings.boughtProfiles
 }

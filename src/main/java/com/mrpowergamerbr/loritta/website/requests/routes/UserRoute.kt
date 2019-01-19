@@ -5,9 +5,11 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.ExtrasController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.FanArtsController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.HomeController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.extras.ExtrasViewerController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserDashboardController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserProfileController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserReputationController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.ProfileListController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.ShipEffectsController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.UserDashboardController
 import org.jooby.Jooby
 
 class UserRoute : Jooby() {
@@ -20,6 +22,8 @@ class UserRoute : Jooby() {
 
 		use(UserProfileController::class.java)
 		use(UserDashboardController::class.java)
+		use(ShipEffectsController::class.java)
+		use(ProfileListController::class.java)
 		use(UserReputationController::class.java)
 	}
 }

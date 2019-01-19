@@ -12,8 +12,8 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.*
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import net.perfectdreams.loritta.utils.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.dsl.paymentSettings
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType

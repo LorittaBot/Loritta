@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.Send
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.CreateDonationPaymentController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.ProfileImageController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.SelfProfileController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.UserReputationController
 import org.jooby.Jooby
@@ -31,5 +32,6 @@ class APIRoute : Jooby() {
 		use(UserReputationController::class.java)
 		use(SelfProfileController::class.java)
 		use(CreateDonationPaymentController::class.java)
+		use(ProfileImageController::class.java)
 	}
 }

@@ -97,7 +97,17 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
-			if (user.donator) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush2.png"))
+
+			val money = loritta.getActiveMoneyFromDonations(user.idLong)
+
+			if (money != 0.0) {
+				badges += ImageIO.read(File(Loritta.ASSETS + "donator.png"))
+
+				if (money >= 99.99) {
+					badges += ImageIO.read(File(Loritta.ASSETS + "super_donator.png"))
+				}
+			}
+
 			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
 			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
 			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
@@ -218,8 +228,11 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				"orkut" to OrkutProfileCreator::class.java
 		)
 
-		var type = context.rawArgs.getOrNull(1) ?: context.rawArgs.getOrNull(0) ?: "default"
-		if (!map.containsKey(type))
+		var type = if (user.idLong == context.userHandle.idLong) {
+			context.args.getOrNull(0)
+		} else { null } ?: map.entries.firstOrNull { settings.activeProfile == it.value.simpleName }?.key ?: "default"
+
+		if (!map.containsKey(type) || !settings.boughtProfiles.contains(map[type]!!.simpleName))
 			type = "default"
 
 		val creator = map[type]!!
@@ -237,7 +250,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				member
 		)
 
-		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"] + " ${if (type != "default") "*Atenção: Isto é um design em testes e futuramente será vendido na loja da Loritta!*" else ""}") // E agora envie o arquivo
+		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
 	}
 
 	class DiscordBotVote(

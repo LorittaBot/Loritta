@@ -264,6 +264,35 @@ object WebsiteUtils {
 		}
 	}
 
+	fun checkDiscordUserAuth(req: Request, res: Response): Boolean {
+		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
+		if (userIdentification == null && req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
+
+		if (userIdentification == null) { // Unauthorized (Discord)
+			res.status(Status.UNAUTHORIZED)
+			if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
+				// Caso seja o Crawler do Discord, vamos mudar o conteúdo enviado! :3
+				res.send(getDiscordCrawlerAuthenticationPage())
+			} else {
+				val state = JsonObject()
+				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+				res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+			}
+			return false
+		}
+
+		req.set("userIdentification", userIdentification)
+		return true
+	}
+
 	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
 		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
 		if (userIdentification == null && req.session().isSet("discordAuth")) {
@@ -651,6 +680,13 @@ object WebsiteUtils {
 		serverConfigJson["serverListConfig"]["votes"] = newArray
 
 		return serverConfigJson
+	}
+
+	fun getProfileAsJson(profile: Profile): JsonObject {
+		return jsonObject(
+				"id" to profile.id.value,
+				"money" to profile.money
+		)
 	}
 
 	fun transformProfileToJson(profile: Profile): JsonObject {

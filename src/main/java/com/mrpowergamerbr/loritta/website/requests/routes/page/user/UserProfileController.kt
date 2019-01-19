@@ -53,6 +53,7 @@ class UserProfileController {
 
         variables["profileUser"] = user
         variables["lorittaProfile"] = lorittaProfile
+
         variables["profileSettings"] = transaction(Databases.loritta) {
             lorittaProfile.settings
         }

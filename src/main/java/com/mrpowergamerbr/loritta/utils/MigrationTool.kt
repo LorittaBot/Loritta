@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import net.perfectdreams.loritta.utils.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class MigrationTool(val config: LorittaConfig) {

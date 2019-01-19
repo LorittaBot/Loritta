@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.tables
 
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import net.perfectdreams.loritta.utils.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.LongIdTable
 
 object Payments : LongIdTable() {

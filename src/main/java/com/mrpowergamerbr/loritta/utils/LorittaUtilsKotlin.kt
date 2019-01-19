@@ -86,22 +86,6 @@ val User.lorittaSupervisor: Boolean
 		return false
 	}
 
-val User.donator: Boolean
-	get() {
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-		if (lorittaGuild != null) {
-			val role = lorittaGuild.getRoleById("334711262262853642")
-			val member = lorittaGuild.getMember(this)
-
-			if (member != null && role != null) {
-				if (member.roles.contains(role))
-					return true
-			}
-		}
-		return false
-	}
-
 val User.artist: Boolean
 	get() {
 		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)

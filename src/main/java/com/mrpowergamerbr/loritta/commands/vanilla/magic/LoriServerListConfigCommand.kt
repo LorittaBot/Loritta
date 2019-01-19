@@ -15,8 +15,8 @@ import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentGateway
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import net.perfectdreams.loritta.utils.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.apache.commons.lang3.RandomStringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update

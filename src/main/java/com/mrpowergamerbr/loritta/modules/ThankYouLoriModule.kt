@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ThankYouLoriModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-		return event.channel.id == "529459242550296577" && 1547899200000 > System.currentTimeMillis()
+		return event.channel.id == "529459242550296577" && 1548021631000 > System.currentTimeMillis()
 	}
 
 	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
@@ -23,15 +23,9 @@ class ThankYouLoriModule : MessageReceivedModule {
 				DonationKeys.userId eq event.author.idLong
 			}.count()
 
-			if (keyCount == 0 && event.message.contentRaw.length >= 8) {
+			if (event.message.contentRaw.length >= 8) {
 				if (MiscUtils.hasInappropriateWords(event.message.contentRaw))
 					return@transaction
-
-				DonationKey.new {
-					this.userId = event.author.idLong
-					this.expiresAt = 1548453600000
-					this.value = 59.99
-				}
 
 				val reactionRandom = Loritta.RANDOM.nextInt(0, 7)
 
@@ -45,6 +39,16 @@ class ThankYouLoriModule : MessageReceivedModule {
 					4 -> message.addReaction("lori_owo:417813932380520448").queue()
 					5 -> message.addReaction("gesso:523233744656662548").queue()
 					6 -> message.addReaction("a:owo_whats_this:515329346194636811").queue()
+				}
+
+				if (keyCount == 0) {
+					DonationKey.new {
+						this.userId = event.author.idLong
+						this.expiresAt = 1548453600000
+						this.value = 59.99
+					}
+
+					message.addReaction("\uD83D\uDD11").queue()
 				}
 			}
 		}

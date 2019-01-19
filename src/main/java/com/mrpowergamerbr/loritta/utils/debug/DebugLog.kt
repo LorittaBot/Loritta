@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -61,8 +60,6 @@ object DebugLog {
 		logger.info("loritta.twitch.cachedGames: ${loritta.twitch.cachedGames.size}")
 		logger.info("loritta.twitch.cachedStreamerInfo: ${loritta.twitch.cachedStreamerInfo.size}")
 		logger.info("gameInfoCache.size: ${loritta.twitch.cachedGames.size}")
-		logger.info("isLivestreaming.size: ${NewLivestreamThread.isLivestreaming.size}")
-		logger.info("displayNameCache.size: ${NewLivestreamThread.displayNameCache.size}")
 		logger.info("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
 		logger.info("> Invite Stuff")
 		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")

@@ -1,16 +1,13 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
+import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.*
+import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.ProfileListController
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
@@ -39,8 +36,115 @@ class SelfProfileController {
 		)
 
 		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val payload = jsonParser.parse(rawMessage)
+		val payload = jsonParser.parse(rawMessage).obj
+
 		val config = payload["config"].obj
+
+		if (config["buyItem"].nullString == "ship_effect") {
+			val editedValue = Math.max(0, Math.min(config["editedValue"].int, 100))
+
+			val user2Name = config["user2NamePlusDiscriminator"].string
+			val split = user2Name.split("#")
+
+			val user = lorittaShards.getUsers().firstOrNull { it.name == split[0].trim() && it.discriminator == split[1].trim() }
+					?: throw WebsiteAPIException(Status.NOT_FOUND,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.UNKNOWN_USER
+							)
+					)
+
+			if (3000 > profile.money) {
+				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.INSUFFICIENT_FUNDS
+						)
+				)
+			}
+
+			transaction(Databases.loritta) {
+				ShipEffect.new {
+					this.buyerId = userIdentification.id.toLong()
+					this.user1Id = userIdentification.id.toLong()
+					this.user2Id = user.idLong
+					this.editedShipValue = editedValue
+					this.expiresAt = System.currentTimeMillis() + 604_800_000
+				}
+
+				profile.money -= 3000
+			}
+
+			res.send(gson.toJson(jsonObject()))
+			return
+		}
+
+		val profileSettings = transaction(Databases.loritta) {
+			profile.settings
+		}
+
+		if (config["buyItem"].nullString == "profile") {
+			val profileType = config["profileType"].string
+
+			val profileDesign = ProfileListController.getProfiles().firstOrNull { it.first.simpleName == profileType } ?: throw WebsiteAPIException(Status.NOT_FOUND,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.ITEM_NOT_FOUND
+					)
+			)
+
+			if (profileSettings.boughtProfiles.contains(profileDesign.first.simpleName)) {
+				throw WebsiteAPIException(Status.FORBIDDEN,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.FORBIDDEN
+						)
+				)
+			}
+
+			if (profileDesign.third > profile.money) {
+				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.INSUFFICIENT_FUNDS
+						)
+				)
+			}
+
+			transaction(Databases.loritta) {
+				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.first.simpleName) }.toTypedArray()
+				profile.money -= profileDesign.third
+			}
+
+			res.send(
+					gson.toJson(
+							ProfileListController.getProfiles().map {
+								ProfileListController.getProfileAsJson(userIdentification, it.first, it.second, profileSettings, it.third)
+							}
+					)
+			)
+			return
+		}
+
+		if (config["setActiveProfileDesign"].nullString != null) {
+			val profileType = config["setActiveProfileDesign"].string
+
+			if (profileType != NostalgiaProfileCreator::class.java.simpleName && !profileSettings.boughtProfiles.contains(profileType)) {
+				throw WebsiteAPIException(Status.FORBIDDEN,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.FORBIDDEN
+						)
+				)
+			}
+
+			transaction(Databases.loritta) {
+				profileSettings.activeProfile = profileType
+			}
+
+			res.send(
+					gson.toJson(
+							ProfileListController.getProfiles().map {
+								ProfileListController.getProfileAsJson(userIdentification, it.first, it.second, profileSettings, it.third)
+							}
+					)
+			)
+			return
+		}
 
 		transaction(Databases.loritta) {
 			profile.settings.aboutMe = config["aboutMe"].string

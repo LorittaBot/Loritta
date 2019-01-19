@@ -56,7 +56,7 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
-import net.perfectdreams.loritta.utils.giveaway.payments.PaymentReason
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -276,8 +276,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
-		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(FOLDER, "livestreaming.json").readText())
-
 		socket = SocketServer(config.socketPort)
 
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
@@ -377,7 +375,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					ReactionOptions,
 					ServerConfigs,
 					DonationKeys,
-					Payments
+					Payments,
+					ShipEffects
 			)
 		}
 	}
