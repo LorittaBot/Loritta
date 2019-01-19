@@ -43,7 +43,7 @@ class VolumeCommand : AbstractCommand("volume", category = CommandCategory.MUSIC
 
 		val donatedMoney = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 
-		if ((donationKey == null || !donationKey.isActive() || 19.99 > donationKey.value) || 19.99 > donatedMoney) {
+		if ((donationKey == null || !donationKey.isActive() || 19.99 > donationKey.value) && 19.99 > donatedMoney) {
 			context.reply(
 					locale["PREMIUM_CantUseFeature"],
 					"\uD83D\uDCB8"
