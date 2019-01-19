@@ -499,6 +499,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					hideSharedServers = false
 					hidePreviousUsernames = false
 					hideLastSeen = false
+					boughtProfiles = arrayOf()
 				}
 			}
 			if (idx2 % 100 == 0L) {
