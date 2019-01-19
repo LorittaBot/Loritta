@@ -24,7 +24,7 @@ class ConfigureServerView : ConfigureView() {
 		return path.matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)?(save)?"))
 	}
 
-	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: ServerConfig): String {
+	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: MongoServerConfig): String {
 		val split = path.split("/")
 		if (split.size == 5) {
 			val argument = split[4]
@@ -168,7 +168,7 @@ class ConfigureServerView : ConfigureView() {
 		return evaluate("configure_server.html", variables)
 	}
 
-	fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleVanillaCommands(serverConfig: MongoServerConfig, receivedPayload: JsonObject): String {
 		val list = arrayListOf<String>()
 		receivedPayload["disabledCommands"].array.forEach {
 			list.add(it.string)
@@ -178,7 +178,7 @@ class ConfigureServerView : ConfigureView() {
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}
 
-	fun handlePermissions(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handlePermissions(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		var response = ""
 		val permissions = config.permissionsConfig
 
@@ -207,7 +207,7 @@ class ConfigureServerView : ConfigureView() {
 		return response
 	}
 
-	fun handleCommunities(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleCommunities(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.aminoConfig.aminos.clear()
 		val communities = receivedPayload["communities"].array
 
@@ -227,7 +227,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleYouTubeChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleYouTubeChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.youTubeConfig.channels.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -245,7 +245,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleLivestreamChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleLivestreamChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.livestreamConfig.channels.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -262,7 +262,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleRssFeeds(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleRssFeeds(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.rssFeedConfig.feeds.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -279,7 +279,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleNashornCommands(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.nashornCommands.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -299,7 +299,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleEventHandlers(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleEventHandlers(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.nashornEventHandlers.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -316,7 +316,7 @@ class ConfigureServerView : ConfigureView() {
 		return "nice"
 	}
 
-	fun handleTextChannels(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handleTextChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		config.textChannelConfigs.clear()
 		val entries = receivedPayload["entries"].array
 
@@ -349,7 +349,7 @@ class ConfigureServerView : ConfigureView() {
 		return "Saved textChannel Configuration!"
 	}
 
-	fun handlePartner(config: ServerConfig, receivedPayload: JsonObject): String {
+	fun handlePartner(config: MongoServerConfig, receivedPayload: JsonObject): String {
 		val keywords = receivedPayload["keywords"].nullArray
 
 		config.serverListConfig.keywords.clear()

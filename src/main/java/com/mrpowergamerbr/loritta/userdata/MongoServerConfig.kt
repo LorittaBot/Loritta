@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 import java.util.*
 
-class ServerConfig @BsonCreator constructor(
+class MongoServerConfig @BsonCreator constructor(
 		@BsonProperty("_id")
 		@get:[BsonIgnore]
 		val guildId: String // Guild ID
@@ -66,7 +66,6 @@ class ServerConfig @BsonCreator constructor(
 	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
-	var guildUserData = mutableListOf<LorittaGuildUserData>()
 
 	var lastCommandReceivedAt = 0L
 	var apiKey: String? = null

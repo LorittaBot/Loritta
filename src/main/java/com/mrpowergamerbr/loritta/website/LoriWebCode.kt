@@ -8,6 +8,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	FORBIDDEN(701, "Forbidden"),
 	INVALID_RECAPTCHA(702, "Invalid reCAPTCHA"),
 	UNKNOWN_GUILD(702, "Unknown Guild"),
+	UNKNOWN_USER(703, "Unknown User"),
 	INVALID_NUMBER(710, "Invalid Number"),
 	INSUFFICIENT_FUNDS(711, "Insufficient Funds"),
 	ITEM_NOT_FOUND(712, "Item not found"),

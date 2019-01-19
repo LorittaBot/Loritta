@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.gson.annotations.SerializedName
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.gson
@@ -163,33 +162,12 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	}
 
 	companion object {
-		var isLivestreaming = mutableSetOf<String>()
-		val displayNameCache = ConcurrentHashMap<String, String>()
 		val logger = LoggerFactory.getLogger(NewLivestreamThread::class.java)
 
 		// ===[ MIXER ]===
 		val isMixerLivestreaming = mutableSetOf<String>()
 		// Channel Username -> Channel ID
 		val mixerUsernameToId = ConcurrentHashMap<String, Long>()
-
-		class LivestreamInfo(
-				val id: String,
-				@SerializedName("user_id")
-				val userId: String,
-				@SerializedName("game_id")
-				val gameId: String,
-				@SerializedName("community_ids")
-				val communityIds: List<String>,
-				val type: String,
-				val title: String,
-				@SerializedName("viewer_count")
-				val viewerCount: Long,
-				@SerializedName("started_at")
-				val startedAt: String,
-				val language: String,
-				@SerializedName("thumbnail_url")
-				val thumbnailUrl: String
-		)
 	}
 
 	class MixerWebhook(

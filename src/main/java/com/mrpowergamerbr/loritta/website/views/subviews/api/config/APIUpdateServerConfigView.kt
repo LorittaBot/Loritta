@@ -89,7 +89,7 @@ class APIUpdateServerConfigView : NoVarsView() {
 
 		if (payloadHandlerClass != null) {
 			val payloadHandler = payloadHandlerClass.newInstance()
-			payloadHandler.process(config, serverConfig, server)
+			payloadHandler.process(config, userIdentification, loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()), serverConfig, server)
 			loritta save serverConfig
 		} else {
 			payload["api:code"] = LoriWebCodes.MISSING_PAYLOAD_HANDLER

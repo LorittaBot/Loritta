@@ -17,7 +17,8 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.dao.*
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
@@ -29,8 +30,7 @@ import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
-import com.mrpowergamerbr.loritta.userdata.MongoLorittaProfile
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.FanArtConfig
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
@@ -45,7 +45,6 @@ import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
-import com.mrpowergamerbr.temmiemercadopago.TemmieMercadoPago
 import kotlinx.coroutines.asCoroutineDispatcher
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
@@ -53,14 +52,18 @@ import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
+import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.payments.PaymentReason
+import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
@@ -94,8 +97,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		var LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
 		@JvmField
 		var FRONTEND = "/home/servers/loritta/frontend/" // Pasta usada para as locales
-		@JvmStatic
-		var temmieMercadoPago: TemmieMercadoPago? = null // Usado na página de "doar"
 
 		// ===[ UTILS ]===
 		@JvmStatic
@@ -126,7 +127,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	lateinit var commandManager: LorittaCommandManager
-	lateinit var dummyServerConfig: ServerConfig // Config utilizada em comandos no privado
+	lateinit var dummyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
@@ -137,8 +138,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
-	lateinit var serversColl: MongoCollection<ServerConfig>
-	lateinit var _usersColl: MongoCollection<MongoLorittaProfile>
+	lateinit var serversColl: MongoCollection<MongoServerConfig>
 	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
@@ -148,7 +148,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	lateinit var fanArtConfig: FanArtConfig
 	val fanArts: List<LorittaFanArt>
-			get() = fanArtConfig.fanArts
+		get() = fanArtConfig.fanArts
 
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
@@ -173,6 +173,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var websiteThread: Thread
 
 	var twitch = TwitchAPI()
+	val mercadoPago: MercadoPago
 
 	init {
 		FOLDER = config.lorittaFolder
@@ -183,7 +184,10 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		Loritta.config = config
 		loadLocales()
 		loadLegacyLocales()
-		temmieMercadoPago = TemmieMercadoPago(config.mercadoPagoClientId, config.mercadoPagoClientToken)
+		mercadoPago = MercadoPago(
+				clientId = config.mercadoPago.clientId,
+				clientSecret = config.mercadoPago.clientSecret
+		)
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
@@ -219,7 +223,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
 	fun generateDummyServerConfig() {
-		val dummy = ServerConfig("-1").apply { // É usado -1 porque -1 é um número de guild inexistente
+		val dummy = MongoServerConfig("-1").apply { // É usado -1 porque -1 é um número de guild inexistente
 			commandPrefix = ""
 			mentionOnCommandOutput = false
 		}
@@ -271,8 +275,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		lorittaShards.shardManager = shardManager
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
-
-		NewLivestreamThread.isLivestreaming = GSON.fromJson(File(FOLDER, "livestreaming.json").readText())
 
 		socket = SocketServer(config.socketPort)
 
@@ -370,7 +372,11 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					GuildProfiles,
 					Timers,
 					Giveaways,
-					ReactionOptions
+					ReactionOptions,
+					ServerConfigs,
+					DonationKeys,
+					Payments,
+					ShipEffects
 			)
 		}
 	}
@@ -395,8 +401,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
-		serversColl = dbCodec.getCollection("servers", ServerConfig::class.java)
-		_usersColl = dbCodec.getCollection("users", MongoLorittaProfile::class.java)
+		serversColl = dbCodec.getCollection("servers", MongoServerConfig::class.java)
 		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
@@ -405,11 +410,26 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	 *
 	 * @param guildId the guild's ID
 	 * @return        the server configuration
-	 * @see           ServerConfig
+	 * @see           MongoServerConfig
 	 */
-	fun getServerConfigForGuild(guildId: String): ServerConfig {
+	fun getServerConfigForGuild(guildId: String): MongoServerConfig {
 		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
-		return serverConfig ?: ServerConfig(guildId)
+		return serverConfig ?: MongoServerConfig(guildId)
+	}
+
+	/**
+	 * Loads the server configuration of a guild
+	 *
+	 * @param guildId the guild's ID
+	 * @return        the server configuration
+	 * @see           MongoServerConfig
+	 */
+	fun getOrCreateServerConfig(guildId: Long): com.mrpowergamerbr.loritta.dao.ServerConfig {
+		return transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.dao.ServerConfig.findById(guildId) ?: com.mrpowergamerbr.loritta.dao.ServerConfig.new(guildId) {
+
+			}
+		}
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
@@ -433,9 +453,17 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		return getOrCreateLorittaProfile(userId.toLong())
 	}
 
+	fun getActiveMoneyFromDonations(userId: Long): Double {
+		return transaction(Databases.loritta) {
+			Payment.find {
+				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
+						(Payments.reason eq PaymentReason.DONATION) and
+						(Payments.userId eq userId)
+			}.sumByDouble { it.money.toDouble() }
+		}
+	}
+
 	var idx0 = 0L
-	val findProfileMongo = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
-	var idx1 = 0L
 	val findProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
 	var idx2 = 0L
 	val newProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
@@ -451,70 +479,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 			if (sqlProfile != null) {
 				return@transaction sqlProfile
-			}
-
-			// Carregar do Mongo
-			val start1 = System.nanoTime()
-			val mongoProfile = _usersColl.find(Filters.eq("_id", userId.toString())).firstOrNull()
-			if (idx1 % 100 == 0L) {
-				findProfileMongo.add(System.nanoTime() - start1)
-			}
-			idx1++
-
-			if (mongoProfile != null) {
-				for (change in mongoProfile.usernameChanges) {
-					UsernameChange.new {
-						this.userId = userId
-						this.username = change.username
-						this.discriminator = change.discriminator
-						this.changedAt = change.changedAt
-					}
-				}
-				for (reminder in mongoProfile.reminders) {
-					if (reminder.textChannel == null)
-						continue
-
-					Reminder.new {
-						this.userId = userId
-						this.remindAt = reminder.remindMe
-						this.content = reminder.reason ?: "???"
-						this.channelId = reminder.textChannel!!.toLong()
-					}
-				}
-
-				return@transaction Profile.new(userId) {
-					xp = mongoProfile.xp
-					isBanned = mongoProfile.isBanned
-					bannedReason = mongoProfile.banReason
-					lastMessageSentAt = 0L
-					lastMessageSentHash = 0
-					money = mongoProfile.dreams
-					isDonator = mongoProfile.isDonator
-					donatorPaid = mongoProfile.donatorPaid
-					donatedAt = mongoProfile.donatedAt
-					donationExpiresIn = mongoProfile.donationExpiresIn
-					isAfk = mongoProfile.isAfk
-					afkReason = mongoProfile.afkReason
-					settings = ProfileSettings.new {
-						gender = mongoProfile.gender
-						aboutMe = mongoProfile.aboutMe
-						hideSharedServers = mongoProfile.hideSharedServers
-						hidePreviousUsernames = mongoProfile.hidePreviousUsernames
-						hideLastSeen = false
-					}
-					if (mongoProfile.marriedWith != null) {
-						val currentMarriage = Marriage.find { (Marriages.user1 eq userId) or (Marriages.user2 eq userId) }.firstOrNull()
-						if (currentMarriage != null) {
-							marriage = currentMarriage
-						} else {
-							marriage = Marriage.new {
-								user1 = userId
-								user2 = mongoProfile.marriedWith!!.toLong()
-								marriedSince = mongoProfile.marriedAt ?: System.currentTimeMillis()
-							}
-						}
-					}
-				}
 			}
 
 			val start2 = System.nanoTime()
@@ -744,19 +708,19 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					field.isAccessible = true
 					for ((key, value) in entries) {
 						try {
-                            when (value) {
-                                is Map<*, *> -> {
-                                    handle(field.get(root), key.yamlToVariable(), value)
-                                }
-                                else -> {
-                                    val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
-                                    entryField.isAccessible = true
-	                                entryField.set(field.get(root), value)
-                                }
-                            }
-                        } catch (e: NoSuchFieldException) {
-                            logger.warn { "O campo $key não existe." }
-                        }
+							when (value) {
+								is Map<*, *> -> {
+									handle(field.get(root), key.yamlToVariable(), value)
+								}
+								else -> {
+									val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
+									entryField.isAccessible = true
+									entryField.set(field.get(root), value)
+								}
+							}
+						} catch (e: NoSuchFieldException) {
+							logger.warn { "O campo $key não existe." }
+						}
 					}
 				}
 

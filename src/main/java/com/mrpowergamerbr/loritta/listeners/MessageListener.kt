@@ -39,7 +39,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				Modules.AMINO_CONVERTER,
 				Modules.AFK,
 				Modules.BOM_DIA_E_CIA,
-				Modules.QUIRKY
+				Modules.QUIRKY,
+				Modules.THANK_YOU_LORI
 		)
 
 		val MESSAGE_EDITED_MODULES = mutableListOf(

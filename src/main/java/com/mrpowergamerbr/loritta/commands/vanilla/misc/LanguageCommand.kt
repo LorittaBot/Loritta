@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
@@ -21,33 +22,38 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
 		val validLanguages = listOf(
 				LocaleWrapper(
 						"Português-Brasil",
+						loritta.getLocaleById("default"),
 						loritta.getLegacyLocaleById("default"),
 						"\uD83C\uDDE7\uD83C\uDDF7"
 				),
 				LocaleWrapper(
 						"Português-Funk",
+						loritta.getLocaleById("pt-funk"),
 						loritta.getLegacyLocaleById("pt-funk"),
 						"<:loritta_quebrada:338679008210190336>"
 				),
 				LocaleWrapper(
 						"Português-Portugal",
+						loritta.getLocaleById("pt-pt"),
 						loritta.getLegacyLocaleById("pt-pt"),
 						"\uD83C\uDDF5\uD83C\uDDF9"
 				),
 				LocaleWrapper(
 						"English-US",
+						loritta.getLocaleById("en-us"),
 						loritta.getLegacyLocaleById("en-us"),
 						"\uD83C\uDDFA\uD83C\uDDF8"
 				),
 				LocaleWrapper(
 						"Español",
+						loritta.getLocaleById("es-es"),
 						loritta.getLegacyLocaleById("es-es"),
 						"\uD83C\uDDEA\uD83C\uDDF8"
 				)
@@ -56,7 +62,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		embed.setTitle("\uD83C\uDF0E " + locale.format { commands.miscellaneous.language.pleaseSelectYourLanguage }, "")
 
 		for (wrapper in validLanguages) {
-			val translators = wrapper.locale.loritta.translationAuthors.mapNotNull { lorittaShards.getUserById(it) }
+			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.getUserById(it) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
@@ -100,7 +106,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
 	private class LocaleWrapper(
 			val name: String,
-			val locale: LegacyBaseLocale,
+			val locale: BaseLocale,
+			val legacyLocale: LegacyBaseLocale,
 			val emoteName: String
 	)
 }

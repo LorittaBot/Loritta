@@ -137,8 +137,6 @@ object ReactionModule {
             }
         }
 
-        logger.info { "Dando cargos para $member!" }
-
         val rolesToBeGiven = roles.filter { !member.roles.contains(it) }
         if (rolesToBeGiven.isNotEmpty()) {
             guild.controller.addRolesToMember(member, rolesToBeGiven).await()

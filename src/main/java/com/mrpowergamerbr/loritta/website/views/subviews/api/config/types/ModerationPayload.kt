@@ -5,12 +5,14 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.string
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.core.entities.Guild
 
 class ModerationPayload : ConfigPayloadType("moderation") {
-	override fun process(payload: JsonObject, serverConfig: ServerConfig, guild: Guild) {
-		val moderationConfig = serverConfig.moderationConfig
+	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+		val moderationConfig = legacyServerConfig.moderationConfig
 		moderationConfig.sendPunishmentViaDm = payload["sendPunishmentViaDm"].bool
 		moderationConfig.sendToPunishLog = payload["sendToPunishLog"].bool
 		moderationConfig.useLorittaBansNetwork = payload["useLorittaBansNetwork"].bool

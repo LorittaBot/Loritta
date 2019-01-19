@@ -15,14 +15,13 @@ import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -34,20 +33,17 @@ import net.dv8tion.jda.core.events.guild.GuildReadyEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
-import net.dv8tion.jda.core.exceptions.PermissionException
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
-import net.perfectdreams.loritta.utils.giveaway.SpawnGiveawayTask
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
@@ -319,7 +315,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	fun updateTextChannelsTopic(guild: Guild, serverConfig: ServerConfig, hideInEventLog: Boolean = false) {
+	fun updateTextChannelsTopic(guild: Guild, serverConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
 		for (textChannel in guild.textChannels) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				continue
@@ -418,7 +414,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				val allActiveGiveaways = Giveaway.find { Giveaways.guildId eq event.guild.idLong }
+				val allActiveGiveaways = transaction(Databases.loritta) {
+					Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
+				}
 
 				allActiveGiveaways.forEach {
 					try {

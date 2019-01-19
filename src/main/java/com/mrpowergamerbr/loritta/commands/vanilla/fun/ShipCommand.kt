@@ -2,14 +2,20 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.ShipEffect
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -79,18 +85,17 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
-				// TODO: Fix
-				/* val loriProfile1 = loritta.getOrCreateLorittaProfile(user1.id)
-				val loriProfile2 = loritta.getOrCreateLorittaProfile(user2.id)
+				val effect = transaction(Databases.loritta) {
+					ShipEffect.find {
+						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
+								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and
+								(ShipEffects.expiresAt greaterEq System.currentTimeMillis())
+					}.firstOrNull()
+				}
 
-				val editedShipEffect1 = loriProfile1.editedShipEffects.firstOrNull { it.userId == user2.id }
-				val editedShipEffect2 = loriProfile2.editedShipEffects.firstOrNull { it.userId == user1.id }
-
-				if (editedShipEffect1 != null) {
-					percentage = editedShipEffect1.editedTo
-				} else if (editedShipEffect2 != null) {
-					percentage = editedShipEffect2.editedTo
-				} */
+				if (effect != null) {
+					percentage = effect.editedShipValue
+				}
 
 				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
 					if ((user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {

@@ -6,10 +6,15 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.tables.DonationKeys
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -22,6 +27,8 @@ import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.User
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -163,6 +170,9 @@ object WebsiteUtils {
 		variables["baseLocale"] = Loritta.GSON.toJson(patchedLocales)
 		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
+		variables["locale"] = locale
+
+		req.set("locale", locale)
 
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -254,6 +264,35 @@ object WebsiteUtils {
 		}
 	}
 
+	fun checkDiscordUserAuth(req: Request, res: Response): Boolean {
+		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
+		if (userIdentification == null && req.session().isSet("discordAuth")) {
+			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
+			try {
+				discordAuth.isReady(true)
+				userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
+			} catch (e: Exception) {
+				req.session().unset("discordAuth")
+			}
+		}
+
+		if (userIdentification == null) { // Unauthorized (Discord)
+			res.status(Status.UNAUTHORIZED)
+			if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
+				// Caso seja o Crawler do Discord, vamos mudar o conteúdo enviado! :3
+				res.send(getDiscordCrawlerAuthenticationPage())
+			} else {
+				val state = JsonObject()
+				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
+				res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+			}
+			return false
+		}
+
+		req.set("userIdentification", userIdentification)
+		return true
+	}
+
 	fun checkDiscordGuildAuth(req: Request, res: Response): Boolean {
 		var userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").getOrNull()
 		if (userIdentification == null && req.session().isSet("discordAuth")) {
@@ -311,6 +350,13 @@ object WebsiteUtils {
 				return false
 			}
 		}
+
+		val newServerConfig = loritta.getOrCreateServerConfig(server.idLong) // get server config for guild
+
+		req.set("userIdentification", userIdentification)
+		req.set("serverConfig", serverConfig)
+		req.set("newServerConfig", newServerConfig)
+		req.set("guild", server)
 
 		req.get<MutableMap<String, Any?>>("variables").put("serverConfig", serverConfig)
 		req.get<MutableMap<String, Any?>>("variables").put("serverConfigJson", gson.toJson(getServerConfigAsJson(server, serverConfig, userIdentification)))
@@ -398,8 +444,11 @@ object WebsiteUtils {
 			variables.get()["guild"] = server
 		}
 
+		val newServerConfig = loritta.getOrCreateServerConfig(server.idLong) // get server config for guild
+
 		req.set("userIdentification", userIdentification)
 		req.set("serverConfig", serverConfig)
+		req.set("newServerConfig", newServerConfig)
 		req.set("guild", server)
 
 		return true
@@ -426,6 +475,76 @@ object WebsiteUtils {
 		} catch (e: IllegalAccessException) {
 			throw IllegalStateException(e)
 		}
+	}
+
+	fun transformToJson(user: User): JsonObject {
+		return jsonObject(
+				"id" to user.id,
+				"name" to user.name,
+				"discriminator" to user.discriminator,
+				"effectiveAvatarUrl" to user.effectiveAvatarUrl
+		)
+	}
+
+	fun transformToDashboardConfigurationJson(user: SimpleUserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig): JsonObject {
+		val guildJson = jsonObject(
+				"name" to guild.name
+		)
+
+		val selfMember = transformToJson(lorittaShards.getUserById(user.id)!!)
+		selfMember["donationKeys"] = transaction(Databases.loritta) {
+			val donationKeys = DonationKey.find {
+				DonationKeys.userId eq user.id.toLong()
+			}
+
+			jsonArray(
+					donationKeys.map {
+						val guildUsingKey = ServerConfig.find { ServerConfigs.donationKey eq it.id }.firstOrNull()
+						val obj = jsonObject(
+								"id" to it.id.value,
+								"value" to it.value,
+								"expiresAt" to it.expiresAt
+						)
+
+						if (guildUsingKey != null) {
+							val guild = lorittaShards.getGuildById(guildUsingKey.guildId)
+
+							if (guild != null) {
+								obj["usesKey"] = jsonObject(
+										"name" to guild.name,
+										"iconUrl" to guild.iconUrl
+								)
+							}
+						}
+
+						obj
+					}
+			)
+		}
+
+		guildJson["donationConfig"] = transaction(Databases.loritta) {
+			val donationConfig = serverConfig.donationConfig
+			jsonObject(
+					"customBadge" to (donationConfig?.customBadge ?: false),
+					"dailyMultiplier" to (donationConfig?.dailyMultiplier ?: false)
+			)
+		}
+
+		guildJson["selfMember"] = selfMember
+
+		transaction(Databases.loritta) {
+			val donationKey = serverConfig.donationKey
+			if (donationKey != null) {
+				guildJson["donationKey"] = jsonObject(
+						"id" to donationKey.id.value,
+						"value" to donationKey.value,
+						"expiresAt" to donationKey.expiresAt,
+						"user" to transformToJson(lorittaShards.getUserById(donationKey.userId)!!)
+				)
+			}
+		}
+
+		return guildJson
 	}
 
 	fun getGuildAsJson(guild: Guild): JsonObject {
@@ -484,7 +603,7 @@ object WebsiteUtils {
 		return guildJson
 	}
 
-	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
+	fun getServerConfigAsJson(guild: Guild, serverConfig: MongoServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
 		val textChannels = JsonArray()
@@ -561,6 +680,13 @@ object WebsiteUtils {
 		serverConfigJson["serverListConfig"]["votes"] = newArray
 
 		return serverConfigJson
+	}
+
+	fun getProfileAsJson(profile: Profile): JsonObject {
+		return jsonObject(
+				"id" to profile.id.value,
+				"money" to profile.money
+		)
 	}
 
 	fun transformProfileToJson(profile: Profile): JsonObject {

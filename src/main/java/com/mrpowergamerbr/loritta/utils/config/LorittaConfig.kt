@@ -1,8 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.dv8tion.jda.core.OnlineStatus
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class LorittaConfig(
 		@JsonProperty("mongodb-ip")
 		val mongoDbIp: String,
@@ -56,10 +58,6 @@ class LorittaConfig(
 		val authorizationUrl: String,
 		@JsonProperty("add-bot-url")
 		val addBotUrl: String,
-		@JsonProperty("mercadopago-client-id")
-		val mercadoPagoClientId: String,
-		@JsonProperty("mercadopago-client-token")
-		val mercadoPagoClientToken: String,
 		@JsonProperty("mashape-key")
 		val mashapeKey: String,
 		@JsonProperty("discord-bots-key")
@@ -92,6 +90,8 @@ class LorittaConfig(
 		val vagalumeKey: String,
 		@JsonProperty("twitter")
 		val twitterConfig: TwitterConfig,
+		@JsonProperty("mercadopago")
+		val mercadoPago: MercadoPagoConfig,
 		@JsonProperty("ghost-ids")
 		val ghostIds: List<String>,
 		@JsonProperty("anti-raid-ids")
@@ -137,5 +137,14 @@ class LorittaConfig(
 			val oAuthAccessToken: String,
 			@JsonProperty("access-token-secret")
 			val oAuthAccessTokenSecret: String
+	)
+
+	class MercadoPagoConfig(
+			@JsonProperty("client-id")
+			val clientId: String,
+			@JsonProperty("client-secret")
+			val clientSecret: String,
+			@JsonProperty("ipn-access-token")
+			val ipnAccessToken: String
 	)
 }

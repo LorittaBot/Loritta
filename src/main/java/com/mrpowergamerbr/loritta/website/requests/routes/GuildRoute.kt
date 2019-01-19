@@ -10,5 +10,8 @@ class GuildRoute : Jooby() {
 		use(ConfigureMemberCounterController::class.java)
 		use(ConfigureTimersController::class.java)
 		use(ConfigureReactionRoleController::class.java)
+		use(ConfigurePremiumKeyController::class.java)
+		use(ConfigureCustomBadgeController::class.java)
+		use(ConfigureDailyMultiplierController::class.java)
 	}
 }

@@ -5,7 +5,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -36,7 +36,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			// IDs dos canais a serem verificados
 			val channelIds = mutableSetOf<String>()
 
-			val list = mutableListOf<ServerConfig>()
+			val list = mutableListOf<MongoServerConfig>()
 
 			logger.info("Verificando canais do YouTube de ${servers.count()} servidores...")
 

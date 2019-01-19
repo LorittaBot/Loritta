@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 /**
  * Um usuário que está comunicando com a Loritta
  */
-open class LorittaUser(val user: User, val config: ServerConfig, val profile: Profile) {
+open class LorittaUser(val user: User, val config: MongoServerConfig, val profile: Profile) {
 	val asMention: String
 		get() = getAsMention(false)
 
@@ -56,7 +56,7 @@ open class LorittaUser(val user: User, val config: ServerConfig, val profile: Pr
 /**
  * Um usuário que está comunicando com a Loritta em canais de texto
  */
-class GuildLorittaUser(val member: Member, config: ServerConfig, profile: Profile) : LorittaUser(member.user, config, profile) {
+class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: Profile) : LorittaUser(member.user, config, profile) {
 	override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
 		val roles = member.roles.toMutableList()
 

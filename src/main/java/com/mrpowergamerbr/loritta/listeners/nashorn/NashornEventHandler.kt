@@ -2,11 +2,10 @@ package com.mrpowergamerbr.loritta.listeners.nashorn
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.nashorn.wrappers.*
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import org.bson.types.ObjectId
 import java.util.*
@@ -28,7 +27,7 @@ class NashornEventHandler {
 	var isForked = false // Se é uma cópia de outro comando na repo de cmds
 	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
-	fun handleMessageReceived(event: GuildMessageReceivedEvent, serverConfig: ServerConfig) {
+	fun handleMessageReceived(event: GuildMessageReceivedEvent, serverConfig: MongoServerConfig) {
 		try {
 			if (!javaScript.contains("onMessageReceived"))
 				return
@@ -69,7 +68,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 		executor.shutdownNow()
 	}
 
-	class NashornMessageReceivedEvent(private val event: GuildMessageReceivedEvent, private val serverConfig: ServerConfig) {
+	class NashornMessageReceivedEvent(private val event: GuildMessageReceivedEvent, private val serverConfig: MongoServerConfig) {
 		fun getMember(): NashornMember {
 			return NashornMember(event.member)
 		}

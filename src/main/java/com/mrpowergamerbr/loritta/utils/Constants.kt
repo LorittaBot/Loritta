@@ -51,9 +51,12 @@ object Constants {
 	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
 	const val SPARKLYPOWER_GUILD_ID = "320248230917046282"
 	const val LORI_STICKERS_ROLE_ID = "510788363264196638"
+	const val THANK_YOU_DONATORS_CHANNEL_ID = "536171041546960916"
 
 	const val DEFAULT_LOCALE_ID = "default"
 	const val MAX_TRACKS_ON_PLAYLIST = 25
+
+	const val DONATION_ACTIVE_MILLIS = 2_764_800_000 // 32 dias
 
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
@@ -104,7 +107,11 @@ object Constants {
 			"viada",
 			"vadia",
 			"putiane",
-			"fdp"
+			"fdp",
+			"xereca",
+			"pepeca",
+			"pepeka",
+			"ppk"
 	)
 
 	// Canais de textos utilizados na Loritta

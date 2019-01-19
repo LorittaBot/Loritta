@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -33,7 +33,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
-class DiscordCommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, command: LorittaCommand, args: Array<String>, val displayArgs: Array<String>, val strippedArgs: Array<String>) : LorittaCommandContext(locale, legacyLocale, command, args) {
+class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, command: LorittaCommand, args: Array<String>, val displayArgs: Array<String>, val strippedArgs: Array<String>) : LorittaCommandContext(locale, legacyLocale, command, args) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
-import com.mrpowergamerbr.loritta.userdata.ServerConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
@@ -62,7 +62,7 @@ object WelcomeModule {
 			}
 			.build<Long, CopyOnWriteArrayList<User>>()
 
-	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig) {
+	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: MongoServerConfig) {
 		if (Loritta.config.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
 			return
 
@@ -104,7 +104,7 @@ object WelcomeModule {
 		}
 	}
 
-	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig) {
+	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: MongoServerConfig) {
 		if (Loritta.config.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
 			return
 
