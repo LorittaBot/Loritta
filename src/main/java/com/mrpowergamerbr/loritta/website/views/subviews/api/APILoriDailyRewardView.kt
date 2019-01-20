@@ -185,8 +185,6 @@ class APILoriDailyRewardView : NoVarsView() {
 		var sponsoredByUser: User? = null
 
 		transaction(Databases.loritta) {
-			addLogger(StdOutSqlLogger)
-
 			// Pegar todos os servidores com sonhos patrocinados
 			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
 				(ServerConfigs.id inList mutualGuilds.map { it.idLong }) and
