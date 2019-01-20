@@ -2,7 +2,11 @@ package net.perfectdreams.mercadopago
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
 import com.google.gson.Gson
+import com.google.gson.JsonParser
+import mu.KotlinLogging
 import net.perfectdreams.mercadopago.entities.Payment
 import net.perfectdreams.mercadopago.entities.PaymentSettings
 import net.perfectdreams.mercadopago.response.CheckoutOAuth2Response
@@ -13,6 +17,8 @@ import net.perfectdreams.mercadopago.response.PaymentSettingsResponse
 class MercadoPago(val clientId: String? = null, val clientSecret: String? = null, val accessToken: String? = null) {
     companion object {
         private val gson = Gson()
+        private val jsonParser = JsonParser()
+        private val logger = KotlinLogging.logger {}
     }
 
     private var checkoutAccessToken: String? = null
@@ -31,17 +37,35 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
         return gson.fromJson(json)
     }
 
-    fun getCheckoutToken(): String {
-        if (checkoutAccessToken != null && System.currentTimeMillis() > ((checkoutLastRenewal + expiresIn) - 60_000)) { // 60 segundos para evitar que a gente faça um request bem na hora que vá expirar
+    fun getCheckoutToken(forceRefresh: Boolean = false): String {
+        if (forceRefresh || (checkoutAccessToken != null && System.currentTimeMillis() > ((checkoutLastRenewal + expiresIn) - 300_000))) { // 60 segundos para evitar que a gente faça um request bem na hora que vá expirar
             return checkoutAccessToken!!
         }
+
+        logger.info { "MercadoPago token expired! Requesting a new token: Is forced? $forceRefresh - Last renewal was $checkoutLastRenewal and it would expire after $expiresIn ms (${checkoutLastRenewal + expiresIn}), current epoch is ${System.currentTimeMillis()}" }
 
         val response = getCheckoutOAuth2Response()
 
         this.checkoutLastRenewal = System.currentTimeMillis()
-        this.expiresIn = response.expiresIn
+        this.expiresIn = response.expiresIn * 1000 // expiresIn está em ms
         this.checkoutAccessToken = response.accessToken
-        return checkoutAccessToken!!
+
+        logger.info { "New MercadoPago token retrieved!"}
+
+        return response.accessToken
+    }
+
+    fun checkInvalidToken(payload: String): Boolean {
+        val json = jsonParser.parse(payload).obj
+
+        if (json["message"].nullString == "invalid_token") {
+            // frick
+            logger.warn { "Tried to make request with invalid MercadoPago token! Forcing token request and trying again..." }
+            getCheckoutToken(true)
+            return true
+        }
+
+        return false
     }
 
     fun getPaymentInfoById(paymentId: String): Payment {
@@ -54,6 +78,9 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
                 .acceptJson()
                 .body()
 
+        if (checkInvalidToken(body))
+            return getPaymentInfoById(paymentId)
+
         println(body)
 
         return gson.fromJson(body)
@@ -64,6 +91,9 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
                 .contentType("application/json")
                 .acceptJson()
                 .body()
+
+        if (checkInvalidToken(body))
+            return searchPayments(limit, offset, filters)
 
         println(body)
 
@@ -76,6 +106,9 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
                 .contentType("application/json")
                 .send(gson.toJson(preference))
                 .body()
+
+        if (checkInvalidToken(response))
+            return createPayment(preference)
 
         println(response)
 
