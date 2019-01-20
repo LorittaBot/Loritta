@@ -1,11 +1,13 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard
 
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -28,6 +30,9 @@ class UserDashboardController {
 
         variables["profileUser"] = user
         variables["lorittaProfile"] = lorittaProfile
+        variables["profileSettings"] = transaction(Databases.loritta) {
+            lorittaProfile.settings
+        }
         variables["profile_json"] = gson.toJson(
                 WebsiteUtils.getProfileAsJson(lorittaProfile)
         )
