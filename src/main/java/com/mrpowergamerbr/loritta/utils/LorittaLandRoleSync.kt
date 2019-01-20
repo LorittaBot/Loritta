@@ -211,7 +211,7 @@ class LorittaLandRoleSync : Runnable {
                     val helpedDays = (donated / 10)
                     val plural = helpedDays != 1.0
 
-                    val text = "Obrigada a ${member.asMention} por doar para mim! <a:lori_happy:521721811298156558>\n\nGraças a doação de R$ ${"%.2f".format(donated)}, ${member.asMention} me ajudou a ficar mais ${"%.1f".format(helpedDays)} dia${if (plural) "s" else ""} online neste mês! <:lori_hearts:519901735666581514>\n\nObrigada mesmo... de coração, pela sua incrível generosidade e por gostar tanto de mim para dar dinheiro para mim... **Você é incrível!** <:lori_owo:417813932380520448>\n\nPara agradecer ${member.user.asMention}, reaga com <a:clapping:536170783257395202>! <:eu_te_moido:366047906689581085><a:clapping:536170783257395202>"
+                    val text = "Obrigada a ${member.asMention} por doar para mim! <a:lori_happy:521721811298156558>\n\nGraças a doação de R$ ${"%.2f".format(donated)}, ${member.asMention} me ajudou a ficar mais ${"%.1f".format(helpedDays)} dia${if (plural) "s" else ""} online neste mês! **Você é incrível!** <:lori_hearts:519901735666581514>\n\nPara agradecer ${member.user.asMention}, reaja com <a:clapping:536170783257395202>! <:eu_te_moido:366047906689581085><a:clapping:536170783257395202>"
 
                     val newEmbed = EmbedBuilder()
                             .setTitle("\uD83D\uDE0A Obrigada!")
