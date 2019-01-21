@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.payments.PaymentReason
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -152,7 +153,7 @@ class LorittaLandRoleSync : Runnable {
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
 				Payment.find {
-					(Payments.reason eq PaymentReason.DONATION)
+					(Payments.reason eq PaymentReason.DONATION) and (Payments.paidAt.isNotNull())
 				}.toMutableList()
 			}
 

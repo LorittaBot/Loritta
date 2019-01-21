@@ -117,7 +117,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (e is MessageReactionRemoveEvent) {
 				if (functions.onReactionRemove != null) {
-
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionRemove!!.invoke(e)
