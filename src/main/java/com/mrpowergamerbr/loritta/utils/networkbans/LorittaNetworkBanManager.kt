@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
 import java.io.File
 
@@ -58,6 +59,34 @@ class LorittaNetworkBanManager {
 			} catch (e: Exception) {
 				logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
 			}
+		}
+	}
+
+	fun punishUser(user: User, reason: String, guild: Guild) {
+		if (!guild.isMember(user)) // Não é um membro da guild atual!
+			return
+
+		val member = guild.getMember(user)
+
+		if (guild.selfMember.hasPermission(Permission.BAN_MEMBERS) && guild.selfMember.canInteract(member))
+			return
+
+		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+
+		try {
+			logger.info("Banindo ${user.id} em ${guild.id}...")
+			BanCommand.ban(
+					serverConfig,
+					guild,
+					guild.selfMember.user,
+					loritta.getLegacyLocaleById(serverConfig.localeId),
+					user,
+					reason,
+					false,
+					7
+			)
+		} catch (e: Exception) {
+			logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
 		}
 	}
 
