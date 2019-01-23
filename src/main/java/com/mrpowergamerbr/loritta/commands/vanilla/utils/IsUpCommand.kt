@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.net.UnknownHostException
 import java.util.*
@@ -21,6 +22,9 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var url = context.args[0]
+
+			if (MiscUtils.hasInvite(url, context.config.inviteBlockerConfig.whitelistedIds))
+				return
 
 			if (!url.startsWith("http", true)) {
 				url = "http://" + url
