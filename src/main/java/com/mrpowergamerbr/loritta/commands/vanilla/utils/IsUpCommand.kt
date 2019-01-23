@@ -4,7 +4,9 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.net.UnknownHostException
@@ -23,8 +25,21 @@ class IsUpCommand : AbstractCommand("isup", category = CommandCategory.UTILS) {
 		if (context.args.isNotEmpty()) {
 			var url = context.args[0]
 
-			if (MiscUtils.hasInvite(url, context.config.inviteBlockerConfig.whitelistedIds))
-				return
+			val inviteBlockerConfig = context.config.inviteBlockerConfig
+			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
+
+			if (checkInviteLinks) {
+				val whitelisted = mutableListOf<String>()
+				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
+
+				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
+					whitelisted.add(it)
+				}
+
+				if (MiscUtils.hasInvite(url, whitelisted)) {
+					return
+				}
+			}
 
 			if (!url.startsWith("http", true)) {
 				url = "http://" + url
