@@ -38,7 +38,7 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
     }
 
     fun getCheckoutToken(forceRefresh: Boolean = false): String {
-        if (forceRefresh || (checkoutAccessToken != null && System.currentTimeMillis() > ((checkoutLastRenewal + expiresIn) - 300_000))) { // 60 segundos para evitar que a gente faça um request bem na hora que vá expirar
+        if (!forceRefresh && (checkoutAccessToken != null && System.currentTimeMillis() > ((checkoutLastRenewal + expiresIn) - 300_000))) { // 60 segundos para evitar que a gente faça um request bem na hora que vá expirar
             return checkoutAccessToken!!
         }
 
