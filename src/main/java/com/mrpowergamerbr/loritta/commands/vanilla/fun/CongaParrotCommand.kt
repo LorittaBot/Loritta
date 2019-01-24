@@ -26,6 +26,11 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var arg0 = context.args.getOrNull(0)
 
+		if (arg0 == null) {
+			context.explain()
+			return
+		}
+
 		val inviteBlockerConfig = context.config.inviteBlockerConfig
 		val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
 
@@ -40,11 +45,6 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 			if (MiscUtils.hasInvite(arg0, whitelisted)) {
 				return
 			}
-		}
-
-		if (arg0 == null) {
-			context.explain()
-			return
 		}
 
 		val upTo = arg0.toIntOrNull()
