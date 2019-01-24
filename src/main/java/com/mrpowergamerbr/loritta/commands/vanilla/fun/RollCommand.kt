@@ -2,11 +2,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -49,6 +47,23 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					} else { // Mas caso tenha (5..10), então coloque o lower bound e o upper bound!
 						lowerBound = bounds[0].toLong()
 						upperBound = bounds[1].toLong()
+					}
+				}
+
+				val joinedArgs = context.args.joinToString(" ")
+				val inviteBlockerConfig = context.config.inviteBlockerConfig
+				val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
+
+				if (checkInviteLinks) {
+					val whitelisted = mutableListOf<String>()
+					whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
+
+					InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
+						whitelisted.add(it)
+					}
+
+					if (MiscUtils.hasInvite(joinedArgs, whitelisted)) {
+						return
 					}
 				}
 
