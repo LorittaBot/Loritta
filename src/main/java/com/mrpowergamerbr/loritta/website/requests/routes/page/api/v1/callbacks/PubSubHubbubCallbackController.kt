@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
@@ -23,6 +24,7 @@ import org.jooby.mvc.POST
 import org.jooby.mvc.Path
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
+import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -30,6 +32,10 @@ import javax.crypto.spec.SecretKeySpec
 class PubSubHubbubCallbackController {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		private val streamingSince = CacheBuilder.newBuilder()
+				.expireAfterAccess(4, TimeUnit.HOURS)
+				.build<String, Long>()
+				.asMap()
 	}
 
 	@POST
@@ -187,6 +193,8 @@ class PubSubHubbubCallbackController {
 			// Se for vazio, quer dizer que é um stream down
 			if (data.size() != 0) {
 				for (_obj in data) {
+					streamingSince[userLogin] = System.currentTimeMillis()
+					
 					val obj = _obj.obj
 
 					val gameId = obj["game_id"].string
@@ -263,6 +271,9 @@ class PubSubHubbubCallbackController {
 				""".trimMargin()).queue()
 					}
 				}
+			} else {
+				// Stream down, streamer parou de streamar
+				streamingSince.remove(userLogin)
 			}
 		}
 
