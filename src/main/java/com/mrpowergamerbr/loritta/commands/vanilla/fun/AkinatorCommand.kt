@@ -4,7 +4,6 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
@@ -12,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.json.XML
 import java.awt.Color
 import kotlin.collections.set
@@ -31,20 +31,20 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 	fun getApiEndpoint(localeId: String): String {
 		return when (localeId) {
-			"default", "pt-pt", "pt-funk" -> "http://62.4.22.192:8166"
-			"tr-tr" -> "http://62.4.22.192:8164"
-			"pl-pl" -> "http://37.187.149.213:8143"
-			"ru-ru" -> "http://62.4.22.192:8169"
-			"nl-nl" -> "http://62.210.100.133:8158"
-			"kr-kr" -> "http://62.4.22.192:8168"
-			"ja-jp" -> "http://178.33.63.63:8012"
-			"it-it" -> "http://62.210.100.133:8159"
-			"he-il" -> "http://178.33.63.63:8006"
-			"fr-fr" -> "http://62.4.22.192:8165"
-			"es-es" -> "http://62.210.100.133:8160"
-			"ar-sa" -> "http://62.210.100.133:8155"
-			"ch-ch" -> "http://158.69.225.49:8150"
-			else -> "http://62.210.100.133:8157"
+			"default", "pt-pt", "pt-funk" -> "https://srv11.akinator.com:9174"
+			"tr-tr" -> "https://srv3.akinator.com:9211"
+			"pl-pl" -> "https://srv7.akinator.com:9143"
+			"ru-ru" -> "https://srv12.akinator.com:9190"
+			"nl-nl" -> "https://srv9.akinator.com:9215"
+			"kr-kr" -> "https://srv2.akinator.com:9156"
+			"ja-jp" -> "https://srv11.akinator.com:9172"
+			"it-it" -> "https://srv9.akinator.com:9214"
+			"he-il" -> "https://srv12.akinator.com:9189"
+			"fr-fr" -> "https://srv3.akinator.com:9217"
+			"es-es" -> "https://srv6.akinator.com:9127"
+			"ar-sa" -> "https://srv2.akinator.com:9155"
+			"ch-ch" -> "https://srv11.akinator.com:9150"
+			else -> "https://srv2.akinator.com:9157"
 		}
 	}
 

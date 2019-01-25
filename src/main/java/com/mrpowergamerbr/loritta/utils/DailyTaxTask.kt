@@ -53,7 +53,7 @@ class DailyTaxTask : Runnable {
 				// Dar aquela reaproveitada aqui na moralzinha
 				val soonToBeExpiredMatchingKeys = transaction(Databases.loritta) {
 					val soonToBeExpiredKeys = DonationKey.find {
-						DonationKeys.expiresAt lessEq (System.currentTimeMillis() + 259_200_000)  // 3 dias
+						DonationKeys.expiresAt lessEq (System.currentTimeMillis() + 259_200_000) and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) // 3 dias
 					}.toMutableList()
 					val soonToBeExpiredMatchingKeys = mutableListOf<Pair<DonationKey, Long>>()
 
