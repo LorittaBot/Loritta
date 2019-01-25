@@ -119,6 +119,15 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 				}
 			}
 
+			if (Loritta.RANDOM.nextInt(0, 10) == 9 && context.lorittaUser.profile.money >= 3000) {
+				context.reply(
+						LoriReply(
+								context.locale["commands.fun.ship.bribeLove", "${Loritta.config}user/@me/dashboard/ship-effects"]
+						)
+				)
+			}
+
+
 			var friendzone: String
 
 			friendzone = if (random.nextBoolean()) {
