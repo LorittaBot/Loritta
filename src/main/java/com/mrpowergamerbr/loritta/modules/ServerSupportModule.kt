@@ -93,7 +93,7 @@ class ServerSupportModule : MessageReceivedModule {
 		return (event.channel.id == "398987569485971466" || event.channel.id == "393332226881880074") && Loritta.config.environment == EnvironmentType.CANARY
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val content = event.message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")

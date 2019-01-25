@@ -25,5 +25,5 @@ interface MessageReceivedModule {
 	 * @param serverConfig the server configuration
 	 * @return             if true, the original event should be cancelled and nothing else should be processed
 	 */
-	fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
+	suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
 }

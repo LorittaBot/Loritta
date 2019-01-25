@@ -14,7 +14,7 @@ class AFKModule : MessageReceivedModule {
 		return (event.channel as TextChannel).canTalk()
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentionedMembers) {

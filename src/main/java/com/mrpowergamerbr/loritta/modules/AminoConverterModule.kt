@@ -16,7 +16,7 @@ class AminoConverterModule : MessageReceivedModule {
 		return serverConfig.aminoConfig.fixAminoImages
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		event.textChannel!!
 		event.member!!
 

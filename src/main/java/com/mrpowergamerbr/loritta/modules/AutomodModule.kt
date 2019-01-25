@@ -85,7 +85,7 @@ class AutomodModule : MessageReceivedModule {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 		val textChannelConfig = serverConfig.getTextChannelConfig(message.channel.id)
 
