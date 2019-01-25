@@ -194,7 +194,7 @@ class PubSubHubbubCallbackController {
 			if (data.size() != 0) {
 				for (_obj in data) {
 					streamingSince[userLogin] = System.currentTimeMillis()
-					
+
 					val obj = _obj.obj
 
 					val gameId = obj["game_id"].string
