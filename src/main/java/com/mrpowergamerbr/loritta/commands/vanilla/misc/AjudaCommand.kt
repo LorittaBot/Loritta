@@ -156,7 +156,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
                             } else {
                                 ""
                             }
-                            
+
                             "**${conf.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.getDescription(loritta.getLocaleById(conf.localeId))}\n"
                         }
 						else -> throw UnsupportedOperationException()
