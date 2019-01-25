@@ -130,7 +130,11 @@ class InviteLinkModule : MessageReceivedModule {
 								if (whitelisted.contains(inviteId))
 									return@async false
 
-								jobs.forEach { it.cancel() }
+								jobs.forEach {
+									if (it != this) { // Se a gente cancelar o atual, vai dar problema ao pegar o resultado depois
+										it.cancel()
+									}
+								}
 
 								if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 									message.delete().queue()
@@ -152,9 +156,10 @@ class InviteLinkModule : MessageReceivedModule {
 					try {
 						if (it.await())
 							return@callback true
-					} catch (e: Exception) {}
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
 				}
-
 				return@callback false
 			}
 			return@callback false
@@ -179,7 +184,7 @@ class InviteLinkModule : MessageReceivedModule {
 			}
 		}
 
-		val result: Boolean = callback.invoke()
+		val result = callback.invoke()
 
 		return result
 	}
