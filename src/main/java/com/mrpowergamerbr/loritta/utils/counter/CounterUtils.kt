@@ -32,6 +32,7 @@ object CounterUtils {
 			CounterThemeName.BLURPLE -> CounterThemes.BLURPLE
 			CounterThemeName.BLACK -> CounterThemes.BLACK
 			CounterThemeName.DELUXE -> CounterThemes.DELUXE
+			CounterThemeName.LORITTA -> CounterThemes.LORITTA
 			else -> CounterThemes.DEFAULT
 		}
 	}
