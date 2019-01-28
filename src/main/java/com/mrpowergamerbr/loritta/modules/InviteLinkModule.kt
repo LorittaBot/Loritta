@@ -5,11 +5,12 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.core.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -33,7 +34,7 @@ class InviteLinkModule : MessageReceivedModule {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 		val guild = message.guild
 		val inviteBlockerConfig = serverConfig.inviteBlockerConfig
@@ -88,8 +89,8 @@ class InviteLinkModule : MessageReceivedModule {
 		val whitelisted = mutableListOf<String>()
 		whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
-		val callback = callback@ {
-			val jobs = mutableListOf<Job>()
+		val callback = suspend callback@ {
+			val jobs = mutableListOf<Deferred<Boolean>>()
 
 			for (matcher in validMatchers) {
 				val urls = mutableSetOf<String>()
@@ -103,19 +104,19 @@ class InviteLinkModule : MessageReceivedModule {
 
 				for (url in urls) {
 					jobs.add(
-							GlobalScope.launch(loritta.coroutineDispatcher) {
+							GlobalScope.async(loritta.coroutineDispatcher) {
 								// Isto provavelmente jamais irá acontecer *exceto* se a coroutine realmente demorar muito para iniciar
 								// Mas, caso as leis da natureza mudem, está aqui uma pequena verificação
 								if (!isActive)
-									return@launch
+									return@async false
 
 								val inviteId = if (!detectedInviteLinks.contains(url)) { // Se não está no cache, vamos verificar!
 									val inviteId = MiscUtils.getInviteId("http://$url")
-											?: run { if (isActive) MiscUtils.getInviteId("https://$url") else return@launch } // Vamos evitar verificações inúteis, certo?
-											?: return@launch // Não é um convite! vlw flw fui
+											?: run { if (isActive) MiscUtils.getInviteId("https://$url") else return@async false } // Vamos evitar verificações inúteis, certo?
+											?: return@async false // Não é um convite! vlw flw fui
 
 									if (!isActive)
-										return@launch
+										return@async false
 
 									detectedInviteLinks[url] = inviteId
 									inviteId
@@ -124,26 +125,44 @@ class InviteLinkModule : MessageReceivedModule {
 								}
 
 								if (inviteId == "attachments" || inviteId == "forums")
-									return@launch
+									return@async false
 
 								if (whitelisted.contains(inviteId))
-									return@launch
+									return@async false
 
-								jobs.forEach { it.cancel() }
+								jobs.forEach {
+									if (it != this) { // Se a gente cancelar o atual, vai dar problema ao pegar o resultado depois
+										it.cancel()
+									}
+								}
 
 								if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 									message.delete().queue()
 
 								if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
 									val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
-											?: return@launch
+											?: return@async false
 
 									message.textChannel.sendMessage(toBeSent).queue()
+
+									return@async true
 								}
+								return@async false
 							}
 					)
 				}
+
+				jobs.onEach {
+					try {
+						if (it.await())
+							return@callback true
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
+				return@callback false
 			}
+			return@callback false
 		}
 
 		// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
@@ -151,17 +170,12 @@ class InviteLinkModule : MessageReceivedModule {
 		if (inviteBlockerConfig.whitelistServerInvites) {
 			if (!cachedInviteLinks.containsKey(guild.id)) {
 				if (guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-					guild.invites.queue {
-						val codes = it.map { it.code }
-						cachedInviteLinks.put(guild.id, codes)
-						codes.forEach {
-							whitelisted.add(it)
-						}
-						GlobalScope.launch(loritta.coroutineDispatcher) {
-							callback.invoke()
-						}
+					val invites = guild.invites.await()
+					val codes = invites.map { it.code }
+					cachedInviteLinks.put(guild.id, codes)
+					codes.forEach {
+						whitelisted.add(it)
 					}
-					return false
 				}
 			} else {
 				cachedInviteLinks[guild.id]?.forEach {
@@ -170,11 +184,9 @@ class InviteLinkModule : MessageReceivedModule {
 			}
 		}
 
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			callback.invoke()
-		}
+		val result = callback.invoke()
 
-		return false
+		return result
 	}
 
 	fun getMatcherIfHasInviteLink(content: String?): Matcher? {

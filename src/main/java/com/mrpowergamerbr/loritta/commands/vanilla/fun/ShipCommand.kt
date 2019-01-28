@@ -4,11 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.ShipEffect
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ShipEffects
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.escapeMentions
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.MessageBuilder
@@ -67,6 +66,22 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			var name2 = user2Name.substring(user2Name.length / 2..user2Name.length - 1)
 			var shipName = name1 + name2
 
+			val inviteBlockerConfig = context.config.inviteBlockerConfig
+			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
+
+			if (checkInviteLinks) {
+				val whitelisted = mutableListOf<String>()
+				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
+
+				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
+					whitelisted.add(it)
+				}
+
+				if (MiscUtils.hasInvite(shipName, whitelisted)) {
+					return
+				}
+			}
+
 			// Para motivos de cálculos, nós iremos criar um "real ship name"
 			// Que é só o nome do ship... mas em ordem alfabética!
 			var realShipName = shipName
@@ -90,7 +105,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
 								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and
 								(ShipEffects.expiresAt greaterEq System.currentTimeMillis())
-					}.firstOrNull()
+					}.sortedByDescending { it.expiresAt } .firstOrNull()
 				}
 
 				if (effect != null) {
@@ -103,6 +118,15 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					}
 				}
 			}
+
+			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
+				context.reply(
+						LoriReply(
+								context.locale["commands.fun.ship.bribeLove", "${Loritta.config.websiteUrl}user/@me/dashboard/ship-effects"]
+						)
+				)
+			}
+
 
 			var friendzone: String
 

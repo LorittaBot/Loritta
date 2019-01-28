@@ -17,7 +17,7 @@ class ThankYouLoriModule : MessageReceivedModule {
 		return event.channel.id == "529459242550296577" && 1548021631000 > System.currentTimeMillis()
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		transaction(Databases.loritta) {
 			val keyCount = DonationKey.find {
 				DonationKeys.userId eq event.author.idLong

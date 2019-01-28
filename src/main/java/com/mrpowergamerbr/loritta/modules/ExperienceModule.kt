@@ -16,7 +16,7 @@ class ExperienceModule : MessageReceivedModule {
 		return true
 	}
 
-	override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		// (copyright Loritta™)
 		var newProfileXp = lorittaProfile.xp
 		var lastMessageSentHash: Int? = null

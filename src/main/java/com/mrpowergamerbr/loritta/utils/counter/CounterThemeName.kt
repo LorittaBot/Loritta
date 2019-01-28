@@ -7,5 +7,6 @@ enum class CounterThemeName(val localizedName: String) {
 	BLURPLE("loritta.modules.counter.theme.blurple"),
 	BLACK("loritta.modules.counter.theme.black"),
 	DELUXE("loritta.modules.counter.theme.deluxe"),
+	LORITTA("loritta.modules.counter.theme.loritta"),
 	CUSTOM("loritta.modules.counter.theme.custom")
 }

@@ -1,50 +1,66 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		private val logger = KotlinLogging.logger {}
+		private val mutexes = Caffeine.newBuilder()
+				.expireAfterAccess(60, TimeUnit.SECONDS)
+				.build<Long, Mutex>()
+				.asMap()
+	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
-			// Carregar a configuração do servidor
-			val config = loritta.getServerConfigForGuild(event.guild.id)
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			val mutex = mutexes.getOrPut(event.channelJoined.idLong) { Mutex() }
 
-			EventLog.onVoiceJoin(config, event.member, event.channelJoined)
+			mutex.withLock {
+				// Carregar a configuração do servidor
+				val config = loritta.getServerConfigForGuild(event.guild.id)
 
-			if (!config.musicConfig.isEnabled)
-				return@execute
+				EventLog.onVoiceJoin(config, event.member, event.channelJoined)
 
-			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
-				return@execute
+				if (!config.musicConfig.isEnabled)
+					return@withLock
 
-			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
+				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+					return@withLock
 
-			if (voiceChannel.members.isEmpty()) // Whoops, demorou demais!
-				return@execute
+				val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@withLock
 
-			if (voiceChannel.members.contains(event.guild.selfMember)) // Mas... fui eu mesmo que entrei!
-				return@execute
+				if (voiceChannel.members.isEmpty()) // Whoops, demorou demais!
+					return@withLock
 
-			val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
+				if (voiceChannel.members.contains(event.guild.selfMember)) // Mas... fui eu mesmo que entrei!
+					return@withLock
 
-			// Se não está tocando nada e o sistema de músicas aleatórias está ativado, toque uma!
-			if (mm.player.playingTrack == null && config.musicConfig.autoPlayWhenEmpty && config.musicConfig.urls.isNotEmpty())
-				LorittaUtilsKotlin.startRandomSong(event.guild, config)
-			else if (mm.player.playingTrack != null && !voiceChannel.members.contains(event.guild.selfMember)) {
-				mm.player.isPaused = false
-				val link = loritta.audioManager.lavalink.getLink(event.guild)
-				link.connect(voiceChannel)
+				val mm = loritta.audioManager.getGuildAudioPlayer(event.guild)
+
+				// Se não está tocando nada e o sistema de músicas aleatórias está ativado, toque uma!
+				if (mm.player.playingTrack == null && config.musicConfig.autoPlayWhenEmpty && config.musicConfig.urls.isNotEmpty())
+					LorittaUtilsKotlin.startRandomSong(event.guild, config)
+				else if (mm.player.playingTrack != null && !voiceChannel.members.contains(event.guild.selfMember)) {
+					mm.player.isPaused = false
+					val link = loritta.audioManager.lavalink.getLink(event.guild)
+					link.connect(voiceChannel)
+				}
 			}
 		}
 	}
@@ -53,27 +69,31 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
-			val config = loritta.getServerConfigForGuild(event.guild.id)
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			val mutex = mutexes.getOrPut(event.channelLeft.idLong) { Mutex() }
 
-			EventLog.onVoiceLeave(config, event.member, event.channelLeft)
+			mutex.withLock {
+				val config = loritta.getServerConfigForGuild(event.guild.id)
 
-			if (!config.musicConfig.isEnabled)
-				return@execute
+				EventLog.onVoiceLeave(config, event.member, event.channelLeft)
 
-			if ((config.musicConfig.musicGuildId ?: "").isEmpty())
-				return@execute
+				if (!config.musicConfig.isEnabled)
+					return@withLock
 
-			val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@execute
+				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+					return@withLock
 
-			if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
-				return@execute
+				val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@withLock
 
-			// Caso não tenha ninguém no canal de voz, vamos retirar o music manager da nossa lista
-			loritta.audioManager.musicManagers.remove(event.guild.idLong)
+				if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
+					return@withLock
 
-			val link = loritta.audioManager.lavalink.getLink(event.guild)
-			link.disconnect() // E desconectar do canal de voz
+				// Caso não tenha ninguém no canal de voz, vamos retirar o music manager da nossa lista
+				loritta.audioManager.musicManagers.remove(event.guild.idLong)
+
+				val link = loritta.audioManager.lavalink.getLink(event.guild)
+				link.disconnect() // E desconectar do canal de voz
+			}
 		}
 	}
 }

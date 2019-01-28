@@ -17,7 +17,9 @@ import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -185,8 +187,6 @@ class APILoriDailyRewardView : NoVarsView() {
 		var sponsoredByUser: User? = null
 
 		transaction(Databases.loritta) {
-			addLogger(StdOutSqlLogger)
-
 			// Pegar todos os servidores com sonhos patrocinados
 			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
 				(ServerConfigs.id inList mutualGuilds.map { it.idLong }) and

@@ -6,6 +6,10 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import lavalink.client.player.IPlayer
 import lavalink.client.player.LavalinkPlayer
 import lavalink.client.player.event.PlayerEventListenerAdapter
@@ -23,21 +27,22 @@ import java.util.concurrent.LinkedBlockingQueue
 class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEventListenerAdapter() {
 	val queue: BlockingQueue<AudioTrackWrapper>
 	var currentTrack: AudioTrackWrapper? = null
-	var isLoadingNextTrack = false
+	val mutex = Mutex()
 
 	init {
 		this.queue = LinkedBlockingQueue()
 	}
 
 	override fun onTrackStart(player: IPlayer, track: AudioTrack) {
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
 			if (serverConfig.musicConfig.logToChannel) {
 				val textChannel = guild.getTextChannelById(serverConfig.musicConfig.channelId)
 
 				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
-					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@execute)
+					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@launch)
+
 					if (currentTrack!!.metadata.isNotEmpty()) {
 						val embed = LorittaUtilsKotlin.createTrackInfoEmbed(guild, LorittaLauncher.loritta.getLegacyLocaleById(serverConfig.localeId), true)
 
@@ -57,9 +62,9 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
-		if (player.playingTrack != null && currentTrack != null && !currentTrack!!.isAutoPlay) { // Quem liga para músicas do autoplay? Cancele ela agora!
+		if (player.playingTrack != null && currentTrack != null && !currentTrack!!.isAutoPlay) {
 			queue.offer(track)
-		} else {
+		} else { // Quem liga para músicas do autoplay? Cancele ela agora!
 			currentTrack = track
 			player.playTrack(track.track)
 		}
@@ -82,15 +87,15 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 			if (player.playingTrack != null) // Se está tocando uma música
 				player.stopTrack() // Vamos parar ela!
 
-			// Para evitar colocar várias músicas na playlist em seguida, vamos verificar se estamos carregando a próxima música antes de fazer algo
-			isLoadingNextTrack = true
-			loritta.executor.execute { // Vamos agora verificar se devemos tocar uma música aleatória
-				val serverConfig = loritta.getServerConfigForGuild(guild.id)
+			// Vamos agora verificar se devemos tocar uma música aleatória
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				mutex.withLock {
+					val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
-				// Então quer dizer que nós iniciamos uma música vazia?
-				// Okay então, vamos pegar nossas próprias coisas
-				LorittaUtilsKotlin.startRandomSong(guild, serverConfig)
-				isLoadingNextTrack = false
+					// Então quer dizer que nós iniciamos uma música vazia?
+					// Okay então, vamos pegar nossas próprias coisas
+					LorittaUtilsKotlin.startRandomSong(guild, serverConfig)
+				}
 			}
 			return
 		}
