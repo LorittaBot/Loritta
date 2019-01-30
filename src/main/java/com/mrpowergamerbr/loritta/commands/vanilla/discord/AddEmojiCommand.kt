@@ -39,7 +39,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 	}
 	
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val imageUrl = context.getImageUrlAt(1, 0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val imageUrl = context.getImageUrlAt(1, 1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		
 		try {
 			val os = LorittaUtils.downloadFile(imageUrl, 5000)
