@@ -195,6 +195,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val regionName = region.getName()
 		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 
+		event.guild.region
 		// Portuguese
 		if (regionName.startsWith("Brazil")) {
 			serverConfig.localeId = "default"

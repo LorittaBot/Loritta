@@ -35,7 +35,9 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros entraram em menos de 15 segundos em ${k1}! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val joinLeaveConfig = loritta.getServerConfigForGuild(v1.toString()).joinLeaveConfig
+						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
+						val joinLeaveConfig = serverConfig.joinLeaveConfig
+
 						if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
@@ -50,7 +52,10 @@ object WelcomeModule {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-											textChannel.sendFile(targetStream, "join-users.log", MessageBuilder().setContent("Quanta gente entrando! Para não encher o canal de mensagens, aqui está a lista de todos que entraram ${Emotes.LORI_OWO}").build()).queue()
+
+											val locale = loritta.getLocaleById(serverConfig.localeId)
+
+											textChannel.sendFile(targetStream, "join-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 										}
 									}
@@ -70,7 +75,9 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em ${k1}! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val joinLeaveConfig = loritta.getServerConfigForGuild(v1.toString()).joinLeaveConfig
+						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
+						val joinLeaveConfig = serverConfig.joinLeaveConfig
+
 						if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
@@ -85,7 +92,10 @@ object WelcomeModule {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent("Quanta gente saindo! Para não encher o canal de mensagens, aqui está a lista de todos que sairam ${Emotes.LORI_OWO}").build()).queue()
+
+											val locale = loritta.getLocaleById(serverConfig.localeId)
+											
+											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
