@@ -18,7 +18,7 @@ import java.util.concurrent.Executors
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-		const val MAX_TICKETS_BY_USER_PER_ROUND = 250
+		const val MAX_TICKETS_BY_USER_PER_ROUND = 1000
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
