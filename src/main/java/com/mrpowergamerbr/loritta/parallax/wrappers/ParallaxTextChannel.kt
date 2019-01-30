@@ -97,6 +97,7 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 		textChannel.manager.setPosition(position).complete()
 	}
 
+	@JvmOverloads
 	fun setTopic(topic: String, reason: String? = null) {
 		textChannel.manager.setTopic(topic)
 				.reason(reason)

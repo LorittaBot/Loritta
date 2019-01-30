@@ -17,8 +17,4 @@ class ParallaxClient(private val jda: JDA) {
 					else -> "???"
 				}
 			}
-
-	override fun equals(other: Any?): Boolean {
-		return jda == other
-	}
 }
