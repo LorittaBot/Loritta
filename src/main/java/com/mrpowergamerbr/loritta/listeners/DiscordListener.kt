@@ -8,11 +8,13 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.ReactionModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -45,6 +47,7 @@ import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
@@ -169,6 +172,20 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
 			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
+
+			transaction(Databases.loritta) {
+				// Deletar todos os perfis do servidor
+				GuildProfiles.deleteWhere {
+					GuildProfiles.guildId eq e.guild.idLong
+				}
+
+				// Deletar configurações
+				val serverConfig = ServerConfig.findById(e.guild.idLong)
+				val donationConfig = serverConfig?.donationConfig
+
+				serverConfig?.delete()
+				donationConfig?.delete()
+			}
 		}
 	}
 
