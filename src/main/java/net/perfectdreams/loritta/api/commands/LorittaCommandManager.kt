@@ -511,7 +511,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				val reply = "\uD83E\uDD37 **|** " + mention + legacyLocale["ERROR_WHILE_EXECUTING_COMMAND"]
 
 				if (!e.message.isNullOrEmpty())
-					reply + " ${e.message!!.escapeMentions()}"
+					reply += " `${e.message!!.escapeMentions()}`"
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply).queue()
