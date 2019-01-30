@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -11,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.Executors
