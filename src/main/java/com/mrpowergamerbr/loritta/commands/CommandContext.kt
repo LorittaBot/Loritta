@@ -238,12 +238,11 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 		if (privateReply || cmd is AjudaCommand) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
-			inputStream.close()
 			return sentMessage
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
-				inputStream.close()
+
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return sentMessage
