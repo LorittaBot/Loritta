@@ -141,7 +141,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 
-		loritta.executor.execute {
+		GlobalScope.launch {
 			if (e.isFromType(ChannelType.TEXT)) {
 				try {
 					val conf = loritta.getServerConfigForGuild(e.guild.id)
