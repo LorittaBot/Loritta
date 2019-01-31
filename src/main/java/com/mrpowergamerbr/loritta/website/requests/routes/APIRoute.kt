@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.Lo
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.SendMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.UsersController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.CreateDonationPaymentController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.ProfileImageController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.SelfProfileController
@@ -23,8 +24,6 @@ class APIRoute : Jooby() {
 		use(DiscordBotsCallbackController::class.java)
 		use(PubSubHubbubCallbackController::class.java)
 		use(LoriTransferBalanceController::class.java)
-		use(IpCallbackController::class.java)
-		use(UserAgentCallbackController::class.java)
 		use(UpdateAvailableCallbackController::class.java)
 		use(MercadoPagoCallbackController::class.java)
 
@@ -33,5 +32,8 @@ class APIRoute : Jooby() {
 		use(SelfProfileController::class.java)
 		use(CreateDonationPaymentController::class.java)
 		use(ProfileImageController::class.java)
+
+		// ===[ LORITTA ]===
+		use(UsersController::class.java)
 	}
 }
