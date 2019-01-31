@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -14,11 +13,6 @@ import org.jooby.mvc.Path
 
 @Path("/api/v1/loritta/users/:type")
 class UsersController {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-		var allowAnyPayment = false
-	}
-
 	@GET
 	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response, type: String) {
@@ -29,7 +23,7 @@ class UsersController {
 				res.status(Status.OK)
 
 				val userIds = loritta.fanArts.mapNotNull {
-					lorittaShards.getUserById(it.artistId)?.idLong
+					lorittaShards.getUserById(it.artistId)?.id
 				}.distinct()
 
 				res.send(
@@ -53,7 +47,7 @@ class UsersController {
 				val members = originalGuild.getMembersWithRoles(partnerRole)
 
 				res.send(
-						gson.toJsonTree(members.map { it.user.idLong })
+						gson.toJsonTree(members.map { it.user.id })
 				)
 				return
 			}
