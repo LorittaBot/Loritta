@@ -185,7 +185,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							if (lastUploadedVideoName != null)
 								embed.addField("\uD83D\uDCE5 ${context.legacyLocale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
 							if (lastLikedVideoName != null)
-								embed.addField("<:twitt_starstruck:352216844603752450> ${context.legacyLocale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
+								embed.addField("<:starstruck:540988091117076481> ${context.legacyLocale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
 
 							embed.addField("⛓ Link", "https://youtube.com/channel/${item.snippet.channelId}", true)
 							// Criar novo embed!

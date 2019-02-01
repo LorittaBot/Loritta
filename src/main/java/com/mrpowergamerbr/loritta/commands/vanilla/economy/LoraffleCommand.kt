@@ -139,7 +139,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				),
 				LoriReply(
 						context.legacyLocale["RAFFLE_CurrentPrize", (RaffleThread.userIds.size * 250).toString()],
-						"<:twitt_starstruck:352216844603752450>",
+						"<:starstruck:540988091117076481>",
 						mentionUser = false
 				),
 				LoriReply(
