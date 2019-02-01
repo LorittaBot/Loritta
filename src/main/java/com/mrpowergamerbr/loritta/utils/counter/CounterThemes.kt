@@ -49,7 +49,7 @@ object CounterThemes {
 			"<:blurple_five:517085610595319829>",
 			"<:blurple_six:517085610800971797>",
 			"<:blurple_seven:517085611061149716>",
-			"<:blurple_eight:517085610956029964> ",
+			"<:blurple_eight:517085610956029964>",
 			"<:blurple_nine:517085610691919872>"
 	)
 
