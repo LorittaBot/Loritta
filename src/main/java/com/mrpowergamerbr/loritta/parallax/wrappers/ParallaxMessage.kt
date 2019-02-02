@@ -66,7 +66,7 @@ class ParallaxMessage(private val message: Message) {
 
     fun pin(): ParallaxPromise<Void?> {
         return object: ParallaxPromise<Void?>() {
-            override fun queue(success: java.util.function.Function<Void?, Any?>?, failure: java.util.function.Function<Void?, Any?>?) {
+            override fun queue(success: Function<Void?, Any?>?, failure: Function<Any?, Any?>?) {
                 message.pin().queue({
                     success?.apply(null)
                 }, {
