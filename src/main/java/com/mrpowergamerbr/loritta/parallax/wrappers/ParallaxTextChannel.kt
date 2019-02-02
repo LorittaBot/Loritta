@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.entities.TextChannel
 import org.graalvm.polyglot.Value
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.function.Function
 import javax.imageio.ImageIO
 
 class ParallaxTextChannel(private val textChannel: TextChannel) {
@@ -48,12 +49,12 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 	// TODO: overwritePermissions
 	// TODO: permissionsFor
 
-	fun send(content: Any, attachment: ParallaxAttachment): ParallaxMessage {
+	fun send(content: Any, attachment: ParallaxAttachment): ParallaxPromise<ParallaxMessage> {
 		return send(content, ParallaxMessageOptions(attachment))
 	}
 
 	@JvmOverloads
-	fun send(content: Any, options: ParallaxMessageOptions? = null): ParallaxMessage {
+	fun send(content: Any, options: ParallaxMessageOptions? = null): ParallaxPromise<ParallaxMessage> {
 		if (content is Value) { // Conteúdo passado diretamente pelo GraalJS (ao usar eval)
 			return send(ParallaxUtils.toParallaxEmbed(content), options)
 		}
@@ -70,9 +71,39 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 
 				val inputStream = ByteArrayInputStream(outputStream.toByteArray())
 
-				return ParallaxMessage(textChannel.sendFile(inputStream, "image.png", content).complete())
+				return object: ParallaxPromise<ParallaxMessage>() {
+					override fun queue(success: Function<ParallaxMessage, Any?>) {
+						queue(success, Function {})
+					}
+
+					override fun queue(success: Function<ParallaxMessage, Any?>, failure: Function<ParallaxMessage, Any?>) {
+						textChannel.sendFile(inputStream, "image.png", content).queue(
+								{
+									success.apply(ParallaxMessage(it))
+								},
+								{
+
+								}
+						)
+					}
+				}
 			}
-			return ParallaxMessage(textChannel.sendMessage(content).complete())
+			return object: ParallaxPromise<ParallaxMessage>() {
+				override fun queue(success: Function<ParallaxMessage, Any?>) {
+					queue(success, Function {})
+				}
+
+				override fun queue(success: Function<ParallaxMessage, Any?>, failure: Function<ParallaxMessage, Any?>) {
+					textChannel.sendMessage(content).queue(
+							{
+								success.apply(ParallaxMessage(it))
+							},
+							{
+
+							}
+					)
+				}
+			}
 		}
 
 		val message = MessageBuilder()
@@ -97,6 +128,7 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 		textChannel.manager.setPosition(position).complete()
 	}
 
+	@JvmOverloads
 	fun setTopic(topic: String, reason: String? = null) {
 		textChannel.manager.setTopic(topic)
 				.reason(reason)

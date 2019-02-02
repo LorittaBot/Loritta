@@ -193,6 +193,9 @@ class PubSubHubbubCallbackController {
 			// Se for vazio, quer dizer que é um stream down
 			if (data.size() != 0) {
 				for (_obj in data) {
+					if (streamingSince.containsKey(userLogin))
+						continue
+
 					streamingSince[userLogin] = System.currentTimeMillis()
 
 					val obj = _obj.obj

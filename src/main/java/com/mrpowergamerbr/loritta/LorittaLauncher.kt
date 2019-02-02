@@ -21,6 +21,7 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
+		// Isto apenas acontece se... "uma falha de segurança na API de comandos em JS for detectada"
 		val doNotStart = File("do_not_start").exists()
 		if (doNotStart) {
 			while (true) {

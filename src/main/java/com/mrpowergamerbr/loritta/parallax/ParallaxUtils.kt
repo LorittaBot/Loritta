@@ -6,11 +6,26 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.utils.gson
+import mu.KotlinLogging
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Message
 import org.graalvm.polyglot.Value
+import java.io.File
 
 object ParallaxUtils {
+	private val logger = KotlinLogging.logger {}
+
+	fun securityViolation(guildId: String?) {
+		try {
+			throw IllegalArgumentException("Deu ruim!")
+		} catch (e: Exception) {
+			logger.error(e) { "Descobriram como pegar o meu token usando JavaScript na guild $guildId!!!" }
+		}
+
+		File("do_not_start").writeText("")
+		System.exit(0)
+	}
+
 	fun toParallaxMessage(map: Map<*, *>): Message {
 		val jsonObject = convertPolyglotMapToJson(map).obj
 		val builder = MessageBuilder()

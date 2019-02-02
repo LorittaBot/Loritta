@@ -81,7 +81,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 
 			embed.setTitle("<:roblox_logo:412576693803286528> $gameName", gameUrl)
 			embed.addField("\uD83D\uDCBB ${locale["RBUSER_ID_DO_ROBLOX"]}", placeId, true)
-			embed.addField("<:twitt_starstruck:392408611269378068> ${locale["RBGAME_Favorites"]}", favoriteCount, true)
+			embed.addField("<:starstruck:540988091117076481> ${locale["RBGAME_Favorites"]}", favoriteCount, true)
 			embed.addField("\uD83D\uDC4D ${locale["MUSICINFO_LIKES"]}", upvotes, true)
 			embed.addField("\uD83D\uDC4E ${locale["MUSICINFO_DISLIKES"]}", downvotes, true)
 			embed.addField("\uD83C\uDFAE ${locale["RBGAME_Playing"]}", playing, true)

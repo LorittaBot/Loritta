@@ -1,7 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -72,7 +73,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		}
 
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")
-		embed.setImage(getAvatar.effectiveAvatarUrl + if (!getAvatar.effectiveAvatarUrl.endsWith(".gif")) "?size=2048" else "")
+		embed.setImage(getAvatar.effectiveAvatarUrl + "?size=2048")
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
 }

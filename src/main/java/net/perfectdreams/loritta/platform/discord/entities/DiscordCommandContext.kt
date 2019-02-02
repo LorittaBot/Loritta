@@ -262,12 +262,12 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
-			inputStream.close()
+
 			return DiscordMessage(sentMessage)
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
-				inputStream.close()
+
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return DiscordMessage(sentMessage)

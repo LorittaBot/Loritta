@@ -50,35 +50,37 @@ class InviteLinkModule : MessageReceivedModule {
 			validMatchers.add(contentMatcher)
 
 		val embeds = message.embeds
-		for (embed in embeds) {
-			val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
-			if (descriptionMatcher != null)
-				validMatchers.add(descriptionMatcher)
+		if (!isYouTubeLink(content)) {
+			for (embed in embeds) {
+				val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
+				if (descriptionMatcher != null)
+					validMatchers.add(descriptionMatcher)
 
-			val titleMatcher = getMatcherIfHasInviteLink(embed.title)
-			if (titleMatcher != null)
-				validMatchers.add(titleMatcher)
+				val titleMatcher = getMatcherIfHasInviteLink(embed.title)
+				if (titleMatcher != null)
+					validMatchers.add(titleMatcher)
 
-			val urlMatcher = getMatcherIfHasInviteLink(embed.url)
-			if (urlMatcher != null)
-				validMatchers.add(urlMatcher)
+				val urlMatcher = getMatcherIfHasInviteLink(embed.url)
+				if (urlMatcher != null)
+					validMatchers.add(urlMatcher)
 
-			val footerMatcher = getMatcherIfHasInviteLink(embed.footer?.text)
-			if (footerMatcher != null)
-				validMatchers.add(footerMatcher)
+				val footerMatcher = getMatcherIfHasInviteLink(embed.footer?.text)
+				if (footerMatcher != null)
+					validMatchers.add(footerMatcher)
 
-			val authorNameMatcher = getMatcherIfHasInviteLink(embed.author?.name)
-			if (authorNameMatcher != null)
-				validMatchers.add(authorNameMatcher)
+				val authorNameMatcher = getMatcherIfHasInviteLink(embed.author?.name)
+				if (authorNameMatcher != null)
+					validMatchers.add(authorNameMatcher)
 
-			val authorUrlMatcher = getMatcherIfHasInviteLink(embed.author?.url)
-			if (authorUrlMatcher != null)
-				validMatchers.add(authorUrlMatcher)
+				val authorUrlMatcher = getMatcherIfHasInviteLink(embed.author?.url)
+				if (authorUrlMatcher != null)
+					validMatchers.add(authorUrlMatcher)
 
-			for (field in embed.fields) {
-				val fieldMatcher = getMatcherIfHasInviteLink(field.value)
-				if (fieldMatcher != null)
-					validMatchers.add(fieldMatcher)
+				for (field in embed.fields) {
+					val fieldMatcher = getMatcherIfHasInviteLink(field.value)
+					if (fieldMatcher != null)
+						validMatchers.add(fieldMatcher)
+				}
 			}
 		}
 
@@ -189,9 +191,9 @@ class InviteLinkModule : MessageReceivedModule {
 		return result
 	}
 
-	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+	fun isYouTubeLink(content: String?): Boolean {
 		if (content.isNullOrBlank())
-			return null
+			return false
 
 		val pattern = Constants.URL_PATTERN
 		val matcher = pattern.matcher(content)
@@ -199,9 +201,19 @@ class InviteLinkModule : MessageReceivedModule {
 			val everything = matcher.group(0)
 			val afterSlash = matcher.group(1)
 			val uri = everything.replace(afterSlash, "")
-			if (uri.endsWith("youtube.com") || uri.endsWith("youtu.be"))
-				return null
+			return uri.endsWith("youtube.com") || uri.endsWith("youtu.be")
+		} else {
+			return false
+		}
+	}
 
+	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+		if (content.isNullOrBlank())
+			return null
+
+		val pattern = Constants.URL_PATTERN
+		val matcher = pattern.matcher(content)
+		if (matcher.find()) {
 			matcher.reset()
 			return matcher
 		} else {

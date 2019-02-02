@@ -106,7 +106,7 @@ abstract class ProtectedView : AbstractView() {
 									}
 
 									// Envie via DM uma mensagem falando sobre a Loritta!
-									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size, "${Loritta.config.websiteUrl}donate"]
+									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${Loritta.config.websiteUrl}donate"]
 
 									user.openPrivateChannel().queue {
 										it.sendMessage(message).queue()

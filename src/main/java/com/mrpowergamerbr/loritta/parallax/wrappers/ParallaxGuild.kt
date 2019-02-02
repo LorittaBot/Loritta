@@ -8,12 +8,17 @@ class ParallaxGuild(private val guild: Guild) {
 	// TODO: afkChannel
 	val afkChannelID get() = guild.afkChannel.id
 
-	fun getRolesByName(name: String): List<ParallaxRole> {
-		return getRolesByName(name, false)
-	}
-
+	@JvmOverloads
 	fun getRolesByName(name: String, ignoreCase: Boolean = false): List<ParallaxRole> {
 		return guild.getRolesByName(name, ignoreCase).map { ParallaxRole(it) }
+	}
+
+	fun getRoleById(roleId: String): ParallaxRole? {
+		return ParallaxRole(guild.getRoleById(roleId))
+	}
+
+	fun getRoleById(roleId: Long): ParallaxRole? {
+		return ParallaxRole(guild.getRoleById(roleId))
 	}
 
 	fun getTextChannelsByName(name: String): List<ParallaxTextChannel> {

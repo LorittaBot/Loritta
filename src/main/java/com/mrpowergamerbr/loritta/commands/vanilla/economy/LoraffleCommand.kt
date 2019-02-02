@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -11,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.Executors
@@ -18,7 +18,7 @@ import java.util.concurrent.Executors
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-		const val MAX_TICKETS_BY_USER_PER_ROUND = 250
+		const val MAX_TICKETS_BY_USER_PER_ROUND = 1000
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -139,7 +139,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				),
 				LoriReply(
 						context.legacyLocale["RAFFLE_CurrentPrize", (RaffleThread.userIds.size * 250).toString()],
-						"<:twitt_starstruck:352216844603752450>",
+						"<:starstruck:540988091117076481>",
 						mentionUser = false
 				),
 				LoriReply(

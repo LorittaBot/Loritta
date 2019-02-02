@@ -26,6 +26,46 @@ import java.util.concurrent.TimeUnit
 object WelcomeModule {
 	private val logger = KotlinLogging.logger {}
 
+	val joinMembersCache = Caffeine.newBuilder()
+			.expireAfterAccess(15, TimeUnit.SECONDS)
+			.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
+				if (k1 != null && v1 != null) {
+					logger.info("Removendo join members cache de ${k1}... ${v1.size} membros tinham saído durante este período")
+
+					if (v1.size > 20) {
+						logger.info("Mais de 20 membros entraram em menos de 15 segundos em ${k1}! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
+
+						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
+						val joinLeaveConfig = serverConfig.joinLeaveConfig
+
+						if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) {
+							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
+
+							if (joinLeaveConfig.canalJoinId != null) {
+								val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
+
+								if (textChannel != null) {
+									if (textChannel.canTalk()) {
+										if (guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
+											val lines = mutableListOf<String>()
+											for (user in v1) {
+												lines.add("${user.name}#${user.discriminator} - (${user.id})")
+											}
+											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
+
+											val locale = loritta.getLocaleById(serverConfig.localeId)
+
+											textChannel.sendFile(targetStream, "join-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).queue()
+											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			.build<Long, CopyOnWriteArrayList<User>>()
 	val leftMembersCache = Caffeine.newBuilder()
 			.expireAfterAccess(15, TimeUnit.SECONDS)
 			.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
@@ -35,7 +75,9 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em ${k1}! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val joinLeaveConfig = loritta.getServerConfigForGuild(v1.toString()).joinLeaveConfig
+						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
+						val joinLeaveConfig = serverConfig.joinLeaveConfig
+
 						if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
@@ -50,7 +92,10 @@ object WelcomeModule {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent("Quanta gente saindo! Para não encher o canal de mensagens, aqui está a lista de todos que sairam ${Emotes.LORI_OWO}").build()).queue()
+
+											val locale = loritta.getLocaleById(serverConfig.localeId)
+											
+											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
@@ -73,6 +118,13 @@ object WelcomeModule {
 
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
 			val guild = event.guild
+
+			val list = joinMembersCache.getIfPresent(event.guild.idLong) ?: CopyOnWriteArrayList()
+			list.add(event.user)
+			joinMembersCache.put(event.guild.idLong, list)
+
+			if (list.size > 20)
+				return
 
 			if (joinLeaveConfig.canalJoinId != null) {
 				val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
