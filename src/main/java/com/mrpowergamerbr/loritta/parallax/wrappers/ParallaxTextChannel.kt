@@ -72,34 +72,32 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 				val inputStream = ByteArrayInputStream(outputStream.toByteArray())
 
 				return object: ParallaxPromise<ParallaxMessage>() {
-					override fun queue(success: Function<ParallaxMessage, Any?>) {
-						queue(success, Function {})
-					}
-
-					override fun queue(success: Function<ParallaxMessage, Any?>, failure: Function<ParallaxMessage, Any?>) {
+					override fun queue(success: Function<ParallaxMessage, Any?>?, failure: Function<Any?, Any?>?) {
 						textChannel.sendFile(inputStream, "image.png", content).queue(
 								{
-									success.apply(ParallaxMessage(it))
+									success?.apply(ParallaxMessage(it))
 								},
 								{
-
+									if (failure == null)
+										ParallaxPromise.DEFAULT_CHANNEL_FAILURE_CALLBACK.invoke(textChannel, it)
+									else
+										failure.apply(null)
 								}
 						)
 					}
 				}
 			}
 			return object: ParallaxPromise<ParallaxMessage>() {
-				override fun queue(success: Function<ParallaxMessage, Any?>) {
-					queue(success, Function {})
-				}
-
-				override fun queue(success: Function<ParallaxMessage, Any?>, failure: Function<ParallaxMessage, Any?>) {
+				override fun queue(success: Function<ParallaxMessage, Any?>?, failure: Function<Any?, Any?>?) {
 					textChannel.sendMessage(content).queue(
 							{
-								success.apply(ParallaxMessage(it))
+								success?.apply(ParallaxMessage(it))
 							},
 							{
-
+								if (failure == null)
+									ParallaxPromise.DEFAULT_CHANNEL_FAILURE_CALLBACK.invoke(textChannel, it)
+								else
+									failure.apply(null)
 							}
 					)
 				}
