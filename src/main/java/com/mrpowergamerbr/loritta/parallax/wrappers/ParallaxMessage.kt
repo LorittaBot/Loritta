@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
 import org.graalvm.polyglot.Value
+import java.util.function.Function
 
 class ParallaxMessage(private val message: Message) {
     // TODO: attachments
@@ -80,7 +81,7 @@ class ParallaxMessage(private val message: Message) {
 
     fun unpin(): ParallaxPromise<Void?> {
         return object: ParallaxPromise<Void?>() {
-            override fun queue(success: java.util.function.Function<Void?, Any?>?, failure: java.util.function.Function<Void?, Any?>?) {
+            override fun queue(success: Function<Void?, Any?>?, failure: Function<Any?, Any?>?) {
                 message.unpin().queue({
                     success?.apply(null)
                 }, {
@@ -95,7 +96,7 @@ class ParallaxMessage(private val message: Message) {
 
     fun react(reaction: String): ParallaxPromise<Void?> {
         return object: ParallaxPromise<Void?>() {
-            override fun queue(success: java.util.function.Function<Void?, Any?>?, failure: java.util.function.Function<Void?, Any?>?) {
+            override fun queue(success: Function<Void?, Any?>?, failure: Function<Any?, Any?>?) {
                 message.addReaction(reaction).queue({
                     success?.apply(null)
                 }, {
