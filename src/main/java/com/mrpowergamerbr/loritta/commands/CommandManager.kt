@@ -125,6 +125,7 @@ class CommandManager {
 		commandMap.add(DiscordBotListCommand())
 		commandMap.add(ActivateKeyCommand())
 		commandMap.add(VotarCommand())
+		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
