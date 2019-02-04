@@ -66,7 +66,7 @@ class ParallaxTextChannel(private val textChannel: TextChannel) {
 			if (options?.attachment != null) {
 				val outputStream = ByteArrayOutputStream()
 				outputStream.use {
-					ImageIO.write(options.attachment.image, "png", it)
+					ImageIO.write(options.attachment.image?.image, "png", it)
 				}
 
 				val inputStream = ByteArrayInputStream(outputStream.toByteArray())
