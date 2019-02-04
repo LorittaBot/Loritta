@@ -38,6 +38,8 @@ class LorittaConfig(
 		val websiteApiKeys: List<AuthenticationKey>,
 		@JsonProperty("owner-id")
 		val ownerId: String,
+		@JsonProperty("sub-owner-ids")
+		val subOwnerIds: String,
 		@JsonProperty("website-url")
 		val websiteUrl: String,
 		@JsonProperty("website-port")

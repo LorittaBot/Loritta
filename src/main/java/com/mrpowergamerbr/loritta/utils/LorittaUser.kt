@@ -34,6 +34,9 @@ open class LorittaUser(val user: User, val config: MongoServerConfig, val profil
 			return false
 		}
 
+		if (!context.cmd.canHandle(context))
+			return false
+
 		return true
 	}
 
