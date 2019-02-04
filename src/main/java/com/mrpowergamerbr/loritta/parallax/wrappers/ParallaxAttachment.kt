@@ -13,8 +13,11 @@ class ParallaxAttachment(private val attachment: Message.Attachment) {
     val url = attachment.url
     val proxyURL = attachment.proxyUrl
 
-    val image = LorittaUtils.downloadImage(attachment.url)
+    val image = if (attachment.isImage)
+        ParallaxImage(LorittaUtils.downloadImage(attachment.url)!!)
+    else
+        null
 
-    val height = image?.height
-    val width = image?.width
+    val height = image?.image?.height
+    val width = image?.image?.width
 }
