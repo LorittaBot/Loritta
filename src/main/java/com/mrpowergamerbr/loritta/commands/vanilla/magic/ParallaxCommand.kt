@@ -16,11 +16,8 @@ class ParallaxCommand : AbstractCommand("parallax", category = CommandCategory.M
     override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
         val code = context.args.joinToString(" ")
 
-        val command = NashornCommand("teste", """
-            // USE NEW API
-
-            $code
-        """.trimIndent())
+        val command = NashornCommand("teste", code)
+        command.useNewAPI = true
 
         command.run(context, locale)
     }
