@@ -10,6 +10,7 @@ class ParallaxAttachment(private val attachment: Message.Attachment) {
     val filename = attachment.fileName
     val filesize = attachment.size
 
+    val url = attachment.url
     val proxyURL = attachment.proxyUrl
 
     val image = LorittaUtils.downloadImage(attachment.url)
