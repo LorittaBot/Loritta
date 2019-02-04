@@ -8,7 +8,7 @@ import org.graalvm.polyglot.Value
 import java.util.function.Function
 
 class ParallaxMessage(private val message: Message) {
-    // TODO: attachments
+    val attachments = message.attachments.map { ParallaxAttachment(it) }
     val author = ParallaxUser(message.author)
     val channel = ParallaxTextChannel(message.textChannel)
     val cleanContent get() = message.contentStripped

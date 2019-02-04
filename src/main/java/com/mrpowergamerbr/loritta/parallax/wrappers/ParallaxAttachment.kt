@@ -1,3 +1,19 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-class ParallaxAttachment(internal val image: ParallaxImage, private val name: String)
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import net.dv8tion.jda.core.entities.Message
+
+class ParallaxAttachment(private val attachment: Message.Attachment) {
+
+    val id = attachment.id
+
+    val filename = attachment.fileName
+    val filesize = attachment.size
+
+    val proxyURL = attachment.proxyUrl
+
+    val image = LorittaUtils.downloadImage(attachment.url)
+
+    val height = image?.height
+    val width = image?.width
+}
