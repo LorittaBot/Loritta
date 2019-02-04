@@ -39,7 +39,7 @@ class LorittaConfig(
 		@JsonProperty("owner-id")
 		val ownerId: String,
 		@JsonProperty("sub-owner-ids")
-		val subOwnerIds: String,
+		val subOwnerIds: List<String>,
 		@JsonProperty("website-url")
 		val websiteUrl: String,
 		@JsonProperty("website-port")
