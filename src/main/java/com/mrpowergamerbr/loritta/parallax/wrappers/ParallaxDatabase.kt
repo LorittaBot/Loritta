@@ -99,10 +99,11 @@ class ParallaxDatabase(private val guild: Guild) {
                         if (backed == null) {
                             backed = ParallaxMetaStorage.new {
                                 this.guildId = guild.idLong
-                                this.data = gson.toJson(data)
+                                this.storageName = this@ParallaxStorage.storageName
+                                this.data = gson.toJson(this@ParallaxStorage.data)
                             }
                         } else {
-                            backed!!.data = gson.toJson(data)
+                            backed!!.data = gson.toJson(this@ParallaxStorage.data)
                         }
                     }
 
