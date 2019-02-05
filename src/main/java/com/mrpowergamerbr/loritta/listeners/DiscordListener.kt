@@ -137,6 +137,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 """.trimMargin()
 
 							val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
+									.header("Authorization", "LorittaMorenitta:${Loritta.config.githubKey}")
 									.accept("application/vnd.github.symmetra-preview+json")
 									.send(
 											gson.toJson(
