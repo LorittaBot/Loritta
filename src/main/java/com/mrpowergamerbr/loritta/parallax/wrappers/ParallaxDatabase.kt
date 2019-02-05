@@ -91,7 +91,7 @@ class ParallaxDatabase(private val guild: Guild) {
         fun get(path: String): Any? {
             return data[path].nullString
         }
-        
+
         fun save(): ParallaxPromise<Void?> {
             return object: ParallaxPromise<Void?>() {
                 override fun queue(success: Function<Void?, Any?>?, failure: Function<Any?, Any?>?) {
