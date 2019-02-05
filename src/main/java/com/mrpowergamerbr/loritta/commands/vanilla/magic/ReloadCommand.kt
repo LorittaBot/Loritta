@@ -333,7 +333,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 
 			for (message in history.retrievedHistory) {
-				if (DiscordListener.isSuggestionValid(message)) {
+				if (DiscordListener.isSuggestionValid(message, requiredCount)) {
 					val alreadySent = transaction(Databases.loritta) {
 						GitHubIssues.select { GitHubIssues.messageId eq message.idLong }.count() != 0
 					}
@@ -342,7 +342,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 						continue
 
 					context.reply("Enviando sugestão ${message.id}...")
-					DiscordListener.sendSuggestionToGitHub(message, requiredCount)
+					DiscordListener.sendSuggestionToGitHub(message)
 					delay(5000)
 				}
 			}
