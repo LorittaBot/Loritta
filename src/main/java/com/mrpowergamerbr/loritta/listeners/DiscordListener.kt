@@ -114,7 +114,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 									continue
 								}
 
-								issueTitle = issueTitle.substringIfNeeded(0 until 47)
+								issueTitle = issueTitle.substringIfNeeded(0 until 77)
 								break
 							}
 
