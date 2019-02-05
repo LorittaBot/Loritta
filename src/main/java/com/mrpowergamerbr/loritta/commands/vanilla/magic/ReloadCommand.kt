@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -28,7 +29,9 @@ import kotlinx.coroutines.delay
 import net.dv8tion.jda.core.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.concurrent.thread
@@ -317,6 +320,14 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 			for (message in history.retrievedHistory) {
 				if (DiscordListener.isSuggestionIsValid(message)) {
+					val alreadySent = transaction(Databases.loritta) {
+						GitHubIssues.select { GitHubIssues.messageId eq message.idLong }.count() != 0
+					}
+
+					if (alreadySent)
+						continue
+
+					context.reply("Enviando sugestão ${message.id}...")
 					DiscordListener.sendSuggestionToGitHub(message)
 					delay(5000)
 				}
