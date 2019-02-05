@@ -4,14 +4,13 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageChannel
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
-import java.util.function.Function
 
 abstract class ParallaxPromise<T> {
     companion object {
         val DEFAULT_CHANNEL_FAILURE_CALLBACK: (MessageChannel, Throwable) -> (Unit) = { channel, e ->
             val builder = EmbedBuilder()
             builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-            var description = "Irineu, você não sabe e nem eu!"
+            val description: String
 
             if (e.cause != null && (e.cause as Throwable).message != null) {
                 description = (e.cause as Throwable).message!!.trim { it <= ' ' }
@@ -28,11 +27,11 @@ abstract class ParallaxPromise<T> {
     }
 
     fun queue() {
-        queue(Function {})
+        queue(null)
     }
 
     fun queue(success: java.util.function.Function<T, Any?>?) {
-        queue(success, Function {})
+        queue(success, null)
     }
 
     abstract fun queue(success: java.util.function.Function<T, Any?>?, failure: java.util.function.Function<Any?, Any?>?)

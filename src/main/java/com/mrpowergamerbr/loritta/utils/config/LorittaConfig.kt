@@ -86,8 +86,6 @@ class LorittaConfig(
 		val recaptchaToken: String,
 		@JsonProperty("invisible-recaptcha-token")
 		val invisibleRecaptchaToken: String,
-		@JsonProperty("pomf-space-token")
-		val pomfSpaceToken: String,
 		@JsonProperty("vagalume-key")
 		val vagalumeKey: String,
 		@JsonProperty("twitter")
