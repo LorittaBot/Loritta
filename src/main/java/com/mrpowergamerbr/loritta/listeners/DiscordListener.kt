@@ -87,7 +87,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			if (Loritta.config.environment == EnvironmentType.CANARY) {
-				if (event.channel.id == "359139508681310212") { // Canal de sugestões
+				if (event.channel.id == "359139508681310212" && (event.reactionEmote.name == "\uD83D\uDC4D" || event.reactionEmote.name == "\uD83D\uDC4E")) { // Canal de sugestões
 					issueMutex.withLock {
 						val alreadySent = transaction(Databases.loritta) {
 							GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0
@@ -96,12 +96,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (alreadySent)
 							return@withLock
 
-						val reactionCount = event.reaction.users.await().filter { !it.isBot }.size
+						val message = event.channel.getMessageById(event.messageId).await()
+
+						// Pegar o número de likes - dislikes
+						val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
 
 						if (reactionCount >= 5) {
-							val message = event.channel.getMessageById(event.messageId).await()
-
-							var issueTitle = message.contentDisplay
+							var issueTitle = message.contentStripped
 
 							while (issueTitle.length > 50) {
 								if (issueTitle.contains(":")) {
@@ -127,10 +128,20 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 								labels.add("✨ enhancement")
 							}
 
-							val body = """**Sugestão de `${event.member.user.name}#${event.member.user.discriminator}` (`${event.member.user.id}`)**
+							var suggestionBody = message.contentRaw
+
+							message.emotes.forEach {
+								suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
+							}
+
+							val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
+    |
+    |**Sugestão de `${message.author.name}#${message.author.discriminator}` (`${message.author.id}`)**
     |**ID da Mensagem: `${event.channel.id}-${event.messageId}`**
     |
-    |${message.contentRaw}
+    |<hr>
+    |
+    |$suggestionBody
     |
     |${message.attachments.filter { !it.isImage }.joinToString("\n", transform = { it.url })}
     |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
