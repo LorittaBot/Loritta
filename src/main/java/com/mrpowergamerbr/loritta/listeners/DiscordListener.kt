@@ -79,6 +79,82 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val issueMutex = Mutex()
 
 		private val logger = KotlinLogging.logger {}
+
+		suspend fun isSuggestionIsValid(message: Message): Boolean {
+			// Pegar o número de likes - dislikes
+			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
+			return reactionCount >= 5
+		}
+
+		fun sendSuggestionToGitHub(message: Message) {
+			var issueTitle = message.contentStripped
+
+			while (issueTitle.length > 50) {
+				if (issueTitle.contains(":")) {
+					issueTitle = issueTitle.split(":").first()
+					continue
+				}
+				if (issueTitle.contains("\n")) {
+					issueTitle = issueTitle.split("\n").first()
+					continue
+				}
+
+				issueTitle = issueTitle.substringIfNeeded(0 until 77)
+				break
+			}
+
+			val labels = mutableListOf<String>()
+
+			if (message.contentRaw.contains("bug", true) || message.contentRaw.contains("problema", true)) {
+				labels.add("\uD83D\uDC1E bug")
+			}
+
+			if (message.contentRaw.contains("adicionar", true) || message.contentRaw.contains("colocar", true) || message.contentRaw.contains("fazer", true)) {
+				labels.add("✨ enhancement")
+			}
+
+			var suggestionBody = message.contentRaw
+
+			message.emotes.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
+			}
+
+			val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
+    |
+    |**Sugestão de `${message.author.name}#${message.author.discriminator}` (`${message.author.id}`)**
+    |**ID da Mensagem: `${message.channel.id}-${message.idLong}`**
+    |
+    |<hr>
+    |
+    |$suggestionBody
+    |
+    |${message.attachments.filter { !it.isImage }.joinToString("\n", transform = { it.url })}
+    |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
+""".trimMargin()
+
+			val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
+					.header("Authorization", "token ${Loritta.config.githubKey}")
+					.accept("application/vnd.github.symmetra-preview+json")
+					.send(
+							gson.toJson(
+									jsonObject(
+											"title" to issueTitle,
+											"body" to body,
+											"labels" to labels.toJsonArray()
+									)
+							)
+					)
+
+			val json = jsonParser.parse(request.body())
+
+			val issueId = json["number"].long
+			transaction(Databases.loritta) {
+				GitHubIssues.insert {
+					it[messageId] = message.idLong
+					it[githubIssueId] = issueId
+				}
+			}
+		}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
@@ -98,77 +174,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val message = event.channel.getMessageById(event.messageId).await()
 
-						// Pegar o número de likes - dislikes
-						val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
-
-						if (reactionCount >= 5) {
-							var issueTitle = message.contentStripped
-
-							while (issueTitle.length > 50) {
-								if (issueTitle.contains(":")) {
-									issueTitle = issueTitle.split(":").first()
-									continue
-								}
-								if (issueTitle.contains("\n")) {
-									issueTitle = issueTitle.split("\n").first()
-									continue
-								}
-
-								issueTitle = issueTitle.substringIfNeeded(0 until 77)
-								break
-							}
-
-							val labels = mutableListOf<String>()
-
-							if (message.contentRaw.contains("bug", true) || message.contentRaw.contains("problema", true)) {
-								labels.add("\uD83D\uDC1E bug")
-							}
-
-							if (message.contentRaw.contains("adicionar", true) || message.contentRaw.contains("colocar", true) || message.contentRaw.contains("fazer", true)) {
-								labels.add("✨ enhancement")
-							}
-
-							var suggestionBody = message.contentRaw
-
-							message.emotes.forEach {
-								suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
-							}
-
-							val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
-    |
-    |**Sugestão de `${message.author.name}#${message.author.discriminator}` (`${message.author.id}`)**
-    |**ID da Mensagem: `${event.channel.id}-${event.messageId}`**
-    |
-    |<hr>
-    |
-    |$suggestionBody
-    |
-    |${message.attachments.filter { !it.isImage }.joinToString("\n", transform = { it.url })}
-    |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
-""".trimMargin()
-
-							val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
-									.header("Authorization", "token ${Loritta.config.githubKey}")
-									.accept("application/vnd.github.symmetra-preview+json")
-									.send(
-											gson.toJson(
-													jsonObject(
-															"title" to issueTitle,
-															"body" to body,
-															"labels" to labels.toJsonArray()
-													)
-											)
-									)
-
-							val json = jsonParser.parse(request.body())
-
-							val issueId = json["number"].long
-							transaction(Databases.loritta) {
-								GitHubIssues.insert {
-									it[messageId] = event.messageIdLong
-									it[githubIssueId] = issueId
-								}
-							}
+						if (isSuggestionIsValid(message)) {
+							sendSuggestionToGitHub(message)
 						}
 					}
 				}

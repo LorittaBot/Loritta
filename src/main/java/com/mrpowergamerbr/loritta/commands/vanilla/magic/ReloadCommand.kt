@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
+import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
@@ -17,11 +18,13 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import kotlinx.coroutines.delay
 import net.dv8tion.jda.core.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
@@ -294,6 +297,34 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Datas exportadas!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "mass_check_suggestions") {
+			val channel = context.guild.getTextChannelById("359139508681310212")
+
+			val history = channel.history
+
+			var lastCheck = -1
+			for (i in 0 until 2200) {
+				history.retrievePast(100).await()
+				if (lastCheck == history.retrievedHistory.size)
+					break
+				lastCheck = history.retrievedHistory.size
+			}
+
+			for (message in history.retrievedHistory) {
+				if (DiscordListener.isSuggestionIsValid(message)) {
+					DiscordListener.sendSuggestionToGitHub(message)
+					delay(5000)
+				}
+			}
+
+			context.reply(
+					LoriReply(
+							"Acabou! Todas as sugestões válidas foram enviadas para o GitHub!"
 					)
 			)
 			return
