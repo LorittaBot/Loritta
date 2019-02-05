@@ -343,7 +343,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 					context.reply("Enviando sugestão ${message.id}...")
 					DiscordListener.sendSuggestionToGitHub(message)
-					delay(5000)
+					delay(60_000)
 				}
 			}
 
