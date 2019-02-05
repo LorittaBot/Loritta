@@ -377,7 +377,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					DonationKeys,
 					Payments,
 					ShipEffects,
-					GitHubIssues
+					GitHubIssues,
+					ParallaxMetaStorages
 			)
 		}
 	}
