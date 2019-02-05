@@ -80,10 +80,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		private val logger = KotlinLogging.logger {}
 
-		suspend fun isSuggestionIsValid(message: Message): Boolean {
+		suspend fun isSuggestionValid(message: Message, requiredCount: Int = 5): Boolean {
 			// Pegar o número de likes - dislikes
 			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
-			return reactionCount >= 5
+			return reactionCount >= requiredCount
 		}
 
 		fun sendSuggestionToGitHub(message: Message) {
@@ -174,7 +174,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val message = event.channel.getMessageById(event.messageId).await()
 
-						if (isSuggestionIsValid(message)) {
+						if (isSuggestionValid(message)) {
 							sendSuggestionToGitHub(message)
 						}
 					}

@@ -29,7 +29,6 @@ import kotlinx.coroutines.delay
 import net.dv8tion.jda.core.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -305,7 +304,22 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "send_suggestion") {
+			val channel = context.guild.getTextChannelById("359139508681310212")
+
+			val message = channel.getMessageById(context.rawArgs[1]).await()
+
+			context.reply("Enviando sugestão ${message.id}...")
+			DiscordListener.sendSuggestionToGitHub(message)
+		}
+
 		if (arg0 == "mass_check_suggestions") {
+			val requiredCount = context.rawArgs.getOrNull(1)?.toIntOrNull() ?: 5
+
+			context.reply(
+					"Enviando sugestões com mais de $requiredCount likes totais para o GitHub..."
+			)
+
 			val channel = context.guild.getTextChannelById("359139508681310212")
 
 			val history = channel.history
@@ -319,7 +333,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 
 			for (message in history.retrievedHistory) {
-				if (DiscordListener.isSuggestionIsValid(message)) {
+				if (DiscordListener.isSuggestionValid(message)) {
 					val alreadySent = transaction(Databases.loritta) {
 						GitHubIssues.select { GitHubIssues.messageId eq message.idLong }.count() != 0
 					}
@@ -328,7 +342,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 						continue
 
 					context.reply("Enviando sugestão ${message.id}...")
-					DiscordListener.sendSuggestionToGitHub(message)
+					DiscordListener.sendSuggestionToGitHub(message, requiredCount)
 					delay(5000)
 				}
 			}
