@@ -88,6 +88,8 @@ class LorittaConfig(
 		val invisibleRecaptchaToken: String,
 		@JsonProperty("vagalume-key")
 		val vagalumeKey: String,
+		@JsonProperty("github-key")
+		val githubKey: String,
 		@JsonProperty("twitter")
 		val twitterConfig: TwitterConfig,
 		@JsonProperty("mercadopago")

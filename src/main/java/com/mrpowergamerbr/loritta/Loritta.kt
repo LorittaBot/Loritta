@@ -376,7 +376,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 					ServerConfigs,
 					DonationKeys,
 					Payments,
-					ShipEffects
+					ShipEffects,
+					GitHubIssues
 			)
 		}
 	}

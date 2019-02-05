@@ -1,6 +1,11 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.toJsonArray
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
@@ -14,16 +19,20 @@ import com.mrpowergamerbr.loritta.modules.ReactionModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -48,6 +57,8 @@ import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
@@ -65,6 +76,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						.asMap()
 		)
 
+		val issueMutex = Mutex()
+
 		private val logger = KotlinLogging.logger {}
 	}
 
@@ -73,6 +86,82 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
+			if (Loritta.config.environment == EnvironmentType.CANARY) {
+				if (event.channel.id == "359139508681310212") { // Canal de sugestões
+					issueMutex.withLock {
+						val alreadySent = transaction(Databases.loritta) {
+							GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0
+						}
+
+						if (alreadySent)
+							return@withLock
+
+						val reactionCount = event.reaction.users.await().filter { !it.isBot }.size
+
+						if (reactionCount >= 5) {
+							val message = event.channel.getMessageById(event.messageId).await()
+
+							var issueTitle = message.contentDisplay
+
+							while (issueTitle.length > 50) {
+								if (issueTitle.contains(":")) {
+									issueTitle = issueTitle.split(":").first()
+									continue
+								}
+								if (issueTitle.contains("\n")) {
+									issueTitle = issueTitle.split("\n").first()
+									continue
+								}
+
+								issueTitle = issueTitle.substringIfNeeded(0 until 47)
+								break
+							}
+
+							val labels = mutableListOf<String>()
+
+							if (message.contentRaw.contains("bug", true) || message.contentRaw.contains("problema", true)) {
+								labels.add("\uD83D\uDC1E bug")
+							}
+
+							if (message.contentRaw.contains("adicionar", true) || message.contentRaw.contains("colocar", true) || message.contentRaw.contains("fazer", true)) {
+								labels.add("✨ enhancement")
+							}
+
+							val body = """**Sugestão de `${event.member.user.name}#${event.member.user.discriminator}` (`${event.member.user.id}`)**
+    |**ID da Mensagem: `${event.channel.id}-${event.messageId}`**
+    |
+    |${message.contentRaw}
+    |
+    |${message.attachments.filter { !it.isImage }.joinToString("\n", transform = { it.url })}
+    |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
+""".trimMargin()
+
+							val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
+									.accept("application/vnd.github.symmetra-preview+json")
+									.send(
+											gson.toJson(
+													jsonObject(
+															"title" to issueTitle,
+															"body" to body,
+															"labels" to labels.toJsonArray()
+													)
+											)
+									)
+
+							val json = jsonParser.parse(request.body())
+
+							val issueId = json["number"].long
+							transaction(Databases.loritta) {
+								GitHubIssues.insert {
+									it[messageId] = event.messageIdLong
+									it[githubIssueId] = issueId
+								}
+							}
+						}
+					}
+				}
+			}
+
 			ReactionModule.onReactionAdd(event)
 		}
 	}
