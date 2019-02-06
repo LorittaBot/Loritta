@@ -63,6 +63,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
@@ -117,6 +118,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			message.emotes.forEach {
 				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
+			}
+			// encontrar links
+			val RegexPattern = Pattern.compile("(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?")
+			val RegexMatcher = RegexPattern.matcher(suggestionBody)
+			val matches = RegexMatcher.results().toArray()
+
+			// Agora vamos fazer com que imagens do imgur funcionem!
+			matches.forEach {
+				if (it.toString().contains("i.imgur")) {
+					if (!it.toString().endsWith(".gifv"))
+						suggestionBody = suggestionBody.replace(it.toString(), "<img src=\"${it.toString()}\'>")
+					else {
+						val link = it.toString().replace(".gifv", ".gif")
+						suggestionBody = suggestionBody.replace(link, "<img src\"${link}\">")
+					}
+				}
 			}
 
 			val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
