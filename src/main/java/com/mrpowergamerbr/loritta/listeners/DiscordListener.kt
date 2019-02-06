@@ -120,13 +120,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
 			}
 			message.mentionedUsers.forEach {
-				suggestionBody = suggestionBody.replace(it.asMention, "@${it.name}#${it.discriminator} (`${it.id}`)")
+				suggestionBody = suggestionBody.replace(it.asMention, "**@${it.name}#${it.discriminator}** (`${it.id}`)")
 			}
 			message.mentionedChannels.forEach {
-				suggestionBody = suggestionBody.replace(it.asMention, "#${it.name} (`${it.id}`)")
+				suggestionBody = suggestionBody.replace(it.asMention, "**#${it.name}** (`${it.id}`)")
 			}
 			message.mentionedRoles.forEach {
-				suggestionBody = suggestionBody.replace(it.asMention, "@${it.name} (`${it.id}`)")
+				suggestionBody = suggestionBody.replace(it.asMention, "**@${it.name}** (`${it.id}`)")
 			}
 			// Encontrar links na sugestão
 			val regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?".toRegex()
