@@ -7,8 +7,12 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
-import com.mrpowergamerbr.loritta.utils.counter.CounterThemeName
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import net.dv8tion.jda.core.entities.Guild
+import org.jooby.Status
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
 	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
@@ -42,9 +46,22 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 
 				config.memberCounterConfig = MemberCounterConfig(
 						topic,
-						CounterThemeName.valueOf(theme)
+						CounterThemes.valueOf(theme)
 				).apply {
 					this.padding = padding
+
+					if (theme == "CUSTOM") {
+						val emojiJsonArray = memberCounterConfig["emojis"].nullArray
+						if (emojiJsonArray == null || emojiJsonArray.size() != 10)
+							throw WebsiteAPIException(Status.UNPROCESSABLE_ENTITY,
+									WebsiteUtils.createErrorPayload(
+											LoriWebCode.UNAUTHORIZED,
+											"Emojis array is null or doesn't have 10 elements!"
+									)
+							)
+
+						this.emojis = memberCounterConfig["emojis"].array.map { it.string }
+					}
 				}
 
 				for (textChannel in guild.textChannels) {

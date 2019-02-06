@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.counter
 
 object CounterUtils {
-	fun generatePrettyCounter(count: Int, theme: CounterThemeName, padding: Int): String {
+	fun generatePrettyCounter(count: Int, theme: CounterThemes, padding: Int): String {
 		return generatePrettyCounter(count, getEmojis(theme), padding)
 	}
 
@@ -25,15 +25,7 @@ object CounterUtils {
 		return counter
 	}
 
-	fun getEmojis(theme: CounterThemeName): List<String> {
-		return when (theme) {
-			CounterThemeName.RED -> CounterThemes.RED
-			CounterThemeName.GREEN -> CounterThemes.GREEN
-			CounterThemeName.BLURPLE -> CounterThemes.BLURPLE
-			CounterThemeName.BLACK -> CounterThemes.BLACK
-			CounterThemeName.DELUXE -> CounterThemes.DELUXE
-			CounterThemeName.LORITTA -> CounterThemes.LORITTA
-			else -> CounterThemes.DEFAULT
-		}
+	fun getEmojis(theme: CounterThemes): List<String> {
+		return theme.emotes ?: throw UnsupportedOperationException("Theme ${theme.name} doesn't have emotes!")
 	}
 }
