@@ -120,18 +120,20 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
 			}
 			// encontrar links
-			val regexPattern = Pattern.compile("(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?")
-			val regexMatcher = regexPattern.matcher(suggestionBody)
-			val matches = regexMatcher.results().toArray()
+			val regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?".toRegex()
+			val regexMatch = regex.matchEntire(suggestionBody)
+			val matches = if (regexMatch != null) { regexMatch.groupValues } else { null }
 
 			// Agora vamos fazer com que imagens do imgur funcionem!
-			matches.forEach {
-				if (it.toString().contains("i.imgur")) {
-					if (!it.toString().endsWith(".gifv"))
-						suggestionBody = suggestionBody.replace(it.toString(), "<img src=\"${it.toString()}\'>")
-					else {
-						val link = it.toString().replace(".gifv", ".gif")
-						suggestionBody = suggestionBody.replace(link, "<img src\"${link}\">")
+			if (matches != null) {
+				matches.forEach {
+					if (it.contains("i.imgur")) {
+						if (!it.endsWith(".gifv"))
+							suggestionBody = suggestionBody.replace(it, "<img src=\"${it}\'>")
+						else {
+							val link = it.replace(".gifv", ".gif")
+							suggestionBody = suggestionBody.replace(link, "<img src\"${link}\">")
+						}
 					}
 				}
 			}
