@@ -119,21 +119,35 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			message.emotes.forEach {
 				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
 			}
-			// encontrar links
+			message.mentionedUsers.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "@${it.name}#${it.discriminator} (`${it.id}`)")
+			}
+			message.mentionedChannels.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "#${it.name} (`${it.id}`)")
+			}
+			message.mentionedRoles.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "@${it.name} (`${it.id}`)")
+			}
+			// Encontrar links na sugestão
 			val regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?".toRegex()
 			val regexMatch = regex.matchEntire(suggestionBody)
 			val matches = if (regexMatch != null) { regexMatch.groupValues } else { null }
 
 			// Agora vamos fazer com que imagens do imgur funcionem!
+			// Se não for um link do imgur, então o link vai ficar em markdown
 			if (matches != null) {
 				matches.forEach {
 					if (it.contains("i.imgur")) {
+						// Precisamos substituir o sufixo do link, caso seja um gif, para a imagem seja valída
 						if (!it.endsWith(".gifv"))
 							suggestionBody = suggestionBody.replace(it, "<img src=\"${it}\'>")
 						else {
 							val link = it.replace(".gifv", ".gif")
 							suggestionBody = suggestionBody.replace(link, "<img src\"${link}\">")
 						}
+					}
+					else {
+						suggestionBody = suggestionBody.replace(it, "`${it}`")
 					}
 				}
 			}
