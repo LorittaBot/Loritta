@@ -200,9 +200,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
 								.substring(serverConfig.commandPrefix.length)
 
-						event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
-							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
-						}
+						val list = mutableListOf(
+								LoriReply(
+										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+										"\uD83E\uDD37"
+								)
+						)
 
 						val allCommandLabels = mutableListOf<String>()
 
@@ -228,12 +231,17 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 
 						if (nearestCommand != null && 6 > diff) {
-							event.channel.sendMessage(
+							list.add(
 									LoriReply(
 											prefix = "<:lori_hm:481516015767781376>",
-											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand]
-									).build(event.author)
-							).queue()
+											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+											mentionUser = false
+									)
+							)
+						}
+
+						event.channel.sendMessage(list.joinToString("\n") { it.build(event.author) }).queue {
+							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}
 				}
