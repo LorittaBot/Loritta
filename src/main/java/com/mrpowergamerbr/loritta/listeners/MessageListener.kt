@@ -221,7 +221,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						for (label in allCommandLabels) {
 							val _diff = LevenshteinDistance.getDefaultInstance().apply(command, label)
 
-							if (_diff > diff) {
+							if (diff > _diff) {
 								nearestCommand = label
 								diff = _diff
 							}
