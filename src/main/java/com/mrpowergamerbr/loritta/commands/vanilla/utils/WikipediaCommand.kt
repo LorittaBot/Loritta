@@ -1,20 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.nullObj
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
@@ -84,40 +77,4 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 			context.explain()
 		}
 	}
-}
-
-fun main(args: Array<String>) {
-	val query = "Shantae"
-
-	val body = HttpRequest.get("https://en.wikipedia.org/w/api.php?action=query&generator=search&format=json&gsrwhat=text&gsrlimit=2&prop=categories|extracts|pageimages&exintro=&explaintext=&cllimit=max&piprop=original&gsrsearch=${URLEncoder.encode(query, "UTF-8")}")
-			.body()
-
-	val wikipedia = jsonParser.parse(body).obj
-	val queryResponse = wikipedia["query"].nullObj
-
-	if (queryResponse == null) {
-		// Nada encontrado
-		return
-	}
-
-	val pages = queryResponse["pages"].obj
-
-	var pageResponse: JsonObject? = null
-
-	for ((s, jsonElement) in pages.entrySet()) {
-		val categories = jsonElement["categories"].array
-		val isDisambiguation = categories.filter { it["title"].string == "Category:Disambiguation pages" }.isNotEmpty()
-
-		if (!isDisambiguation) {
-			pageResponse = jsonElement.obj
-		}
-	}
-
-	if (pageResponse == null) {
-		// Nada encontrado
-		return
-	}
-
-	val originalImage = pageResponse["original"].nullObj
-	val sourceImage = originalImage?.get("source").nullString
 }

@@ -330,22 +330,3 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				.build())
 	}
 }
-
-fun main(args: Array<String>) {
-	val owo = Jsoup.connect("https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg")
-			.get()
-
-	val titles = owo.getElementsByAttributeValue("data-event-action", "title")
-
-	titles.forEach {
-		val title = it.text()
-
-		val url = it.attr("href")
-		val owo2 = Jsoup.connect("https://reddit.com/" + url)
-				.get()
-
-		val resp = owo2.getElementsByClass("entry")[0].getElementsByClass("md").text()
-
-		println("\"$title\\n\\n${resp.replace("\"", "\\\"")}\",")
-	}
-}
