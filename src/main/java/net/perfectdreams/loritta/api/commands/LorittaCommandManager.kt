@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
+import org.apache.commons.lang3.StringUtils
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -239,6 +240,28 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		}
 
 		// println("Vàlido? $valid $rawArguments[0]")
+
+		val allCommandLabels = mutableListOf<String>()
+		commands.forEach {
+			allCommandLabels.addAll(it.labels)
+		}
+
+		for (label in allCommandLabels) {
+			if (rawArguments[0] != label) {
+				val diff = StringUtils.getLevenshteinDistance(rawArguments[0], label)
+
+				if (diff < 4) {
+					ev.channel.sendMessage(
+							LoriReply(
+									prefix = "<:lori_hm:481516015767781376>",
+									message = locale["commands.didYouMeanCommand", prefix + label]
+							).build(ev.author)
+					).queue()
+
+					return false
+				}
+			}
+		}
 
 		if (valid) {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)

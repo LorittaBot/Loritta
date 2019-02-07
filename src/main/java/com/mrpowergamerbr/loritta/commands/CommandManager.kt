@@ -31,6 +31,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 class CommandManager {
@@ -337,6 +338,28 @@ class CommandManager {
 			// by mention
 			valid = labels.any { rawArguments[1].equals(it, true) }
 			byMention = true
+		}
+
+		val allCommandLabels = commandMap.map { it.label }.toMutableList()
+		commandMap.forEach {
+			allCommandLabels.addAll(it.aliases)
+		}
+
+		for (label in allCommandLabels) {
+			if (rawArguments[0] != label) {
+				val diff = StringUtils.getLevenshteinDistance(rawArguments[0], label)
+
+				if (diff < 4) {
+					ev.channel.sendMessage(
+							LoriReply(
+									prefix = "<:lori_hm:481516015767781376>",
+									message = locale["commands.didYouMeanCommand", prefix + label]
+							).build(ev.author)
+					).queue()
+
+					return false
+				}
+			}
 		}
 
 		if (valid) {
