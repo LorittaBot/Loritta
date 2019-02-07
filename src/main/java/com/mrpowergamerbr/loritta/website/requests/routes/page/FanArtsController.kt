@@ -59,7 +59,7 @@ class FanArtsController {
 			)
 		}
 
-		variables["artists_json"] = gson.toJsonTree(artists)
+		variables["artists_json"] = gson.toJson(artists)
 
 		res.send(evaluate("fan_arts.html", variables))
 	}

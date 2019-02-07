@@ -7,7 +7,6 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
-import com.mitchellbosecke.pebble.template.PebbleTemplate
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
@@ -197,7 +196,6 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
 		private val logger = KotlinLogging.logger {}
-		val templateCache = Caffeine.newBuilder().build<String, PebbleTemplate>().asMap()
 		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
 		const val API_V1 = "/api/v1/"
 
@@ -244,8 +242,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
 	val writer = StringWriter()
-	// Para evitar hits ao disco, vamos fazer cache dos templates do Pebble
-	val template = LorittaWebsite.templateCache.getOrPut(file) { LorittaWebsite.ENGINE.getTemplate(file) }
+	val template = LorittaWebsite.ENGINE.getTemplate(file)
 	template.evaluate(writer, variables)
 	return writer.toString()
 }
