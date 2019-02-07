@@ -128,7 +128,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				suggestionBody = suggestionBody.replace(it.asMention, "`@${it.name}` (`${it.id}`)")
 			}
 			// Encontrar links na sugestão
-			val regex = Constants.URL_PATTERN.toRegex()
+			val regex = Constants.HTTP_URL_PATTERN.toRegex()
 			val regexMatch = regex.findAll(suggestionBody)
 
 			// Agora vamos fazer com que imagens do imgur (e imagens do discord em forma de link) funcionem!
