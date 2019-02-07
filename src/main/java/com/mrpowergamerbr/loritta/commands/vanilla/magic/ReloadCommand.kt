@@ -210,7 +210,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 					)
 			)
 			LorittaWebsite.kotlinTemplateCache.clear()
-			LorittaWebsite.templateCache.clear()
 			LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			return
 		}
