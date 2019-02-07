@@ -8,11 +8,9 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.toJsonArray
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
-import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.ReactionModule
@@ -22,7 +20,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -422,16 +419,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
-				}
-
-				val profile = transaction(Databases.loritta) {
-					Profile.find { (Profiles.id eq event.member.user.idLong) }.firstOrNull()
-				}
-
-				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
-				val lastMessageSentDiff = System.currentTimeMillis() - (profile?.lastMessageSentAt ?: 0)
-				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || lastMessageSentDiff >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
-					AdminUtils.sendSuspectInfo(channel, event.user, profile)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
