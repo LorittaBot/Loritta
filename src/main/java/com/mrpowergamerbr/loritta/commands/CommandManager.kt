@@ -340,28 +340,6 @@ class CommandManager {
 			byMention = true
 		}
 
-		val allCommandLabels = commandMap.map { it.label }.toMutableList()
-		commandMap.forEach {
-			allCommandLabels.addAll(it.aliases)
-		}
-
-		for (label in allCommandLabels) {
-			if (rawArguments[0] != label) {
-				val diff = StringUtils.getLevenshteinDistance(rawArguments[0], label)
-
-				if (diff < 4) {
-					ev.channel.sendMessage(
-							LoriReply(
-									prefix = "<:lori_hm:481516015767781376>",
-									message = locale["commands.didYouMeanCommand", prefix + label]
-							).build(ev.author)
-					).queue()
-
-					return false
-				}
-			}
-		}
-
 		if (valid) {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
