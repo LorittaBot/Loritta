@@ -144,9 +144,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 							suggestionBody = suggestionBody.replace(link, "![$link]($link)")
 						}
 					}
-					else if (it.value.contains("cdn.discordapp.com"))
+					else if (it.value.contains("cdn.discordapp.com") && (!it.value.contains("/emojis/")))
 						suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
 					else
+						if (!it.value.contains("cdn.discordapp.com/emojis/"))
 						suggestionBody = suggestionBody.replace(it.value, "`${it.value}`")
 				}
 			}
