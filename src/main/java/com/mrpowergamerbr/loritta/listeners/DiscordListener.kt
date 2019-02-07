@@ -63,7 +63,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
