@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.core.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -21,7 +20,9 @@ import kotlin.collections.set
 
 @Path("/:localeId/fanarts")
 class FanArtsController {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	@GET
 	@LoriRequiresVariables(true)
@@ -35,14 +36,14 @@ class FanArtsController {
 
 		for (fanArt in fanArts) {
 			val user = if (fanArt.artistId != null) {
-				users.getOrPut(fanArt.artistId) { runBlocking { lorittaShards.retrieveUserById(fanArt.artistId) }}
+				users.getOrPut(fanArt.artistId) { lorittaShards.getUserById(fanArt.artistId) }
 			} else {
 				null
 			}
 
-			val artist = artists.firstOrNull { it.id == fanArt.artistId } ?: run {
+			val artist = artists.firstOrNull { it.id == (fanArt.artistId ?: fanArt.fancyName) } ?: run {
 				val artist = FanArtArtist(
-						fanArt.artistId,
+						fanArt.artistId ?: fanArt.fancyName ?: user?.id,
 						fanArt.fancyName ?: user?.name ?: "???",
 						user?.effectiveAvatarUrl ?: "https://loritta.website/assets/img/unknown.png",
 						loritta.fanArtConfig.artists[fanArt.artistId]?.socialNetworks ?: listOf(),

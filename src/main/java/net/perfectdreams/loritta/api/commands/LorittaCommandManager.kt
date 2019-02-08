@@ -442,7 +442,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					context.reply(
 							LoriReply(
 									legacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
-									"<:lori_owo:432530033316462593>"
+									Emotes.LORI_OWO
 							)
 					)
 				}
