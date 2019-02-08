@@ -28,8 +28,7 @@ class DesgostoCommand : AbstractCommand("desgosto", category = CommandCategory.I
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
-		return arguments {
-			argument(ArgumentType.USER) {}
+	  return arguments {
 			argument(ArgumentType.IMAGE) {}
 		}
 	}
@@ -56,5 +55,4 @@ class DesgostoCommand : AbstractCommand("desgosto", category = CommandCategory.I
 		context.sendFile(base, "desgosto.png", context.getAsMention(true))
 	}
 }
-
 
