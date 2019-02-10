@@ -494,22 +494,6 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 						}
 					}
 
-					val inviteBlockerConfig = context.config.inviteBlockerConfig
-					val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-					if (checkInviteLinks) {
-						val whitelisted = mutableListOf<String>()
-						whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-						InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-							whitelisted.add(it)
-						}
-
-						if (MiscUtils.hasInvite(output, whitelisted)) {
-							return@onReactionAddByAuthor
-						}
-					}
-
 					context.sendMessage("${context.getAsMention(true)} $output")
 				}
 
