@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -197,7 +198,49 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-						val message = event.channel.sendMessage("\uD83E\uDD37 **|** ${event.author.asMention} ${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}").queue {
+								.substring(serverConfig.commandPrefix.length)
+
+						val list = mutableListOf(
+								LoriReply(
+										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+										"\uD83E\uDD37"
+								)
+						)
+
+						val allCommandLabels = mutableListOf<String>()
+
+						loritta.commandManager.commands.forEach {
+							allCommandLabels.addAll(it.labels)
+						}
+
+						loritta.legacyCommandManager.commandMap.forEach {
+							allCommandLabels.add(it.label)
+							allCommandLabels.addAll(it.aliases)
+						}
+
+						var diff = 999
+						var nearestCommand: String? = null
+
+						for (label in allCommandLabels) {
+							val _diff = LevenshteinDistance.getDefaultInstance().apply(command, label)
+
+							if (diff > _diff) {
+								nearestCommand = label
+								diff = _diff
+							}
+						}
+
+						if (nearestCommand != null && 6 > diff) {
+							list.add(
+									LoriReply(
+											prefix = "<:lori_hm:481516015767781376>",
+											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+											mentionUser = false
+									)
+							)
+						}
+
+						event.channel.sendMessage(list.joinToString("\n") { it.build(event.author) }).queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}

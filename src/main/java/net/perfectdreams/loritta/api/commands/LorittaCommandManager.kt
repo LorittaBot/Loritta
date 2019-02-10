@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
+import org.apache.commons.lang3.StringUtils
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -441,7 +442,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					context.reply(
 							LoriReply(
 									legacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
-									"<:lori_owo:432530033316462593>"
+									Emotes.LORI_OWO
 							)
 					)
 				}

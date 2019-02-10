@@ -41,10 +41,16 @@ internal class ParallaxTask(var graalContext: Context, var javaScript: String, v
 		}
 		t.start()
 
-		val value = graalContext.eval("js", javaScript)
-		value.execute(context)
+		try {
+			val value = graalContext.eval("js", javaScript)
+			value.execute(context)
 
-		running = false
+			running = false
+		} catch (e: Exception) {
+			e.printStackTrace()
+			running = false
+			graalContext.close(true)
+		}
 		return null
 	}
 }

@@ -38,6 +38,8 @@ class LorittaConfig(
 		val websiteApiKeys: List<AuthenticationKey>,
 		@JsonProperty("owner-id")
 		val ownerId: String,
+		@JsonProperty("sub-owner-ids")
+		val subOwnerIds: List<String>,
 		@JsonProperty("website-url")
 		val websiteUrl: String,
 		@JsonProperty("website-port")
@@ -84,10 +86,10 @@ class LorittaConfig(
 		val recaptchaToken: String,
 		@JsonProperty("invisible-recaptcha-token")
 		val invisibleRecaptchaToken: String,
-		@JsonProperty("pomf-space-token")
-		val pomfSpaceToken: String,
 		@JsonProperty("vagalume-key")
 		val vagalumeKey: String,
+		@JsonProperty("github-key")
+		val githubKey: String,
 		@JsonProperty("twitter")
 		val twitterConfig: TwitterConfig,
 		@JsonProperty("mercadopago")

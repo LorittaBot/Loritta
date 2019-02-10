@@ -1,29 +1,35 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.toJsonArray
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
-import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.ReactionModule
 import com.mrpowergamerbr.loritta.modules.StarboardModule
 import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
@@ -48,6 +54,8 @@ import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import java.util.*
@@ -65,7 +73,118 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						.asMap()
 		)
 
+		val issueMutex = Mutex()
+
 		private val logger = KotlinLogging.logger {}
+
+		suspend fun isSuggestionValid(message: Message, requiredCount: Int = 5): Boolean {
+			// Pegar o número de likes - dislikes
+			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
+			return reactionCount >= requiredCount
+		}
+
+		fun sendSuggestionToGitHub(message: Message) {
+			var issueTitle = message.contentStripped
+
+			while (issueTitle.length > 50) {
+				if (issueTitle.contains(":")) {
+					issueTitle = issueTitle.split(":").first()
+					continue
+				}
+				if (issueTitle.contains("\n")) {
+					issueTitle = issueTitle.split("\n").first()
+					continue
+				}
+
+				issueTitle = issueTitle.substringIfNeeded(0 until 77)
+				break
+			}
+
+			val labels = mutableListOf<String>()
+
+			if (message.contentRaw.contains("bug", true) || message.contentRaw.contains("problema", true)) {
+				labels.add("\uD83D\uDC1E bug")
+			}
+
+			if (message.contentRaw.contains("adicionar", true) || message.contentRaw.contains("colocar", true) || message.contentRaw.contains("fazer", true)) {
+				labels.add("✨ enhancement")
+			}
+
+			var suggestionBody = message.contentRaw
+
+			message.emotes.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "<img src=\"${it.imageUrl}\" width=\"16\">")
+			}
+			message.mentionedUsers.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "`@${it.name}#${it.discriminator}` (`${it.id}`)")
+			}
+			message.mentionedChannels.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "`#${it.name}` (`${it.id}`)")
+			}
+			message.mentionedRoles.forEach {
+				suggestionBody = suggestionBody.replace(it.asMention, "`@${it.name}` (`${it.id}`)")
+			}
+			// Encontrar links na sugestão
+			val regex = Constants.HTTP_URL_PATTERN.toRegex()
+			val regexMatch = regex.findAll(suggestionBody)
+
+			// Agora vamos fazer com que imagens do imgur (e imagens do discord em forma de link) funcionem!
+			// Se não for um link do imgur e imagem do discord em forma de link, então o link vai ficar em markdown
+			if (regexMatch != null) {
+				regexMatch.forEach {
+					if (it.value.contains("i.imgur")) {
+						// Precisamos substituir o sufixo do link, caso seja um gif, para a imagem seja valída
+						if (!it.value.endsWith(".gifv"))
+							suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
+						else {
+							val link = it.value.replace(".gifv", ".gif")
+							suggestionBody = suggestionBody.replace(link, "![$link]($link)")
+						}
+					}
+					else if (it.value.contains("cdn.discordapp.com") && (!it.value.contains("/emojis/")))
+						suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
+					else
+						if (!it.value.contains("cdn.discordapp.com/emojis/"))
+						suggestionBody = suggestionBody.replace(it.value, "`${it.value}`")
+				}
+			}
+
+			val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
+    |
+    |**Sugestão de `${message.author.name}#${message.author.discriminator}` (`${message.author.id}`)**
+    |**ID da Mensagem: `${message.channel.id}-${message.idLong}`**
+    |
+    |<hr>
+    |
+    |$suggestionBody
+    |
+    |${message.attachments.filter { !it.isImage }.joinToString("\n", transform = { it.url })}
+    |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
+""".trimMargin()
+
+			val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
+					.header("Authorization", "token ${Loritta.config.githubKey}")
+					.accept("application/vnd.github.symmetra-preview+json")
+					.send(
+							gson.toJson(
+									jsonObject(
+											"title" to issueTitle,
+											"body" to body,
+											"labels" to labels.toJsonArray()
+									)
+							)
+					)
+
+			val json = jsonParser.parse(request.body())
+
+			val issueId = json["number"].long
+			transaction(Databases.loritta) {
+				GitHubIssues.insert {
+					it[messageId] = message.idLong
+					it[githubIssueId] = issueId
+				}
+			}
+		}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
@@ -73,6 +192,25 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
+			if (Loritta.config.environment == EnvironmentType.CANARY) {
+				if (event.channel.id == "359139508681310212" && (event.reactionEmote.name == "\uD83D\uDC4D" || event.reactionEmote.name == "\uD83D\uDC4E")) { // Canal de sugestões
+					issueMutex.withLock {
+						val alreadySent = transaction(Databases.loritta) {
+							GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0
+						}
+
+						if (alreadySent)
+							return@withLock
+
+						val message = event.channel.getMessageById(event.messageId).await()
+
+						if (isSuggestionValid(message)) {
+							sendSuggestionToGitHub(message)
+						}
+					}
+				}
+			}
+
 			ReactionModule.onReactionAdd(event)
 		}
 	}
@@ -281,16 +419,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
-				}
-
-				val profile = transaction(Databases.loritta) {
-					Profile.find { (Profiles.id eq event.member.user.idLong) }.firstOrNull()
-				}
-
-				val channel = lorittaShards.getTextChannelById(Constants.SUSPECTS_CHANNEL)
-				val lastMessageSentDiff = System.currentTimeMillis() - (profile?.lastMessageSentAt ?: 0)
-				if (!event.user.isBot && channel != null && (profile == null || (profile.lastMessageSentAt == 0L || lastMessageSentDiff >= 2_592_000_000)) && lorittaShards.getMutualGuilds(event.user).size >= 10) {
-					AdminUtils.sendSuspectInfo(channel, event.user, profile)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)

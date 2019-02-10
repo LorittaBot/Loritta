@@ -13,12 +13,6 @@ infix fun Double.percentage(val2: Double): Double {
 	return getPercentage(this, val2)
 }
 
-fun main(args: Array<String>) {
-	println(MathUtils.convertToExtended("5k"))
-	println(MathUtils.convertToExtended("2.5k"))
-	println(MathUtils.convertToExtended("1kk500k"))
-}
-
 object MathUtils {
 	fun convertToExtended(input: String): Double? {
 		var switch = false

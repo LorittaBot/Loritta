@@ -125,6 +125,7 @@ class CommandManager {
 		commandMap.add(DiscordBotListCommand())
 		commandMap.add(ActivateKeyCommand())
 		commandMap.add(VotarCommand())
+		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
@@ -539,7 +540,7 @@ class CommandManager {
 					context.reply(
 							LoriReply(
 									locale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
-									"<:lori_owo:432530033316462593>"
+									Emotes.LORI_OWO
 							)
 					)
 				}

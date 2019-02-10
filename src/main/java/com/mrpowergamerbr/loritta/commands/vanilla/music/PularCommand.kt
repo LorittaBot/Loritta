@@ -1,13 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
-class PularCommand : AbstractCommand("skip", listOf("pular"), category = CommandCategory.MUSIC, lorittaPermissions = listOf(LorittaPermission.DJ)) {
+class PularCommand : AbstractCommand("skip", listOf("pular"), category = CommandCategory.MUSIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["PULAR_DESCRIPTION"]
 	}
@@ -20,7 +23,34 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+		val channel = context.guild.selfMember.voiceState.channel
+
+		if (channel != null) {
+			// Só tem uma pessoa escutando no canal de música?
+			val userCount = channel.members.count { !it.user.isBot }
+			// Se tiver, vamos deixar ela pular a música, afinal, só tem ela!
+
+			if (userCount > 1) { // Mas se tiver mais de uma, vamos verificar se ela tem permissão de DJ!
+				val missingPermissions = listOf(LorittaPermission.DJ).filterNot { context.lorittaUser.hasPermission(it) }
+
+				if (missingPermissions.isNotEmpty()) {
+					// oh no
+					val required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
+					var message = locale["LORIPERMISSION_MissingPermissions", required]
+
+					if (context.handle.hasPermission(Permission.ADMINISTRATOR) || context.handle.hasPermission(Permission.MANAGE_SERVER)) {
+						message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.websiteUrl]}"
+					}
+					context.reply(
+							message,
+							Constants.ERROR
+					)
+					return
+				}
+			}
+		}
+
 		loritta.audioManager.skipTrack(context)
 	}
 }

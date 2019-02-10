@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Guild
 class ParallaxGuild(private val guild: Guild) {
 	// TODO: afkChannel
 	val afkChannelID get() = guild.afkChannel.id
+	val database = ParallaxDatabase(guild)
 
 	@JvmOverloads
 	fun getRolesByName(name: String, ignoreCase: Boolean = false): List<ParallaxRole> {

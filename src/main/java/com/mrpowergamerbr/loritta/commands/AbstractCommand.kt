@@ -100,6 +100,15 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	}
 
 	/**
+	 * Retorna um valor boolean para verificar se o usuário pode rodar o comando
+	 *
+	 * @return um valor boolean para verificar se o usuário pode rodar o comando
+	 */
+	open fun canHandle(context: CommandContext): Boolean {
+		return true
+	}
+
+	/**
 	 * What the command should do when it is executed
 	 *
 	 * @param context the context of the command

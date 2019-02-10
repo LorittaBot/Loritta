@@ -98,10 +98,12 @@ class OrkutProfileCreator : ProfileCreator {
 				startGuildY += 113 + 26
 			}
 
-			val icon = LorittaUtils.downloadImage(guild.iconUrl)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
-			graphics.drawImage(icon, startGuildX, startGuildY, null)
-			graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
-			startGuildX += 113 + 12
+			if (guild.iconUrl != null) {
+				val icon = LorittaUtils.downloadImage(guild.iconUrl)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
+				graphics.drawImage(icon, startGuildX, startGuildY, null)
+				graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
+				startGuildX += 113 + 12
+			}
 		}
 
 		graphics.color = Color(51, 51, 93)
