@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
@@ -258,7 +259,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				mutedRole = mutedRoles[0]
 			}
 
-			val couldntEditChannels = mutableListOf<TextChannel>()
+			val couldntEditChannels = mutableListOf<Channel>()
 
 			// E agora vamos pegar todos os canais de texto do servidor
 			for (textChannel in context.guild.textChannels) {
@@ -277,6 +278,26 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 				} else {
 					couldntEditChannels.add(textChannel)
+				}
+			}
+
+			// E agora os canais de voz
+			for (voiceChannel in context.guild.voiceChannels) {
+				if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
+					val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
+					if (permissionOverride == null) { // Se é null...
+						voiceChannel.createPermissionOverride(mutedRole)
+								.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+								.queue()
+					} else {
+						if (permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
+							permissionOverride.manager
+									.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+									.queue()
+						}
+					}
+				} else {
+					couldntEditChannels.add(voiceChannel)
 				}
 			}
 
