@@ -179,10 +179,9 @@ class InviteLinkModule : MessageReceivedModule {
 						whitelisted.add(it)
 					}
 				}
-			} else {
-				cachedInviteLinks[guild.id]?.forEach {
-					whitelisted.add(it)
-				}
+			}
+			cachedInviteLinks[guild.id]?.forEach {
+				whitelisted.add(it)
 			}
 		}
 
