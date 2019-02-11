@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import org.jooby.Status
 import org.json.XML
+import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
@@ -31,7 +32,10 @@ object MiscUtils {
 		return getInviteId(url) != null
 	}
 
-	fun getInviteId(url: String): String? {
+	fun getInviteId(url: String, count: Int = 0): String? {
+		if (count == 5) // Stuck in a loop
+			return null
+
 		try {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
 			var newUrl = url.removePrefix(".").removeSuffix(".")
@@ -51,6 +55,26 @@ object MiscUtils {
 			if (matcher.find()) {
 				return matcher.group(3)
 			}
+
+			// Se não encontrar nenhum invite, vamos tentar parsear a página para pegar http redirects no <head> da página
+			val parser = Jsoup.parse(httpRequest.body())
+			val htmlRedirects = parser.getElementsByTag("meta").filter { it.hasAttr("http-equiv") && it.hasAttr("content") }
+
+			htmlRedirects.forEach {
+				val content = it.attr("content") // O formato é algo assim: 3;url=https://discordapp.com/invite/xyzabc
+
+				val urlEqualsIndex = content.indexOf("url=")
+
+				if (urlEqualsIndex == -1) // Caso não tenha um "url=", vamos ignorar
+					return@forEach
+
+				val redirectUrl = content.substring(urlEqualsIndex + "url=".length)
+
+				val externalInviteId = getInviteId(redirectUrl, count + 1)
+				if (externalInviteId != null)
+					return externalInviteId
+			}
+
 			return null
 		} catch (e: HttpRequest.HttpRequestException) {
 			return null
