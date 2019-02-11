@@ -142,22 +142,6 @@ object MiscUtils {
 		list.add("sparklmail.com")
 		list.add("l8oaypr.com")
 
-		// mailto.space
-		try {
-			val body = HttpRequest.get("https://mailto.space/get/inbox/c785304469fbf265b6c71965f194e653e4c4951c/wbydvhbby")
-					.userAgent(Constants.USER_AGENT)
-					.body()
-
-			val element = jsonParser.parse(body)
-
-			val array = element.array
-			val domainsArray = array[1].array
-
-			list.addAll(domainsArray.map { it.string })
-		} catch (e: Exception) {
-			logger.error("Erro ao tentar pegar email atual do mailto.space!", e)
-		}
-
 		val matches = list.any { it == domain[1] }
 
 		if (matches)
