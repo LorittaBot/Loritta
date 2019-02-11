@@ -7,5 +7,8 @@ enum class SocialNetwork(val fancyName: String) {
 	STEAM("Steam"),
 	YOUTUBE("YouTube"),
 	WEBSITE("Website"),
-	AMINO("Amino")
+	AMINO("Amino"),
+	FUR_AFFINITY("Fur Affinity"),
+	TOYHOUSE("Toyhouse"),
+	FACEBOOK("Facebook")
 }
