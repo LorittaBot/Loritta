@@ -28,10 +28,10 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 
 		if (channel != null) {
 			// Só tem uma pessoa escutando no canal de música?
-			val userCount = channel.members.count { !it.user.isBot }
+			val usersInChannel = channel.members.filter { !it.user.isBot }
 			// Se tiver, vamos deixar ela pular a música, afinal, só tem ela!
 
-			if (userCount > 1) { // Mas se tiver mais de uma, vamos verificar se ela tem permissão de DJ!
+			if (usersInChannel.size > 1 || (usersInChannel.size == 1 && usersInChannel.first().user.idLong != context.userHandle.idLong)) { // Mas se tiver mais de uma, vamos verificar se ela tem permissão de DJ!
 				val missingPermissions = listOf(LorittaPermission.DJ).filterNot { context.lorittaUser.hasPermission(it) }
 
 				if (missingPermissions.isNotEmpty()) {
