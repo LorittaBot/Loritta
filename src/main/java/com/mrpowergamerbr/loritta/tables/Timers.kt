@@ -12,6 +12,6 @@ object Timers : LongIdTable() {
 	val startsAt = long("starts_at")
 	val repeatCount = integer("repeat_count").nullable()
 	val repeatDelay = long("repeat_delay")
-	val activeOnDays = array<DayOfWeek>("active_on_days", EnumerationColumnType(DayOfWeek::class.java))
+	val activeOnDays = array<DayOfWeek>("active_on_days", EnumerationColumnType(DayOfWeek::class))
 	val effects = array<String>("effects", TextColumnType())
 }

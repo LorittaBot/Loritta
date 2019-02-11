@@ -136,7 +136,7 @@ class UserReputationController {
 
 		if (chance(randomChance)) { // Lori é fofis e retribu reputações :eu_te_moido:
 			GlobalScope.launch(loritta.coroutineDispatcher) {
-				delay(Loritta.RANDOM.nextInt(8000, 15001)) // Delay aleatório para ficar mais "real"
+				delay(Loritta.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
 				giveReputation(
 						Loritta.config.clientId.toLong(),
