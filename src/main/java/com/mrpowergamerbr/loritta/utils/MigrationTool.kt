@@ -1,54 +1,33 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
-import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.utils.payments.PaymentGateway
-import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.transactions.transaction
+import com.mrpowergamerbr.loritta.youtube.YouTubeWebhook
+import java.io.File
 
 class MigrationTool(val config: LorittaConfig) {
-    fun migrateDonators() {
+    fun migrateYouTubeWebhooks() {
         val loritta = Loritta(config)
         loritta.initMongo()
         loritta.initPostgreSql()
 
-        println("Migrando doadores...")
+        println("Migrando YouTube Webhooks...")
 
-        transaction(Databases.loritta) {
-            val profiles = Profile.find {
-                Profiles.isDonator eq true
-            }
+        val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
+        val youtubeWebhooks = gson.fromJson<List<OldYouTubeWebhook>>(youtubeWebhookFile.readText())
 
-            profiles.forEach {
-                if (it.isActiveDonator()) {
-                    Payment.new {
-                        this.money = (it.donatorPaid + 10).toBigDecimal()
-                        this.createdAt = it.donatedAt
-                        this.paidAt = it.donatedAt
-                        this.expiresAt = it.donatedAt + Constants.DONATION_ACTIVE_MILLIS
-                        this.gateway = PaymentGateway.OTHER
-                        this.userId = it.userId
-                        this.reason = PaymentReason.DONATION
-                    }
+        val newYouTubeWebhooks = mutableMapOf<String, YouTubeWebhook>()
 
-                    if (it.donatorPaid + 10 >= 19.99) {
-                        DonationKey.new {
-                            this.userId = it.userId
-                            this.value = (it.donatorPaid + 10)
-                            this.expiresAt = it.donatedAt + 2_764_800_000
-                        }
-                    }
-                }
-            }
+        youtubeWebhooks.forEach {
+            newYouTubeWebhooks[it.channelId] = YouTubeWebhook(it.createdAt, it.lease)
         }
 
+        youtubeWebhookFile.renameTo(File(Loritta.FOLDER, "youtube_webhook.pre_migration"))
+        youtubeWebhookFile.writeText(gson.toJson(newYouTubeWebhooks))
 
-        println("Doadores migrados com sucesso!")
+        println("Webhooks migradas com sucesso!")
     }
 
+    class OldYouTubeWebhook(val channelId: String, val createdAt: Long, val lease: Int)
 }

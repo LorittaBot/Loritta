@@ -24,7 +24,8 @@ class CreateYouTubeWebhooksTask : Runnable {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	var youtubeWebhooks: MutableList<YouTubeWebhook>? = null
+	var youtubeWebhooks = mutableMapOf<String, YouTubeWebhook>()
+	var fileLoaded = false
 
 	override fun run() {
 		try {
@@ -69,10 +70,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 			}
 
 			val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
-			if (youtubeWebhooks == null && youtubeWebhookFile.exists()) {
+
+			if (!fileLoaded && youtubeWebhookFile.exists()) {
+				fileLoaded = true
 				youtubeWebhooks = gson.fromJson(youtubeWebhookFile.readText())
-			} else if (youtubeWebhooks == null) {
-				youtubeWebhooks = mutableListOf()
 			}
 
 			val notCreatedYetChannels = mutableListOf<String>()
@@ -80,7 +81,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			logger.info { "Existem ${channelIds.size} canais no YouTube que eu irei verificar! Atualmente existem ${youtubeWebhooks!!.size} webhooks criadas!" }
 
 			for (channelId in channelIds) {
-				val webhook = youtubeWebhooks!!.firstOrNull { it.channelId == channelId }
+				val webhook = youtubeWebhooks[channelId]
 
 				if (webhook == null) {
 					notCreatedYetChannels.add(channelId)
@@ -89,7 +90,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
 					logger.debug { "Webhook de ${channelId} expirou! Nós iremos recriar ela..." }
-					youtubeWebhooks!!.remove(webhook)
+					youtubeWebhooks.remove(channelId)
 					notCreatedYetChannels.add(channelId)
 				}
 			}
@@ -134,10 +135,12 @@ class CreateYouTubeWebhooksTask : Runnable {
 						}
 
 						logger.debug { "Webhook de $channelId criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!" }
-						return@async YouTubeWebhook(
+						return@async Pair(
 								channelId,
-								System.currentTimeMillis(),
-								432000
+								YouTubeWebhook(
+										System.currentTimeMillis(),
+										432000
+								)
 						)
 					} catch (e: Exception) {
 						logger.error("Erro ao criar subscription no YouTube", e)
@@ -148,10 +151,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			runBlocking {
 				tasks.onEach {
-					val webhook = it.await()
+					val pair = it.await()
 
-					if (webhook != null) {
-						youtubeWebhooks!!.add(webhook)
+					if (pair != null) {
+						youtubeWebhooks[pair.first] = pair.second
 					}
 				}
 
