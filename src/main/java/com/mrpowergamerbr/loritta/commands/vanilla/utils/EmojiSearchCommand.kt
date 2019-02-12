@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiInfoCommand
 import com.mrpowergamerbr.loritta.utils.*
@@ -12,6 +11,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Emote
 import net.dv8tion.jda.core.entities.Icon
 import net.dv8tion.jda.core.entities.Message
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 
@@ -51,10 +51,10 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 
 			val queriedEmotes = lorittaShards.getGuilds()
 					.flatMap { it ->
-						it.emotes.filter {
+						it.emoteCache.filter {
 							it.name.contains(query, true)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
 						}
-					}.sortedByDescending { it.guild.members.size }
+					}.sortedByDescending { it.guild.memberCache.size() }
 
 			sendQueriedEmbed(context, queriedEmotes, query, 0)
 		} else {
