@@ -239,10 +239,6 @@ class APILoriDailyRewardView : NoVarsView() {
 			dailyPayout = (dailyPayout * multipliedBy!!).toInt()
 		}
 
-		payload["api:code"] = LoriWebCodes.SUCCESS
-		payload["receivedDailyAt"] = receivedDailyAt
-		payload["dailyPayout"] = dailyPayout
-
 		val id = userIdentification.id.toLong()
 
 		println(userIdentification.id.toLong())
@@ -261,6 +257,10 @@ class APILoriDailyRewardView : NoVarsView() {
 			lorittaProfile.money += dailyPayout
 		}
 
+		payload["api:code"] = LoriWebCodes.SUCCESS
+		payload["receivedDailyAt"] = receivedDailyAt
+		payload["dailyPayout"] = dailyPayout
+		payload["currentBalance"] = (lorittaProfile.money + dailyPayout)
 
 		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 		return payload.toString()
