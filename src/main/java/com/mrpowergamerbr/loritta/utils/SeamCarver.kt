@@ -8,11 +8,7 @@ package com.mrpowergamerbr.loritta.utils
  * Java program to perform content-aware image resizing using seam carving.
  */
 
-import java.awt.FlowLayout
 import java.awt.image.BufferedImage
-import javax.swing.ImageIcon
-import javax.swing.JFrame
-import javax.swing.JLabel
 
 /**
  * SeamCarver() is a class for content aware image resizing.
@@ -51,16 +47,16 @@ object SeamCarver {
 	 * the pixel that is 'missing'.
 	 *
 	 * @param image
-	 * @return energy table (double[][]).
+	 * @return energy table (Int[][]).
 	 */
-	private fun computeEnergy(image: BufferedImage): Array<DoubleArray> {
+	private fun computeEnergy(image: BufferedImage): Array<IntArray> {
 		val width = image.width
 		val height = image.height
-		val colors = Array(width) { IntArray(height) }
+		val colors = Array(width) { IntArray(height) { -1 } }
 
 		// Fazer cache de valores para evitar getRGBs desnecessários
 		fun getColor(x: Int, y: Int): Int {
-			if (colors[x][y] != 0)
+			if (colors[x][y] != -1)
 				return colors[x][y]
 
 			val rgb = image.getRGB(x, y)
@@ -68,11 +64,12 @@ object SeamCarver {
 			return rgb
 		}
 
-		val energyTable = Array(width) { DoubleArray(height) }
+		val energyTable = Array(width) { IntArray(height) }
 
 		// Loop over every pixel in the image and compute its energy.
-		for (y in 0 until height) {
-			for (x in 0 until width) {
+		// O loop é x -> y para evitar cache misses, assim fica mais rápido!
+		for (x in 0 until width) {
+			for (y in 0 until height) {
 				val x1Pixel: Int
 				val x2Pixel: Int
 				val y1Pixel: Int
@@ -121,7 +118,7 @@ object SeamCarver {
 				val yBlue = Math.abs((y1Pixel and 0x000000ff) - (y2Pixel and 0x000000ff))
 
 				// We add up all the differences and call that our energy.
-				val energy = (xRed + xGreen + xBlue + yRed + yGreen + yBlue).toDouble()
+				val energy = xRed + xGreen + xBlue + yRed + yGreen + yBlue
 
 				energyTable[x][y] = energy
 			}
@@ -134,24 +131,24 @@ object SeamCarver {
 	 * findSeam() finds a seam given an energy table and a direction. The seam is
 	 * the path from bottom to top or left to right with minimum total energy.
 	 *
-	 * @param energy table (double[][]) and direction (vertical / horizontal).
+	 * @param energy table (Int[][]) and direction (vertical / horizontal).
 	 * @return seam (int[x or y][x, y]).
 	 */
-	private fun findSeam(energyTable: Array<DoubleArray>, direction: String): Array<IntArray> {
+	private fun findSeam(energyTable: Array<IntArray>, direction: String): Array<IntArray> {
 		val seam: Array<IntArray>
 		val width = energyTable.size
 		val height = energyTable[0].size
 		// seamDynamic is the table we will use for dynamic programming.
-		val seamDynamic = Array(width) { DoubleArray(height) }
+		val seamDynamic = Array(width) { IntArray(height) }
 		val backtracker = Array(width) { IntArray(height) }
-		var minimum: Double
+		var minimum: Int
 		if (direction == "vertical") {
 			// vertical seam.
 			seam = Array(energyTable[0].size) { IntArray(2) }
 
 			// Loops over the energy table and finds the lowest energy path.
-			for (y in 0 until height) {
-				for (x in 0 until width) {
+			for (x in 0 until width) {
+				for (y in 0 until height) {
 					if (y == 0) {
 						seamDynamic[x][y] = energyTable[x][y]
 						backtracker[x][y] = -1
@@ -382,10 +379,11 @@ object SeamCarver {
 					// this does not work, as we might need to put it at either x-1 or y-1.
 					if (!inSeam) {
 						// pixel not part of the seam, so we add it.
+						val color = image.getRGB(x, y)
 						if (shift) {
-							newImage.setRGB(x, y - 1, image.getRGB(x, y))
+							newImage.setRGB(x, y - 1, color)
 						} else {
-							newImage.setRGB(x, y, image.getRGB(x, y))
+							newImage.setRGB(x, y, color)
 						}
 					}
 				}
@@ -393,20 +391,6 @@ object SeamCarver {
 		}
 
 		return newImage
-	}
-
-	/**
-	 * showImage() displays the given image.
-	 *
-	 * @param image
-	 * @return n/a.
-	 */
-	private fun showImage(image: BufferedImage) {
-		val frame = JFrame()
-		frame.contentPane.layout = FlowLayout()
-		frame.contentPane.add(JLabel(ImageIcon(image)))
-		frame.pack()
-		frame.isVisible = true
 	}
 }
 
