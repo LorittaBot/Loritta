@@ -147,8 +147,8 @@ object SeamCarver {
 			seam = Array(energyTable[0].size) { IntArray(2) }
 
 			// Loops over the energy table and finds the lowest energy path.
-			for (x in 0 until width) {
-				for (y in 0 until height) {
+			for (y in 0 until height) {
+				for (x in 0 until width) {
 					if (y == 0) {
 						seamDynamic[x][y] = energyTable[x][y]
 						backtracker[x][y] = -1
