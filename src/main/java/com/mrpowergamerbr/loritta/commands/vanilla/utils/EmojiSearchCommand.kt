@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.entities.Message
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 
-class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder"), CommandCategory.UTILS) {
+class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder", "searchemoji"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
 		return "query [animated]"
 	}
