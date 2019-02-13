@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jetbrains.exposed.sql.select
@@ -150,6 +151,6 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
 
-		return payload.toString()
+		return gson.toJson(payload)
 	}
 }

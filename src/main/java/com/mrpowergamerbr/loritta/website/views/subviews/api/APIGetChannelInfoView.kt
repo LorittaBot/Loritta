@@ -1,14 +1,11 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
 import org.jooby.Request
@@ -25,7 +22,7 @@ class APIGetChannelInfoView : NoVarsView() {
 
 		if (!req.param("channelLink").isSet) {
 			json["error"] = "Missing channelLink param"
-			return json.toString()
+			return gson.toJson(json)
 		}
 
 		val channelLink = req.param("channelLink").value()
@@ -36,7 +33,7 @@ class APIGetChannelInfoView : NoVarsView() {
 
 		if (httpRequest.code() == 404) {
 			json["error"] = "Unknown channel"
-			return json.toString()
+			return gson.toJson(json)
 		}
 
 		val body = httpRequest.body()
@@ -72,10 +69,10 @@ class APIGetChannelInfoView : NoVarsView() {
 			// json["description"] = description.attr("content")
 			json["avatarUrl"] = avatarUrl
 			json["channelId"] = channelId
-			return json.toString()
+			return gson.toJson(json)
 		} catch (e: Exception) {
 			json["raw"] = body
-			return json.toString()
+			return gson.toJson(json)
 		}
 	}
 }

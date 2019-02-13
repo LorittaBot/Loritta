@@ -201,6 +201,6 @@ class APIVoteServerView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["votedAt"] = System.currentTimeMillis()
 		payload["canVoteAgain"] = tomorrow
-		return payload.toString()
+		return gson.toJson(payload)
 	}
 }

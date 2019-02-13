@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.common.collect.Lists
@@ -7,6 +8,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
 import org.jooby.Request
@@ -74,6 +76,6 @@ class APIGetCommandsView : NoVarsView() {
 			array.add(obj)
 		}
 
-		return array.toString()
+		return gson.toJson(jsonObject())
 	}
 }

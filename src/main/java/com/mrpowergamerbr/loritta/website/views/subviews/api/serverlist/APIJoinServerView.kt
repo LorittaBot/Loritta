@@ -5,11 +5,12 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import org.bson.Document
@@ -84,7 +85,7 @@ class APIJoinServerView : NoVarsView() {
 
 		val payload = JsonObject()
 		payload["api:code"] = LoriWebCodes.SUCCESS
-		return payload.toString()
+		return gson.toJson(payload)
 	}
 
 	/**

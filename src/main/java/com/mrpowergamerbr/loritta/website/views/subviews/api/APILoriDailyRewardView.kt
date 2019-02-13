@@ -263,6 +263,6 @@ class APILoriDailyRewardView : NoVarsView() {
 		payload["currentBalance"] = (lorittaProfile.money + dailyPayout)
 
 		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
-		return payload.toString()
+		return gson.toJson(payload)
 	}
 }

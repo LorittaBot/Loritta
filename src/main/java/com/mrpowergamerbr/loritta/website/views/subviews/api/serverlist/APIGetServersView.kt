@@ -7,6 +7,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.views.subviews.LoriPartnerView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
@@ -84,7 +85,7 @@ class APIGetServersView : NoVarsView() {
 					Filters.eq("serverListConfig.enabled", true)
 			)
 
-			return samples.toString()
+			return gson.toJson(samples)
 		}
 		return JsonObject().toString()
 	}
