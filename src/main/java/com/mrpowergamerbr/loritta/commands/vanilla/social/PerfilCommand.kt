@@ -187,7 +187,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale, newLocale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
@@ -213,7 +213,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			return
 		}
 		if (contextUser == null && context.args.first() == "shop") {
-			context.reply(LoriReply(newLocale["commands.social.profile.profileshop"].format("${Loritta.config.websiteUrl}user/@me/dashboard/profiles"), Emotes.LORI_OWO))
+			context.reply(LoriReply(context.locale["commands.social.profile.profileshop"].format("${Loritta.config.websiteUrl}user/@me/dashboard/profiles"), Emotes.LORI_OWO))
 		}
 
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
