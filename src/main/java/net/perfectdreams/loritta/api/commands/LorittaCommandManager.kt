@@ -195,7 +195,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		val rawArguments = rawMessage.replace("\n", "").split(" ")
 
 		// Primeiro os comandos vanilla da Loritta(tm)
-		for (command in getRegisteredCommands()) {
+		for (command in getRegisteredCommands().filter { !conf.disabledCommands.contains(it.javaClass.simpleName) }) {
 			if (verifyAndDispatch(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
