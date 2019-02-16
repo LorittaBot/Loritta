@@ -260,7 +260,7 @@ class APILoriDailyRewardView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 		payload["receivedDailyAt"] = receivedDailyAt
 		payload["dailyPayout"] = dailyPayout
-		payload["currentBalance"] = (lorittaProfile.money + dailyPayout)
+		payload["currentBalance"] = lorittaProfile.money
 
 		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 		return gson.toJson(payload)
