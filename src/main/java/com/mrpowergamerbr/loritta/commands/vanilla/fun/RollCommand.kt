@@ -51,21 +51,6 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 				}
 
 				val joinedArgs = context.args.joinToString(" ")
-				val inviteBlockerConfig = context.config.inviteBlockerConfig
-				val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-				if (checkInviteLinks) {
-					val whitelisted = mutableListOf<String>()
-					whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-					InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-						whitelisted.add(it)
-					}
-
-					if (MiscUtils.hasInvite(joinedArgs, whitelisted)) {
-						return
-					}
-				}
 
 				if (context.args[0].contains("d")) {
 					val values = context.args[0].split("d")

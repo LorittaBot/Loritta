@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -78,6 +79,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val hasNotifyMeRole = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128")
 			val isLorittaPartner = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952")
 			val isTranslator = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449")
+			val isGitHubContributor = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333")
 			val hasLoriStickerArt = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, Constants.LORI_STICKERS_ROLE_ID)
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
 			val usesPocketDreamsRichPresence = if (member != null) {
@@ -110,6 +112,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
 			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
+			if (isGitHubContributor) badges += ImageIO.read(File(Loritta.ASSETS + "github_contributor.png"))
 			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 
 			val mutualGuilds = lorittaShards.getMutualGuilds(user)
@@ -184,7 +187,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
@@ -207,6 +210,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 							"✍"
 					)
 			)
+			return
+		}
+		if (contextUser == null && context.args.isNotEmpty() && context.args.first() == "shop") {
+			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${Loritta.config.websiteUrl}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 

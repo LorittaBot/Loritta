@@ -26,21 +26,6 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var waifu = context.args.joinToString(separator = " ") // Vamos juntar tudo em uma string
-			val inviteBlockerConfig = context.config.inviteBlockerConfig
-			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-			if (checkInviteLinks) {
-				val whitelisted = mutableListOf<String>()
-				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-					whitelisted.add(it)
-				}
-
-				if (MiscUtils.hasInvite(waifu, whitelisted)) {
-					return
-				}
-			}
 
 			val user = context.getUserAt(0)
 			if (user != null) {

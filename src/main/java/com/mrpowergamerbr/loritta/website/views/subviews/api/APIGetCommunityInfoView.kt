@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.utils.gson
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -61,6 +62,6 @@ class APIGetCommunityInfoView : NoVarsView() {
 
 		val pattern = "window\\.ServerData\\.deeplink = \"narviiapp:\\/\\/(x[0-9]+)\\/.+\";".toPattern().matcher(body).apply { find() }
 		json["communityId"] = pattern.group(1)
-		return json.toString()
+		return gson.toJson(json)
 	}
 }

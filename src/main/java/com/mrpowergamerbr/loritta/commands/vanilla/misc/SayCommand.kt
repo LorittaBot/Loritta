@@ -81,22 +81,6 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 
 			var message = args.joinToString(" ")
 
-			val inviteBlockerConfig = context.config.inviteBlockerConfig
-			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-			if (checkInviteLinks) {
-				val whitelisted = mutableListOf<String>()
-				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-					whitelisted.add(it)
-				}
-
-				if (MiscUtils.hasInvite(message, whitelisted)) {
-					return
-				}
-			}
-
 			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 

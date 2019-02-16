@@ -27,21 +27,6 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ")
-			val inviteBlockerConfig = context.config.inviteBlockerConfig
-			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-			if (checkInviteLinks) {
-				val whitelisted = mutableListOf<String>()
-				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-					whitelisted.add(it)
-				}
-
-				if (MiscUtils.hasInvite(expression, whitelisted)) {
-					return
-				}
-			}
 
 			try {
 				val result = LorittaUtils.evalMath(expression)

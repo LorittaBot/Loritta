@@ -66,22 +66,6 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			var name2 = user2Name.substring(user2Name.length / 2..user2Name.length - 1)
 			var shipName = name1 + name2
 
-			val inviteBlockerConfig = context.config.inviteBlockerConfig
-			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-			if (checkInviteLinks) {
-				val whitelisted = mutableListOf<String>()
-				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-					whitelisted.add(it)
-				}
-
-				if (MiscUtils.hasInvite(shipName, whitelisted)) {
-					return
-				}
-			}
-
 			// Para motivos de cálculos, nós iremos criar um "real ship name"
 			// Que é só o nome do ship... mas em ordem alfabética!
 			var realShipName = shipName

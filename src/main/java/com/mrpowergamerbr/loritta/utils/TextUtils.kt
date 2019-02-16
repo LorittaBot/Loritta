@@ -177,7 +177,7 @@ fun String.convertToEpochMillisRelativeToNow(): Long {
 		val addYears = yearsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.YEAR] += addYears
 	}
-	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es?))".toPattern().matcher(content)
+	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es)?)".toPattern().matcher(content)
 	if (monthMatcher.find()) {
 		val addMonths = monthMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MONTH] += addMonths

@@ -4,9 +4,10 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import com.mrpowergamerbr.loritta.utils.*
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -46,6 +47,6 @@ class APIGetServerVotesView : NoVarsView() {
 			it.obj.remove("email")
 		}
 
-		return json.toString()
+		return gson.toJson(json)
 	}
 }

@@ -55,12 +55,18 @@ object ImageUtils {
 	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
 		try {
 			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
-			if (emotes.containsKey(imageUrl))
-				return emotes[imageUrl]
+			try {
+				if (emotes.containsKey(imageUrl))
+					return emotes[imageUrl]
 
-			val emoteImage = LorittaUtils.downloadImage(imageUrl)
-			emotes[imageUrl] = emoteImage
-			return emoteImage
+				val emoteImage = LorittaUtils.downloadImage(imageUrl)
+				emotes[imageUrl] = emoteImage
+				return emoteImage
+			} catch (e: Exception) {
+				// Outro try ... catch, esse é usado para evitar baixar imagens inexistentes, mas que o codepoint existe
+				emotes[imageUrl] = null
+				return null
+			}
 		} catch (e: Exception) {
 			return null
 		}

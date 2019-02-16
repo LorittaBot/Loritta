@@ -1,12 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.util.*
 
@@ -26,22 +27,6 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var query = context.args.joinToString(" ")
-
-			val inviteBlockerConfig = context.config.inviteBlockerConfig
-			val checkInviteLinks = inviteBlockerConfig.isEnabled && !inviteBlockerConfig.whitelistedChannels.contains(context.event.channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES)
-
-			if (checkInviteLinks) {
-				val whitelisted = mutableListOf<String>()
-				whitelisted.addAll(context.config.inviteBlockerConfig.whitelistedIds)
-
-				InviteLinkModule.cachedInviteLinks[context.guild.id]?.forEach {
-					whitelisted.add(it)
-				}
-
-				if (MiscUtils.hasInvite(query, whitelisted)) {
-					return
-				}
-			}
 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(

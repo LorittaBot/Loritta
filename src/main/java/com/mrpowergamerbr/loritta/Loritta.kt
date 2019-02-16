@@ -41,7 +41,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
-import com.mrpowergamerbr.loritta.utils.socket.SocketServer
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
@@ -116,7 +115,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	override val supportedFeatures = PlatformFeature.values().toMutableList()
 
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	lateinit var socket: SocketServer
 	val executor = createThreadPool("Executor Thread %d") // Threads
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
@@ -276,8 +274,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
-		socket = SocketServer(config.socketPort)
-
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
@@ -309,10 +305,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
-
-		thread {
-			socket.start()
-		}
 
 		thread(name = "Update Random Stuff") {
 			while (true) {

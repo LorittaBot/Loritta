@@ -17,7 +17,7 @@ import java.util.regex.Matcher
 
 class InviteLinkModule : MessageReceivedModule {
 	companion object {
-		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<String, List<String>>().asMap()
+		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 		val detectedInviteLinks = Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<String, String>().asMap()
 	}
 
@@ -42,7 +42,6 @@ class InviteLinkModule : MessageReceivedModule {
 		val content = message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")
-				.toLowerCase()
 
 		val validMatchers = mutableListOf<Matcher>()
 		val contentMatcher = getMatcherIfHasInviteLink(content)
@@ -170,19 +169,14 @@ class InviteLinkModule : MessageReceivedModule {
 		// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
 		// necessário, e, ao pegar, vamos guardar no cache de invites
 		if (inviteBlockerConfig.whitelistServerInvites) {
-			if (!cachedInviteLinks.containsKey(guild.id)) {
-				if (guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-					val invites = guild.invites.await()
-					val codes = invites.map { it.code }
-					cachedInviteLinks.put(guild.id, codes)
-					codes.forEach {
-						whitelisted.add(it)
-					}
-				}
-			} else {
-				cachedInviteLinks[guild.id]?.forEach {
-					whitelisted.add(it)
-				}
+			if (!cachedInviteLinks.containsKey(guild.idLong) && guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
+				val invites = guild.invites.await()
+				val codes = invites.map { it.code }
+				cachedInviteLinks[guild.idLong] = codes
+			}
+
+			cachedInviteLinks[guild.idLong]?.forEach {
+				whitelisted.add(it)
 			}
 		}
 
