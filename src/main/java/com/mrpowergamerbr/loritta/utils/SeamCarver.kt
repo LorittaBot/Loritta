@@ -54,12 +54,21 @@ object SeamCarver {
 		val height = image.height
 		val colors = Array(width) { IntArray(height) { -1 } }
 
+		val raster = image.raster
+
 		// Fazer cache de valores para evitar getRGBs desnecessários
 		fun getColor(x: Int, y: Int): Int {
 			if (colors[x][y] != -1)
 				return colors[x][y]
 
-			val rgb = image.getRGB(x, y)
+			val result = (raster.getDataElements(x, y, null))
+			val rgb = if (result is IntArray) {
+				result[0]
+			} else {
+				// I tried, okay?
+				image.getRGB(x, y)
+			}
+
 			colors[x][y] = rgb
 			return rgb
 		}
@@ -339,6 +348,8 @@ object SeamCarver {
 			newImage = BufferedImage(width, height - 1, BufferedImage.TYPE_INT_ARGB)
 		}
 
+		val raster = image.raster
+
 		// Loops over ever pixel in the original image and copies them over.
 		// Do not copy over the pixels in the seam.
 		if (direction == "vertical") {
@@ -355,7 +366,14 @@ object SeamCarver {
 
 					if (!inSeam) {
 						// pixel not part of the seam, so we add it.
-						val color = image.getRGB(x, y)
+						val result = (raster.getDataElements(x, y, null))
+						val color = if (result is IntArray) {
+							result[0]
+						} else {
+							// I tried, okay?
+							image.getRGB(x, y)
+						}
+
 						if (shift) {
 							newImage.setRGB(x - 1, y, color)
 						} else {
@@ -379,7 +397,14 @@ object SeamCarver {
 					// this does not work, as we might need to put it at either x-1 or y-1.
 					if (!inSeam) {
 						// pixel not part of the seam, so we add it.
-						val color = image.getRGB(x, y)
+						val result = (raster.getDataElements(x, y, null))
+						val color = if (result is IntArray) {
+							result[0]
+						} else {
+							// I tried, okay?
+							image.getRGB(x, y)
+						}
+
 						if (shift) {
 							newImage.setRGB(x, y - 1, color)
 						} else {
