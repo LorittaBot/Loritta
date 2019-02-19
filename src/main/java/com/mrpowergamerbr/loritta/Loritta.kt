@@ -44,7 +44,9 @@ import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.core.utils.cache.CacheFlag
@@ -304,9 +306,12 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		DebugLog.startCommandListenerThread()
 
+		GlobalScope.launch(coroutineDispatcher) {
+			connectionManager.updateProxies()
+		}
+		
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
-		this.connectionManager.updateProxies()
 
 		thread(name = "Update Random Stuff") {
 			while (true) {
