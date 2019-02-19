@@ -44,6 +44,7 @@ object MiscUtils {
 				newUrl = bitlyUrl
 			}
 			val httpRequest = HttpRequest.get(newUrl)
+					.doSafeConnection()
 					.followRedirects(true)
 					.connectTimeout(2500)
 					.readTimeout(2500)

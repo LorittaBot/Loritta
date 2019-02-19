@@ -171,6 +171,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var websiteThread: Thread
 
 	var twitch = TwitchAPI()
+	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 
 	init {
@@ -305,6 +306,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
+		this.connectionManager.updateProxies()
 
 		thread(name = "Update Random Stuff") {
 			while (true) {

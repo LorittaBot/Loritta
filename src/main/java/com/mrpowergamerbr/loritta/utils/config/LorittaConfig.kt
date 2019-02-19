@@ -92,6 +92,8 @@ class LorittaConfig(
 		val githubKey: String,
 		@JsonProperty("twitter")
 		val twitterConfig: TwitterConfig,
+		@JsonProperty("connection-manager")
+		val connectionManagerConfig: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
 		@JsonProperty("ghost-ids")
@@ -148,5 +150,14 @@ class LorittaConfig(
 			val clientSecret: String,
 			@JsonProperty("ipn-access-token")
 			val ipnAccessToken: String
+	)
+
+	class ConnectionManagerConfig(
+			@JsonProperty("proxy-untrusted-connections")
+			val proxyUntrustedConnections: Boolean,
+			@JsonProperty("trusted-domains")
+			val trustedDomains: List<String>,
+			@JsonProperty("blocked-domains")
+			val blockedDomains: List<String>
 	)
 }

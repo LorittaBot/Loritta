@@ -1,12 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import com.mrpowergamerbr.loritta.utils.Constants
-import java.net.HttpURLConnection
-import java.net.URL
-import javax.imageio.ImageIO
-
 object ParallaxHttp {
-	@JvmStatic
+	/* @JvmStatic
 	fun get(url: String): ParallaxHttpResponse {
 		val imageUrl = URL(url)
 		val connection = imageUrl.openConnection() as HttpURLConnection
@@ -30,5 +25,5 @@ object ParallaxHttp {
 		override fun toString(): String {
 			return connection.inputStream.bufferedReader().readText()
 		}
-	}
+	} */
 }

@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.MiscUtils.getResponseError
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -26,6 +27,16 @@ class APIGetChannelInfoView : NoVarsView() {
 		}
 
 		val channelLink = req.param("channelLink").value()
+
+		if (!channelLink.isValidUrl()) {
+			json["error"] = "Invalid URL"
+			return json.toString()
+		}
+
+		if (!loritta.connectionManager.isTrusted(channelLink)) {
+			json["error"] = "Untrusted URL"
+			return json.toString()
+		}
 
 		val httpRequest = HttpRequest.get(channelLink)
 				.header("Cookie", "YSC=g_0DTrOsgy8; PREF=f1=50000000&f6=7; VISITOR_INFO1_LIVE=r8qTZn_IpAs")

@@ -54,7 +54,7 @@ object LorittaUtils {
 	fun downloadImage(url: String, timeout: Int = 30, maxSize: Int = 20000000): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
-			val connection = imageUrl.openConnection() as HttpURLConnection
+			val connection = imageUrl.openSafeConnection() as HttpURLConnection
 			connection.setRequestProperty("User-Agent",
 					Constants.USER_AGENT)
 
@@ -77,7 +77,7 @@ object LorittaUtils {
 	fun downloadFile(url: String, timeout: Int): InputStream? {
 		try {
 			val imageUrl = URL(url)
-			val connection = imageUrl.openConnection() as HttpURLConnection
+			val connection = imageUrl.openSafeConnection() as HttpURLConnection
 			connection.setRequestProperty("User-Agent",
 					Constants.USER_AGENT)
 
@@ -116,7 +116,7 @@ object LorittaUtils {
 	@Throws(Exception::class)
 	fun fetchRemoteFile(location: String): ByteArray? {
 		val url = URL(location)
-		val connection = url.openConnection() as HttpURLConnection
+		val connection = url.openSafeConnection() as HttpURLConnection
 		connection.setRequestProperty(
 				"User-Agent",
 				"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")

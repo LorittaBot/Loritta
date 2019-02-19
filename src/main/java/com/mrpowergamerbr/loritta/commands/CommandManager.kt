@@ -190,14 +190,14 @@ class CommandManager {
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
 		commandMap.add(McAvatarCommand())
-		commandMap.add(McQueryCommand())
+		// commandMap.add(McQueryCommand())
 		commandMap.add(McUUIDCommand())
 		commandMap.add(McStatusCommand())
 		commandMap.add(McHeadCommand())
 		commandMap.add(McBodyCommand())
 		commandMap.add(SpigotMcCommand())
 		commandMap.add(McConquistaCommand())
-		commandMap.add(PeQueryCommand())
+		// commandMap.add(PeQueryCommand())
 		commandMap.add(McSkinCommand())
 		commandMap.add(McMoletomCommand())
 
