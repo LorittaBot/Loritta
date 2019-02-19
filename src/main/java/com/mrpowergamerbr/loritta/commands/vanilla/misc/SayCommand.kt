@@ -88,7 +88,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 			var useWebhook = false
 			var webhook: TemmieWebhook? = null
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MANAGE)) {
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MANAGE_SERVER)) {
 				// Para evitar pessoas xingando outros membros usando a Loritta, vamos usar uma webhook com o mesmo nome do usuário para todas as ocasiões necessárias.
 				// Mas *apenas* se o usuário está usando emojis que o webhook possa usar
 				val usingExternalEmotes = context.message.emotes.any { it.guild != context.guild }
