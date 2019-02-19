@@ -51,7 +51,7 @@ object LorittaUtils {
 	}
 
 	@JvmOverloads
-	fun downloadImage(url: String, timeout: Int = 30, maxSize: Int = 20000000): BufferedImage? {
+	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 100_000_000, overrideTimeoutsForSafeDomains: Boolean = false): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
 			val connection = imageUrl.openSafeConnection() as HttpURLConnection
@@ -62,9 +62,12 @@ object LorittaUtils {
 				return null
 			}
 
-			if (timeout != -1) {
-				connection.readTimeout = timeout
-				connection.connectTimeout = timeout
+			if (connectTimeout != -1 && (!loritta.connectionManager.isTrusted(url) && overrideTimeoutsForSafeDomains)) {
+				connection.connectTimeout = connectTimeout
+			}
+
+			if (readTimeout != -1 && (!loritta.connectionManager.isTrusted(url) && overrideTimeoutsForSafeDomains)) {
+				connection.readTimeout = readTimeout
 			}
 
 			return ImageIO.read(connection.inputStream)
