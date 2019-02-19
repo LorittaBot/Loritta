@@ -2,6 +2,11 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.threads.NewRssFeedTask.Companion.coroutineDispatcher
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -17,26 +22,30 @@ class ConnectionManager {
     }
 
     val proxies = mutableListOf<Proxy>()
+    val mutex = Mutex()
+
     var lastProxyListUpdate = 0L
 
-    fun updateProxies() {
-        this.lastProxyListUpdate = System.currentTimeMillis()
-        val proxyList = HttpRequest.get("https://proxy.rudnkh.me/txt")
-                .body()
+    suspend fun updateProxies() {
+        mutex.withLock {
+            this.lastProxyListUpdate = System.currentTimeMillis()
+            val proxyList = HttpRequest.get("https://proxy.rudnkh.me/txt")
+                    .body()
 
-        val ipAndPortProxies = proxyList.lines()
-        val proxies = ipAndPortProxies.mapNotNull {
-            val split = it.split(":")
+            val ipAndPortProxies = proxyList.lines()
+            val proxies = ipAndPortProxies.mapNotNull {
+                val split = it.split(":")
 
-            if (split.size != 2)
-                return@mapNotNull null
+                if (split.size != 2)
+                    return@mapNotNull null
 
-            Proxy(split[0], split[1].toInt())
+                Proxy(split[0], split[1].toInt())
+            }
+
+            val validProxies = checkProxies(proxies)
+            this.proxies.clear()
+            this.proxies.addAll(validProxies)
         }
-
-        val validProxies = checkProxies(proxies)
-        this.proxies.clear()
-        this.proxies.addAll(validProxies)
     }
 
     fun checkProxies(proxies: List<Proxy>): List<Proxy> {
@@ -111,17 +120,25 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
     val url = ConnectionManager.URL_FIELD.get(this) as URL
 
     if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections) {
-        if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000) {
-            loritta.connectionManager.updateProxies()
-        }
-
         if (loritta.connectionManager.isBlocked(url.toString())) {
+            if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
+                GlobalScope.launch(coroutineDispatcher) {
+                    loritta.connectionManager.updateProxies()
+                }
+            }
+
             // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
             ConnectionManager.logger.info { "IP Logger detected $url, redirecing to somewhere else!" }
             return HttpRequest.get("https://loritta.website")
         }
 
         if (!loritta.connectionManager.isTrusted(url.toString())) {
+            if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
+                GlobalScope.launch(coroutineDispatcher) {
+                    loritta.connectionManager.updateProxies()
+                }
+            }
+
             // This ain't trusted dawg!
             ConnectionManager.logger.info { "Doing untrusted connection $url, that ain't trusted dawg! Let's proxy it!!" }
 
@@ -136,17 +153,25 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
 
 fun URL.openSafeConnection(): URLConnection {
     if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections) {
-        if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000) {
-            loritta.connectionManager.updateProxies()
-        }
-
         if (loritta.connectionManager.isBlocked(this.toString())) {
+            if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
+                GlobalScope.launch(coroutineDispatcher) {
+                    loritta.connectionManager.updateProxies()
+                }
+            }
+
             // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
             ConnectionManager.logger.info { "IP Logger detected ${this}, redirecing to somewhere else!" }
             return URL("https://loritta.website").openConnection()
         }
 
         if (!loritta.connectionManager.isTrusted(this.toString())) {
+            if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
+                GlobalScope.launch(coroutineDispatcher) {
+                    loritta.connectionManager.updateProxies()
+                }
+            }
+
             // This ain't trusted dawg!
             ConnectionManager.logger.info { "Doing untrusted connection ${this}, that ain't trusted dawg! Let's proxy it!!" }
 

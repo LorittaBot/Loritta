@@ -309,7 +309,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		GlobalScope.launch(coroutineDispatcher) {
 			connectionManager.updateProxies()
 		}
-		
+
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
 
