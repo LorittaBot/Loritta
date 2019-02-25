@@ -19,28 +19,13 @@ class QuirkyModule : MessageReceivedModule {
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		// uwu u are sooo quirky
 		val message = event.message
-
+		
+		val reactions = arrayListOf("ata:339904769139146755", "daora:375321168632086529", "wow:432531424671694849", "rip:473621981619552267", "gesso:523233744656662548", "a:revolving_think:417382964364836864", "thonk:413425726369431552", "lori_morre_diabo:540656812836519936", "a:lori_rage:541715482986938379", "lori_ok_hand:426183783008698391", "demencia:302228166314033152", "eu_te_moido:366047906689581085", "lori_wow:540944393692119040", "hyper_NOSA:450476856303419432", "idai:334709223588102144", "a:lori_happy:521721811298156558", "a:ralseinite:508811387175436291", "duckrage:422243901735174145", "opoha:540308642407120896")
 		val reactionRandom = RANDOM.nextInt(0, 500)
 		val random = RANDOM.nextInt(0, 250)
 
-		when (reactionRandom) {
-			0 -> message.addReaction("ata:339904769139146755").queue()
-			1 -> message.addReaction("daora:375321168632086529").queue()
-			2 -> message.addReaction("wow:432531424671694849").queue()
-			3 -> message.addReaction("rip:473621981619552267").queue()
-			4 -> message.addReaction("gesso:523233744656662548").queue()
-			5 -> message.addReaction("a:revolving_think:417382964364836864").queue()
-			6 -> message.addReaction("thonk:413425726369431552").queue()
-			7 -> message.addReaction("lori_morre_diabo:540656812836519936").queue()
-			8 -> message.addReaction("a:lori_rage:541715482986938379").queue()
-			9 -> message.addReaction("lori_ok_hand:426183783008698391").queue()
-			10 -> message.addReaction("demencia:302228166314033152").queue()
-			11 -> message.addReaction("eu_te_moido:366047906689581085").queue()
-			12 -> message.addReaction("lori_wow:540944393692119040").queue()
-			13 -> message.addReaction("hyper_NOSA:450476856303419432").queue()
-			14 -> message.addReaction("idai:334709223588102144").queue()
-			15 -> message.addReaction("a:lori_happy:521721811298156558").queue()
-			16 -> message.addReaction("a:ralseinite:508811387175436291").queue()
+		if (reactionRandom < reactions.size) {
+			message.addReaction(reactions.get(reactionRandom)).queue()
 		}
 		
 		if (chance(0.10)) {
