@@ -29,9 +29,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import net.perfectdreams.commands.Command
 
-class MessageListener(val loritta: Loritta, val config: MongoServerConfig) : ListenerAdapter() {
+class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
@@ -212,17 +211,13 @@ class MessageListener(val loritta: Loritta, val config: MongoServerConfig) : Lis
 
 						val allCommandLabels = mutableListOf<String>()
 
-						fun getlegacyCommands(config: MongoServerConfig): List<AbstractCommand> {
-							return loritta.legacyCommandManager.commandMap.filter { !config.disabledCommands.contains(it.javaClass.simpleName) }
-						}
-
 						loritta.commandManager.commands.forEach {
-							if (!it.onlyOwner || !config.disabledCommands.contains(it.javaClass.simpleName))
+							if (!it.onlyOwner || !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
 							allCommandLabels.addAll(it.labels)
 						}
 
-						getlegacyCommands(config).forEach {
-							if (!it.onlyOwner) {
+						loritta.legacyCommandManager.commandMap.forEach {
+							if (!it.onlyOwner || !serverConfig.disabledCommands.contains(it.javaClass.simpleName)) {
 								allCommandLabels.add(it.label)
 								allCommandLabels.addAll(it.aliases)
 							}
