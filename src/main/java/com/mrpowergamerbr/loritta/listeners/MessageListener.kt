@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.Modules
@@ -27,8 +28,10 @@ import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import net.perfectdreams.commands.Command
 
-class MessageListener(val loritta: Loritta) : ListenerAdapter() {
+class MessageListener(val loritta: Loritta, val config: MongoServerConfig) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
@@ -209,13 +212,20 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						val allCommandLabels = mutableListOf<String>()
 
+						fun getlegacyCommands(config: MongoServerConfig): List<AbstractCommand> {
+							return loritta.legacyCommandManager.commandMap.filter { !config.disabledCommands.contains(it.javaClass.simpleName) }
+						}
+
 						loritta.commandManager.commands.forEach {
+							if (!it.onlyOwner || !config.disabledCommands.contains(it.javaClass.simpleName))
 							allCommandLabels.addAll(it.labels)
 						}
 
-						loritta.legacyCommandManager.commandMap.forEach {
-							allCommandLabels.add(it.label)
-							allCommandLabels.addAll(it.aliases)
+						getlegacyCommands(config).forEach {
+							if (!it.onlyOwner) {
+								allCommandLabels.add(it.label)
+								allCommandLabels.addAll(it.aliases)
+							}
 						}
 
 						var diff = 999
