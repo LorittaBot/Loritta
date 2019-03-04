@@ -76,6 +76,22 @@ class APIGetCommandsView : NoVarsView() {
 			array.add(obj)
 		}
 
-		return gson.toJson(jsonObject())
+		loritta.commandManager.commands.forEach {
+			val obj = JsonObject()
+			obj["name"] = it::class.java.simpleName
+			obj["label"] = it.labels.first()
+			obj["aliases"] = it.labels.toList().toJsonArray()
+			obj["category"] = it.category.name
+			obj["description"] = it.getDescription(loritta.getLocaleById("default"))
+			obj["usage"] = it.getUsage(loritta.getLocaleById("default"))
+			obj["detailedUsage"] = jsonObject()
+			obj["example"] = it.getExamples(loritta.getLocaleById("default")).toJsonArray()
+			obj["extendedExamples"] = jsonObject()
+			obj["requiredUserPermissions"] = it.discordPermissions.map { it.name }.toJsonArray()
+			obj["requiredBotPermissions"] = it.botPermissions.map { it.name }.toJsonArray()
+			array.add(obj)
+		}
+
+		return gson.toJson(array)
 	}
 }
