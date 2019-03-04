@@ -83,7 +83,7 @@ class APIGetCommandsView : NoVarsView() {
 			obj["aliases"] = it.labels.toList().toJsonArray()
 			obj["category"] = it.category.name
 			obj["description"] = it.getDescription(loritta.getLocaleById("default"))
-			obj["usage"] = it.getUsage(loritta.getLocaleById("default"))
+			obj["usage"] = it.getUsage(loritta.getLocaleById("default")).build(lorittaLocale)
 			obj["detailedUsage"] = jsonObject()
 			obj["example"] = it.getExamples(loritta.getLocaleById("default")).toJsonArray()
 			obj["extendedExamples"] = jsonObject()
