@@ -108,7 +108,6 @@ class CommandManager {
 		commandMap.add(CongaParrotCommand())
 		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
-		commandMap.add(RandomNaoEntreAkiCommand())
 		commandMap.add(TodoGrupoTemCommand())
 		commandMap.add(TioDoPaveCommand())
 		commandMap.add(VemDeZapCommand())
