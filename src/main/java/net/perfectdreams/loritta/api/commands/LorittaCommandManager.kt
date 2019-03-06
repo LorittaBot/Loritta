@@ -26,9 +26,9 @@ import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
+import net.perfectdreams.loritta.commands.vanilla.actions.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
-import org.apache.commons.lang3.StringUtils
 import java.awt.Image
 import java.util.*
 import kotlin.reflect.KClass
@@ -48,6 +48,13 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		
 		registerCommand(ChannelInfoCommand())
 		registerCommand(GiveawayCommand())
+
+		// =======[ ACTIONS ]======
+		registerCommand(AttackCommand())
+		registerCommand(DanceCommand())
+		registerCommand(HugCommand())
+		registerCommand(KissCommand())
+		registerCommand(SlapCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
@@ -324,7 +331,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
 					context.reply(
 							LoriReply(
-									legacyLocale.format(fancy, "\uD83D\uDE45") { commands.pleaseWaitCooldown },
+									locale["commands.pleaseWaitCooldown"],
 									"\uD83D\uDD25"
 							)
 					)
@@ -352,10 +359,10 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(legacyLocale) + "`" })
+						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
 								LoriReply(
-										legacyLocale.format(required, "\uD83D\uDE22", "\uD83D\uDE42") { commands.loriDoesntHavePermissionDiscord },
+										locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
 										Constants.ERROR
 								)
 						)
@@ -391,7 +398,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				if (context.command.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
 					context.reply(
 							LoriReply(
-									legacyLocale.format { commands.commandOnlyForOwner },
+									locale["commands.commandOnlyForOwner"],
 									Constants.ERROR
 							)
 					)
@@ -400,10 +407,10 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 
 				if (!context.canUseCommand()) {
 					val requiredPermissions = command.discordPermissions.filter { !ev.message.member.hasPermission(ev.message.textChannel, it) }
-					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(legacyLocale) + "`" })
+					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
 							LoriReply(
-									legacyLocale.format(required) { commands.doesntHavePermissionDiscord },
+									locale["commands.userDoesntHavePermissionDiscord", required],
 									Constants.ERROR
 							)
 					)
@@ -496,7 +503,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
 									LoriReply(
-											context.legacyLocale.format("8MB", Emotes.LORI_TEMMIE) { commands.imageTooLarge },
+											locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
 											"\uD83E\uDD37"
 									)
 							)

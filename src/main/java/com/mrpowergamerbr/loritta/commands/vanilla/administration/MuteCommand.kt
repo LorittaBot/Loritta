@@ -463,7 +463,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 							guild.selfMember.user,
 							locale,
 							member.user,
-							locale.format("<:lori_owo:417813932380520448>") { locale.commands.moderation.unmute.automaticallyExpired },
+							locale.toNewLocale()["locale.commands.moderation.unmute.automaticallyExpired", "<:lori_owo:417813932380520448>"],
 							false
 					)
 				}

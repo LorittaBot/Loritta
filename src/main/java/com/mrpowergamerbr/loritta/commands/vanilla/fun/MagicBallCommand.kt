@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -12,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.entertainment.vieirinha.description }
+		return locale.toNewLocale()["commands.entertainment.vieirinha.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -24,7 +25,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.format { commands.entertainment.vieirinha.examples }
+		return locale.toNewLocale().getWithType("commands.entertainment.vieirinha.examples")
 	}
 
 	override fun hasCommandFeedback(): Boolean {
@@ -41,7 +42,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + locale.commands.entertainment.vieirinha.responses.getRandom())
+					.content(context.getAsMention(true) + locale.toNewLocale().getWithType<List<String>>("commands.entertainment.vieirinha.responses").getRandom())
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {

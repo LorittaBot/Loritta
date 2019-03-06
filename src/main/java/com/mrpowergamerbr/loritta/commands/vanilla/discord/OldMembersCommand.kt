@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.Emotes
@@ -13,10 +12,11 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Message
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos", "oldusers", "usuáriosantigos", "usuariosantigos"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.discord.oldMembers.description }
+		return locale.toNewLocale()["commands.discord.oldMembers.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -39,7 +39,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.DISCORD_BLURPLE)
-			setTitle("\uD83C\uDF1F ${context.legacyLocale.format(guild.name) { commands.discord.oldMembers.theOldestPeople }}")
+			setTitle("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.oldMembers.theOldestPeople", guild.name]}")
 
 			for ((index, member) in sortedMembersInCurrentPage.withIndex()) {
 				val ownerEmote = when {
@@ -65,7 +65,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 				}
 
 				appendDescription("`${1 + index + (page * 10)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")
-				setFooter("${context.legacyLocale.format { loritta.page }} ${context.legacyLocale.format(page + 1, maxPage + 1) { loritta.xOfX }} | ${context.legacyLocale.format(userCurrentPage + 1) { loritta.youAreCurrentlyOnPage }}", null)
+				setFooter("${context.legacyLocale.toNewLocale()["loritta.page"]} ${context.locale["loritta.xOfX", page + 1, maxPage + 1]} | ${context.locale["loritta.youAreCurrentlyOnPage", userCurrentPage + 1]}", null)
 			}
 		}
 

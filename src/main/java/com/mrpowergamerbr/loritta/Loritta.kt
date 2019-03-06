@@ -67,7 +67,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
@@ -673,73 +672,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				}
 
 				File(LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
-			}
-		}
-
-		// Nós também suportamos locales em YAML
-		for ((key, locale) in locales) {
-			val yaml = Yaml()
-
-			val defaultYaml = File(LOCALES, "default.yml")
-			val localeYaml = File(LOCALES, "$key.yml")
-
-			fun String.yamlToVariable(): String {
-				var newVariable = ""
-				var nextShouldBeUppercase = false
-				for (ch in this) {
-					if (ch == '-') {
-						nextShouldBeUppercase = true
-						continue
-					}
-					var thisChar = ch
-					if (nextShouldBeUppercase)
-						thisChar = thisChar.toUpperCase()
-					newVariable += thisChar
-					nextShouldBeUppercase = false
-				}
-				return newVariable
-			}
-
-			fun applyValues(file: File) {
-				val obj = yaml.load(file.readText()) as Map<String, Object>
-
-				fun handle(root: Any, name: String, entries: Map<*, *>) {
-					entries as Map<String, Any>
-
-					val field = root::class.java.getDeclaredField(name)
-					field.isAccessible = true
-					for ((key, value) in entries) {
-						try {
-							when (value) {
-								is Map<*, *> -> {
-									handle(field.get(root), key.yamlToVariable(), value)
-								}
-								else -> {
-									val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
-									entryField.isAccessible = true
-									entryField.set(field.get(root), value)
-								}
-							}
-						} catch (e: NoSuchFieldException) {
-							logger.warn { "O campo $key não existe." }
-						}
-					}
-				}
-
-				for ((key, value) in obj) {
-					if (value is Map<*, *>)
-						handle(locale, key.yamlToVariable(), value)
-					else {
-						logger.error { "Posição inválida para $key em $value"}
-					}
-				}
-			}
-
-			applyValues(defaultYaml)
-			if (localeYaml.exists()) {
-				applyValues(localeYaml)
-			} else {
-				logger.error { "Locale $key não possui YAML! Fix it, fix it, fix it!!!" }
 			}
 		}
 

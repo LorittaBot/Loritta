@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
@@ -16,6 +15,7 @@ import net.dv8tion.jda.core.OnlineStatus
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.User
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
@@ -103,10 +103,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.legacyLocale)
-			addField("\uD83D\uDCC5 ${context.legacyLocale.format { commands.discord.userInfo.accountCreated }}", accountCreatedDiff, true)
+			addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountCreated"]}", accountCreatedDiff, true)
 			if (member != null) {
 				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), context.legacyLocale)
-				addField("\uD83C\uDF1F ${context.legacyLocale.format { commands.discord.userInfo.accountJoined }}", accountJoinedDiff, true)
+				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
 			}
 
 			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime()
@@ -116,7 +116,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addField("\uD83D\uDC40 ${context.legacyLocale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
 			}
 
-			var sharedServersFieldTitle = context.legacyLocale.format { commands.discord.userInfo.sharedServers }
+			var sharedServersFieldTitle = context.legacyLocale.toNewLocale()["commands.discord.userInfo.sharedServers"]
 			var servers: String?
 			val sharedServers = lorittaShards.getMutualGuilds(user)
 					.sortedByDescending { it.members.size }
@@ -186,12 +186,12 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			if (member != null) {
 				addField(
-						"\uD83D\uDC81 ${locale.format { commands.discord.userInfo.joinPosition }}",
-						locale.format("${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º") { commands.discord.userInfo.joinPlace },
+						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userInfo.joinPosition"]}",
+						locale.toNewLocale()["commands.discord.userInfo.joinPlace", "${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º"],
 						true
 				)
 
-				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(locale)}`" })
+				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
 				addField("\uD83D\uDEE1️ Permissões", permissions, true)
 
 			 	val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })

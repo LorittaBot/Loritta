@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.Permission.*
@@ -51,39 +51,39 @@ suspend fun Message.edit(content: Message): Message {
 	return this
 }
 
-fun Permission.localized(locale: LegacyBaseLocale): String {
+fun Permission.localized(locale: BaseLocale): String {
 	return when (this) {
-		CREATE_INSTANT_INVITE -> locale.format { discord.permissions.createInstantInvite }
-		KICK_MEMBERS -> locale.format { discord.permissions.kickMembers }
-		BAN_MEMBERS -> locale.format { discord.permissions.banMembers }
-		ADMINISTRATOR -> locale.format { discord.permissions.administrator }
-		MANAGE_CHANNEL -> locale.format { discord.permissions.manageChannel }
-		MANAGE_SERVER -> locale.format { discord.permissions.manageServer }
-		MESSAGE_ADD_REACTION -> locale.format { discord.permissions.addReactions }
-		VIEW_AUDIT_LOGS -> locale.format { discord.permissions.viewAuditLogs }
-		PRIORITY_SPEAKER -> locale.format { discord.permissions.prioritySpeaker }
-		VIEW_CHANNEL -> locale.format { discord.permissions.viewChannel }
-		MESSAGE_READ -> locale.format { discord.permissions.messageRead }
-		MESSAGE_WRITE -> locale.format { discord.permissions.messageWrite }
-		MESSAGE_TTS -> locale.format { discord.permissions.attachFiles }
-		MESSAGE_MANAGE -> locale.format { discord.permissions.messageManage }
-		MESSAGE_EMBED_LINKS -> locale.format { discord.permissions.messageEmbedLinks }
-		MESSAGE_ATTACH_FILES -> locale.format { discord.permissions.attachFiles }
-		MESSAGE_HISTORY -> locale.format { discord.permissions.messageHistory }
-		MESSAGE_MENTION_EVERYONE -> locale.format { discord.permissions.mentionEveryone }
-		MESSAGE_EXT_EMOJI -> locale.format { discord.permissions.messageExtEmoji }
-		VOICE_CONNECT -> locale.format { discord.permissions.connect }
-		VOICE_SPEAK -> locale.format { discord.permissions.speak }
-		VOICE_MUTE_OTHERS -> locale.format { discord.permissions.muteVoiceMembers }
-		VOICE_DEAF_OTHERS -> locale.format { discord.permissions.disableVoiceAudio }
-		VOICE_MOVE_OTHERS -> locale.format { discord.permissions.moveVoiceMembers }
-		VOICE_USE_VAD -> locale.format { discord.permissions.useVoiceDetection }
-		NICKNAME_CHANGE -> locale.format { discord.permissions.changeNickname }
-		NICKNAME_MANAGE -> locale.format { discord.permissions.manageNicknames }
-		MANAGE_ROLES -> locale.format { discord.permissions.manageRoles }
-		MANAGE_PERMISSIONS -> locale.format { discord.permissions.managePermissions }
-		MANAGE_WEBHOOKS -> locale.format { discord.permissions.manageWebhooks }
-		MANAGE_EMOTES -> locale.format { discord.permissions.manageEmotes }
+		CREATE_INSTANT_INVITE -> locale["discord.permissions.createInstantInvite"]
+		KICK_MEMBERS -> locale["discord.permissions.kickMembers"]
+		BAN_MEMBERS -> locale["discord.permissions.banMembers"]
+		ADMINISTRATOR -> locale["discord.permissions.administrator"]
+		MANAGE_CHANNEL -> locale["discord.permissions.manageChannel"]
+		MANAGE_SERVER -> locale["discord.permissions.manageServer"]
+		MESSAGE_ADD_REACTION -> locale["discord.permissions.addReactions"]
+		VIEW_AUDIT_LOGS -> locale["discord.permissions.viewAuditLogs"]
+		PRIORITY_SPEAKER -> locale["discord.permissions.prioritySpeaker"]
+		VIEW_CHANNEL -> locale["discord.permissions.viewChannel"]
+		MESSAGE_READ -> locale["discord.permissions.messageRead"]
+		MESSAGE_WRITE -> locale["discord.permissions.messageWrite"]
+		MESSAGE_TTS -> locale["discord.permissions.attachFiles"]
+		MESSAGE_MANAGE -> locale["discord.permissions.messageManage"]
+		MESSAGE_EMBED_LINKS -> locale["discord.permissions.messageEmbedLinks"]
+		MESSAGE_ATTACH_FILES -> locale["discord.permissions.attachFiles"]
+		MESSAGE_HISTORY -> locale["discord.permissions.messageHistory"]
+		MESSAGE_MENTION_EVERYONE -> locale["discord.permissions.mentionEveryone"]
+		MESSAGE_EXT_EMOJI -> locale["discord.permissions.messageExtEmoji"]
+		VOICE_CONNECT -> locale["discord.permissions.connect"]
+		VOICE_SPEAK -> locale["discord.permissions.speak"]
+		VOICE_MUTE_OTHERS -> locale["discord.permissions.muteVoiceMembers"]
+		VOICE_DEAF_OTHERS -> locale["discord.permissions.disableVoiceAudio"]
+		VOICE_MOVE_OTHERS -> locale["discord.permissions.moveVoiceMembers"]
+		VOICE_USE_VAD -> locale["discord.permissions.useVoiceDetection"]
+		NICKNAME_CHANGE -> locale["discord.permissions.changeNickname"]
+		NICKNAME_MANAGE -> locale["discord.permissions.manageNicknames"]
+		MANAGE_ROLES -> locale["discord.permissions.manageRoles"]
+		MANAGE_PERMISSIONS -> locale["discord.permissions.managePermissions"]
+		MANAGE_WEBHOOKS -> locale["discord.permissions.manageWebhooks"]
+		MANAGE_EMOTES -> locale["discord.permissions.manageEmotes"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }

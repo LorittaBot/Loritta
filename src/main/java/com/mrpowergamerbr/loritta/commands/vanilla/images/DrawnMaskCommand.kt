@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -18,7 +18,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format("(Drawn Mask)[https://bit.ly/drawnmask]") { commands.images.drawnMaskSign.description }
+		return locale.toNewLocale().getWithType("commands.images.drawnMaskSign.description")
 	}
 
 	override fun getExamples(): List<String> {

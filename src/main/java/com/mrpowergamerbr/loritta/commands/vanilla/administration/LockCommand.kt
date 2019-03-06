@@ -1,20 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.f
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN) {
-	
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.moderation.lock.description }
+		return locale.toNewLocale()["commands.moderation.lock.description"]
 	}
 	
 	override fun getDiscordPermissions(): List<Permission> {
@@ -49,7 +46,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		
 		context.reply(
 				LoriReply(
-						locale.format { commands.moderation.lock.denied.f(context.config.commandPrefix) },
+						locale.toNewLocale()["commands.moderation.lock.denied", context.config.commandPrefix],
 						"\uD83C\uDF89"
 				)
 		)

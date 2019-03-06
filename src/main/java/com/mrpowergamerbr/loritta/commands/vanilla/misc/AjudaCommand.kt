@@ -150,7 +150,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					val toBeAdded = when (cmd) {
 						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.legacyLocale) + "\n"
 						is LorittaCommand -> {
-                            val usage = cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.legacyLocale)
+                            val usage = cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale)
                             val usageWithinCodeBlocks = if (usage.isNotEmpty()) {
                                 "`$usage` "
                             } else {

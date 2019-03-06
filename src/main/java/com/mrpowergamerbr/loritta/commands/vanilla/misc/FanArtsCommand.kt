@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
@@ -11,10 +10,11 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.core.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format("<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>") { commands.miscellaneous.fanArts.description }
+		return locale.toNewLocale()["commands.miscellaneous.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
@@ -32,7 +32,7 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 
 			val displayName = fanArt.fancyName ?: user?.name
 
-			setDescription("**" + locale.format(displayName) { commands.miscellaneous.fanArts.madeBy } + "**")
+			setDescription("**" + locale.toNewLocale()["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
 			val artist = loritta.fanArtConfig.artists[fanArt.artistId]
 			if (artist != null) {
 				for (socialNetwork in artist.socialNetworks) {
@@ -43,9 +43,9 @@ class FanArtsCommand : AbstractCommand("fanarts", category = CommandCategory.MIS
 					appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
 				}
 			}
-			appendDescription("\n\n${locale.format(displayName) { commands.miscellaneous.fanArts.thankYouAll }}")
+			appendDescription("\n\n${locale.toNewLocale()["commands.miscellaneous.fanArts.thankYouAll", displayName]}")
 
-			var footer = "Fan Art ${locale.format(index, loritta.fanArts.size) { loritta.xOfX }}"
+			var footer = "Fan Art ${locale.toNewLocale()["loritta.xOfX", index, loritta.fanArts.size]}"
 
 			if (user != null) {
 				footer = "${user.name + "#" + user.discriminator} • $footer"

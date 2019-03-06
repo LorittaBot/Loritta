@@ -302,7 +302,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			val commandArguments = command.getUsage(locale)
 			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(legacyLocale)}`"
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
 				else -> ""
 			}
 
@@ -312,7 +312,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			for (argument in commandArguments.arguments) {
 				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(legacyLocale)}` - "
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
 					if (argument.defaultValue != null) {
 						cmdInfo += "(Padrão: ${argument.defaultValue}) "
 					}
@@ -349,10 +349,10 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			if (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty()) {
 				var field = ""
 				if (command.discordPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para utilizar este comando!\n"
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
 				}
 				if (command.botPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",
