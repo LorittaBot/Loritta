@@ -56,6 +56,8 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${Loritta.config.websiteUrl}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${Loritta.config.websiteUrl}commands", true)
 		embed.addField("\uD83D\uDC81 ${context.legacyLocale["WEBSITE_Support"]}", "${Loritta.config.websiteUrl}support", true)
+		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
+		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 		embed.addField("\uD83C\uDFC5 ${context.legacyLocale.get("BOTINFO_HONORABLE_MENTIONS")}", context.legacyLocale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
