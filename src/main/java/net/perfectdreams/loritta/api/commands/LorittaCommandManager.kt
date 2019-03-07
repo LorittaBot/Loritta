@@ -273,7 +273,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				}
 			}
 
-			val context = DiscordCommandContext(conf, lorittaUser, locale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = DiscordCommandContext(conf, lorittaUser, locale, legacyLocale, ev, command, rawArgs, args, strippedArgs)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {
 				logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
