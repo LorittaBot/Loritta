@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 
@@ -68,7 +69,8 @@ class ExperienceModule : MessageReceivedModule {
 					val profile = serverConfig.getUserData(event.author.idLong)
 
 					val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
-					mutex.lock {
+
+					mutex.withLock {
 						transaction(Databases.loritta) {
 							profile.xp += gainedXp
 						}
@@ -79,7 +81,8 @@ class ExperienceModule : MessageReceivedModule {
 
 		if (lastMessageSentHash != null && lorittaProfile.xp != newProfileXp) {
 			val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
-			mutex.lock {
+
+			mutex.withLock {
 				transaction(Databases.loritta) {
 					lorittaProfile.lastMessageSentHash = lastMessageSentHash
 					lorittaProfile.xp = newProfileXp
