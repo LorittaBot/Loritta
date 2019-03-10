@@ -177,6 +177,12 @@ object WebsiteUtils {
 
 		req.set("locale", locale)
 
+		for ((key, value) in locale.localeEntries) {
+			if (value is String) {
+				variables[key] = MessageFormat.format(value)
+			}
+		}
+
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {
