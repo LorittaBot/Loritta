@@ -221,12 +221,17 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		val outputStream = ByteArrayOutputStream()
-		outputStream.use {
-			ImageIO.write(image, "png", it)
+		// https://stackoverflow.com/a/12253091/7271796
+		val output = object : ByteArrayOutputStream() {
+			@Synchronized
+			override fun toByteArray(): ByteArray {
+				return this.buf
+			}
 		}
 
-		val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+		ImageIO.write(image, "png", output)
+
+		val inputStream = ByteArrayInputStream(output.toByteArray(), 0, output.size())
 
 		return sendFile(inputStream, name, message)
 	}

@@ -199,12 +199,17 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
-		val outputStream = ByteArrayOutputStream()
-		outputStream.use {
-			ImageIO.write(image, "png", it)
+		// https://stackoverflow.com/a/12253091/7271796
+		val output = object : ByteArrayOutputStream() {
+			@Synchronized
+			override fun toByteArray(): ByteArray {
+				return this.buf
+			}
 		}
 
-		val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+		ImageIO.write(image, "png", output)
+
+		val inputStream = ByteArrayInputStream(output.toByteArray(), 0, output.size())
 
 		return sendFile(inputStream, name, message)
 	}
