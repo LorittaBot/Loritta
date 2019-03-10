@@ -30,7 +30,7 @@ object SeamCarver {
 	 * @param image to be carved and direction of the seam (vertical / horizontal).
 	 * @return carved image.
 	 */
-	fun carveSeam(image: BufferedImage?, direction: String): BufferedImage {
+	fun carveSeam(image: BufferedImage?, direction: CarveDirection): BufferedImage {
 		// We need to compute the energy table, find and remove a seam.
 		var newImage: BufferedImage? = null
 		val energyTable = computeEnergy(image!!)
@@ -143,7 +143,7 @@ object SeamCarver {
 	 * @param energy table (Int[][]) and direction (vertical / horizontal).
 	 * @return seam (int[x or y][x, y]).
 	 */
-	private fun findSeam(energyTable: Array<IntArray>, direction: String): Array<IntArray> {
+	private fun findSeam(energyTable: Array<IntArray>, direction: CarveDirection): Array<IntArray> {
 		val seam: Array<IntArray>
 		val width = energyTable.size
 		val height = energyTable[0].size
@@ -151,7 +151,7 @@ object SeamCarver {
 		val seamDynamic = Array(width) { IntArray(height) }
 		val backtracker = Array(width) { IntArray(height) }
 		var minimum: Int
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			seam = Array(energyTable[0].size) { IntArray(2) }
 
@@ -336,11 +336,11 @@ object SeamCarver {
 	 * @param image, seam[][] and direction (vertical / horizontal).
 	 * @return carved image.
 	 */
-	private fun removeSeam(image: BufferedImage, seam: Array<IntArray>, direction: String): BufferedImage {
+	private fun removeSeam(image: BufferedImage, seam: Array<IntArray>, direction: CarveDirection): BufferedImage {
 		val newImage: BufferedImage
 		val width = image.width
 		val height = image.height
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			newImage = BufferedImage(width - 1, height, BufferedImage.TYPE_INT_ARGB)
 		} else {
@@ -352,7 +352,7 @@ object SeamCarver {
 
 		// Loops over ever pixel in the original image and copies them over.
 		// Do not copy over the pixels in the seam.
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			for (y in 0 until height) {
 				var shift = false
@@ -416,6 +416,10 @@ object SeamCarver {
 		}
 
 		return newImage
+	}
+
+	enum class CarveDirection {
+		HORIZONTAL, VERTICAL
 	}
 }
 

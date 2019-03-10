@@ -190,7 +190,10 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 
 		// Não mostrar categorias vazias
-		categories = categories.filter { category -> loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } }
+		categories = categories.filter { category ->
+			loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } ||
+					loritta.commandManager.commands.any { it.category == category }
+		}
 
 		val reactionEmotes = mapOf(
 				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
@@ -211,16 +214,22 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		)
 
 		for (category in categories) {
-			val cmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
-			val cmdCountInCategory = cmdsInCategory.count()
+			val legacyCmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
+			val cmdsInCategory = loritta.commandManager.commands.filter { it.category == category }
+
+			val cmdCountInCategory = legacyCmdsInCategory.count() + cmdsInCategory.count()
+
 			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
 			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }
 			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
 			description += "$emoji **" + context.legacyLocale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
+
+			val mixedCommands = cmdsInCategory + legacyCmdsInCategory
+
 			// Exemplos de comandos, iremos pegar os comandos mais usados e mostrar lá
-			val mostUsedCommands = cmdsInCategory.sortedByDescending { it.executedCount }
+			val mostUsedCommands = mixedCommands.sortedByDescending { if (it is AbstractCommand) it.executedCount else if (it is LorittaCommand) it.executedCount else 0 }
 			val subList = mostUsedCommands.subList(0, Math.min(5, mostUsedCommands.size))
-			description += "• ${subList.joinToString(", ", transform = { "**`${it.label}`**" })}...\n"
+			description += "• ${subList.joinToString(", ", transform = { "**`${if (it is AbstractCommand) it.label else if (it is LorittaCommand) it.labels.first() else "???"}`**" })}...\n"
 		}
 
 		val embed = EmbedBuilder().apply {

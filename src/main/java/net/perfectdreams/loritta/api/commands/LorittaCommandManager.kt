@@ -26,7 +26,6 @@ import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
-import net.perfectdreams.loritta.commands.vanilla.actions.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
 import java.awt.Image
@@ -48,13 +47,6 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		
 		registerCommand(ChannelInfoCommand())
 		registerCommand(GiveawayCommand())
-
-		// =======[ ACTIONS ]======
-		registerCommand(AttackCommand())
-		registerCommand(DanceCommand())
-		registerCommand(HugCommand())
-		registerCommand(KissCommand())
-		registerCommand(SlapCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {

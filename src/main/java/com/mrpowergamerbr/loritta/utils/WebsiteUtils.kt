@@ -22,12 +22,15 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.User
+import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.ReactionOptions
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -365,9 +368,30 @@ object WebsiteUtils {
 		return true
 	}
 
+	fun checkDiscordChannelRestAuth(req: Request, res: Response): Boolean {
+		// TODO: Permitir customizar da onde veio o channelId
+		val channelId = req.path().split("/")[4]
+
+		val channel = lorittaShards.getTextChannelById(channelId) ?: throw WebsiteAPIException(Status.NOT_FOUND,
+				createErrorPayload(
+						LoriWebCode.CHANNEL_DOESNT_EXIST,
+						"Channel doesn't exist or guild isn't loaded yet"
+				)
+		)
+
+		return checkServerConfigurationAuth(req, res, channel.guild.id)
+	}
+
 	fun checkDiscordGuildRestAuth(req: Request, res: Response): Boolean {
 		res.type(MediaType.json)
 
+		// TODO: Permitir customizar da onde veio o guildId
+		val guildId = req.path().split("/")[4]
+
+		return checkServerConfigurationAuth(req, res, guildId)
+	}
+
+	fun checkServerConfigurationAuth(req: Request, res: Response, guildId: String): Boolean {
 		var userIdentification: TemmieDiscordAuth.UserIdentification? = null
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
@@ -389,9 +413,6 @@ object WebsiteUtils {
 			)
 			return false
 		}
-
-		// TODO: Permitir customizar da onde veio o guildId
-		val guildId = req.path().split("/")[4]
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
 		val server = lorittaShards.getGuildById(guildId)
@@ -530,6 +551,22 @@ object WebsiteUtils {
 			)
 		}
 
+		guildJson["reactionRoleConfigs"] = transaction(Databases.loritta) {
+			val reactionOptions = ReactionOption.find {
+				ReactionOptions.guildId eq guild.idLong
+			}
+
+			reactionOptions.map {
+				jsonObject(
+						"textChannelId" to it.textChannelId.toString(),
+						"messageId" to it.messageId.toString(),
+						"reaction" to it.reaction,
+						"locks" to it.locks.toList().toJsonArray(),
+						"roleIds" to it.roleIds.toList().toJsonArray()
+				)
+			}.toJsonArray()
+		}
+
 		guildJson["selfMember"] = selfMember
 
 		transaction(Databases.loritta) {
@@ -543,6 +580,23 @@ object WebsiteUtils {
 				)
 			}
 		}
+
+		guildJson["roles"] = guild.roles.map {
+			jsonObject(
+					"id" to it.id,
+					"name" to it.name,
+					"color" to it.colorRaw
+			)
+		}.toJsonArray()
+
+		guildJson["textChannels"] in guild.textChannels.map {
+			jsonObject(
+					"id" to it.id,
+					"canTalk" to it.canTalk(),
+					"name" to it.name,
+					"topic" to it.topic
+			)
+		}.toJsonArray()
 
 		return guildJson
 	}
