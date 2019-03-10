@@ -49,6 +49,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.core.requests.RestAction
 import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
@@ -249,6 +250,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	// Inicia a Loritta
 	fun start() {
+		RestAction.setPassContext(true)
+
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 		val rootLogger = loggerContext.getLogger("org.mongodb.driver")

@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.PermissionException
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
@@ -225,6 +226,9 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val output = object : ByteArrayOutputStream() {
 			@Synchronized
 			override fun toByteArray(): ByteArray {
+				if (cmd.category == CommandCategory.IMAGES && this.buf.isEmpty()) {
+					throw RuntimeException("Trying to send empty image! Image is $image, file name is $name")
+				}
 				return this.buf
 			}
 		}
