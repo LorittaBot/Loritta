@@ -226,7 +226,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val output = object : ByteArrayOutputStream() {
 			@Synchronized
 			override fun toByteArray(): ByteArray {
-				if (cmd.category == CommandCategory.IMAGES && this.buf.isEmpty()) {
+				if (command.category == CommandCategory.IMAGES && this.buf.isEmpty()) {
 					throw RuntimeException("Trying to send empty image! Image is $image, file name is $name")
 				}
 				return this.buf
