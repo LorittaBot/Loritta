@@ -98,7 +98,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 				context.reply(
 						LoriReply(
-								locale["commands.moderation.unmute.successfullyUnmuted"],
+								locale.toNewLocale()["commands.moderation.unmute.successfullyUnmuted"],
 								"\uD83C\uDF89"
 						)
 				)
@@ -109,7 +109,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale["commands.moderation.unmute.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
+			var str = locale["BAN_ReadyToPunish", locale.toNewLocale()["commands.moderation.unmute.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
 
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
 			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
