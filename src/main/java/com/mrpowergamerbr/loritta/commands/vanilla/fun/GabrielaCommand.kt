@@ -6,7 +6,6 @@ import com.mongodb.client.model.UpdateOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaAnswer
@@ -15,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Message
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.bson.types.ObjectId
@@ -317,7 +317,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 				val answers = document.answers.filter { raw ->
 					WORD_BLACKLIST.forEach {
-						if (raw.answer.contains(Regex("(?i)\b($it)\b"))) {
+						if (raw.answer.contains(Regex("(?i)\\b($it)\\b"))) {
 							return@filter false
 						}
 					}

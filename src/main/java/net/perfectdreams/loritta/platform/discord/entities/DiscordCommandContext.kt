@@ -18,7 +18,6 @@ import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.exceptions.PermissionException
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
@@ -275,7 +274,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
 				Reference.reachabilityFence(inputStream) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
-				
+
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return DiscordMessage(sentMessage)
