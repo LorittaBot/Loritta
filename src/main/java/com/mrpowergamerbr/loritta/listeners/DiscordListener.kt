@@ -40,6 +40,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.core.events.http.HttpRequestEvent
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
@@ -52,12 +53,14 @@ import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -76,6 +79,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val issueMutex = Mutex()
 
 		private val logger = KotlinLogging.logger {}
+		private val requestLogger = LoggerFactory.getLogger("requests")
 
 		suspend fun isSuggestionValid(message: Message, requiredCount: Int = 5): Boolean {
 			// Pegar o número de likes - dislikes
@@ -183,6 +187,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		}
+	}
+
+	override fun onHttpRequest(event: HttpRequestEvent) {
+		val copy = event.requestRaw.newBuilder().build()
+		val buffer = Buffer()
+		copy.body()?.writeTo(buffer)
+		requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\nGlobally? ${event.responseHeaders.get("X-RateLimit-Global") ?: "false"} - RateLimit-Limit: ${event.responseHeaders.get("X-RateLimit-Limit")} - RateLimit-Remaining: ${event.responseHeaders.get("X-RateLimit-Remaining")} - Retry-After: ${event.responseHeaders.get("Retry-After")}\n${buffer.readUtf8()}")
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
