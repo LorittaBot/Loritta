@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
+import java.lang.ref.Reference
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -226,9 +227,6 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val output = object : ByteArrayOutputStream() {
 			@Synchronized
 			override fun toByteArray(): ByteArray {
-				if (command.category == CommandCategory.IMAGES && this.buf.isEmpty()) {
-					throw RuntimeException("Trying to send empty image! Image is $image, file name is $name")
-				}
 				return this.buf
 			}
 		}
@@ -276,7 +274,8 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
 				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
-
+				Reference.reachabilityFence(inputStream) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
+				
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return DiscordMessage(sentMessage)

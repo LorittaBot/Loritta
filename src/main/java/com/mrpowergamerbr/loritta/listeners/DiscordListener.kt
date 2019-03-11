@@ -130,23 +130,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			// Agora vamos fazer com que imagens do imgur (e imagens do discord em forma de link) funcionem!
 			// Se não for um link do imgur e imagem do discord em forma de link, então o link vai ficar em markdown
-			if (regexMatch != null) {
-				regexMatch.forEach {
-					if (it.value.contains("i.imgur")) {
-						// Precisamos substituir o sufixo do link, caso seja um gif, para a imagem seja valída
-						if (!it.value.endsWith(".gifv"))
-							suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
-						else {
-							val link = it.value.replace(".gifv", ".gif")
-							suggestionBody = suggestionBody.replace(link, "![$link]($link)")
-						}
-					}
-					else if (it.value.contains("cdn.discordapp.com") && (!it.value.contains("/emojis/")))
+			regexMatch.forEach {
+				if (it.value.contains("i.imgur")) {
+					// Precisamos substituir o sufixo do link, caso seja um gif, para a imagem seja valída
+					if (!it.value.endsWith(".gifv"))
 						suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
-					else
-						if (!it.value.contains("cdn.discordapp.com/emojis/"))
-						suggestionBody = suggestionBody.replace(it.value, "`${it.value}`")
+					else {
+						val link = it.value.replace(".gifv", ".gif")
+						suggestionBody = suggestionBody.replace(link, "![$link]($link)")
+					}
 				}
+				else if (it.value.contains("cdn.discordapp.com") && (!it.value.contains("/emojis/")))
+					suggestionBody = suggestionBody.replace(it.value, "![${it.value}](${it.value})")
+				else
+					if (!it.value.contains("cdn.discordapp.com/emojis/"))
+						suggestionBody = suggestionBody.replace(it.value, "`${it.value}`")
 			}
 
 			val body = """<img width="64" align="left" src="${message.author.effectiveAvatarUrl}">
