@@ -258,30 +258,33 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		/* if (cmd is AbstractCommand) {
+		try {
+			var privateReply = lorittaUser.config.commandOutputInPrivate
+			/* if (cmd is AbstractCommand) {
 			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
 			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 				privateReply = cmdOptions.commandOutputInPrivate
 			}
 		} */
-		if (privateReply) {
-			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			val sentMessage = privateChannel.sendMessageAsync(message)
+			if (privateReply) {
+				val privateChannel = lorittaUser.user.openPrivateChannel().await()
+				val sentMessage = privateChannel.sendMessageAsync(message)
 
-			return DiscordMessage(sentMessage)
-		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
-				Reference.reachabilityFence(inputStream) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
-
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 				return DiscordMessage(sentMessage)
 			} else {
-				LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
+				if (isPrivateChannel || event.textChannel!!.canTalk()) {
+					val sentMessage = event.channel.sendFile(inputStream, name, message).await()
+
+					if (config.deleteMessagesAfter != null)
+						sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+					return DiscordMessage(sentMessage)
+				} else {
+					LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
+					throw RuntimeException("Sem permissão para enviar uma mensagem!")
+				}
 			}
+		} finally {
+			Reference.reachabilityFence(inputStream) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
 		}
 	}
 

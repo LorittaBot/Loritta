@@ -323,7 +323,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
 					context.reply(
 							LoriReply(
-									locale["commands.pleaseWaitCooldown"],
+									locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
 									"\uD83D\uDD25"
 							)
 					)
