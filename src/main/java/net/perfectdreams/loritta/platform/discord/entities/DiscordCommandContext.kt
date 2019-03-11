@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.extensions.sendFileAsyncHoldReference
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -273,7 +274,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				return DiscordMessage(sentMessage)
 			} else {
 				if (isPrivateChannel || event.textChannel!!.canTalk()) {
-					val sentMessage = event.channel.sendFile(inputStream, name, message).await()
+					val sentMessage = event.channel.sendFileAsyncHoldReference(inputStream, name, message)
 
 					if (config.deleteMessagesAfter != null)
 						sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)

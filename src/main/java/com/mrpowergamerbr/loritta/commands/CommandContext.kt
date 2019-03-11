@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.sendFileAsyncHoldReference
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -248,7 +249,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 				return sentMessage
 			} else {
 				if (isPrivateChannel || event.textChannel!!.canTalk()) {
-					val sentMessage = event.channel.sendFile(inputStream, name, message).await()
+					val sentMessage = event.channel.sendFileAsyncHoldReference(inputStream, name, message)
 
 					if (config.deleteMessagesAfter != null)
 						sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)

@@ -1,10 +1,11 @@
 package com.mrpowergamerbr.loritta.modules
 
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.extensions.sendFileAsyncHoldReference
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 import org.apache.commons.io.IOUtils
@@ -42,7 +43,7 @@ class AminoConverterModule : MessageReceivedModule {
 
 				val extension = if (isGif) "gif" else "png"
 
-				event.textChannel.sendFile(byteArray.inputStream(), "amino.$extension", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build()).queue()
+				event.textChannel.sendFileAsyncHoldReference(byteArray.inputStream(), "amino.$extension", MessageBuilder().append("(Por " + event.member.asMention + ") **Link para o \".Amino\":** " + attachments.url).build())
 				event.message.delete().queue()
 			}
 		}
