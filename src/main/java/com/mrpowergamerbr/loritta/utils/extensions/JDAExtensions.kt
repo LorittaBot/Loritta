@@ -11,14 +11,13 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.requests.RestAction
 import java.io.File
 import java.io.InputStream
-import java.lang.ref.Reference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 suspend fun <T> RestAction<T>.await() : T {
 	return suspendCoroutine { cont ->
-		this.queue({ cont.resume(it) }, { cont.resumeWithException(it) })
+		this.queue({ cont.resume(it)}, { cont.resumeWithException(it) })
 	}
 }
 
@@ -33,17 +32,6 @@ suspend fun MessageChannel.sendFileAsync(file: File, fileName: String, message: 
 suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String) = this.sendFile(data, fileName).await()
 suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String, message: Message) = this.sendFile(data, fileName).await()
 suspend fun MessageChannel.sendFileAsync(data: InputStream, fileName: String, message: Message) = this.sendFile(data, fileName).await()
-
-suspend fun MessageChannel.sendFileAsyncHoldReference(data: InputStream, fileName: String, message: Message) : Message {
-	Reference.reachabilityFence(data) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
-	return suspendCoroutine { cont ->
-		Reference.reachabilityFence(data) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
-		this.sendFile(data, fileName, message).queue({
-			Reference.reachabilityFence(data) // https://cdn.discordapp.com/attachments/358774895850815488/554480010363273217/unknown.png
-			cont.resume(it)
-		}, { cont.resumeWithException(it) })
-	}
-}
 
 suspend fun Message.edit(message: String, embed: MessageEmbed): Message {
 	return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
