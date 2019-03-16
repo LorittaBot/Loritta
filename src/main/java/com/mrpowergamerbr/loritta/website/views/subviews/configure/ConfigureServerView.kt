@@ -5,12 +5,12 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.evaluate
 import net.dv8tion.jda.core.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
@@ -21,7 +21,7 @@ import javax.imageio.ImageIO
 class ConfigureServerView : ConfigureView() {
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
 		super.handleRender(req, res, path, variables)
-		return path.matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)?(save)?"))
+		return path.matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)?(save|general)?"))
 	}
 
 	override fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: MongoServerConfig): String {

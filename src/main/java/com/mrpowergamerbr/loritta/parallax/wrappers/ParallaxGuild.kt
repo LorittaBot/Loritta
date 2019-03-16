@@ -5,9 +5,29 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.core.entities.Guild
 
 class ParallaxGuild(private val guild: Guild) {
-	// TODO: afkChannel
+	val afkChannel get() = ParallaxVoiceChannel(guild.afkChannel)
 	val afkChannelID get() = guild.afkChannel.id
+	val afkTimeout get() = guild.afkTimeout.seconds
+
 	val database = ParallaxDatabase(guild)
+
+	val me get() = ParallaxMember(guild.selfMember)
+
+	val iconURL get() = guild.iconUrl
+
+	val owner = ParallaxMember(guild.owner)
+	val ownerId = guild.ownerId
+
+	val roles get() = guild.roles.map { ParallaxRole(it) }
+	val members get() = guild.members.map { ParallaxMember(it) }
+
+	fun getMemberById(memberId: String): ParallaxMember? {
+		return members.firstOrNull { it.id == memberId }
+	}
+
+	fun getMemberById(memberId: Long): ParallaxMember? {
+		return members.firstOrNull { it.id == memberId.toString() }
+	}
 
 	@JvmOverloads
 	fun getRolesByName(name: String, ignoreCase: Boolean = false): List<ParallaxRole> {
@@ -15,11 +35,11 @@ class ParallaxGuild(private val guild: Guild) {
 	}
 
 	fun getRoleById(roleId: String): ParallaxRole? {
-		return ParallaxRole(guild.getRoleById(roleId))
+		return roles.firstOrNull { it.id == roleId }
 	}
 
 	fun getRoleById(roleId: Long): ParallaxRole? {
-		return ParallaxRole(guild.getRoleById(roleId))
+		return roles.firstOrNull { it.id == roleId.toString() }
 	}
 
 	fun getTextChannelsByName(name: String): List<ParallaxTextChannel> {

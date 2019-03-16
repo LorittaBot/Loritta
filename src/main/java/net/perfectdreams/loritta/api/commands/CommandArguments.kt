@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 
 data class CommandArguments(val arguments: List<CommandArgument>) {
-	fun build(locale: LegacyBaseLocale): String {
+	fun build(locale: BaseLocale): String {
 		val builder = StringBuilder()
 		for (argument in arguments) {
 			argument.build(builder, locale)
@@ -20,11 +20,11 @@ data class CommandArgument(
 		val text: String? = null,
 		val explanation: String? = null
 ) {
-	fun build(locale: LegacyBaseLocale): String {
+	fun build(locale: BaseLocale): String {
 		return build(StringBuilder(), locale).toString()
 	}
 
-	fun build(builder: StringBuilder, locale: LegacyBaseLocale): StringBuilder {
+	fun build(builder: StringBuilder, locale: BaseLocale): StringBuilder {
 		if (this.optional)
 			builder.append('[')
 		else
@@ -45,14 +45,13 @@ enum class ArgumentType {
 	EMOTE,
 	IMAGE;
 
-	fun localized(locale: LegacyBaseLocale): String {
+	fun localized(locale: BaseLocale): String {
 		return when (this) {
-			TEXT ->   locale.format { commands.arguments.text }
-			NUMBER -> locale.format { commands.arguments.number }
-			USER ->   locale.format { commands.arguments.user }
-			EMOTE ->  locale.format { commands.arguments.emote }
-			IMAGE ->  locale.format { commands.arguments.image }
-			else -> "derp"
+			TEXT   -> locale["commands.arguments.text"]
+			NUMBER -> locale["commands.arguments.number"]
+			USER   -> locale["commands.arguments.user"]
+			EMOTE  -> locale["commands.arguments.emote"]
+			IMAGE  -> locale["commands.arguments.image"]
 		}
 	}
 }

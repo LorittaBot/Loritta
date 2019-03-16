@@ -141,7 +141,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			val commandArguments = getUsage(locale)
 			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(context.locale)}`"
 				getUsage() != null -> " `${getUsage()}`"
 				else -> ""
 			}
@@ -152,7 +152,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			for (argument in commandArguments.arguments) {
 				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(context.locale)}` - "
 					if (argument.defaultValue != null) {
 						cmdInfo += "(Padrão: ${argument.defaultValue}) "
 					}
@@ -198,10 +198,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
 				var field = ""
 				if (getDiscordPermissions().isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para utilizar este comando!\n"
 				}
 				if (getBotPermissions().isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",

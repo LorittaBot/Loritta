@@ -210,12 +210,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						val allCommandLabels = mutableListOf<String>()
 
 						loritta.commandManager.commands.forEach {
-							allCommandLabels.addAll(it.labels)
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
+								allCommandLabels.addAll(it.labels)
 						}
 
 						loritta.legacyCommandManager.commandMap.forEach {
-							allCommandLabels.add(it.label)
-							allCommandLabels.addAll(it.aliases)
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName)) {
+								allCommandLabels.add(it.label)
+								allCommandLabels.addAll(it.aliases)
+							}
 						}
 
 						var diff = 999

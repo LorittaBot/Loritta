@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.entertainment.roll.description }
+		return locale.toNewLocale()["commands.entertainment.roll.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -20,7 +20,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			argument(ArgumentType.NUMBER) {
 				optional = true
 				defaultValue = "6"
-				explanation = locale.format { commands.entertainment.roll.howMuchSides }
+				explanation = locale.toNewLocale()["commands.entertainment.roll.howMuchSides"]
 			}
 		}
 	}

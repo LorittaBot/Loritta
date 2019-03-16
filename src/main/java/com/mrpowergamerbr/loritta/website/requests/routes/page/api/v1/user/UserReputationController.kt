@@ -269,18 +269,19 @@ class UserReputationController {
 				if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
 					return
 
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 
 				// Tudo certo? Então vamos enviar!
 				val reply = LoriReply(
-						locale.format(
+						locale[
+								"commands.social.reputation.success",
 								"<@${giverId}>",
 								"<@$receiverId>",
 								reputationCount,
 								Emotes.LORI_OWO,
 								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>",
 								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-						) { commands.social.reputation.success },
+						],
 						Emotes.LORI_HUG
 				)
 

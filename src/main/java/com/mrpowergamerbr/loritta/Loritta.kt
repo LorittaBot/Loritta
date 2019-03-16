@@ -44,9 +44,12 @@ import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.core.requests.RestAction
 import net.dv8tion.jda.core.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
@@ -65,7 +68,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
@@ -171,6 +173,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var websiteThread: Thread
 
 	var twitch = TwitchAPI()
+	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 
 	init {
@@ -247,6 +250,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	// Inicia a Loritta
 	fun start() {
+		RestAction.setPassContext(true)
+
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 		val rootLogger = loggerContext.getLogger("org.mongodb.driver")
@@ -302,6 +307,10 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
+
+		GlobalScope.launch(coroutineDispatcher) {
+			connectionManager.updateProxies()
+		}
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
@@ -666,73 +675,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				}
 
 				File(LOCALES, "$id.json").writeText(prettyGson.toJson(jsonObject))
-			}
-		}
-
-		// Nós também suportamos locales em YAML
-		for ((key, locale) in locales) {
-			val yaml = Yaml()
-
-			val defaultYaml = File(LOCALES, "default.yml")
-			val localeYaml = File(LOCALES, "$key.yml")
-
-			fun String.yamlToVariable(): String {
-				var newVariable = ""
-				var nextShouldBeUppercase = false
-				for (ch in this) {
-					if (ch == '-') {
-						nextShouldBeUppercase = true
-						continue
-					}
-					var thisChar = ch
-					if (nextShouldBeUppercase)
-						thisChar = thisChar.toUpperCase()
-					newVariable += thisChar
-					nextShouldBeUppercase = false
-				}
-				return newVariable
-			}
-
-			fun applyValues(file: File) {
-				val obj = yaml.load(file.readText()) as Map<String, Object>
-
-				fun handle(root: Any, name: String, entries: Map<*, *>) {
-					entries as Map<String, Any>
-
-					val field = root::class.java.getDeclaredField(name)
-					field.isAccessible = true
-					for ((key, value) in entries) {
-						try {
-							when (value) {
-								is Map<*, *> -> {
-									handle(field.get(root), key.yamlToVariable(), value)
-								}
-								else -> {
-									val entryField = field.get(root)::class.java.getDeclaredField(key.yamlToVariable())
-									entryField.isAccessible = true
-									entryField.set(field.get(root), value)
-								}
-							}
-						} catch (e: NoSuchFieldException) {
-							logger.warn { "O campo $key não existe." }
-						}
-					}
-				}
-
-				for ((key, value) in obj) {
-					if (value is Map<*, *>)
-						handle(locale, key.yamlToVariable(), value)
-					else {
-						logger.error { "Posição inválida para $key em $value"}
-					}
-				}
-			}
-
-			applyValues(defaultYaml)
-			if (localeYaml.exists()) {
-				applyValues(localeYaml)
-			} else {
-				logger.error { "Locale $key não possui YAML! Fix it, fix it, fix it!!!" }
 			}
 		}
 

@@ -168,6 +168,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 				LoriAuthLevel.API_KEY -> WebsiteUtils.checkHeaderAuth(req, res)
 				LoriAuthLevel.DISCORD_GUILD_AUTH -> WebsiteUtils.checkDiscordGuildAuth(req, res)
 				LoriAuthLevel.DISCORD_GUILD_REST_AUTH -> WebsiteUtils.checkDiscordGuildRestAuth(req, res)
+				LoriAuthLevel.DISCORD_CHANNEL_REST_AUTH -> WebsiteUtils.checkDiscordChannelRestAuth(req, res)
 				LoriAuthLevel.USER_AUTH -> WebsiteUtils.checkDiscordUserAuth(req, res)
 				else -> throw UnsupportedOperationException("Unknown auth method: ${authLevel}")
 			}

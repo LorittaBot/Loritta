@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.website.requests.routes
 
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.*
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.channels.GetMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.LoriTransferBalanceController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.SendMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
@@ -18,6 +19,7 @@ class APIRoute : Jooby() {
 		use(UpdateServerConfigController::class.java)
 		use(SendMessageGuildController::class.java)
 		use(StoreItemsGuildController::class.java)
+		use(GetMessageGuildController::class.java)
 
 		// ===[ CALLBACKS ]===
 		use(MixerCallbackController::class.java)

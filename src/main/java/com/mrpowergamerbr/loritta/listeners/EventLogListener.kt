@@ -59,13 +59,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 	}
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
-			.removalListener { k1: String?, v1: UserMetaHolder?, removalCause ->
+			.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
 				if (k1 != null && v1 != null) {
 					val user = lorittaShards.getUserById(k1) ?: return@removalListener
 					sendUsernameChange(user, v1)
 				}
 			}
-			.build<String, UserMetaHolder>().asMap()
+			.build<Long, UserMetaHolder>().asMap()
 
 	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
 
@@ -161,14 +161,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (!handledUsernameChanges.containsKey(event.user.id)) {
-			handledUsernameChanges[event.user.id] = UserMetaHolder(event.oldName, null)
+		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
+			handledUsernameChanges[event.user.idLong] = UserMetaHolder(event.oldName, null)
 		} else {
-			val usernameChange = handledUsernameChanges[event.user.id]!!
+			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldName = event.oldName
 
 			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
-				handledUsernameChanges[event.user.id] = null
+				handledUsernameChanges.remove(event.user.idLong)
 				loritta.executor.execute {
 					sendUsernameChange(event.user, usernameChange)
 				}
@@ -180,14 +180,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (!handledUsernameChanges.containsKey(event.user.id)) {
-			handledUsernameChanges[event.user.id] = UserMetaHolder(null, event.oldDiscriminator)
+		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
+			handledUsernameChanges[event.user.idLong] = UserMetaHolder(null, event.oldDiscriminator)
 		} else {
-			val usernameChange = handledUsernameChanges[event.user.id]!!
+			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
 
 			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
-				handledUsernameChanges[event.user.id] = null
+				handledUsernameChanges.remove(event.user.idLong)
 				loritta.executor.execute {
 					sendUsernameChange(event.user, usernameChange)
 				}

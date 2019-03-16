@@ -1,9 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornImage
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import java.awt.Color
 import java.io.IOException
 
@@ -15,7 +11,7 @@ object NashornUtils {
 	fun loritta(): String { // Método teste
 		return "Loritta!"
 	}
-	@JvmStatic
+	/* @JvmStatic
 	fun getURL(url: String): String {
 		return HttpRequest.get(url).userAgent(Constants.USER_AGENT).body()
 	}
@@ -25,7 +21,7 @@ object NashornUtils {
 	fun downloadImage(url: String): NashornImage {
 		val image = LorittaUtils.downloadImage(url)
 		return NashornImage(image!!)
-	}
+	} */
 
 	@Throws(IOException::class)
 	@JvmStatic

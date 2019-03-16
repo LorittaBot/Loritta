@@ -28,7 +28,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.discord.addEmoji.description }
+		return locale.toNewLocale()["commands.discord.addEmoji.description"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -49,7 +49,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
 				context.reply(
 						LoriReply(
-								context.legacyLocale.format { commands.discord.addEmoji.success },
+								context.legacyLocale.toNewLocale()["commands.discord.addEmoji.success"],
 								emote.asMention
 						)
 				)
@@ -59,7 +59,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				if (e.errorCode == 30008) {
 					context.reply(
 							LoriReply(
-									context.legacyLocale.format { commands.discord.addEmoji.limitReached },
+									context.legacyLocale.toNewLocale()["commands.discord.addEmoji.limitReached"],
 									Constants.ERROR
 							)
 					)
@@ -70,7 +70,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 			
 			context.reply(
 					LoriReply(
-							context.legacyLocale.format { commands.discord.addEmoji.error },
+							context.legacyLocale.toNewLocale()["commands.discord.addEmoji.error"],
 							Constants.ERROR
 					)
 			)

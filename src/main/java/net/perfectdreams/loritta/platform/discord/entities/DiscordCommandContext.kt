@@ -221,12 +221,17 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		val outputStream = ByteArrayOutputStream()
-		outputStream.use {
-			ImageIO.write(image, "png", it)
+		// https://stackoverflow.com/a/12253091/7271796
+		val output = object : ByteArrayOutputStream() {
+			@Synchronized
+			override fun toByteArray(): ByteArray {
+				return this.buf
+			}
 		}
 
-		val inputStream = ByteArrayInputStream(outputStream.toByteArray())
+		ImageIO.write(image, "png", output)
+
+		val inputStream = ByteArrayInputStream(output.toByteArray(), 0, output.size())
 
 		return sendFile(inputStream, name, message)
 	}
@@ -254,11 +259,11 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		var privateReply = lorittaUser.config.commandOutputInPrivate
 		/* if (cmd is AbstractCommand) {
-			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
-			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-				privateReply = cmdOptions.commandOutputInPrivate
-			}
-		} */
+        val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
+        if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
+            privateReply = cmdOptions.commandOutputInPrivate
+        }
+    } */
 		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
@@ -302,7 +307,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			val commandArguments = command.getUsage(locale)
 			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(legacyLocale)}`"
+				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
 				else -> ""
 			}
 
@@ -312,7 +317,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			for (argument in commandArguments.arguments) {
 				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(legacyLocale)}` - "
+					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
 					if (argument.defaultValue != null) {
 						cmdInfo += "(Padrão: ${argument.defaultValue}) "
 					}
@@ -349,10 +354,10 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			if (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty()) {
 				var field = ""
 				if (command.discordPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para utilizar este comando!\n"
+					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
 				}
 				if (command.botPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(legacyLocale)}`" })} para poder executar este comando!\n"
+					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB Permissões",

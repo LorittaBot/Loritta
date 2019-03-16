@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.discord.emojiInfo.description }
+		return locale.toNewLocale()["commands.discord.emojiInfo.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -41,7 +41,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				} else {
 					context.reply(
 							LoriReply(
-									locale.format("`$arg0`") { commands.discord.emoji.notFoundId },
+									locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
 									Constants.ERROR
 							)
 					)
@@ -71,7 +71,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 
 				val embed = EmbedBuilder()
 				embed.setColor(Constants.DISCORD_BLURPLE)
-				embed.setTitle("$arg0 ${context.legacyLocale.format { commands.discord.emojiInfo.aboutEmoji }}")
+				embed.setTitle("$arg0 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.aboutEmoji"]}")
 				embed.setThumbnail(emojiUrl)
 
 				val names = mutableListOf<String>()
@@ -82,9 +82,9 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				}
 
 				if (names.isNotEmpty())
-					embed.addField("\uD83D\uDD16 ${context.legacyLocale.format { commands.discord.emojiInfo.emojiName }}", "`${names.joinToString(" + ")}`", true)
+					embed.addField("\uD83D\uDD16 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiName"]}", "`${names.joinToString(" + ")}`", true)
 
-				embed.addField("\uD83D\uDC40 ${context.legacyLocale.format { commands.discord.emojiInfo.mention }}", "`$arg0`", true)
+				embed.addField("\uD83D\uDC40 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.mention"]}", "`$arg0`", true)
 				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
 				embed.addField("⛓ Link", emojiUrl, true)
 
@@ -116,14 +116,14 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				"✨"
 			val embed = EmbedBuilder()
 			embed.setColor(Constants.DISCORD_BLURPLE)
-			embed.setTitle("$emoteTitle ${context.legacyLocale.format { commands.discord.emojiInfo.aboutEmoji }}")
+			embed.setTitle("$emoteTitle ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.aboutEmoji"]}")
 			embed.setThumbnail(emote.imageUrl)
-			embed.addField("\uD83D\uDD16 ${context.legacyLocale.format { commands.discord.emojiInfo.emojiName }}", "`${emote.name}`", true)
-			embed.addField("\uD83D\uDCBB ${context.legacyLocale.format { commands.discord.emojiInfo.emojiId }}", "`${emote.id}`", true)
-			embed.addField("\uD83D\uDC40 ${context.legacyLocale.format { commands.discord.emojiInfo.mention }}", "`${emote.asMention}`", true)
-			embed.addField("\uD83D\uDCC5 ${context.legacyLocale.format { commands.discord.emojiInfo.emojiCreated }}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.legacyLocale), true)
+			embed.addField("\uD83D\uDD16 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiName"]}", "`${emote.name}`", true)
+			embed.addField("\uD83D\uDCBB ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiId"]}", "`${emote.id}`", true)
+			embed.addField("\uD83D\uDC40 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.mention"]}", "`${emote.asMention}`", true)
+			embed.addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiCreated"]}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.legacyLocale), true)
 			if (sourceGuild != null)
-				embed.addField("\uD83D\uDD0E ${context.legacyLocale.format { commands.discord.emojiInfo.seenAt }}", "`${sourceGuild.name}`", true)
+				embed.addField("\uD83D\uDD0E ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.seenAt"]}", "`${sourceGuild.name}`", true)
 			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
 			return embed.build()
 		}

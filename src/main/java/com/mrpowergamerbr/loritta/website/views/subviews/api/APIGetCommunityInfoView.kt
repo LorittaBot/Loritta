@@ -3,7 +3,9 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -25,6 +27,16 @@ class APIGetCommunityInfoView : NoVarsView() {
 
 		var aminoInviteLink = req.param("aminoInviteLink").value()
 
+		if (!aminoInviteLink.isValidUrl()) {
+			json["error"] = "Invalid URL"
+			return json.toString()
+		}
+
+		if (!loritta.connectionManager.isTrusted(aminoInviteLink)) {
+			json["error"] = "Untrusted URL"
+			return json.toString()
+		}
+
 		// Amino agora apenas aceita https
 		aminoInviteLink = aminoInviteLink.replace("http://", "https://")
 
@@ -41,14 +53,7 @@ class APIGetCommunityInfoView : NoVarsView() {
 			return json.toString()
 		}
 
-		println("headers...")
-		httpRequest.headers().forEach { t, u ->
-			println("$t - $u")
-		}
-
 		val body = httpRequest.body()
-
-		println(body)
 
 		val document = Jsoup.parse(body)
 

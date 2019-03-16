@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.modules
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -9,9 +10,20 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.concurrent.TimeUnit
 
 class ExperienceModule : MessageReceivedModule {
+	// Para evitar "could not serialize access due to concurrent update", vamos sincronizar o update de XP usando mutexes
+	// Como um usuário normalmente só está falando em um servidor ao mesmo tempo, a gente pode sincronizar baseado no User ID dele
+	// User ID -> Mutex
+	private val mutexes = Caffeine.newBuilder()
+			.expireAfterAccess(60, TimeUnit.SECONDS)
+			.build<Long, Mutex>()
+			.asMap()
+
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
@@ -56,18 +68,26 @@ class ExperienceModule : MessageReceivedModule {
 
 					val profile = serverConfig.getUserData(event.author.idLong)
 
-					transaction(Databases.loritta) {
-						profile.xp += gainedXp
+					val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
+
+					mutex.withLock {
+						transaction(Databases.loritta) {
+							profile.xp += gainedXp
+						}
 					}
 				}
 			}
 		}
 
 		if (lastMessageSentHash != null && lorittaProfile.xp != newProfileXp) {
-			transaction(Databases.loritta) {
-				lorittaProfile.lastMessageSentHash = lastMessageSentHash
-				lorittaProfile.xp = newProfileXp
-				lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+			val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
+
+			mutex.withLock {
+				transaction(Databases.loritta) {
+					lorittaProfile.lastMessageSentHash = lastMessageSentHash
+					lorittaProfile.xp = newProfileXp
+					lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+				}
 			}
 		}
 		return false

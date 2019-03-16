@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
 
 class BolsoDrakeCommand : AbstractCommand("bolsodrake", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.format { commands.images.bolsoDrake.description }
+		return locale.toNewLocale()["commands.images.bolsoDrake.description"]
 	}
 
 	override fun getExamples(): List<String> {

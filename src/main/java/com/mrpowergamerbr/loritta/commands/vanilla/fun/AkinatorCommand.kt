@@ -31,9 +31,9 @@ class AkinatorCommand : AbstractCommand("akinator", category = CommandCategory.F
 
 	fun getApiEndpoint(localeId: String): String {
 		return when (localeId) {
-			"default", "pt-pt", "pt-funk" -> "https://srv11.akinator.com:9174"
+			"default", "pt-pt", "pt-funk" -> "https://srv2.akinator.com:9161"
 			"tr-tr" -> "https://srv3.akinator.com:9211"
-			"pl-pl" -> "https://srv7.akinator.com:9143"
+			"pl-pl" -> "https://srv12.akinator.com:9188"
 			"ru-ru" -> "https://srv12.akinator.com:9190"
 			"nl-nl" -> "https://srv9.akinator.com:9215"
 			"kr-kr" -> "https://srv2.akinator.com:9156"

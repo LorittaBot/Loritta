@@ -30,7 +30,7 @@ object SeamCarver {
 	 * @param image to be carved and direction of the seam (vertical / horizontal).
 	 * @return carved image.
 	 */
-	fun carveSeam(image: BufferedImage?, direction: String): BufferedImage {
+	fun carveSeam(image: BufferedImage?, direction: CarveDirection): BufferedImage {
 		// We need to compute the energy table, find and remove a seam.
 		var newImage: BufferedImage? = null
 		val energyTable = computeEnergy(image!!)
@@ -54,12 +54,21 @@ object SeamCarver {
 		val height = image.height
 		val colors = Array(width) { IntArray(height) { -1 } }
 
+		val raster = image.raster
+
 		// Fazer cache de valores para evitar getRGBs desnecessários
 		fun getColor(x: Int, y: Int): Int {
 			if (colors[x][y] != -1)
 				return colors[x][y]
 
-			val rgb = image.getRGB(x, y)
+			val result = (raster.getDataElements(x, y, null))
+			val rgb = if (result is IntArray) {
+				result[0]
+			} else {
+				// I tried, okay?
+				image.getRGB(x, y)
+			}
+
 			colors[x][y] = rgb
 			return rgb
 		}
@@ -134,7 +143,7 @@ object SeamCarver {
 	 * @param energy table (Int[][]) and direction (vertical / horizontal).
 	 * @return seam (int[x or y][x, y]).
 	 */
-	private fun findSeam(energyTable: Array<IntArray>, direction: String): Array<IntArray> {
+	private fun findSeam(energyTable: Array<IntArray>, direction: CarveDirection): Array<IntArray> {
 		val seam: Array<IntArray>
 		val width = energyTable.size
 		val height = energyTable[0].size
@@ -142,7 +151,7 @@ object SeamCarver {
 		val seamDynamic = Array(width) { IntArray(height) }
 		val backtracker = Array(width) { IntArray(height) }
 		var minimum: Int
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			seam = Array(energyTable[0].size) { IntArray(2) }
 
@@ -327,11 +336,11 @@ object SeamCarver {
 	 * @param image, seam[][] and direction (vertical / horizontal).
 	 * @return carved image.
 	 */
-	private fun removeSeam(image: BufferedImage, seam: Array<IntArray>, direction: String): BufferedImage {
+	private fun removeSeam(image: BufferedImage, seam: Array<IntArray>, direction: CarveDirection): BufferedImage {
 		val newImage: BufferedImage
 		val width = image.width
 		val height = image.height
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			newImage = BufferedImage(width - 1, height, BufferedImage.TYPE_INT_ARGB)
 		} else {
@@ -339,9 +348,11 @@ object SeamCarver {
 			newImage = BufferedImage(width, height - 1, BufferedImage.TYPE_INT_ARGB)
 		}
 
+		val raster = image.raster
+
 		// Loops over ever pixel in the original image and copies them over.
 		// Do not copy over the pixels in the seam.
-		if (direction == "vertical") {
+		if (direction == CarveDirection.VERTICAL) {
 			// vertical seam.
 			for (y in 0 until height) {
 				var shift = false
@@ -355,7 +366,14 @@ object SeamCarver {
 
 					if (!inSeam) {
 						// pixel not part of the seam, so we add it.
-						val color = image.getRGB(x, y)
+						val result = (raster.getDataElements(x, y, null))
+						val color = if (result is IntArray) {
+							result[0]
+						} else {
+							// I tried, okay?
+							image.getRGB(x, y)
+						}
+
 						if (shift) {
 							newImage.setRGB(x - 1, y, color)
 						} else {
@@ -379,7 +397,14 @@ object SeamCarver {
 					// this does not work, as we might need to put it at either x-1 or y-1.
 					if (!inSeam) {
 						// pixel not part of the seam, so we add it.
-						val color = image.getRGB(x, y)
+						val result = (raster.getDataElements(x, y, null))
+						val color = if (result is IntArray) {
+							result[0]
+						} else {
+							// I tried, okay?
+							image.getRGB(x, y)
+						}
+
 						if (shift) {
 							newImage.setRGB(x, y - 1, color)
 						} else {
@@ -391,6 +416,10 @@ object SeamCarver {
 		}
 
 		return newImage
+	}
+
+	enum class CarveDirection {
+		HORIZONTAL, VERTICAL
 	}
 }
 

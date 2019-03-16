@@ -1,13 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.SeamCarver
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -30,28 +29,20 @@ class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("ca
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val loriImage = LorittaImage(contextImage)
-		loriImage.resize(512, 512, true)
+		loriImage.resize(256, 256, true)
 		contextImage = loriImage.bufferedImage
 
 		var newImage = contextImage
 
-		for (i in 0..399) {
+		for (i in 0 until 256) {
 			// determine scale
-			var scaleTo = if (Loritta.RANDOM.nextBoolean()) "horizontal" else "vertical"
+			var scaleTo = if (i % 2 == 0) SeamCarver.CarveDirection.HORIZONTAL else SeamCarver.CarveDirection.VERTICAL
 
-			if (200 > newImage.height) { // se ficar menos que 200 irá ficar bem ruim a imagem
-				scaleTo = "vertical"
-			}
-
-			if (200 > newImage.width) { // se ficar menos que 200 irá ficar bem ruim a imagem
-				scaleTo = "horizontal"
-			}
-
-			if (100 > newImage.height) { // se ficar menos que 200 irá ficar bem ruim a imagem
+			if (32 > newImage.height) { // se ficar menos que 32 irá ficar bem ruim a imagem
 				break
 			}
 
-			if (100 > newImage.width) { // se ficar menos que 200 irá ficar bem ruim a imagem
+			if (32 > newImage.width) { // se ficar menos que 32 irá ficar bem ruim a imagem
 				break
 			}
 

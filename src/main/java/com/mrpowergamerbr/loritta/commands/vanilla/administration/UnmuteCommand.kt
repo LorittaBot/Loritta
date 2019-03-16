@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -97,7 +98,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 				context.reply(
 						LoriReply(
-								locale.format { commands.moderation.unmute.sucessfullyUnmuted },
+								locale.toNewLocale()["commands.moderation.unmute.successfullyUnmuted"],
 								"\uD83C\uDF89"
 						)
 				)
@@ -108,7 +109,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale.format { commands.moderation.unmute.punishName }, user.asMention, user.name + "#" + user.discriminator, user.id]
+			var str = locale["BAN_ReadyToPunish", locale.toNewLocale()["commands.moderation.unmute.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
 
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
 			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
@@ -151,7 +152,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 								guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale.format { commands.moderation.unmute.punishAction },
+										"punishment" to locale.toNewLocale()["commands.moderation.unmute.punishAction"],
 										"staff" to punisher.name,
 										"@staff" to punisher.asMention,
 										"staff-discriminator" to punisher.discriminator,

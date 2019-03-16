@@ -2,17 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.Emote
-
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -50,7 +45,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				} else {
 					context.reply(
 							LoriReply(
-									locale.format("`$arg0`") { commands.discord.emoji.notFoundId },
+									locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
 									Constants.ERROR
 							)
 					)
