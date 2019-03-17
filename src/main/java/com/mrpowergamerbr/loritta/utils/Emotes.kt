@@ -11,4 +11,6 @@ object Emotes {
 	const val LORI_OWO = "<:lori_owo:417813932380520448>"
 	const val LORI_HUG = "<:lori_hug:515328576611155968>"
 	const val LORI_HAPPY = "<a:lori_happy:521721811298156558>"
+	const val LORI_CRYING = "<:lori_tristeliz:556524143281963008>"
+	const val LORI_RAGE = "<:lori_brava:556525700425711636>"
 }

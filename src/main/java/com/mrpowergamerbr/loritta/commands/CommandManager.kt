@@ -599,7 +599,7 @@ class CommandManager {
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
-				var reply = "\uD83E\uDD37 **|** " + mention + reparsedLegacyLocale["ERROR_WHILE_EXECUTING_COMMAND"]
+				var reply = "\uD83E\uDD37 **|** " + mention + locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING]
 
 				if (!e.message.isNullOrEmpty())
 					reply += " `${e.message!!.escapeMentions()}`"
