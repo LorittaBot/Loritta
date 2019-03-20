@@ -69,16 +69,6 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 							LoriReply(message = context.legacyLocale["PPT_CHOSEN", jesus, jesus], prefix = "\uD83C\uDFF3"),
 							LoriReply(message = fancy, mentionUser = false)
 					)
-				} else if (playerValue.equals("velberan", ignoreCase = true)) {
-					val opponent = Jankenpon.values()[Loritta.RANDOM.nextInt(Jankenpon.values().size)]
-
-					val fancy = "🕹🕹🕹"
-					context.sendMessage(context.getAsMention(true) + "Você escolheu 🕹 *VELBERAN*🕹, eu escolhi " + opponent.emoji + "\n" + fancy)
-					try {
-						context.sendFile(File(Loritta.ASSETS + "velberan.gif"), "velberan.gif", " ")
-					} catch (e: IOException) {
-						e.printStackTrace()
-					}
 				} else {
 					val fancy = "**${context.legacyLocale["PPT_INVALID"]} \uD83D\uDE09**"
 					val jesus = "🙇 *${context.legacyLocale["PPT_JESUS_CHRIST"]}* 🙇"
