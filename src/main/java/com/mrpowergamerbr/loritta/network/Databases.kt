@@ -14,10 +14,7 @@ object Databases {
 			config.password = Loritta.config.postgreSqlPassword
 		config.driverClassName = "org.postgresql.Driver"
 
-		config.maximumPoolSize = 128
-		config.addDataSourceProperty("cachePrepStmts", "true")
-		config.addDataSourceProperty("prepStmtCacheSize", "250")
-		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+		config.maximumPoolSize = 24
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
