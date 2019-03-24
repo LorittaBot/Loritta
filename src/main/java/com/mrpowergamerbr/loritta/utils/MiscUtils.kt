@@ -297,3 +297,15 @@ object MiscUtils {
 		OVH_HOSTNAME(false)
 	}
 }
+
+fun main(args: Array<String>) {
+	fun checkAndVerify(url: String) {
+		val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*").matcher(url)
+
+		println("${url}: ${matcher.find()}")
+	}
+
+	checkAndVerify("loritta.website")
+	checkAndVerify("discord.gg/lori")
+	checkAndVerify("https://blog.discordapp.com/tagged/game-development?source=post")
+}

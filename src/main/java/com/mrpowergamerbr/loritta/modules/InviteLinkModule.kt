@@ -97,7 +97,7 @@ class InviteLinkModule : MessageReceivedModule {
 				val urls = mutableSetOf<String>()
 				while (matcher.find()) {
 					var url = matcher.group()
-					if (url.contains("discord") && url.contains("gg")) {
+					if (url.startsWith("discord.gg")) {
 						url = "discord.gg" + matcher.group(1).replace(".", "")
 					}
 					urls.add(url)
@@ -124,9 +124,6 @@ class InviteLinkModule : MessageReceivedModule {
 								} else {
 									detectedInviteLinks[url]!!
 								}
-
-								if (inviteId == "attachments" || inviteId == "forums")
-									return@async false
 
 								if (whitelisted.contains(inviteId))
 									return@async false
