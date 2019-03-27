@@ -65,13 +65,13 @@ class TemmieDiscordAuth {
 	}
 
 	fun refreshToken() {
-		isReady(true)
-
 		val variables = mapOf(
 				"refresh_token" to refreshToken!!,
 				"grant_type" to "refresh_token",
 				"client_id" to clientId,
-				"client_secret" to clientSecret
+				"client_secret" to clientSecret,
+				"redirect_uri" to redirectUri,
+				"scope" to "identify guilds email guilds.join"
 		)
 
 		val response = HttpRequest.post(TOKEN_BASE_URL)
@@ -150,6 +150,7 @@ class TemmieDiscordAuth {
 
 	fun getUserGuilds(): List<DiscordGuild> {
 		isReady()
+
 		val response = HttpRequest.get(USER_GUILDS_URL)
 				.header("User-Agent", USER_AGENT)
 				.header("Content-Type", "application/x-www-form-urlencoded")
@@ -174,7 +175,7 @@ class TemmieDiscordAuth {
 	}
 
 	fun isValid(): Boolean {
-		return System.currentTimeMillis() > (this.generatedIn!! + this.expiresIn!!) * 1000
+		return (this.generatedIn!! + (this.expiresIn!! * 1000)) > System.currentTimeMillis()
 	}
 
 	private fun buildQuery(params: Map<String, Any>): String {
