@@ -20,14 +20,14 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
+import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.TextChannel
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent
@@ -75,6 +76,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						.build<Long, Boolean>()
 						.asMap()
 		)
+		val memberCounterLastUpdate = Caffeine.newBuilder()
+						.expireAfterWrite(120, TimeUnit.SECONDS)
+						.build<Long, Long>()
+						.asMap()
+		val memberCounterUpdateJob = Caffeine.newBuilder()
+				.expireAfterWrite(120, TimeUnit.SECONDS)
+				.build<Long, Job>()
+				.asMap()
 
 		val issueMutex = Mutex()
 
@@ -373,8 +382,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf, true)
-
 				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
 					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
 					BanCommand.ban(
@@ -403,6 +410,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					)
 					return@launch
 				}
+
+				queueTextChannelTopicUpdates(event.guild, conf, true)
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberJoin(event)
@@ -453,7 +462,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				updateTextChannelsTopic(event.guild, conf, true)
+				queueTextChannelTopicUpdates(event.guild, conf, true)
 
 				for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberLeave(event)
@@ -469,19 +478,51 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	fun updateTextChannelsTopic(guild: Guild, serverConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
+	fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
 		for (textChannel in guild.textChannels) {
-			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
-				continue
-
-			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
-			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
-			if (hideInEventLog)
-				memberCounterJoinLeftCache.add(textChannel.idLong)
-
-			val locale = loritta.getLocaleById(serverConfig.localeId)
-			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
+			queueTextChannelTopicUpdate(guild, serverConfig, textChannel, hideInEventLog)
 		}
+	}
+
+	fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: MongoServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
+		if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
+			return
+
+		val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: return
+
+		val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
+		val diff = System.currentTimeMillis() - lastUpdate
+
+		if (60_000 > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
+			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
+			val currentJob = memberCounterUpdateJob[textChannel.idLong]
+			currentJob?.cancel()
+
+			memberCounterUpdateJob[textChannel.idLong] = GlobalScope.launch(loritta.coroutineDispatcher) {
+				delay(diff)
+
+				if (!this.isActive) {
+					memberCounterUpdateJob[textChannel.idLong] = null
+					return@launch
+				}
+
+				updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
+				memberCounterUpdateJob[textChannel.idLong] = null
+			}
+			return
+		}
+
+		updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
+	}
+
+	fun updateTextChannelTopic(guild: Guild, serverConfig: MongoServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
+		val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
+		if (hideInEventLog)
+			memberCounterJoinLeftCache.add(textChannel.idLong)
+		memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
+		
+		val locale = loritta.getLocaleById(serverConfig.localeId)
+		textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
