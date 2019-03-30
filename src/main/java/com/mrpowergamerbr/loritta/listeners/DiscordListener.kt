@@ -473,10 +473,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		for (textChannel in guild.textChannels) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				continue
+
 			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
 			val formattedTopic = memberCountConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
-				memberCounterJoinLeftCache.add(guild.idLong)
+				memberCounterJoinLeftCache.add(textChannel.idLong)
 
 			val locale = loritta.getLocaleById(serverConfig.localeId)
 			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()

@@ -253,8 +253,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		// Detectar se é apenas uma mudança no contador ou se o tópico alterou
 		if (event is TextChannelUpdateTopicEvent) {
-			if (DiscordListener.memberCounterJoinLeftCache.contains(event.guild.idLong)) {
-				DiscordListener.memberCounterJoinLeftCache.remove(event.guild.idLong)
+			if (DiscordListener.memberCounterJoinLeftCache.contains(event.channel.idLong)) {
+				DiscordListener.memberCounterJoinLeftCache.remove(event.channel.idLong)
 				return
 			}
 		}
