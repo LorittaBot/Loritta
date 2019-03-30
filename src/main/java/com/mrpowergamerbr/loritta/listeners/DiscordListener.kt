@@ -520,7 +520,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (hideInEventLog)
 			memberCounterJoinLeftCache.add(textChannel.idLong)
 		memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
-		
+
 		val locale = loritta.getLocaleById(serverConfig.localeId)
 		textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
