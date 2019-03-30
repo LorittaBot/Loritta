@@ -31,13 +31,13 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 
 class AnyOp(val expr1: Expression<*>, val expr2: Expression<*>) : Op<Boolean>() {
 	override fun toSQL(queryBuilder: QueryBuilder) = buildString {
-		if (expr2 is OrOp<*>) {
+		if (expr2 is OrOp) {
 			append("(").append(expr2.toSQL(queryBuilder)).append(")")
 		} else {
 			append(expr2.toSQL(queryBuilder))
 		}
 		append(" = ANY (")
-		if (expr1 is OrOp<*>) {
+		if (expr1 is OrOp) {
 			append("(").append(expr1.toSQL(queryBuilder)).append(")")
 		} else {
 			append(expr1.toSQL(queryBuilder))
