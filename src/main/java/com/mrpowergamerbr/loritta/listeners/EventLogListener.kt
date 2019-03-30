@@ -60,9 +60,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
 			.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
+				// Removal listeners processam removals, expired, etc.
+				// Então não precisamos usar o sendUsernameChange em outros lugares :3
 				if (k1 != null && v1 != null) {
-					val user = lorittaShards.getUserById(k1) ?: return@removalListener
-					sendUsernameChange(user, v1)
+					GlobalScope.launch(loritta.coroutineDispatcher) {
+						val user = lorittaShards.getUserById(k1) ?: return@launch
+						sendUsernameChange(user, v1)
+					}
 				}
 			}
 			.build<Long, UserMetaHolder>().asMap()
@@ -167,12 +171,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldName = event.oldName
 
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
 				handledUsernameChanges.remove(event.user.idLong)
-				loritta.executor.execute {
-					sendUsernameChange(event.user, usernameChange)
-				}
-			}
 		}
 	}
 
@@ -186,12 +186,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
 
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null) {
+			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
 				handledUsernameChanges.remove(event.user.idLong)
-				loritta.executor.execute {
-					sendUsernameChange(event.user, usernameChange)
-				}
-			}
 		}
 	}
 
