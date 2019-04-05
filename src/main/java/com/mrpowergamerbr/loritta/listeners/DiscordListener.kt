@@ -80,7 +80,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						.expireAfterWrite(120, TimeUnit.SECONDS)
 						.build<Long, Long>()
 						.asMap()
-		val memberCounterUpdateJob = Caffeine.newBuilder()
+		val memberCounterUpdateJobs = Caffeine.newBuilder()
 				.expireAfterWrite(120, TimeUnit.SECONDS)
 				.build<Long, Job>()
 				.asMap()
@@ -495,19 +495,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (60_000 > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
-			val currentJob = memberCounterUpdateJob[textChannel.idLong]
+			val currentJob = memberCounterUpdateJobs[textChannel.idLong]
 			currentJob?.cancel()
 
-			memberCounterUpdateJob[textChannel.idLong] = GlobalScope.launch(loritta.coroutineDispatcher) {
+			memberCounterUpdateJobs[textChannel.idLong] = GlobalScope.launch(loritta.coroutineDispatcher) {
 				delay(diff)
 
 				if (!this.isActive) {
-					memberCounterUpdateJob[textChannel.idLong] = null
+					memberCounterUpdateJobs[textChannel.idLong] = null
 					return@launch
 				}
 
 				updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
-				memberCounterUpdateJob[textChannel.idLong] = null
+				memberCounterUpdateJobs.remove(textChannel.idLong)
 			}
 			return
 		}
