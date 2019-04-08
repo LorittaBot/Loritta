@@ -7,7 +7,7 @@ class ParallaxRole(internal val role: Role) {
 	val client = ParallaxClient(role.jda)
 	val color get() = role.color.rgb
 	// TODO: createdAt
-	// TODO: createdTimestamp
+	val createdTimestamp get() = role.creationTime.toInstant().toEpochMilli()
 	val editable get() = role.guild.selfMember.canInteract(role)
 	val guild get() = ParallaxGuild(role.guild)
 	// TODO: hexColor
@@ -19,4 +19,8 @@ class ParallaxRole(internal val role: Role) {
 	val name get() = role.name
 	val permissions get() = role.permissionsRaw
 	val position get() = role.positionRaw
+
+	fun canInteract(role: ParallaxRole): Boolean {
+		return this.role.canInteract(role.role)
+	}
 }
