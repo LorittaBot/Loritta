@@ -157,7 +157,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
-				for (module in MESSAGE_RECEIVED_MODULES) {
+				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
@@ -324,7 +324,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
-				for (module in MESSAGE_EDITED_MODULES) {
+				for (module in (MESSAGE_EDITED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
