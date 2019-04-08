@@ -16,4 +16,12 @@ class ParallaxMember(private val member: Member) : ParallaxUser(member.user) {
 		member.guild.controller.removeSingleRoleFromMember(member, role.role).queue()
 		return true
 	}
+
+	fun canInteract(role: ParallaxRole): Boolean {
+		return member.canInteract(role.role)
+	}
+
+	fun canInteract(member: ParallaxMember): Boolean {
+		return this.member.canInteract(member.member)
+	}
 }
