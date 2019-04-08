@@ -29,6 +29,10 @@ class ParallaxGuild(private val guild: Guild) {
 		return members.firstOrNull { it.id == memberId.toString() }
 	}
 
+	fun getMember(user: ParallaxUser): ParallaxMember? {
+		return this.getMemberById(user.id)
+	}
+
 	@JvmOverloads
 	fun getRolesByName(name: String, ignoreCase: Boolean = false): List<ParallaxRole> {
 		return guild.getRolesByName(name, ignoreCase).map { ParallaxRole(it) }
