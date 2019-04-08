@@ -57,7 +57,7 @@ class PluginManager(val loritta: Loritta) {
 
 			val clazz = Class.forName(info.main, true, classLoader)
 
-			val plugin = clazz.newInstance() as LorittaPlugin
+			val plugin = clazz.getConstructor().newInstance() as LorittaPlugin
 			plugin.loritta = loritta
 			plugin.name = info.pluginName
 			plugin.classLoader = classLoader
