@@ -55,6 +55,8 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.socket.LorittaSocketServer
+import net.perfectdreams.loritta.socket.network.commands.GetUserByIdCommand
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
@@ -175,6 +177,11 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	var twitch = TwitchAPI()
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
+	val socketServer = LorittaSocketServer().apply {
+		this.registerCommands(
+				GetUserByIdCommand()
+		)
+	}
 
 	init {
 		FOLDER = config.lorittaFolder
@@ -251,6 +258,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	// Inicia a Loritta
 	fun start() {
 		RestAction.setPassContext(true)
+
+		socketServer.start(35576)
 
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
