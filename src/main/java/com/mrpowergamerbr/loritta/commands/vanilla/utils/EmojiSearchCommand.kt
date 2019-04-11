@@ -70,7 +70,8 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		val queriedEmotes = _queriedEmotes.subList(page * 9, Math.min(_queriedEmotes.size, (page + 1) * 9))
 		var x = 0
 		var y = 0
-		for ((index, emote) in queriedEmotes.withIndex()) {
+
+		for (emote in queriedEmotes) {
 			val url = emote.imageUrl
 			val emoteImage = LorittaUtils.downloadImage(url)
 
@@ -96,19 +97,15 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		val message = context.sendFile(emotesPreview, "emotes.png", embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			var index = -1
-
-			for ((i, emote) in Constants.INDEXES.withIndex()) {
-				if (emote == it.reactionEmote.name) {
-					index = i
-					break
-				}
-			}
-
 			message.delete().queue()
 
-			if (index != -1) {
-				val emote = queriedEmotes[index]
+			if (it.reactionEmote.isEmote) {
+				val emote = queriedEmotes.firstOrNull { queriedEmote -> queriedEmote.idLong == it.reactionEmote?.emote?.idLong }
+
+				if (emote == null) {
+					// TODO: Adicionar mensagem avisando que o emote foi deletado
+					return@onReactionAddByAuthor
+				}
 
 				val emojiInfoEmbed = EmojiInfoCommand.getDiscordEmoteInfoEmbed(context, emote)
 
@@ -162,10 +159,8 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			}
 		}
 
-		for ((index, emote) in Constants.INDEXES.withIndex()) {
-			if (queriedEmotes.size > index) {
-				message.addReaction(emote).queue()
-			}
+		for (emote in queriedEmotes) { // Adicionar reações da pesquisa
+			message.addReaction(emote).queue()
 		}
 
 		if (page > 0) {
