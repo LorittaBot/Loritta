@@ -44,6 +44,7 @@ object Constants {
 	const val ACTION_MALE_AND_FEMALE = "male_x_female"
 	const val ACTION_MALE_AND_MALE = "male_x_male"
 
+	val JSON_MAPPER = ObjectMapper()
 	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 	val YAML = Yaml()
 

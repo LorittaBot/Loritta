@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.socket
 
-import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.utils.Constants
 import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.openReadChannel
@@ -16,6 +16,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.socket.network.commands.SocketCommand
+import net.perfectdreams.loritta.utils.extensions.obj
+import net.perfectdreams.loritta.utils.extensions.set
 import java.net.InetSocketAddress
 
 class LorittaSocketServer(val jsonParser: JsonParser = JsonParser(), val gson: Gson = Gson()) {
@@ -53,11 +55,11 @@ class LorittaSocketServer(val jsonParser: JsonParser = JsonParser(), val gson: G
                         while (true) {
                             val line = input.readUTF8Line() ?: break
 
-                            val json = jsonParser.parse(line).obj
+                            val json = Constants.JSON_MAPPER.readTree(line)
 
                             logger.info("Received: $json")
 
-                            val op = json["op"].int
+                            val op = json["op"].intValue()
 
                             val command = commands.firstOrNull { it.op == op }
 
@@ -67,12 +69,16 @@ class LorittaSocketServer(val jsonParser: JsonParser = JsonParser(), val gson: G
                             }
 
                             val result = command.process(json)
-                            val uniqueId = json["uniqueId"].nullString
-                            result["uniqueId"] = uniqueId
+                            println("Before changes: " + result)
+
+                            val uniqueId = json["uniqueId"].textValue()
+                            result.obj["uniqueId"] = uniqueId
+
+                            println("Sending: " + Constants.JSON_MAPPER.writeValueAsString(result))
 
                             mutex.withLock {
                                 output.writeStringUtf8(
-                                        gson.toJson(result) + "\n"
+                                        Constants.JSON_MAPPER.writeValueAsString(result) + "\n"
                                 )
                             }
                         }
