@@ -425,7 +425,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
+						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
+
+						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
 
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
