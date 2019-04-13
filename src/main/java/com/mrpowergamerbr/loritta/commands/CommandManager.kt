@@ -121,7 +121,6 @@ class CommandManager {
 		commandMap.add(PatreonCommand())
 		commandMap.add(FanArtsCommand())
 		commandMap.add(DiscordBotListCommand())
-		commandMap.add(ActivateKeyCommand())
 		commandMap.add(VotarCommand())
 		commandMap.add(ParallaxCommand())
 
