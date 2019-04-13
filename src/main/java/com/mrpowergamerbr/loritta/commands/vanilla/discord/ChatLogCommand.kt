@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
 
@@ -32,14 +33,9 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		val lines = mutableListOf<String>()
 
 		for (message in history.retrievedHistory.reversed()) {
-			val dayOfMonth = String.format("%02d", message.creationTime.dayOfMonth)
-			val month = String.format("%02d", message.creationTime.monthValue)
-			val year = message.creationTime.year
+			val creationTime = message.creationTime
 
-			val hour = String.format("%02d", message.creationTime.hour)
-			val minute = String.format("%02d", message.creationTime.minute)
-
-			val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.author.id}) ${message.author.name}#${message.author.discriminator}: ${message.contentRaw}"
+			val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.id}) ${message.author.name}#${message.author.discriminator}: ${message.contentRaw}"
 			lines.add(line)
 		}
 
