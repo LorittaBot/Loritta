@@ -182,7 +182,7 @@ class LorittaLandRoleSync : Runnable {
             val messages = textChannel.history.retrievePast(100).complete()
 
 			for (member in originalGuild.members) {
-				val roles = member.roles.toMutableList()
+				val roles = member.roles.toMutableSet()
 
 				if (donatorsPlusQuantity.containsKey(member.user.idLong)) {
 					val donated = donatorsPlusQuantity[member.user.idLong] ?: 0.0
@@ -271,7 +271,7 @@ class LorittaLandRoleSync : Runnable {
                 }
 
 				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) {// Novos cargos foram adicionados
-					logger.info("Alterando cargos de ${member}, novos cargos serão $roles")
+					logger.info("Alterando cargos de $member, cargos atuais são ${member.roles}, novos cargos serão $roles")
 					member.guild.controller.modifyMemberRoles(member, roles).queue()
 				}
 			}
