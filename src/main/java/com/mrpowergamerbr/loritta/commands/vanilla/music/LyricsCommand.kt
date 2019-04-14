@@ -4,11 +4,11 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.core.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Whitelist
@@ -53,7 +53,6 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			// É necessário posicionar na ordem de mais confiável -> menos confiável
 			val songInfo = retrieveSongInfoFromLyricWikia(artist, musicName)
 					?: retrieveSongInfoFromGenius(artist, musicName)
-					?: retrieveSongInfoFromLyricsOvh(artist, musicName)
 					?: retrieveSongInfoFromSongLyrics(artist, musicName)
 					?: retrieveSongInfoFromLetrasMus(artist, musicName)
 					?: retrieveSongInfoFromVagalume(artist, musicName) // Pesquisa no Vagalume, isto deve ser a última opção!
@@ -348,23 +347,6 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 				musicName,
 				null,
 				lyrics.replace("<br>", "\n")
-		)
-	}
-
-	fun retrieveSongInfoFromLyricsOvh(artist: String, musicName: String): SongInfo? {
-		val request = HttpRequest.get("https://api.lyrics.ovh/v1/${artist.encodeToUrl()}/${musicName.encodeToUrl()}")
-		request.ok()
-
-		if (request.code() == 404)
-			return null
-
-		val payload = jsonParser.parse(request.body())
-
-		return SongInfo(
-				artist,
-				musicName,
-				null,
-				payload["lyrics"].string
 		)
 	}
 
