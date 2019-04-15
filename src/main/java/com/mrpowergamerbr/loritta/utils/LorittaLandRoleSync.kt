@@ -63,14 +63,14 @@ class LorittaLandRoleSync : Runnable {
 			for (illustrator in validIllustrators) {
 				if (!illustrator.roles.contains(drawingRole)) {
 					logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
-                    originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
+					originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
 				}
 			}
 
 			val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
 			invalidIllustrators.forEach {
 				logger.info("Removendo cargo de desenhista de ${it.user.id}...")
-                originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
+				originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
 			}
 
 			// ===[ PARCEIROS ]===
@@ -144,11 +144,11 @@ class LorittaLandRoleSync : Runnable {
 			}
 
 			// Give roles
-            synchronizeRoles(originalGuild, usGuild, "351473717194522647", "421325022951637015") // Guarda-Costas
-            synchronizeRoles(originalGuild, usGuild, "399301696892829706", "421325387889377291") // Suporte
-            synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
-            synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
-            synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
+			synchronizeRoles(originalGuild, usGuild, "351473717194522647", "421325022951637015") // Guarda-Costas
+			synchronizeRoles(originalGuild, usGuild, "399301696892829706", "421325387889377291") // Suporte
+			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
+			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
+			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
 
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
@@ -158,15 +158,15 @@ class LorittaLandRoleSync : Runnable {
 			}
 
 			val donatorsPlusQuantity = mutableMapOf<Long, Double>()
-            val donatorsPlusFirstDate = mutableMapOf<Long, Long>()
+			val donatorsPlusFirstDate = mutableMapOf<Long, Long>()
 			val inactiveDonators = mutableSetOf<Long>()
 
 			for (payment in payments) {
 				if (payment.expiresAt ?: 0 >= System.currentTimeMillis()) {
 					donatorsPlusQuantity[payment.userId] = payment.money.toDouble() + donatorsPlusQuantity.getOrDefault(payment.userId, 0.0)
-                    if (!donatorsPlusFirstDate.containsKey(payment.userId)) {
-                        donatorsPlusFirstDate[payment.userId] = payment.paidAt ?: 0L
-                    }
+					if (!donatorsPlusFirstDate.containsKey(payment.userId)) {
+						donatorsPlusFirstDate[payment.userId] = payment.paidAt ?: 0L
+					}
 				} else {
 					inactiveDonators.add(payment.userId)
 				}
@@ -177,9 +177,9 @@ class LorittaLandRoleSync : Runnable {
 			val megaDonatorRole = originalGuild.getRoleById("534659343656681474")
 			val inactiveRole = originalGuild.getRoleById("435856512787677214")
 
-            val textChannel = originalGuild.getTextChannelById(Constants.THANK_YOU_DONATORS_CHANNEL_ID)
+			val textChannel = originalGuild.getTextChannelById(Constants.THANK_YOU_DONATORS_CHANNEL_ID)
 
-            val messages = textChannel.history.retrievePast(100).complete()
+			val messages = textChannel.history.retrievePast(100).complete()
 
 			for (member in originalGuild.members) {
 				val roles = member.roles.toMutableSet()
@@ -209,44 +209,44 @@ class LorittaLandRoleSync : Runnable {
 							roles.remove(superDonatorRole)
 					}
 
-                    val helpedDays = (donated / 10)
-                    val plural = helpedDays != 1.0
+					val helpedDays = (donated / 10)
+					val plural = helpedDays != 1.0
 
-                    val text = "Obrigada a ${member.asMention} por doar para mim! <a:lori_happy:521721811298156558>\n\nGraças a doação de R$ ${"%.2f".format(donated)}, ${member.asMention} me ajudou a ficar mais ${"%.1f".format(helpedDays)} dia${if (plural) "s" else ""} online neste mês! **Você é incrível!** <:lori_hearts:519901735666581514>\n\nPara agradecer ${member.user.asMention}, reaja com <a:clapping:536170783257395202>! <:eu_te_moido:366047906689581085><a:clapping:536170783257395202>"
+					val text = "Obrigada a ${member.asMention} por doar para mim! <a:lori_happy:521721811298156558>\n\nGraças a doação de R$ ${"%.2f".format(donated)}, ${member.asMention} me ajudou a ficar mais ${"%.1f".format(helpedDays)} dia${if (plural) "s" else ""} online neste mês! **Você é incrível!** <:lori_hearts:519901735666581514>\n\nPara agradecer ${member.user.asMention}, reaja com <a:clapping:536170783257395202>! <:eu_te_moido:366047906689581085><a:clapping:536170783257395202>"
 
-                    val newEmbed = EmbedBuilder()
-                            .setTitle("\uD83D\uDE0A Obrigada!")
-                            .setThumbnail(member.user.effectiveAvatarUrl)
-                            .setDescription(text)
-                            .setColor(Constants.LORITTA_AQUA)
-                            .setFooter("Doador desde", "https://cdn.discordapp.com/emojis/515330130495799307.gif?v=1")
-                            .setTimestamp(Instant.ofEpochMilli(donatorsPlusFirstDate[member.user.idLong]!!))
-                            .build()
+					val newEmbed = EmbedBuilder()
+							.setTitle("\uD83D\uDE0A Obrigada!")
+							.setThumbnail(member.user.effectiveAvatarUrl)
+							.setDescription(text)
+							.setColor(Constants.LORITTA_AQUA)
+							.setFooter("Doador desde", "https://cdn.discordapp.com/emojis/515330130495799307.gif?v=1")
+							.setTimestamp(Instant.ofEpochMilli(donatorsPlusFirstDate[member.user.idLong]!!))
+							.build()
 
-                    val newMessage = MessageBuilder()
-                            .setContent(member.asMention)
-                            .setEmbed(
-                                    newEmbed
-                            ).build()
+					val newMessage = MessageBuilder()
+							.setContent(member.asMention)
+							.setEmbed(
+									newEmbed
+							).build()
 
-                    val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
 
-                    if (message != null) {
-                        val embed = message.embeds.firstOrNull()
-                        if (embed == null) {
-                            message?.delete()?.queue()
-                        } else {
-                            if (embed.description != newEmbed.description) {
-                                message.editMessage(newMessage).queue()
-                            }
-                        }
-                    } else {
-                        textChannel.sendMessage(newMessage).queue {
-                            it.addReaction(
-                                    "a:clapping:536170783257395202"
-                            ).queue()
-                        }
-                    }
+					if (message != null) {
+						val embed = message.embeds.firstOrNull()
+						if (embed == null) {
+							message.delete()?.queue()
+						} else {
+							if (embed.description != newEmbed.description) {
+								message.editMessage(newMessage).queue()
+							}
+						}
+					} else {
+						textChannel.sendMessage(newMessage).queue {
+							it.addReaction(
+									"a:clapping:536170783257395202"
+							).queue()
+						}
+					}
 				} else {
 					val filter = roles.filter { it.name.startsWith("\uD83C\uDFA8") }
 					roles.removeAll(filter)
@@ -260,15 +260,17 @@ class LorittaLandRoleSync : Runnable {
 					if (roles.contains(megaDonatorRole))
 						roles.remove(megaDonatorRole)
 
-					if (!roles.contains(inactiveRole) && inactiveDonators.contains(member.user.idLong))
-						roles.add(inactiveRole)
-					else
+					if (inactiveDonators.contains(member.user.idLong)) {
+						if (!roles.contains(inactiveRole)) {
+							roles.add(inactiveRole)
+						}
+					} else
 						roles.remove(inactiveRole)
 
-                    val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
 
-                    message?.delete()?.queue()
-                }
+					message?.delete()?.queue()
+				}
 
 				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) {// Novos cargos foram adicionados
 					logger.info("Alterando cargos de $member, cargos atuais são ${member.roles}, novos cargos serão $roles")
