@@ -16,8 +16,8 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup

@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 

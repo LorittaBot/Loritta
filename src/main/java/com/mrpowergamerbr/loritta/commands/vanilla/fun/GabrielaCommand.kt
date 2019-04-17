@@ -12,8 +12,8 @@ import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaAnswer
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.similarity.LevenshteinDistance
@@ -368,7 +368,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						) {
 							val messageId = it["id"].string
 							val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
-							context.message.textChannel.getMessageById(messageId).queue { message ->
+							context.message.textChannel.retrieveMessageById(messageId).queue { message ->
 								if (message != null) {
 									learnGabriela(pergunta, message, context, functions, true, document, answer)
 								}
@@ -388,7 +388,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			) {
 				val messageId = it["id"].string
 				val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
-				context.message.textChannel.getMessageById(messageId).queue { message ->
+				context.message.textChannel.retrieveMessageById(messageId).queue { message ->
 					if (message != null) {
 						learnGabriela(pergunta, message, context, functions)
 					}

@@ -2,9 +2,9 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Game
+import net.dv8tion.jda.api.entities.Member
 import java.awt.Color
 
 /**

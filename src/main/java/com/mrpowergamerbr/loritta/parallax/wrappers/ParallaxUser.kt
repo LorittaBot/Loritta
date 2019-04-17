@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 
 open class ParallaxUser(internal val user: User) {
 	val avatar get() = user.avatarId

@@ -9,11 +9,11 @@ import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -92,7 +92,7 @@ object GiveawayManager {
         val emoteId = reaction.toLongOrNull()
 
         if (emoteId != null) {
-            val mention = lorittaShards.getEmoteById(emoteId.toString())
+            val mention = lorittaShards.getEmoteById(emoteId.toString()) ?: return
             message.addReaction(mention).await()
         } else {
             message.addReaction(reaction).await()
@@ -141,7 +141,7 @@ object GiveawayManager {
 
                     val diff = giveaway.finishAt - System.currentTimeMillis()
 
-                    val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                    val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
                         logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                         cancelGiveaway(giveaway, true)
                         return@launch
@@ -186,7 +186,7 @@ object GiveawayManager {
                     cancelGiveaway(giveaway, true)
                     return@launch
                 }
-                val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
                     logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                     cancelGiveaway(giveaway, true)
                     return@launch
@@ -276,7 +276,7 @@ object GiveawayManager {
                     val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
 
                     winners.forEach { user ->
-                        val member = message.guild.getMember(user)
+                        val member = message.guild.getMember(user) ?: return@forEach
                         val rolesToBeGiven = roles.filter {
                             !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
                         }

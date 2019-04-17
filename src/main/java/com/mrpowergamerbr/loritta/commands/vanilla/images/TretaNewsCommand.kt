@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.User
 import java.util.*
 
 class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {

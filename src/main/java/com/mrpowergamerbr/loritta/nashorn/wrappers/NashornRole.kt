@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 import java.awt.Color
 
 class NashornRole(internal val role: Role) {

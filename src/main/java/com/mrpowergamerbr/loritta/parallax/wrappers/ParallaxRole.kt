@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 
 class ParallaxRole(internal val role: Role) {
 	val calculatedPosition get() = role.position

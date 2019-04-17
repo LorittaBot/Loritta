@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response

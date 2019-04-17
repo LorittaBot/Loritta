@@ -12,9 +12,9 @@ import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Emote
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response

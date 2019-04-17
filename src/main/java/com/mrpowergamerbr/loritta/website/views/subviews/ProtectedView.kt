@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*

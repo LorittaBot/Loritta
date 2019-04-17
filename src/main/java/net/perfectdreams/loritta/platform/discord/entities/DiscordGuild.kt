@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.api.entities.Guild
 import net.perfectdreams.loritta.api.entities.Member
 import net.perfectdreams.loritta.api.entities.MessageChannel
 
-class DiscordGuild(val handle: net.dv8tion.jda.core.entities.Guild) : Guild {
+class DiscordGuild(val handle: net.dv8tion.jda.api.entities.Guild) : Guild {
 	override val name: String
 		get() = handle.name
 	override val iconUrl: String?

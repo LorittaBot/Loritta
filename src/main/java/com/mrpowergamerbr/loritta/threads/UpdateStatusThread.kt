@@ -4,10 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.EntityBuilder
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Icon
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.EntityBuilder
+import net.dv8tion.jda.api.entities.Game
+import net.dv8tion.jda.api.entities.Icon
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.util.*

@@ -48,9 +48,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.core.requests.RestAction
-import net.dv8tion.jda.core.utils.cache.CacheFlag
+import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -211,7 +211,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.PRESENCE))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,

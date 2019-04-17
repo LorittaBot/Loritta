@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.api.entities.TextChannel
 
 /**
  * Wrapper de um text channel de um comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que

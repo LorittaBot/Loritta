@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 
 class ParallaxGuild(private val guild: Guild) {
 	val afkChannel get() = ParallaxVoiceChannel(guild.afkChannel)

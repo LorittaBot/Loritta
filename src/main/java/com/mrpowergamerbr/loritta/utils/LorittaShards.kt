@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.dv8tion.jda.bot.sharding.ShardManager
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.*
 
 /**
  * Guarda todos os shards da Loritta

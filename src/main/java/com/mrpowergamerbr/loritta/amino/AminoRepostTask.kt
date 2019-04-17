@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.awt.Color
@@ -153,8 +153,7 @@ class AminoRepostTask : Runnable {
 								}) {
 									val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 
-									val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId)
-											?: continue
+									val textChannel = guild.getTextChannelById(aminoInfo.repostToChannelId ?: continue) ?: continue
 
 									if (!textChannel.canTalk())
 										continue

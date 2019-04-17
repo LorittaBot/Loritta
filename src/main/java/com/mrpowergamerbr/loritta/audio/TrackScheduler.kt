@@ -13,8 +13,8 @@ import kotlinx.coroutines.sync.withLock
 import lavalink.client.player.IPlayer
 import lavalink.client.player.LavalinkPlayer
 import lavalink.client.player.event.PlayerEventListenerAdapter
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -38,7 +38,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 			val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
 			if (serverConfig.musicConfig.logToChannel) {
-				val textChannel = guild.getTextChannelById(serverConfig.musicConfig.channelId)
+				val textChannel = guild.getTextChannelById(serverConfig.musicConfig.channelId ?: return@launch) ?: return@launch
 
 				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@launch)

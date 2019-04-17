@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.jooby.Request
 import org.jooby.Response
 

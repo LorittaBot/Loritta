@@ -10,8 +10,8 @@ import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageChannel
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegisterCommand : AbstractCommand("register", listOf("registrar"), CommandCategory.SOCIAL) {
@@ -54,7 +54,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 
 		message.onReactionAddByAuthor(context) { event ->
 			// Sim, é necessário pegar a mensagem DE NOVO para pegar os valores das reações atualizados
-			val reactedMessage = channel.getMessageById(message.id).await()
+			val reactedMessage = channel.retrieveMessageById(message.id).await()
 
 			val reactions = reactedMessage.reactions.filter { it.count > 1} // Como é apenas via DM, se as reações forem maiores que 1 == o usuário reagiu!
 			val answersMade = step.options.filter {

@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response

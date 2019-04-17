@@ -17,8 +17,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.managers.AudioManager
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.managers.AudioManager
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit

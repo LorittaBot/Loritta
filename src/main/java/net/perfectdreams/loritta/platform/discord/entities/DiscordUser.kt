@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.platform.discord.entities
 
 import net.perfectdreams.loritta.api.entities.User
 
-open class DiscordUser(val handle: net.dv8tion.jda.core.entities.User) : User {
+open class DiscordUser(val handle: net.dv8tion.jda.api.entities.User) : User {
 	override val id: String
 		get() = handle.id
 

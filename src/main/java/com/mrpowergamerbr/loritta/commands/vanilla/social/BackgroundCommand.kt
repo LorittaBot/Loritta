@@ -7,9 +7,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageEmbed
 import java.awt.Color
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
@@ -51,7 +51,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png")
 				val imageUrl = if (file.exists()) "${Loritta.config.websiteUrl}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png"
 
-				var builder = net.dv8tion.jda.core.EmbedBuilder()
+				var builder = net.dv8tion.jda.api.EmbedBuilder()
 						.setTitle("\uD83D\uDDBC ${context.legacyLocale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
@@ -160,7 +160,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	fun getFirstPageEmbed(context: CommandContext): MessageEmbed {
-		var builder = net.dv8tion.jda.core.EmbedBuilder()
+		var builder = net.dv8tion.jda.api.EmbedBuilder()
 				.setTitle("\uD83D\uDE4B ${context.legacyLocale["BACKGROUND_CENTRAL"]}")
 				.setDescription(context.legacyLocale["BACKGROUND_INFO", context.config.commandPrefix])
 				.setColor(Color(0, 223, 142))

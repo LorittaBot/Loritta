@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.userdata.AutoroleConfig
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import java.util.concurrent.TimeUnit
 
 object AutoroleModule {

@@ -59,9 +59,9 @@ class ServerSupportModule : MessageReceivedModule {
 						import java.awt.image.BufferedImage
 						import java.io.File
 						import javax.imageio.ImageIO
-						import net.dv8tion.jda.core.entities.*
-						import net.dv8tion.jda.core.*
-						import net.dv8tion.jda.core.entities.impl.*
+						import net.dv8tion.jda.api.entities.*
+						import net.dv8tion.jda.api.*
+						import net.dv8tion.jda.api.entities.impl.*
 						import java.util.regex.Pattern
 
 						$scriptContent

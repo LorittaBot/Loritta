@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.entities.Member
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
