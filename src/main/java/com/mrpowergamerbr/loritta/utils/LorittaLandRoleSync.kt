@@ -149,6 +149,9 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
 			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
+			synchronizeRoles(originalGuild, usGuild, "534659343656681474", "568505810825642029") // LorittaLand
+			synchronizeRoles(originalGuild, usGuild, "463652112656629760", "568506127977938977") // Super Contribuidor
+			synchronizeRoles(originalGuild, usGuild, "364201981016801281", "420640526711390208") // Contribuidor
 
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
