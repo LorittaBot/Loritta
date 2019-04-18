@@ -229,7 +229,7 @@ class LorittaLandRoleSync : Runnable {
 									newEmbed
 							).build()
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.isMentioned(member) }
 
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
