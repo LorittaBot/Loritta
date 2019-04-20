@@ -22,7 +22,7 @@ object LorittaTasks {
 		DAILY_TAX_TASK = DailyTaxTask()
 
 		if (Loritta.config.environment == EnvironmentType.PRODUCTION)
-			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 15L, TimeUnit.SECONDS)
+			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AminoRepostTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(NewRssFeedTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)

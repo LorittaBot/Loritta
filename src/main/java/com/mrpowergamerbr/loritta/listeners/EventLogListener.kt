@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
 import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.deleteWhere
@@ -412,18 +413,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
-							val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
-							gmt.timeInMillis = message.createdAt
-							val creationTime = OffsetDateTime.ofInstant(gmt.toInstant(), gmt.timeZone.toZoneId())
+							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 
-							val dayOfMonth = String.format("%02d", creationTime.dayOfMonth)
-							val month = String.format("%02d", creationTime.monthValue)
-							val year = creationTime.year
-
-							val hour = String.format("%02d", creationTime.hour)
-							val minute = String.format("%02d", creationTime.minute)
-
-							val line = "[$dayOfMonth/$month/$year $hour:$minute] (${message.authorId}) ${user.name}#${user.discriminator}: ${message.content}"
+							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${user.name}#${user.discriminator}: ${message.content}"
 							lines.add(line)
 						}
 
@@ -433,7 +425,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-${System.currentTimeMillis()}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
+						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
+
+						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
 
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
