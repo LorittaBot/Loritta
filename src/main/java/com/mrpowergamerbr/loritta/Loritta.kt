@@ -161,7 +161,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var bomDiaECia: BomDiaECia
 
 	var ticTacToeServer = TicTacToeServer()
-	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
 	var pluginManager = PluginManager(this)
@@ -189,7 +188,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
-		loadPremiumKeys()
 		loadBlacklistedServers()
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
@@ -674,40 +672,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	 */
 	fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
-	}
-
-	/**
-	 * Gets a premium key from the key's name, if it is valid
-	 *
-	 * @param name the key's name
-	 * @return     the premium key, or null, if the key doesn't exist of it is expired
-	 * @see        PremiumKey
-	 */
-	fun getPremiumKey(name: String?): PremiumKey? {
-		return premiumKeys.filter {
-			it.name == name
-		}.filter {
-			it.validUntil > System.currentTimeMillis()
-		}.firstOrNull()
-	}
-
-	/**
-	 * Loads all available premium keys from the "premium-keys.json" file
-	 *
-	 * @see PremiumKey
-	 */
-	fun loadPremiumKeys() {
-		if (File("./premium-keys.json").exists())
-			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
-	}
-
-	/**
-	 * Saves all available premium keys
-	 *
-	 * @see PremiumKey
-	 */
-	fun savePremiumKeys() {
-		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
 	}
 
 	/**

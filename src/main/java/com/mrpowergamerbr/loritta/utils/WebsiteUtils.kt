@@ -143,7 +143,7 @@ object WebsiteUtils {
 
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
-		
+
 		variables["addBotUrl"] = Loritta.config.addBotUrl
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime

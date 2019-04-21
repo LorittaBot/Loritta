@@ -246,24 +246,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (arg0 == "savekeys") {
-			loritta.savePremiumKeys()
-			context.reply(
-					LoriReply(
-							"Premium Keys salvas!"
-					)
-			)
-			return
-		}
-		if (arg0 == "loadkeys") {
-			loritta.loadPremiumKeys()
-			context.reply(
-					LoriReply(
-							"Premium Keys carregadas!"
-					)
-			)
-			return
-		}
 		if (arg0 == "loadblacklist") {
 			loritta.loadBlacklistedServers()
 			context.reply(
