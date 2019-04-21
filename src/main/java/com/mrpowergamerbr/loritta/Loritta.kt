@@ -277,18 +277,29 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
+		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
+
+		loadCommandManager() // Inicie todos os comandos da Loritta
+		pluginManager.loadPlugins()
+
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
+		logger.info { "Iniciando Livestream Thread..." }
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
+		logger.info { "Iniciando Update Status Thread..." }
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
+		logger.info { "Iniciando Tasks..." }
 		LorittaTasks.startTasks()
 
+		logger.info { "Iniciando threads de reminders..." }
 		RemindersThread().start()
 
+		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia()
 
+		logger.info { "Carregando raffle..." }
 		val raffleFile = File(FOLDER, "raffle.json")
 
 		if (raffleFile.exists()) {
@@ -311,9 +322,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		GlobalScope.launch(coroutineDispatcher) {
 			connectionManager.updateProxies()
 		}
-
-		loadCommandManager() // Inicie todos os comandos da Loritta
-		pluginManager.loadPlugins()
 
 		thread(name = "Update Random Stuff") {
 			while (true) {
