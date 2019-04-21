@@ -166,9 +166,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	val networkBanManager = LorittaNetworkBanManager()
 	var pluginManager = PluginManager(this)
 
-	var isPatreon = mutableMapOf<String, Boolean>()
-	var isDonator = mutableMapOf<String, Boolean>()
-
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
 
@@ -321,38 +318,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		GlobalScope.launch(coroutineDispatcher) {
 			connectionManager.updateProxies()
-		}
-
-		thread(name = "Update Random Stuff") {
-			while (true) {
-				try {
-					val isPatreon = mutableMapOf<String, Boolean>()
-					val isDonator = mutableMapOf<String, Boolean>()
-
-					val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-					if (lorittaGuild != null) {
-						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-						val roleDonators = lorittaGuild.getRoleById("435856512787677214") // Doadores
-
-						val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-						val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-
-						patreons.forEach {
-							isPatreon[it.user.id] = true
-						}
-						donators.forEach {
-							isDonator[it.user.id] = true
-						}
-
-						this.isPatreon = isPatreon
-						this.isDonator = isDonator
-					}
-				} catch (e: Exception) {
-					logger.error("Erro ao atualizar informações aleatórias", e)
-				}
-				Thread.sleep(15000)
-			}
 		}
 
 		try { ServerSupportModule.loadResponses() } catch (e: FileNotFoundException) {
