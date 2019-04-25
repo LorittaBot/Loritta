@@ -142,17 +142,13 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         }
         text += "`]"
 
-        var reactionInfo = """
+        val reactionInfo = """
             👍 ${locale["$LOCALE_PREFIX.answers.yes"]}
             👎 ${locale["$LOCALE_PREFIX.answers.no"]}
             ${Emotes.LORI_SHRUG} ${locale["$LOCALE_PREFIX.answers.dontKnow"]}
             <:lori_sorriso:556525532359950337> ${locale["$LOCALE_PREFIX.answers.probablyYes"]}
             <:lori_tristeliz:556524143281963008> ${locale["$LOCALE_PREFIX.answers.probablyNot"]}
         """.trimIndent()
-
-        if (currentQuestion.step != 0) { // não é primeira pergunta, vamos fazer que possa voltar
-            reactionInfo += "\n⏪ ${locale["$LOCALE_PREFIX.goBack"]}"
-        }
 
         val builder = getAkinatorEmbedBase(context).apply {
             setThumbnail("${Loritta.config.websiteUrl}assets/img/akinator_embed.png")
