@@ -16,6 +16,10 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 
 class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji", "buscaremoji", "findemoji", "emojifinder", "searchemoji"), CommandCategory.UTILS) {
+	companion object {
+	    const val EMOTES_PER_PAGE = 10
+	}
+
 	override fun getUsage(): String {
 		return "query [animated]"
 	}
@@ -52,7 +56,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			val queriedEmotes = lorittaShards.getGuilds()
 					.flatMap { it ->
 						it.emoteCache.filter {
-							it.name.contains(query, true)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated)
+							it.name.contains(query, true)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated) && it.canInteract(it.guild.selfMember) // Se canInteract for false, então a Lori não irá conseguir adicionar ela como reação
 						}
 					}.sortedByDescending { it.guild.memberCache.size() }
 
@@ -66,8 +70,8 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 		val emotesPreview = BufferedImage(333, 128, BufferedImage.TYPE_INT_ARGB)
 		val graphics = emotesPreview.graphics
 
-		val totalPages = (_queriedEmotes.size / 9)
-		val queriedEmotes = _queriedEmotes.subList(page * 9, Math.min(_queriedEmotes.size, (page + 1) * 9))
+		val totalPages = (_queriedEmotes.size / EMOTES_PER_PAGE)
+		val queriedEmotes = _queriedEmotes.subList(page * EMOTES_PER_PAGE, Math.min(_queriedEmotes.size, (page + 1) * EMOTES_PER_PAGE))
 		var x = 0
 		var y = 0
 
@@ -76,7 +80,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			val emoteImage = LorittaUtils.downloadImage(url)
 
 			if (x + 64 > 333) {
-				x = 32
+				x = 0
 				y += 64
 			}
 
