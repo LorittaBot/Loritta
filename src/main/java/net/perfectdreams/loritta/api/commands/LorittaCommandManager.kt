@@ -25,6 +25,7 @@ import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import net.perfectdreams.loritta.api.entities.User
+import net.perfectdreams.loritta.commands.vanilla.`fun`.AkinatorCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
@@ -47,6 +48,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		
 		registerCommand(ChannelInfoCommand())
 		registerCommand(GiveawayCommand())
+		registerCommand(AkinatorCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {

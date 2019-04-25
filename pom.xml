@@ -293,6 +293,11 @@
             <version>1a4b0f58af</version>
         </dependency>
         <dependency>
+            <groupId>com.github.markozajc</groupId>
+            <artifactId>akiwrapper</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20180813</version>

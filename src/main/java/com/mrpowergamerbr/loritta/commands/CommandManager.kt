@@ -78,7 +78,6 @@ class CommandManager {
 		commandMap.add(AtaCommand())
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
-		commandMap.add(AkinatorCommand())
 		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
 

@@ -378,6 +378,16 @@ fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend
 }
 
 /**
+ * Removes all interaction functions associated with [this]
+ */
+fun Message.removeAllFunctions(): Message {
+
+	loritta.messageInteractionCache.remove(this.idLong)
+	return this
+}
+
+
+/**
  * When a message is received in any guild
  *
  * @param context  the context of the message
