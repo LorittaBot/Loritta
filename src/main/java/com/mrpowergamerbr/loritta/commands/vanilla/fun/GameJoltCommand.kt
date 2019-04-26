@@ -15,7 +15,7 @@ import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 import java.awt.Color
 import java.util.*
 

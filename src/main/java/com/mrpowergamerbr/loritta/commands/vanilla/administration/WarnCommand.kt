@@ -1,14 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -105,7 +107,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					}
 
 					if (context.config.moderationConfig.sendToPunishLog) {
-						val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+						val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
 
 						if (textChannel != null && textChannel.canTalk()) {
 							val message = MessageUtils.generateMessage(
@@ -118,12 +120,12 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 											"staff" to context.userHandle.name,
 											"@staff" to context.userHandle.asMention,
 											"staff-discriminator" to context.userHandle.discriminator,
-											"staff-avatar-url" to context.userHandle.avatarUrl,
+											"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
 											"staff-id" to context.userHandle.id
 									)
 							)
 
-							textChannel.sendMessage(message).queue()
+							textChannel.sendMessage(message!!).queue()
 						}
 					}
 				}
@@ -137,12 +139,14 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				val punishments = config.moderationConfig.punishmentActions.filter { it.warnCount == warnCount }
 
 				for (punishment in punishments) {
-					if (punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN) BanCommand.ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
-					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN) SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
-					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK) KickCommand.kick(context, locale, member, user, reason, isSilent)
-					else if (punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE) {
-						val time = punishment.customMetadata0?.convertToEpochMillisRelativeToNow()
-						MuteCommand.muteUser(context, member, time, locale, user, reason, isSilent)
+					when {
+						punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN -> BanCommand.ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
+						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN -> SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
+						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK -> KickCommand.kick(context, locale, member, user, reason, isSilent)
+						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE -> {
+							val time = punishment.customMetadata0?.convertToEpochMillisRelativeToNow()
+							MuteCommand.muteUser(context, member, time, locale, user, reason, isSilent)
+						}
 					}
 				}
 

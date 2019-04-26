@@ -13,11 +13,11 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.exceptions.PermissionException
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
@@ -271,7 +271,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			return DiscordMessage(sentMessage)
 		} else {
 			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendFile(inputStream, name, message).await()
+				val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
 
 				if (config.deleteMessagesAfter != null)
 					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
@@ -621,14 +621,14 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		if (this.guild is DiscordGuild) {
 			val handle = (this.guild as DiscordGuild).handle
 			// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-			if (search > 0 && !this.isPrivateChannel && handle.selfMember.hasPermission(this.event.textChannel, Permission.MESSAGE_HISTORY)) {
+			if (search > 0 && !this.isPrivateChannel && handle.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
 				try {
 					val message = this.discordMessage.channel.history.retrievePast(search).await()
 
 					attach@ for (msg in message) {
 						for (embed in msg.embeds) {
 							if (embed.image != null) {
-								return embed.image.url
+								return embed.image!!.url
 							}
 						}
 						for (attachment in msg.attachments) {

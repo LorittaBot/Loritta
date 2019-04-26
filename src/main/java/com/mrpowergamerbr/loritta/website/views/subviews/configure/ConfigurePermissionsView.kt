@@ -5,8 +5,8 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Role
 import org.jooby.Request
 import org.jooby.Response
 import kotlin.collections.set

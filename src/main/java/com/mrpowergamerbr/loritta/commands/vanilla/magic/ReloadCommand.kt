@@ -26,7 +26,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.coroutines.delay
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
 import org.jetbrains.exposed.sql.deleteWhere
@@ -264,8 +264,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 			lorittaShards.getGuilds().forEach {
 				val self = it.selfMember
-				val year = self.joinDate.year
-				val month = self.joinDate.monthValue
+				val year = self.timeJoined.year
+				val month = self.timeJoined.monthValue
 
 				val padding = month.toString().padStart(2, '0')
 				dates.put("$year-$padding", dates.getOrDefault("$year-$padding", 0) + 1)
@@ -286,9 +286,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "send_suggestion") {
-			val channel = context.guild.getTextChannelById("359139508681310212")
+			val channel = context.guild.getTextChannelById("359139508681310212") ?: return
 
-			val message = channel.getMessageById(context.rawArgs[1]).await()
+			val message = channel.retrieveMessageById(context.rawArgs[1]).await()
 
 			context.reply("Enviando sugestão ${message.id}...")
 			DiscordListener.sendSuggestionToGitHub(message)
@@ -303,7 +303,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 			val channel = context.guild.getTextChannelById("359139508681310212")
 
-			val history = channel.history
+			val history = channel!!.history
 
 			var lastCheck = -1
 			for (i in 0 until 2200) {

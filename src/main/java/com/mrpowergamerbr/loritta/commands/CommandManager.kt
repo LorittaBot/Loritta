@@ -27,9 +27,9 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import java.util.*
 
 class CommandManager {
@@ -211,8 +211,6 @@ class CommandManager {
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
 		// commandMap.add(TempBanCommand())
-		if (false && Loritta.config.environment == EnvironmentType.CANARY)
-			commandMap.add(TempRoleCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
 		commandMap.add(UnbanCommand())
@@ -379,7 +377,7 @@ class CommandManager {
 										listOf(ev.member, ev.textChannel),
 										ev.guild
 								)
-								ev.textChannel.sendMessage(generatedMessage).queue()
+								ev.textChannel.sendMessage(generatedMessage!!).queue()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -484,7 +482,7 @@ class CommandManager {
 				}
 
 				if (!context.canUseCommand()) {
-					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member.hasPermission(ev.message.textChannel, it) }
+					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
 							LoriReply(
@@ -559,8 +557,8 @@ class CommandManager {
 
 				val cmdOpti = context.config.getCommandOptionsFor(command)
 				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
-						ev.message.textChannel.getMessageById(ev.messageId).queue {
+					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
+						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
 							it.delete().queue()
 						}

@@ -1,9 +1,12 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import net.dv8tion.jda.bot.sharding.ShardManager
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.sharding.ShardManager
 
 /**
  * Guarda todos os shards da Loritta
@@ -78,11 +81,6 @@ class LorittaShards {
 
 		return shardManager.getTextChannelById(id)
 	}
-
-	/**
-	 * Atualiza a presença do bot em todas as shards
-	 */
-	fun setGame(game: Game) = shardManager.setGame(game)
 
 	fun getShards(): List<JDA> {
 		return shardManager.shards

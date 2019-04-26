@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
@@ -33,7 +33,7 @@ class ChatLogCommand : AbstractCommand("chatlog", listOf("backupchat", "chatback
 		val lines = mutableListOf<String>()
 
 		for (message in history.retrievedHistory.reversed()) {
-			val creationTime = message.creationTime
+			val creationTime = message.timeCreated
 
 			val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.id}) ${message.author.name}#${message.author.discriminator}: ${message.contentRaw}"
 			lines.add(line)

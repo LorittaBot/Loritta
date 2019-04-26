@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Emote
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -121,7 +122,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 			embed.addField("\uD83D\uDD16 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiName"]}", "`${emote.name}`", true)
 			embed.addField("\uD83D\uDCBB ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiId"]}", "`${emote.id}`", true)
 			embed.addField("\uD83D\uDC40 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.mention"]}", "`${emote.asMention}`", true)
-			embed.addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiCreated"]}", DateUtils.formatDateDiff(emote.creationTime.toInstant().toEpochMilli(), context.legacyLocale), true)
+			embed.addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.emojiCreated"]}", DateUtils.formatDateDiff(emote.timeCreated.toInstant().toEpochMilli(), context.legacyLocale), true)
 			if (sourceGuild != null)
 				embed.addField("\uD83D\uDD0E ${context.legacyLocale.toNewLocale()["commands.discord.emojiInfo.seenAt"]}", "`${sourceGuild.name}`", true)
 			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)

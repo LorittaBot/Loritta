@@ -4,10 +4,10 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.time.Instant
 

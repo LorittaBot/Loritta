@@ -16,8 +16,8 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 import org.jsoup.Jsoup
@@ -123,14 +123,14 @@ class LoriPartnerView : AbstractView() {
 			information["tagline"] = server.serverListConfig.tagline
 			information["description"] = server.serverListConfig.description
 			information["keywords"] = Loritta.GSON.toJsonTree(server.serverListConfig.keywords)
-			information["ownerId"] = guild.owner.user.id
-			information["ownerName"] = guild.owner.user.name
-			information["ownerDiscriminator"] = guild.owner.user.discriminator
-			information["ownerAvatarUrl"] = guild.owner.user.effectiveAvatarUrl.replace("jpg", "png")
+			information["ownerId"] = guild.owner?.user?.id
+			information["ownerName"] = guild.owner?.user?.name
+			information["ownerDiscriminator"] = guild.owner?.user?.discriminator
+			information["ownerAvatarUrl"] = guild.owner?.user?.effectiveAvatarUrl?.replace("jpg", "png")
 			information["memberCount"] = guild.members.size
 			information["onlineCount"] = guild.members.count { it.onlineStatus != OnlineStatus.OFFLINE }
-			information["serverCreatedAt"] = guild.creationTime.toEpochSecond() * 1000
-			information["joinedAt"] = guild.selfMember.joinDate.toEpochSecond() * 1000
+			information["serverCreatedAt"] = guild.timeCreated.toEpochSecond() * 1000
+			information["joinedAt"] = guild.selfMember.timeJoined.toEpochSecond() * 1000
 			val background = File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${server.guildId}.png")
 			information["hasCustomBackground"] = background.exists()
 			if (background.exists()) {

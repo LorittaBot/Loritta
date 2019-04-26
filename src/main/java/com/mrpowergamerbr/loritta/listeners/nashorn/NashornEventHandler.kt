@@ -4,9 +4,9 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.nashorn.wrappers.*
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import org.bson.types.ObjectId
 import java.util.*
 import java.util.concurrent.Executors
@@ -70,7 +70,7 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 
 	class NashornMessageReceivedEvent(private val event: GuildMessageReceivedEvent, private val serverConfig: MongoServerConfig) {
 		fun getMember(): NashornMember {
-			return NashornMember(event.member)
+			return NashornMember(event.member!!)
 		}
 
 		fun getMessage(): NashornMessage {

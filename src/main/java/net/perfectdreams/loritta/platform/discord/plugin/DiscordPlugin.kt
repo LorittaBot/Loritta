@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.platform.discord.plugin
 
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 open class DiscordPlugin : LorittaPlugin() {
     val eventListeners = mutableListOf<ListenerAdapter>()

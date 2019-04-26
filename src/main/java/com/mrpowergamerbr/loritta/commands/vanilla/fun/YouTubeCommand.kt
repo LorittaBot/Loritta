@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 import java.awt.Color
 import java.util.*
 

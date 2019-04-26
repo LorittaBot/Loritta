@@ -2,9 +2,8 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Member
 import java.awt.Color
 
 /**
@@ -45,62 +44,42 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 
 	@NashornCommand.NashornDocs()
 	fun getColor(): Color {
-		return member.color
+		return member.color!!
 	}
 
 	@NashornCommand.NashornDocs()
 	fun inVoiceChannel(): Boolean {
-		return member.voiceState.inVoiceChannel()
+		return member.voiceState!!.inVoiceChannel()
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isDeafened(): Boolean {
-		return member.voiceState.isDeafened
+		return member.voiceState!!.isDeafened
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isGuildDeafened(): Boolean {
-		return member.voiceState.isGuildDeafened
+		return member.voiceState!!.isGuildDeafened
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isMuted(): Boolean {
-		return member.voiceState.isMuted
+		return member.voiceState!!.isMuted
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isGuildMuted(): Boolean {
-		return member.voiceState.isGuildMuted
+		return member.voiceState!!.isGuildMuted
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isSelfMuted(): Boolean {
-		return member.voiceState.isSelfMuted
+		return member.voiceState!!.isSelfMuted
 	}
 
 	@NashornCommand.NashornDocs()
 	fun isSelfDeafened(): Boolean {
-		return member.voiceState.isSelfDeafened
-	}
-
-	@NashornCommand.NashornDocs()
-	fun isPlaying(): Boolean {
-		return member.game != null
-	}
-
-	@NashornCommand.NashornDocs()
-	fun isStreaming(): Boolean {
-		return member.game.type == Game.GameType.STREAMING
-	}
-
-	@NashornCommand.NashornDocs()
-	fun getGameName(): String {
-		return member.game.name
-	}
-
-	@NashornCommand.NashornDocs()
-	fun getGameUrl(): String {
-		return member.game.url
+		return member.voiceState!!.isSelfDeafened
 	}
 
 	@NashornCommand.NashornDocs()

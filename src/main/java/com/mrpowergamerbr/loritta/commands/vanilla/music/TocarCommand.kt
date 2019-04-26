@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -29,13 +29,13 @@ class TocarCommand : AbstractCommand("play", listOf("tocar", "adicionar"), Comma
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		if (context.guild.selfMember.voiceState.inVoiceChannel()) { // Se eu estou em um canal de voz...
+		if (context.guild.selfMember.voiceState?.inVoiceChannel() == true) { // Se eu estou em um canal de voz...
 			val selfMember = context.guild.selfMember
-			if (selfMember.voiceState.isGuildMuted) { // E eu estou mutada?!? Como pode!
+			if (selfMember.voiceState?.isGuildMuted == true) { // E eu estou mutada?!? Como pode!
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["TOCAR_MUTED"])
 				return
 			}
-			if (selfMember.voiceState.isSuppressed) {
+			if (selfMember.voiceState?.isSuppressed == true) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["TOCAR_CANTTALK"])
 				return
 			}

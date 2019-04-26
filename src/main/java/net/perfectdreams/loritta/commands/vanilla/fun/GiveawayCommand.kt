@@ -3,18 +3,16 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
-import org.jsoup.Connection
 
 class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
     override val discordPermissions = listOf(
@@ -260,7 +258,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                             return@onResponseByAuthor
                         }
 
-                        if (!context.discordMessage.member.canInteract(role)) {
+                        if (context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
                                     LoriReply(
                                             locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
@@ -336,7 +334,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
             if (emoteId != null) {
                 val emote = lorittaShards.getEmoteById(emoteId.toString())
 
-                if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
+                if (emote == null) {
                     reaction = "\uD83C\uDF89"
                 } else {
                     message.addReaction(emote).await()

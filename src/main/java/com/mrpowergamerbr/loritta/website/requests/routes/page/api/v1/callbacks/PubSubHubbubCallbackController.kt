@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
@@ -140,7 +141,7 @@ class PubSubHubbubCallbackController {
 					val youTubeInfos = config.youTubeConfig.channels.filter { it.channelId == channelId }
 
 					for (youTubeInfo in youTubeInfos) {
-						val textChannel = guild.getTextChannelById(youTubeInfo.repostToChannelId) ?: continue
+						val textChannel = guild.getTextChannelByNullableId(youTubeInfo.repostToChannelId) ?: continue
 
 						guildIds.add(config.guildId)
 
@@ -234,7 +235,7 @@ class PubSubHubbubCallbackController {
 									continue
 								if (!channel.channelUrl!!.startsWith("http"))
 									continue
-								val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
+								val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 								val storedUserLogin = channel.channelUrl!!.split("/").last()
 								if (storedUserLogin == userLogin) {
@@ -257,7 +258,7 @@ class PubSubHubbubCallbackController {
 											"link" to "https://www.twitch.tv/$userLogin"
 									)
 
-									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
+									textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
 								}
 							}
 						}

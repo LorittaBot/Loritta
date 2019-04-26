@@ -8,16 +8,17 @@ import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.audit.ActionType
-import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.audit.ActionType
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
@@ -42,7 +43,7 @@ object WelcomeModule {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
 							if (joinLeaveConfig.canalJoinId != null) {
-								val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
+								val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalJoinId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -55,7 +56,7 @@ object WelcomeModule {
 
 											val locale = loritta.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendFile(targetStream, "join-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).queue()
+											textChannel.sendMessage(MessageBuilder().setContent(locale["module.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).addFile(targetStream, "join-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 										}
 									}
@@ -82,7 +83,7 @@ object WelcomeModule {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
 							if (joinLeaveConfig.canalLeaveId != null) {
-								val textChannel = guild.getTextChannelById(joinLeaveConfig.canalLeaveId)
+								val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalLeaveId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -95,7 +96,7 @@ object WelcomeModule {
 
 											val locale = loritta.getLocaleById(serverConfig.localeId)
 											
-											textChannel.sendFile(targetStream, "left-users.log", MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).queue()
+											textChannel.sendMessage(MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
@@ -113,7 +114,7 @@ object WelcomeModule {
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 		val tokens = mapOf(
-				"humanized-date" to event.member.joinDate.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
+				"humanized-date" to event.member.timeJoined.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
 		)
 
 		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
@@ -127,13 +128,13 @@ object WelcomeModule {
 				return
 
 			if (joinLeaveConfig.canalJoinId != null) {
-				val textChannel = guild.getTextChannelById(joinLeaveConfig.canalJoinId)
+				val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalJoinId)
 
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
 						val msg = joinLeaveConfig.joinMessage
 						if (msg.isNotEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)).queue {
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
 								if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
 									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
 							}
@@ -150,7 +151,7 @@ object WelcomeModule {
 
 			if (msg.isNotEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 				event.user.openPrivateChannel().queue {
-					it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)).queue() // Pronto!
+					it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)!!).queue() // Pronto!
 				}
 			}
 		}
@@ -173,7 +174,7 @@ object WelcomeModule {
 				return
 
 			if (joinLeaveConfig.canalLeaveId != null) {
-				val textChannel = guild.getTextChannelById(joinLeaveConfig.canalLeaveId)
+				val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalLeaveId)
 
 				if (textChannel != null) {
 					if (textChannel.canTalk()) {
@@ -181,7 +182,7 @@ object WelcomeModule {
 						val customTokens = mutableMapOf<String, String>()
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditLogs = guild.auditLogs.await()
+							val auditLogs = guild.retrieveAuditLogs().await()
 							if (auditLogs.isNotEmpty()) {
 								val entry = auditLogs.firstOrNull { it.targetId == event.user.id }
 
@@ -207,7 +208,7 @@ object WelcomeModule {
 						}
 
 						if (msg.isNotEmpty()) {
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)).queue {
+							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)!!).queue {
 								if (serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
 									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!, TimeUnit.SECONDS)
 							}

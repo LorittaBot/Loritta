@@ -11,8 +11,8 @@ import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand

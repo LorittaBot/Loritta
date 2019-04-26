@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.Message
 import net.perfectdreams.loritta.api.entities.User
 
-class DiscordMessage(val handle: net.dv8tion.jda.core.entities.Message) : Message {
+class DiscordMessage(val handle: net.dv8tion.jda.api.entities.Message) : Message {
 	override val author = DiscordUser(handle.author)
 	override val content = handle.contentRaw
 	override val mentionedUsers: List<User>

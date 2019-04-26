@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.TextChannel
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET

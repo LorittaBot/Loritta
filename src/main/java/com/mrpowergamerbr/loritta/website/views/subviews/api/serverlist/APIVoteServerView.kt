@@ -8,9 +8,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.ServerListConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -154,46 +155,50 @@ class APIVoteServerView : NoVarsView() {
 
 		val member = guild.getMemberById(userIdentification.id)
 
-		if (serverConfig.serverListConfig.sendOnVote && serverConfig.serverListConfig.voteBroadcastChannelId != null && serverConfig.serverListConfig.voteBroadcastMessage != null) {
-			val textChannel = guild.getTextChannelById(serverConfig.serverListConfig.voteBroadcastChannelId)
+		if (member != null) {
+			if (serverConfig.serverListConfig.sendOnVote && serverConfig.serverListConfig.voteBroadcastChannelId != null && serverConfig.serverListConfig.voteBroadcastMessage != null) {
+				val textChannel = guild.getTextChannelByNullableId(serverConfig.serverListConfig.voteBroadcastChannelId)
 
-			if (textChannel != null) {
-				val customTokens = mutableMapOf<String, String>(
-						"vote-count" to serverConfig.serverListConfig.votes.count { it.id == member.user.id }.toString()
-				)
+				if (textChannel != null) {
+					val customTokens = mutableMapOf<String, String>(
+							"vote-count" to serverConfig.serverListConfig.votes.count { it.id == member.user.id }.toString()
+					)
 
-				val message = MessageUtils.generateMessage(
-						serverConfig.serverListConfig.voteBroadcastMessage!!,
-						listOf(guild, member),
-						guild,
-						customTokens
-				)
+					val message = MessageUtils.generateMessage(
+							serverConfig.serverListConfig.voteBroadcastMessage!!,
+							listOf(guild, member!!),
+							guild,
+							customTokens
+					)
 
-				if (message != null)
-					textChannel.sendMessage(message).queue()
-			}
-		}
-
-		val voteCount = serverConfig.serverListConfig.votes.count { it.id == userIdentification.id }
-		val roleIds = serverConfig.autoroleConfig.rolesVoteRewards.filter { it.voteCount >= voteCount }.flatMap { it.roles }
-
-		val roles = mutableListOf<Role>()
-
-		roleIds.forEach { // E pegar a role dependendo do ID!
-			try {
-				val role = guild.getRoleById(it)
-
-				if (role != null && !member.roles.contains(role) && !role.isPublicRole && !role.isManaged && guild.selfMember.canInteract(role)) {
-					roles.add(role)
+					if (message != null)
+						textChannel.sendMessage(message).queue()
 				}
-			} catch (e: NumberFormatException) {} // The specified ID is not a valid snowflake (null).
-		}
+			}
 
-		if (roles.isNotEmpty()) {
-			if (roles.size == 1) {
-				guild.controller.addSingleRoleToMember(member, roles[0]).reason("Autorole").queue()
-			} else {
-				guild.controller.addRolesToMember(member, roles).reason("Autorole").queue()
+			val voteCount = serverConfig.serverListConfig.votes.count { it.id == userIdentification.id }
+			val roleIds = serverConfig.autoroleConfig.rolesVoteRewards.filter { it.voteCount >= voteCount }.flatMap { it.roles }
+
+			val roles = mutableListOf<Role>()
+
+			roleIds.forEach {
+				// E pegar a role dependendo do ID!
+				try {
+					val role = guild.getRoleById(it)
+
+					if (role != null && !member.roles.contains(role) && !role.isPublicRole && !role.isManaged && guild.selfMember.canInteract(role)) {
+						roles.add(role)
+					}
+				} catch (e: NumberFormatException) {
+				} // The specified ID is not a valid snowflake (null).
+			}
+
+			if (roles.isNotEmpty()) {
+				if (roles.size == 1) {
+					guild.controller.addSingleRoleToMember(member, roles[0]).reason("Autorole").queue()
+				} else {
+					guild.controller.addRolesToMember(member, roles).reason("Autorole").queue()
+				}
 			}
 		}
 

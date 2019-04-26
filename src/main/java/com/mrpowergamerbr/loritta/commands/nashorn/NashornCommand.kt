@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import jdk.nashorn.api.scripting.ClassFilter
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.bson.types.ObjectId
 import org.graalvm.polyglot.Context

@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 
 class ParallaxGuild(private val guild: Guild) {
-	val afkChannel get() = ParallaxVoiceChannel(guild.afkChannel)
-	val afkChannelID get() = guild.afkChannel.id
+	val afkChannel get() = ParallaxVoiceChannel(guild.afkChannel!!)
+	val afkChannelID get() = guild.afkChannel!!.id
 	val afkTimeout get() = guild.afkTimeout.seconds
 
 	val database = ParallaxDatabase(guild)
@@ -15,7 +15,7 @@ class ParallaxGuild(private val guild: Guild) {
 
 	val iconURL get() = guild.iconUrl
 
-	val owner = ParallaxMember(guild.owner)
+	val owner = ParallaxMember(guild.owner!!)
 	val ownerId = guild.ownerId
 
 	val roles get() = guild.roles.map { ParallaxRole(it) }

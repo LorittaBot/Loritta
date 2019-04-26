@@ -6,11 +6,11 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.MessageReaction
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.MessageReaction
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
 import org.jetbrains.exposed.sql.and

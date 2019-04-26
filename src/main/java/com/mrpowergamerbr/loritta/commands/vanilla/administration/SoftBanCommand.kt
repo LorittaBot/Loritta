@@ -1,11 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -174,7 +176,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				}
 
 				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+					val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
@@ -187,12 +189,12 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.avatarUrl,
+										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
 										"staff-id" to context.userHandle.id
 								)
 						)
 
-						textChannel.sendMessage(message).queue()
+						textChannel.sendMessage(message!!).queue()
 					}
 				}
 			}

@@ -5,14 +5,15 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
+import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
@@ -43,7 +44,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
 					return@withLock
 
-				val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@withLock
+				val voiceChannel = event.guild.getVoiceChannelByNullableId(config.musicConfig.musicGuildId) ?: return@withLock
 
 				if (voiceChannel.members.isEmpty()) // Whoops, demorou demais!
 					return@withLock
@@ -83,9 +84,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
 					return@withLock
 
-				val voiceChannel = event.guild.getVoiceChannelById(config.musicConfig.musicGuildId) ?: return@withLock
+				val voiceChannel = event.guild.getVoiceChannelByNullableId(config.musicConfig.musicGuildId) ?: return@withLock
 
-				if (voiceChannel.members.any { !it.user.isBot && (!it.voiceState.isDeafened && !it.voiceState.isGuildDeafened) })
+				if (voiceChannel.members.any { !it.user.isBot && (it.voiceState?.isDeafened != true && it.voiceState?.isGuildDeafened != true) })
 					return@withLock
 
 				// Caso não tenha ninguém no canal de voz, vamos retirar o music manager da nossa lista

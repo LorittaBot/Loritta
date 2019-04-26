@@ -13,16 +13,16 @@ import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.events.message.MessageDeleteEvent
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
@@ -68,7 +68,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
-				val ownerProfile = loritta.getLorittaProfile(event.guild.owner.user.idLong)
+				val ownerProfile = loritta.getLorittaProfile(event.guild.owner!!.user.idLong)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
@@ -89,7 +89,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				EventLog.onMessageReceived(serverConfig, event.message)
 
 				if (isMentioningMe(event.message))
-					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
+					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
@@ -307,7 +307,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				val lorittaUser = GuildLorittaUser(event.member, serverConfig, lorittaProfile)
+				val lorittaUser = GuildLorittaUser(event.member!!, serverConfig, lorittaProfile)
 
 				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 
@@ -386,7 +386,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 */
 	fun isGuildBanned(guild: Guild): Boolean {
 		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
-			if (guild.owner.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
+			if (guild.owner!!.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true

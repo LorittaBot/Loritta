@@ -6,11 +6,11 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiInfoCommand
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Emote
-import net.dv8tion.jda.core.entities.Icon
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.Icon
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -56,9 +56,9 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			val queriedEmotes = lorittaShards.getGuilds()
 					.flatMap { it ->
 						it.emoteCache.filter {
-							it.name.contains(query, true)  && ((onlyAnimated && it.isAnimated) || !onlyAnimated) && it.canInteract(it.guild.selfMember) // Se canInteract for false, então a Lori não irá conseguir adicionar ela como reação
+							it.name.contains(query, true) && ((onlyAnimated && it.isAnimated) || !onlyAnimated) && it.canInteract(it.guild?.selfMember) // Se canInteract for false, então a Lori não irá conseguir adicionar ela como reação
 						}
-					}.sortedByDescending { it.guild.memberCache.size() }
+					}.sortedByDescending { it.guild?.memberCache?.size() ?: 0 }
 
 			sendQueriedEmbed(context, queriedEmotes, query, 0)
 		} else {
@@ -125,7 +125,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 							emoteInfo.delete().queue()
 							try {
 								ByteArrayOutputStream().use { os ->
-									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000)
+									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000) ?: throw RuntimeException("Couldn't download image!")
 
 									os.use { inputStream ->
 										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()

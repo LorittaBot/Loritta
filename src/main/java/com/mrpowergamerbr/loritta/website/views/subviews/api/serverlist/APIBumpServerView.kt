@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.save
@@ -90,9 +91,9 @@ class APIBumpServerView : NoVarsView() {
 		val member = guild.getMemberById(userIdentification.id)
 
 		if (serverConfig.serverListConfig.sendOnPromote && serverConfig.serverListConfig.promoteBroadcastChannelId != null && serverConfig.serverListConfig.promoteBroadcastMessage != null) {
-			val textChannel = guild.getTextChannelById(serverConfig.serverListConfig.promoteBroadcastChannelId)
+			val textChannel = guild.getTextChannelByNullableId(serverConfig.serverListConfig.promoteBroadcastChannelId)
 
-			if (textChannel != null) {
+			if (textChannel != null && member != null) {
 				val customTokens = mutableMapOf<String, String>(
 						"vote-count" to serverConfig.serverListConfig.votes.count { it.id == member.user.id }.toString()
 				)

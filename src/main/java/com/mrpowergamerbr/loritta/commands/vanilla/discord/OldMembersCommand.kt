@@ -9,9 +9,9 @@ import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos", "oldusers", "usuáriosantigos", "usuariosantigos"), CommandCategory.DISCORD) {
@@ -30,7 +30,7 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 	suspend fun showOldMembers(message: Message?, context: CommandContext, page: Int) {
 		val guild = context.guild
 
-		val sortedMembers = guild.members.sortedBy { it.joinDate }
+		val sortedMembers = guild.members.sortedBy { it.timeJoined }
 
 		val sortedMembersInCurrentPage = sortedMembers.subList(page * 10, Math.min((page + 1) * 10, guild.members.size))
 

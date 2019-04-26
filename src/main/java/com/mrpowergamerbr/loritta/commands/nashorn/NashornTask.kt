@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.lang.management.ManagementFactory

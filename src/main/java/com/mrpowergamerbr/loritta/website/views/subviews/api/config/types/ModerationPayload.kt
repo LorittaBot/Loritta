@@ -13,7 +13,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 
 class ModerationPayload : ConfigPayloadType("moderation") {
 	companion object {

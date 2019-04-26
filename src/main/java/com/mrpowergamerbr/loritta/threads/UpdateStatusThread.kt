@@ -4,10 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.EntityBuilder
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Icon
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Icon
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.util.*
@@ -65,7 +64,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				currentIndex = 0
 			}
 
-			var minutes = calendar.get(Calendar.MINUTE) / 10
+			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
 
 			if (diff >= 25000 && firstInstance != null) {
@@ -79,7 +78,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				} else {
 					"¯\\_(ツ)_/¯"
 				}
-				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 				lastUpdate = System.currentTimeMillis()
 			}
 
@@ -103,7 +102,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					}
 
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
+					loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 
 					currentFanArt = fanArt
 					currentIndex++
@@ -145,7 +144,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				str = str.replace("{uptime}", sb.toString())
 
 				val shard = lorittaShards.getShards().firstOrNull() ?: return
-				loritta.lorittaShards.setGame(EntityBuilder(shard).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
+				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 

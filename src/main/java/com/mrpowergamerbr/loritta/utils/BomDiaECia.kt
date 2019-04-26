@@ -9,13 +9,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -134,7 +134,7 @@ class BomDiaECia {
 
 		validTextChannels.forEach {
 			// TODO: Localization!
-			it.sendMessage(messageForLocales["default"]).queue()
+			it.sendMessage(messageForLocales["default"]!!).queue()
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {

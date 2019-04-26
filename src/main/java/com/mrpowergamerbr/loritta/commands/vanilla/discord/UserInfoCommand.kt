@@ -10,11 +10,11 @@ import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -102,10 +102,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
 
-			val accountCreatedDiff = DateUtils.formatDateDiff(user.creationTime.toInstant().toEpochMilli(), context.legacyLocale)
+			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.legacyLocale)
 			addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountCreated"]}", accountCreatedDiff, true)
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(member.joinDate.toInstant().toEpochMilli(), context.legacyLocale)
+				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.legacyLocale)
 				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
 			}
 
@@ -187,7 +187,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (member != null) {
 				addField(
 						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userInfo.joinPosition"]}",
-						locale.toNewLocale()["commands.discord.userInfo.joinPlace", "${member.guild.members.sortedBy { it.joinDate }.indexOf(member) + 1}º"],
+						locale.toNewLocale()["commands.discord.userInfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
 						true
 				)
 

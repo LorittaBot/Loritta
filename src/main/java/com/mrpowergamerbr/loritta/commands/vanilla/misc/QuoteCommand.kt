@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
@@ -13,9 +12,10 @@ import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.embed.AuthorEmbed
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
 class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "r", "reply"), CommandCategory.DISCORD) {
@@ -40,7 +40,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 		if (context.args[0].isValidSnowflake()) {
 			var msg: Message? = null
 			try {
-				msg = context.event.textChannel!!.getMessageById(context.args[0]).await()
+				msg = context.event.textChannel!!.retrieveMessageById(context.args[0]).await()
 			} catch (e: ErrorResponseException) {
 			}
 

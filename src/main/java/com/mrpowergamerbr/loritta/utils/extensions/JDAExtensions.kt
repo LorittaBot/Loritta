@@ -1,16 +1,11 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.Permission.*
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageChannel
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.requests.RestAction
-import java.io.File
-import java.io.InputStream
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.Permission.*
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.requests.RestAction
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -24,14 +19,6 @@ suspend fun <T> RestAction<T>.await() : T {
 suspend fun MessageChannel.sendMessageAsync(text: String) = this.sendMessage(text).await()
 suspend fun MessageChannel.sendMessageAsync(message: Message) = this.sendMessage(message).await()
 suspend fun MessageChannel.sendMessageAsync(embed: MessageEmbed) = this.sendMessage(embed).await()
-
-suspend fun MessageChannel.sendFileAsync(file: File) = this.sendFile(file).await()
-suspend fun MessageChannel.sendFileAsync(file: File, fileName: String) = this.sendFile(file, fileName).await()
-suspend fun MessageChannel.sendFileAsync(file: File, message: Message) = this.sendFile(file, message).await()
-suspend fun MessageChannel.sendFileAsync(file: File, fileName: String, message: Message) = this.sendFile(file, fileName, message).await()
-suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String) = this.sendFile(data, fileName).await()
-suspend fun MessageChannel.sendFileAsync(data: ByteArray, fileName: String, message: Message) = this.sendFile(data, fileName).await()
-suspend fun MessageChannel.sendFileAsync(data: InputStream, fileName: String, message: Message) = this.sendFile(data, fileName).await()
 
 suspend fun Message.edit(message: String, embed: MessageEmbed, clearReactions: Boolean = true): Message {
 	return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), clearReactions)
@@ -82,7 +69,21 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 }
 
 fun Message.refresh(): RestAction<Message> {
-	return this.channel.getMessageById(this.idLong)
+	return this.channel.retrieveMessageById(this.idLong)
+}
+
+fun Guild.getTextChannelByNullableId(id: String?): TextChannel? {
+	if (id == null)
+		return null
+
+	return this.getTextChannelById(id)
+}
+
+fun Guild.getVoiceChannelByNullableId(id: String?): VoiceChannel? {
+	if (id == null)
+		return null
+
+	return this.getVoiceChannelById(id)
 }
 
 fun Permission.localized(locale: BaseLocale): String {

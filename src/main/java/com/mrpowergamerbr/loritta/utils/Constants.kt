@@ -20,6 +20,9 @@ import javax.imageio.ImageIO
 object Constants {
 	const val ERROR = "<:error:412585701054611458>"
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
+	const val DISCORD_EPOCH = 1420070400000L
+	const val TIMESTAMP_OFFSET: Long = 22
+
 	/**
 	 * Discord's URL Crawler User Agent
 	 */

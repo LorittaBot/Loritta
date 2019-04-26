@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.entities.Member
 
 class ParallaxMember(private val member: Member) : ParallaxUser(member.user) {
 	fun hasRole(role: ParallaxRole): Boolean {
