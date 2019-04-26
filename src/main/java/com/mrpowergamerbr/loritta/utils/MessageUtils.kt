@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
@@ -346,6 +347,22 @@ fun Message.onReactionRemoveByAuthor(context: LorittaCommandContext, function: s
 }
 
 /**
+ * When the command executor adds or removes a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionByAuthor(context: LorittaCommandContext, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
+	if (context !is DiscordCommandContext)
+		throw UnsupportedOperationException("I don't know how to handle a $context yet!")
+
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(this.guild?.idLong, this.channel?.idLong, context.userHandle.id) }
+	functions.onReactionByAuthor = function
+	return this
+}
+
+/**
  * When an user sends a message on the same text channel as the executed command
  *
  * @param context  the context of the message
@@ -381,7 +398,6 @@ fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend
  * Removes all interaction functions associated with [this]
  */
 fun Message.removeAllFunctions(): Message {
-
 	loritta.messageInteractionCache.remove(this.idLong)
 	return this
 }
@@ -409,6 +425,7 @@ class MessageInteractionFunctions(val guildId: Long?, val channelId: Long?, val 
 	var onReactionRemove: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
 	var onReactionAddByAuthor: (suspend (MessageReactionAddEvent) -> Unit)? = null
 	var onReactionRemoveByAuthor: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
+	var onReactionByAuthor: (suspend (GenericMessageReactionEvent) -> Unit)? = null
 	var onResponse: (suspend (LorittaMessageEvent) -> Unit)? = null
 	var onResponseByAuthor: (suspend (LorittaMessageEvent) -> Unit)? = null
 	var onMessageReceived: (suspend (LorittaMessageEvent) -> Unit)? = null

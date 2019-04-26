@@ -118,7 +118,6 @@ class CommandManager {
 		commandMap.add(EscolherCommand())
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
-		commandMap.add(FanArtsCommand())
 		commandMap.add(DiscordBotListCommand())
 		commandMap.add(VotarCommand())
 		commandMap.add(ParallaxCommand())

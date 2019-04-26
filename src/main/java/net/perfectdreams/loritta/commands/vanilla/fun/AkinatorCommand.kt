@@ -6,9 +6,10 @@ import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Emotes
+import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
@@ -77,11 +78,13 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
             setColor(Color(20, 158, 255))
         }
 
-        val message = currentMessage?.edit(context.getAsMention(true), builder.build()) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
-        message.addReaction("✅").queue()
-        message.addReaction("error:412585701054611458").queue()
+        val message = currentMessage?.edit(context.getAsMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
+        message.doReactions(
+                "✅",
+                "error:412585701054611458"
+        )
 
-        message.onReactionAddByAuthor(context) {
+        message.onReactionByAuthor(context) {
             when {
                 it.reactionEmote.name == "✅" -> {
                     val builder = getAkinatorEmbedBase(context).apply {
@@ -157,15 +160,9 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
             setColor(Color(20, 158, 255))
         }
 
-        val message = currentMessage?.edit(context.getAsMention(true), builder.build()) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
+        val message = currentMessage?.edit(context.getAsMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
 
-        message.addReaction("\uD83D\uDC4D").queue() // Yes
-        message.addReaction("\uD83D\uDC4E").queue() // No
-        message.addReaction("lori_shrug:548639343141715978").queue() // Don't know
-        message.addReaction("lori_sorriso:556525532359950337").queue() // Probably yes
-        message.addReaction("lori_tristeliz:556524143281963008").queue() // Probably not
-
-        message.onReactionAddByAuthor(context) {
+        message.onReactionByAuthor(context) {
             val answer = when {
                 it.reactionEmote.name == "\uD83D\uDC4D⃣" -> Akiwrapper.Answer.YES
                 it.reactionEmote.name == "\uD83D\uDC4E⃣" -> Akiwrapper.Answer.NO
@@ -179,6 +176,14 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
 
             handleAkinator(context, locale, aw, message, declinedGuesses)
         }
+
+        message.doReactions(
+                "\uD83D\uDC4D", // Yes
+                "\uD83D\uDC4E", // No
+                "lori_shrug:548639343141715978", // Don't know
+                "lori_sorriso:556525532359950337", // Probably yes
+                "lori_tristeliz:556524143281963008" // Probably not
+        )
     }
 
     @Subcommand

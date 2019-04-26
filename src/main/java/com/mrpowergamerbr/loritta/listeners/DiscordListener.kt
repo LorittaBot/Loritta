@@ -263,10 +263,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
+				if (e.user.id == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionAddByAuthor!!.invoke(e)
+							functions.onReactionByAuthor?.invoke(e)
+							functions.onReactionAddByAuthor?.invoke(e)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
 						}
@@ -285,10 +286,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
+				if (e.user.id == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionRemoveByAuthor!!.invoke(e)
+							functions.onReactionByAuthor?.invoke(e)
+							functions.onReactionRemoveByAuthor?.invoke(e)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
 						}
