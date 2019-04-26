@@ -215,6 +215,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 						channelListener,
 						audioManager.lavalink
 				)
+				.setVoiceDispatchInterceptor(audioManager.lavalink.voiceInterceptor)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
