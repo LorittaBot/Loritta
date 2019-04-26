@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import org.jsoup.parser.Parser
 import java.awt.Color
 import java.util.*
 
@@ -49,9 +50,9 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 						var duration = java.time.Duration.parse(strDuration)
 						var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS) // Nós não podemos pegar o tempo diretamente porque é "unsupported"
 						var final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60))
-						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n"
+						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtu.be/${item.id.videoId})**\n"
 					} else {
-						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${item.snippet.title}](https://youtu.be/${item.id.videoId})**\n"
+						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtu.be/${item.id.videoId})**\n"
 					}
 					context.metadata.put(i.toString(), item)
 				}
@@ -106,7 +107,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
 
 							var embed = EmbedBuilder()
-							embed.setTitle("<:youtube:314349922885566475> ${item.snippet.title}", "https://youtu.be/${item.id.videoId}")
+							embed.setTitle("<:youtube:314349922885566475> ${Parser.unescapeEntities(item.snippet.title, false)}", "https://youtu.be/${item.id.videoId}")
 							embed.setDescription(item.snippet.description)
 							embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
 
