@@ -54,7 +54,7 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 		else
 			emotes.contains(it.reactionEmote.name)
 	}
-	
+
 	if (invalidReactions.isNotEmpty())
 		clearAll = true
 
@@ -79,7 +79,7 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
  */
 fun MessageReaction.ReactionEmote.isEmote(id: String): Boolean {
 	return if (this.isEmote)
-		this.id == id
+		this.id == id || this.name == id
 	else
 		this.name == id
 }
