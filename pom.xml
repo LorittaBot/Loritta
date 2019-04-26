@@ -291,7 +291,7 @@
         <dependency>
             <groupId>com.github.DuncteBot</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>e7396c685d</version>
+            <version>63242d0ad8</version>
         </dependency>
         <dependency>
             <groupId>com.github.markozajc</groupId>
