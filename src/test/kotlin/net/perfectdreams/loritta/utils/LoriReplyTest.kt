@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import io.mockk.every
 import io.mockk.mockk
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.fromMorse
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toMorse
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 import java.awt.Color
 
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {

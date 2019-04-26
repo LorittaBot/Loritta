@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.utils.MiscUtil
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -71,7 +72,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 					true
 				}
 			}.filter {
-				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - MiscUtil.DISCORD_EPOCH shl MiscUtil.TIMESTAMP_OFFSET.toInt()
+				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - Constants.DISCORD_EPOCH shl Constants.TIMESTAMP_OFFSET.toInt()
 				val isTooOld = MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
 				if (isTooOld) {
 					hasTooOldMessages = true

@@ -4,18 +4,19 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -134,7 +135,7 @@ class BomDiaECia {
 
 		validTextChannels.forEach {
 			// TODO: Localization!
-			it.sendMessage(messageForLocales["default"]).queue()
+			it.sendMessage(messageForLocales["default"]!!).queue()
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -143,7 +144,7 @@ class BomDiaECia {
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
 						message.onReactionAddByAuthor(user.id) {
-							if (it.reactionEmote.name == "⁉") {
+							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
 								val triedToCall = triedToCall.mapNotNull { lorittaShards.getUserById(it) }

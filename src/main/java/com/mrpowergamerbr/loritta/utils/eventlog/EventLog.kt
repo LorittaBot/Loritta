@@ -3,14 +3,15 @@ package com.mrpowergamerbr.loritta.utils.eventlog
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.VoiceChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.VoiceChannel
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.time.Instant
@@ -50,7 +51,7 @@ object EventLog {
 
 		try {
 			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
-				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = message.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 						return
@@ -69,9 +70,9 @@ object EventLog {
 
 						embed.setColor(Color(238, 241, 0))
 
-						embed.setAuthor("${message.member.user.name}#${message.member.user.discriminator}", null, message.member.user.effectiveAvatarUrl)
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_EDITED", message.member.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
-						embed.setFooter(locale["EVENTLOG_USER_ID", message.member.user.id], null)
+						embed.setAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl)
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_EDITED", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
+						embed.setFooter(locale["EVENTLOG_USER_ID", message.member?.user?.id], null)
 
 						textChannel.sendMessage(embed.build()).queue()
 					}
@@ -93,7 +94,7 @@ object EventLog {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -127,7 +128,7 @@ object EventLog {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return

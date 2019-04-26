@@ -3,9 +3,9 @@ package com.mrpowergamerbr.loritta.profile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import java.awt.image.BufferedImage
 
 interface ProfileCreator {

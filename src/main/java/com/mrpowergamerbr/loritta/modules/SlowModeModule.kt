@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import java.util.concurrent.TimeUnit
 
 class SlowModeModule : MessageReceivedModule {
@@ -19,7 +19,7 @@ class SlowModeModule : MessageReceivedModule {
 		if (!serverConfig.slowModeChannels.contains(event.channel.id))
 			return false
 
-		if (!event.guild!!.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE))
+		if (!event.guild!!.selfMember.hasPermission(event.textChannel!!, Permission.MESSAGE_MANAGE))
 			return false
 
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_SLOW_MODE))

@@ -8,12 +8,12 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.MessageType
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageType
 
 class QuirkyModule : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-		return serverConfig.miscellaneousConfig.enableQuirky && event.guild?.selfMember?.hasPermission(event.textChannel, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE) == true && event.message.type == MessageType.DEFAULT
+		return serverConfig.miscellaneousConfig.enableQuirky && event.guild?.selfMember?.hasPermission(event.textChannel!!, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE) == true && event.message.type == MessageType.DEFAULT
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {

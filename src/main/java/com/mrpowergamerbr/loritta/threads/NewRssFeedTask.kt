@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta.Companion.config
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.rometools.rome.io.ParsingFeedException
 import com.rometools.rome.io.SyndFeedInput
 import kotlinx.coroutines.GlobalScope
@@ -91,7 +92,7 @@ class NewRssFeedTask : Runnable {
 									for (feedInfo in server.rssFeedConfig.feeds.filter { rssFeedLink  == it.feedUrl }) {
 										val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 
-										val textChannel = guild.getTextChannelById(feedInfo.repostToChannelId) ?: continue
+										val textChannel = guild.getTextChannelByNullableId(feedInfo.repostToChannelId) ?: continue
 
 										if (!textChannel.canTalk())
 											continue

@@ -15,9 +15,9 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -195,14 +195,14 @@ class AutomodModule : MessageReceivedModule {
 				raidingPercentage += nonMutualGuildsScore
 
 				// Conta nova no Discord
-				val newAccountScore = AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.creationTime.toInstant().toEpochMilli()))
+				val newAccountScore = AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.timeCreated.toInstant().toEpochMilli()))
 				// analysis(analysis, "+ newAccountScore é $nonMutualGuildsScore - Valor atual é $raidingPercentage")
 				raidingPercentage += newAccountScore
 
 				// Conta nova que entrou no servidor
 				val member = event.member
 				if (member != null) {
-					val recentlyJoinedScore = AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - member.joinDate.toInstant().toEpochMilli()))
+					val recentlyJoinedScore = AutomodModule.FRESH_ACCOUNT_JOINED_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - member.timeJoined.toInstant().toEpochMilli()))
 					// analysis(analysis, "+ recentlyJoinedScore é $recentlyJoinedScore - Valor atual é $raidingPercentage")
 					raidingPercentage += recentlyJoinedScore
 				}
@@ -229,7 +229,7 @@ class AutomodModule : MessageReceivedModule {
 
 						if (percentage >= BAN_THRESHOLD) {
 							alreadyBanned.add(storedMessage.author)
-							if (event.guild.selfMember.canInteract(event.member)) {
+							if (event.guild.selfMember.canInteract(event.member!!)) {
 								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
 								BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 							}
@@ -239,7 +239,7 @@ class AutomodModule : MessageReceivedModule {
 					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 						return true
 
-					if (event.guild.selfMember.canInteract(event.member)) {
+					if (event.guild.selfMember.canInteract(event.member!!)) {
 						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
 						BanCommand.ban(serverConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 					}
@@ -269,9 +269,9 @@ class AutomodModule : MessageReceivedModule {
 								MessageUtils.generateMessage(automodCaps.replyMessage,
 										listOf(event.guild!!, event.member!!),
 										event.guild
-								)
+								)!!
 						).queue {
-							if (automodCaps.enableMessageTimeout && it.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
+							if (automodCaps.enableMessageTimeout && it.guild.selfMember.hasPermission(event.textChannel!!, Permission.MESSAGE_MANAGE)) {
 								val delay = Math.min(automodCaps.messageTimeout * 1000, 60000)
 								it.delete().queueAfter(delay.toLong(), TimeUnit.MILLISECONDS)
 							}

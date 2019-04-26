@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -52,7 +53,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 							continue
 						if (!channel.channelUrl!!.startsWith("http"))
 							continue
-						val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
+						val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 						if (!textChannel.canTalk())
 							continue

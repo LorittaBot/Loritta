@@ -5,8 +5,8 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.Emote
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {

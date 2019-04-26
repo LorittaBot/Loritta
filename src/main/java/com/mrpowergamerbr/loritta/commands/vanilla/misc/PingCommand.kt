@@ -2,11 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override fun getDescription(locale: LegacyBaseLocale): String {
@@ -23,9 +25,9 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val row3 = mutableListOf<String>()
 			val row4 = mutableListOf<String>()
 
-			lorittaShards.getShards().sortedBy { it.shardInfo.shardId }.forEach {
-				row0.add("Shard ${it.shardInfo.shardId}")
-				row1.add("${it.ping}ms")
+			lorittaShards.getShards().sortedBy { it.shardInfo?.shardId }.forEach {
+				row0.add("Shard ${it.shardInfo?.shardId}")
+				row1.add("${it.gatewayPing}ms")
 				row2.add(it.status.name)
 				row3.add("${it.guilds.size} guilds")
 				row4.add("${it.users.size} users")
@@ -69,11 +71,11 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
             val replies = mutableListOf(
 					LoriReply(
-							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${Loritta.config.shards - 1})",
+							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo?.shardId}/${Loritta.config.shards - 1})",
 							prefix = ":ping_pong:"
 					),
 					LoriReply(
-							message = "**WebSocket Ping: ** `${context.event.jda.ping}ms`",
+							message = "**Gateway Ping: ** `${context.event.jda.gatewayPing}ms`",
 							prefix = ":stopwatch:",
 							mentionUser = false
 					),

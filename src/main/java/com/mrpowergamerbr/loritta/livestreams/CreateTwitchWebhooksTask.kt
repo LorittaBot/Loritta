@@ -6,6 +6,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -48,7 +49,7 @@ class CreateTwitchWebhooksTask : Runnable {
 							continue
 						if (!channel.channelUrl!!.startsWith("http"))
 							continue
-						val textChannel = guild.getTextChannelById(channel.repostToChannelId) ?: continue
+						val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 						if (!textChannel.canTalk())
 							continue

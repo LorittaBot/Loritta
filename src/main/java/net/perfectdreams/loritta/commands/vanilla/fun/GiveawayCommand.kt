@@ -2,19 +2,18 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.Role
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
-import org.jsoup.Connection
 
 class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
     override val discordPermissions = listOf(
@@ -211,7 +210,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
         message.handle.onReactionAddByAuthor(context) {
             message.delete()
 
-            if (it.reactionEmote.name == "✅") {
+            if (it.reactionEmote.isEmote("✅")) {
                 val message = context.reply(
                         LoriReply(
                                 message = locale["commands.fun.giveaway.giveawayMentionRoles"],
@@ -260,7 +259,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                             return@onResponseByAuthor
                         }
 
-                        if (!context.discordMessage.member.canInteract(role)) {
+                        if (context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
                                     LoriReply(
                                             locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
@@ -332,19 +331,36 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
 
         try {
             // Testar se é possível usar o emoticon atual
-            val emoteId = reaction.toLongOrNull()
-            if (emoteId != null) {
-                val emote = lorittaShards.getEmoteById(emoteId.toString())
+            val emoteMatcher = Constants.DISCORD_EMOTE_PATTERN.matcher(reaction)
 
-                if (lorittaShards.getEmoteById(emoteId.toString()) == null) {
-                    reaction = "\uD83C\uDF89"
-                } else {
-                    message.addReaction(emote).await()
+            if (emoteMatcher.find()) {
+                val emoteId = emoteMatcher.group(2).toLongOrNull()
+
+                if (emoteId != null) {
+                    val emote = lorittaShards.getEmoteById(emoteId.toString())
+
+                    // TODO: Isso está feio e confuso, dá para ser melhor.
+                    if (emote == null) { // Emoji NÃO existe
+                        reaction = "\uD83C\uDF89"
+                    } else {
+                        val emoteGuild = emote.guild
+                        if (emoteGuild == null) { // Guild do emote NÃO existe (Então a Lori não conhece o emoji)
+                            reaction = "\uD83C\uDF89"
+                        } else {
+                            if (!emote.canInteract(emoteGuild.selfMember)) { // Lori não consegue interagir com o emoji
+                                reaction = "\uD83C\uDF89"
+                            } else {
+                                message.addReaction(emote).await()
+                                reaction = emote.id
+                            }
+                        }
+                    }
                 }
             } else {
                 message.addReaction(reaction).await()
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             reaction = "\uD83C\uDF89"
         }
 

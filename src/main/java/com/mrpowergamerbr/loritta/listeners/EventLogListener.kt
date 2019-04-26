@@ -12,31 +12,32 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.audit.ActionType
-import net.dv8tion.jda.core.entities.User
-import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent
-import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent
-import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePositionEvent
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateTopicEvent
-import net.dv8tion.jda.core.events.guild.GuildBanEvent
-import net.dv8tion.jda.core.events.guild.GuildUnbanEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
-import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent
-import net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent
-import net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent
-import net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.audit.ActionType
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent
+import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent
+import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent
+import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNameEvent
+import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePositionEvent
+import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateTopicEvent
+import net.dv8tion.jda.api.events.guild.GuildBanEvent
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
+import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
+import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.Column
@@ -94,7 +95,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setColor(Constants.DISCORD_BLURPLE)
 				embed.setImage("attachment://avatar.png")
 
-				val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl.replace("jpg", "png"))
+				val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl!!.replace("jpg", "png"))
 				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
 
 				if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
@@ -131,7 +132,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 								val guild = guilds.first { it.id == config.guildId }
 
-								val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+								val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
 
 								if (textChannel != null && textChannel.canTalk()) {
 									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
@@ -148,7 +149,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 									val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-									textChannel.sendFile(bais, "avatar.png", message.build()).queue()
+									textChannel.sendMessage(message.build()).addFile(bais, "avatar.png").queue()
 								}
 							}
 						}
@@ -228,7 +229,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val guild = guilds.first { it.id == config.guildId }
 
-				val textChannel = guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+				val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
 
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -270,7 +271,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val locale = loritta.getLegacyLocaleById(config.localeId)
 			val eventLogConfig = config.eventLogConfig
 			if (eventLogConfig.isEnabled) {
-				val textChannel = event.guild.getTextChannelById(config.eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
 
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -326,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = config.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -352,7 +353,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
 						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditEntry = event.guild.auditLogs.await().firstOrNull()
+							val auditEntry = event.guild.retrieveAuditLogs().await().firstOrNull()
 
 							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
 								if (auditEntry.targetIdLong == storedMessage.authorId) {
@@ -389,7 +390,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = config.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -427,7 +428,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
 
-						textChannel.sendFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", MessageBuilder().append(" ").setEmbed(embed.build()).build()).queue()
+						textChannel.sendMessage(MessageBuilder().append(" ").setEmbed(embed.build()).build()).addFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log").queue()
 
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
@@ -449,7 +450,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
-					if (relayTo.banList.await().firstOrNull { it.user == event.user } == null) {
+					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
 						relayTo.controller.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
 					}
 				}
@@ -458,7 +459,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				if (relayTo != null) {
-					if (relayTo.banList.await().firstOrNull { it.user == event.user } == null) {
+					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
 						relayTo.controller.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
 					}
 				}
@@ -468,7 +469,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -488,7 +489,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.auditLogs.await().first()
+					val auditLog = event.guild.retrieveAuditLogs().await().first()
 
 					if (auditLog.type == ActionType.BAN) {
 						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}"
@@ -526,7 +527,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
@@ -545,7 +546,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.auditLogs.await().first()
+					val auditLog = event.guild.retrieveAuditLogs().await().first()
 
 					if (auditLog.type == ActionType.UNBAN) {
 						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user?.asMention ?: "???"]}"
@@ -562,7 +563,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	override fun onGuildMemberNickChange(event: GuildMemberNickChangeEvent) {
+	override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -578,7 +579,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@execute
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@execute
 				if (!textChannel.canTalk())
 					return@execute
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -588,8 +589,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@execute
 
-				val oldNickname = if (event.prevNick == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.prevNick
-				val newNickname = if (event.newNick == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNick
+				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.oldNickname
+				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNickname
 
 				embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NicknameChanged", oldNickname, newNickname]}")
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)

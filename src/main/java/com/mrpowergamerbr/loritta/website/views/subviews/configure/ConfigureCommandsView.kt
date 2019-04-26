@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 

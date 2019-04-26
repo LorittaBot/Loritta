@@ -3,10 +3,11 @@ package com.mrpowergamerbr.loritta.website.views.subviews.configure
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import net.dv8tion.jda.core.entities.Guild
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.website.evaluate
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 
@@ -22,7 +23,7 @@ class ConfigureYouTubeView : ConfigureView() {
 		val channels = JsonArray()
 		serverConfig.youTubeConfig.channels.filter { it.repostToChannelId != null }.forEach {
 			val json = Loritta.GSON.toJsonTree(it)
-			val textChannel = guild.getTextChannelById(it.repostToChannelId)
+			val textChannel = guild.getTextChannelByNullableId(it.repostToChannelId)
 			if (textChannel != null) {
 				json["textChannelName"] = textChannel.name
 				channels.add(json)

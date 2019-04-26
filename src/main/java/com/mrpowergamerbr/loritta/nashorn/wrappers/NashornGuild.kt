@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 
 /**
  * Wrapper para a Guild, usado para imagens de comandos Nashorn
@@ -18,12 +18,12 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 
 	@NashornCommand.NashornDocs()
 	fun getIconUrl(): String {
-		return guild.iconUrl
+		return guild.iconUrl!!
 	}
 
 	@NashornCommand.NashornDocs()
 	fun getIcon(): NashornImage? {
-		val image = LorittaUtils.downloadImage(guild.iconUrl) ?: return null
+		val image = LorittaUtils.downloadImage(guild.iconUrl!!) ?: return null
 		return NashornImage(image)
 	}
 
@@ -51,12 +51,12 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 
 	@NashornCommand.NashornDocs()
 	fun getRoleById(id: String): NashornRole {
-		return NashornRole(guild.getRoleById(id))
+		return NashornRole(guild.getRoleById(id)!!)
 	}
 
 	@NashornCommand.NashornDocs()
 	fun getMemberById(id: String): NashornLorittaUser {
-		return NashornLorittaUser(guild.getMemberById(id), serverConfig)
+		return NashornLorittaUser(guild.getMemberById(id)!!, serverConfig)
 	}
 
 	@NashornCommand.NashornDocs()

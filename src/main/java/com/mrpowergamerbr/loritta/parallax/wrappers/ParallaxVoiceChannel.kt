@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.entities.VoiceChannel
+import net.dv8tion.jda.api.entities.VoiceChannel
 
 class ParallaxVoiceChannel(private val channel: VoiceChannel) {
 

@@ -26,9 +26,9 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -144,8 +144,6 @@ object WebsiteUtils {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["isPatreon"] = loritta.isPatreon
-		variables["isDonator"] = loritta.isDonator
 		variables["addBotUrl"] = Loritta.config.addBotUrl
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
@@ -638,9 +636,9 @@ object WebsiteUtils {
 
 			if (role.color != null) {
 				json["color"] = jsonObject(
-						"red" to role.color.red,
-						"green" to role.color.green,
-						"blue" to role.color.blue
+						"red" to role.color!!.red,
+						"green" to role.color!!.green,
+						"blue" to role.color!!.blue
 				)
 			}
 
@@ -692,9 +690,9 @@ object WebsiteUtils {
 
 			if (role.color != null) {
 				json["color"] = jsonObject(
-						"red" to role.color.red,
-						"green" to role.color.green,
-						"blue" to role.color.blue
+						"red" to role.color!!.red,
+						"green" to role.color!!.green,
+						"blue" to role.color!!.blue
 				)
 			}
 

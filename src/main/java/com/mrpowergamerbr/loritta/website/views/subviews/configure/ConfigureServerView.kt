@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 import java.io.ByteArrayInputStream

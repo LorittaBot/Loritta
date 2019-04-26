@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.TextChannel
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 

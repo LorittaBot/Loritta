@@ -9,11 +9,11 @@ import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -93,7 +93,8 @@ object GiveawayManager {
 
         if (emoteId != null) {
             val mention = lorittaShards.getEmoteById(emoteId.toString())
-            message.addReaction(mention).await()
+            if (mention != null)
+                message.addReaction(mention).await()
         } else {
             message.addReaction(reaction).await()
         }
@@ -141,7 +142,7 @@ object GiveawayManager {
 
                     val diff = giveaway.finishAt - System.currentTimeMillis()
 
-                    val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                    val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
                         logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                         cancelGiveaway(giveaway, true)
                         return@launch
@@ -186,7 +187,7 @@ object GiveawayManager {
                     cancelGiveaway(giveaway, true)
                     return@launch
                 }
-                val message = channel.getMessageById(giveaway.messageId).await() ?: run {
+                val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
                     logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
                     cancelGiveaway(giveaway, true)
                     return@launch
@@ -237,13 +238,13 @@ object GiveawayManager {
         val locale = loritta.getLocaleById(serverConfig.localeId)
 
         if (messageReaction != null) {
-            val users = messageReaction.users.await()
+            val users = messageReaction.retrieveUsers().await()
 
             if (users.size == 1 && users[0].id == Loritta.config.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.users.await().filter { it.id != Loritta.config.clientId }.toMutableList()
+                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.clientId }.toMutableList()
 
                 repeat(giveaway.numberOfWinners) {
                     if (reactedUsers.isEmpty())
@@ -275,8 +276,7 @@ object GiveawayManager {
                 if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
                     val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
 
-                    winners.forEach { user ->
-                        val member = message.guild.getMember(user)
+                    winners.mapNotNull { message.guild.getMember(it) }.forEach { member ->
                         val rolesToBeGiven = roles.filter {
                             !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
                         }

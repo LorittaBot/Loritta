@@ -15,7 +15,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.jooby.Request
 import org.jooby.Response
 

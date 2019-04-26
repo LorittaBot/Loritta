@@ -6,15 +6,16 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
-import net.dv8tion.jda.core.entities.PrivateChannel
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.PrivateChannel
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.awt.Color
@@ -267,12 +268,12 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			}
 		}
 
-		if (e.reactionEmote.name == "\uD83D\uDD19") {
+		if (e.reactionEmote.isEmote("\uD83D\uDD19")) {
 			sendInfoBox(context, msg.privateChannel)
 			return
 		}
 
-		if (e.reactionEmote.name == "\uD83D\uDD22") {
+		if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
 			for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
 				getCommandsFor(context, category).forEach {
 					context.sendMessage(it)

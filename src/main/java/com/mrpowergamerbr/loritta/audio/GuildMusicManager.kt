@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.audio
 
 import com.mrpowergamerbr.loritta.utils.loritta
 import lavalink.client.player.LavalinkPlayer
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 
 /**
  * Holder for both the player and a track scheduler for one guild.

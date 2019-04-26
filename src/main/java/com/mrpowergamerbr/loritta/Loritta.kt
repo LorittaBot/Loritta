@@ -48,9 +48,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.core.requests.RestAction
-import net.dv8tion.jda.core.utils.cache.CacheFlag
+import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -161,13 +161,9 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	lateinit var bomDiaECia: BomDiaECia
 
 	var ticTacToeServer = TicTacToeServer()
-	var premiumKeys = mutableListOf<PremiumKey>()
 	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
 	var pluginManager = PluginManager(this)
-
-	var isPatreon = mutableMapOf<String, Boolean>()
-	var isDonator = mutableMapOf<String, Boolean>()
 
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
@@ -192,7 +188,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
-		loadPremiumKeys()
 		loadBlacklistedServers()
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
@@ -211,7 +206,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				.setToken(Loritta.config.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.PRESENCE))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
@@ -220,6 +215,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 						channelListener,
 						audioManager.lavalink
 				)
+				.setVoiceDispatchInterceptor(audioManager.lavalink.voiceInterceptor)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
@@ -277,18 +273,29 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
+		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
+
+		loadCommandManager() // Inicie todos os comandos da Loritta
+		pluginManager.loadPlugins()
+
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
+		logger.info { "Iniciando Livestream Thread..." }
 		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
+		logger.info { "Iniciando Update Status Thread..." }
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
+		logger.info { "Iniciando Tasks..." }
 		LorittaTasks.startTasks()
 
+		logger.info { "Iniciando threads de reminders..." }
 		RemindersThread().start()
 
+		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia()
 
+		logger.info { "Carregando raffle..." }
 		val raffleFile = File(FOLDER, "raffle.json")
 
 		if (raffleFile.exists()) {
@@ -310,41 +317,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 		GlobalScope.launch(coroutineDispatcher) {
 			connectionManager.updateProxies()
-		}
-
-		loadCommandManager() // Inicie todos os comandos da Loritta
-		pluginManager.loadPlugins()
-
-		thread(name = "Update Random Stuff") {
-			while (true) {
-				try {
-					val isPatreon = mutableMapOf<String, Boolean>()
-					val isDonator = mutableMapOf<String, Boolean>()
-
-					val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-					if (lorittaGuild != null) {
-						val rolePatreons = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-						val roleDonators = lorittaGuild.getRoleById("435856512787677214") // Doadores
-
-						val patreons = lorittaGuild.getMembersWithRoles(rolePatreons)
-						val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-
-						patreons.forEach {
-							isPatreon[it.user.id] = true
-						}
-						donators.forEach {
-							isDonator[it.user.id] = true
-						}
-
-						this.isPatreon = isPatreon
-						this.isDonator = isDonator
-					}
-				} catch (e: Exception) {
-					logger.error("Erro ao atualizar informações aleatórias", e)
-				}
-				Thread.sleep(15000)
-			}
 		}
 
 		try { ServerSupportModule.loadResponses() } catch (e: FileNotFoundException) {
@@ -701,40 +673,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	 */
 	fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
-	}
-
-	/**
-	 * Gets a premium key from the key's name, if it is valid
-	 *
-	 * @param name the key's name
-	 * @return     the premium key, or null, if the key doesn't exist of it is expired
-	 * @see        PremiumKey
-	 */
-	fun getPremiumKey(name: String?): PremiumKey? {
-		return premiumKeys.filter {
-			it.name == name
-		}.filter {
-			it.validUntil > System.currentTimeMillis()
-		}.firstOrNull()
-	}
-
-	/**
-	 * Loads all available premium keys from the "premium-keys.json" file
-	 *
-	 * @see PremiumKey
-	 */
-	fun loadPremiumKeys() {
-		if (File("./premium-keys.json").exists())
-			premiumKeys = GSON.fromJson(File("./premium-keys.json").readText())
-	}
-
-	/**
-	 * Saves all available premium keys
-	 *
-	 * @see PremiumKey
-	 */
-	fun savePremiumKeys() {
-		File("./premium-keys.json").writeText(GSON.toJson(premiumKeys))
 	}
 
 	/**

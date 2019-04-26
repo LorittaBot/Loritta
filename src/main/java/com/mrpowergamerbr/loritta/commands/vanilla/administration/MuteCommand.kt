@@ -7,11 +7,13 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.exceptions.HierarchyException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.HierarchyException
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -140,8 +142,8 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				)
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-						val isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
+					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+						val isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
 						message.delete().queue()
 
@@ -173,7 +175,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			setHour.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.name == "\uD83D\uDD04") {
+				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
 					setHour.delete().queue()
 					punishUser(null)
 				}
@@ -205,7 +207,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 
 				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelById(context.config.moderationConfig.punishmentLogChannelId)
+					val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
@@ -218,12 +220,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.avatarUrl,
+										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
 										"staff-id" to context.userHandle.id
 								)
 						)
 
-						textChannel.sendMessage(message).queue()
+						textChannel.sendMessage(message!!).queue()
 					}
 				}
 			}
@@ -259,7 +261,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				mutedRole = mutedRoles[0]
 			}
 
-			val couldntEditChannels = mutableListOf<Channel>()
+			val couldntEditChannels = mutableListOf<GuildChannel>()
 
 			// E agora vamos pegar todos os canais de texto do servidor
 			for (textChannel in context.guild.textChannels) {

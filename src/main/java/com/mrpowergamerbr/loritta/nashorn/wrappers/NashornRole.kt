@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 import java.awt.Color
 
 class NashornRole(internal val role: Role) {
@@ -34,7 +34,7 @@ class NashornRole(internal val role: Role) {
 			"",
 			"wow")
 	fun getColor(): Color {
-		return role.color
+		return role.color!!
 	}
 
 	@NashornCommand.NashornDocs("Retorna se a role aparece separadamente na lista de usuários online",

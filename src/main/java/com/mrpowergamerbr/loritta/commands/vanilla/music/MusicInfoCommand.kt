@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingnow", "musicinfo", "np"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -40,10 +41,10 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 
 			message.onReactionAddByAuthor(context) {
 				if (context.lorittaUser.hasPermission(LorittaPermission.DJ)) {
-					if (it.reactionEmote.name == "⏪") {
+					if (it.reactionEmote.isEmote("⏪")) {
 						RestartSongCommand.skip(context, locale, manager)
 					}
-					if (it.reactionEmote.name == "⏯") {
+					if (it.reactionEmote.isEmote("⏯")) {
 						if (manager.player.isPaused) {
 							manager.player.isPaused = false
 							context.sendMessage("▶ **|** " + context.getAsMention(true) + context.legacyLocale.get("UNPAUSE_CONTINUANDO", context.config.commandPrefix))
@@ -52,7 +53,7 @@ class MusicInfoCommand : AbstractCommand("playing", listOf("tocando", "playingno
 							context.sendMessage("\u23F8 **|** " + context.getAsMention(true) + context.legacyLocale.get("PAUSAR_PAUSADO", context.config.commandPrefix))
 						}
 					}
-					if (it.reactionEmote.name == "⏩") {
+					if (it.reactionEmote.isEmote("⏩")) {
 						loritta.audioManager.skipTrack(context)
 					}
 					return@onReactionAddByAuthor

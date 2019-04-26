@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.evaluateKotlin
 import kotlinx.html.div
 import kotlinx.html.stream.appendHTML
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.entities.Member
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET

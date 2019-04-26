@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import net.dv8tion.jda.core.OnlineStatus
+import net.dv8tion.jda.api.OnlineStatus
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class LorittaConfig(

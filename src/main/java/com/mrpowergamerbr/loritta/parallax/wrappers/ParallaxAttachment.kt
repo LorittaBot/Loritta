@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.entities.Message
 
 class ParallaxAttachment(private val attachment: Message.Attachment) {
 

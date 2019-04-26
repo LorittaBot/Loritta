@@ -11,7 +11,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.isActive
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -167,7 +167,7 @@ class InviteLinkModule : MessageReceivedModule {
 		// necessário, e, ao pegar, vamos guardar no cache de invites
 		if (inviteBlockerConfig.whitelistServerInvites) {
 			if (!cachedInviteLinks.containsKey(guild.idLong) && guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-				val invites = guild.invites.await()
+				val invites = guild.retrieveInvites().await()
 				val codes = invites.map { it.code }
 				cachedInviteLinks[guild.idLong] = codes
 			}

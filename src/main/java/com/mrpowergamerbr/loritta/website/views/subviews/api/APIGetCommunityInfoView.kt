@@ -65,7 +65,7 @@ class APIGetCommunityInfoView : NoVarsView() {
 		json["description"] = description.attr("content")
 		json["iconUrl"] = iconUrl.attr("content")
 
-		val pattern = "window\\.ServerData\\.deeplink = \"narviiapp:\\/\\/(x[0-9]+)\\/.+\";".toPattern().matcher(body).apply { find() }
+		val pattern = "\"ndcId\": \"(x[0-9]+)\"".toPattern().matcher(body).apply { find() }
 		json["communityId"] = pattern.group(1)
 		return gson.toJson(json)
 	}

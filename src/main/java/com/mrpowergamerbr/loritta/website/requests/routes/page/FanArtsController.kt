@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
@@ -17,8 +18,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.managers.AudioManager
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.managers.AudioManager
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -28,7 +29,7 @@ class AudioManager(val loritta: Loritta) {
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards, { shardId: Int -> lorittaShards.getShards().first { shardId == it.shardInfo.shardId } })
+	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
@@ -279,11 +280,11 @@ class AudioManager(val loritta: Loritta) {
 	 */
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
 		val link = loritta.audioManager.lavalink.getLink(audioManager.guild)
-		if (audioManager.isConnected && audioManager.connectedChannel.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
+		if (audioManager.isConnected && audioManager.connectedChannel?.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
 			link.disconnect() // Desconecte do canal atual!
 		}
 
-		if (!audioManager.isAttemptingToConnect && audioManager.isConnected && !audioManager.guild.selfMember.voiceState.inVoiceChannel()) {
+		if (!audioManager.isAttemptingToConnect && audioManager.isConnected && audioManager.guild.selfMember.voiceState?.inVoiceChannel() == false) {
 			// Corrigir bug que simplesmente eu desconecto de um canal de voz magicamente
 
 			// Quando isto acontecer, nós iremos vazar, vlw flw
@@ -301,7 +302,7 @@ class AudioManager(val loritta: Loritta) {
 	 * @return if the voice channel state is valid
 	 */
 	suspend fun checkVoiceChannelState(context: CommandContext): Boolean {
-		if (!context.handle.voiceState.inVoiceChannel() || context.handle.voiceState.channel.id != context.config.musicConfig.musicGuildId) {
+		if (context.handle.voiceState?.inVoiceChannel() == false || context.handle.voiceState?.channel?.id != context.config.musicConfig.musicGuildId) {
 			if (context.config.musicConfig.musicGuildId == null) {
 				context.reply(
 						LoriReply(
@@ -313,7 +314,7 @@ class AudioManager(val loritta: Loritta) {
 			}
 
 			// Se o cara não estiver no canal de voz ou se não estiver no canal de voz correto...
-			val channel = context.guild.getVoiceChannelById(context.config.musicConfig.musicGuildId)
+			val channel = context.guild.getVoiceChannelByNullableId(context.config.musicConfig.musicGuildId)
 
 			if (channel != null) {
 				context.reply(

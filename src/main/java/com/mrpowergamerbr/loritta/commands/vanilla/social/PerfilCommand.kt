@@ -18,7 +18,7 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -42,7 +42,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					if (lorittaGuild.isMember(user)) {
 						val member = lorittaGuild.getMember(user)
 						val role = lorittaGuild.getRoleById(roleId)
-						member.roles.contains(role)
+						member?.roles?.contains(role) ?: false
 					} else {
 						false
 					}
@@ -82,16 +82,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isGitHubContributor = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333")
 			val hasLoriStickerArt = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, Constants.LORI_STICKERS_ROLE_ID)
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
-			val usesPocketDreamsRichPresence = if (member != null) {
-				val game = member.game
-				if (game != null && game.isRich) {
-					game.asRichPresence().applicationId == "415617983411388428"
-				} else {
-					false
-				}
-			} else {
-				false
-			}
 
 			val badges = mutableListOf<BufferedImage>()
 			if (user.patreon || user.id == Loritta.config.ownerId) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
@@ -159,7 +149,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			}
 
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
-			if (usesPocketDreamsRichPresence) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_rp.png"))
 			if (user.id == Loritta.config.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
 			val marriage = transaction(Databases.loritta) { profile.marriage }

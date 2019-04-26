@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.utils.TimersTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 

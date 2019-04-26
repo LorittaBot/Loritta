@@ -9,8 +9,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or

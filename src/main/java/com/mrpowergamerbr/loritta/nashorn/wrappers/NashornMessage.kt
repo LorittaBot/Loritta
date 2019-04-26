@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Message
 
 /**
  * Wrapper de uma mensagem de um comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que
@@ -72,7 +72,7 @@ class NashornMessage(private val message: Message) {
 
 	@NashornCommand.NashornDocs()
 	fun getMember(): NashornMember {
-		return NashornMember(message.member)
+		return NashornMember(message.member!!)
 	}
 
 	@NashornCommand.NashornDocs()
