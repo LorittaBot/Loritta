@@ -331,19 +331,36 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
 
         try {
             // Testar se é possível usar o emoticon atual
-            val emoteId = reaction.toLongOrNull()
-            if (emoteId != null) {
-                val emote = lorittaShards.getEmoteById(emoteId.toString())
+            val emoteMatcher = Constants.DISCORD_EMOTE_PATTERN.matcher(reaction)
 
-                if (emote == null) {
-                    reaction = "\uD83C\uDF89"
-                } else {
-                    message.addReaction(emote).await()
+            if (emoteMatcher.find()) {
+                val emoteId = emoteMatcher.group(2).toLongOrNull()
+
+                if (emoteId != null) {
+                    val emote = lorittaShards.getEmoteById(emoteId.toString())
+
+                    // TODO: Isso está feio e confuso, dá para ser melhor.
+                    if (emote == null) { // Emoji NÃO existe
+                        reaction = "\uD83C\uDF89"
+                    } else {
+                        val emoteGuild = emote.guild
+                        if (emoteGuild == null) { // Guild do emote NÃO existe (Então a Lori não conhece o emoji)
+                            reaction = "\uD83C\uDF89"
+                        } else {
+                            if (!emote.canInteract(emoteGuild.selfMember)) { // Lori não consegue interagir com o emoji
+                                reaction = "\uD83C\uDF89"
+                            } else {
+                                message.addReaction(emote).await()
+                                reaction = emote.id
+                            }
+                        }
+                    }
                 }
             } else {
                 message.addReaction(reaction).await()
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             reaction = "\uD83C\uDF89"
         }
 
