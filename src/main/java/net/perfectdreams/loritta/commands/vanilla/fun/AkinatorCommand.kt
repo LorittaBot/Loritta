@@ -6,6 +6,7 @@ import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Emotes
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -86,7 +87,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         )
 
         message.onReactionAddByAuthor(context) {
-            it.reaction.removeReaction(it.user)
+            it.reaction.removeReaction(it.user).await()
 
             when {
                 it.reactionEmote.isEmote("✅") -> {
@@ -166,7 +167,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         val message = currentMessage?.edit(context.getAsMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
 
         message.onReactionAddByAuthor(context) {
-            it.reaction.removeReaction(it.user)
+            it.reaction.removeReaction(it.user).await()
 
             val answer = when {
                 it.reactionEmote.isEmote("\uD83D\uDC4D⃣") -> Akiwrapper.Answer.YES
