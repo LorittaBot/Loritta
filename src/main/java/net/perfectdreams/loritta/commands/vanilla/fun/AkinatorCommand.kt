@@ -24,6 +24,7 @@ import java.awt.Color
 class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN) {
     companion object {
         const val LOCALE_PREFIX = "commands.fun.akinator"
+        const val CHARACTER_PROBABILITY = 0.70
     }
 
     override fun getDescription(locale: BaseLocale): String? {
@@ -111,7 +112,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
     suspend fun handleAkinator(context: DiscordCommandContext, locale: BaseLocale, aw: Akiwrapper, currentMessage: Message?, declinedGuesses: MutableList<Long>) {
         currentMessage?.removeAllFunctions()
 
-        aw.guesses.filter { it.probability >= 0.85 && !declinedGuesses.contains(it.idLong) }.forEach { // Existe alguma guess válida, vamos usar!
+        aw.guesses.filter { it.probability >= CHARACTER_PROBABILITY && !declinedGuesses.contains(it.idLong) }.forEach { // Existe alguma guess válida, vamos usar!
             handleGuess(context, locale, aw, currentMessage!!, it, declinedGuesses)
             return
         }
