@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.userdata.ModerationConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -192,8 +193,8 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 			)
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-					warnCallback.invoke(message, it.reactionEmote.name == "\uD83D\uDE4A")
+				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+					warnCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}

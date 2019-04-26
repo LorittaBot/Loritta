@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -367,7 +368,7 @@ object LorittaUtilsKotlin {
 	suspend fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
 		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
 			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
-				if (e.reactionEmote.name == "\uD83D\uDD22") {
+				if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
 					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).queue {
 						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
 						for (reaction in filteredReactions) {
@@ -382,7 +383,7 @@ object LorittaUtilsKotlin {
 							}
 						}
 					}
-				} else if (e.reactionEmote.name == "\uD83E\uDD26") {
+				} else if (e.reactionEmote.isEmote("\uD83E\uDD26")) {
 					msg.editMessage(LorittaUtilsKotlin.createTrackInfoEmbed(context)).queue {
 						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
 						for (reaction in filteredReactions) {

@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import kotlinx.coroutines.sync.Mutex
@@ -26,7 +27,7 @@ object StarboardModule {
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
 
-		if (e.reactionEmote.name == "⭐") {
+		if (e.reactionEmote.isEmote("⭐")) {
 			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
 			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY))
 				return

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -391,7 +392,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(this) {
-					if (it.reactionEmote.name == "❓") {
+					if (it.reactionEmote.isEmote("❓")) {
 						message.delete().queue()
 						explainArguments()
 					}
@@ -431,7 +432,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(this) {
-			if (it.reactionEmote.name == "❓") {
+			if (it.reactionEmote.isEmote("❓")) {
 				message.delete().queue()
 				explain()
 			}

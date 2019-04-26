@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -236,7 +237,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				val message = context.sendMessage(context.getAsMention(true), embed.build())
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "❓") {
+					if (it.reactionEmote.isEmote("❓")) {
 						message.delete().queue()
 						explainArguments(context)
 					}
@@ -276,7 +277,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "❓") {
+			if (it.reactionEmote.isEmote("❓")) {
 				message.delete().queue()
 				explain(context)
 			}

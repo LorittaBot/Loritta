@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
@@ -164,7 +165,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				message.addReaction("error:412585701054611458").queue()
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅") {
+					if (it.reactionEmote.isEmote("✅")) {
 						loritta.networkBanManager.notVerifiedEntries.forEach {
 							loritta.networkBanManager.addBanEntry(it)
 						}

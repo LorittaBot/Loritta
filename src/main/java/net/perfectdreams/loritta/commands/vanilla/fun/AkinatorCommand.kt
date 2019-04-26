@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -86,7 +87,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
 
         message.onReactionByAuthor(context) {
             when {
-                it.reactionEmote.name == "✅" -> {
+                it.reactionEmote.isEmote("✅") -> {
                     val builder = getAkinatorEmbedBase(context).apply {
                         setDescription(locale["$LOCALE_PREFIX.akinatorWon", Emotes.LORI_HAPPY])
                         setColor(Color(20, 158, 255))
@@ -164,11 +165,11 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
 
         message.onReactionByAuthor(context) {
             val answer = when {
-                it.reactionEmote.name == "\uD83D\uDC4D⃣" -> Akiwrapper.Answer.YES
-                it.reactionEmote.name == "\uD83D\uDC4E⃣" -> Akiwrapper.Answer.NO
-                it.reactionEmote.name == "556525532359950337⃣" -> Akiwrapper.Answer.PROBABLY
-                it.reactionEmote.id == "556524143281963008⃣" -> Akiwrapper.Answer.PROBABLY_NOT
-                it.reactionEmote.id == "548639343141715978" -> Akiwrapper.Answer.DONT_KNOW
+                it.reactionEmote.isEmote("\uD83D\uDC4D⃣") -> Akiwrapper.Answer.YES
+                it.reactionEmote.isEmote("\uD83D\uDC4E⃣") -> Akiwrapper.Answer.NO
+                it.reactionEmote.isEmote("556525532359950337⃣") -> Akiwrapper.Answer.PROBABLY
+                it.reactionEmote.isEmote("556524143281963008⃣") -> Akiwrapper.Answer.PROBABLY_NOT
+                it.reactionEmote.isEmote("548639343141715978") -> Akiwrapper.Answer.DONT_KNOW
                 else -> Akiwrapper.Answer.YES
             }
 

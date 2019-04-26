@@ -4,9 +4,9 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.util.*
 
@@ -64,7 +65,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				mensagem.onReactionAddByAuthor(context) {
 					if (context.metadata.contains("currentItem")) {
 						val item = context.metadata["currentItem"] as YouTubeItem
-						if (it.reactionEmote.name == "▶") {
+						if (it.reactionEmote.isEmote("▶")) {
 							loritta.audioManager.loadAndPlay(context, "https://youtu.be/${item.id.videoId}")
 							context.metadata.remove("currentItem")
 						}

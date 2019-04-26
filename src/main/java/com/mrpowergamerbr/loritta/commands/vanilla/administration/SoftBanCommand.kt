@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
@@ -131,8 +132,8 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				)
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-						var isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
+					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+						var isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
 						SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 

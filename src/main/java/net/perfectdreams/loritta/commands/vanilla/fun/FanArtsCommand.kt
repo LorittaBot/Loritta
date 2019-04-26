@@ -3,10 +3,7 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
-import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.doReactions
-import com.mrpowergamerbr.loritta.utils.extensions.edit
-import com.mrpowergamerbr.loritta.utils.extensions.refresh
+import com.mrpowergamerbr.loritta.utils.extensions.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -73,16 +70,16 @@ class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = C
         val allowForward = list.size > item + 1
         val allowBack = item != 0
 
-        if ((!allowForward && message.reactions.any { it.reactionEmote.name == "⏩" }) || (!allowBack && message.reactions.any { it.reactionEmote.name == "⏪" })) { // Remover todas as reações caso seja necessário
+        if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) { // Remover todas as reações caso seja necessário
             message.clearReactions().await()
             message = message.refresh().await() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
         }
 
         message.onReactionByAuthor(context) {
-            if (allowForward && it.reactionEmote.name == "⏩") {
+            if (allowForward && it.reactionEmote.isEmote("⏩")) {
                 sendFanArtEmbed(context, locale, list, item + 1, message)
             }
-            if (allowBack && it.reactionEmote.name == "⏪") {
+            if (allowBack && it.reactionEmote.isEmote("⏪")) {
                 sendFanArtEmbed(context, locale, list, item - 1, message)
             }
         }

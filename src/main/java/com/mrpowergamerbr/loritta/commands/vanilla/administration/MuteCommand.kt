@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.Permission
@@ -141,8 +142,8 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				)
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-						val isSilent = it.reactionEmote.name == "\uD83D\uDE4A"
+					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+						val isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
 						message.delete().queue()
 
@@ -174,7 +175,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			setHour.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.name == "\uD83D\uDD04") {
+				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
 					setHour.delete().queue()
 					punishUser(null)
 				}

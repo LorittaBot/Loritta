@@ -27,6 +27,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -92,7 +93,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		suspend fun isSuggestionValid(message: Message, requiredCount: Int = 5): Boolean {
 			// Pegar o número de likes - dislikes
-			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0)
+			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.isEmote("\uD83D\uDC4D") }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.isEmote("\uD83D\uDC4E") }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0)
 			return reactionCount >= requiredCount
 		}
 
@@ -211,7 +212,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			if (Loritta.config.environment == EnvironmentType.CANARY) {
-				if (event.channel.id == "359139508681310212" && (event.reactionEmote.name == "\uD83D\uDC4D" || event.reactionEmote.name == "\uD83D\uDC4E")) { // Canal de sugestões
+				if (event.channel.id == "359139508681310212" && (event.reactionEmote.isEmote("\uD83D\uDC4D") || event.reactionEmote.isEmote("\uD83D\uDC4E"))) { // Canal de sugestões
 					issueMutex.withLock {
 						val alreadySent = transaction(Databases.loritta) {
 							GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0

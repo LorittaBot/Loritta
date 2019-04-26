@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaAnswer
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -403,7 +404,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 	fun learnGabriela(pergunta: String, message: Message, context: CommandContext, functions: MessageInteractionFunctions, allowUpvoteDownvote: Boolean = false, document: GabrielaMessage? = null, answer: GabrielaAnswer? = null) {
 		functions.onReactionAdd = {
 			// UPVOTE
-			if (it.reactionEmote.name == "\uD83D\uDC4D" && document != null && answer != null) {
+			if (it.reactionEmote.isEmote("\uD83D\uDC4D") && document != null && answer != null) {
 				val message = loritta.gabrielaMessagesColl.find(
 						Filters.eq(
 								"_id", document.messageId
@@ -427,7 +428,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				}
 			}
 			// DOWNVOTE
-			if (it.reactionEmote.name == "\uD83D\uDC4E" && document != null && answer != null) {
+			if (it.reactionEmote.isEmote("\uD83D\uDC4E") && document != null && answer != null) {
 				val message = loritta.gabrielaMessagesColl.find(
 						Filters.eq(
 								"_id", document.messageId
@@ -454,7 +455,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 		functions.onReactionAddByAuthor = {
 			// ENSINAR
-			if (it.reactionEmote.name == "\uD83D\uDCA1") {
+			if (it.reactionEmote.isEmote("\uD83D\uDCA1")) {
 				val ask = context.reply(
 						LoriReply(
 								context.legacyLocale["FRASETOSCA_WhenSomeoneAsks", pergunta.stripCodeMarks()],

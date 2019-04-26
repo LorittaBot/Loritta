@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.EmojiInfoCommand
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -116,12 +117,12 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 				val emoteInfo = context.sendMessage(emojiInfoEmbed)
 
 				emoteInfo.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "⏪") {
+					if (it.reactionEmote.isEmote("⏪")) {
 						emoteInfo.delete().queue()
 						sendQueriedEmbed(context, _queriedEmotes, query, page)
 					}
 					if (context.guild.selfMember.hasPermission(Permission.MANAGE_EMOTES) && context.handle.hasPermission(Permission.MANAGE_EMOTES)) {
-						if (it.reactionEmote.name == "wumplus") {
+						if (it.reactionEmote.isEmote("wumplus")) {
 							emoteInfo.delete().queue()
 							try {
 								ByteArrayOutputStream().use { os ->
@@ -155,9 +156,9 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 					emoteInfo.addReaction("wumplus:388417805126467594").queue()
 				}
 			} else {
-				if (it.reactionEmote.name == "⏩") {
+				if (it.reactionEmote.isEmote("⏩")) {
 					sendQueriedEmbed(context, _queriedEmotes, query, 1 + page)
-				} else if (it.reactionEmote.name == "⏪") {
+				} else if (it.reactionEmote.isEmote("⏪")) {
 					sendQueriedEmbed(context, _queriedEmotes, query, page - 1)
 				}
 			}

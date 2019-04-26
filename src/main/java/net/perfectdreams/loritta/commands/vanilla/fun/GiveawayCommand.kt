@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -209,7 +210,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
         message.handle.onReactionAddByAuthor(context) {
             message.delete()
 
-            if (it.reactionEmote.name == "✅") {
+            if (it.reactionEmote.isEmote("✅")) {
                 val message = context.reply(
                         LoriReply(
                                 message = locale["commands.fun.giveaway.giveawayMentionRoles"],

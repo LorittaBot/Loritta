@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
@@ -114,7 +115,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			val message = context.sendMessage(response)
 
 			message.onReactionAdd(context) {
-				if (it.reactionEmote.name == "\uD83D\uDC8D" && it.member?.user?.id == proposeTo.id) {
+				if (it.reactionEmote.isEmote("\uD83D\uDC8D") && it.member?.user?.id == proposeTo.id) {
 					message.delete().queue()
 
 					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)

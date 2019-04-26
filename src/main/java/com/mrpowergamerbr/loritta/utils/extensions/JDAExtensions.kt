@@ -68,6 +68,16 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 	return message
 }
 
+/**
+ * Hacky workaround for JDA v4 support
+ */
+fun MessageReaction.ReactionEmote.isEmote(id: String): Boolean {
+	return if (this.isEmote)
+		this.id == id
+	else
+		this.name == id
+}
+
 fun Message.refresh(): RestAction<Message> {
 	return this.channel.retrieveMessageById(this.idLong)
 }

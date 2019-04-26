@@ -1,15 +1,16 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -108,12 +109,12 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "➡") {
+			if (it.reactionEmote.isEmote("➡")) {
 				message.delete().queue()
 				handleReminderList(context, page + 1, locale)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "⬅") {
+			if (it.reactionEmote.isEmote("⬅")) {
 				message.delete().queue()
 				handleReminderList(context, page - 1, locale)
 				return@onReactionAddByAuthor

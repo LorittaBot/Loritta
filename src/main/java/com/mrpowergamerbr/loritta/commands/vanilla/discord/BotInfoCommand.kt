@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -63,7 +64,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "loritta") {
+			if (it.reactionEmote.isEmote("loritta")) {
 				message.delete().queue()
 
 				showExtendedInfo(context, locale)

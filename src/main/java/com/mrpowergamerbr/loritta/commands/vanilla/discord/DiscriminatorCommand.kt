@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
@@ -91,10 +92,10 @@ class DiscriminatorCommand : AbstractCommand("discriminator", listOf("discrim", 
 		message.onReactionAddByAuthor(context) {
 			message.delete().queue()
 
-			if (allowForward && it.reactionEmote.name == "⏩") {
+			if (allowForward && it.reactionEmote.isEmote("⏩")) {
 				sendDiscriminatorEmbed(context, locale, user, discriminator, users, page + 1)
 			}
-			if (allowBack && it.reactionEmote.name == "⏪") {
+			if (allowBack && it.reactionEmote.isEmote("⏪")) {
 				sendDiscriminatorEmbed(context, locale, user, discriminator, users, page - 1)
 			}
 		}

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.edit
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -71,23 +72,23 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 
 		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "⏪") {
+			if (it.reactionEmote.isEmote("⏪")) {
 				showOldMembers(_message, context, 0)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "◀") {
+			if (it.reactionEmote.isEmote("◀")) {
 				showOldMembers(_message, context, page - 1)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "▶") {
+			if (it.reactionEmote.isEmote("▶")) {
 				showOldMembers(_message, context, page + 1)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "⏩") {
+			if (it.reactionEmote.isEmote("⏩")) {
 				showOldMembers(_message, context, maxPage)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "\uD83D\uDC81") {
+			if (it.reactionEmote.isEmote("\uD83D\uDC81")) {
 				showOldMembers(_message, context, userCurrentPage)
 				return@onReactionAddByAuthor
 			}
