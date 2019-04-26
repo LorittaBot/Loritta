@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -85,7 +85,9 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
                 "error:412585701054611458"
         )
 
-        message.onReactionByAuthor(context) {
+        message.onReactionAddByAuthor(context) {
+            it.reaction.removeReaction(it.user)
+
             when {
                 it.reactionEmote.isEmote("✅") -> {
                     val builder = getAkinatorEmbedBase(context).apply {
@@ -163,7 +165,9 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
 
         val message = currentMessage?.edit(context.getAsMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
 
-        message.onReactionByAuthor(context) {
+        message.onReactionAddByAuthor(context) {
+            it.reaction.removeReaction(it.user)
+
             val answer = when {
                 it.reactionEmote.isEmote("\uD83D\uDC4D⃣") -> Akiwrapper.Answer.YES
                 it.reactionEmote.isEmote("\uD83D\uDC4E⃣") -> Akiwrapper.Answer.NO
