@@ -5,6 +5,7 @@ import com.markozajc.akiwrapper.AkiwrapperBuilder
 import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
@@ -173,8 +174,8 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
             val answer = when {
                 it.reactionEmote.isEmote("\uD83D\uDC4D⃣") -> Akiwrapper.Answer.YES
                 it.reactionEmote.isEmote("\uD83D\uDC4E⃣") -> Akiwrapper.Answer.NO
-                it.reactionEmote.isEmote("556525532359950337⃣") -> Akiwrapper.Answer.PROBABLY
-                it.reactionEmote.isEmote("556524143281963008⃣") -> Akiwrapper.Answer.PROBABLY_NOT
+                it.reactionEmote.isEmote("556525532359950337") -> Akiwrapper.Answer.PROBABLY
+                it.reactionEmote.isEmote("556524143281963008") -> Akiwrapper.Answer.PROBABLY_NOT
                 it.reactionEmote.isEmote("548639343141715978") -> Akiwrapper.Answer.DONT_KNOW
                 else -> Akiwrapper.Answer.YES
             }
@@ -196,6 +197,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
     @Subcommand
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
         val aw = AkiwrapperBuilder()
+                .setUserAgent(Constants.USER_AGENT)
                 .setLocalization(getApiEndpoint(context.config.localeId))
                 .setFilterProfanity(true)
                 .setName(context.userHandle.name)
