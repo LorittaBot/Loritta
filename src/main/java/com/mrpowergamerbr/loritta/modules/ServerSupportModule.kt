@@ -61,7 +61,6 @@ class ServerSupportModule : MessageReceivedModule {
 						import javax.imageio.ImageIO
 						import net.dv8tion.jda.api.entities.*
 						import net.dv8tion.jda.api.*
-						import net.dv8tion.jda.api.entities.impl.*
 						import java.util.regex.Pattern
 
 						$scriptContent

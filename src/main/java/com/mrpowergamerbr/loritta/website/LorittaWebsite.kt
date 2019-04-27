@@ -290,7 +290,6 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import kotlinx.html.*
 			import net.dv8tion.jda.api.entities.*
 			import net.dv8tion.jda.api.*
-			import net.dv8tion.jda.api.entities.impl.*
 
 			class ContentStuff {
 				$scriptContent
