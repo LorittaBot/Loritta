@@ -25,7 +25,7 @@ import java.awt.Color
 class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN) {
     companion object {
         const val LOCALE_PREFIX = "commands.fun.akinator"
-        const val CHARACTER_PROBABILITY = 0.70
+        const val CHARACTER_PROBABILITY = 0.85
     }
 
     override fun getDescription(locale: BaseLocale): String? {
