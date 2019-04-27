@@ -164,16 +164,32 @@ object GiveawayManager {
                     message.editMessage(giveawayMessage).await()
                     // }
 
-                    if (60_000 >= diff) { // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
-                        logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
-                        delay(1000) // a cada um segundo
-                    } else {
-                        // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
-                        // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
-                        // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
-                        val delay = 60_000 - (System.currentTimeMillis() % 60_000)
-                        logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms - Giveaway will be finished in ${diff}ms" }
-                        delay(60_000 - (System.currentTimeMillis() % 60_000))
+                    // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
+                    when {
+                        5_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 5s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(1_000) // a cada 1 segundo
+                        }
+                        15_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 5000ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(5_000) // a cada 5 segundos
+                        }
+                        30_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(10_000) // a cada 10 segundos
+                        }
+                        60_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 15000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(15_000) // a cada 15 segundos
+                        }
+                        else -> {
+                            // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
+                            // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
+                            // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
+                            val delay = 60_000 - (System.currentTimeMillis() % 60_000)
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms - Giveaway will be finished in ${diff}ms" }
+                            delay(60_000 - (System.currentTimeMillis() % 60_000))
+                        }
                     }
                 }
 
