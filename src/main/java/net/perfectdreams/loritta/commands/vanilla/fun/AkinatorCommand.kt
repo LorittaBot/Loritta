@@ -179,8 +179,6 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
                 it.reactionEmote.isEmote("548639343141715978") -> Akiwrapper.Answer.DONT_KNOW
                 else -> Akiwrapper.Answer.YES
             }
-            
-            println("Você respondeu com $answer")
 
             aw.answerCurrentQuestion(answer)
 
