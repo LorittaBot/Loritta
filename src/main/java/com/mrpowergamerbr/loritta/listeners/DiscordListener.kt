@@ -68,6 +68,8 @@ import java.util.concurrent.TimeUnit
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
+        const val MEMBER_COUNTER_COOLDOWN = 150_000L
+
 		/**
 		 * Utilizado para não enviar mudanças do contador no event log
 		 */
@@ -496,7 +498,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
 		val diff = System.currentTimeMillis() - lastUpdate
 
-		if (60_000 > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
+		if (MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 			val currentJob = memberCounterUpdateJobs[textChannel.idLong]
 			currentJob?.cancel()
