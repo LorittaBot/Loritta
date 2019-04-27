@@ -2,14 +2,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.save
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
@@ -75,16 +76,16 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
 		message.onReactionAddByAuthor(context) {
 			var localeId = "default"
-			if (it.reactionEmote.name == "loritta_quebrada") {
+			if (it.reactionEmote.isEmote("loritta_quebrada")) {
 				localeId = "pt-funk"
 			}
-			if (it.reactionEmote.name == "\uD83C\uDDFA\uD83C\uDDF8") {
+			if (it.reactionEmote.isEmote("\uD83C\uDDFA\uD83C\uDDF8")) {
 				localeId = "en-us"
 			}
-			if (it.reactionEmote.name == "\uD83C\uDDF5\uD83C\uDDF9") {
+			if (it.reactionEmote.isEmote("\uD83C\uDDF5\uD83C\uDDF9")) {
 				localeId = "pt-pt"
 			}
-			if (it.reactionEmote.name == "\uD83C\uDDEA\uD83C\uDDF8") {
+			if (it.reactionEmote.isEmote("\uD83C\uDDEA\uD83C\uDDF8")) {
 				localeId = "es-es"
 			}
 

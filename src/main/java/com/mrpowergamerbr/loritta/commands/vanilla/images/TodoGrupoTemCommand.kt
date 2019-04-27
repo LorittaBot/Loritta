@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.User
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File

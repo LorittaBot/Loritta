@@ -8,8 +8,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -100,7 +100,7 @@ class RaffleThread : Thread("Raffle Thread") {
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 					user.openPrivateChannel().queue {
-						it.sendFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png", message).queue()
+						it.sendMessage(message).addFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png").queue()
 					}
 				} catch (e: Exception) {}
 			}

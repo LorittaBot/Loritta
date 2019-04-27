@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -20,7 +20,7 @@ class UserInvitesCommand : AbstractCommand("userinvites", category = CommandCate
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val invites = context.guild.invites.await().filter { it.inviter == context.userHandle }
+		val invites = context.guild.retrieveInvites().await().filter { it.inviter == context.userHandle }
 
 		if (invites.isEmpty()) {
 			context.reply(

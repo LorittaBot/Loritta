@@ -3,8 +3,8 @@ package com.mrpowergamerbr.loritta.events
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.*
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.*
 
 class LorittaMessageEvent(
         val author: User,

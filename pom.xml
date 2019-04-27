@@ -6,7 +6,7 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2019.04.19-SNAPSHOT</loritta.version>
+        <loritta.version>2019.05.03-SNAPSHOT</loritta.version>
         <kotlin.version>1.3.21</kotlin.version>
         <ktor.version>1.1.3</ktor.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -18,7 +18,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>3.8.2_459</jda.version>
+        <jda.version>4.ALPHA.0_79</jda.version>
     </properties>
 
     <repositories>
@@ -298,10 +298,16 @@
             <artifactId>jackson-module-kotlin</artifactId>
             <version>2.9.8</version>
         </dependency>
+        <!-- https://github.com/DuncteBot/Lavalink-Client/tree/jda-v4 -->
         <dependency>
-            <groupId>com.github.FredBoat</groupId>
+            <groupId>com.github.DuncteBot</groupId>
             <artifactId>Lavalink-Client</artifactId>
-            <version>1a4b0f58af</version>
+            <version>63242d0ad8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.markozajc</groupId>
+            <artifactId>akiwrapper</artifactId>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 
 /**
  * Wrapper de um user de um comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que

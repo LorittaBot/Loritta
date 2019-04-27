@@ -288,9 +288,8 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import kotlinx.html.html
 			import kotlinx.html.stream.appendHTML
 			import kotlinx.html.*
-			import net.dv8tion.jda.core.entities.*
-			import net.dv8tion.jda.core.*
-			import net.dv8tion.jda.core.entities.impl.*
+			import net.dv8tion.jda.api.entities.*
+			import net.dv8tion.jda.api.*
 
 			class ContentStuff {
 				$scriptContent

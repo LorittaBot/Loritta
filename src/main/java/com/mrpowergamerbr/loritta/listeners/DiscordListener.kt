@@ -27,28 +27,29 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.core.events.guild.GuildReadyEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent
-import net.dv8tion.jda.core.events.http.HttpRequestEvent
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.http.HttpRequestEvent
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.Giveaways
@@ -92,7 +93,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		suspend fun isSuggestionValid(message: Message, requiredCount: Int = 5): Boolean {
 			// Pegar o número de likes - dislikes
-			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4D" }?.users?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.name == "\uD83D\uDC4E" }?.users?.await()?.filter { !it.isBot }?.size ?: 0)
+			val reactionCount = (message.reactions.firstOrNull { it.reactionEmote.isEmote("\uD83D\uDC4D") }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0) - (message.reactions.firstOrNull { it.reactionEmote.isEmote("\uD83D\uDC4E") }?.retrieveUsers()?.await()?.filter { !it.isBot }?.size ?: 0)
 			return reactionCount >= requiredCount
 		}
 
@@ -199,10 +200,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onHttpRequest(event: HttpRequestEvent) {
-		val copy = event.requestRaw.newBuilder().build()
+		val copy = event.requestRaw?.newBuilder()?.build()
 		val buffer = Buffer()
-		copy.body()?.writeTo(buffer)
-		requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\nGlobally? ${event.responseHeaders.get("X-RateLimit-Global") ?: "false"} - RateLimit-Limit: ${event.responseHeaders.get("X-RateLimit-Limit")} - RateLimit-Remaining: ${event.responseHeaders.get("X-RateLimit-Remaining")} - Retry-After: ${event.responseHeaders.get("Retry-After")}\n${buffer.readUtf8()}")
+		copy?.body()?.writeTo(buffer)
+		requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\nGlobally? ${event.responseHeaders?.get("X-RateLimit-Global") ?: "false"} - RateLimit-Limit: ${event.responseHeaders?.get("X-RateLimit-Limit")} - RateLimit-Remaining: ${event.responseHeaders?.get("X-RateLimit-Remaining")} - Retry-After: ${event.responseHeaders?.get("Retry-After")}\n${buffer.readUtf8()}")
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
@@ -211,7 +212,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			if (Loritta.config.environment == EnvironmentType.CANARY) {
-				if (event.channel.id == "359139508681310212" && (event.reactionEmote.name == "\uD83D\uDC4D" || event.reactionEmote.name == "\uD83D\uDC4E")) { // Canal de sugestões
+				if (event.channel.id == "359139508681310212" && (event.reactionEmote.isEmote("\uD83D\uDC4D") || event.reactionEmote.isEmote("\uD83D\uDC4E"))) { // Canal de sugestões
 					issueMutex.withLock {
 						val alreadySent = transaction(Databases.loritta) {
 							GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0
@@ -220,7 +221,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (alreadySent)
 							return@withLock
 
-						val message = event.channel.getMessageById(event.messageId).await()
+						val message = event.channel.retrieveMessageById(event.messageId).await()
 
 						if (isSuggestionValid(message)) {
 							sendSuggestionToGitHub(message)
@@ -263,10 +264,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && functions.onReactionAddByAuthor != null) {
+				if (e.user.id == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionAddByAuthor!!.invoke(e)
+							functions.onReactionByAuthor?.invoke(e)
+							functions.onReactionAddByAuthor?.invoke(e)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
 						}
@@ -285,10 +287,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && functions.onReactionRemoveByAuthor != null) {
+				if (e.user.id == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionRemoveByAuthor!!.invoke(e)
+							functions.onReactionByAuthor?.invoke(e)
+							functions.onReactionRemoveByAuthor?.invoke(e)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
 						}
@@ -307,8 +310,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						StarboardModule.handleStarboardReaction(e, conf)
 					}
 				} catch (exception: Exception) {
-					logger.error("[${e.guild.name}] Starboard ${e.member.user.name}", exception)
-					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member.user.name}**", exception)
+					logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
+					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member?.user?.name}**", exception)
 				}
 			}
 		}
@@ -558,7 +561,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(option.textChannelId) ?: continue
 				val message = messages.getOrPutNullable(option.messageId) {
 					try {
-						textChannel.getMessageById(option.messageId).await()
+						textChannel.retrieveMessageById(option.messageId).await()
 					} catch (e: ErrorResponseException) {
 						null
 					}
@@ -604,7 +607,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (reaction != null) { // Reaction existe!
-						reaction.users.await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
+						reaction.retrieveUsers().await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
 							ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
 						}
 					}

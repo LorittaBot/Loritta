@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jooby.Request
 import org.jooby.Response
 
@@ -36,7 +36,7 @@ class TestMessageView : ConfigureView() {
 		var message = content
 		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
 		val member = guild.getMemberById(userIdentification.id)
-		val nickname = member.effectiveName
+		val nickname = member?.effectiveName
 
 		val customTokens = mutableMapOf<String, String>()
 
@@ -45,11 +45,11 @@ class TestMessageView : ConfigureView() {
 		customTokens.put("user-discriminator", userIdentification.discriminator)
 		customTokens.put("user-id", userIdentification.id)
 		customTokens.put("userAvatarUrl", "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userIdentification.avatar}.png")
-		customTokens.put("nickname", nickname)
+		customTokens.put("nickname", nickname ?: "???")
 		customTokens.put("guild", guild.name)
 		customTokens.put("guildsize", guild.members.size.toString())
-		customTokens.put("@owner", guild.owner.asMention)
-		customTokens.put("owner", guild.owner.effectiveName)
+		customTokens.put("@owner", guild.owner?.asMention ?: "???")
+		customTokens.put("owner", guild.owner?.effectiveName ?: "???")
 		customTokens.put("@staff", "<@${Loritta.config.clientId}>")
 		customTokens.put("staff", "Loritta")
 		customTokens.put("reason", "You gonna have a bad time.")
@@ -84,12 +84,12 @@ class TestMessageView : ConfigureView() {
 				return response.toString()
 			}
 
-			textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
+			textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
 			response["success"] = true
 		} else {
 			try {
-				member.user.openPrivateChannel().queue {
-					it.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)).queue()
+				member?.user?.openPrivateChannel()?.queue {
+					it.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
 				}
 			} catch (e: Exception) {
 				response["error"] = "Sua DM está desativada"

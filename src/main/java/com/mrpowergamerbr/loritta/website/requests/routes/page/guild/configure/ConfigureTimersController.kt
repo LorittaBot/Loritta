@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.website.*
 import kotlinx.html.div
 import kotlinx.html.stream.appendHTML
-import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response

@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import org.apache.commons.io.IOUtils
 import java.awt.image.BufferedImage
 import java.io.IOException
@@ -20,7 +20,7 @@ import javax.imageio.ImageIO
 object LorittaUtils {
 
 	fun canUploadFiles(context: CommandContext): Boolean {
-		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.textChannel, Permission.MESSAGE_ATTACH_FILES)) {
+		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.textChannel!!, Permission.MESSAGE_ATTACH_FILES)) {
 			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["IMAGE_UPLOAD_NO_PERM"].f() + " \uD83D\uDE22").queue()
 			return false
 		}

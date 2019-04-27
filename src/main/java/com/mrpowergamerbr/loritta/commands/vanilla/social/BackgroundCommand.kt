@@ -2,14 +2,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
@@ -40,18 +41,18 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		val message = context.sendMessage(embed)
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.name == "\uD83D\uDE4B") { // Caso seja para voltar para a página inicial...
+			if (it.reactionEmote.isEmote("\uD83D\uDE4B")) { // Caso seja para voltar para a página inicial...
 				message.editMessage(getFirstPageEmbed(context)).await()
 				message.clearReactions().await()
 				message.addReaction("\uD83D\uDDBC").await() // Quadro - Para ver seu background atual
 				message.addReaction("\uD83D\uDED2").await() // Carrinho de supermercado - Para procurar novos backgrounds
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "\uD83D\uDDBC") { // Se é o quadro...
+			if (it.reactionEmote.isEmote("\uD83D\uDDBC")) { // Se é o quadro...
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png")
 				val imageUrl = if (file.exists()) "${Loritta.config.websiteUrl}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png"
 
-				var builder = net.dv8tion.jda.core.EmbedBuilder()
+				var builder = net.dv8tion.jda.api.EmbedBuilder()
 						.setTitle("\uD83D\uDDBC ${context.legacyLocale["BACKGROUND_YOUR_CURRENT_BG"]}")
 						.setImage(imageUrl)
 						.setColor(Color(0, 223, 142))
@@ -61,7 +62,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				message.addReaction("\uD83D\uDED2").await() // Para ir para os "templates"
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.name == "\uD83D\uDED2" || it.reactionEmote.name == "⬅" || it.reactionEmote.name == "➡" || it.reactionEmote.name == "✅") { // Se é o carrinho de super mercado...
+			if (it.reactionEmote.isEmote("\uD83D\uDED2") || it.reactionEmote.isEmote("⬅") || it.reactionEmote.isEmote("➡") || it.reactionEmote.isEmote("✅")) { // Se é o carrinho de super mercado...
 				val templates = listOf("https://loritta.website/assets/img/templates/dreemurrs.png",
 						"https://loritta.website/assets/img/templates/chaves_sexta.png",
 						"https://loritta.website/assets/img/templates/rodrigo_noriaki.png",
@@ -73,10 +74,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 						"https://loritta.website/assets/img/templates/gotta_go_fast.png")
 				var index = context.metadata.getOrDefault("templateIdx", 0) as Int
 
-				if (it.reactionEmote.name == "⬅") {
+				if (it.reactionEmote.isEmote("⬅")) {
 					index -= 1
 				}
-				if (it.reactionEmote.name == "➡") {
+				if (it.reactionEmote.isEmote("➡")) {
 					index += 1
 				}
 
@@ -86,7 +87,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 				var currentUrl = templates[index]
 
-				if (it.reactionEmote.name == "✅") {
+				if (it.reactionEmote.isEmote("✅")) {
 					message.delete().await()
 					setAsBackground(currentUrl, context)
 					return@onReactionAddByAuthor
@@ -160,7 +161,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	fun getFirstPageEmbed(context: CommandContext): MessageEmbed {
-		var builder = net.dv8tion.jda.core.EmbedBuilder()
+		var builder = net.dv8tion.jda.api.EmbedBuilder()
 				.setTitle("\uD83D\uDE4B ${context.legacyLocale["BACKGROUND_CENTRAL"]}")
 				.setDescription(context.legacyLocale["BACKGROUND_INFO", context.config.commandPrefix])
 				.setColor(Color(0, 223, 142))

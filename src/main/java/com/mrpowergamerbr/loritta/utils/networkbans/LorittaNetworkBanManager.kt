@@ -9,9 +9,9 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import java.io.File
 
 class LorittaNetworkBanManager {
@@ -68,7 +68,7 @@ class LorittaNetworkBanManager {
 
 		val member = guild.getMember(user)
 
-		if (guild.selfMember.hasPermission(Permission.BAN_MEMBERS) && guild.selfMember.canInteract(member))
+		if (guild.selfMember.hasPermission(Permission.BAN_MEMBERS) && guild.selfMember.canInteract(member!!))
 			return
 
 		val serverConfig = loritta.getServerConfigForGuild(guild.id)

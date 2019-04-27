@@ -11,9 +11,9 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -36,7 +36,7 @@ class MSNProfileCreator : ProfileCreator {
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 		val imageToBeDownload = if (sender == user) { guild.selfMember.user.avatarUrl } else { sender.effectiveAvatarUrl }
-		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload!!)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		val msnFont = FileInputStream(File(Loritta.ASSETS + "micross.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -82,7 +82,7 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.color = Color(255, 255, 255)
 		graphics.drawText(user.name, 269, 142)
 
-		if (member != null && member.game != null) {
+		/* if (member != null && member.game != null) {
 			val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
 			graphics.drawImage(gameIcon, 0, 5, null)
 			graphics.font = msnFont24
@@ -95,7 +95,7 @@ class MSNProfileCreator : ProfileCreator {
 			// GAME
 			graphics.color = Color(255, 255, 255)
 			graphics.drawText(member.game.name, 295, 169)
-		}
+		} */
 
 		graphics.font = msnFont20
 		graphics.color = Color(142, 124, 125)

@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -54,8 +54,10 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
-		val serverIconUrl = if (context.guild.iconUrl != null) {
-			context.guild.iconUrl.replace("jpg", "png")
+		val guildIconUrl = context.guild.iconUrl
+
+		val serverIconUrl = if (guildIconUrl != null) {
+			guildIconUrl.replace("jpg", "png")
 		} else {
 			"${Loritta.config.websiteUrl}assets/img/unknown.png"
 		}

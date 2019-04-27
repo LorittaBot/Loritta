@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
@@ -99,7 +99,7 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 		}
 
 		// E, finalmente, iremos verificar as permissões do usuário
-		if (member.hasPermission(context.event.textChannel, context.cmd.getDiscordPermissions())) {
+		if (member.hasPermission(context.event.textChannel!!, context.cmd.getDiscordPermissions())) {
 			return true
 		}
 
@@ -115,7 +115,7 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 
 		if (context is DiscordCommandContext) {
 			// E, finalmente, iremos verificar as permissões do usuário
-			if (member.hasPermission(context.event.textChannel, context.command.discordPermissions)) {
+			if (member.hasPermission(context.event.textChannel!!, context.command.discordPermissions)) {
 				return true
 			}
 		}

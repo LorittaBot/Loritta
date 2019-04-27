@@ -7,9 +7,9 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Icon
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Icon
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -45,14 +45,18 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		try {
 			val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
-			os.use { inputStream ->
-				val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
-				context.reply(
-						LoriReply(
-								context.legacyLocale.toNewLocale()["commands.discord.addEmoji.success"],
-								emote.asMention
-						)
-				)
+			if (os != null) {
+				os.use { inputStream ->
+					val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
+					context.reply(
+							LoriReply(
+									context.legacyLocale.toNewLocale()["commands.discord.addEmoji.success"],
+									emote.asMention
+							)
+					)
+				}
+			} else {
+				throw RuntimeException("Couldn't download image!")
 			}
 		} catch (e: Exception) {
 			if (e is ErrorResponseException) {

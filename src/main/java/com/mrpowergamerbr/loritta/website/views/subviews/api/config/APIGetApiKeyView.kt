@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.apache.commons.lang3.RandomStringUtils
 import org.jooby.Request
 import org.jooby.Response

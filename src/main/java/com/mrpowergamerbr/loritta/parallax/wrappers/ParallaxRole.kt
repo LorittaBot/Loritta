@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.entities.Role
+import net.dv8tion.jda.api.entities.Role
 
 class ParallaxRole(internal val role: Role) {
 	val calculatedPosition get() = role.position
 	val client = ParallaxClient(role.jda)
-	val color get() = role.color.rgb
+	val color get() = role.color!!.rgb
 	// TODO: createdAt
-	val createdTimestamp get() = role.creationTime.toInstant().toEpochMilli()
+	val createdTimestamp get() = role.timeCreated.toInstant().toEpochMilli()
 	val editable get() = role.guild.selfMember.canInteract(role)
 	val guild get() = ParallaxGuild(role.guild)
 	// TODO: hexColor

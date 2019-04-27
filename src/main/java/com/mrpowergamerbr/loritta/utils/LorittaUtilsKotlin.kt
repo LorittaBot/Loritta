@@ -14,15 +14,17 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
-import net.dv8tion.jda.core.utils.MiscUtil
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
@@ -366,7 +368,7 @@ object LorittaUtilsKotlin {
 	suspend fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
 		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
 			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
-				if (e.reactionEmote.name == "\uD83D\uDD22") {
+				if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
 					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).queue {
 						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
 						for (reaction in filteredReactions) {
@@ -381,7 +383,7 @@ object LorittaUtilsKotlin {
 							}
 						}
 					}
-				} else if (e.reactionEmote.name == "\uD83E\uDD26") {
+				} else if (e.reactionEmote.isEmote("\uD83E\uDD26")) {
 					msg.editMessage(LorittaUtilsKotlin.createTrackInfoEmbed(context)).queue {
 						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
 						for (reaction in filteredReactions) {
@@ -400,19 +402,19 @@ object LorittaUtilsKotlin {
 			}
 		} else { // Se for facepalm...
 			val atw = context.metadata.get("currentTrack") as AudioTrackWrapper
-			val list = e.reaction.users.await()
+			val list = e.reaction.retrieveUsers().await()
 			val count = list.count { !it.isBot }
 
 			val conf = context.config
 
 			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
-				val vc = e.guild.getVoiceChannelById(conf.musicConfig.musicGuildId)
+				val vc = e.guild.getVoiceChannelByNullableId(conf.musicConfig.musicGuildId)
 
 				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
 					return
 				}
 
-				if (e.member.voiceState.channel !== vc) {
+				if (e.member?.voiceState?.channel !== vc) {
 					e.reaction.removeReaction(e.user).queue()
 					return
 				}
@@ -569,7 +571,7 @@ object LorittaUtilsKotlin {
 		if (conf.musicConfig.musicGuildId == null || conf.musicConfig.musicGuildId!!.isEmpty())
 			return
 
-		val voiceChannel = guild.getVoiceChannelById(conf.musicConfig.musicGuildId) ?: return
+		val voiceChannel = guild.getVoiceChannelByNullableId(conf.musicConfig.musicGuildId) ?: return
 
 		if (!guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT))
 			return

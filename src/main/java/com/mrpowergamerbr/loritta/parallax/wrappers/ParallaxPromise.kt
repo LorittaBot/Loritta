@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageChannel
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction

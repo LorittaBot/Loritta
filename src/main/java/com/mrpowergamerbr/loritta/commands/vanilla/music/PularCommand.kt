@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class PularCommand : AbstractCommand("skip", listOf("pular"), category = CommandCategory.MUSIC) {
@@ -24,7 +24,7 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
-		val channel = context.guild.selfMember.voiceState.channel
+		val channel = context.guild.selfMember.voiceState?.channel
 
 		if (channel != null) {
 			// Só tem uma pessoa escutando no canal de música?

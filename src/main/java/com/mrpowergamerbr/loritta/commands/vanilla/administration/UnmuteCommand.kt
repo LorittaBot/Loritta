@@ -8,12 +8,14 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -124,8 +126,8 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			)
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.name == "✅" || it.reactionEmote.name == "\uD83D\uDE4A") {
-					banCallback.invoke(message, it.reactionEmote.name == "\uD83D\uDE4A")
+				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}
@@ -143,7 +145,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 		fun unmute(serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (serverConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = guild.getTextChannelById(serverConfig.moderationConfig.punishmentLogChannelId)
+					val textChannel = guild.getTextChannelByNullableId(serverConfig.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
@@ -156,12 +158,12 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 										"staff" to punisher.name,
 										"@staff" to punisher.asMention,
 										"staff-discriminator" to punisher.discriminator,
-										"staff-avatar-url" to punisher.avatarUrl,
+										"staff-avatar-url" to punisher.effectiveAvatarUrl,
 										"staff-id" to punisher.id
 								)
 						)
 
-						textChannel.sendMessage(message).queue()
+						textChannel.sendMessage(message!!).queue()
 					}
 				}
 			}
@@ -178,11 +180,11 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				if (mutedRoles != null) {
 					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).queue()
 				}
-			}
 
-			transaction(Databases.loritta) {
-				Mutes.deleteWhere {
-					(Mutes.guildId eq guild.idLong) and (Mutes.userId eq member.user.idLong)
+				transaction(Databases.loritta) {
+					Mutes.deleteWhere {
+						(Mutes.guildId eq guild.idLong) and (Mutes.userId eq member.user.idLong)
+					}
 				}
 			}
 		}

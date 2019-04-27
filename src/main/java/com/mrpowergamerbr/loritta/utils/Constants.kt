@@ -20,6 +20,9 @@ import javax.imageio.ImageIO
 object Constants {
 	const val ERROR = "<:error:412585701054611458>"
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
+	const val DISCORD_EPOCH = 1420070400000L
+	const val TIMESTAMP_OFFSET: Long = 22
+
 	/**
 	 * Discord's URL Crawler User Agent
 	 */
@@ -80,6 +83,7 @@ object Constants {
 
 	val REPEATING_CHARACTERS_REGEX = Regex("(.)\\1+")
 	val TWITCH_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9][\\w]{3,24}\$")
+	val DISCORD_EMOTE_PATTERN = Pattern.compile("<a?:([A-z0-9_]+):([0-9]+)>")
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }

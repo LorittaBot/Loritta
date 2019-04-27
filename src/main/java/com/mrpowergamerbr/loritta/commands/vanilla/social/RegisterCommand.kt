@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
@@ -10,8 +9,9 @@ import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageChannel
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegisterCommand : AbstractCommand("register", listOf("registrar"), CommandCategory.SOCIAL) {
@@ -33,7 +33,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 
 			for (answer in answers) {
 				val guild = context.guild
-				val role = guild.getRoleById(answer.roleId)
+				val role = guild.getRoleById(answer.roleId) ?: continue
 				guild.controller.addSingleRoleToMember(context.handle, role).queue()
 			}
 			return
@@ -54,11 +54,11 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 
 		message.onReactionAddByAuthor(context) { event ->
 			// Sim, é necessário pegar a mensagem DE NOVO para pegar os valores das reações atualizados
-			val reactedMessage = channel.getMessageById(message.id).await()
+			val reactedMessage = channel.retrieveMessageById(message.id).await()
 
 			val reactions = reactedMessage.reactions.filter { it.count > 1} // Como é apenas via DM, se as reações forem maiores que 1 == o usuário reagiu!
 			val answersMade = step.options.filter {
-				reactions.any {storedEmote ->
+				reactions.any { storedEmote ->
 					it.emote == storedEmote.reactionEmote.name || (storedEmote.reactionEmote.id != null && it.emote.split(":").getOrNull(1) == storedEmote.reactionEmote.id) }
 			}
 

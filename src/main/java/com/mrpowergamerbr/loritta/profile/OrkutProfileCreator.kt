@@ -10,9 +10,9 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -99,7 +99,7 @@ class OrkutProfileCreator : ProfileCreator {
 			}
 
 			if (guild.iconUrl != null) {
-				val icon = LorittaUtils.downloadImage(guild.iconUrl)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
+				val icon = LorittaUtils.downloadImage(guild.iconUrl!!)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
 				graphics.drawImage(icon, startGuildX, startGuildY, null)
 				graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
 				startGuildX += 113 + 12

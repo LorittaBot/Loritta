@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.api.Permission
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
@@ -90,10 +90,10 @@ abstract class ProtectedView : AbstractView() {
 										return false
 									}
 
-									val profile = loritta.getOrCreateLorittaProfile(guild.owner.user.id)
+									val profile = loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
 									if (profile.isBanned) { // Dono blacklisted
 										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner.user.asMention, profile.bannedReason ?: "???"]
+										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, profile.bannedReason ?: "???"]
 
 										user.openPrivateChannel().queue {
 											it.sendMessage(message).queue({

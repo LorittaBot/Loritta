@@ -3,12 +3,12 @@ package com.mrpowergamerbr.loritta.utils
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Guild
-import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -60,52 +60,57 @@ class LorittaLandRoleSync : Runnable {
 				}
 			}
 
-			for (illustrator in validIllustrators) {
-				if (!illustrator.roles.contains(drawingRole)) {
-					logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
-					originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
+			if (drawingRole != null) {
+				for (illustrator in validIllustrators) {
+					if (!illustrator.roles.contains(drawingRole)) {
+						logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
+						originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
+					}
 				}
-			}
 
-			val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
-			invalidIllustrators.forEach {
-				logger.info("Removendo cargo de desenhista de ${it.user.id}...")
-				originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
+				val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
+				invalidIllustrators.forEach {
+					logger.info("Removendo cargo de desenhista de ${it.user.id}...")
+					originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
+				}
 			}
 
 			// ===[ PARCEIROS ]===
 			logger.info("Processando cargos de parceiros...")
 			if (!loritta.lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED }) {
 				val partnerRole = originalGuild.getRoleById("434512654292221952")
-				val partnerServerConfigs = loritta.serversColl.find(
-						Filters.eq(
-								"serverListConfig.partner",
-								true
-						)
-				)
 
-				val validPartners = mutableListOf<Member>()
+				if (partnerRole != null) {
+					val partnerServerConfigs = loritta.serversColl.find(
+							Filters.eq(
+									"serverListConfig.partner",
+									true
+							)
+					)
 
-				val partnerGuilds = partnerServerConfigs.mapNotNull { lorittaShards.getGuildById(it.guildId) }
-				partnerGuilds.forEach {
-					val partners = it.members.filter { it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER) }
-					for (partner in partners) {
-						val member = originalGuild.getMember(partner.user) ?: continue
-						validPartners.add(member)
-						if (!member.roles.contains(partnerRole)) {
-							logger.info("Dando o cargo de parceiro para ${member.user.id}...")
-							originalGuild.controller.addSingleRoleToMember(member, partnerRole).queue()
+					val validPartners = mutableListOf<Member>()
+
+					val partnerGuilds = partnerServerConfigs.mapNotNull { lorittaShards.getGuildById(it.guildId) }
+					partnerGuilds.forEach {
+						val partners = it.members.filter { it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER) }
+						for (partner in partners) {
+							val member = originalGuild.getMember(partner.user) ?: continue
+							validPartners.add(member)
+							if (!member.roles.contains(partnerRole)) {
+								logger.info("Dando o cargo de parceiro para ${member.user.id}...")
+								originalGuild.controller.addSingleRoleToMember(member, partnerRole).queue()
+							}
 						}
 					}
-				}
 
-				val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
-				invalidPartners.forEach {
-					logger.info("Removendo cargo de parceiro de ${it.user.id}...")
-					originalGuild.controller.removeSingleRoleFromMember(it, partnerRole).queue()
+					val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
+					invalidPartners.forEach {
+						logger.info("Removendo cargo de parceiro de ${it.user.id}...")
+						originalGuild.controller.removeSingleRoleFromMember(it, partnerRole).queue()
+					}
+				} else {
+					logger.warn("Todas as shards não estão carregadas! Ignorando cargos de parceiros...")
 				}
-			} else {
-				logger.warn("Todas as shards não estão carregadas! Ignorando cargos de parceiros...")
 			}
 
 			logger.info("Sincronizando cargos da LorittaLand...")
@@ -114,32 +119,34 @@ class LorittaLandRoleSync : Runnable {
 				val originalRole = originalGuild.getRoleById(originalRoleId)
 				val usRole = usGuild.getRoleById(usRoleId)
 
-				val manager = usRole.manager
-				var changed = false
+				if (originalRole != null && usRole != null) {
+					val manager = usRole.manager
+					var changed = false
 
-				if (originalRole.color != usRole.color) {
-					manager.setColor(originalRole.color)
-					changed = true
-				}
+					if (originalRole.color != usRole.color) {
+						manager.setColor(originalRole.color)
+						changed = true
+					}
 
-				if (originalRole.permissionsRaw != usRole.permissionsRaw) {
-					manager.setPermissions(originalRole.permissionsRaw)
-					changed = true
-				}
+					if (originalRole.permissionsRaw != usRole.permissionsRaw) {
+						manager.setPermissions(originalRole.permissionsRaw)
+						changed = true
+					}
 
-				if (originalRole.isHoisted != usRole.isHoisted) {
-					manager.setHoisted(originalRole.isHoisted)
-					changed = true
-				}
+					if (originalRole.isHoisted != usRole.isHoisted) {
+						manager.setHoisted(originalRole.isHoisted)
+						changed = true
+					}
 
-				if (originalRole.isMentionable != usRole.isMentionable) {
-					manager.setMentionable(originalRole.isMentionable)
-					changed = true
-				}
+					if (originalRole.isMentionable != usRole.isMentionable) {
+						manager.setMentionable(originalRole.isMentionable)
+						changed = true
+					}
 
-				if (changed) {
-					logger.info("Atualizando ${usRole.name}...")
-					manager.queue()
+					if (changed) {
+						logger.info("Atualizando ${usRole.name}...")
+						manager.queue()
+					}
 				}
 			}
 
@@ -149,6 +156,9 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
 			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
 			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
+			synchronizeRoles(originalGuild, usGuild, "534659343656681474", "568505810825642029") // LorittaLand
+			synchronizeRoles(originalGuild, usGuild, "463652112656629760", "568506127977938977") // Super Contribuidor
+			synchronizeRoles(originalGuild, usGuild, "364201981016801281", "420640526711390208") // Contribuidor
 
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
@@ -179,7 +189,7 @@ class LorittaLandRoleSync : Runnable {
 
 			val textChannel = originalGuild.getTextChannelById(Constants.THANK_YOU_DONATORS_CHANNEL_ID)
 
-			val messages = textChannel.history.retrievePast(100).complete()
+			val messages = textChannel!!.history.retrievePast(100).complete()
 
 			for (member in originalGuild.members) {
 				val roles = member.roles.toMutableSet()
@@ -229,7 +239,7 @@ class LorittaLandRoleSync : Runnable {
 									newEmbed
 							).build()
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.isMentioned(member) }
 
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
@@ -283,8 +293,8 @@ class LorittaLandRoleSync : Runnable {
 	}
 
 	fun synchronizeRoles(fromGuild: Guild, toGuild: Guild, originalRoleId: String, giveRoleId: String) {
-		val originalRole = fromGuild.getRoleById(originalRoleId)
-		val giveRole = toGuild.getRoleById(giveRoleId)
+		val originalRole = fromGuild.getRoleById(originalRoleId) ?: return
+		val giveRole = toGuild.getRoleById(giveRoleId) ?: return
 
 		val membersWithOriginalRole = fromGuild.getMembersWithRoles(originalRole)
 		val membersWithNewRole = toGuild.getMembersWithRoles(giveRole)

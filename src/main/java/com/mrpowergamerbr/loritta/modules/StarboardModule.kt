@@ -3,15 +3,17 @@ package com.mrpowergamerbr.loritta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.save
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
@@ -25,29 +27,29 @@ object StarboardModule {
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
 
-		if (e.reactionEmote.name == "⭐") {
+		if (e.reactionEmote.isEmote("⭐")) {
 			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
 			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY))
 				return
 
 			val mutex = mutexes.getOrPut(e.textChannel.idLong) { Mutex() }
 			mutex.withLock {
-				val msg = e.textChannel.getMessageById(e.messageId).await()
+				val msg = e.textChannel.retrieveMessageById(e.messageId).await()
 				if (msg != null) {
-					val textChannel = guild.getTextChannelById(starboardConfig.starboardId)
+					val textChannel = guild.getTextChannelByNullableId(starboardConfig.starboardId)
 
 					if (textChannel != null && msg.textChannel != textChannel && textChannel.canTalk()) { // Verificar se não é null e verificar se a reaction não foi na starboard
 						var starboardMessageId = serverConfig.starboardEmbedMessages.firstOrNull { it.messageId == e.messageId }?.embedId
 						var starboardMessage: Message? = null
 						if (starboardMessageId != null) {
-							starboardMessage = textChannel.getMessageById(starboardMessageId).await()
+							starboardMessage = textChannel.retrieveMessageById(starboardMessageId).await()
 						}
 
 						val embed = EmbedBuilder()
-						val count = e.reaction.users.await().size
+						val count = e.reaction.retrieveUsers().await().size
 						var content = msg.contentRaw
 						embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
-						embed.setTimestamp(msg.creationTime)
+						embed.setTimestamp(msg.timeCreated)
 						embed.setColor(Color(255, 255, Math.max(200 - (count * 20), 0)))
 
 						var emoji = "⭐"

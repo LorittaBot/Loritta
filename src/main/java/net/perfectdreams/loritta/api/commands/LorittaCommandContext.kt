@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.api.commands
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.entities.Message
 import java.awt.image.BufferedImage
 import java.io.File

@@ -17,14 +17,16 @@ import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
 import net.perfectdreams.loritta.api.entities.User
+import net.perfectdreams.loritta.commands.vanilla.`fun`.AkinatorCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
@@ -47,6 +49,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		
 		registerCommand(ChannelInfoCommand())
 		registerCommand(GiveawayCommand())
+		registerCommand(AkinatorCommand())
+		registerCommand(FanArtsCommand())
 
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
@@ -294,7 +298,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 									listOf(ev.member, ev.textChannel),
 									ev.guild
 							)
-							ev.textChannel.sendMessage(generatedMessage).queue()
+							ev.textChannel.sendMessage(generatedMessage!!).queue()
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -398,7 +402,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				}
 
 				if (!context.canUseCommand()) {
-					val requiredPermissions = command.discordPermissions.filter { !ev.message.member.hasPermission(ev.message.textChannel, it) }
+					val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
 							LoriReply(
@@ -472,8 +476,8 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				val result = execute(context, command, rawArgs)
 
 				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.selfMember.hasPermission(ev.textChannel, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand)) {
-						ev.message.textChannel.getMessageById(ev.messageId).queue {
+					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand)) {
+						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
 							it.delete().queue()
 						}

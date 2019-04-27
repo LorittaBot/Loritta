@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -28,11 +29,16 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 
 			try {
 				val translatedText = GoogleTranslateUtils.translate(text, "auto", strLang)
-				context.sendMessage(context.getAsMention(true) + translatedText!!.escapeMentions())
+
+				context.reply(
+						LoriReply(
+								translatedText!!.escapeMentions(),
+								"\uD83D\uDDFA"
+						)
+				)
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-
 		} else {
 			context.explain()
 		}

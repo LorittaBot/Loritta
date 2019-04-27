@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.MessageChannel
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.exceptions.PermissionException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.exceptions.PermissionException
 
 object WebhookUtils {
 	/**
@@ -25,7 +25,7 @@ object WebhookUtils {
 		if (!textChannel.guild.selfMember.hasPermission(Permission.MANAGE_WEBHOOKS))
 			return null
 
-		val webhookList = textChannel.guild.webhooks.await()
+		val webhookList = textChannel.guild.retrieveWebhooks().await()
 
 		val webhooks = webhookList.filter { it.channel == textChannel }
 		val webhook = if (webhooks.isEmpty()) {

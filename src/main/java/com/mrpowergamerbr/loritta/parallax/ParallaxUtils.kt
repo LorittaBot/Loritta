@@ -7,8 +7,8 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.utils.gson
 import mu.KotlinLogging
-import net.dv8tion.jda.core.MessageBuilder
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import org.graalvm.polyglot.Value
 import java.io.File
 

@@ -35,7 +35,7 @@ class GetMessageGuildController {
 
 		println("Channel obj is $channel")
 
-		val message = channel.getMessageById(messageId).complete() ?: throw WebsiteAPIException(Status.NOT_FOUND,
+		val message = channel.retrieveMessageById(messageId).complete() ?: throw WebsiteAPIException(Status.NOT_FOUND,
 				WebsiteUtils.createErrorPayload(
 						LoriWebCode.MESSAGE_DOESNT_EXIST,
 						"Message doesn't exist or guild isn't loaded yet"

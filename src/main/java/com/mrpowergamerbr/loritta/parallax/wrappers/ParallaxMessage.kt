@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.parallax.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
 import org.graalvm.polyglot.Value
 import java.util.function.Function
 
@@ -14,11 +14,11 @@ class ParallaxMessage(private val message: Message) {
     val cleanContent get() = message.contentStripped
     val client = ParallaxClient(message.jda)
     val content get() = message.contentDisplay
-    val createdAt get() = message.creationTime
+    val createdAt get() = message.timeCreated
     // TODO: createdTimestamp
     val deletable get() = message.author.id == Loritta.config.clientId || message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)
     val editable get() = message.author.id == Loritta.config.clientId
-    val editedAt get() = message.editedTime
+    val editedAt get() = message.timeEdited
     // TODO: editedTimestamp
     // TODO: edits
     // TODO: embeds
@@ -26,7 +26,7 @@ class ParallaxMessage(private val message: Message) {
     val guild = ParallaxGuild(message.guild)
     // TODO: hit
     val id get() = message.id
-    val member get() = ParallaxMember(message.member)
+    val member get() = ParallaxMember(message.member!!)
     // TODO: mentions
     // TODO: nonce
     val pinnable get() = message.author.id == Loritta.config.clientId

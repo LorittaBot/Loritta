@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
@@ -17,7 +18,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.apache.commons.lang3.RandomStringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -165,7 +165,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				message.addReaction("error:412585701054611458").queue()
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.name == "✅") {
+					if (it.reactionEmote.isEmote("✅")) {
 						loritta.networkBanManager.notVerifiedEntries.forEach {
 							loritta.networkBanManager.addBanEntry(it)
 						}
@@ -208,40 +208,6 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				context.reply(
 						LoriReply(
 								"Servidor `${guild.name}` foi marcado como patrociado até `${serverConfig.serverListConfig.sponsoredUntil.humanize(locale)}`"
-						)
-				)
-			}
-
-			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
-				val rawArgs = context.rawArgs.toMutableList()
-				rawArgs.removeAt(0)
-
-				val args = rawArgs.joinToString(" ")
-						.split("|")
-						.map { it.trim() }
-						.toMutableList()
-
-				val price = args[0].toDouble()
-				val reason = args[1]
-
-				val time = args[2].convertToEpochMillisRelativeToNow()
-
-				val key = RandomStringUtils.random(32, 0, 66, true, true, *"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@!$&".toCharArray())
-
-				val premiumKey = PremiumKey(
-						key,
-						reason,
-						time,
-						price
-				)
-
-				loritta.premiumKeys.add(premiumKey)
-
-				loritta.savePremiumKeys()
-
-				context.reply(
-						LoriReply(
-								"Key gerada! `${premiumKey.name}`"
 						)
 				)
 			}
