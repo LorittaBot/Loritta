@@ -172,7 +172,7 @@ object GiveawayManager {
                         }
                         15_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 5000ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
-                            delay(5_000) // a cada 5 segundos
+                            delay(2_500) // a cada 2.5 segundos
                         }
                         30_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
