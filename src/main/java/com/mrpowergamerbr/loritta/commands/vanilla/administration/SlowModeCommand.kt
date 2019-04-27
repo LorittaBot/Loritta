@@ -51,7 +51,6 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 			}
 
 			if (0 >= seconds) {
-				context.config.slowModeChannels.remove(context.event.textChannel!!.id)
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
 					context.message.textChannel.manager.setSlowmode(0).queue()
 
@@ -61,7 +60,6 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				return
 			}
 
-			context.config.slowModeChannels[context.event.textChannel!!.id] = seconds
 			if (seconds in 0..21600 && context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL)) // 6 horas
 				context.message.textChannel.manager.setSlowmode(seconds).queue()
 			else {
