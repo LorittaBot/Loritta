@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -61,8 +62,13 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 			}
 
 			context.config.slowModeChannels[context.event.textChannel!!.id] = seconds
-			if (seconds in 0..120 && context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
+			if (seconds in 0..21600 && context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL)) // 6 horas
 				context.message.textChannel.manager.setSlowmode(seconds).queue()
+			else {
+				// TODO: Colocar uma mensagem melhor
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["INVALID_NUMBER", context.args[0]])
+				return
+			}
 
 			loritta save context.config
 

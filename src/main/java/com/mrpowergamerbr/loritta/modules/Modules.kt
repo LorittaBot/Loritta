@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.modules
 
 object Modules {
-	val SLOW_MODE = SlowModeModule()
 	val INVITE_LINK = InviteLinkModule()
 	val SERVER_SUPPORT = ServerSupportModule()
 	val AUTOMOD = AutomodModule()

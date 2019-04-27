@@ -32,7 +32,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
-				Modules.SLOW_MODE,
 				Modules.AUTOMOD,
 				Modules.INVITE_LINK,
 				Modules.SERVER_SUPPORT,
