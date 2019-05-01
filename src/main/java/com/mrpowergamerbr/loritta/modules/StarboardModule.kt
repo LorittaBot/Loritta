@@ -48,9 +48,10 @@ object StarboardModule {
 						val embed = EmbedBuilder()
 						val count = e.reaction.retrieveUsers().await().size
 						var content = msg.contentRaw
-						embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
+						embed.setAuthor("${msg.author.name}#${msg.author.discriminator} (${msg.author.id})", null, msg.author.effectiveAvatarUrl)
 						embed.setTimestamp(msg.timeCreated)
-						embed.setColor(Color(255, 255, Math.max(200 - (count * 20), 0)))
+						embed.setColor(Color(255, 255, Math.max(255 - (count * 15), 0)))
+						embed.addField("Ir para a mensagem", "[Clique aqui](https://discordapp.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id})", false)
 
 						var emoji = "⭐"
 
@@ -82,7 +83,7 @@ object StarboardModule {
 						embed.setDescription(content)
 
 						val starCountMessage = MessageBuilder()
-						starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
+						starCountMessage.append("$emoji **${count}** - ${e.textChannel.asMention}")
 						starCountMessage.setEmbed(embed.build())
 
 						if (starboardMessage != null) {
