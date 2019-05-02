@@ -79,9 +79,9 @@ object StarboardModule {
 									embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
 									hasImage = true
 								}
-								fieldValue += "\uD83D\uDD17 **|** (${attach.fileName})[${attach.url}]\n"
+								fieldValue += "\uD83D\uDD17 **|** [${attach.fileName}](${attach.url})\n"
 							}
-							embed.addField("Arquivos:", fieldValue, false)
+							embed.addField("Arquivos", fieldValue, false)
 						}
 
 						embed.setDescription(content)
