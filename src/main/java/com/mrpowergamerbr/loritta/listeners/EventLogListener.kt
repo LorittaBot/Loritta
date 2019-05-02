@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent
 import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNameEvent
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePositionEvent
 import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateTopicEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent

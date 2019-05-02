@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -217,6 +218,11 @@ object GiveawayManager {
                         return@launch
                     }
                 }
+                if (e is InsufficientPermissionException) { // Sem permissão, vamos cancelar o giveaway!
+                    cancelGiveaway(giveaway, true)
+                    return@launch
+                }
+
                 logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
                 cancelGiveaway(giveaway, false)
             }
