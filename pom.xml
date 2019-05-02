@@ -287,6 +287,11 @@
             <artifactId>jackson-module-kotlin</artifactId>
             <version>2.9.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.honton.chas.hocon</groupId>
+            <artifactId>jackson-dataformat-hocon</artifactId>
+            <version>1.1.1</version>
+        </dependency>
         <!-- https://github.com/DuncteBot/Lavalink-Client/tree/jda-v4 -->
         <dependency>
             <groupId>com.github.DuncteBot</groupId>
