@@ -299,12 +299,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						textChannel.sendMessage(embed.build()).queue()
 						return@execute
 					}
-					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_POSITION_UPDATED", event.channel.asMention, event.oldPosition, event.channel.position]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@execute
-					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
 						embed.setDescription("\uD83D\uDEAE ${locale["EVENTLOG_CHANNEL_DELETED", event.channel.name]}")
 
