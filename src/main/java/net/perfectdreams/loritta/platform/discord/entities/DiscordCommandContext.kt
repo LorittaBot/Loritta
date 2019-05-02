@@ -296,7 +296,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		if (conf.explainOnCommandRun) {
 			val rawArguments = discordMessage.contentRaw.split(" ")
 			var commandLabel = rawArguments[0]
-			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
+			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.discord.clientId}>" || rawArguments[0] == "<@!${Loritta.config.discord.clientId}>")) {
 				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
 				commandLabel = rawArguments[1]
 			}
@@ -381,7 +381,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(legacyLocale[command.category.fancyTitle], "${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(legacyLocale[command.category.fancyTitle], "${Loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

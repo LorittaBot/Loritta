@@ -20,6 +20,7 @@ import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -29,7 +30,7 @@ class AudioManager(val loritta: Loritta) {
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = JdaLavalink(Loritta.config.clientId, Loritta.config.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
+	val lavalink = JdaLavalink(Loritta.config.discord.clientId, Loritta.config.discord.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
@@ -40,7 +41,13 @@ class AudioManager(val loritta: Loritta) {
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
 
-		lavalink.addNode(URI("ws://${Loritta.config.lavalinkIp}:2334"), Loritta.config.mixerWebhookSecret)
+		for (node in Loritta.config.lavalink.nodes) {
+			lavalink.addNode(
+					node.name,
+					URI("ws://${NetAddressUtils.getWithPortIfMissing(node.address, 2334)}"),
+					node.password
+			)
+		}
 	}
 
 	/**

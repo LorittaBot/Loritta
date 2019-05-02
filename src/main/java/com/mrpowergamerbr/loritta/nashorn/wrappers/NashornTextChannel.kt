@@ -51,10 +51,8 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 
 	@NashornCommand.NashornDocs()
 	fun sendMessage(mensagem: String): NashornMessage {
-		if (mensagem.contains(Loritta.config.clientToken, true)) {
+		if (mensagem.contains(Loritta.config.discord.clientToken, true))
 			NashornContext.securityViolation(null)
-			return null!!
-		}
 
 		return NashornMessage(textChannel.sendMessage(mensagem).complete())
 	}

@@ -46,27 +46,29 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		if (getAvatar.id == "390927821997998081")
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_PantufaCute"]}* \uD83D\uDE0A")
 
-		if (getAvatar.id == Loritta.config.clientId) {
+		if (getAvatar.id == Loritta.config.discord.clientId) {
 			val calendar = Calendar.getInstance()
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
-			if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
+			if (Loritta.config.discord.fanArtExtravaganza.enabled && currentDay == Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek) {
 				val fanArt = UpdateStatusThread.currentFanArt
 
-				val user = lorittaShards.retrieveUserById(fanArt.artistId)
+				if (fanArt != null) {
+					val user = lorittaShards.retrieveUserById(fanArt.artistId)
 
-				val displayName = fanArt.fancyName ?: user?.name
+					val displayName = fanArt.fancyName ?: user?.name
 
-				embed.appendDescription("\n\n**" + locale.toNewLocale()["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
-				val artist = loritta.fanArtConfig.artists[fanArt.artistId]
-				if (artist != null) {
-					for (socialNetwork in artist.socialNetworks) {
-						var root = socialNetwork.display
-						if (socialNetwork.link != null) {
-							root = "[$root](${socialNetwork.link})"
+					embed.appendDescription("\n\n**" + locale.toNewLocale()["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
+					val artist = loritta.fanArtConfig.artists[fanArt.artistId]
+					if (artist != null) {
+						for (socialNetwork in artist.socialNetworks) {
+							var root = socialNetwork.display
+							if (socialNetwork.link != null) {
+								root = "[$root](${socialNetwork.link})"
+							}
+							embed.appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
 						}
-						embed.appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
 					}
 				}
 			}

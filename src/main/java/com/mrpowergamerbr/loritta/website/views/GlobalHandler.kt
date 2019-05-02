@@ -120,15 +120,15 @@ object GlobalHandler {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("${Loritta.config.websiteUrl}br${req.path()}${queryString}")
+						res.redirect("${Loritta.config.loritta.website.url}br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("${Loritta.config.websiteUrl}pt${req.path()}${queryString}")
+						res.redirect("${Loritta.config.loritta.website.url}pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("${Loritta.config.websiteUrl}es${req.path()}${queryString}")
+						res.redirect("${Loritta.config.loritta.website.url}es${req.path()}${queryString}")
 					}
-					res.redirect("${Loritta.config.websiteUrl}us${req.path()}${queryString}")
+					res.redirect("${Loritta.config.loritta.website.url}us${req.path()}${queryString}")
 					return "Redirecting..."
 				}
 			}

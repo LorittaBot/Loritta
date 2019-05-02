@@ -160,7 +160,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         """.trimIndent()
 
         val builder = getAkinatorEmbedBase(context).apply {
-            setThumbnail("${Loritta.config.websiteUrl}assets/img/akinator_embed.png")
+            setThumbnail("${Loritta.config.loritta.website.url}assets/img/akinator_embed.png")
             setDescription("**${currentQuestion.question}**" + "\n\n$progression% $text\n\n$reactionInfo")
             setFooter(context.userHandle.name + " • ${locale["$LOCALE_PREFIX.question", currentQuestion.step + 1]}", context.userHandle.effectiveAvatarUrl)
             setColor(Color(20, 158, 255))

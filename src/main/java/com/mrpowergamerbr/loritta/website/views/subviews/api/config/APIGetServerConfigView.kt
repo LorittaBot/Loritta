@@ -69,7 +69,7 @@ class APIGetServerConfigView : NoVarsView() {
 			hasAdministrationOrManageServerPermission = member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)
 		}
 
-		val canBypass = id == Loritta.config.ownerId || canAccessDashboardViaPermission
+		val canBypass = Loritta.config.isOwner(id) || canAccessDashboardViaPermission
 
 		if (!canBypass && !hasAdministrationOrManageServerPermission) {
 			val payload = JsonObject()

@@ -55,7 +55,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 				return
 			}
 
-			var url = "${Loritta.config.websiteUrl}user/${user.id}/rep"
+			var url = "${Loritta.config.loritta.website.url}user/${user.id}/rep"
 			if (!context.isPrivateChannel)
 				url += "?channel=${context.message.channel.id}"
 

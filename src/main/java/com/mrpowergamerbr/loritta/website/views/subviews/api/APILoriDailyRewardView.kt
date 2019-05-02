@@ -55,7 +55,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.recaptchaToken}&response=$recaptcha")
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
 				.body()
 
 		val jsonParser = jsonParser.parse(body).obj

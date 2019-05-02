@@ -269,11 +269,11 @@ object GiveawayManager {
         if (messageReaction != null) {
             val users = messageReaction.retrieveUsers().await()
 
-            if (users.size == 1 && users[0].id == Loritta.config.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
+            if (users.size == 1 && users[0].id == Loritta.config.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.clientId }.toMutableList()
+                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.discord.clientId }.toMutableList()
 
                 repeat(giveaway.numberOfWinners) {
                     if (reactedUsers.isEmpty())

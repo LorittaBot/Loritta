@@ -239,7 +239,7 @@ class LorittaLandRoleSync : Runnable {
 									newEmbed
 							).build()
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.isMentioned(member) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.discord.clientId.toLong() && it.isMentioned(member) }
 
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
@@ -277,7 +277,7 @@ class LorittaLandRoleSync : Runnable {
 					} else
 						roles.remove(inactiveRole)
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == Loritta.config.discord.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
 
 					message?.delete()?.queue()
 				}

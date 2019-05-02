@@ -30,20 +30,16 @@ class NashornImage {
 
 	@NashornCommand.NashornDocs(arguments = "texto, x, y")
 	fun write(texto: String, x: Int, y: Int): NashornImage {
-		if (texto.contains(Loritta.config.clientToken, true)) {
+		if (texto.contains(Loritta.config.discord.clientToken, true))
 			NashornContext.securityViolation(null)
-			return null!!
-		}
 
 		return write(texto, Color(0, 0, 0), x, y)
 	}
 
 	@NashornCommand.NashornDocs(arguments = "texto, cor, x, y")
 	fun write(texto: String, cor: Color, x: Int, y: Int): NashornImage {
-		if (texto.contains(Loritta.config.clientToken, true)) {
+		if (texto.contains(Loritta.config.discord.clientToken, true))
 			NashornContext.securityViolation(null)
-			return null!!
-		}
 
 		graphics.color = cor
 		ImageUtils.drawTextWrap(texto, x, y, 9999, 9999, graphics.fontMetrics, graphics)

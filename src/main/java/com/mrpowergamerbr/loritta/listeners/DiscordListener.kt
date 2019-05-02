@@ -176,8 +176,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
     |${message.attachments.filter { it.isImage }.joinToString("\n", transform = { "![${it.url}](${it.url})" })}
 """.trimMargin()
 
-			val request = HttpRequest.post("https://api.github.com/repos/LorittaBot/Loritta/issues")
-					.header("Authorization", "token ${Loritta.config.githubKey}")
+			val request = HttpRequest.post("${Loritta.config.github.repositoryUrl}/issues")
+					.header("Authorization", "token ${Loritta.config.github.apiKey}")
 					.accept("application/vnd.github.symmetra-preview+json")
 					.send(
 							gson.toJson(
@@ -213,7 +213,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			if (Loritta.config.environment == EnvironmentType.CANARY) {
+			if (Loritta.config.loritta.environment == EnvironmentType.CANARY) {
 				if (event.channel.id == "359139508681310212" && (event.reactionEmote.isEmote("\uD83D\uDC4D") || event.reactionEmote.isEmote("\uD83D\uDC4E"))) { // Canal de sugestões
 					issueMutex.withLock {
 						val alreadySent = transaction(Databases.loritta) {
@@ -461,7 +461,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				if (event.user.id == Loritta.config.clientId) {
+				if (event.user.id == Loritta.config.discord.clientId) {
 					return@launch
 				}
 

@@ -58,6 +58,7 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.OkHttpClient
@@ -173,11 +174,11 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	val mercadoPago: MercadoPago
 
 	init {
-		FOLDER = config.lorittaFolder
-		ASSETS = config.assetsFolder
-		TEMP = config.tempFolder
-		LOCALES = config.localesFolder
-		FRONTEND = config.frontendFolder
+		FOLDER = config.loritta.folders.root
+		ASSETS = config.loritta.folders.assets
+		TEMP = config.loritta.folders.temp
+		LOCALES = config.loritta.folders.locales
+		FRONTEND = config.loritta.website.folder
 		Loritta.config = config
 		loadLocales()
 		loadLegacyLocales()
@@ -201,9 +202,9 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 
 		builder = DefaultShardManagerBuilder()
-				.setShardsTotal(Loritta.config.shards)
-				.setStatus(Loritta.config.userStatus)
-				.setToken(Loritta.config.clientToken)
+				.setShardsTotal(Loritta.config.discord.shards)
+				.setStatus(Loritta.config.discord.status)
+				.setToken(Loritta.config.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
 				.setDisabledCacheFlags(EnumSet.of(CacheFlag.PRESENCE))
@@ -230,7 +231,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 
 	fun resetYouTubeKeys() {
 		youtubeKeys.clear()
-		youtubeKeys.addAll(config.youtubeKeys)
+		youtubeKeys.addAll(config.youtube.apiKeys)
 		lastKeyReset = Calendar.getInstance()[Calendar.DAY_OF_MONTH]
 	}
 
@@ -261,7 +262,7 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(config.websiteUrl, config.frontendFolder)
+			website = LorittaWebsite(config.loritta.website.url, config.loritta.website.folder)
 			org.jooby.run({
 				website
 			})
@@ -370,9 +371,9 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				.connectionsPerHost(250)
 				.build()
 
-		mongo = MongoClient("${config.mongoDbIp}:27017", options) // Hora de iniciar o MongoClient
+		mongo = MongoClient(NetAddressUtils.getWithPortIfMissing(config.mongoDb.address, 27017), options) // Hora de iniciar o MongoClient
 
-		val db = mongo.getDatabase(config.databaseName)
+		val db = mongo.getDatabase(config.mongoDb.databaseName)
 
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 

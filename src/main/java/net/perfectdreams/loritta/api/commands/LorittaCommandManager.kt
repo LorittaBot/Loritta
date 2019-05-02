@@ -43,7 +43,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 	val commands = mutableListOf<LorittaCommand>()
 
 	init {
-		if (Loritta.config.environment == EnvironmentType.CANARY)
+		if (Loritta.config.loritta.environment == EnvironmentType.CANARY)
 			registerCommand(MagicPingCommand())
 		registerCommand(PluginsCommand())
 		
@@ -236,7 +236,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 		var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
 		var byMention = false
 
-		if (!isSubcommand && rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.clientId}>" || rawArguments[0] == "<@!${Loritta.config.clientId}>")) {
+		if (!isSubcommand && rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.discord.clientId}>" || rawArguments[0] == "<@!${Loritta.config.discord.clientId}>")) {
 			// by mention
 			valid = labels.any { rawArguments[1].equals(it, true) }
 			byMention = true
@@ -311,7 +311,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				// Cooldown
 				val diff = System.currentTimeMillis() - com.mrpowergamerbr.loritta.utils.loritta.userCooldown.getOrDefault(ev.author.idLong, 0L)
 
-				if (1250 > diff && ev.author.id != Loritta.config.ownerId) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
+				if (1250 > diff && !Loritta.config.isOwner(ev.author.id)) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
 					com.mrpowergamerbr.loritta.utils.loritta.userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
@@ -323,7 +323,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					cooldown /= 2
 				}
 
-				if (cooldown > diff && ev.author.id != Loritta.config.ownerId) {
+				if (cooldown > diff && !Loritta.config.isOwner(ev.author.id)) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
 					context.reply(
 							LoriReply(
@@ -375,7 +375,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 						var message = legacyLocale["LORIPERMISSION_MissingPermissions", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${legacyLocale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.websiteUrl]}"
+							message += " ${legacyLocale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
 						return true
@@ -391,7 +391,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 					return true
 				}
 
-				if (context.command.onlyOwner && context.userHandle.id != Loritta.config.ownerId) {
+				if (context.command.onlyOwner && !Loritta.config.isOwner(context.userHandle.id)) {
 					context.reply(
 							LoriReply(
 									locale["commands.commandOnlyForOwner"],
@@ -427,7 +427,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				if (command.requiresMusic) {
 					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) legacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${Loritta.config.websiteUrl}dashboard"] else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) legacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${Loritta.config.loritta.website.url}dashboard"] else "")
 						return true
 					}
 				}
@@ -444,7 +444,7 @@ class LorittaCommandManager(val loritta: Loritta) : CommandManager<LorittaComman
 				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
 					context.reply(
 							LoriReply(
-									legacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.websiteUrl}donate>"],
+									legacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.loritta.website.url}donate>"],
 									Emotes.LORI_OWO
 							)
 					)

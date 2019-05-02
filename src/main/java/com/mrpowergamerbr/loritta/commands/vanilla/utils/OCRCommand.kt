@@ -5,12 +5,12 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.imageio.ImageIO
@@ -26,7 +26,7 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 		ByteArrayOutputStream().use {
 			ImageIO.write(contextImage, "png", it)
 			val json = """{"requests":[{"features":[{"maxResults":1,"type":"TEXT_DETECTION"}],"image":{"content":"${Base64.getEncoder().encodeToString(it.toByteArray())}"}}]}"""
-			val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVisionKey}&alt=json")
+			val response = HttpRequest.post("https://content-vision.googleapis.com/v1/images:annotate?key=${Loritta.config.googleVision.apiKey}&alt=json")
 					.contentType("application/json")
 					.header("Content-Length", json.toByteArray().size)
 					.header("Content-Type", "application/json")

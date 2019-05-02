@@ -41,7 +41,7 @@ abstract class ConfigureView : ProtectedView() {
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
 
-		val canBypass = userIdentification.id == Loritta.config.ownerId || canAccessDashboardViaPermission
+		val canBypass = Loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true)) {
 			return "Você não tem permissão!"
 		}

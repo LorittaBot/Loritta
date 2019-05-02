@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
@@ -50,14 +51,14 @@ object LorittaLauncher {
 		// Now we set it to our own classpath
 		System.setProperty("kotlin.script.classpath", propClassPath)
 
-		val file = File(System.getProperty("conf") ?: "./config.yml")
+		val file = File(System.getProperty("conf") ?: "./config.conf")
 		var config: LorittaConfig? = null
 
 		if (file.exists()) {
 			val json: String
 			try {
 				json = file.readText()
-				config = Constants.MAPPER.readValue(json, LorittaConfig::class.java)
+				config = Constants.HOCON_MAPPER.readValue<LorittaConfig>(json)
 			} catch (e: IOException) {
 				e.printStackTrace()
 				System.exit(1) // Sair caso der erro

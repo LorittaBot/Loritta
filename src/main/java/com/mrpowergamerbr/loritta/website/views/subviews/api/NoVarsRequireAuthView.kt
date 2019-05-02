@@ -20,7 +20,7 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 		val header = req.header("Lori-Authentication")
 		val auth = header.value("???")
 
-		val validKey = Loritta.config.websiteApiKeys.filter {
+		val validKey = Loritta.config.loritta.website.apiKeys.filter {
 			it.name == auth &&
 					(it.allowed.contains("*") || it.allowed.contains(path))
 		}.firstOrNull()

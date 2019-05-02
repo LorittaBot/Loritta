@@ -363,7 +363,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
 										context.legacyLocale["FRASETOSCA_GABRIELA"],
 										context.getAsMention(true) + answer.answer.escapeMentions(),
-										"${Loritta.config.websiteUrl}assets/img/gabriela_avatar.png"
+										"${Loritta.config.loritta.website.url}assets/img/gabriela_avatar.png"
 								),
 								true
 						) {

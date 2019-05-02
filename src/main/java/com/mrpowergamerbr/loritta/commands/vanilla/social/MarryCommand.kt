@@ -43,7 +43,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (proposeTo.id == Loritta.config.clientId) {
+			if (proposeTo.id == Loritta.config.discord.clientId) {
 				context.reply(
 						LoriReply(
 								locale["MARRY_Loritta"],
@@ -133,7 +133,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (proposeTo.id == Loritta.config.clientId) {
+					if (proposeTo.id == Loritta.config.discord.clientId) {
 						context.reply(
 								LoriReply(
 										locale["MARRY_Loritta"],

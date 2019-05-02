@@ -40,7 +40,7 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 					var message = locale["LORIPERMISSION_MissingPermissions", required]
 
 					if (context.handle.hasPermission(Permission.ADMINISTRATOR) || context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-						message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.websiteUrl]}"
+						message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.loritta.website.url]}"
 					}
 					context.reply(
 							message,
