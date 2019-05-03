@@ -24,6 +24,9 @@ object StarboardModule {
 			.asMap()
 
 	suspend fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: MongoServerConfig) {
+		// Não enviar mensagens para o starboard se o canal é NSFW
+		if (e.textChannel.isNSFW) return
+
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
 
@@ -70,14 +73,15 @@ object StarboardModule {
 
 						var hasImage = false
 						if (msg.attachments.isNotEmpty()) { // Se tem attachments...
-							content += "\n**Arquivos:**\n"
+							var fieldValue = ""
 							for (attach in msg.attachments) {
 								if (attach.isImage && !hasImage) { // Se é uma imagem...
 									embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
 									hasImage = true
 								}
-								content += attach.url + "\n"
+								fieldValue += "\uD83D\uDD17 **|** [${attach.fileName}](${attach.url})\n"
 							}
+							embed.addField("Arquivos", fieldValue, false)
 						}
 
 						embed.setDescription(content)
