@@ -1,8 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
@@ -16,13 +13,10 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaTasks
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.coroutines.delay
@@ -337,9 +331,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "config") {
-			val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
-			val file = File(System.getProperty("conf") ?: "./config.yml")
-			Loritta.config = mapper.readValue(file.readText(), LorittaConfig::class.java)
+			val file = File(System.getProperty("conf") ?: "./config.conf")
+			Loritta.config = Constants.HOCON_MAPPER.readValue(file.readText(), LorittaConfig::class.java)
 			context.reply(
 					LoriReply(
 							"Config recarregada!"
@@ -418,9 +411,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 		val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 
-		val mapper = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
-		val file = File(System.getProperty("conf") ?: "./config.yml")
-		Loritta.config = mapper.readValue(file.readText(), LorittaConfig::class.java)
+		val file = File(System.getProperty("conf") ?: "./config.conf")
+		Loritta.config = Constants.HOCON_MAPPER.readValue(file.readText(), LorittaConfig::class.java)
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()

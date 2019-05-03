@@ -18,7 +18,7 @@ import java.util.jar.JarFile
 object LorittaLauncher {
 	// STATIC MAGIC(tm)
 	lateinit var loritta: Loritta
-
+    
 	@JvmStatic
 	fun main(args: Array<String>) {
 		// Isto apenas acontece se... "uma falha de segurança na API de comandos em JS for detectada"
@@ -52,9 +52,9 @@ object LorittaLauncher {
 		System.setProperty("kotlin.script.classpath", propClassPath)
 
 		val file = File(System.getProperty("conf") ?: "./config.conf")
-		var config: LorittaConfig? = null
+        var config: LorittaConfig?
 
-		if (file.exists()) {
+        if (file.exists()) {
 			try {
 				val json = file.readText()
 				config = Constants.HOCON_MAPPER.readValue<LorittaConfig>(json)
