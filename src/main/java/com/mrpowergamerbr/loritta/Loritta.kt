@@ -256,7 +256,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 	fun start() {
 		RestAction.setPassContext(true)
 
-		socketServer.start(35576)
+		if (Loritta.config.socket.enabled)
+			socketServer.start(Loritta.config.socket.port)
 
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
