@@ -114,7 +114,7 @@ class CreateTwitchWebhooksTask : Runnable {
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
 										"hub.mode" to "unsubscribe",
-										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.secret" to Loritta.config.mixer.webhookSecret,
 										"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=$userId"
 								))
 								.ok()
@@ -125,7 +125,7 @@ class CreateTwitchWebhooksTask : Runnable {
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=twitch&userlogin=${userLogin.encodeToUrl()}",
 										"hub.lease_seconds" to "864000",
 										"hub.mode" to "subscribe",
-										"hub.secret" to Loritta.config.mixerWebhookSecret,
+										"hub.secret" to Loritta.config.mixer.webhookSecret,
 										"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=$userId"
 								))
 								.code()

@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent
 import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNameEvent
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePositionEvent
 import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateTopicEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
@@ -295,12 +294,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_TOPIC_UPDATED", event.channel.asMention, event.oldTopic, event.channel.topic]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@execute
-					}
-					if (event is TextChannelUpdatePositionEvent && eventLogConfig.channelPositionUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_POSITION_UPDATED", event.channel.asMention, event.oldPosition, event.channel.position]}")
 
 						textChannel.sendMessage(embed.build()).queue()
 						return@execute

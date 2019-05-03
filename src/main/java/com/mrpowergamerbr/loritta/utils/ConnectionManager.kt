@@ -29,7 +29,7 @@ class ConnectionManager {
     suspend fun updateProxies() {
         mutex.withLock {
             this.lastProxyListUpdate = System.currentTimeMillis()
-            val proxyList = HttpRequest.get("https://proxy.rudnkh.me/txt")
+            val proxyList = HttpRequest.get(Loritta.config.connectionManager.proxySources.random())
                     .body()
 
             val ipAndPortProxies = proxyList.lines()
@@ -44,6 +44,14 @@ class ConnectionManager {
 
             val validProxies = checkProxies(proxies)
             this.proxies.clear()
+            // Adicionar todos os proxies da config também
+            this.proxies.addAll(
+                    Loritta.config.connectionManager.proxies.map {
+                        val split = it.split(":")
+                        Proxy(split[0], split[1].toInt())
+                    }
+            )
+
             this.proxies.addAll(validProxies)
         }
     }
@@ -89,7 +97,7 @@ class ConnectionManager {
                 return false
             val domain = split.takeLast(2).joinToString(".")
 
-            return Loritta.config.connectionManagerConfig.trustedDomains.any { it.endsWith(domain) }
+            return Loritta.config.connectionManager.trustedDomains.any { it.endsWith(domain) }
         } else {
             return false
         }
@@ -107,7 +115,7 @@ class ConnectionManager {
                 return false
             val domain = split.takeLast(2).joinToString(".")
 
-            return Loritta.config.connectionManagerConfig.blockedDomains.any { it.endsWith(domain) }
+            return Loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain) }
         } else {
             return false
         }
@@ -119,7 +127,7 @@ class ConnectionManager {
 fun HttpRequest.doSafeConnection(): HttpRequest {
     val url = ConnectionManager.URL_FIELD.get(this) as URL
 
-    if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections) {
+    if (Loritta.config.connectionManager.proxyUntrustedConnections) {
         if (loritta.connectionManager.isBlocked(url.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
                 GlobalScope.launch(coroutineDispatcher) {
@@ -152,7 +160,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
 }
 
 fun URL.openSafeConnection(): URLConnection {
-    if (Loritta.config.connectionManagerConfig.proxyUntrustedConnections) {
+    if (Loritta.config.connectionManager.proxyUntrustedConnections) {
         if (loritta.connectionManager.isBlocked(this.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
                 GlobalScope.launch(coroutineDispatcher) {

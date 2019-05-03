@@ -41,7 +41,7 @@ class DiscordBotsCallbackController {
 		}
 
 		val authorization = authorizationHeader.value()
-		if (authorization != Loritta.config.mixerWebhookSecret) {
+		if (authorization != Loritta.config.mixer.webhookSecret) {
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 			res.status(Status.UNAUTHORIZED)
 			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Authorization Content from Request")
@@ -54,7 +54,7 @@ class DiscordBotsCallbackController {
 		val userId = payload["user"].string
 		val type = payload["type"].string
 
-		if (botId == Loritta.config.ownerId && type == "upvote") {
+		if (Loritta.config.isOwner(botId) && type == "upvote") {
 			PerfilCommand.userVotes?.add(PerfilCommand.DiscordBotVote(userId))
 		}
 

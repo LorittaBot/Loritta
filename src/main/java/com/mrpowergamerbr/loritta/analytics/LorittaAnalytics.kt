@@ -4,7 +4,8 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.*
+import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOTS
+import com.mrpowergamerbr.loritta.analytics.AnalyticProcessorService.DISCORD_BOT_LIST
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 
@@ -17,14 +18,13 @@ object LorittaAnalytics {
 	 * @param service the analytic processor service
 	 */
 	fun send(service: AnalyticProcessorService) {
-		val request = HttpRequest.post(service.endpoint.format(Loritta.config.clientId))
+		val request = HttpRequest.post(service.endpoint.format(Loritta.config.discord.clientId))
 				.connectTimeout(25000)
 				.readTimeout(25000)
 
 		when (service) {
-			DISCORD_BOTS -> request.authorization(Loritta.config.discordBotsKey)
-			DISCORD_BOT_LIST -> request.authorization(Loritta.config.discordBotsOrgKey)
-			VESPERTINE_BOT_LIST -> request.authorization(Loritta.config.vespertineBotListKey)
+			DISCORD_BOTS -> request.authorization(Loritta.config.discordBots.apiKey)
+			DISCORD_BOT_LIST -> request.authorization(Loritta.config.discordBotList.apiKey)
 		}
 
 		request.acceptJson().contentType("application/json")
@@ -51,7 +51,7 @@ object LorittaAnalytics {
 						"server_count" to lorittaShards.getCachedGuildCount()
 				)
 			}
-			DISCORD_BOTS, VESPERTINE_BOT_LIST -> {
+			DISCORD_BOTS -> {
 				return jsonObject(
 						"guildCount" to lorittaShards.getCachedGuildCount()
 				)

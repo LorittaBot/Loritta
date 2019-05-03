@@ -36,7 +36,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val description = context.legacyLocale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
-					Loritta.config.addBotUrl,
+					Loritta.config.discord.addBotUrl,
 					context.event.guild?.name ?: "\uD83E\uDD37"]
 
 			val builder = EmbedBuilder()

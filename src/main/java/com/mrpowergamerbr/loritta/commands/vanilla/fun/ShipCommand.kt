@@ -4,10 +4,12 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.ShipEffect
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ShipEffects
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -96,8 +98,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					percentage = effect.editedShipValue
 				}
 
-				if (user1.id == Loritta.config.clientId || user2.id == Loritta.config.clientId) {
-					if ((user1.id != Loritta.config.ownerId && user2.id != Loritta.config.ownerId) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {
+				if (user1.id == Loritta.config.discord.clientId || user2.id == Loritta.config.discord.clientId) {
+					if ((!Loritta.config.isOwner(user1.id) && !Loritta.config.isOwner(user2.id)) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {
 						percentage = random.nextInt(0, 51)
 					}
 				}
@@ -106,7 +108,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
 						LoriReply(
-								context.locale["commands.fun.ship.bribeLove", "${Loritta.config.websiteUrl}user/@me/dashboard/ship-effects"]
+								context.locale["commands.fun.ship.bribeLove", "${Loritta.config.loritta.website.url}user/@me/dashboard/ship-effects"]
 						)
 				)
 			}

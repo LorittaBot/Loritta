@@ -15,8 +15,8 @@ class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot"
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.legacyLocale["INVITE_INFO", Loritta.config.addBotUrl, "${Loritta.config.websiteUrl}dashboard", "${Loritta.config.websiteUrl}support"])
-                .setThumbnail("${Loritta.config.websiteUrl}assets/img/loritta_gabizinha_v1.png")
+                .setDescription(context.legacyLocale["INVITE_INFO", Loritta.config.discord.addBotUrl, "${Loritta.config.loritta.website.url}dashboard", "${Loritta.config.loritta.website.url}support"])
+                .setThumbnail("${Loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Constants.LORITTA_AQUA)
                 .build()
 

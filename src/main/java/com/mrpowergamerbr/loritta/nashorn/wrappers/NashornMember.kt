@@ -95,10 +95,8 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 	@NashornCommand.NashornDocs("Altera o nome de um usuário",
 			"novoNickname")
 	fun setNickname(nickname: String) {
-		if (nickname.contains(Loritta.config.clientToken, true)) {
+		if (nickname.contains(Loritta.config.discord.clientToken, true))
 			NashornContext.securityViolation(null)
-			return null!!
-		}
 
 		member.guild.controller.setNickname(member, nickname).queue()
 	}

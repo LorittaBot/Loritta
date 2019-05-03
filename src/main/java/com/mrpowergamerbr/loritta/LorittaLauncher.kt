@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
@@ -17,7 +18,7 @@ import java.util.jar.JarFile
 object LorittaLauncher {
 	// STATIC MAGIC(tm)
 	lateinit var loritta: Loritta
-
+    
 	@JvmStatic
 	fun main(args: Array<String>) {
 		// Isto apenas acontece se... "uma falha de segurança na API de comandos em JS for detectada"
@@ -50,25 +51,31 @@ object LorittaLauncher {
 		// Now we set it to our own classpath
 		System.setProperty("kotlin.script.classpath", propClassPath)
 
-		val file = File(System.getProperty("conf") ?: "./config.yml")
-		var config: LorittaConfig? = null
+		val file = File(System.getProperty("conf") ?: "./config.conf")
+        var config: LorittaConfig?
 
-		if (file.exists()) {
-			val json: String
+        if (file.exists()) {
 			try {
-				json = file.readText()
-				config = Constants.MAPPER.readValue(json, LorittaConfig::class.java)
+				val json = file.readText()
+				config = Constants.HOCON_MAPPER.readValue<LorittaConfig>(json)
 			} catch (e: IOException) {
 				e.printStackTrace()
 				System.exit(1) // Sair caso der erro
 				return
 			}
-
 		} else {
-			println("Welcome to Loritta!")
-			println("Because this is your first time executing me, I will create a file named \"config.yml\", that you will need to configure before using me!")
+			println("Welcome to Loritta Morenitta! :3")
+			println("")
+			println("I want to make a world a better place... helping people, making them laugh... I hope I succeed!")
+			println("")
+			println("Before we start, you will need to configure me.")
+			println("I will create a file named \"config.conf\", open it on your favorite text editor and change it!")
 			println("")
 			println("After configuring the file, run me again!")
+
+			val inputStream = LorittaLauncher::class.java.getResourceAsStream("/config.conf")
+			File("./config.conf").writeBytes(inputStream.readAllBytes())
+			
 			System.exit(1)
 			return
 		}

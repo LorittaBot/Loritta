@@ -50,7 +50,7 @@ class MercadoPagoCallbackController {
 				logger.info { "MercadoPago Payment $id is ${payment.description} - Reference ID: ${payment.externalReference}" }
 
 
-				if (payment.status == PaymentStatus.APPROVED || (Loritta.config.environment == EnvironmentType.CANARY && allowAnyPayment)) {
+				if (payment.status == PaymentStatus.APPROVED || (Loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
 					if (payment.externalReference?.startsWith("LORI-DONATE-MP-") == true) {
 						// Criação de nova key:
 						// LORI-DONATE-MP-InternalTransactionId

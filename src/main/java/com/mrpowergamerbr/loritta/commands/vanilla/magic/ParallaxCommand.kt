@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 class ParallaxCommand : AbstractCommand("parallax", category = CommandCategory.MAGIC) {
 
     override fun canHandle(context: CommandContext): Boolean {
-        return context.userHandle.id in Loritta.config.subOwnerIds || context.userHandle.id == Loritta.config.ownerId
+        return context.userHandle.id in Loritta.config.loritta.subOwnerIds || Loritta.config.isOwner(context.userHandle.id)
     }
 
     override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {

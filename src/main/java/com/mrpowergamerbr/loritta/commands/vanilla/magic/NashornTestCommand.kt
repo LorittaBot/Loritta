@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -13,7 +13,7 @@ class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory
 	}
 
 	override fun canHandle(context: CommandContext): Boolean {
-		return context.userHandle.id in Loritta.config.subOwnerIds || context.userHandle.id == Loritta.config.ownerId
+		return context.userHandle.id in Loritta.config.loritta.subOwnerIds || Loritta.config.isOwner(context.userHandle.id)
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

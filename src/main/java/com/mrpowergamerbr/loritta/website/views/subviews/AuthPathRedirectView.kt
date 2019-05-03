@@ -10,7 +10,7 @@ class AuthPathRedirectView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
-		res.redirect(Loritta.config.websiteUrl + "dashboard")
+		res.redirect(Loritta.config.loritta.website.url + "dashboard")
 		return "Redirecionando..."
 	}
 

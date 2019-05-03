@@ -9,14 +9,6 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file> log-${byDay}.txt </file>
-        <append>true</append>
-        <encoder>
-            <pattern>[%d{HH:mm:ss.SSS}] [%thread/%level]: %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
