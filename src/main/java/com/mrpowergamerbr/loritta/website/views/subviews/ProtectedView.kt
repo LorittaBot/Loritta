@@ -28,13 +28,13 @@ abstract class ProtectedView : AbstractView() {
 					} else {
 						val state = JsonObject()
 						state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-						res.redirect(Loritta.config.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+						res.redirect(Loritta.config.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 					}
 					return false
 				}
 			} else {
 				val code = req.param("code").value()
-				val auth = TemmieDiscordAuth(code, "${Loritta.config.websiteUrl}dashboard", Loritta.config.clientId, Loritta.config.clientSecret).apply {
+				val auth = TemmieDiscordAuth(code, "${Loritta.config.loritta.website.url}dashboard", Loritta.config.discord.clientId, Loritta.config.discord.clientSecret).apply {
 					debug = false
 				}
 				auth.doTokenExchange()
@@ -106,7 +106,7 @@ abstract class ProtectedView : AbstractView() {
 									}
 
 									// Envie via DM uma mensagem falando sobre a Loritta!
-									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.websiteUrl, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${Loritta.config.websiteUrl}donate"]
+									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, Loritta.config.loritta.website.url, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${Loritta.config.loritta.website.url}donate"]
 
 									user.openPrivateChannel().queue {
 										it.sendMessage(message).queue()
@@ -116,11 +116,11 @@ abstract class ProtectedView : AbstractView() {
 						}
 					}
 
-					res.redirect("${Loritta.config.websiteUrl}dashboard/configure/${guildId.value()}")
+					res.redirect("${Loritta.config.loritta.website.url}dashboard/configure/${guildId.value()}")
 					return true
 				}
 
-				res.redirect("${Loritta.config.websiteUrl}dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+				res.redirect("${Loritta.config.loritta.website.url}dashboard") // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 			return true
 		}
@@ -132,7 +132,7 @@ abstract class ProtectedView : AbstractView() {
 			return WebsiteUtils.getDiscordCrawlerAuthenticationPage()
 
 		if (!req.session().isSet("discordAuth")) { // Caso discordAuth não exista, vamos redirecionar para a tela de autenticação
-			res.redirect(Loritta.config.authorizationUrl)
+			res.redirect(Loritta.config.discord.authorizationUrl)
 			return "Redirecionando..."
 		}
 
@@ -141,7 +141,7 @@ abstract class ProtectedView : AbstractView() {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {
 			req.session().unset("discordAuth")
-			res.redirect(Loritta.config.authorizationUrl)
+			res.redirect(Loritta.config.discord.authorizationUrl)
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth
@@ -149,7 +149,7 @@ abstract class ProtectedView : AbstractView() {
 			renderProtected(req, res, path, variables, discordAuth)
 		} catch (e: TemmieDiscordAuth.TokenExchangeException) {
 			req.session().unset("discordAuth")
-			res.redirect(Loritta.config.authorizationUrl)
+			res.redirect(Loritta.config.discord.authorizationUrl)
 			"Redirecionando..."
 		}
 	}

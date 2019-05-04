@@ -80,7 +80,7 @@ class UserReputationController {
 		val token = json["token"].string
 		val channelId = json["channelId"].nullString
 
-		if (!MiscUtils.checkRecaptcha(Loritta.config.invisibleRecaptchaToken, token))
+		if (!MiscUtils.checkRecaptcha(Loritta.config.googleRecaptcha.reputationToken, token))
 			throw WebsiteAPIException(
 					Status.FORBIDDEN,
 					WebsiteUtils.createErrorPayload(
@@ -139,7 +139,7 @@ class UserReputationController {
 				delay(Loritta.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
 				giveReputation(
-						Loritta.config.clientId.toLong(),
+						Loritta.config.discord.clientId.toLong(),
 						"127.0.0.1",
 						"me@loritta.website",
 						userIdentification.id.toLong(),
@@ -151,8 +151,8 @@ class UserReputationController {
 				}
 
 				if (channelId != null) {
-					val lorittaProfile = loritta.getOrCreateLorittaProfile(Loritta.config.clientId.toLong())
-					sendReputationReceivedMessage(channelId, Loritta.config.clientId, lorittaProfile, userIdentification.id, reputationCount)
+					val lorittaProfile = loritta.getOrCreateLorittaProfile(Loritta.config.discord.clientId.toLong())
+					sendReputationReceivedMessage(channelId, Loritta.config.discord.clientId, lorittaProfile, userIdentification.id, reputationCount)
 				}
 			}
 		}
@@ -279,7 +279,7 @@ class UserReputationController {
 								"<@$receiverId>",
 								reputationCount,
 								Emotes.LORI_OWO,
-								"<${Loritta.config.websiteUrl}user/${receiverId}/rep?channel=$channelId>",
+								"<${Loritta.config.loritta.website.url}user/${receiverId}/rep?channel=$channelId>",
 								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
 						],
 						Emotes.LORI_HUG

@@ -6,8 +6,9 @@
     <version>${loritta.version}</version>
 
     <properties>
-        <loritta.version>2019.04.26-SNAPSHOT</loritta.version>
+        <loritta.version>2019.05.03-SNAPSHOT</loritta.version>
         <kotlin.version>1.3.21</kotlin.version>
+        <ktor.version>1.1.3</ktor.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -231,6 +232,16 @@
             <version>1.6.0</version>
         </dependency>
         <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-core</artifactId>
+            <version>${ktor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-netty</artifactId>
+            <version>${ktor.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-mongodb</artifactId>
             <version>1.6.0</version>
@@ -286,6 +297,11 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
             <version>2.9.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.honton.chas.hocon</groupId>
+            <artifactId>jackson-dataformat-hocon</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <!-- https://github.com/DuncteBot/Lavalink-Client/tree/jda-v4 -->
         <dependency>

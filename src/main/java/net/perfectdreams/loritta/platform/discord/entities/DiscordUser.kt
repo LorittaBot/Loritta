@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.platform.discord.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import net.perfectdreams.loritta.api.entities.User
 
-open class DiscordUser(val handle: net.dv8tion.jda.api.entities.User) : User {
+open class DiscordUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : User {
 	override val id: String
 		get() = handle.id
 
@@ -12,8 +13,8 @@ open class DiscordUser(val handle: net.dv8tion.jda.api.entities.User) : User {
 	override val effectiveAvatarUrl: String
 		get() = handle.effectiveAvatarUrl
 
-	override val avatarUrl: String
-		get() = handle.avatarUrl ?: "???"
+	override val avatarUrl: String?
+		get() = handle.avatarUrl
 
 	override val asMention: String
 		get() = handle.asMention

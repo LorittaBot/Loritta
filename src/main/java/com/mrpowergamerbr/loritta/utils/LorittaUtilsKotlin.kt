@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.mongodb.MongoWaitQueueFullException
@@ -229,7 +232,7 @@ object LorittaUtilsKotlin {
 
 	fun getImageStatus(url: String): NSFWResponse {
 		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
-				.header("X-Mashape-Key", Loritta.config.mashapeKey)
+				.header("X-Mashape-Key", Loritta.config.mashape.apiKey)
 				.header("Accept", "application/json")
 				.acceptJson()
 				.body()
@@ -429,67 +432,6 @@ object LorittaUtilsKotlin {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Pega um post aleatório de uma página do Facebook
-	 */
-	fun getRandomPostsFromPage(page: String, limit: Int = 5): List<FacebookPostWrapper> {
-		val response = HttpRequest
-				.get("https://graph.facebook.com/v2.9/$page/posts?fields=attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 500)}&limit=$limit")
-				.body()
-
-		val json = jsonParser.parse(response).obj
-
-		var url: String?
-		var description: String?
-
-		val posts = mutableListOf<FacebookPostWrapper>()
-
-		if (json["data"].nullArray == null) {
-			logger.error("Page payload has null data! ${response}")
-			return listOf()
-		}
-
-		for (post in json["data"].array) {
-			val foundUrl = post["attachments"]["data"][0]["url"].string
-
-			if (!foundUrl.contains("video")) {
-				try { // Provavelmente não é o que nós queremos
-					url = post["attachments"]["data"][0]["media"]["image"]["src"].string
-					description = post["attachments"]["data"][0]["description"].string
-					posts.add(FacebookPostWrapper(url, description))
-				} catch (e: Exception) {}
-			}
-		}
-		return posts
-	}
-
-	/**
-	 * Pega um post aleatório de um grupo do Facebook
-	 */
-	fun getRandomPostsFromGroup(group: String): List<FacebookPostWrapper> {
-		val response = HttpRequest.get("https://graph.facebook.com/v2.9/$group/feed?fields=message,attachments{url,subattachments,media,description}&access_token=${Loritta.config.facebookToken}&offset=${Loritta.RANDOM.nextInt(0, 1000)}")
-				.body()
-		val json = jsonParser.parse(response)
-
-		var url: String? = null
-		var description: String? = null
-
-		val posts = mutableListOf<FacebookPostWrapper>()
-
-		for (post in json["data"].array) {
-			var foundUrl = post["attachments"]["data"][0]["url"].string
-
-			if (!foundUrl.contains("video")) {
-				try { // Provavelmente não é o que nós queremos
-					url = post["attachments"]["data"][0]["media"]["image"]["src"].string
-					description = if (post.obj.has("message")) post["message"].string else ""
-					posts.add(FacebookPostWrapper(url, description))
-				} catch (e: Exception) {}
-			}
-		}
-		return posts
 	}
 
 	fun sendStackTrace(message: Message, t: Throwable) {

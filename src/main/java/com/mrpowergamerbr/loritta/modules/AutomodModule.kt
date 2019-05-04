@@ -93,7 +93,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
-		if (ANTIRAID_ENABLED && (Loritta.config.antiRaidIds.contains(event.channel.id)) && Loritta.config.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (Loritta.config.antiRaidIds.contains(event.channel.id)) && Loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {

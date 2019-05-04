@@ -49,10 +49,10 @@ class BomDiaECia {
 		)
 		val randomImages by lazy {
 			listOf(
-					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia.jpg",
-					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-2.jpg",
-					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-3.jpg",
-					"${Loritta.config.websiteUrl}assets/img/bom-dia-cia-4.jpg"
+					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia.jpg",
+					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
+					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
+					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
 			)
 		}
 	}

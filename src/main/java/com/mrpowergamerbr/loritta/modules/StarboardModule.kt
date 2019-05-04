@@ -24,6 +24,9 @@ object StarboardModule {
 			.asMap()
 
 	suspend fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: MongoServerConfig) {
+		// Não enviar mensagens para o starboard se o canal é NSFW
+		if (e.textChannel.isNSFW) return
+
 		val guild = e.guild
 		val starboardConfig = serverConfig.starboardConfig
 
@@ -48,9 +51,10 @@ object StarboardModule {
 						val embed = EmbedBuilder()
 						val count = e.reaction.retrieveUsers().await().size
 						var content = msg.contentRaw
-						embed.setAuthor(msg.author.name, null, msg.author.effectiveAvatarUrl)
+						embed.setAuthor("${msg.author.name}#${msg.author.discriminator} (${msg.author.id})", null, msg.author.effectiveAvatarUrl)
 						embed.setTimestamp(msg.timeCreated)
-						embed.setColor(Color(255, 255, Math.max(200 - (count * 20), 0)))
+						embed.setColor(Color(255, 255, Math.max(255 - (count * 15), 0)))
+						embed.addField("Ir para a mensagem", "[Clique aqui](https://discordapp.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id})", false)
 
 						var emoji = "⭐"
 
@@ -69,20 +73,21 @@ object StarboardModule {
 
 						var hasImage = false
 						if (msg.attachments.isNotEmpty()) { // Se tem attachments...
-							content += "\n**Arquivos:**\n"
+							var fieldValue = ""
 							for (attach in msg.attachments) {
 								if (attach.isImage && !hasImage) { // Se é uma imagem...
 									embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
 									hasImage = true
 								}
-								content += attach.url + "\n"
+								fieldValue += "\uD83D\uDD17 **|** [${attach.fileName}](${attach.url})\n"
 							}
+							embed.addField("Arquivos", fieldValue, false)
 						}
 
 						embed.setDescription(content)
 
 						val starCountMessage = MessageBuilder()
-						starCountMessage.append("$emoji **${count}** ${e.textChannel.asMention}")
+						starCountMessage.append("$emoji **${count}** - ${e.textChannel.asMention}")
 						starCountMessage.setEmbed(embed.build())
 
 						if (starboardMessage != null) {

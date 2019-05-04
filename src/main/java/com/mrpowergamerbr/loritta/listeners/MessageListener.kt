@@ -32,16 +32,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
-				Modules.SLOW_MODE,
 				Modules.AUTOMOD,
 				Modules.INVITE_LINK,
 				Modules.SERVER_SUPPORT,
 				Modules.EXPERIENCE,
 				Modules.AMINO_CONVERTER,
 				Modules.AFK,
-				Modules.BOM_DIA_E_CIA,
-				Modules.QUIRKY,
-				Modules.THANK_YOU_LORI
+				Modules.BOM_DIA_E_CIA
 		)
 
 		val MESSAGE_EDITED_MODULES = mutableListOf(
@@ -350,7 +347,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param contentRaw the raw content of the message
 	 * @returns if the message is mentioning only me
 	 */
-	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${Loritta.config.clientId}>"
+	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${Loritta.config.discord.clientId}>"
 
 	/**
 	 * Checks if the message mentions me
@@ -369,7 +366,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 */
 	fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
-			if (ownerProfile.userId != Loritta.config.ownerId.toLong()) { // E ele não é o dono do bot!
+			if (!Loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
@@ -386,7 +383,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 */
 	fun isGuildBanned(guild: Guild): Boolean {
 		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
-			if (guild.owner!!.user.id != Loritta.config.ownerId) { // E ele não é o dono do bot!
+			if (!Loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true

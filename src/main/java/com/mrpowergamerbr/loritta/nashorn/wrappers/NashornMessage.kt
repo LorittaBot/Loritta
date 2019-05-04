@@ -88,10 +88,8 @@ class NashornMessage(private val message: Message) {
 
 	@NashornCommand.NashornDocs(arguments = "mensagem")
 	fun editMessage(texto: String) {
-		if (texto.contains(Loritta.config.clientToken, true)) {
+		if (texto.contains(Loritta.config.discord.clientToken, true))
 			NashornContext.securityViolation(null)
-			return null!!
-		}
 
 		message.editMessage(texto).queue()
 	}

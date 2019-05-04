@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.Giveaway
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -164,16 +165,39 @@ object GiveawayManager {
                     message.editMessage(giveawayMessage).await()
                     // }
 
-                    if (60_000 >= diff) { // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
-                        logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
-                        delay(1000) // a cada um segundo
-                    } else {
-                        // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
-                        // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
-                        // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
-                        val delay = 60_000 - (System.currentTimeMillis() % 60_000)
-                        logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms - Giveaway will be finished in ${diff}ms" }
-                        delay(60_000 - (System.currentTimeMillis() % 60_000))
+                    // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
+                    when {
+                        5_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 5s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(1_000) // a cada 1 segundo
+                        }
+                        15_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 2500ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(2_500) // a cada 2.5 segundos
+                        }
+                        30_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(10_000) // a cada 10 segundos
+                        }
+                        60_000 >= diff -> {
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for 15000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
+                            delay(15_000) // a cada 15 segundos
+                        }
+                        3_600_000 >= diff -> {
+                            // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
+                            // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
+                            // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
+                            val delay = 60_000 - (System.currentTimeMillis() % 60_000)
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms (minute) - Giveaway will be finished in ${diff}ms" }
+                            delay(60_000 - (System.currentTimeMillis() % 60_000))
+                        }
+                        else -> {
+                            // Para evitar rate limits, vamos apenas atualizar a embed a cada *hora* (já que só vai ter que atualizar o giveaway a cada hora mesmo, né)
+                            // Mesma coisa dos minutos, "vamos alinhar, wow!"
+                            val delay = 3_600_000 - (System.currentTimeMillis() % 3_600_000)
+                            logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms (hour) - Giveaway will be finished in ${diff}ms" }
+                            delay(3_600_000 - (System.currentTimeMillis() % 3_600_000))
+                        }
                     }
                 }
 
@@ -201,6 +225,11 @@ object GiveawayManager {
                         return@launch
                     }
                 }
+                if (e is InsufficientPermissionException) { // Sem permissão, vamos cancelar o giveaway!
+                    cancelGiveaway(giveaway, true)
+                    return@launch
+                }
+
                 logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
                 cancelGiveaway(giveaway, false)
             }
@@ -240,11 +269,11 @@ object GiveawayManager {
         if (messageReaction != null) {
             val users = messageReaction.retrieveUsers().await()
 
-            if (users.size == 1 && users[0].id == Loritta.config.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
+            if (users.size == 1 && users[0].id == Loritta.config.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.clientId }.toMutableList()
+                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.discord.clientId }.toMutableList()
 
                 repeat(giveaway.numberOfWinners) {
                     if (reactedUsers.isEmpty())

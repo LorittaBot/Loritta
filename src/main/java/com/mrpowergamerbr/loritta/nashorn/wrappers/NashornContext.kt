@@ -57,10 +57,8 @@ reply("Olá, eu me chamo Loritta!");
 			}
 		}
 
-		if (mensagem.contains(Loritta.config.clientToken, true)) {
+		if (mensagem.contains(Loritta.config.discord.clientToken, true))
 			securityViolation(context.guild.id)
-			return null!!
-		}
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
@@ -84,10 +82,8 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 			}
 		}
 
-		if (mensagem.contains(Loritta.config.clientToken, true)) {
+		if (mensagem.contains(Loritta.config.discord.clientToken, true))
 			securityViolation(context.guild.id)
-			return null!!
-		}
 
 		sentMessages++
 		lastMessageSent = System.currentTimeMillis()
@@ -126,10 +122,8 @@ sendImage(imagem, "😄");
 		ImageIO.write(bufferedImage, "png", os)
 		val `is` = ByteArrayInputStream(os.toByteArray())
 
-		if (mensagem.contains(Loritta.config.clientToken, true)) {
+		if (mensagem.contains(Loritta.config.discord.clientToken, true))
 			securityViolation(context.guild.id)
-			return null!!
-		}
 
 		runBlocking {
 			val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))

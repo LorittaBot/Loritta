@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class UpdateStatusThread : Thread("Update Status Thread") {
 	companion object {
 		var skipToIndex = -1 // owo
-		var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
+		var currentFanArt: LorittaConfig.LorittaAvatarFanArt? = null
 	}
 
 	var lastUpdate: Long = System.currentTimeMillis()
@@ -49,8 +49,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (Loritta.config.fanArtExtravaganza) {
-			if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
+		if (Loritta.config.discord.fanArtExtravaganza.enabled) {
+			if (currentDay != Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
 				if (firstInstance != null) {
 					revertedAvatar = true
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
@@ -58,14 +58,15 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			}
 		}
 
-		if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
+		if (Loritta.config.discord.fanArtExtravaganza.enabled && currentDay == Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek) {
 			revertedAvatar = false
-			if (currentIndex > Loritta.config.fanArts.size - 1) {
+			if (currentIndex > Loritta.config.discord.fanArtExtravaganza.fanArts.size - 1) {
 				currentIndex = 0
 			}
 
 			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
+			val currentFanArt = Loritta.config.discord.fanArtExtravaganza.fanArts[0]
 
 			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
@@ -84,11 +85,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 			if (fanArtMinutes != minutes) { // Diferente!
 				fanArtMinutes = minutes
-				if (currentIndex > Loritta.config.fanArts.size - 1) {
+				if (currentIndex > Loritta.config.discord.fanArtExtravaganza.fanArts.size - 1) {
 					currentIndex = 0
 				}
 
-				val fanArt = Loritta.config.fanArts[currentIndex]
+				val fanArt = Loritta.config.discord.fanArtExtravaganza.fanArts[currentIndex]
 
 				if (firstInstance != null) {
 					val artist = lorittaShards.getUserById(fanArt.artistId)
@@ -104,7 +105,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
 					loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 
-					currentFanArt = fanArt
+					UpdateStatusThread.currentFanArt = fanArt
 					currentIndex++
 				}
 			}
@@ -114,7 +115,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			val diff = System.currentTimeMillis() - lastUpdate
 
 			if (diff >= 25000) {
-				if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
+				if (currentIndex > Loritta.config.discord.activities.size - 1) {
 					currentIndex = 0
 				}
 				var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
@@ -136,19 +137,18 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				sb.append(seconds)
 				sb.append("s")
 
-				val game = Loritta.config.currentlyPlaying[currentIndex]
+				val game = Loritta.config.discord.activities[currentIndex]
 
 				var str = game.name
 				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
 				str = str.replace("{users}", loritta.lorittaShards.getCachedUserCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
-				val shard = lorittaShards.getShards().firstOrNull() ?: return
 				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 
-				if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
+				if (currentIndex > Loritta.config.discord.activities.size - 1) {
 					currentIndex = 0
 				}
 			}

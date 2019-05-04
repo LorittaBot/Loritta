@@ -385,7 +385,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 	}
 
 	fun retrieveSongInfoFromVagalume(artist: String, musicName: String): SongInfo? {
-		val request = HttpRequest.get("https://api.vagalume.com.br/search.artmus?apikey=${Loritta.config.vagalumeKey}&q=${artist.encodeToUrl()} ${musicName.encodeToUrl()}&limit=1")
+		val request = HttpRequest.get("https://api.vagalume.com.br/search.artmus?apikey=lolidkthekey&q=${artist.encodeToUrl()} ${musicName.encodeToUrl()}&limit=1")
 				.body()
 
 		val payload = jsonParser.parse(request)
@@ -403,7 +403,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 		val id = firstResult["id"]
 
-		val musicRequest = HttpRequest.get("https://api.vagalume.com.br/search.php?musid=$id&apikey=${Loritta.config.vagalumeKey}")
+		val musicRequest = HttpRequest.get("https://api.vagalume.com.br/search.php?musid=$id&apikey=lolidkthekey")
 				.body()
 
 		val musicPayload = jsonParser.parse(musicRequest)

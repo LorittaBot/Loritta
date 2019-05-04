@@ -61,7 +61,6 @@ class ServerSupportModule : MessageReceivedModule {
 						import javax.imageio.ImageIO
 						import net.dv8tion.jda.api.entities.*
 						import net.dv8tion.jda.api.*
-						import net.dv8tion.jda.api.entities.impl.*
 						import java.util.regex.Pattern
 
 						$scriptContent
@@ -90,7 +89,7 @@ class ServerSupportModule : MessageReceivedModule {
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-		return (event.channel.id == "398987569485971466" || event.channel.id == "393332226881880074") && Loritta.config.environment == EnvironmentType.CANARY
+		return (event.channel.id == "398987569485971466" || event.channel.id == "393332226881880074") && Loritta.config.loritta.environment == EnvironmentType.CANARY
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {

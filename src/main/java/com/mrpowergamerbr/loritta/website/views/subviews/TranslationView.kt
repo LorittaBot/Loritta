@@ -6,11 +6,11 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.website.evaluate
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.website.evaluate
 import org.jooby.Request
 import org.jooby.Response
 import java.io.File
@@ -44,7 +44,7 @@ class TranslationView : AbstractView() {
 		if (split.size == 4 && split[3] == "save") {
 			if (variables.containsKey("discordAuth")) {
 				val temmie = variables["discordAuth"] as TemmieDiscordAuth
-				if (temmie.getUserIdentification().id == Loritta.config.ownerId) {
+				if (Loritta.config.isOwner(temmie.getUserIdentification().id)) {
 					val receivedLocale = jsonParser.parse(req.body().value()).obj
 					var inputFile = File(Loritta.LOCALES, "$localeId.json")
 					if (!inputFile.exists()) {

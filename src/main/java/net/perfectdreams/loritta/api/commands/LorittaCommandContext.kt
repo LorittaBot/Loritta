@@ -53,9 +53,9 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 
 	abstract suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String?
 
-	abstract suspend fun getImageUrl(link: String?, search: Int, avatarSize: Int): String?
+	abstract suspend fun getImageUrl(link: String?, search: Int = 25, avatarSize: Int = 2048): String?
 
-	abstract suspend fun getImageAt(argument: Int, search: Int, avatarSize: Int): BufferedImage?
+	abstract suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage?
 
 	abstract suspend fun explain()
 }

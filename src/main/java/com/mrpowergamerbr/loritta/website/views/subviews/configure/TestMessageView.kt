@@ -50,7 +50,7 @@ class TestMessageView : ConfigureView() {
 		customTokens.put("guildsize", guild.members.size.toString())
 		customTokens.put("@owner", guild.owner?.asMention ?: "???")
 		customTokens.put("owner", guild.owner?.effectiveName ?: "???")
-		customTokens.put("@staff", "<@${Loritta.config.clientId}>")
+		customTokens.put("@staff", "<@${Loritta.config.discord.clientId}>")
 		customTokens.put("staff", "Loritta")
 		customTokens.put("reason", "You gonna have a bad time.")
 
