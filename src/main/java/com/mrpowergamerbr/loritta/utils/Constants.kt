@@ -1,14 +1,16 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
@@ -57,6 +59,16 @@ object Constants {
 	val HOCON_MAPPER = ObjectMapper(HoconFactory()).apply {
 		this.enable(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING)
 		this.registerModule(ParameterNamesModule())
+		val module = SimpleModule()
+
+		// Workaround for https://github.com/jclawson/jackson-dataformat-hocon/issues/15
+		module.setDeserializerModifier(object: BeanDeserializerModifier() {
+			override fun modifyMapDeserializer(config: DeserializationConfig?, type: MapType?, beanDesc: BeanDescription?, deserializer: JsonDeserializer<*>?): JsonDeserializer<*> {
+				return FixedMapDeserializer()
+			}
+		})
+
+		this.registerModule(module)
 
 		this.propertyNamingStrategy = object: PropertyNamingStrategy.PropertyNamingStrategyBase() {
 			override fun translate(p0: String): String {
