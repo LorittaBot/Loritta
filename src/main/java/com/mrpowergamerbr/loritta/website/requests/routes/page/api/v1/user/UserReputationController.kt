@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString

@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 class LoriReply(
@@ -12,6 +13,13 @@ class LoriReply(
 		val hasPadding: Boolean = true,
 		val mentionUser: Boolean = true
 ) {
+	constructor(message: String = " ",
+				prefix: LorittaEmote,
+				forceMention: Boolean = false,
+				hasPadding: Boolean = true,
+				mentionUser: Boolean = true
+	) : this(message, prefix.asMention, forceMention, hasPadding, mentionUser)
+
 	fun build(commandContext: CommandContext) = build(commandContext.userHandle.asMention, commandContext.getAsMention(true))
 
 	fun build(commandContext: LorittaCommandContext): String {

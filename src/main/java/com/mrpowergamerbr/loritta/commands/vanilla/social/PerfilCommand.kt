@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta

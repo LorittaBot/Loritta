@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -54,15 +54,15 @@ class OldMembersCommand : AbstractCommand("oldmembers", listOf("membrosantigos",
 				}
 
 				val typeEmote = when {
-					member.user.isBot -> Emotes.DISCORD_BOT_TAG
-					else -> Emotes.DISCORD_WUMPUS_BASIC
+					member.user.isBot -> Emotes.BOT_TAG
+					else -> Emotes.WUMPUS_BASIC
 				}
 
 				val statusEmote = when (member?.onlineStatus) {
-					OnlineStatus.ONLINE -> Emotes.DISCORD_ONLINE
-					OnlineStatus.IDLE -> Emotes.DISCORD_IDLE
-					OnlineStatus.DO_NOT_DISTURB -> Emotes.DISCORD_DO_NOT_DISTURB
-					else -> Emotes.DISCORD_OFFLINE
+					OnlineStatus.ONLINE -> Emotes.ONLINE
+					OnlineStatus.IDLE -> Emotes.IDLE
+					OnlineStatus.DO_NOT_DISTURB -> Emotes.DO_NOT_DISTURB
+					else -> Emotes.OFFLINE
 				}
 
 				appendDescription("`${1 + index + (page * 10)}º` $ownerEmote$typeEmote$statusEmote$userEmote `${member.user.name.stripCodeMarks()}#${member.user.discriminator}`\n")

@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mongodb.client.model.Filters
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -118,7 +119,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				replies.add(
 						LoriReply(
 								"**Lista de usuários a serem banidos *GLOBALMENTE*...**",
-								Emotes.DISCORD_ONLINE
+								Emotes.ONLINE
 						)
 				)
 
@@ -131,8 +132,8 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					val user = lorittaShards.getUserById(it.id) ?: return
 
 					val typeEmote = when {
-						user.isBot -> Emotes.DISCORD_BOT_TAG
-						else -> Emotes.DISCORD_WUMPUS_BASIC
+						user.isBot -> Emotes.BOT_TAG
+						else -> Emotes.WUMPUS_BASIC
 					}
 
 					val mutualGuilds = lorittaShards.getMutualGuilds(user)
@@ -157,7 +158,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val message = context.reply(
 						LoriReply(
 								"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
-								Emotes.DISCORD_DO_NOT_DISTURB
+								Emotes.DO_NOT_DISTURB
 						)
 				)
 

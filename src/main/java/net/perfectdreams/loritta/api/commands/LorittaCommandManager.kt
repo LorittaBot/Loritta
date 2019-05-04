@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta

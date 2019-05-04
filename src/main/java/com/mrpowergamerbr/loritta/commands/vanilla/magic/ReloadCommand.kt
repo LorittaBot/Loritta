@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -37,6 +38,15 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 
+		if (arg0 == "emotes") {
+			context.reply(
+					LoriReply(
+							"Recarregando emotes!"
+					)
+			)
+			Emotes.loadEmotes()
+			return
+		}
 		if (arg0 == "dailytax") {
 			context.reply(
 					LoriReply(

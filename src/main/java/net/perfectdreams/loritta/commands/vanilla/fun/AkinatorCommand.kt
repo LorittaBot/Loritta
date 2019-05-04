@@ -6,7 +6,7 @@ import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit

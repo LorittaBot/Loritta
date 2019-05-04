@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile

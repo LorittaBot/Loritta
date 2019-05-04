@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote

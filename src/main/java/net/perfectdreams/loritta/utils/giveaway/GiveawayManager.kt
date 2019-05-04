@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.utils.giveaway
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*

@@ -63,8 +63,8 @@ object Constants {
 
 		// Workaround for https://github.com/jclawson/jackson-dataformat-hocon/issues/15
 		module.setDeserializerModifier(object: BeanDeserializerModifier() {
-			override fun modifyMapDeserializer(config: DeserializationConfig?, type: MapType?, beanDesc: BeanDescription?, deserializer: JsonDeserializer<*>?): JsonDeserializer<*> {
-				return FixedMapDeserializer()
+			override fun modifyMapDeserializer(config: DeserializationConfig, type: MapType, beanDesc: BeanDescription, deserializer: JsonDeserializer<*>): JsonDeserializer<*> {
+				return FixedMapDeserializer(type)
 			}
 		})
 

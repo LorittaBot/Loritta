@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Profile

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*

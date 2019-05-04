@@ -55,11 +55,13 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.socket.LorittaSocketServer
 import net.perfectdreams.loritta.socket.network.commands.GetUserByIdCommand
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
@@ -197,6 +199,8 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 		resetYouTubeKeys()
 		loadFanArts()
 		loadBlacklistedServers()
+		Emotes.emoteManager = DiscordEmoteManager()
+		Emotes.loadEmotes()
 		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
@@ -206,7 +210,6 @@ class Loritta(config: LorittaConfig) : LorittaBot {
 				.readTimeout(30, TimeUnit.SECONDS)
 				.writeTimeout(30, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
-
 
 		builder = DefaultShardManagerBuilder()
 				.setShardsTotal(Loritta.config.discord.shards)
