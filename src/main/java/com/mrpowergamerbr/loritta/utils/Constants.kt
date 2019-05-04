@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -54,6 +55,7 @@ object Constants {
 	val YAML = Yaml()
 	val HOCON_MAPPER = ObjectMapper(HoconFactory()).apply {
 		this.enable(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING)
+		this.registerModule(ParameterNamesModule())
 
 		this.propertyNamingStrategy = object: PropertyNamingStrategy.PropertyNamingStrategyBase() {
 			override fun translate(p0: String): String {

@@ -1,10 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class MongoDbConfig(
-        @JsonProperty("database-name")
+class MongoDbConfig @JsonCreator constructor(
         val databaseName: String,
-        @JsonProperty("address")
         val address: String
 )

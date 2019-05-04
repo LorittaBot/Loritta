@@ -1,16 +1,11 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class ConnectionManagerConfig(
-        @JsonProperty("proxy-untrusted-connections")
+class ConnectionManagerConfig @JsonCreator constructor(
         val proxyUntrustedConnections: Boolean,
-        @JsonProperty("proxy-sources")
         val proxySources: List<String>,
-        @JsonProperty("proxies")
         val proxies: List<String>,
-        @JsonProperty("trusted-domains")
         val trustedDomains: List<String>,
-        @JsonProperty("blocked-domains")
         val blockedDomains: List<String>
 )

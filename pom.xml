@@ -288,6 +288,11 @@
             <version>2.9.8</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+            <version>2.9.8</version>
+        </dependency>
+        <dependency>
             <groupId>org.honton.chas.hocon</groupId>
             <artifactId>jackson-dataformat-hocon</artifactId>
             <version>1.1.1</version>
@@ -351,6 +356,9 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin.version}</version>
+                <configuration>
+                    <javaParameters>true</javaParameters>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
