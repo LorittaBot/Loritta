@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import net.perfectdreams.loritta.utils.Emotes
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
@@ -20,6 +19,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -54,8 +54,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			try {
 				// biscord bots
 				if (System.currentTimeMillis() - lastQuery > 60000) {
-					val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${Loritta.config.discord.clientId}/votes?onlyids=1")
-							.authorization(Loritta.config.discordBotList.apiKey)
+					val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${loritta.discordConfig.discord.clientId}/votes?onlyids=1")
+							.authorization(loritta.discordConfig.discordBotList.apiKey)
 							.body()
 
 					lastQuery = System.currentTimeMillis()
@@ -84,7 +84,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
 
 			val badges = mutableListOf<BufferedImage>()
-			if (user.patreon || Loritta.config.isOwner(user.id)) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
+			if (user.patreon || loritta.config.isOwner(user.id)) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			if (user.supervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
@@ -110,7 +110,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			transaction(Databases.loritta) {
 				var specialCase = false
 
-				val results = if (user.idLong == Loritta.config.discord.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
+				val results = if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
 					(ServerConfigs innerJoin DonationConfigs)
 							.select {
 								// Então iremos pegar apenas
@@ -149,7 +149,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			}
 
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
-			if (user.id == Loritta.config.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
+			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
 			val marriage = transaction(Databases.loritta) { profile.marriage }
 			if (marriage != null) {
@@ -202,7 +202,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && context.args.first() == "shop") {
-			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${Loritta.config.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
+			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.config.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 
@@ -214,7 +214,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		var aboutMe: String? = null
 
-		if (userProfile.userId == Loritta.config.discord.clientId.toLong()) {
+		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
 			aboutMe = locale["PERFIL_LORITTA_DESCRIPTION"]
 		}
 

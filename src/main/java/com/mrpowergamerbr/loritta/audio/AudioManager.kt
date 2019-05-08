@@ -30,7 +30,7 @@ class AudioManager(val loritta: Loritta) {
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = JdaLavalink(Loritta.config.discord.clientId, Loritta.config.discord.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
+	val lavalink = JdaLavalink(loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
@@ -41,7 +41,7 @@ class AudioManager(val loritta: Loritta) {
 
 		AudioSourceManagers.registerRemoteSources(playerManager)
 
-		for (node in Loritta.config.lavalink.nodes) {
+		for (node in loritta.discordConfig.lavalink.nodes) {
 			lavalink.addNode(
 					node.name,
 					URI("ws://${NetAddressUtils.getWithPortIfMissing(node.address, 2334)}"),

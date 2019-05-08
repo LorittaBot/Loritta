@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "upvote"), category = CommandCategory.MISC) {
     override fun getDescription(locale: LegacyBaseLocale): String {
@@ -17,7 +17,7 @@ class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "u
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.LORITTA_AQUA)
-			setThumbnail("${Loritta.config.loritta.website.url}assets/img/loritta_star.png")
+			setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_star.png")
 			setTitle("✨ Discord Bot List")
 			setDescription(locale["DBL_Info", context.config.commandPrefix, PerfilCommand.userVotes?.size ?: 0, "https://discordbots.org/bot/loritta"])
 		}

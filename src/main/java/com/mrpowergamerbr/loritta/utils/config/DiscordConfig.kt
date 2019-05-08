@@ -17,7 +17,7 @@ class DiscordConfig @JsonCreator constructor(
     class FanArtExtravaganzaConfig @JsonCreator constructor(
             val enabled: Boolean,
             val dayOfTheWeek: Int,
-            val fanArts: List<LorittaConfig.LorittaAvatarFanArt>
+            val fanArts: List<GeneralConfig.LorittaAvatarFanArt>
     )
     class LorittaGameStatus @JsonCreator constructor(
             val name: String,

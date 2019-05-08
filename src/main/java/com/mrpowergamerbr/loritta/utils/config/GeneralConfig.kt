@@ -5,15 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class LorittaConfig @JsonCreator constructor(
+class GeneralConfig @JsonCreator constructor(
 		val loritta: LorittaConfig,
-		val discord: DiscordConfig,
 		@JsonProperty("postgresql")
 		val postgreSql: PostgreSqlConfig,
 		@JsonProperty("mongodb")
 		@Deprecated("MongoDB is unstable")
 		val mongoDb: MongoDbConfig,
-		val lavalink: LavalinkConfig,
 		val connectionManager: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
@@ -26,11 +24,7 @@ class LorittaConfig @JsonCreator constructor(
 		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
-		val mixer: MixerConfig,
-		val discordBots: DiscordBotsConfig,
-		val discordBotList: DiscordBotListConfig,
-		val ghostIds: List<String>,
-		val antiRaidIds: List<String>) {
+		val mixer: MixerConfig) {
 
 	class LorittaConfig @JsonCreator constructor(
 			val environment: EnvironmentType,
@@ -59,7 +53,8 @@ class LorittaConfig @JsonCreator constructor(
 				val root: String,
 				val assets: String,
 				val temp: String,
-				val locales: String
+				val locales: String,
+				val plugins: String
 		)
 	}
 

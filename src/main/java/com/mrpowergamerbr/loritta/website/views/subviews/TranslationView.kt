@@ -44,7 +44,7 @@ class TranslationView : AbstractView() {
 		if (split.size == 4 && split[3] == "save") {
 			if (variables.containsKey("discordAuth")) {
 				val temmie = variables["discordAuth"] as TemmieDiscordAuth
-				if (Loritta.config.isOwner(temmie.getUserIdentification().id)) {
+				if (loritta.config.isOwner(temmie.getUserIdentification().id)) {
 					val receivedLocale = jsonParser.parse(req.body().value()).obj
 					var inputFile = File(Loritta.LOCALES, "$localeId.json")
 					if (!inputFile.exists()) {

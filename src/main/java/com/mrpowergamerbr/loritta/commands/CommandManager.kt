@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
@@ -31,6 +30,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.utils.Emotes
 import java.util.*
 
 class CommandManager {
@@ -135,7 +135,7 @@ class CommandManager {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
-		if (Loritta.config.loritta.environment == EnvironmentType.CANARY)
+		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(RegisterCommand())
 
 		// =======[ UTILS ]=======
@@ -170,7 +170,7 @@ class CommandManager {
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
-		if (false && Loritta.config.loritta.environment == EnvironmentType.CANARY)
+		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(UserInvitesCommand())
 		commandMap.add(EmojiInfoCommand())
 		commandMap.add(OldMembersCommand())
@@ -232,7 +232,7 @@ class CommandManager {
 		commandMap.add(LoriServerListConfigCommand())
 		commandMap.add(TicTacToeCommand())
 		commandMap.add(EvalKotlinCommand())
-		if (Loritta.config.loritta.environment == EnvironmentType.CANARY)
+		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(AntiRaidCommand())
 
 		// =======[ MÚSICA ]========
@@ -257,7 +257,7 @@ class CommandManager {
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
 		commandMap.add(SonhosTopCommand())
-		if (false && Loritta.config.loritta.environment == EnvironmentType.CANARY)
+		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
 
 		for (cmdBase in this.commandMap) {
@@ -319,7 +319,7 @@ class CommandManager {
 		var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
 		var byMention = false
 
-		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.discord.clientId}>" || rawArguments[0] == "<@!${Loritta.config.discord.clientId}>")) {
+		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
 			// by mention
 			valid = labels.any { rawArguments[1].equals(it, true) }
 			byMention = true
@@ -391,7 +391,7 @@ class CommandManager {
 				// Cooldown
 				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.idLong, 0L)
 
-				if (1250 > diff && !Loritta.config.isOwner(ev.author.id)) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
+				if (1250 > diff && !loritta.config.isOwner(ev.author.id)) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
 					loritta.userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
@@ -404,7 +404,7 @@ class CommandManager {
 					cooldown /= 2
 				}
 
-				if (cooldown > diff && !Loritta.config.isOwner(ev.author.id)) {
+				if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), reparsedLegacyLocale)
 					context.reply(
 							LoriReply(
@@ -456,7 +456,7 @@ class CommandManager {
 						var message = reparsedLegacyLocale["LORIPERMISSION_MissingPermissions", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", Loritta.config.loritta.website.url]}"
+							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.config.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
 						return true
@@ -472,7 +472,7 @@ class CommandManager {
 					return true
 				}
 
-				if (context.cmd.onlyOwner && !Loritta.config.isOwner(ev.author.id)) {
+				if (context.cmd.onlyOwner && !loritta.config.isOwner(ev.author.id)) {
 					context.reply(
 							LoriReply(
 									locale["commands.commandOnlyForOwner"],
@@ -508,7 +508,7 @@ class CommandManager {
 				if (command.requiresMusicEnabled()) {
 					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${Loritta.config.loritta.website.url}dashboard"] else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.config.loritta.website.url}dashboard"] else "")
 						return true
 					}
 				}
@@ -525,7 +525,7 @@ class CommandManager {
 				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
 					context.reply(
 							LoriReply(
-									reparsedLegacyLocale["LORITTA_PleaseDonate", "<${Loritta.config.loritta.website.url}donate>"],
+									reparsedLegacyLocale["LORITTA_PleaseDonate", "<${loritta.config.loritta.website.url}donate>"],
 									Emotes.LORI_OWO
 							)
 					)

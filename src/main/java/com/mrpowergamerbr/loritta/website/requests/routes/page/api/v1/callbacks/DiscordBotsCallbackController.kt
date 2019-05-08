@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import mu.KotlinLogging
@@ -41,7 +41,7 @@ class DiscordBotsCallbackController {
 		}
 
 		val authorization = authorizationHeader.value()
-		if (authorization != Loritta.config.mixer.webhookSecret) {
+		if (authorization != loritta.config.mixer.webhookSecret) {
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 			res.status(Status.UNAUTHORIZED)
 			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Authorization Content from Request")
@@ -54,7 +54,7 @@ class DiscordBotsCallbackController {
 		val userId = payload["user"].string
 		val type = payload["type"].string
 
-		if (Loritta.config.isOwner(botId) && type == "upvote") {
+		if (loritta.config.isOwner(botId) && type == "upvote") {
 			PerfilCommand.userVotes?.add(PerfilCommand.DiscordBotVote(userId))
 		}
 

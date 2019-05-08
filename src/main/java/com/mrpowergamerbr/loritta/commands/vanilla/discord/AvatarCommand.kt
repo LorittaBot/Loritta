@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
@@ -46,12 +45,12 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		if (getAvatar.id == "390927821997998081")
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_PantufaCute"]}* \uD83D\uDE0A")
 
-		if (getAvatar.id == Loritta.config.discord.clientId) {
+		if (getAvatar.id == loritta.discordConfig.discord.clientId) {
 			val calendar = Calendar.getInstance()
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
-			if (Loritta.config.discord.fanArtExtravaganza.enabled && currentDay == Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek) {
+			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
 				val fanArt = UpdateStatusThread.currentFanArt
 
 				if (fanArt != null) {

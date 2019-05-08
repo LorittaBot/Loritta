@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
@@ -239,7 +238,7 @@ class LorittaLandRoleSync : Runnable {
 									newEmbed
 							).build()
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.discord.clientId.toLong() && it.isMentioned(member) }
+					val message = messages.firstOrNull { it.author.idLong == loritta.discordConfig.discord.clientId.toLong() && it.isMentioned(member) }
 
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
@@ -277,7 +276,7 @@ class LorittaLandRoleSync : Runnable {
 					} else
 						roles.remove(inactiveRole)
 
-					val message = messages.firstOrNull { it.author.idLong == Loritta.config.discord.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
+					val message = messages.firstOrNull { it.author.idLong == loritta.discordConfig.discord.clientId.toLong() && it.contentRaw.startsWith(member.asMention) }
 
 					message?.delete()?.queue()
 				}

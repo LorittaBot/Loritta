@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -130,7 +129,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		if (conf.explainOnCommandRun) {
 			val rawArguments = context.message.contentRaw.split(" ")
 			var commandLabel = rawArguments[0]
-			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.discord.clientId}>" || rawArguments[0] == "<@!${Loritta.config.discord.clientId}>")) {
+			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
 				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
 				commandLabel = rawArguments[1]
 			}
@@ -226,7 +225,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(context.legacyLocale[this.category.fancyTitle], "${Loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(context.legacyLocale[this.category.fancyTitle], "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

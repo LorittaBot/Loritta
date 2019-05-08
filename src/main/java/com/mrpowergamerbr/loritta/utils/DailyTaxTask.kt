@@ -77,7 +77,7 @@ class DailyTaxTask : Runnable {
 
 					val embed = EmbedBuilder()
 							.setTitle("\uD83D\uDC4B Hey!")
-							.setDescription("Só estou aqui passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${Loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}")
+							.setDescription("Só estou aqui passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}")
 							.setThumbnail("https://i.imgur.com/HSmy9yK.png")
 							.setColor(Constants.LORITTA_AQUA)
 

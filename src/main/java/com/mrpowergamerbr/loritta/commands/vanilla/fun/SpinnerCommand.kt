@@ -25,7 +25,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 			val page = if (context.args.size == 2) { context.args[1].toIntOrNull() ?: 1 } else { 1 }
 			if (arg == "rank") {
 				val documents = loritta.mongo
-						.getDatabase(Loritta.config.databaseName)
+						.getDatabase(loritta.config.databaseName)
 						.getCollection("users")
 						.aggregate(listOf(
 								Aggregates.match(Filters.exists("spinnerScores")),
@@ -40,7 +40,7 @@ class SpinnerCommand : AbstractCommand("spinner", listOf("fidget", "fidgetspinne
 						).iterator()
 
 				val aggregateTime = loritta.mongo
-						.getDatabase(Loritta.config.databaseName)
+						.getDatabase(loritta.config.databaseName)
 						.getCollection("users")
 						.aggregate(listOf(
 								Document("\$unwind", "\$spinnerScores"),

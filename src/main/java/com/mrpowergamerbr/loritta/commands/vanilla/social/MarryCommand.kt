@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Marriage
@@ -43,7 +42,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				return
 			}
 
-			if (proposeTo.id == Loritta.config.discord.clientId) {
+			if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 				context.reply(
 						LoriReply(
 								locale["MARRY_Loritta"],
@@ -133,7 +132,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						return@onReactionAdd
 					}
 
-					if (proposeTo.id == Loritta.config.discord.clientId) {
+					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 						context.reply(
 								LoriReply(
 										locale["MARRY_Loritta"],

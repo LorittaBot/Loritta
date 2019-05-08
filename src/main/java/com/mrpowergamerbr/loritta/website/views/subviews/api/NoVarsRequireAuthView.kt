@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api
 
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
 import org.jooby.Request
@@ -20,7 +20,7 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 		val header = req.header("Lori-Authentication")
 		val auth = header.value("???")
 
-		val validKey = Loritta.config.loritta.website.apiKeys.filter {
+		val validKey = loritta.config.loritta.website.apiKeys.filter {
 			it.name == auth &&
 					(it.allowed.contains("*") || it.allowed.contains(path))
 		}.firstOrNull()

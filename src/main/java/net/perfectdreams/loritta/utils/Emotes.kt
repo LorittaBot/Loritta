@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.utils
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.UnicodeEmote
@@ -33,7 +33,7 @@ object Emotes {
 
     fun loadEmotes() {
         resetEmotes()
-        val emoteMap = Constants.HOCON_MAPPER.readValue<Map<String, String>>(File("${Loritta.config.loritta.folders.root}emotes.conf"))
+        val emoteMap = Constants.HOCON_MAPPER.readValue<Map<String, String>>(File("${loritta.config.loritta.folders.root}emotes.conf"))
         this.emoteMap = emoteMap
     }
 

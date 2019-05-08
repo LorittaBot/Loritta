@@ -232,7 +232,7 @@ object LorittaUtilsKotlin {
 
 	fun getImageStatus(url: String): NSFWResponse {
 		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
-				.header("X-Mashape-Key", Loritta.config.mashape.apiKey)
+				.header("X-Mashape-Key", loritta.config.mashape.apiKey)
 				.header("Accept", "application/json")
 				.acceptJson()
 				.body()

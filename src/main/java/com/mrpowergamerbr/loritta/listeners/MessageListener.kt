@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.listeners
 
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -24,6 +23,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
@@ -348,7 +348,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param contentRaw the raw content of the message
 	 * @returns if the message is mentioning only me
 	 */
-	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${Loritta.config.discord.clientId}>"
+	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
 
 	/**
 	 * Checks if the message mentions me
@@ -367,7 +367,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 */
 	fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
 		if (ownerProfile.isBanned) { // Se o dono está banido...
-			if (!Loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
+			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
@@ -384,7 +384,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 */
 	fun isGuildBanned(guild: Guild): Boolean {
 		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
-			if (!Loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
+			if (!loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true

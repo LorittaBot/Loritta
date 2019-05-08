@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -50,7 +49,7 @@ class TestMessageView : ConfigureView() {
 		customTokens.put("guildsize", guild.members.size.toString())
 		customTokens.put("@owner", guild.owner?.asMention ?: "???")
 		customTokens.put("owner", guild.owner?.effectiveName ?: "???")
-		customTokens.put("@staff", "<@${Loritta.config.discord.clientId}>")
+		customTokens.put("@staff", "<@${loritta.discordConfig.discord.clientId}>")
 		customTokens.put("staff", "Loritta")
 		customTokens.put("reason", "You gonna have a bad time.")
 

@@ -3,11 +3,12 @@ package com.mrpowergamerbr.loritta.plugin
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.platform.LorittaBot
 import java.io.File
 import java.net.URLClassLoader
 
 open class LorittaPlugin {
-	lateinit var loritta: Loritta
+	lateinit var loritta: LorittaBot
 	lateinit var name: String
 	lateinit var classLoader: URLClassLoader
 	lateinit var pluginFile: File

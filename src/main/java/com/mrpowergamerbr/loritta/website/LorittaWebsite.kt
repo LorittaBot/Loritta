@@ -35,7 +35,7 @@ import java.util.*
 import kotlin.reflect.full.functions
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
-	port(Loritta.config.loritta.website.port) // Porta do website
+	port(loritta.config.loritta.website.port) // Porta do website
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
@@ -138,15 +138,15 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 						res.status(302) // temporary redirect / no page rank penalty (?)
 						if (localeId == "default") {
-							res.redirect("${Loritta.config.loritta.website.url}br${req.path()}${req.urlQueryString}")
+							res.redirect("${loritta.config.loritta.website.url}br${req.path()}${req.urlQueryString}")
 						}
 						if (localeId == "pt-pt") {
-							res.redirect("${Loritta.config.loritta.website.url}pt${req.path()}${req.urlQueryString}")
+							res.redirect("${loritta.config.loritta.website.url}pt${req.path()}${req.urlQueryString}")
 						}
 						if (localeId == "es-es") {
-							res.redirect("${Loritta.config.loritta.website.url}es${req.path()}${req.urlQueryString}")
+							res.redirect("${loritta.config.loritta.website.url}es${req.path()}${req.urlQueryString}")
 						}
-						res.redirect("${Loritta.config.loritta.website.url}us${req.path()}${req.urlQueryString}")
+						res.redirect("${loritta.config.loritta.website.url}us${req.path()}${req.urlQueryString}")
 						res.send("Redirecting...")
 						return@use
 					}

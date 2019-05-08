@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.entities
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -122,7 +121,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")
 		}
-		return sendFile(image, fileName, message.toString())
+		return sendFile(image, fileName, message.toString()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 	}
 
 	override suspend fun sendMessage(message: String): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
@@ -206,10 +205,6 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		return sendFile(image, name, "", embed)
-	}
-
-	override suspend fun sendFile(image: BufferedImage, name: String, message: String): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		return sendFile(image, name, message, null)
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
@@ -296,7 +291,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		if (conf.explainOnCommandRun) {
 			val rawArguments = discordMessage.contentRaw.split(" ")
 			var commandLabel = rawArguments[0]
-			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${Loritta.config.discord.clientId}>" || rawArguments[0] == "<@!${Loritta.config.discord.clientId}>")) {
+			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
 				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
 				commandLabel = rawArguments[1]
 			}
@@ -381,7 +376,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(legacyLocale[command.category.fancyTitle], "${Loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(legacyLocale[command.category.fancyTitle], "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

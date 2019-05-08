@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -30,7 +30,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		context.reply(
 				LoriReply(
-						locale["DAILY_DailyLink", "${Loritta.config.loritta.website.url}daily"],
+						locale["DAILY_DailyLink", "${loritta.config.loritta.website.url}daily"],
 						"\uD83D\uDCB3"
 				)
 		)

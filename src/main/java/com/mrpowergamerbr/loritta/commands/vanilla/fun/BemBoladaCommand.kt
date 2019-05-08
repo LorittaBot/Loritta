@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -205,7 +205,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Kenji do Loop Infinito")
 				.content(context.getAsMention(true) + bemBoladas[RANDOM.nextInt(bemBoladas.size)])
-				.avatarUrl("${Loritta.config.loritta.website.url}assets/img/kenji.jpg")
+				.avatarUrl("${loritta.config.loritta.website.url}assets/img/kenji.jpg")
 				.build())
 	}
 }

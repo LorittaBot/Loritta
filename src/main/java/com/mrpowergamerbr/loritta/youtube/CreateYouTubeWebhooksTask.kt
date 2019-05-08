@@ -110,10 +110,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
 										"hub.lease_seconds" to "",
 										"hub.mode" to "unsubscribe",
-										"hub.secret" to Loritta.config.mixer.webhookSecret,
+										"hub.secret" to loritta.config.mixer.webhookSecret,
 										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
 										"hub.verify" to "async",
-										"hub.verify_token" to Loritta.config.mixer.webhookSecret
+										"hub.verify_token" to loritta.config.mixer.webhookSecret
 								))
 								.ok()
 
@@ -123,10 +123,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
 										"hub.lease_seconds" to "",
 										"hub.mode" to "subscribe",
-										"hub.secret" to Loritta.config.mixer.webhookSecret,
+										"hub.secret" to loritta.config.mixer.webhookSecret,
 										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
 										"hub.verify" to "async",
-										"hub.verify_token" to Loritta.config.mixer.webhookSecret
+										"hub.verify_token" to loritta.config.mixer.webhookSecret
 								))
 								.code()
 

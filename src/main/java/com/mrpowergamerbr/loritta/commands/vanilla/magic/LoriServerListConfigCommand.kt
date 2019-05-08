@@ -34,7 +34,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		// Sub-comandos que só o Dono pode usar
-		if (Loritta.config.isOwner(context.userHandle.id)) {
+		if (loritta.config.isOwner(context.userHandle.id)) {
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
 				transaction(Databases.loritta) {
@@ -215,7 +215,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (Loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
+		if (loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
 			if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
 				val userId = arg1
 				var guildId = arg2

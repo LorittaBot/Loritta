@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import java.net.URLEncoder
@@ -112,7 +113,7 @@ class TwitchAPI {
 			delay(delay)
 		}
 
-		val request = HttpRequest(url, method).userAgent(Constants.USER_AGENT).header("Client-ID", Loritta.config.twitch.clientId)
+		val request = HttpRequest(url, method).userAgent(Constants.USER_AGENT).header("Client-ID", loritta.config.twitch.clientId)
 
 		if (form != null)
 			request.form(form)

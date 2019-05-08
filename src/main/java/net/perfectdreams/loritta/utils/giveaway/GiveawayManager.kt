@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.utils.giveaway
 
-import net.perfectdreams.loritta.utils.Emotes
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -270,11 +272,11 @@ object GiveawayManager {
         if (messageReaction != null) {
             val users = messageReaction.retrieveUsers().await()
 
-            if (users.size == 1 && users[0].id == Loritta.config.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
+            if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != Loritta.config.discord.clientId }.toMutableList()
+                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != loritta.discordConfig.discord.clientId }.toMutableList()
 
                 repeat(giveaway.numberOfWinners) {
                     if (reactedUsers.isEmpty())

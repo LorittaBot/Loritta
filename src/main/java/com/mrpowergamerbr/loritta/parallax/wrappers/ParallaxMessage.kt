@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import org.graalvm.polyglot.Value
@@ -16,8 +16,8 @@ class ParallaxMessage(private val message: Message) {
     val content get() = message.contentDisplay
     val createdAt get() = message.timeCreated
     // TODO: createdTimestamp
-    val deletable get() = message.author.id == Loritta.config.discord.clientId || message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)
-    val editable get() = message.author.id == Loritta.config.discord.clientId
+    val deletable get() = message.author.id == loritta.discordConfig.discord.clientId || message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)
+    val editable get() = message.author.id == loritta.discordConfig.discord.clientId
     val editedAt get() = message.timeEdited
     // TODO: editedTimestamp
     // TODO: edits
@@ -29,7 +29,7 @@ class ParallaxMessage(private val message: Message) {
     val member get() = ParallaxMember(message.member!!)
     // TODO: mentions
     // TODO: nonce
-    val pinnable get() = message.author.id == Loritta.config.discord.clientId
+    val pinnable get() = message.author.id == loritta.discordConfig.discord.clientId
     val pinned get() = message.isPinned
     // TODO: reactions
     // TODO: system

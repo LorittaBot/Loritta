@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -224,10 +223,10 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			logger.info("Interrompendo a Thread do Website...")
 			loritta.websiteThread.interrupt()
 			logger.info("Iniciando instância do Website...")
-			loritta.website = LorittaWebsite(Loritta.config.loritta.website.url, Loritta.config.loritta.website.folder)
+			loritta.website = LorittaWebsite(loritta.config.loritta.website.url, loritta.config.loritta.website.folder)
 			logger.info("Iniciando website...")
 			loritta.websiteThread = thread(true, name = "Website Thread") {
-				loritta.website = LorittaWebsite(Loritta.config.loritta.website.url, Loritta.config.loritta.website.folder)
+				loritta.website = LorittaWebsite(loritta.config.loritta.website.url, loritta.config.loritta.website.folder)
 				org.jooby.run({
 					loritta.website
 				})
@@ -341,8 +340,11 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "config") {
-			val file = File(System.getProperty("conf") ?: "./config.conf")
-			Loritta.config = Constants.HOCON_MAPPER.readValue(file.readText(), LorittaConfig::class.java)
+			val file = File(System.getProperty("conf") ?: "./loritta.conf")
+			loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
+			val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
+			loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
+
 			context.reply(
 					LoriReply(
 							"Config recarregada!"
@@ -421,8 +423,10 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 		val oldCommandCount = loritta.legacyCommandManager.commandMap.size
 
-		val file = File(System.getProperty("conf") ?: "./config.conf")
-		Loritta.config = Constants.HOCON_MAPPER.readValue(file.readText(), LorittaConfig::class.java)
+		val file = File(System.getProperty("conf") ?: "./loritta.conf")
+		loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
+		val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
+		loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
 
 		loritta.generateDummyServerConfig()
 		LorittaLauncher.loritta.loadCommandManager()
