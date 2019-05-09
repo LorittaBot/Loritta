@@ -37,9 +37,13 @@ open class LorittaCommand(override val labels: Array<String>, val category: Comm
 }
 
 @ExperimentalContracts
-fun <T> LorittaCommand.notNull(value: T?, message: String, prefix: String = Constants.ERROR) { // Contracts precisam ser fora de uma classe, então...
+fun <T> LorittaCommand.notNull(value: T?, message: String, prefix: String = Constants.ERROR): T { // Contracts precisam ser fora de uma classe, então...
 	contract {
 		returns() implies (value != null)
 	}
 	if(value == null) throw CommandException(message, prefix)
+	return value
 }
+
+@ExperimentalContracts
+fun <T> LorittaCommand.notNullImage(value: T?, context: LorittaCommandContext, prefix: String = Constants.ERROR) = notNull(value, context.legacyLocale["NO_VALID_IMAGE"], prefix)
