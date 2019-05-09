@@ -56,6 +56,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (!(loritta.discordConfig.discord.requestLimiter.allowMessagesWith.any { event.message.contentRaw.contains(it, true) }) && loritta.requestLimiter.isRateLimited())
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member

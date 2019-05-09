@@ -12,6 +12,7 @@ class DiscordConfig @JsonCreator constructor(
         val addBotUrl: String,
         val authorizationUrl: String,
         val fanArtExtravaganza: FanArtExtravaganzaConfig,
+        val requestLimiter: RequestLimiterConfig,
         val activities: List<LorittaGameStatus>
 ) {
     class FanArtExtravaganzaConfig @JsonCreator constructor(
@@ -22,5 +23,11 @@ class DiscordConfig @JsonCreator constructor(
     class LorittaGameStatus @JsonCreator constructor(
             val name: String,
             val type: String
+    )
+    class RequestLimiterConfig @JsonCreator constructor(
+            val enabled: Boolean,
+            val maxRequests: Int,
+            val ignoreRequestsFor: Int,
+            val allowMessagesWith: Array<String>
     )
 }

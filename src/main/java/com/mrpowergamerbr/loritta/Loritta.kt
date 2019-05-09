@@ -174,6 +174,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				GetGuildByIdCommand()
 		)
 	}
+	val requestLimiter = RequestLimiter(this)
 
 	init {
 		LorittaLauncher.loritta = this
