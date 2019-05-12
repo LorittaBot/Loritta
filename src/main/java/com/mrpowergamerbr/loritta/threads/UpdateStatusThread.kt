@@ -66,7 +66,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
-			val currentFanArt = loritta.discordConfig.discord.fanArtExtravaganza.fanArts[0]
+			val currentFanArt = UpdateStatusThread.currentFanArt ?: loritta.discordConfig.discord.fanArtExtravaganza.fanArts[0]
 
 			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
