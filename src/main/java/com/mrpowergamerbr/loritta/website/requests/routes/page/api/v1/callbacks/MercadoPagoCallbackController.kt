@@ -36,7 +36,7 @@ class MercadoPagoCallbackController {
 		val id = req.param("id").valueOrNull()
 		val topic = req.param("topic").valueOrNull()
 
-		if (access == null || id == null || topic == null || access != Loritta.config.mercadoPago.ipnAccessToken) {
+		if (access == null || id == null || topic == null || access != loritta.config.mercadoPago.ipnAccessToken) {
 			res.status(Status.FORBIDDEN)
 			res.send("{}")
 			return
@@ -50,7 +50,7 @@ class MercadoPagoCallbackController {
 				logger.info { "MercadoPago Payment $id is ${payment.description} - Reference ID: ${payment.externalReference}" }
 
 
-				if (payment.status == PaymentStatus.APPROVED || (Loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
+				if (payment.status == PaymentStatus.APPROVED || (loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
 					if (payment.externalReference?.startsWith("LORI-DONATE-MP-") == true) {
 						// Criação de nova key:
 						// LORI-DONATE-MP-InternalTransactionId

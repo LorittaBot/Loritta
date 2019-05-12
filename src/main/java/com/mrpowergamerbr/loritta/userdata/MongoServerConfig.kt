@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator

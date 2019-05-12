@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
@@ -49,10 +50,10 @@ class BomDiaECia {
 		)
 		val randomImages by lazy {
 			listOf(
-					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia.jpg",
-					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
-					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
-					"${Loritta.config.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
+					"${loritta.config.loritta.website.url}assets/img/bom-dia-cia.jpg",
+					"${loritta.config.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
+					"${loritta.config.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
+					"${loritta.config.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
 			)
 		}
 	}

@@ -3,15 +3,11 @@ package com.mrpowergamerbr.loritta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
@@ -93,7 +89,7 @@ class AutomodModule : MessageReceivedModule {
 		val automodCaps = automodConfig.automodCaps
 		val automodSelfEmbed = automodConfig.automodSelfEmbed
 
-		if (ANTIRAID_ENABLED && (Loritta.config.antiRaidIds.contains(event.channel.id)) && Loritta.config.loritta.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (loritta.discordConfig.antiRaidIds.contains(event.channel.id)) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {

@@ -1,10 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class SocketConfig(
-        @JsonProperty("enabled")
+class SocketConfig @JsonCreator constructor(
         val enabled: Boolean,
-        @JsonProperty("port")
         val port: Int
 )

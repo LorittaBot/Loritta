@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot", "invitebot"), CommandCategory.DISCORD) {
     override fun getDescription(locale: LegacyBaseLocale): String {
@@ -15,8 +15,8 @@ class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot"
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.legacyLocale["INVITE_INFO", Loritta.config.discord.addBotUrl, "${Loritta.config.loritta.website.url}dashboard", "${Loritta.config.loritta.website.url}support"])
-                .setThumbnail("${Loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+                .setDescription(context.legacyLocale["INVITE_INFO", loritta.discordConfig.discord.addBotUrl, "${loritta.config.loritta.website.url}dashboard", "${loritta.config.loritta.website.url}support"])
+                .setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Constants.LORITTA_AQUA)
                 .build()
 

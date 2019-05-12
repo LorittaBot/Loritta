@@ -1,10 +1,8 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -19,6 +17,7 @@ import net.dv8tion.jda.api.audit.ActionType
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
@@ -109,7 +108,7 @@ object WelcomeModule {
 			.build<Long, CopyOnWriteArrayList<User>>()
 
 	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: MongoServerConfig) {
-		if (Loritta.config.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
+		if (loritta.discordConfig.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
 			return
 
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
@@ -158,7 +157,7 @@ object WelcomeModule {
 	}
 
 	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: MongoServerConfig) {
-		if (Loritta.config.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
+		if (loritta.discordConfig.ghostIds.contains(event.user.id)) // Ignorar ID do RevengeTakedown
 			return
 
 		delay(500) // esperar 0.5ms antes de avisar

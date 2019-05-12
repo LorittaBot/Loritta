@@ -1,14 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class PostgreSqlConfig(
-        @JsonProperty("database-name")
+class PostgreSqlConfig @JsonCreator constructor(
         val databaseName: String,
-        @JsonProperty("address")
         val address: String,
-        @JsonProperty("username")
         val username: String,
-        @JsonProperty("password")
         val password: String
 )

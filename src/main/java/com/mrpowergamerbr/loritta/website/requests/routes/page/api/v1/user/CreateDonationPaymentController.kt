@@ -104,7 +104,7 @@ class CreateDonationPaymentController {
                         externalReference = "LORI-DONATE-MP-${internalPayment.id.value}"
                     }
 
-                    notificationUrl = "${Loritta.config.loritta.website.url}api/v1/callbacks/mercadopago?access=${Loritta.config.mercadoPago.ipnAccessToken}"
+                    notificationUrl = "${loritta.config.loritta.website.url}api/v1/callbacks/mercadopago?access=${loritta.config.mercadoPago.ipnAccessToken}"
                 }
 
                 val payment = loritta.mercadoPago.createPayment(settings)

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Message
 
@@ -88,7 +89,7 @@ class NashornMessage(private val message: Message) {
 
 	@NashornCommand.NashornDocs(arguments = "mensagem")
 	fun editMessage(texto: String) {
-		if (texto.contains(Loritta.config.discord.clientToken, true))
+		if (texto.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
 
 		message.editMessage(texto).queue()

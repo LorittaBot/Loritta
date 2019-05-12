@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.loritta
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -30,7 +30,7 @@ class NashornImage {
 
 	@NashornCommand.NashornDocs(arguments = "texto, x, y")
 	fun write(texto: String, x: Int, y: Int): NashornImage {
-		if (texto.contains(Loritta.config.discord.clientToken, true))
+		if (texto.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
 
 		return write(texto, Color(0, 0, 0), x, y)
@@ -38,7 +38,7 @@ class NashornImage {
 
 	@NashornCommand.NashornDocs(arguments = "texto, cor, x, y")
 	fun write(texto: String, cor: Color, x: Int, y: Int): NashornImage {
-		if (texto.contains(Loritta.config.discord.clientToken, true))
+		if (texto.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
 
 		graphics.color = cor

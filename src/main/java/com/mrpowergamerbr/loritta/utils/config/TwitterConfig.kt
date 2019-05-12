@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.config
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class TwitterConfig(
+class TwitterConfig @JsonCreator constructor(
         @JsonProperty("consumer-key")
         val oAuthConsumerKey: String,
         @JsonProperty("consumer-secret")

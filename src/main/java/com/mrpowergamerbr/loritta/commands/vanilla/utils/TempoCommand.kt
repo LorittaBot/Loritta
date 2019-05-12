@@ -3,12 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.google.gson.stream.JsonReader
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
@@ -33,7 +33,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 		if (context.args.isNotEmpty()) {
 			var cidade = context.args.joinToString(separator = " ")
 
-			var cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + Loritta.config.openWeatherMap.apiKey).body()
+			var cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + loritta.config.openWeatherMap.apiKey).body()
 			val reader = StringReader(cidadeResponse)
 			val jsonReader = JsonReader(reader)
 			val cidadeJsonResponse = jsonParser.parse(jsonReader).asJsonObject // Base

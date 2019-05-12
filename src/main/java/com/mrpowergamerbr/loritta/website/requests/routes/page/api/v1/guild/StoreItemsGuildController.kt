@@ -69,7 +69,7 @@ class StoreItemsGuildController {
 		}
 
 		val id = userIdentification.id
-		if (!Loritta.config.isOwner(id)) {
+		if (!loritta.config.isOwner(id)) {
 			val member = server.getMemberById(id)
 
 			if (member == null) {

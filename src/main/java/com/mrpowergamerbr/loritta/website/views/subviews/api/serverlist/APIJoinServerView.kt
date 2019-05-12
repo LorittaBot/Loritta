@@ -101,7 +101,7 @@ class APIJoinServerView : NoVarsView() {
 		val body = HttpRequest.put("https://discordapp.com/api/v6/guilds/${guild.id}/members/$userId")
 				.header("User-Agent", "DiscordBot (https://github.com/LorittaBot/Loritta, 0)")
 				.header("Content-Type", "application/json")
-				.header("Authorization", "Bot ${Loritta.config.discord.clientToken}")
+				.header("Authorization", "Bot ${loritta.discordConfig.discord.clientToken}")
 				.send(payload.toString())
 				.body()
 

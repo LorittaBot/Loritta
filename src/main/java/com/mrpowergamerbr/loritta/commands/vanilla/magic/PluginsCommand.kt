@@ -1,10 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.Loritta
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import java.io.File
@@ -29,7 +28,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 				)
 		)
 
-		loritta.pluginManager.loadPlugin(File(Loritta.FOLDER, "plugins/$pluginName.jar"))
+		loritta.pluginManager.loadPlugin(File(loritta.config.loritta.folders.plugins, "$pluginName.jar"))
 		context.reply(
 				LoriReply(
 						"Finalizado, yay!"

@@ -73,7 +73,7 @@ object WebsiteUtils {
 		val jsonObject = jsonObject(
 				"code" to code.errorId,
 				"reason" to code.fancyName,
-				"help" to "${Loritta.config.loritta.website.url}docs/api"
+				"help" to "${loritta.config.loritta.website.url}docs/api"
 		)
 
 		if (message != null) {
@@ -115,9 +115,9 @@ object WebsiteUtils {
 				"commandMap" to loritta.legacyCommandManager.commandMap + loritta.commandManager.commands.size,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
-				"clientId" to Loritta.config.discord.clientId,
+				"clientId" to loritta.discordConfig.discord.clientId,
 				"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
-				"environment" to Loritta.config.loritta.environment
+				"environment" to loritta.config.loritta.environment
 		)
 
 		req.set("variables", variables)
@@ -144,7 +144,7 @@ object WebsiteUtils {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["addBotUrl"] = Loritta.config.discord.addBotUrl
+		variables["addBotUrl"] = loritta.discordConfig.discord.addBotUrl
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
@@ -239,7 +239,7 @@ object WebsiteUtils {
 		val auth = header.value()
 
 
-		val validKey = Loritta.config.loritta.website.apiKeys.firstOrNull {
+		val validKey = loritta.config.loritta.website.apiKeys.firstOrNull {
 			it.name == auth
 		}
 
@@ -291,7 +291,7 @@ object WebsiteUtils {
 			} else {
 				val state = JsonObject()
 				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-				res.redirect(Loritta.config.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+				res.redirect(loritta.discordConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 			}
 			return false
 		}
@@ -320,7 +320,7 @@ object WebsiteUtils {
 			} else {
 				val state = JsonObject()
 				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-				res.redirect(Loritta.config.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+				res.redirect(loritta.discordConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 			}
 			return false
 		}
@@ -337,7 +337,7 @@ object WebsiteUtils {
 		}
 
 		val id = userIdentification.id
-		if (!Loritta.config.isOwner(id)) {
+		if (!loritta.config.isOwner(id)) {
 			val member = server.getMemberById(id)
 
 			if (member == null) {
@@ -349,7 +349,7 @@ object WebsiteUtils {
 			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
 			val canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 
-			val canOpen = Loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
+			val canOpen = loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
 
 			if (!canOpen) { // not authorized (perm side)
 				res.status(Status.FORBIDDEN)
@@ -432,7 +432,7 @@ object WebsiteUtils {
 		}
 
 		val id = userIdentification.id
-		if (!Loritta.config.isOwner(id)) {
+		if (!loritta.config.isOwner(id)) {
 			val member = server.getMemberById(id)
 
 			if (member == null) {
@@ -449,7 +449,7 @@ object WebsiteUtils {
 			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
 			val canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 
-			val canOpen = Loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
+			val canOpen = loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
 
 			if (!canOpen) { // not authorized (perm side)
 				res.status(Status.FORBIDDEN)
@@ -766,7 +766,7 @@ object WebsiteUtils {
 				setMetaProperty("og:site_name", "Loritta")
 				setMetaProperty("og:title", "Painel da Loritta")
 				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-				setMetaProperty("og:image", Loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
 				setMetaProperty("og:image:width", "320")
 				setMetaProperty("og:ttl", "660")
 				setMetaProperty("og:image:width", "320")

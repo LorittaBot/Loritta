@@ -1,21 +1,14 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class LavalinkConfig(
-        @JsonProperty("enabled")
+class LavalinkConfig @JsonCreator constructor(
         val enabled: Boolean,
-        @JsonProperty("nodes")
         val nodes: List<LavalinkNode>
 ) {
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    class LavalinkNode(
-            @JsonProperty("name")
+    class LavalinkNode @JsonCreator constructor(
             val name: String,
-            @JsonProperty("address")
             val address: String,
-            @JsonProperty("password")
             val password: String
     )
 }

@@ -49,7 +49,7 @@ class MixerCallbackController {
 
 		val originalSignature = originalSignatureHeader.value()
 
-		val signingKey = SecretKeySpec(Loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA384")
+		val signingKey = SecretKeySpec(loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA384")
 		val mac = Mac.getInstance("HmacSHA384")
 		mac.init(signingKey)
 		val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))

@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.UsernameChange
@@ -69,15 +70,15 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			val typeEmote = when {
-				user.isBot -> Emotes.DISCORD_BOT_TAG
-				else -> Emotes.DISCORD_WUMPUS_BASIC
+				user.isBot -> Emotes.BOT_TAG
+				else -> Emotes.WUMPUS_BASIC
 			}
 
 			val statusEmote = when (member?.onlineStatus) {
-				OnlineStatus.ONLINE -> Emotes.DISCORD_ONLINE
-				OnlineStatus.IDLE -> Emotes.DISCORD_IDLE
-				OnlineStatus.DO_NOT_DISTURB -> Emotes.DISCORD_DO_NOT_DISTURB
-				else -> Emotes.DISCORD_OFFLINE
+				OnlineStatus.ONLINE -> Emotes.ONLINE
+				OnlineStatus.IDLE -> Emotes.IDLE
+				OnlineStatus.DO_NOT_DISTURB -> Emotes.DO_NOT_DISTURB
+				else -> Emotes.OFFLINE
 			}
 
 			setTitle("$ownerEmote$typeEmote$statusEmote $nickname", null)

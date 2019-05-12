@@ -6,12 +6,13 @@ import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
@@ -160,7 +161,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         """.trimIndent()
 
         val builder = getAkinatorEmbedBase(context).apply {
-            setThumbnail("${Loritta.config.loritta.website.url}assets/img/akinator_embed.png")
+            setThumbnail("${loritta.config.loritta.website.url}assets/img/akinator_embed.png")
             setDescription("**${currentQuestion.question}**" + "\n\n$progression% $text\n\n$reactionInfo")
             setFooter(context.userHandle.name + " • ${locale["$LOCALE_PREFIX.question", currentQuestion.step + 1]}", context.userHandle.effectiveAvatarUrl)
             setColor(Color(20, 158, 255))

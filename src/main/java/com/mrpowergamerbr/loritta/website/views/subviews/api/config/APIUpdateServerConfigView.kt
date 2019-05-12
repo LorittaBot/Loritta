@@ -64,7 +64,7 @@ class APIUpdateServerConfigView : NoVarsView() {
 		val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
 		var canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 
-		var canOpen = Loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
+		var canOpen = loritta.config.isOwner(id) || canAccessDashboardViaPermission || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR)
 
 		if (!canOpen) { // not authorized (perm side)
 			val payload = JsonObject()

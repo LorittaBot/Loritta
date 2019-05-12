@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.awt.image.BufferedImage
@@ -57,7 +57,7 @@ reply("Olá, eu me chamo Loritta!");
 			}
 		}
 
-		if (mensagem.contains(Loritta.config.discord.clientToken, true))
+		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
 			securityViolation(context.guild.id)
 
 		sentMessages++
@@ -82,7 +82,7 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 			}
 		}
 
-		if (mensagem.contains(Loritta.config.discord.clientToken, true))
+		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
 			securityViolation(context.guild.id)
 
 		sentMessages++
@@ -122,7 +122,7 @@ sendImage(imagem, "😄");
 		ImageIO.write(bufferedImage, "png", os)
 		val `is` = ByteArrayInputStream(os.toByteArray())
 
-		if (mensagem.contains(Loritta.config.discord.clientToken, true))
+		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
 			securityViolation(context.guild.id)
 
 		runBlocking {

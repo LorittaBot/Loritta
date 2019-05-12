@@ -1,60 +1,45 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class MashapeConfig(
-        @JsonProperty("api-key")
+class MashapeConfig @JsonCreator constructor(
         val apiKey: String
 )
 
-class OpenWeatherMapConfig(
-        @JsonProperty("api-key")
+class OpenWeatherMapConfig @JsonCreator constructor(
         val apiKey: String
 )
 
-class GoogleVisionKey(
-        @JsonProperty("api-key")
+class GoogleVisionKey @JsonCreator constructor(
         val apiKey: String
 )
 
-class GoogleRecaptcha(
-        @JsonProperty("server-vote-token")
+class GoogleRecaptcha @JsonCreator constructor(
         val serverVoteToken: String,
-        @JsonProperty("reputation-token")
         val reputationToken: String
 )
 
-class GitHubConfig(
-        @JsonProperty("api-key")
+class GitHubConfig @JsonCreator constructor(
         val apiKey: String,
-        @JsonProperty("repository-url")
         val repositoryUrl: String
 )
 
-class DiscordBotsConfig(
-        @JsonProperty("enabled")
+class DiscordBotsConfig @JsonCreator constructor(
         val enabled: Boolean,
-        @JsonProperty("api-key")
         val apiKey: String
 )
 
-class DiscordBotListConfig(
-        @JsonProperty("enabled")
+class DiscordBotListConfig@JsonCreator constructor(
         val enabled: Boolean,
-        @JsonProperty("api-key")
         val apiKey: String
 )
 
-class TwitchConfig(
-        @JsonProperty("client-id")
+class TwitchConfig @JsonCreator constructor(
         val clientId: String
 )
 
-class MixerConfig(
-        @JsonProperty("client-id")
+class MixerConfig @JsonCreator constructor(
         val clientId: String,
-        @JsonProperty("client-secret")
         val clientSecret: String,
-        @JsonProperty("webhook-secret")
         val webhookSecret: String
 )

@@ -1,8 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class YouTubeConfig(
-        @JsonProperty("api-keys")
+class YouTubeConfig @JsonCreator constructor(
         val apiKeys: List<String>
 )

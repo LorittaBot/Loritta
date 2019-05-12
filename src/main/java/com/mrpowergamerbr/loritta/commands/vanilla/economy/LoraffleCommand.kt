@@ -28,7 +28,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
-		if (arg0 == "clear" && Loritta.config.isOwner(context.userHandle.id)) {
+		if (arg0 == "clear" && loritta.config.isOwner(context.userHandle.id)) {
 			context.reply(
 					LoriReply(
 							"Limpando ${RaffleThread.userIds.size}..."

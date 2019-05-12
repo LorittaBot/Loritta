@@ -115,7 +115,7 @@ object MessageUtils {
 					mentionOwner = source.owner?.asMention ?: "???"
 					owner = source.owner?.effectiveName ?: "???"
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
-					tokens["lsl-url"] = "${Loritta.config.loritta.website.url}s/${source.id}"
+					tokens["lsl-url"] = "${loritta.config.loritta.website.url}s/${source.id}"
 				}
 				if (source is TextChannel) {
 					tokens["channel"] = source.name

@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
@@ -11,6 +9,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
@@ -55,7 +55,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 				return
 			}
 
-			var url = "${Loritta.config.loritta.website.url}user/${user.id}/rep"
+			var url = "${loritta.config.loritta.website.url}user/${user.id}/rep"
 			if (!context.isPrivateChannel)
 				url += "?channel=${context.message.channel.id}"
 

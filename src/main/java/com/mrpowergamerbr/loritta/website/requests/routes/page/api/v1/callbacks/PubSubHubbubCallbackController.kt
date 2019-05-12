@@ -60,7 +60,7 @@ class PubSubHubbubCallbackController {
 		val originalSignature = originalSignatureHeader.value()
 
 		val output = if (originalSignature.startsWith("sha1=")) {
-			val signingKey = SecretKeySpec(Loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val signingKey = SecretKeySpec(loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
 			val mac = Mac.getInstance("HmacSHA1")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -72,7 +72,7 @@ class PubSubHubbubCallbackController {
 
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
-			val signingKey = SecretKeySpec(Loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+			val signingKey = SecretKeySpec(loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
 			val mac = Mac.getInstance("HmacSHA256")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.TextChannel
 
 /**
@@ -51,7 +52,7 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 
 	@NashornCommand.NashornDocs()
 	fun sendMessage(mensagem: String): NashornMessage {
-		if (mensagem.contains(Loritta.config.discord.clientToken, true))
+		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
 
 		return NashornMessage(textChannel.sendMessage(mensagem).complete())

@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.config.LorittaConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.JDA
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class UpdateStatusThread : Thread("Update Status Thread") {
 	companion object {
 		var skipToIndex = -1 // owo
-		var currentFanArt: LorittaConfig.LorittaAvatarFanArt? = null
+		var currentFanArt: GeneralConfig.LorittaAvatarFanArt? = null
 	}
 
 	var lastUpdate: Long = System.currentTimeMillis()
@@ -49,8 +49,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (Loritta.config.discord.fanArtExtravaganza.enabled) {
-			if (currentDay != Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
+		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled) {
+			if (currentDay != loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
 				if (firstInstance != null) {
 					revertedAvatar = true
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
@@ -58,15 +58,15 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			}
 		}
 
-		if (Loritta.config.discord.fanArtExtravaganza.enabled && currentDay == Loritta.config.discord.fanArtExtravaganza.dayOfTheWeek) {
+		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
 			revertedAvatar = false
-			if (currentIndex > Loritta.config.discord.fanArtExtravaganza.fanArts.size - 1) {
+			if (currentIndex > loritta.discordConfig.discord.fanArtExtravaganza.fanArts.size - 1) {
 				currentIndex = 0
 			}
 
 			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
-			val currentFanArt = Loritta.config.discord.fanArtExtravaganza.fanArts[0]
+			val currentFanArt = loritta.discordConfig.discord.fanArtExtravaganza.fanArts[0]
 
 			if (diff >= 25000 && firstInstance != null) {
 				val fanArt = currentFanArt
@@ -85,11 +85,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 			if (fanArtMinutes != minutes) { // Diferente!
 				fanArtMinutes = minutes
-				if (currentIndex > Loritta.config.discord.fanArtExtravaganza.fanArts.size - 1) {
+				if (currentIndex > loritta.discordConfig.discord.fanArtExtravaganza.fanArts.size - 1) {
 					currentIndex = 0
 				}
 
-				val fanArt = Loritta.config.discord.fanArtExtravaganza.fanArts[currentIndex]
+				val fanArt = loritta.discordConfig.discord.fanArtExtravaganza.fanArts[currentIndex]
 
 				if (firstInstance != null) {
 					val artist = lorittaShards.getUserById(fanArt.artistId)
@@ -115,7 +115,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			val diff = System.currentTimeMillis() - lastUpdate
 
 			if (diff >= 25000) {
-				if (currentIndex > Loritta.config.discord.activities.size - 1) {
+				if (currentIndex > loritta.discordConfig.discord.activities.size - 1) {
 					currentIndex = 0
 				}
 				var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
@@ -137,7 +137,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				sb.append(seconds)
 				sb.append("s")
 
-				val game = Loritta.config.discord.activities[currentIndex]
+				val game = loritta.discordConfig.discord.activities[currentIndex]
 
 				var str = game.name
 				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
@@ -148,7 +148,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 
-				if (currentIndex > Loritta.config.discord.activities.size - 1) {
+				if (currentIndex > loritta.discordConfig.discord.activities.size - 1) {
 					currentIndex = 0
 				}
 			}

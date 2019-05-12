@@ -62,7 +62,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		val serverIconUrl = if (guildIconUrl != null) {
 			guildIconUrl.replace("jpg", "png")
 		} else {
-			"${Loritta.config.loritta.website.url}assets/img/unknown.png"
+			"${loritta.config.loritta.website.url}assets/img/unknown.png"
 		}
 
 		val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)

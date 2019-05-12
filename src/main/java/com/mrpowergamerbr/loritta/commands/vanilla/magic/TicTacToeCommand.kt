@@ -23,7 +23,7 @@ class TicTacToeCommand : AbstractCommand("tictactoe", category = CommandCategory
 
 		context.reply(
 				LoriReply(
-						"Sala criada com sucesso! ${Loritta.config.loritta.website.url}tictactoe?r=${randomRoomId}"
+						"Sala criada com sucesso! ${loritta.config.loritta.website.url}tictactoe?r=${randomRoomId}"
 				)
 		)
 	}

@@ -102,8 +102,8 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 
 					val deactivatedBody = HttpRequest.post("https://mixer.com/api/v1/hooks/${mixerWebhook.hookId}/deactivate")
 							.acceptJson()
-							.header("Client-ID", Loritta.config.mixer.clientId)
-							.header("Authorization", "Secret ${Loritta.config.mixer.clientSecret}")
+							.header("Client-ID", loritta.config.mixer.clientId)
+							.header("Authorization", "Secret ${loritta.config.mixer.clientSecret}")
 							.send("{}") // Como é um POST, nós precisamos enviar alguma coisa, caso contrário, irá dar erro
 							.body()
 
@@ -121,14 +121,14 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val json = jsonObject(
 						"kind" to "web",
 						"events" to gson.toJsonTree(events),
-						"url" to Loritta.config.loritta.website.url + "api/v1/callbacks/mixer",
-						"secret" to Loritta.config.mixer.webhookSecret
+						"url" to loritta.config.loritta.website.url + "api/v1/callbacks/mixer",
+						"secret" to loritta.config.mixer.webhookSecret
 				)
 
 				val payload = HttpRequest.post("https://mixer.com/api/v1/hooks")
 						.acceptJson()
-						.header("Client-ID", Loritta.config.mixer.clientId)
-						.header("Authorization", "Secret ${Loritta.config.mixer.clientSecret}")
+						.header("Client-ID", loritta.config.mixer.clientId)
+						.header("Authorization", "Secret ${loritta.config.mixer.clientSecret}")
 						.send(json.toString())
 						.body()
 

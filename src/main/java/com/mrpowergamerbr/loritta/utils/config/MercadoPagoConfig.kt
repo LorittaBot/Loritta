@@ -1,12 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class MercadoPagoConfig(
-        @JsonProperty("client-id")
+class MercadoPagoConfig @JsonCreator constructor(
         val clientId: String,
-        @JsonProperty("client-secret")
         val clientSecret: String,
-        @JsonProperty("ipn-access-token")
         val ipnAccessToken: String
 )

@@ -1,17 +1,33 @@
 package com.mrpowergamerbr.loritta.utils
 
+import net.perfectdreams.loritta.api.entities.LorittaEmote
+
+@Deprecated(replaceWith = ReplaceWith("net.perfectdreams.loritta.utils.Emotes"), message = "Old package")
 object Emotes {
-	const val DISCORD_ONLINE = "<:online:516265733659951104>"
-	const val DISCORD_IDLE = "<:idle:516265836009357322>"
-	const val DISCORD_DO_NOT_DISTURB = "<:do_not_disturb:516265799338688533>"
-	const val DISCORD_OFFLINE = "<:offline:516265862894714891>"
-	const val DISCORD_BOT_TAG = "<:bot:516314838541008906>"
-	const val DISCORD_WUMPUS_BASIC = "<:wumpus_basic:516315292821880832>"
-	const val LORI_TEMMIE = "<a:lori_temmie:515330130495799307>"
-	const val LORI_OWO = "<:lori_owo:417813932380520448>"
-	const val LORI_HUG = "<:lori_hug:515328576611155968>"
-	const val LORI_HAPPY = "<a:lori_happy:521721811298156558>"
-	const val LORI_CRYING = "<:lori_tristeliz:556524143281963008>"
-	const val LORI_RAGE = "<:lori_brava:556525700425711636>"
-	const val LORI_SHRUG = "<:lori_shrug:548639343141715978>"
+	val ONLINE: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.ONLINE
+	val IDLE: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.IDLE
+	val DO_NOT_DISTURB: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.DO_NOT_DISTURB
+	val OFFLINE: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.OFFLINE
+	val BOT_TAG: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.BOT_TAG
+	val WUMPUS_BASIC: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.WUMPUS_BASIC
+	val LORI_TEMMIE: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_TEMMIE
+	val LORI_OWO: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_OWO
+	val LORI_HUG: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_HUG
+	val LORI_HAPPY: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_HAPPY
+	val LORI_CRYING: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_CRYING
+	val LORI_RAGE: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_RAGE
+	val LORI_SHRUG: LorittaEmote
+		get() = net.perfectdreams.loritta.utils.Emotes.LORI_SHRUG
 }

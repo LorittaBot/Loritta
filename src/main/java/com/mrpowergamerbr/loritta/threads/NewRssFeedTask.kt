@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta.Companion.config
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
@@ -88,9 +87,9 @@ class NewRssFeedTask : Runnable {
 						for (entry in entries) {
 							if (!storedEntriesLink.contains(entry.link)) {
 								// avisar a todos que desejam receber a novidade
-								for (server in list) {
-									for (feedInfo in server.rssFeedConfig.feeds.filter { rssFeedLink  == it.feedUrl }) {
-										val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+								for (serverConfig in list) {
+									for (feedInfo in serverConfig.rssFeedConfig.feeds.filter { rssFeedLink  == it.feedUrl }) {
+										val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
 
 										val textChannel = guild.getTextChannelByNullableId(feedInfo.repostToChannelId) ?: continue
 
@@ -102,7 +101,7 @@ class NewRssFeedTask : Runnable {
 										if (message.isEmpty()) {
 											message = "{link}"
 											feedInfo.newMessage = message
-											loritta save config
+											loritta save serverConfig
 										}
 
 										val customTokens = mutableMapOf<String, String>()

@@ -1,40 +1,33 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 import net.dv8tion.jda.api.OnlineStatus
 
-class DiscordConfig(
-        @JsonProperty("client-token")
+class DiscordConfig @JsonCreator constructor(
         val clientToken: String,
-        @JsonProperty("client-id")
         val clientId: String,
-        @JsonProperty("client-secret")
         val clientSecret: String,
-        @JsonProperty("shards")
         val shards: Int,
-        @JsonProperty("status")
         val status: OnlineStatus,
-        @JsonProperty("add-bot-url")
         val addBotUrl: String,
-        @JsonProperty("authorization-url")
         val authorizationUrl: String,
-        @JsonProperty("fan-art-extravaganza")
         val fanArtExtravaganza: FanArtExtravaganzaConfig,
-        @JsonProperty("activities")
+        val requestLimiter: RequestLimiterConfig,
         val activities: List<LorittaGameStatus>
 ) {
-    class FanArtExtravaganzaConfig(
-            @JsonProperty("enabled")
+    class FanArtExtravaganzaConfig @JsonCreator constructor(
             val enabled: Boolean,
-            @JsonProperty("day-of-the-week")
             val dayOfTheWeek: Int,
-            @JsonProperty("fan-arts")
-            val fanArts: List<LorittaConfig.LorittaAvatarFanArt>
+            val fanArts: List<GeneralConfig.LorittaAvatarFanArt>
     )
-    class LorittaGameStatus(
-            @JsonProperty("name")
+    class LorittaGameStatus @JsonCreator constructor(
             val name: String,
-            @JsonProperty("type")
             val type: String
+    )
+    class RequestLimiterConfig @JsonCreator constructor(
+            val enabled: Boolean,
+            val maxRequests: Int,
+            val ignoreRequestsFor: Int,
+            val allowMessagesWith: Array<String>
     )
 }

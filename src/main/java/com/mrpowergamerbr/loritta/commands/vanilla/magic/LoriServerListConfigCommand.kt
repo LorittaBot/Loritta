@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mongodb.client.model.Filters
+import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -33,7 +34,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		// Sub-comandos que só o Dono pode usar
-		if (Loritta.config.isOwner(context.userHandle.id)) {
+		if (loritta.config.isOwner(context.userHandle.id)) {
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
 				transaction(Databases.loritta) {
@@ -118,7 +119,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				replies.add(
 						LoriReply(
 								"**Lista de usuários a serem banidos *GLOBALMENTE*...**",
-								Emotes.DISCORD_ONLINE
+								Emotes.ONLINE
 						)
 				)
 
@@ -131,8 +132,8 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 					val user = lorittaShards.getUserById(it.id) ?: return
 
 					val typeEmote = when {
-						user.isBot -> Emotes.DISCORD_BOT_TAG
-						else -> Emotes.DISCORD_WUMPUS_BASIC
+						user.isBot -> Emotes.BOT_TAG
+						else -> Emotes.WUMPUS_BASIC
 					}
 
 					val mutualGuilds = lorittaShards.getMutualGuilds(user)
@@ -157,7 +158,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val message = context.reply(
 						LoriReply(
 								"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
-								Emotes.DISCORD_DO_NOT_DISTURB
+								Emotes.DO_NOT_DISTURB
 						)
 				)
 
@@ -214,7 +215,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (Loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
+		if (loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
 			if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
 				val userId = arg1
 				var guildId = arg2

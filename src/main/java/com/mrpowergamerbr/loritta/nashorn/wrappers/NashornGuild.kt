@@ -68,7 +68,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 
 	@NashornCommand.NashornDocs()
 	fun ban(user: NashornUser, delDays: Int, reason: String) {
-		if (reason.contains(Loritta.config.discord.clientToken, true))
+		if (reason.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(guild.id)
 
 		guild.controller.ban(user.user, delDays, reason).queue()
@@ -76,7 +76,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 
 	@NashornCommand.NashornDocs()
 	fun kick(member: NashornMember, reason: String) {
-		if (reason.contains(Loritta.config.discord.clientToken, true))
+		if (reason.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(guild.id)
 
 		guild.controller.kick(member.member, reason).queue()

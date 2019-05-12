@@ -1,10 +1,13 @@
 package net.perfectdreams.loritta.platform.discord.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import net.perfectdreams.loritta.api.entities.Guild
 import net.perfectdreams.loritta.api.entities.Member
 import net.perfectdreams.loritta.api.entities.MessageChannel
 
-class DiscordGuild(val handle: net.dv8tion.jda.api.entities.Guild) : Guild {
+class DiscordGuild(@JsonIgnore val handle: net.dv8tion.jda.api.entities.Guild) : Guild {
+	override val id: String
+		get() = handle.id
 	override val name: String
 		get() = handle.name
 	override val iconUrl: String?

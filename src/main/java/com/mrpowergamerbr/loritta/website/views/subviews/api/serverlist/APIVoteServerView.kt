@@ -62,7 +62,7 @@ class APIVoteServerView : NoVarsView() {
 		}
 
 
-		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${Loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
 				.body()
 
 		val jsonParser = jsonParser.parse(body).obj
