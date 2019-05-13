@@ -47,12 +47,14 @@ abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<L
 				}
 		)
 
-		contextManager.registerContext<Image>(
+		contextManager.registerContext<Image?>(
 				{ clazz: KClass<*> -> clazz.isSubclassOf(Image::class) || clazz == Image::class },
 				{ sender, clazz, stack ->
-					val pop = stack.pop()
-
-					sender.getImage(pop)
+					if (!stack.empty()) {
+						sender.getImage(stack.pop())
+					} else {
+						sender.getImage("")
+					}
 				}
 		)
 	}

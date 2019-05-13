@@ -9,13 +9,13 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>loritta-cli</artifactId>
+	<artifactId>loritta-discord</artifactId>
 
 	<dependencies>
 		<dependency>
 			<artifactId>loritta-core</artifactId>
-			<groupId>net.perfectdreams.loritta</groupId>
-			<version>2019.05.17-SNAPSHOT</version>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -76,8 +76,17 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>net.perfectdreams.loritta.platform.console.ConsoleLoritta</mainClass>
+							<mainClass>com.mrpowergamerbr.loritta.LorittaLauncher</mainClass>
 						</manifest>
+						<manifestEntries>
+							<Loritta-Version>${loritta.version}</Loritta-Version>
+							<Build-Number>${build.number}</Build-Number>
+							<Commit-Hash>${commit.hash}</Commit-Hash>
+							<Git-Branch>${git.branch}</Git-Branch>
+							<Compiled-At>${compiled.at}</Compiled-At>
+							<Kotlin-Version>${kotlin.version}</Kotlin-Version>
+							<JDA-Version>${jda.version}</JDA-Version>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>

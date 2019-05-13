@@ -6,10 +6,10 @@
     <packaging>pom</packaging>
     <version>2019.05.17-SNAPSHOT</version>
     <modules>
-        <module>core</module>
-        <module>cli</module>
-        <module>discord</module>
-        <module>amino</module>
+        <module>loritta-core</module>
+        <module>loritta-cli</module>
+        <module>loritta-discord</module>
+        <module>loritta-amino</module>
     </modules>
 
     <properties>

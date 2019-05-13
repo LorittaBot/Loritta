@@ -9,13 +9,18 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>loritta-discord</artifactId>
+	<artifactId>loritta-amino</artifactId>
 
 	<dependencies>
 		<dependency>
 			<artifactId>loritta-core</artifactId>
-			<groupId>net.perfectdreams.loritta</groupId>
-			<version>2019.05.17-SNAPSHOT</version>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<artifactId>AminoREAPI</artifactId>
+			<groupId>net.perfectdreams.aminoreapi</groupId>
+			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -76,17 +81,8 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>com.mrpowergamerbr.loritta.LorittaLauncher</mainClass>
+							<mainClass>net.perfectdreams.loritta.platform.amino.AminoLorittaLauncher</mainClass>
 						</manifest>
-						<manifestEntries>
-							<Loritta-Version>${loritta.version}</Loritta-Version>
-							<Build-Number>${build.number}</Build-Number>
-							<Commit-Hash>${commit.hash}</Commit-Hash>
-							<Git-Branch>${git.branch}</Git-Branch>
-							<Compiled-At>${compiled.at}</Compiled-At>
-							<Kotlin-Version>${kotlin.version}</Kotlin-Version>
-							<JDA-Version>${jda.version}</JDA-Version>
-						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
