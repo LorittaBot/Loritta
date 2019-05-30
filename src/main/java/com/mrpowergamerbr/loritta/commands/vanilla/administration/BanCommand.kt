@@ -90,7 +90,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
-                        val fancyReason = reason + message.attachments.get(0)?.url ?: ""
+                        val fancyReason = reason + context.message.attachments.get(0)?.url ?: ""
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				ban(context.config, context.guild, context.userHandle, locale, user, fancyReason, isSilent, delDays)
