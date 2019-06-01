@@ -1,18 +1,19 @@
 package net.perfectdreams.loritta.socket.network.commands
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.socket.SocketWrapper
 import net.perfectdreams.loritta.socket.network.SocketOpCode
-import net.perfectdreams.loritta.socket.network.commands.config.GeneralConfigCommand
+import net.perfectdreams.loritta.socket.network.commands.config.patch.PatchGeneralConfigCommand
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.extensions.textValueOrNull
 
 class UpdateGuildConfigByIdCommand : SocketCommand(SocketOpCode.Discord.UPDATE_GUILD_CONFIG_BY_ID) {
     val commands = mutableListOf(
-            GeneralConfigCommand()
+            PatchGeneralConfigCommand()
     )
 
     override suspend fun process(socketWrapper: SocketWrapper, payload: JsonNode): JsonNode {
@@ -37,17 +38,18 @@ class UpdateGuildConfigByIdCommand : SocketCommand(SocketOpCode.Discord.UPDATE_G
             }
         }
 
-        val serverConfig = loritta.getServerConfigForGuild(guildId)
-
-        // Let's update my dude
-        val command = commands.firstOrNull { it.op == patchCode } ?: run {
-            logger.warn("Unknown patch with op code $op")
-            return objectNode(
-                    "status" to "idk wtf you are trying to do???"
-            )
+        val serverConfig: MongoServerConfig by lazy {
+            loritta.getServerConfigForGuild(guildId)
         }
 
-        command.process(serverConfig, payload["data"])
+        commands.forEach {
+            if (payload.has(it.sectionName)) {
+                val section = payload[it.sectionName]
+
+                it.process(serverConfig, section)
+            }
+        }
+
         return objectNode()
     }
 }

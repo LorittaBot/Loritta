@@ -46,7 +46,7 @@ fun objectNode(values: Iterable<Pair<String, *>>) = _objectNode(values.iterator(
 fun objectNode(values: Sequence<Pair<String, *>>) = _objectNode(values.iterator())
 fun arrayNode() = JsonNodeFactory.instance.arrayNode()
 
-fun JsonNode?.textValueOrNull(): String? = this?.textValue()
+fun JsonNode?.textValueOrNull(): String? = if (this?.isNull == false) { this.textValue() } else null
 
 fun Iterable<*>.toNodeArray(): ArrayNode {
     val array = arrayNode()

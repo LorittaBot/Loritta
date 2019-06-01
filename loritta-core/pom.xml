@@ -10,4 +10,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>loritta-core</artifactId>
+
+	<properties>
+		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+	</properties>
 </project>
