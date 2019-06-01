@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.api.entities
 
-interface Guild : Unique {
+interface Guild : Identifiable {
 	val name: String
 	val members: List<Member>
-	val iconUrl: String?
+	val icon: String?
 	val messageChannels: List<MessageChannel>
 }

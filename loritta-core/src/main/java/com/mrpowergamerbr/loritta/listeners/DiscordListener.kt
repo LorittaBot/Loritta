@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -320,6 +321,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
+		loritta.socket.socketWrapper?.syncDiscordStats()
+
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
 		MuteCommand.roleRemovalJobs.forEach { key, value ->
@@ -351,12 +354,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
+		loritta.socket.socketWrapper?.syncDiscordStats()
+
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
 		val region = event.guild.region
 		val regionName = region.getName()
 		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 
-		event.guild.region
 		// Portuguese
 		if (regionName.startsWith("Brazil")) {
 			serverConfig.localeId = "default"
@@ -377,6 +381,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		loritta.executor.execute {
 			loritta save serverConfig
 		}
+	}
+
+	override fun onReady(event: ReadyEvent) {
+		loritta.socket.socketWrapper?.syncDiscordStats()
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {

@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 
 /**
- * Guarda todos os shards da Loritta
+ * Guarda todos as shards da Loritta
  */
 class LorittaShards {
 	lateinit var shardManager: ShardManager

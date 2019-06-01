@@ -30,7 +30,7 @@ class AudioManager(val loritta: Loritta) {
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
-	val lavalink = JdaLavalink(loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.shards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
+	val lavalink = JdaLavalink(loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.maxShards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}

@@ -77,6 +77,11 @@ object AdminUtils {
 				reason = _reason
 		}
 
+		val attachment = context.message.attachments.firstOrNull { it.isImage }
+
+		if (attachment != null)
+			reason += " " + attachment.url
+
 		return AdministrationOptions(reason, skipConfirmation, silent, delDays)
 	}
 

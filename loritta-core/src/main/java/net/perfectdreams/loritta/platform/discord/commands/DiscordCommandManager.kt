@@ -26,7 +26,7 @@ import net.perfectdreams.loritta.commands.vanilla.`fun`.AkinatorCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.Emotes
 import java.util.*
 import kotlin.reflect.KClass
@@ -55,7 +55,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         for (user in message.mentionedUsers) {
                             if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
                                 // Diferente de null? Então vamos usar o avatar do usuário!
-                                return@registerContext DiscordUser(user)
+                                return@registerContext JDAUser(user)
                             }
                         }
 
@@ -67,7 +67,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                                 val matchedMember = sender.discordGuild.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
                                 if (matchedMember.isPresent) {
-                                    return@registerContext DiscordUser(matchedMember.get().user)
+                                    return@registerContext JDAUser(matchedMember.get().user)
                                 }
                             }
                         }
@@ -77,7 +77,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                             val matchedMembers = sender.discordGuild.getMembersByEffectiveName(link, true)
 
                             if (!matchedMembers.isEmpty()) {
-                                return@registerContext DiscordUser(matchedMembers[0].user)
+                                return@registerContext JDAUser(matchedMembers[0].user)
                             }
                         }
 
@@ -86,7 +86,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                             val matchedMembers = sender.discordGuild.getMembersByName(link, true)
 
                             if (!matchedMembers.isEmpty()) {
-                                return@registerContext DiscordUser(matchedMembers[0].user)
+                                return@registerContext JDAUser(matchedMembers[0].user)
                             }
                         }
 
@@ -95,7 +95,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                             val user = discordLoritta.lorittaShards.retrieveUserById(link)
 
                             if (user != null) { // Pelo visto é!
-                                return@registerContext DiscordUser(user)
+                                return@registerContext JDAUser(user)
                             }
                         } catch (e: Exception) {
                         }

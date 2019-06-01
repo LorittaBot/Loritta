@@ -44,10 +44,10 @@ class RequestLimiter(val loritta: Loritta) {
             val requester = REQUESTER_FIELD.get(jda)
             val limiter = RATE_LIMITER_FIELD.get(requester) as net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter
 
-            val buckets = limiter.routeBuckets
+            val buckets = limiter.routeBuckets // BAD PERFORMANCE
             val subBuck = limiter.queuedRouteBuckets
 
-            rateLimitedRequests += (buckets.sumBy { it.requests.size }) + (subBuck.sumBy { it.requests.size })
+            rateLimitedRequests += (buckets.sumBy { it.requests.size }) + (subBuck.sumBy { it.requests.size }) // BAD PERFORMANCE
         }
 
         return rateLimitedRequests

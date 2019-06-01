@@ -6,9 +6,10 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.socket.network.SocketOpCode
+import net.perfectdreams.loritta.utils.extensions.objectNode
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override fun getDescription(locale: LegacyBaseLocale): String {
@@ -19,18 +20,35 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "shards") {
+			val networkShards = loritta.socket.socketWrapper!!.awaitResponse(SocketOpCode.Discord.GET_LORITTA_SHARDS, objectNode())["lorittaShards"]
+
 			val row0 = mutableListOf<String>()
 			val row1 = mutableListOf<String>()
 			val row2 = mutableListOf<String>()
 			val row3 = mutableListOf<String>()
 			val row4 = mutableListOf<String>()
 
-			lorittaShards.getShards().sortedBy { it.shardInfo?.shardId }.forEach {
-				row0.add("Shard ${it.shardInfo?.shardId}")
-				row1.add("${it.gatewayPing}ms")
-				row2.add(it.status.name)
-				row3.add("${it.guilds.size} guilds")
-				row4.add("${it.users.size} users")
+			networkShards.forEach {
+				val totalGuildCount = it["shards"].sumBy {
+					it["guildCount"].intValue()
+				}
+				val totalUserCount = it["shards"].sumBy {
+					it["userCount"].intValue()
+				}
+
+				row0.add("Loritta Shard ${it["lorittaShardId"].intValue()} (${it["lorittaShardName"].textValue()})")
+				row1.add("---")
+				row2.add("---")
+				row3.add("$totalGuildCount guilds")
+				row4.add("$totalUserCount users")
+
+				it["shards"].sortedBy { it["id"].intValue() }.forEach {
+					row0.add("> Shard ${it["id"].intValue()}")
+					row1.add(it["gatewayPing"].longValue().toString() + "ms") // gateway ping
+					row2.add(it["status"].textValue())
+					row3.add(it["guildCount"].intValue().toString() + " guilds") // guilds
+					row4.add(it["userCount"].intValue().toString() + " users") // users
+				}
 			}
 
 			val maxRow0 = row0.maxBy { it.length }!!.length
@@ -71,7 +89,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
             val replies = mutableListOf(
 					LoriReply(
-							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo?.shardId}/${loritta.discordConfig.discord.shards - 1})",
+							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo?.shardId}/${loritta.discordConfig.discord.maxShards - 1})",
 							prefix = ":ping_pong:"
 					),
 					LoriReply(

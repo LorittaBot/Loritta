@@ -53,14 +53,16 @@ import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
-import net.perfectdreams.loritta.socket.LorittaSocketServer
-import net.perfectdreams.loritta.socket.network.commands.GetGuildByIdCommand
-import net.perfectdreams.loritta.socket.network.commands.GetUserByIdCommand
+import net.perfectdreams.loritta.socket.LorittaSocket
+import net.perfectdreams.loritta.socket.network.SocketOpCode
+import net.perfectdreams.loritta.socket.network.commands.*
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.extensions.obj
+import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.OkHttpClient
@@ -168,10 +170,15 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 	var twitch = TwitchAPI()
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
-	val socketServer = LorittaSocketServer().apply {
+	val socket = LorittaSocket(35575).apply {
 		this.registerCommands(
 				GetUserByIdCommand(),
-				GetGuildByIdCommand()
+				GetUsersByIdCommand(),
+				GetGuildByIdCommand(),
+				GetGuildsByIdCommand(),
+				GetGuildConfigByIdCommand(),
+				UpdateGuildConfigByIdCommand(),
+				HeartbeatCommand()
 		)
 	}
 	val requestLimiter = RequestLimiter(this)
@@ -206,7 +213,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 		builder = DefaultShardManagerBuilder()
-				.setShardsTotal(discordConfig.discord.shards)
+				.setShardsTotal(discordConfig.discord.maxShards)
+				.setShards(discordConfig.discord.minShardId, discordConfig.discord.maxShardId)
 				.setStatus(discordConfig.discord.status)
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
@@ -253,9 +261,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 	fun start() {
 		RestAction.setPassContext(true)
 
-		if (config.socket.enabled)
-			socketServer.start(config.socket.port)
-
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 		val rootLogger = loggerContext.getLogger("org.mongodb.driver")
@@ -280,6 +285,42 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
+
+		if (config.socket.enabled) {
+			logger.info { "Sucesso! Iniciando socket client..." }
+			socket.connect()
+			socket.onSocketConnected = { socketWrapper ->
+				socketWrapper.sendRequestAsync(
+						SocketOpCode.Discord.IDENTIFY,
+						objectNode(
+								"lorittaShardId" to config.socket.shardId,
+								"lorittaShardName" to config.socket.clientName,
+								"discordMaxShards" to discordConfig.discord.maxShards,
+								"discordShardMin" to discordConfig.discord.minShardId,
+								"discordShardMax" to discordConfig.discord.maxShardId
+						),
+						success = {
+							logger.info("Identification process was a success! We are now identified and ready to send and receive commands!")
+
+							socketWrapper.isReady = true
+							socketWrapper.syncDiscordStats()
+						},
+						failure = {
+							logger.error("Failed to identify!")
+						}
+				)
+			}
+
+			socket.onMessageReceived = {
+				val socketWrapper = socket.socketWrapper!!
+
+				val uniqueId = UUID.fromString(it["uniqueId"].textValue())
+				val request = socketWrapper._requests.getIfPresent(uniqueId)
+				socketWrapper._requests.invalidate(uniqueId)
+
+				request?.first?.invoke(it.obj)
+			}
+		}
 
 		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
 

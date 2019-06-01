@@ -7,20 +7,29 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.network.discord.entities.DiscordNetworkUser
 import net.perfectdreams.loritta.socket.SocketWrapper
 import net.perfectdreams.loritta.socket.network.SocketOpCode
-import net.perfectdreams.loritta.utils.extensions.set
 
-class GetUserByIdCommand : SocketCommand(SocketOpCode.Discord.GET_USER_BY_ID) {
+class GetUsersByIdCommand : SocketCommand(SocketOpCode.Discord.GET_USERS_BY_ID) {
     override suspend fun process(socketWrapper: SocketWrapper, payload: JsonNode): JsonNode {
-        val userId = payload["userId"].textValue()
+        val userIds = payload["userIds"]
 
-        val user = lorittaShards.getUserById(userId) ?: return JsonNodeFactory.instance.objectNode()
-        val discordUser = JDAUser(user)
+        val users = userIds.asSequence()
+                .mapNotNull {
+                    lorittaShards.getUserById(it.textValue())
+                }
+                .map {
+                    JDAUser(it)
+                }
+                .toList()
 
         val objNode = JsonNodeFactory.instance.objectNode()
 
-        // Não importa qual shard seja, desde que conecte na shard da Lori atual
-        objNode["foundInShard"] = lorittaShards.shardManager.shards.first().shardInfo?.shardId ?: 0
-        objNode["user"] = DiscordNetworkUser.toObjectNode(discordUser)
+        objNode["users"] = JsonNodeFactory.instance.arrayNode().apply {
+            users.forEach {
+                this.add(
+                        DiscordNetworkUser.toObjectNode(it)
+                )
+            }
+        }
 
         return objNode
     }

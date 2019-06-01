@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -61,7 +63,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 	override val guild: DiscordGuild?
 		get() = if (event.guild != null)
-			DiscordGuild(event.guild!!)
+			JDAGuild(event.guild!!)
 		else
 			null
 
@@ -455,7 +457,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			// Vamos tentar procurar pelo username + discriminator
 			if (this.guild is DiscordGuild) {
-				val handle = (this.guild as DiscordGuild).handle
+				val handle = (this.guild as JDAGuild).handle
 				if (!this.isPrivateChannel && !link.isEmpty()) {
 					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
@@ -513,13 +515,13 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			for (user in this.discordMessage.mentionedUsers) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
-					return DiscordUser(user)
+					return JDAUser(user)
 				}
 			}
 
 			// Vamos tentar procurar pelo username + discriminator
 			if (this.guild is DiscordGuild) {
-				val handle = (this.guild as DiscordGuild).handle
+				val handle = (this.guild as JDAGuild).handle
 				if (!this.isPrivateChannel && !link.isEmpty()) {
 					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
 
@@ -527,7 +529,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 						val matchedMember = handle.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
 
 						if (matchedMember.isPresent) {
-							return DiscordUser(matchedMember.get().user)
+							return JDAUser(matchedMember.get().user)
 						}
 					}
 				}
@@ -537,7 +539,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 					val matchedMembers = handle.getMembersByEffectiveName(link, true)
 
 					if (!matchedMembers.isEmpty()) {
-						return DiscordUser(matchedMembers[0].user)
+						return JDAUser(matchedMembers[0].user)
 					}
 				}
 
@@ -546,7 +548,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 					val matchedMembers = handle.getMembersByName(link, true)
 
 					if (!matchedMembers.isEmpty()) {
-						return DiscordUser(matchedMembers[0].user)
+						return JDAUser(matchedMembers[0].user)
 					}
 				}
 			}
@@ -556,7 +558,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
 
 				if (user != null) { // Pelo visto é!
-					return DiscordUser(user)
+					return JDAUser(user)
 				}
 			} catch (e: Exception) {
 			}
@@ -589,7 +591,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				return link // Se é um link, vamos enviar para o usuário agora
 
 			// Vamos verificar por usuários no argumento especificado
-			val user = getUser(link)
+			val user = getUser(link) as DiscordUser?
 			if (user != null)
 				return user.effectiveAvatarUrl + "?size=" + avatarSize
 
@@ -614,8 +616,8 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			}
 		}
 
-		if (this.guild is DiscordGuild) {
-			val handle = (this.guild as DiscordGuild).handle
+		if (this.guild is JDAGuild) {
+			val handle = (this.guild as JDAGuild).handle
 			// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 			if (search > 0 && !this.isPrivateChannel && handle.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
 				try {
