@@ -219,10 +219,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						val timePretty = if (time != null)
 							DateUtils.formatDateDiff(System.currentTimeMillis(), time, locale)
-						else context.
+						else context.locale["cosmmands.moderation.mute.forever"]
 
 						embed.addField(
-								"Duração",
+								context.locale["cosmmands.moderation.mute.duration"],
 								timePretty,
 								false
 						)
