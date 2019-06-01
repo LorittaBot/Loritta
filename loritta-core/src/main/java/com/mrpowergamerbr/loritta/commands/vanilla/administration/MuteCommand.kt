@@ -195,12 +195,39 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		val roleRemovalJobs = mutableMapOf<String, Job>()
 
 		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+			val delay = if (time != null) {
+				time - System.currentTimeMillis()
+			} else {
+				null
+			}
+
+			if (delay != null && 0 > delay) {
+				// :whatdog:
+				context.reply(
+						LoriReply(
+								locale["MUTE_NegativeTime"],
+								Constants.ERROR
+						)
+				)
+				return false
+			}
+
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
+						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
 
-						user.openPrivateChannel().await().sendMessage(embed).queue()
+						val timePretty = if (time != null)
+							DateUtils.formatDateDiff(System.currentTimeMillis(), time, locale)
+						else context.
+
+						embed.addField(
+								"Duração",
+								timePretty,
+								false
+						)
+
+						user.openPrivateChannel().await().sendMessage(embed.build()).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -228,23 +255,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						textChannel.sendMessage(message!!).queue()
 					}
 				}
-			}
-
-			val delay = if (time != null) {
-				time - System.currentTimeMillis()
-			} else {
-				null
-			}
-
-			if (delay != null && 0 > delay) {
-				// :whatdog:
-				context.reply(
-						LoriReply(
-								locale["MUTE_NegativeTime"],
-								Constants.ERROR
-						)
-				)
-				return false
 			}
 
 			// Vamos pegar se a nossa role existe

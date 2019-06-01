@@ -12,7 +12,7 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
+	fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder {
 		val embed = EmbedBuilder()
 
 		embed.setTimestamp(Instant.now())
@@ -24,7 +24,11 @@ object AdminUtils {
 		embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
 		embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
 
-		return embed.build()
+		return embed
+	}
+
+	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
+		return createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
 	}
 
 	suspend fun getOptions(context: CommandContext): AdministrationOptions? {
