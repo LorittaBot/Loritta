@@ -159,7 +159,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 						context.reply(
 								LoriReply(
-										locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+										locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 										"\uD83D\uDCB8"
 								)
 						)
