@@ -3,9 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val loriVersion by lazy { ext["lori-version"] as String }
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
-val loriVersion = "2019.06.07-SNAPSHOT"
+val loriVersion   = "2019.06.07-SNAPSHOT"
 val kotlinVersion = "1.3.21"
-val ktorVersion ="1.2.0-rc2"
+val ktorVersion   = "1.2.0-rc2"
+val jdaVersion    = "4.ALPHA.0_79"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -15,9 +16,10 @@ allprojects {
         set("lori-version", loriVersion)
         set("kotlin-version", kotlinVersion)
         set("ktor-version", ktorVersion)
+        set("jda-version", jdaVersion)
         set(
                 "fat-jar-stuff",
-                fun(mainClass: String): Task {
+                fun(mainClass: String, customAttributes: Map<String, String>): Task {
                     return task("fatJar", type = Jar::class) {
                         archiveBaseName.set("${project.name}-fat")
 
@@ -31,8 +33,10 @@ allprojects {
                             addIfAvailable("commit.hash", "Commit-Hash")
                             addIfAvailable("git.branch", "Git-Branch")
                             addIfAvailable("compiled.at", "Compiled-At")
-                             attributes["Main-Class"] = mainClass
+                            attributes["Main-Class"] = mainClass
+                            attributes["Kotlin-Version"] = kotlinVersion
                             attributes["Class-Path"] = configurations.compile.get().joinToString(" ", transform = { "libs/" + it.name })
+                            attributes.putAll(customAttributes)
                         }
 
                         val libs = File("libs")

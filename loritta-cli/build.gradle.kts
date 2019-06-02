@@ -7,7 +7,10 @@ plugins {
     kotlin("jvm")
 }
 
-val fatJar = (extra["fat-jar-stuff"] as (String) -> (Task)).invoke("net.perfectdreams.loritta.platform.console.ConsoleLoritta")
+val fatJar = (extra["fat-jar-stuff"] as (String, Map<String, String>) -> (Task)).invoke(
+        "net.perfectdreams.loritta.platform.console.ConsoleLoritta",
+        mapOf()
+)
 
 tasks {
     "build" {
