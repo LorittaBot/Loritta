@@ -11,6 +11,10 @@
 
 	<artifactId>loritta-cli</artifactId>
 
+	<properties>
+		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<artifactId>loritta-core</artifactId>
@@ -100,7 +104,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.1</version>
 				<executions>
@@ -114,7 +118,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>
