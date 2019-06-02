@@ -201,7 +201,7 @@ var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a 
 imagem.write("fofa!", cor(128, 128, 128), 20, 20);
 sendImage(imagem, "😄");
 """)
-	fun getImageFromContext(argumento: Int): NashornImage? {
+	fun getImageFromContext(argumento: Int): NashornImage {
 		val bufferedImage = runBlocking { context.getImageAt(argumento) }
 
 		if (bufferedImage != null) {
