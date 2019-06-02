@@ -112,7 +112,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 
 				graphics.font = oswaldRegular16
 
-				ImageUtils.drawTextWrap("${profile[Profiles.money]} sonhos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap("${"%.2f".format(profile[Profiles.money])} sonhos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 

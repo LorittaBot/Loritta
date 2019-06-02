@@ -123,7 +123,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 		graphics.font = whitneyBold20
 		graphics.drawText("Sonhos", 159, 98  + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
+		graphics.drawText("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}", 159, 116  + shiftY, 800 - 6)
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
 		if (marriage != null) {
