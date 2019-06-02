@@ -40,7 +40,7 @@ class UpdateAvailableCallbackController {
 			val items = payload["changeSet"]["items"].array
 
 			val artifacts = payload["artifacts"].array
-			val firstDiscordArtifact = artifacts.firstOrNull { it["fileName"].string.startsWith("loritta-discord-") } ?: return@thread
+			val firstDiscordArtifact = artifacts.firstOrNull { it["fileName"].string.startsWith("loritta-discord-fat-") } ?: return@thread
 
 			run {
 				val textChannel = lorittaShards.getTextChannelById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
