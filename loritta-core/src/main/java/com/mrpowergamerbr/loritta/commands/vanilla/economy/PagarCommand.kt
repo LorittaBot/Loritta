@@ -87,7 +87,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (0 >= howMuch || context.lorittaUser.profile.money.isNaN()) {
+			if (1 > howMuch || context.lorittaUser.profile.money.isNaN()) {
 				context.reply(
 						LoriReply(
 								locale["INVALID_NUMBER", context.rawArgs[1]],
