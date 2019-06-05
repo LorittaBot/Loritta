@@ -25,7 +25,7 @@
         <commit.hash>Unknown</commit.hash>
         <git.branch>Unknown</git.branch>
         <compiled.at>Unknown</compiled.at>
-        <jda.version>4.ALPHA.0_79</jda.version>
+        <jda.version>4.ALPHA.0_98</jda.version>
     </properties>
 
     <repositories>
