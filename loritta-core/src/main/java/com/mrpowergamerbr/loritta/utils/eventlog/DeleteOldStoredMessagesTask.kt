@@ -1,7 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.eventlog
 
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class DeleteOldStoredMessagesTask : Runnable {
     companion object {
@@ -9,8 +11,10 @@ class DeleteOldStoredMessagesTask : Runnable {
     }
 
     override fun run() {
-        StoredMessages.deleteWhere {
-            StoredMessages.createdAt lessEq System.currentTimeMillis() - TWO_WEEKS
+        transaction(Databases.loritta) {
+            StoredMessages.deleteWhere {
+                StoredMessages.createdAt lessEq System.currentTimeMillis() - TWO_WEEKS
+            }
         }
     }
 }
