@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
+import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
@@ -35,6 +35,7 @@ object LorittaTasks {
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
