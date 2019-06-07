@@ -38,8 +38,8 @@ allprojects {
                             attributes["Class-Path"] = configurations.compile.get().joinToString(" ", transform = { "libs/" + it.name })
                             attributes.putAll(customAttributes)
                         }
-
-                        val libs = File("libs")
+                                                
+                        val libs = File(rootProject.projectDir, "libs")
                         libs.deleteRecursively()
                         libs.mkdirs()
 
@@ -50,7 +50,7 @@ allprojects {
                                 val output = File(libs, it.name)
 
                                 if (!output.exists())
-                                    it.copyTo(File(libs, it.name))
+                                    it.copyTo(File(libs, it.name), true)
 
                                 null
                             }
