@@ -120,17 +120,20 @@ object ParallaxUtils {
 	 *
 	 * @return the sent throwable
 	 */
-	suspend fun sendThrowableToChannel(throwable: Throwable, channel: MessageChannel): Message {
+	suspend fun sendThrowableToChannel(throwable: Throwable, channel: MessageChannel, message: String? = null): Message {
 		logger.warn(throwable) { "Error while evaluating code" }
+
+		val messageBuilder = MessageBuilder()
+		messageBuilder.append(message ?: " ")
 
 		val cause = throwable.cause
 
-		val builder = EmbedBuilder()
-		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
+		val embedBuilder = EmbedBuilder()
+		embedBuilder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
 
 		val description = when (throwable) {
-			is ExecutionException -> "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
 			// Thread.stop (deprecated)
+			is ExecutionException -> "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
 			else -> {
 				val stringBuilder = StringBuilder()
 
@@ -142,9 +145,12 @@ object ParallaxUtils {
 			}
 		}
 
-		builder.setDescription("```$description```")
-		builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-		builder.setColor(Color.RED)
-		return channel.sendMessage(builder.build()).await()
+		embedBuilder.setDescription("```$description```")
+		embedBuilder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
+		embedBuilder.setColor(Color.RED)
+
+		messageBuilder.setEmbed(embedBuilder.build())
+
+		return channel.sendMessage(messageBuilder.build()).await()
 	}
 }

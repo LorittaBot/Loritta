@@ -480,7 +480,8 @@ object LorittaUtilsKotlin {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			ParallaxUtils.sendThrowableToChannel(
 					t,
-					textChannel
+					textChannel,
+					message
 			)
 		}
 
