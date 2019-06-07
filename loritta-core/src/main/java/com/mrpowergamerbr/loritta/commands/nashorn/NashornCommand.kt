@@ -1,20 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
+import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import jdk.nashorn.api.scripting.ClassFilter
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
-import net.dv8tion.jda.api.EmbedBuilder
-import org.apache.commons.lang3.exception.ExceptionUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.bson.types.ObjectId
 import org.graalvm.polyglot.Context
-import java.awt.Color
 import java.util.*
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.script.Invocable
@@ -84,29 +82,12 @@ var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
 var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
-			val executor = Executors.newSingleThreadExecutor()
+			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (Nashorn) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
 			try {
 				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Throwable) {
-				e.printStackTrace()
-				val builder = EmbedBuilder()
-				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-				var description = "Irineu, você não sabe e nem eu!"
-				if (e is ExecutionException) {
-					description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-				} else {
-					if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
-						description = (e.cause as Throwable).message!!.trim { it <= ' ' }
-					} else if (e != null) {
-						description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
-					}
-				}
-				builder.setDescription("```$description```")
-				builder.setFooter(
-						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-				builder.setColor(Color.RED)
-				ogContext.sendMessage(builder.build())
+				ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
 			}
 			executor.shutdownNow()
 		} else {
@@ -131,7 +112,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
 				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
 			""".trimIndent()
-			val executor = Executors.newSingleThreadExecutor()
+			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
 			try {
 				val parallaxContext = ParallaxContext(ogContext)
 				val future = executor.submit(ParallaxTask(graalContext, "(function(context) { \n" +
@@ -139,22 +120,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 						"$javaScript\n })", ogContext, parallaxContext))
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Throwable) {
-				e.printStackTrace()
-				val builder = EmbedBuilder()
-				builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-				var description = "Irineu, você não sabe e nem eu!"
-
-				if (e != null && e.cause != null && (e.cause as Throwable).message != null) {
-					description = (e.cause as Throwable).message!!.trim { it <= ' ' }
-				} else if (e != null) {
-					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
-				}
-
-				builder.setDescription("```$description```")
-				builder.setFooter(
-						"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-				builder.setColor(Color.RED)
-				ogContext.sendMessage(builder.build())
+				ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
 			}
 			executor.shutdownNow()
 		}
@@ -175,4 +141,8 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			val arguments: String = "",
 			val example: String = ""
 	)
+
+	companion object {
+
+	}
 }

@@ -2,18 +2,21 @@ package com.mrpowergamerbr.loritta.commands.nashorn
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
+import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.api.EmbedBuilder
-import org.apache.commons.lang3.exception.ExceptionUtils
-import java.awt.Color
+import mu.KotlinLogging
 import java.lang.management.ManagementFactory
 import java.util.concurrent.Callable
 import javax.script.Invocable
 import javax.script.ScriptEngine
 
 internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var ogContext: CommandContext, var context: NashornContext) : Callable<Void> {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	var running = true
 	var autoKill = 0
 
@@ -30,13 +33,20 @@ internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var
 			val t = object : Thread() {
 				override fun run() {
 					while (running) {
-						println("bytes: " + sunBean.getThreadAllocatedBytes(id))
+						logger.info("${currentThread.name} - bytes: ${sunBean.getThreadAllocatedBytes(id)}")
+
 						autoKill++
-						if (sunBean.getThreadAllocatedBytes(id) > 227402240 || autoKill > 600) {
-							println("!!! Matando thread")
+						val allocatedBytes = sunBean.getThreadAllocatedBytes(id)
+
+						if (allocatedBytes > 227402240 || autoKill > 600) {
+							logger.info("Killing thread ${currentThread.name}, $allocatedBytes allocated bytes, autoKill = $autoKill")
 							running = false
-							currentThread.stop() // stop now!
 						}
+
+						// Workaround, não se deve usar Thread.stop()!
+						if (!running)
+							currentThread.stop() // stop now!
+
 						try {
 							Thread.sleep(25)
 						} catch (e: Exception) {
@@ -46,28 +56,27 @@ internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var
 					return
 				}
 			}
+
 			t.start()
+			logger.info("Evaluating (Nashorn) @ ${ogContext.guild.idLong} = $javaScript")
+
 			val invocable = engine as Invocable
 			engine.eval(javaScript)
 			invocable.invokeFunction("nashornCommand", context)
-		} catch (e: Throwable) {
-			e.printStackTrace()
-			val builder = EmbedBuilder()
-			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-			builder.setDescription("```" + (if (e.cause != null)
-				e.cause!!.message!!.trim { it <= ' ' }
-			else
-				ExceptionUtils.getStackTrace(e)
-						.substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))) + "```")
-			builder.setFooter(
-					"Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-			builder.setColor(Color.RED)
+
+			running = false
+		} catch (t: Throwable) {
+			// Cancele primeiro a task
+			running = false
+
 			GlobalScope.launch(loritta.coroutineDispatcher) {
-				ogContext.sendMessage(builder.build())
+				ParallaxUtils.sendThrowableToChannel(
+						t,
+						ogContext.event.channel
+				)
 			}
 		}
 
-		running = false
 		return null
 	}
 }

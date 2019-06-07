@@ -1,28 +1,20 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import net.dv8tion.jda.api.EmbedBuilder
+import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.MessageChannel
-import org.apache.commons.lang3.exception.ExceptionUtils
-import java.awt.Color
 
 abstract class ParallaxPromise<T> {
     companion object {
-        val DEFAULT_CHANNEL_FAILURE_CALLBACK: (MessageChannel, Throwable) -> (Unit) = { channel, e ->
-            val builder = EmbedBuilder()
-            builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-            val description: String
-
-            if (e.cause != null && (e.cause as Throwable).message != null) {
-                description = (e.cause as Throwable).message!!.trim { it <= ' ' }
-            } else {
-                description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(e).length))
+        val DEFAULT_CHANNEL_FAILURE_CALLBACK: (MessageChannel, Throwable) -> (Unit) = { channel, t ->
+            GlobalScope.launch(loritta.coroutineDispatcher) {
+                ParallaxUtils.sendThrowableToChannel(
+                        t,
+                        channel
+                )
             }
-
-            builder.setDescription("```$description```")
-            builder.setFooter(
-                    "Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-            builder.setColor(Color.RED)
-            channel.sendMessage(builder.build()).queue()
         }
     }
 

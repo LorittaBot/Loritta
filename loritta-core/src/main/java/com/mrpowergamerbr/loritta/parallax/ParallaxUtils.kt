@@ -5,12 +5,18 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import mu.KotlinLogging
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageChannel
 import org.graalvm.polyglot.Value
+import java.awt.Color
 import java.io.File
+import java.util.concurrent.ExecutionException
 
 object ParallaxUtils {
 	private val logger = KotlinLogging.logger {}
@@ -107,5 +113,38 @@ object ParallaxUtils {
 			member.isNull -> null
 			else -> null
 		}
+	}
+
+	/**
+	 * Sends the [throwable] to a [channel] inside a [net.dv8tion.jda.api.entities.MessageEmbed]
+	 *
+	 * @return the sent throwable
+	 */
+	suspend fun sendThrowableToChannel(throwable: Throwable, channel: MessageChannel): Message {
+		logger.warn(throwable) { "Error while evaluating code" }
+
+		val cause = throwable.cause
+
+		val builder = EmbedBuilder()
+		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
+
+		val description = when (throwable) {
+			is ExecutionException -> "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
+			// Thread.stop (deprecated)
+			else -> {
+				val stringBuilder = StringBuilder()
+
+				if (cause?.message != null) {
+					stringBuilder.append("${cause.message}\n")
+				}
+
+				stringBuilder.toString().substringIfNeeded(0 until 2000)
+			}
+		}
+
+		builder.setDescription("```$description```")
+		builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
+		builder.setColor(Color.RED)
+		return channel.sendMessage(builder.build()).await()
 	}
 }

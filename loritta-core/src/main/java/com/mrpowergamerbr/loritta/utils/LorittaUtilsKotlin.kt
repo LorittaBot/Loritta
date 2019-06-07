@@ -15,14 +15,16 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
@@ -31,7 +33,6 @@ import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
-import org.apache.commons.lang3.exception.ExceptionUtils
 import org.jsoup.nodes.Element
 import java.awt.Color
 import java.awt.Graphics
@@ -40,7 +41,6 @@ import java.awt.image.BufferedImage
 import java.io.StringReader
 import java.net.URLEncoder
 import java.util.*
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 fun Image.toBufferedImage() : BufferedImage {
@@ -466,27 +466,6 @@ object LorittaUtilsKotlin {
 			return
 		}
 
-		val messageBuilder = MessageBuilder()
-		messageBuilder.append(message)
-		val builder = EmbedBuilder()
-		builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-		var description = "Irineu, você não sabe e nem eu!"
-		if (t is ExecutionException) {
-			description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-		} else {
-			val message = t.cause?.message
-			if (t != null && t.cause != null && message != null) {
-				description = message.trim { it <= ' ' }
-			} else if (t != null) {
-				description = ExceptionUtils.getStackTrace(t).substring(0, Math.min(2000, ExceptionUtils.getStackTrace(t).length))
-			}
-		}
-		builder.setDescription("```$description```")
-		builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-		builder.setColor(Color.RED)
-
-		messageBuilder.setEmbed(builder.build())
-
 		if ((System.currentTimeMillis() - stackTraceDelay) > 5000) {
 			stackTraceCount = 0
 			stackTraceDelay = System.currentTimeMillis()
@@ -498,7 +477,13 @@ object LorittaUtilsKotlin {
 			return
 		}
 
-		textChannel.sendMessage(messageBuilder.build()).queue()
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			ParallaxUtils.sendThrowableToChannel(
+					t,
+					textChannel
+			)
+		}
+
 		stackTraceCount++
 	}
 

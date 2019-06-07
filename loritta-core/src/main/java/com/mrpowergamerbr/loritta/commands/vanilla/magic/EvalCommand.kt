@@ -1,13 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.api.EmbedBuilder
-import org.apache.commons.lang3.exception.ExceptionUtils
-import java.awt.Color
-import java.util.concurrent.ExecutionException
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
@@ -31,24 +28,11 @@ class EvalCommand : AbstractCommand("evaljs", listOf("evaljavascript", "evaluate
 			if (returnedValue != null) {
 				context.sendMessage(returnedValue.toString()) // Value of, já que nós não sabemos qual tipo esse objeto é
 			}
-		} catch (e: Exception) {
-			val builder = EmbedBuilder()
-			builder.setTitle("❌ Ih Serjão Sujou! 🤦", "https://youtu.be/G2u8QGY25eU")
-			var description = "Irineu, você não sabe e nem eu!"
-			if (e is ExecutionException) {
-				description = "A thread que executava este comando agora está nos céus... *+angel* (Provavelmente seu script atingiu o limite máximo de memória utilizada!)"
-			} else {
-				val message = e.cause?.message
-				if (e != null && e.cause != null && message != null) {
-					description = message.trim { it <= ' ' }
-				} else if (e != null) {
-					description = ExceptionUtils.getStackTrace(e).substring(0, Math.min(1000, ExceptionUtils.getStackTrace(e).length))
-				}
-			}
-			builder.setDescription("```$description```")
-			builder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
-			builder.setColor(Color.RED)
-			context.sendMessage(builder.build())
+		} catch (t: Throwable) {
+			ParallaxUtils.sendThrowableToChannel(
+					t,
+					context.event.channel
+			)
 		}
 	}
 }
