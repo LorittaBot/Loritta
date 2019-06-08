@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.graalvm.polyglot.Value
 import java.awt.Color
 import java.io.File
@@ -137,9 +138,10 @@ object ParallaxUtils {
 			else -> {
 				val stringBuilder = StringBuilder()
 
-				if (cause?.message != null) {
+				if (cause?.message != null)
 					stringBuilder.append("${cause.message}\n")
-				}
+
+				stringBuilder.append(ExceptionUtils.getStackTrace(throwable))
 
 				stringBuilder.toString().substringIfNeeded(0 until 2000)
 			}
