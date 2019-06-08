@@ -171,9 +171,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldName = event.oldName
-
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
-				handledUsernameChanges.remove(event.user.idLong)
 		}
 	}
 
@@ -186,9 +183,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
-
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
-				handledUsernameChanges.remove(event.user.idLong)
 		}
 	}
 
