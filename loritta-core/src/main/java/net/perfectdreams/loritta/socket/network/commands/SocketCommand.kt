@@ -1,0 +1,13 @@
+package net.perfectdreams.loritta.socket.network.commands
+
+import com.fasterxml.jackson.databind.JsonNode
+import mu.KotlinLogging
+import net.perfectdreams.loritta.socket.SocketWrapper
+
+abstract class SocketCommand(val op: Int) {
+    companion object {
+        internal val logger = KotlinLogging.logger {}
+    }
+
+    abstract suspend fun process(socketWrapper: SocketWrapper, payload: JsonNode): JsonNode
+}

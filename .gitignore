@@ -90,6 +90,10 @@ buildNumber.properties
 # Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
+.gradle
+**/build/
+**/libs/
+**/out/
 
 # CMake
 cmake-build-debug/
