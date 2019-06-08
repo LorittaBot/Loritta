@@ -141,7 +141,6 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 				var str = game.name
 				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
-				str = str.replace("{users}", loritta.lorittaShards.getCachedUserCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
 				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
