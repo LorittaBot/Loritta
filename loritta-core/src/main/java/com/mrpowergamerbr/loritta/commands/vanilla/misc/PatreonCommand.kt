@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -14,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
-class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor"), category = CommandCategory.MISC) {
+class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor", "doar", "donate"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["PATREON_DESCRIPTION"]
 	}
@@ -26,10 +25,8 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 
 		if (lorittaGuild != null) {
 			val roleDonators = lorittaGuild.getRoleById("364201981016801281") // Pagadores de Aluguel
-			val roleInative = lorittaGuild.getRoleById("435856512787677214") // Contribuidor Inativo
 
 			val donators = lorittaGuild.getMembersWithRoles(roleDonators)
-			val inative = lorittaGuild.getMembersWithRoles(roleInative)
 
 			val lorittaProfiles = transaction(Databases.loritta) {
 				Profile.find { Profiles.id inList donators.map { it.user.idLong } }.toMutableList()
@@ -48,11 +45,6 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 					name = "**$name**"
 				}
 				patrons += "<:lori_owo:417813932380520448> $name\n"
-			}
-
-			patrons += "\uD83D\uDCB8"
-			inative.forEach {
-				patrons += " `${it.user.name}#${it.user.discriminator}`"
 			}
 		}
 
