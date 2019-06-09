@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.Command
 import net.perfectdreams.loritta.api.platform.PlatformFeature
+import net.perfectdreams.loritta.utils.Emotes
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -41,9 +42,12 @@ fun <T> LorittaCommand.notNull(value: T?, message: String, prefix: String = Cons
 	contract {
 		returns() implies (value != null)
 	}
-	if(value == null) throw CommandException(message, prefix)
+
+	if(value == null)
+		throw CommandException(message, prefix)
+
 	return value
 }
 
 @ExperimentalContracts
-fun <T> LorittaCommand.notNullImage(value: T?, context: LorittaCommandContext, prefix: String = Constants.ERROR) = notNull(value, context.legacyLocale["NO_VALID_IMAGE"], prefix)
+fun <T> LorittaCommand.notNullImage(value: T?, context: LorittaCommandContext, prefix: String = Constants.ERROR) = notNull(value, context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()], prefix)

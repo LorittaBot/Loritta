@@ -44,7 +44,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-script-util:$kotlinVersion")
     compile("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
     compile("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlinVersion")
-    compile("net.perfectdreams.commands:command-framework-core:0.0.7")
+    compile("net.perfectdreams.commands:command-framework-core:0.0.8")
     compile("com.oracle.graaljs:graal-js:1.0.0-rc9")
     compile("com.oracle.tregex:tregex:1.0.0-rc9")
     compile("com.oracle.truffle:truffle-api:1.0.0-rc7")
