@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.platform.amino.commands
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -93,7 +92,7 @@ class AminoCommandManager(val aminoLoritta: AminoLoritta) : LorittaCommandManage
                 val result = execute(context, command, rawArgs)
                 return result
             } catch (e: Exception) {
-                AbstractCommand.logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
+                logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 
                 // Avisar ao usuário que algo deu muito errado
                 var reply = "\uD83E\uDD37 **|** " + locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING]

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
