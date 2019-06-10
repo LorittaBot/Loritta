@@ -27,6 +27,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(BolsonaroCommand())
         registerCommand(SustoCommand())
         registerCommand(AtaCommand())
+        registerCommand(LoriAtaCommand())
         registerCommand(StudiopolisTvCommand())
         registerCommand(RomeroBrittoCommand())
         registerCommand(QuadroCommand())
