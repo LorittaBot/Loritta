@@ -53,10 +53,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				calendar.timeInMillis = inMillis
 
 				val message = message.trim()
-				println("userId = ${context.userHandle.idLong}")
-				println("channelId = ${context.message.textChannel.idLong}")
-				println("remindAt = ${inMillis}")
-				println("content = ${message.trim()}")
+				logger.trace { "userId = ${context.userHandle.idLong}" }
+				logger.trace { "channelId = ${context.message.channel.idLong}" }
+				logger.trace { "remindAt = $inMillis" }
+				logger.trace { "content = $message" }
 
 				// Criar o Lembrete
 				transaction(Databases.loritta) {

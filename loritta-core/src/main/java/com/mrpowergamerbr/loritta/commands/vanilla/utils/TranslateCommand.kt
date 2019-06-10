@@ -21,7 +21,7 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 		return listOf("pt Hello World!")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		if (context.args.size >= 2) {
 			val strLang = context.args[0]
 			context.args[0] = "" // Super workaround
@@ -37,7 +37,7 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 						)
 				)
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.warn(e) { "Error while translating $text to $strLang!" }
 			}
 		} else {
 			context.explain()

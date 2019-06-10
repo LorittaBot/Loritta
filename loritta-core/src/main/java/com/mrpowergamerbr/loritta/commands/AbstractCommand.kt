@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -17,9 +18,7 @@ import java.awt.Color
 import java.time.Instant
 
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
-	companion object {
-		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
-	}
+	internal val logger = KotlinLogging.logger {}
 
 	val cooldown: Int
 		get() = if (needsToUploadFiles()) 10000 else 5000

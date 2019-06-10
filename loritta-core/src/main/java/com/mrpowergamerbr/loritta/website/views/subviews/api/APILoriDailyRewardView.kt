@@ -240,11 +240,16 @@ class APILoriDailyRewardView : NoVarsView() {
 		}
 
 		val id = userIdentification.id.toLong()
+		email!!
 
-		println(userIdentification.id.toLong())
-		println(receivedDailyAt)
-		println(ip)
-		println(email!!)
+		logger.trace { "userIdentification.id = ${userIdentification.id}" }
+		logger.trace { "userIdentification.id.toLong() = ${userIdentification.id.toLong()}" }
+		logger.trace { "receivedDailyAt = $receivedDailyAt" }
+		logger.trace { "ip = $ip"}
+		logger.trace { "email = $email"}
+		logger.trace { "dailyPayout = $dailyPayout"}
+		logger.trace { "sponsoredBy = $sponsoredBy"}
+		logger.trace { "multipliedBy = $multipliedBy"}
 
 		transaction(Databases.loritta) {
 			Dailies.insert {
