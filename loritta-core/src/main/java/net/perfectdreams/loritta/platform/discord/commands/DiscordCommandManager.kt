@@ -451,7 +451,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                AbstractCommand.logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
+                logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
                 LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
                 // Avisar ao usuário que algo deu muito errado
