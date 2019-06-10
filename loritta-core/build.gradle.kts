@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    compile(project(":loritta-api-jvm"))
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     compile("com.google.guava:guava:27.1-jre")

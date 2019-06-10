@@ -25,6 +25,8 @@ allprojects {
                 "fat-jar-stuff",
                 fun(mainClass: String, customAttributes: Map<String, String>): Task {
                     return task("fatJar", type = Jar::class) {
+                        println("Building fat jar for ${project.name}...")
+
                         archiveBaseName.set("${project.name}-fat")
 
                         manifest {
@@ -42,9 +44,9 @@ allprojects {
                             attributes["Class-Path"] = configurations.compile.get().joinToString(" ", transform = { "libs/" + it.name })
                             attributes.putAll(customAttributes)
                         }
-                                                
+
                         val libs = File(rootProject.projectDir, "libs")
-                        libs.deleteRecursively()
+                        // libs.deleteRecursively()
                         libs.mkdirs()
 
                         from(configurations.runtimeClasspath.get().mapNotNull {
@@ -54,7 +56,7 @@ allprojects {
                                 val output = File(libs, it.name)
 
                                 if (!output.exists())
-                                   it.copyTo(output, true)
+                                    it.copyTo(output, true)
 
                                 null
                             }
