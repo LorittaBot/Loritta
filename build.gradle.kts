@@ -11,6 +11,10 @@ val jdaVersion    = "4.ALPHA.0_79"
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
 
+buildscript {
+    repositories { jcenter() }
+}
+
 allprojects {
     extra.apply {
         set("lori-version", loriVersion)
@@ -44,13 +48,13 @@ allprojects {
                         libs.mkdirs()
 
                         from(configurations.runtimeClasspath.get().mapNotNull {
-                            if (it.name.startsWith("loritta-core-")) {
+                            if (it.name.startsWith("loritta-core-") || it.name.startsWith("loritta-api-")) {
                                 zipTree(it)
                             } else {
                                 val output = File(libs, it.name)
 
                                 if (!output.exists())
-                                    it.copyTo(File(libs, it.name), true)
+                                   it.copyTo(output, true)
 
                                 null
                             }
