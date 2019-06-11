@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import java.io.File
+import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
@@ -121,7 +122,7 @@ object DebugLog {
 				println("===[ ACTIVE THREADS ]===")
 				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
-				println("Total Thread Count: ${Thread.getAllStackTraces().keys.size}")
+				println("Total Thread Count: ${ManagementFactory.getThreadMXBean().threadCount}")
 			}
 			"mongo" -> {
 				println("===[ MONGODB ]===")
