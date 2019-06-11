@@ -60,6 +60,7 @@ abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<L
 	final override fun getRegisteredCommands() = commands
 
 	final override fun registerCommand(command: LorittaCommand) {
+		command.loritta = loritta
 		commands.add(command)
 	}
 

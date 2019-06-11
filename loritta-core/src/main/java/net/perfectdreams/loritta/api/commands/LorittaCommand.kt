@@ -6,17 +6,32 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.Command
+import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.utils.Emotes
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 open class LorittaCommand(override val labels: Array<String>, val category: CommandCategory) : Command() {
+	lateinit var loritta: LorittaBot
+
 	internal val logger = KotlinLogging.logger {}
 	open val requiresFeatures = listOf<PlatformFeature>()
 	open val onlyOwner: Boolean = false
+
 	open val cooldown: Int
-		get() = if (needsToUploadFiles) 10000 else 5000
+		get() {
+			val customCooldown = loritta.config.loritta.commands.commandsCooldown[this::class.simpleName]
+
+			if (customCooldown != null)
+				return customCooldown
+
+			return if (needsToUploadFiles)
+				loritta.config.loritta.commands.imageCooldown
+			else
+				loritta.config.loritta.commands.cooldown
+		}
+
 	open var executedCount: Int = 0
 	open val hasCommandFeedback: Boolean = true
 	open val botPermissions = listOf<Permission>()

@@ -23,7 +23,17 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	internal val logger = KotlinLogging.logger {}
 
 	val cooldown: Int
-		get() = if (needsToUploadFiles()) 10000 else 5000
+		get() {
+			val customCooldown = loritta.config.loritta.commands.commandsCooldown[this::class.simpleName]
+
+			if (customCooldown != null)
+				return customCooldown
+
+			return if (needsToUploadFiles())
+				loritta.config.loritta.commands.imageCooldown
+			else
+				loritta.config.loritta.commands.cooldown
+		}
 
 	var executedCount = 0
 
