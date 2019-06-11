@@ -72,6 +72,8 @@ dependencies {
     compile("org.jooby:jooby-lang-kotlin:1.6.0")
     compile("io.ktor:ktor-server-core:$ktorVersion")
     compile("io.ktor:ktor-server-netty:$ktorVersion")
+    compile("io.ktor:ktor-client-core:$ktorVersion")
+    compile("io.ktor:ktor-client-cio:$ktorVersion")
     compile("org.jooby:jooby-mongodb:1.6.0")
     compile("io.github.microutils:kotlin-logging:1.6.26")
     compile("io.pebbletemplates:pebble:3.0.8")

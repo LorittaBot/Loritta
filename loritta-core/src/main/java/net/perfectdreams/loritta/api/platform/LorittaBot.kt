@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import io.ktor.client.HttpClient
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import java.io.File
 import java.lang.reflect.Modifier
@@ -26,6 +27,9 @@ abstract class LorittaBot(var config: GeneralConfig) {
 	var locales = mapOf<String, BaseLocale>()
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	var pluginManager = PluginManager(this)
+	val http = HttpClient {
+		this.expectSuccess = false
+	}
 
 	/**
 	 * Initializes the [id] locale and adds missing translation strings to non-default languages
