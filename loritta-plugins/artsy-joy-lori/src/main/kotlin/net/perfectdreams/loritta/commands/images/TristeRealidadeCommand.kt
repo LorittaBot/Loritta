@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -8,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandException
@@ -74,7 +74,7 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         val firstUser = users[0]
         if (firstUser is DiscordUser) {
             lovedGender = transaction(Databases.loritta) {
-                val profile = loritta.getOrCreateLorittaProfile(firstUser.id)
+                val profile = LorittaLauncher.loritta.getOrCreateLorittaProfile(firstUser.id)
                 profile.settings.gender
             }
         }
@@ -105,7 +105,7 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
                 var gender = Gender.UNKNOWN
 
                 gender = transaction(Databases.loritta) {
-                    val profile = loritta.getOrCreateLorittaProfile(member.handle.idLong)
+                    val profile = LorittaLauncher.loritta.getOrCreateLorittaProfile(member.handle.idLong)
                     profile.settings.gender
                 }
 
