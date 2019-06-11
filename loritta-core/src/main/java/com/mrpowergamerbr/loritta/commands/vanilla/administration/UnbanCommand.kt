@@ -3,13 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -163,7 +160,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				}
 			}
 
-			guild.controller.unban(user).reason(locale["UNBAN_UnbannedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+			guild.controller.unban(user).reason(locale["UNBAN_UnbannedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
 					.queue()
 		}
 	}
