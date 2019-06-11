@@ -427,8 +427,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                discordLoritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
-
                 val end = System.currentTimeMillis()
                 if (ev.message.isFromType(ChannelType.TEXT)) {
                     logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
