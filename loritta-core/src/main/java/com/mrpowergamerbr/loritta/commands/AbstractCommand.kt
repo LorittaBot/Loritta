@@ -13,12 +13,13 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
-import org.slf4j.LoggerFactory
+import org.bson.codecs.pojo.annotations.BsonIgnore
 import java.awt.Color
 import java.time.Instant
 
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	@Transient
+	@BsonIgnore
 	internal val logger = KotlinLogging.logger {}
 
 	val cooldown: Int
