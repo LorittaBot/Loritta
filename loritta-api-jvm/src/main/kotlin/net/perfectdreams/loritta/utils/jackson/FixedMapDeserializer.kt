@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.databind.type.MapType
 
@@ -37,7 +38,7 @@ class FixedMapDeserializer(val mapType: MapType) : JsonDeserializer<Map<*, *>>()
     fun convertFromJacksonToJava(type: JavaType, node: TreeNode): Any {
         return when {
             type.isTypeOrSubTypeOf(String::class.java) -> (node as TextNode).textValue()
-            type.isTypeOrSubTypeOf(Int::class.java) -> (node as TextNode).intValue()
+            type.isTypeOrSubTypeOf(Integer::class.java) -> (node as IntNode).intValue()
             type.isTypeOrSubTypeOf(Long::class.java) -> (node as TextNode).longValue()
             type.isTypeOrSubTypeOf(Float::class.java) -> (node as TextNode).floatValue()
             type.isTypeOrSubTypeOf(Double::class.java) -> (node as TextNode).doubleValue()
