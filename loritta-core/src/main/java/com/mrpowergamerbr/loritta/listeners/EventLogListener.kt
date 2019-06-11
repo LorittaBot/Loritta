@@ -59,6 +59,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 	}
+
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
 			.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
 				// Removal listeners processam removals, expired, etc.
