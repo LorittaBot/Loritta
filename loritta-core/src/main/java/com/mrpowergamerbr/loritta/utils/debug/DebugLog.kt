@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
-import org.jetbrains.kotlin.cli.common.toBooleanLenient
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
@@ -83,7 +82,7 @@ object DebugLog {
 
 		when (command) {
 			"toggleevents", "te" -> {
-				val toggleState = args.getOrNull(0).toBooleanLenient() ?: !cancelAllEvents
+				val toggleState = args.getOrNull(0)?.toBoolean() ?: !cancelAllEvents
 				cancelAllEvents = toggleState
 
 				println("Cancel all events: $cancelAllEvents")
