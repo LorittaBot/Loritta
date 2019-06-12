@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
+import org.jetbrains.kotlin.cli.common.toBooleanLenient
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
@@ -16,8 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
-	var cancelAllEvents = false
 	private val logger = KotlinLogging.logger {}
+	var cancelAllEvents = false
+		get() {
+			if (field)
+				logger.warn { "All received events are cancelled and ignored!" }
+			return field
+		}
 
 	fun startCommandListenerThread() {
 		thread {
@@ -76,10 +82,11 @@ object DebugLog {
 		args.removeAt(0)
 
 		when (command) {
-			"toggleevents" -> {
-				cancelAllEvents = !cancelAllEvents
+			"toggleevents", "te" -> {
+				val toggleState = args.getOrNull(0).toBooleanLenient() ?: !cancelAllEvents
+				cancelAllEvents = toggleState
 
-				println("Cancel all events: ${cancelAllEvents}")
+				println("Cancel all events: $cancelAllEvents")
 			}
 			"reload" -> {
 				val arg0 = args.getOrNull(0)
