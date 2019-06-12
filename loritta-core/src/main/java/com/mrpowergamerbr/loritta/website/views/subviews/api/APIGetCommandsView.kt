@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -87,8 +88,13 @@ class APIGetCommandsView : NoVarsView() {
 			obj["detailedUsage"] = jsonObject()
 			obj["example"] = it.getExamples(loritta.getLocaleById("default")).toJsonArray()
 			obj["extendedExamples"] = jsonObject()
-			obj["requiredUserPermissions"] = it.discordPermissions.map { it.name }.toJsonArray()
-			obj["requiredBotPermissions"] = it.botPermissions.map { it.name }.toJsonArray()
+			if (it is LorittaDiscordCommand) {
+				obj["requiredUserPermissions"] = it.discordPermissions.map { it.name }.toJsonArray()
+				obj["requiredBotPermissions"] = it.botPermissions.map { it.name }.toJsonArray()
+			} else {
+				obj["requiredUserPermissions"] = JsonArray()
+				obj["requiredBotPermissions"] = JsonArray()
+			}
 			array.add(obj)
 		}
 

@@ -3,14 +3,18 @@ package net.perfectdreams.loritta.commands.administration
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.perfectdreams.commands.annotation.Subcommand
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
-class RenameChannelCommand : LorittaCommand(arrayOf("renamechannel", "renomearcanal"), CommandCategory.ADMIN) {
+class RenameChannelCommand : LorittaDiscordCommand(arrayOf("renamechannel", "renomearcanal"), CommandCategory.ADMIN) {
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.moderation.renamechannel.description"]
     }
