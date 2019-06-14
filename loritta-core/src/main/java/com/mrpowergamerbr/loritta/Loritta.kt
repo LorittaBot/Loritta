@@ -264,8 +264,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		initMongo()
 		initPostgreSql()
 
-		generateDummyServerConfig()
-
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
@@ -281,6 +279,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
+		generateDummyServerConfig()
+		
 		if (config.socket.enabled) {
 			logger.info { "Sucesso! Iniciando socket client..." }
 			socket.connect()
