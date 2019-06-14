@@ -13,7 +13,7 @@ class QuirkyStuff : DiscordPlugin() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
 
         registerEventListeners(
-                AddReactionListener()
+                AddReactionListener(config)
         )
 
         registerMessageReceivedModules(

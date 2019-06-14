@@ -1,24 +1,28 @@
 package net.perfectdreams.loritta.listeners
 
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.QuirkyConfig
+import net.perfectdreams.loritta.utils.Emotes
 import java.io.File
 import java.net.URL
 
-class AddReactionListener : ListenerAdapter() {
+class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
-		if (event.channel.idLong != 583406099047252044L
-				|| event.reactionEmote.idLong != 521721811298156558L
-				|| event.member.idLong != 123170274651668480L)
+		if (!config.addFanArts.enabled
+				|| event.channel.idLong !in config.addFanArts.channels
+				|| event.reactionEmote.idLong != config.addFanArts.emoteId
+				|| !loritta.config.isOwner(event.member.idLong))
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -35,7 +39,7 @@ class AddReactionListener : ListenerAdapter() {
 
 				logger.info { "Tentando adicionar fan art de $userId ($userName) - URL: ${attachment.url} " }
 
-				for (it in File("/home/loritta_canary/test_website/fan_arts/").listFiles()) {
+				for (it in File(loritta.config.loritta.folders.fanArts).listFiles()) {
 					if (it.extension == "conf") {
 						val text = it.readText()
 						if (text.contains("        id = \"$userId\"")) {
@@ -69,14 +73,14 @@ class AddReactionListener : ListenerAdapter() {
 				logger.info { "Nome do arquivo para $userId ($userName) é $artistNameOnFiles" }
 
 				val fanArtName = run {
-					val first = File("/home/loritta/frontend/static/assets/img/fanarts/Loritta_-_$artistNameOnFiles.$ext")
+					val first = File(config.addFanArts.fanArtFiles, "Loritta_-_$artistNameOnFiles.$ext")
 					if (!first.exists())
 						first.name
 					else {
 						var recursiveness = 2
 						var f: File
 						do {
-							f = File("/home/loritta/frontend/static/assets/img/fanarts/Loritta_${recursiveness}_-_$artistNameOnFiles.$ext")
+							f = File(config.addFanArts.fanArtFiles, "Loritta_${recursiveness}_-_$artistNameOnFiles.$ext")
 							recursiveness++
 						} while (f.exists())
 
@@ -92,13 +96,13 @@ class AddReactionListener : ListenerAdapter() {
 				logger.info { "Nome da Fan Art: $fanArtName" }
 
 				val contents = URL(fanArtUrl).openConnection().getInputStream().readAllBytes()
-				val imageFile = File("/home/loritta/frontend/static/assets/img/fanarts/$fanArtName").apply {
+				val imageFile = File(config.addFanArts.fanArtFiles, fanArtName).apply {
 					this.writeBytes(contents)
 				}
 
 				logger.info { "Fan Art de $userId ($userName) - URL: ${attachment.url} foi salva em $imageFile!" }
 
-				val artistFile = File("/home/loritta_canary/test_website/fan_arts/$artistId.conf")
+				val artistFile = File(loritta.config.loritta.folders.fanArts, "$artistId.conf")
 
 				val fanArtSection = """    {
         |        file-name = "$fanArtName"
@@ -115,11 +119,7 @@ class AddReactionListener : ListenerAdapter() {
 					val insertAt = lines.indexOf("]")
 					lines.addAll(insertAt, fanArtSection.lines())
 
-					// println("Isto está OK?")
-					// println(lines.joinToString("\n"))
-					// readLine()
 					artistFile.writeText(lines.joinToString("\n"))
-					// println("Finalizado! :3")
 				} else {
 					logger.info { "Criando um arquivo de artista para a fan art..." }
 
@@ -141,14 +141,47 @@ networks = [
 ]
 """
 
-					// println("Isto está OK?")
-					// println(fullArtistTemplate)
-					// readLine()
 					artistFile.writeText(fullArtistTemplate)
-					// println("Finalizado! :3")
 				}
 
-				event.user.openPrivateChannel().await().sendMessage("A incrível Fan Art foi adicionada com sucesso! :3").await()
+				loritta.loadFanArts()
+
+				val fanArtArtist = loritta.fanArtArtists.first { it.id == artistId }
+
+				val userMessage = StringBuilder()
+				userMessage.append("A sua Fan Art (<https://loritta.website/assets/img/fanarts/$fanArtName>) foi adicionada no website! ${Emotes.LORI_TEMMIE}")
+				userMessage.append("\n\n")
+				userMessage.append("Aonde será que eu irei colocar a sua fan art... Talvez eu irei colocar ${config.addFanArts.placesToPlaceStuff.random()}!")
+				userMessage.append("\n\n")
+				userMessage.append("Você agora tem ${fanArtArtist.fanArts.size} fan art${if (fanArtArtist.fanArts.size != 1) { "s" } else ""} no meu website! <https://loritta.website/fanarts>")
+				userMessage.append("\n\n")
+
+				val fanArtArtistGuildMember = message.member
+				if (fanArtArtistGuildMember != null) {
+					val role = event.guild.getRoleById(config.addFanArts.firstFanArtRoleId)
+
+					if (role != null) {
+						if (fanArtArtistGuildMember.roles.contains(role)) {
+							userMessage.append("Obrigada por ser uma pessoa incrível!! Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
+							userMessage.append("\n\n")
+							userMessage.append("Agora você tem permissão para mandar mais fan arts para mim em <#583406099047252044>, mandar outros desenhos fofis em <#510601125221761054> e conversar com outros artistas em <#574387310129315850>! ${Emotes.LORI_OWO}")
+							event.guild.controller.removeSingleRoleFromMember(fanArtArtistGuildMember, role).await()
+						} else {
+							userMessage.append("Obrigada por ser uma pessoa incrível e por continuar a fazer fan arts de mim (tô até emocionada ${Emotes.LORI_CRYING})... Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
+						}
+					}
+				}
+				userMessage.append("\n\n")
+				userMessage.append("Sério, obrigada pela fan art, continue assim e continue a transformar o mundo em um lugar melhor! ${Emotes.LORI_HUG}")
+
+				if (event.channel.idLong == config.addFanArts.firstFanArtChannelId)
+					message.delete().await()
+
+				event.user.openPrivateChannel().await().sendMessage("A incrível Fan Art foi adicionada com sucesso! :3 https://loritta.website/assets/img/fanarts/$fanArtName").await()
+
+				try {
+					fanArtArtistGuildMember?.user?.openPrivateChannel()?.await()?.sendMessageAsync(userMessage.toString())
+				} catch (e: Exception) {}
 			} catch (e: Exception) {
 				logger.error(e) { "Erro ao adicionar fan art" }
 			}
