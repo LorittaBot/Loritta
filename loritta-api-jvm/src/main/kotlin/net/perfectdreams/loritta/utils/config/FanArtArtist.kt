@@ -1,21 +1,22 @@
-package net.perfectdreams.loritta.website.utils.config
+package net.perfectdreams.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import net.perfectdreams.loritta.utils.config.FanArt
 
 data class FanArtArtist @JsonCreator constructor(
     @param:JsonProperty("id")
     @field:JsonProperty("id")
     val id: String,
-    @param:JsonProperty("info")
+		@param:JsonProperty("info")
     @field:JsonProperty("info")
     val info: Info,
-    @param:JsonProperty("fanArts")
+		@param:JsonProperty("fanArts")
     @field:JsonProperty("fanArts")
     val fanArts: List<FanArt>,
-    @param:JsonProperty("networks")
+		@param:JsonProperty("networks")
     @field:JsonProperty("networks")
     val socialNetworks: List<SocialNetwork>? = listOf()
 ) {

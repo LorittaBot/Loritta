@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.website.utils.config
+package net.perfectdreams.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize

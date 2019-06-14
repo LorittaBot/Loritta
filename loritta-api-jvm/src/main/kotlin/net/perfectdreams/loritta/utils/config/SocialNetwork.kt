@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.website.utils.config
+package net.perfectdreams.loritta.utils.config
 
 data class SocialNetwork(
     val type: Type

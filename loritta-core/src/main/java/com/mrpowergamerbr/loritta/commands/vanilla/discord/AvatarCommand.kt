@@ -59,7 +59,12 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 					val displayName = fanArt.fancyName ?: user?.name
 
 					embed.appendDescription("\n\n**" + locale.toNewLocale()["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
-					val artist = loritta.fanArtConfig.artists[fanArt.artistId]
+					// TODO: Readicionar redes sociais depois
+					/* val artist = loritta.fanArtArtists.firstOrNull {
+						it.socialNetworks
+								?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+					}?.id
+
 					if (artist != null) {
 						for (socialNetwork in artist.socialNetworks) {
 							var root = socialNetwork.display
@@ -68,7 +73,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 							}
 							embed.appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
 						}
-					}
+					} */
 				}
 			}
 		}
