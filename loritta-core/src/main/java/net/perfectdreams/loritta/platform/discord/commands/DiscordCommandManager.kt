@@ -287,7 +287,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 // Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-                if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null) {
+                if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null && command is LorittaDiscordCommand) {
                     // Verificar se a Loritta possui todas as permissões necessárias
                     val botPermissions = command.botPermissions.toMutableList()
                     botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
@@ -345,15 +345,17 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 if (!context.canUseCommand()) {
-                    val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
-                    val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
-                    context.reply(
-                            LoriReply(
-                                    locale["commands.userDoesntHavePermissionDiscord", required],
-                                    Constants.ERROR
-                            )
-                    )
-                    return true
+                    if (command is LorittaDiscordCommand) {
+                        val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
+                        val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+                        context.reply(
+                                LoriReply(
+                                        locale["commands.userDoesntHavePermissionDiscord", required],
+                                        Constants.ERROR
+                                )
+                        )
+                        return true
+                    }
                 }
 
                 if (context.isPrivateChannel && !command.canUseInPrivateChannel) {

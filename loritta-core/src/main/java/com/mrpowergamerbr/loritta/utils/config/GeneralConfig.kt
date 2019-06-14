@@ -55,7 +55,8 @@ class GeneralConfig @JsonCreator constructor(
 				val assets: String,
 				val temp: String,
 				val locales: String,
-				val plugins: String
+				val plugins: String,
+				val fanArts: String
 		)
 
 		class CommandsConfig @JsonCreator constructor(

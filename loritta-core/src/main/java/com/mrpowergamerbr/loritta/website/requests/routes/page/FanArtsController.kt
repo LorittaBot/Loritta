@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page
 
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
-import com.mrpowergamerbr.loritta.utils.config.fanarts.SocialNetworkWrapper
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -10,7 +8,10 @@ import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.utils.config.FanArt
+import net.perfectdreams.loritta.utils.config.SocialNetwork
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -35,18 +36,24 @@ class FanArtsController {
 		val artists = mutableListOf<FanArtArtist>()
 
 		for (fanArt in fanArts) {
-			val user = if (fanArt.artistId != null) {
-				users.getOrPut(fanArt.artistId) { lorittaShards.getUserById(fanArt.artistId) }
+			val fanArtArtist = loritta.getFanArtArtistByFanArt(fanArt) ?: continue
+			val discordId = fanArtArtist.socialNetworks
+					?.firstIsInstanceOrNull<net.perfectdreams.loritta.utils.config.FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+					?.id
+
+			val user = if (discordId != null) {
+				users.getOrPut(discordId) { lorittaShards.getUserById(discordId) }
 			} else {
 				null
 			}
 
-			val artist = artists.firstOrNull { it.id == (fanArt.artistId ?: fanArt.fancyName) } ?: run {
+			val artist = artists.firstOrNull { it.id == fanArtArtist.id } ?: run {
 				val artist = FanArtArtist(
-						fanArt.artistId ?: fanArt.fancyName ?: user?.id,
-						fanArt.fancyName ?: user?.name ?: "???",
+						fanArtArtist.id,
+						fanArtArtist.info.override?.name ?: user?.name ?: fanArtArtist.info.name ?: "???",
 						user?.effectiveAvatarUrl ?: "https://loritta.website/assets/img/unknown.png",
-						loritta.fanArtConfig.artists[fanArt.artistId]?.socialNetworks ?: listOf(),
+						// TODO: Readicionar as redes sociais do usuário
+						listOf(),
 						user?.let { transaction(Databases.loritta) { loritta.getLorittaProfile(user.idLong)?.settings?.aboutMe } }
 				)
 
@@ -60,7 +67,12 @@ class FanArtsController {
 			)
 		}
 
-		variables["artists_json"] = gson.toJson(artists)
+		variables["artists_json"] = gson.toJson(
+				artists.sortedBy {
+					// Vamos enviar na ordem da *primeira fan art* feita para a Lori
+					it.fanArts.first().createdAt
+				}
+		)
 
 		res.send(evaluate("fan_arts.html", variables))
 	}
@@ -69,9 +81,9 @@ class FanArtsController {
 			val id: String?,
 			val name: String,
 			val effectiveAvatarUrl: String,
-			val socialNetworks: List<SocialNetworkWrapper>,
+			val socialNetworks: List<SocialNetwork>,
 			val aboutMe: String?
 	) {
-		val fanArts = mutableListOf<LorittaFanArt>()
+		val fanArts = mutableListOf<FanArt>()
 	}
 }

@@ -6,10 +6,11 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import java.awt.Color
 
-class RoleColorCommand: LorittaCommand(arrayOf("rolecolor", "colorrole", "changerolecolor"), CommandCategory.ADMIN) {
+class RoleColorCommand: LorittaDiscordCommand(arrayOf("rolecolor", "colorrole", "changerolecolor"), CommandCategory.ADMIN) {
     companion object {
         val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toRegex()
     }
@@ -25,6 +26,10 @@ class RoleColorCommand: LorittaCommand(arrayOf("rolecolor", "colorrole", "change
         }
     }
 
+    override fun getExamples(locale: BaseLocale): List<String> {
+        return listOf("351473717194522647 #000FFF", "cargolegal #000000")
+    }
+
     override val botPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
     override val discordPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
 
@@ -35,10 +40,10 @@ class RoleColorCommand: LorittaCommand(arrayOf("rolecolor", "colorrole", "change
             context.explain()
             return
         }
-        val hexStr = context.args.first()
+        val hexStr = context.args[1]
         val hexMatcher = RoleColorCommand.HEX_PATTERN.find(hexStr)
         var hexColor: Color?
-        val roleStr = context.args[1]
+        val roleStr = context.args.first()
         // sim e muit grand
         val role = if (context.discordMessage.mentionedRoles.firstOrNull() != null) {
             context.discordMessage.mentionedRoles.firstOrNull()

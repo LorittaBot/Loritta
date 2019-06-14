@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.Command
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -34,8 +33,6 @@ open class LorittaCommand(override val labels: Array<String>, val category: Comm
 
 	open var executedCount: Int = 0
 	open val hasCommandFeedback: Boolean = true
-	open val botPermissions = listOf<Permission>()
-	open val discordPermissions = listOf<Permission>()
 	open val lorittaPermissions = listOf<LorittaPermission>()
 	open val canUseInPrivateChannel: Boolean = true
 	open val requiresMusic: Boolean = false

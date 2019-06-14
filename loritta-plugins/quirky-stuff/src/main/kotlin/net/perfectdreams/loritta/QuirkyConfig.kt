@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonCreator
 class QuirkyConfig @JsonCreator constructor(
         val randomReactions: RandomReactionsConfig,
         val thankYouLori: ThankYouLoriConfig,
-        val tioDoPave: TioDoPaveConfig
+        val tioDoPave: TioDoPaveConfig,
+        val addFanArts: AddFanArtsConfig
 ) {
     class RandomReactionsConfig @JsonCreator constructor(
             val enabled: Boolean,
@@ -29,5 +30,15 @@ class QuirkyConfig @JsonCreator constructor(
             val enabled: Boolean,
             val channelId: Long,
             val reactions: List<String>
+    )
+
+    class AddFanArtsConfig @JsonCreator constructor(
+            val enabled: Boolean,
+            val emoteId: Long,
+            val channels: List<Long>,
+            val fanArtFiles: String,
+            val firstFanArtChannelId: Long,
+            val firstFanArtRoleId: Long,
+            val placesToPlaceStuff: List<String>
     )
 }

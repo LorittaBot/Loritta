@@ -5,11 +5,15 @@ import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.annotation.Subcommand
-import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import java.util.regex.Pattern
 
-class RenameEmojiCommand : LorittaCommand(arrayOf("renameemoji", "renomearemoji"), CommandCategory.DISCORD) {
+class RenameEmojiCommand : LorittaDiscordCommand(arrayOf("renameemoji", "renomearemoji"), CommandCategory.DISCORD) {
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.discord.renameemoji.description"]
     }
