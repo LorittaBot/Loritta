@@ -28,6 +28,7 @@ class RoleColorCommand: LorittaCommand(arrayOf("rolecolor", "colorrole", "change
     override val botPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
     override val discordPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
 
+
     @Subcommand
     suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
         if (context.args.isEmpty() || context.args.size < 2) {
