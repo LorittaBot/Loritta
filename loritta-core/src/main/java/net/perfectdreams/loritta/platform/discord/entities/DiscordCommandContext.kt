@@ -729,7 +729,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	 * @see Role
 	 * */
 	fun getRoleAt(argument: Int): Role? {
-		if (argument < this.args.size) {
+		if (this.args.size > argument) {
 			val roleStr = this.args[argument]
 			val guild = this.discordGuild!!
 			val message = this.discordMessage
