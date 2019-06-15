@@ -721,4 +721,36 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			return null
 		}
 	}
+	/**
+	 *
+	 * Gets a role from argument index
+	 *
+	 * @param argument the argument index
+	 * @see Role
+	 * */
+	fun getRoleAt(argument: Int): Role? {
+		if (argument < this.args.size) {
+			val roleStr = this.args[argument]
+			val guild = this.discordGuild!!
+			val message = this.discordMessage
+
+			try {
+				// Tentar encontrar por cargos mencionados
+				if (message.mentionedRoles[argument] != null)
+					return this.discordMessage.mentionedRoles[argument]
+
+				// Tentar encontrar por ID de cargo
+				if (roleStr.isValidSnowflake() && guild.getRoleById(roleStr) != null)
+					return guild.getRoleById(roleStr)
+
+				// Tentar encontrar por nome
+				if (guild.getRolesByName(roleStr, true).isNotEmpty())
+					return guild.getRolesByName(roleStr, true).first()
+			} catch(e: Exception) {
+				// Se for algum motivo der erro, apenas retorne null
+				return null
+			}
+		}
+		return null
+	}
 }
