@@ -30,7 +30,7 @@ class RoleColorCommand : LorittaDiscordCommand(arrayOf("rolecolor", "colorrole",
 
     @Subcommand
     suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
-        if (2 >= context.args.size) {
+        if (2 > context.args.size) {
             context.explain()
             return
         }
