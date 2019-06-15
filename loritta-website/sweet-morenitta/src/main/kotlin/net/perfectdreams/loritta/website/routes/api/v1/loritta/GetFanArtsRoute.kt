@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.utils.Constants
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.routes.BaseRoute
-import net.perfectdreams.loritta.website.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.website
 

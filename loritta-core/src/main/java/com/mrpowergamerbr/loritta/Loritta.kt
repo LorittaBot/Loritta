@@ -58,8 +58,6 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
-import net.perfectdreams.loritta.utils.config.FanArt
-import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -280,7 +278,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		lorittaShards.shardManager = shardManager
 
 		generateDummyServerConfig()
-		
+
 		if (config.socket.enabled) {
 			logger.info { "Sucesso! Iniciando socket client..." }
 			socket.connect()
