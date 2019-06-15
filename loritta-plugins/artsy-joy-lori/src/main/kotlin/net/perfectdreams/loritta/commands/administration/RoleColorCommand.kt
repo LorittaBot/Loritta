@@ -1,19 +1,15 @@
 package net.perfectdreams.loritta.commands.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import java.awt.Color
+import net.perfectdreams.loritta.utils.ColorUtils
 
-class RoleColorCommand: LorittaDiscordCommand(arrayOf("rolecolor", "colorrole", "changerolecolor"), CommandCategory.ADMIN) {
-    companion object {
-        val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toRegex()
-    }
+class RoleColorCommand : LorittaDiscordCommand(arrayOf("rolecolor", "colorrole", "changerolecolor"), CommandCategory.ADMIN) {
 
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.moderation.rolecolor.description"]
@@ -22,7 +18,7 @@ class RoleColorCommand: LorittaDiscordCommand(arrayOf("rolecolor", "colorrole", 
     override fun getUsage(locale: BaseLocale): CommandArguments {
         return arguments {
             argument(ArgumentType.ROLE) {}
-            argument(ArgumentType.TEXT) {}
+            argument(ArgumentType.COLOR) {}
         }
     }
 
@@ -32,42 +28,29 @@ class RoleColorCommand: LorittaDiscordCommand(arrayOf("rolecolor", "colorrole", 
 
     override val botPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
     override val discordPermissions: List<Permission> = listOf(Permission.MANAGE_ROLES)
-
+    override val canUseInPrivateChannel: Boolean = false
 
     @Subcommand
     suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
-        if (context.args.isEmpty() || context.args.size < 2) {
+        if (2 > context.args.size) {
             context.explain()
             return
         }
-        val hexStr = context.args[1]
-        val hexMatcher = RoleColorCommand.HEX_PATTERN.find(hexStr)
-        var hexColor: Color?
-        val roleStr = context.args.first()
-        // sim e muit grand
-        val role = if (context.discordMessage.mentionedRoles.firstOrNull() != null) {
-            context.discordMessage.mentionedRoles.firstOrNull()
-        } else if (context.args.isNotEmpty() && roleStr.isValidSnowflake() && context.event.guild!!.getRoleById(roleStr) != null) {
-            context.event.guild!!.getRoleById(roleStr)
-        } else if (context.event.guild!!.getRolesByName(roleStr, true).isNotEmpty()) {
-            context.event.guild!!.getRolesByName(roleStr, true)[0]
-        } else if (context.event.guild!!.roles.filter { it.name.contains(roleStr, true) }.isNotEmpty()) {
-            context.event.guild!!.roles.filter { it.name.contains(roleStr, true) }.first()
-        } else {
-            context.reply(locale["commands.discord.rolecolor.roleNotFound"], Constants.ERROR)
+        val hexStr = context.args.drop(1).joinToString(" ")
+        val hexColor = ColorUtils.getColorFromString(hexStr)
+        val role = context.getRoleAt(0)
+
+        if (role == null) {
+            context.reply(locale["commands.moderation.rolecolor.rolenotfound"])
             return
         }
-
-        if (hexMatcher != null) {
-            hexColor = Color.decode('#' + hexMatcher.groupValues.first())
-        } else {
-            context.reply(locale["commands.moderation.rolecolor.invalidHex"])
+        if (hexColor == null) {
+            context.reply(locale["commands.moderation.rolecolor."])
             return
         }
-
         // E finalmente vamos mudar a cor do cargo
         try {
-            val manager = role!!.manager
+            val manager = role.manager
             manager.setColor(hexColor).queue()
         } catch(e: Exception) {
             context.reply(locale["commands.moderation.rolecolor.cantChange"], Constants.ERROR)
