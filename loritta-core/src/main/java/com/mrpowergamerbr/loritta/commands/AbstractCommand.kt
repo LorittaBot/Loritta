@@ -7,22 +7,33 @@ import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
-import org.slf4j.LoggerFactory
+import org.bson.codecs.pojo.annotations.BsonIgnore
 import java.awt.Color
 import java.time.Instant
 
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
-	companion object {
-		val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
-	}
+	@Transient
+	@get:BsonIgnore
+	internal val logger = KotlinLogging.logger {}
 
 	val cooldown: Int
-		get() = if (needsToUploadFiles()) 10000 else 5000
+		get() {
+			val customCooldown = loritta.config.loritta.commands.commandsCooldown[this::class.simpleName]
+
+			if (customCooldown != null)
+				return customCooldown
+
+			return if (needsToUploadFiles())
+				loritta.config.loritta.commands.imageCooldown
+			else
+				loritta.config.loritta.commands.cooldown
+		}
 
 	var executedCount = 0
 

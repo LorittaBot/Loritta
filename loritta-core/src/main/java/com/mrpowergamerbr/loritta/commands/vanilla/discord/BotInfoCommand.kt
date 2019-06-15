@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -52,7 +51,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.config.loritta.website.url, "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), LorittaLauncher.loritta.lorittaShards.getCachedUserCount(), sb.toString(), LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
+		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), sb.toString(), LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
 		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.config.loritta.website.url}donate", true)
 		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.config.loritta.website.url}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.config.loritta.website.url}commands", true)
@@ -161,7 +160,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						mentionUser = false
 				),
 				LoriReply(
-						"**${locale["BOTINFO_ThreadCount"]}:** ${Thread.getAllStackTraces().keys.size}",
+						"**${locale["BOTINFO_ThreadCount"]}:** ${ManagementFactory.getThreadMXBean().threadCount}",
 						"\uD83D\uDC4B",
 						mentionUser = false
 				),

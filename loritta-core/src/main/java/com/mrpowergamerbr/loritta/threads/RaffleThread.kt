@@ -8,10 +8,10 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
@@ -25,8 +25,9 @@ class RaffleThread : Thread("Raffle Thread") {
 		var lastWinnerPrize = 0
 		var started: Long = System.currentTimeMillis()
 		// user ID + locale ID
+		// TODO: Alterar userId para um long (para usar menos memória)
 		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
-		val logger = LoggerFactory.getLogger(RaffleThread::class.java)
+		val logger = KotlinLogging.logger {}
 	}
 
 	override fun run() {
@@ -40,7 +41,7 @@ class RaffleThread : Thread("Raffle Thread") {
 					handleWin()
 				}
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.warn(e) { "Exception while trying to handleWin()! We have ${userIds.size} stored IDs, started = $started"}
 			}
 			Thread.sleep(1000)
 		}
@@ -56,12 +57,11 @@ class RaffleThread : Thread("Raffle Thread") {
 		json["lastWinnerPrize"] = lastWinnerPrize
 		json["userIds"] = Loritta.GSON.toJsonTree(userIds)
 
-		logger.info("""Salvando raffle.json...
-			|Iniciou às: $started
-			|Último vencedor: $lastWinnerId
-			|Prémio do último vencedor: $lastWinnerPrize
-			|Tickets: ${userIds.size}
-		""".trimMargin())
+		logger.info { "Salvando raffle.json..." }
+		logger.info { "Iniciou às: $started" }
+		logger.info { "Último vencedor: $lastWinnerId" }
+		logger.info { "Prémio do último vencedor: $lastWinnerPrize" }
+		logger.info { "Tickets: ${userIds.size}" }
 
 		loteriaFile.writeText(json.toString())
 	}

@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    compile(project(":loritta-api-jvm"))
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     compile("com.google.guava:guava:27.1-jre")
@@ -44,7 +45,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-script-util:$kotlinVersion")
     compile("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
     compile("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlinVersion")
-    compile("net.perfectdreams.commands:command-framework-core:0.0.7")
+    compile("net.perfectdreams.commands:command-framework-core:0.0.8")
     compile("com.oracle.graaljs:graal-js:1.0.0-rc9")
     compile("com.oracle.tregex:tregex:1.0.0-rc9")
     compile("com.oracle.truffle:truffle-api:1.0.0-rc7")
@@ -71,6 +72,8 @@ dependencies {
     compile("org.jooby:jooby-lang-kotlin:1.6.0")
     compile("io.ktor:ktor-server-core:$ktorVersion")
     compile("io.ktor:ktor-server-netty:$ktorVersion")
+    compile("io.ktor:ktor-client-core:$ktorVersion")
+    compile("io.ktor:ktor-client-cio:$ktorVersion")
     compile("org.jooby:jooby-mongodb:1.6.0")
     compile("io.github.microutils:kotlin-logging:1.6.26")
     compile("io.pebbletemplates:pebble:3.0.8")

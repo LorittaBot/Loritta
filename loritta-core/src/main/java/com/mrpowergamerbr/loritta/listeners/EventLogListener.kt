@@ -59,6 +59,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 	}
+
 	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
 			.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
 				// Removal listeners processam removals, expired, etc.
@@ -171,9 +172,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldName = event.oldName
-
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
-				handledUsernameChanges.remove(event.user.idLong)
 		}
 	}
 
@@ -186,9 +184,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} else {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
-
-			if (usernameChange.oldName != null && usernameChange.oldDiscriminator != null)
-				handledUsernameChanges.remove(event.user.idLong)
 		}
 	}
 

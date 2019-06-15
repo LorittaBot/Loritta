@@ -10,9 +10,11 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import org.slf4j.LoggerFactory
 import java.time.Instant
 
@@ -49,9 +51,11 @@ class LorittaLandRoleSync : Runnable {
 			val drawingRole = originalGuild.getRoleById("341343754336337921")
 
 			logger.info("Processando cargos de desenhistas...")
-			val validIllustrators = loritta.fanArts.mapNotNull {
-				val artist = loritta.fanArtConfig.artists[it.artistId]
-				val discordId = artist?.discordId ?: it.artistId
+			val validIllustrators = loritta.fanArtArtists.mapNotNull {
+				val discordId = it.socialNetworks
+						?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+						?.id
+
 				if (discordId != null) {
 					originalGuild.getMemberById(discordId)
 				} else {

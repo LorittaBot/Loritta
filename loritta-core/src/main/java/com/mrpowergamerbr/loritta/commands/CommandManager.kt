@@ -27,6 +27,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -36,6 +37,7 @@ import java.util.*
 class CommandManager {
 	companion object {
 		val DEFAULT_COMMAND_OPTIONS = CommandOptions()
+		val logger = KotlinLogging.logger {}
 	}
 
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
@@ -64,7 +66,6 @@ class CommandManager {
 		commandMap.add(ShipCommand())
 		commandMap.add(AvaliarWaifuCommand())
 		commandMap.add(RazoesCommand())
-		commandMap.add(QuadroCommand())
 		commandMap.add(DeusCommand())
 		commandMap.add(PerfeitoCommand())
 		commandMap.add(TrumpCommand())
@@ -76,7 +77,6 @@ class CommandManager {
 		commandMap.add(AmizadeCommand())
 		commandMap.add(PerdaoCommand())
 		commandMap.add(RipVidaCommand())
-		commandMap.add(AtaCommand())
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
 		commandMap.add(GameJoltCommand())
@@ -84,22 +84,15 @@ class CommandManager {
 
 		// =======[ IMAGENS ]======
 		commandMap.add(GetOverHereCommand())
-		commandMap.add(RomeroBrittoCommand())
-		commandMap.add(StudiopolisTvCommand())
 		commandMap.add(ManiaTitleCardCommand())
 		commandMap.add(LaranjoCommand())
-		commandMap.add(SustoCommand())
 		commandMap.add(TriggeredCommand())
 		commandMap.add(GumballCommand())
 		commandMap.add(ContentAwareScaleCommand())
-		commandMap.add(ArtCommand())
-		commandMap.add(PepeDreamCommand())
 		commandMap.add(SwingCommand())
 		commandMap.add(DemonCommand())
 		commandMap.add(KnuxThrowCommand())
-		commandMap.add(LoriSignCommand())
 		commandMap.add(TextCraftCommand())
-		commandMap.add(BolsonaroCommand())
 		commandMap.add(BolsoDrakeCommand())
 		commandMap.add(DrawnMaskCommand())
 
@@ -353,9 +346,9 @@ class CommandManager {
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					AbstractCommand.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				} else {
-					AbstractCommand.logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
 				conf.lastCommandReceivedAt = System.currentTimeMillis()
@@ -566,13 +559,11 @@ class CommandManager {
 					}
 				}
 
-				loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
-
 				val end = System.currentTimeMillis()
 				if (ev.message.isFromType(ChannelType.TEXT)) {
-					AbstractCommand.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
+					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
 				} else {
-					AbstractCommand.logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
+					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
 				}
 				return true
 			} catch (e: Exception) {
@@ -589,7 +580,7 @@ class CommandManager {
 					}
 				}
 
-				AbstractCommand.logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
+				logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado

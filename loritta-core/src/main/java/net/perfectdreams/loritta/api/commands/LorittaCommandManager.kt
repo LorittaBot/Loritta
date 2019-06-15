@@ -13,9 +13,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
 abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<LorittaCommandContext, LorittaCommand, BaseDSLCommand>() {
-	companion object {
-		internal val logger = KotlinLogging.logger {}
-	}
+	val logger = KotlinLogging.logger {}
 
 	val commands = mutableListOf<LorittaCommand>()
 
@@ -62,6 +60,7 @@ abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<L
 	final override fun getRegisteredCommands() = commands
 
 	final override fun registerCommand(command: LorittaCommand) {
+		command.loritta = loritta
 		commands.add(command)
 	}
 

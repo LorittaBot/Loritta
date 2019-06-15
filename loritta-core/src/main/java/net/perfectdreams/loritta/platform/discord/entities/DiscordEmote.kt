@@ -36,10 +36,12 @@ class DiscordEmote(code: String) : LorittaEmote(code) {
     }
 
     private fun getJdaEmote(): Emote? {
-        return if (jdaEmote != null)
+        return jdaEmote ?: run {
+            val jdaEmote = lorittaShards.getEmoteById(id)
+            if (jdaEmote != null)
+                this.jdaEmote = jdaEmote
             jdaEmote
-        else
-            lorittaShards.getEmoteById(jdaEmote)
+        }
     }
 
     override fun toString() = asMention

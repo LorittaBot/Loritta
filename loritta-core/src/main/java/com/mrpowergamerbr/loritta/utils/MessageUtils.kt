@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
+import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
@@ -16,6 +17,8 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 object MessageUtils {
+	private val logger = KotlinLogging.logger {}
+
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
 		val jsonObject = try {
 			if (message.startsWith("---\n")) { // Se existe o header de um arquivo YAML... vamos processar como se fosse YAML!
@@ -152,7 +155,8 @@ object MessageUtils {
 				var overflow = 0
 				while (message.indexOf(":${emote.name}:", index) != -1) {
 					if (overflow == 999) {
-						println("Overflow on String ${message}!!!")
+						logger.warn { "String $message was overflown (999 > $overflow) when processing emotes, breaking current execution"}
+						logger.warn { "Stuck while processing emote $emote, index = $index, indexOf = ${message.indexOf(":${emote.name}:", index)}"}
 						break
 					}
 					val _index = index

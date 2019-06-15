@@ -77,11 +77,11 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
     suspend fun runAction(context: DiscordCommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
         val response: String
         val locale = context.locale
-        val senderProfile = userProfile ?: loritta.getOrCreateLorittaProfile(user.id)
-        val recProfile = receiverProfile ?: loritta.getOrCreateLorittaProfile(receiver.id)
+        val senderProfile = userProfile ?: LorittaLauncher.loritta.getOrCreateLorittaProfile(user.id)
+        val recProfile = receiverProfile ?: LorittaLauncher.loritta.getOrCreateLorittaProfile(receiver.id)
 
         // Anti-gente idiota
-        if (this is KissCommand && receiver.id == loritta.discordConfig.discord.clientId) {
+        if (this is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
             context.reply(
                     LoriReply(
                             locale["commands.actions.kiss.responseAntiIdiot"],
@@ -98,7 +98,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
         response = getResponse(locale, user, receiver)
 
         // Quem tentar estapear a Loritta, vai ser estapeado
-        var files = if ((this is SlapCommand || this is AttackCommand || this is KissCommand) && receiver.id == loritta.discordConfig.discord.clientId) {
+        var files = if ((this is SlapCommand || this is AttackCommand || this is KissCommand) && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
             getGifsFor(receiverGender, userGender)
         } else {
             getGifsFor(userGender, receiverGender)

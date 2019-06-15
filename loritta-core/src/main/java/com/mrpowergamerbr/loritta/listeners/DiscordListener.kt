@@ -321,39 +321,66 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
+		logger.info { "Someone removed me @ ${e.guild}! :(" }
+
 		loritta.socket.socketWrapper?.syncDiscordStats()
 
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
 		MuteCommand.roleRemovalJobs.forEach { key, value ->
 			if (key.startsWith(e.guild.id)) {
+				logger.debug { "Stopping mute job $value @ ${e.guild} because they removed me!" }
 				value.cancel()
 				toRemove.add(key)
 			}
 		}
 		toRemove.forEach { MuteCommand.roleRemovalJobs.remove(it) }
 
+		logger.debug { "Deleting all ${e.guild} related stuff..." }
+
 		loritta.executor.execute {
+			logger.trace { "Deleting MongoDB ${e.guild} config..."}
+
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
 			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
 
 			transaction(Databases.loritta) {
+				DiscordListener.logger.trace { "Deleting all ${e.guild} profiles..."}
+
 				// Deletar todos os perfis do servidor
 				GuildProfiles.deleteWhere {
 					GuildProfiles.guildId eq e.guild.idLong
 				}
 
 				// Deletar configurações
+				DiscordListener.logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
+				DiscordListener.logger.trace { "Deleting ${e.guild} donation config..."}
 				val donationConfig = serverConfig?.donationConfig
 
+				DiscordListener.logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 				donationConfig?.delete()
+
+				DiscordListener.logger.trace { "Deleting all ${e.guild}'s giveaways..."}
+				val allGiveaways = Giveaway.find {
+					Giveaways.guildId eq e.guild.idLong
+				}
+
+				DiscordListener.logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!"}
+
+				allGiveaways.forEach {
+					GiveawayManager.cancelGiveaway(it, true, true)
+				}
+
+				DiscordListener.logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
 			}
 		}
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
+		logger.info { "Someone added me @ ${event.guild}! :)" }
+
 		loritta.socket.socketWrapper?.syncDiscordStats()
 
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
@@ -361,12 +388,18 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val regionName = region.getName()
 		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 
+		logger.trace { "regionName = $regionName" }
+
 		// Portuguese
 		if (regionName.startsWith("Brazil")) {
+			logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
 			serverConfig.localeId = "default"
 		} else {
+			logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
 			serverConfig.localeId = "en-us"
 		}
+
+		logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
 
 		// Adicionar a permissão de DJ para alguns cargos
 		event.guild.roles.forEach {
@@ -390,6 +423,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
+
+		logger.debug { "${event.member} joined server ${event.guild}" }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
@@ -442,7 +477,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
 				}
 
+				logger.trace { "Does ${event.member} in guild ${event.guild} has a mute status? $mute" }
+
 				if (mute != null) {
+					logger.debug { "${event.member} in guild ${event.guild} has a mute! Readding roles and recreating role removal task!" }
 					val locale = loritta.getLegacyLocaleById(conf.localeId)
 					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLegacyLocaleById(conf.localeId)) ?: return@launch
 
@@ -462,16 +500,19 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		logger.debug { "${event.member} left server ${event.guild}" }
+
 		// Remover thread de role removal caso o usuário tenha saido do servidor
 		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + event.member.user.id]
+		logger.debug { "Stopping mute job $job due to member guild quit" }
 		job?.cancel()
 		MuteCommand.roleRemovalJobs.remove(event.guild.id + "#" + event.member.user.id)
 
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				if (event.user.id == loritta.discordConfig.discord.clientId) {
+				if (event.user.id == loritta.discordConfig.discord.clientId)
 					return@launch
-				}
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
@@ -492,6 +533,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
+		logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Should hide in event log? $hideInEventLog"}
+
 		for (textChannel in guild.textChannels) {
 			queueTextChannelTopicUpdate(guild, serverConfig, textChannel, hideInEventLog)
 		}
@@ -507,6 +550,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val diff = System.currentTimeMillis() - lastUpdate
 
 		if (MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
+			logger.debug { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
+
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 			val currentJob = memberCounterUpdateJobs[textChannel.idLong]
 			currentJob?.cancel()
@@ -535,6 +580,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 
 		val locale = loritta.getLocaleById(serverConfig.localeId)
+		logger.debug { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
+		logger.trace { "Member Counter Theme = ${memberCounterConfig.theme}"}
+		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
+		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
+		logger.trace { "Formatted Topic = $formattedTopic" }
+
 		textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
 

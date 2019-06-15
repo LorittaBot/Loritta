@@ -110,7 +110,6 @@ object WebsiteUtils {
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
 				"guildCount" to lorittaShards.getCachedGuildCount(),
-				"userCount" to lorittaShards.getCachedUserCount(),
 				"availableCommandsCount" to loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
 				"commandMap" to loritta.legacyCommandManager.commandMap + loritta.commandManager.commands.size,
 				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,

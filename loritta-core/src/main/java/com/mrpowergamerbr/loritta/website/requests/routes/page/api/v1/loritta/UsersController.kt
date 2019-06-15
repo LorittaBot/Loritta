@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import net.perfectdreams.loritta.utils.config.FanArtArtist
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -22,8 +24,10 @@ class UsersController {
 			"artists" -> {
 				res.status(Status.OK)
 
-				val userIds = loritta.fanArts.mapNotNull {
-					lorittaShards.getUserById(it.artistId)?.id
+				val userIds = loritta.fanArtArtists.mapNotNull {
+					it.socialNetworks
+							?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+							?.id
 				}.distinct()
 
 				res.send(

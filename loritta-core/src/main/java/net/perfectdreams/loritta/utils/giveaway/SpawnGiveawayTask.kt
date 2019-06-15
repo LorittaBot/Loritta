@@ -20,7 +20,7 @@ class SpawnGiveawayTask : Runnable {
                     if (GiveawayManager.giveawayTasks[it.id.value] == null)
                         GiveawayManager.createGiveawayJob(it)
                 } catch (e: Exception) {
-                    Companion.logger.error(e) { "Error while creating giveaway ${it.id.value} job" }
+                    SpawnGiveawayTask.logger.error(e) { "Error while creating giveaway ${it.id.value} job" }
                 }
             }
         }

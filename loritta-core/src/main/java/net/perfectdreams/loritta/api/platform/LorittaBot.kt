@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.api.platform
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
@@ -10,7 +11,10 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import io.ktor.client.HttpClient
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
+import net.perfectdreams.loritta.utils.config.FanArt
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import java.io.File
 import java.lang.reflect.Modifier
 import java.util.*
@@ -26,6 +30,32 @@ abstract class LorittaBot(var config: GeneralConfig) {
 	var locales = mapOf<String, BaseLocale>()
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	var pluginManager = PluginManager(this)
+	val http = HttpClient {
+		this.expectSuccess = false
+	}
+	var fanArtArtists = listOf<FanArtArtist>()
+	val fanArts: List<FanArt>
+		get() = fanArtArtists.flatMap { it.fanArts }
+
+	/**
+	 * Loads the artists from the Fan Arts folder
+	 *
+	 * In the future this will be loaded from Loritta's website!
+	 */
+	fun loadFanArts() {
+		val f = File(config.loritta.folders.fanArts)
+
+		fanArtArtists = f.listFiles().filter { it.extension == "conf" }.map {
+			loadFanArtArtist(it)
+		}
+	}
+
+	/**
+	 * Loads an specific fan art artist
+	 */
+	fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON_MAPPER.readValue(file)
+
+	fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 
 	/**
 	 * Initializes the [id] locale and adds missing translation strings to non-default languages

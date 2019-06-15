@@ -17,13 +17,23 @@ class ArtsyJoyLori : LorittaPlugin() {
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
-        // IMAGES
 
+        // IMAGES
         registerCommand(AtendenteCommand())
         registerCommand(TristeRealidadeCommand())
         registerCommand(AsciiCommand())
         registerCommand(DrawnWordCommand())
         registerCommand(BriggsCapaCommand())
+        registerCommand(BolsonaroCommand())
+        registerCommand(SustoCommand())
+        registerCommand(AtaCommand())
+        registerCommand(LoriAtaCommand())
+        registerCommand(StudiopolisTvCommand())
+        registerCommand(RomeroBrittoCommand())
+        registerCommand(QuadroCommand())
+        registerCommand(PepeDreamCommand())
+        registerCommand(LoriSignCommand())
+        registerCommand(ArtCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())

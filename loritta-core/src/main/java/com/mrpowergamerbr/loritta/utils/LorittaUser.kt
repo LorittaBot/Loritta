@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -8,6 +7,7 @@ import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 /**
@@ -112,7 +112,7 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 		if (!super.canUseCommand(context))
 			return false
 
-		if (context is DiscordCommandContext) {
+		if (context is DiscordCommandContext && context.command is LorittaDiscordCommand) {
 			// E, finalmente, iremos verificar as permissões do usuário
 			if (member.hasPermission(context.event.textChannel!!, context.command.discordPermissions)) {
 				return true

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -11,12 +10,13 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
-class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
+class GiveawayCommand : LorittaDiscordCommand(arrayOf("giveaway", "sorteio"), CommandCategory.FUN) {
     override val discordPermissions = listOf(
             Permission.MESSAGE_MANAGE
     )
@@ -341,18 +341,18 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                     val emote = lorittaShards.getEmoteById(emoteId.toString())
 
                     // TODO: Isso está feio e confuso, dá para ser melhor.
-                    if (emote == null) { // Emoji NÃO existe
-                        reaction = "\uD83C\uDF89"
+                    reaction = if (emote == null) { // Emoji NÃO existe
+                        "\uD83C\uDF89"
                     } else {
                         val emoteGuild = emote.guild
                         if (emoteGuild == null) { // Guild do emote NÃO existe (Então a Lori não conhece o emoji)
-                            reaction = "\uD83C\uDF89"
+                            "\uD83C\uDF89"
                         } else {
                             if (!emote.canInteract(emoteGuild.selfMember)) { // Lori não consegue interagir com o emoji
-                                reaction = "\uD83C\uDF89"
+                                "\uD83C\uDF89"
                             } else {
                                 message.addReaction(emote).await()
-                                reaction = emote.id
+                                emote.id
                             }
                         }
                     }
@@ -361,7 +361,7 @@ class GiveawayCommand : LorittaCommand(arrayOf("giveaway", "sorteio"), CommandCa
                 message.addReaction(reaction).await()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.trace(e) { "Exception while adding $reaction to $message, resetting emote to default..."}
             reaction = "\uD83C\uDF89"
         }
 

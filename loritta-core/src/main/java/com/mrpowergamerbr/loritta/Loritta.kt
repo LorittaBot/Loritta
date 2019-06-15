@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.collect.EvictingQueue
@@ -30,10 +29,8 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.FanArtConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
-import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.Gender
@@ -61,6 +58,8 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.config.FanArt
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -145,10 +144,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
-
-	lateinit var fanArtConfig: FanArtConfig
-	val fanArts: List<LorittaFanArt>
-		get() = fanArtConfig.fanArts
 
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
@@ -269,8 +264,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		initMongo()
 		initPostgreSql()
 
-		generateDummyServerConfig()
-
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
@@ -286,6 +279,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
+		generateDummyServerConfig()
+		
 		if (config.socket.enabled) {
 			logger.info { "Sucesso! Iniciando socket client..." }
 			socket.connect()
@@ -544,13 +539,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		legacyCommandManager = CommandManager()
-	}
-
-	/**
-	 * Loads the Fan Arts from the "fanarts.json" file
-	 */
-	fun loadFanArts() {
-		fanArtConfig = Constants.MAPPER.readValue(File("./fanarts.yml").readText())
 	}
 
 	/**

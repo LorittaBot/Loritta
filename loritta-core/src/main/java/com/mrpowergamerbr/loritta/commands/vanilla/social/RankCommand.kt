@@ -49,7 +49,9 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 					.toMutableList()
 		}
 
-		println("Loaded ${profiles.size}!")
+		logger.trace { "Retrived profiles of ${context.guild}"}
+		logger.trace { "profiles.size = ${profiles.size}"}
+
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics as Graphics2D

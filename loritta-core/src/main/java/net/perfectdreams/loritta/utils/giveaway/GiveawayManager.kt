@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -88,20 +87,44 @@ object GiveawayManager {
     }
 
     suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
+        logger.debug { "Spawning Giveaway! locale = $locale, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
+
         val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
 
         val message = channel.sendMessage(giveawayMessage).await()
         val messageId = message.idLong
 
         val emoteId = reaction.toLongOrNull()
+        var validReaction = reaction
 
-        if (emoteId != null) {
-            val mention = lorittaShards.getEmoteById(emoteId.toString())
-            if (mention != null)
-                message.addReaction(mention).await()
-        } else {
-            message.addReaction(reaction).await()
+        logger.trace { "Can I use emote $emoteId in $channel?"}
+
+        try {
+            if (emoteId != null) {
+                val mention = lorittaShards.getEmoteById(emoteId.toString())
+                logger.trace { "Mention is $mention in $channel" }
+
+                if (mention != null)
+                    message.addReaction(mention).await()
+            } else {
+                logger.trace { "Emote $emoteId doesn't look like a valid snowflake..."}
+                message.addReaction(reaction).await()
+            }
+        } catch (e: IllegalArgumentException) {
+            logger.debug(e) { "Looks like the emote $emoteId doesn't exist, falling back to the default emote (if possible)"}
+            message.addReaction("\uD83C\uDF89").await()
+            validReaction = "\uD83C\uDF89"
+        }catch (e: InsufficientPermissionException) {
+            logger.error(e) { "Looks like we can't create a giveaway here! Missing some checks, huh? ;3" }
+            throw e
+        } catch (e: Exception) {
+            logger.error(e) { "Error while trying to add emotes for the giveaway!" }
+            throw e
         }
+
+        logger.debug { "Using reaction $validReaction for the giveaway..." }
+
+        logger.trace { "Storing giveaway info..." }
 
         val giveaway = transaction(Databases.loritta) {
             Giveaway.new {
@@ -113,12 +136,14 @@ object GiveawayManager {
                 this.reason = reason
                 this.description = description
                 this.finishAt = epoch
-                this.reaction = reaction
+                this.reaction = validReaction
                 this.customMessage = customMessage
                 this.locale = locale.id
                 this.roleIds = roleIds?.toTypedArray()
             }
         }
+
+        logger.trace { "Success! Giveaway ID is ${giveaway.id.value}, creating job..." }
 
         createGiveawayJob(giveaway)
 
@@ -126,7 +151,8 @@ object GiveawayManager {
     }
 
     fun createGiveawayJob(giveaway: Giveaway) {
-        logger.warn { "Creating giveaway ${giveaway.id.value} job..." }
+        logger.info { "Creating giveaway ${giveaway.id.value} job..." }
+
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
                 while (giveaway.finishAt > System.currentTimeMillis()) {
@@ -239,23 +265,25 @@ object GiveawayManager {
         }
     }
 
-    suspend fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean) {
+    fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean, forceDelete: Boolean = false) {
+        logger.info { "Canceling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete"}
+
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
 
-        // Se a Lori ainda não iniciou, vamos apenas ignorar por enquanto
-        if (lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED })
-            return
-
-        if (deleteFromDatabase) {
-            transaction(Databases.loritta) {
-                giveaway.delete()
+        if (deleteFromDatabase || forceDelete) {
+            if (forceDelete || System.currentTimeMillis() - 604_800_000 >= giveaway.finishAt) { // Já se passaram uma semana?
+                logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore"}
+                transaction(Databases.loritta) {
+                    giveaway.delete()
+                }
             }
         }
     }
 
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
-        logger.warn { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
+        logger.info { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
+
         val emoteId = giveaway.reaction.toLongOrNull()
 
         val messageReaction: MessageReaction?

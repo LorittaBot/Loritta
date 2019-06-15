@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -292,7 +291,8 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				)
 				return
 			}
-			val discordWebhook = DiscordWebhook(url)
+
+			val discordWebhook = DiscordWebhook(url, loritta.http, loritta.coroutineDispatcher)
 
 			val documents = loritta.gabrielaMessagesColl.find(
 					Filters.`in`("questionWords", perguntas)
@@ -359,40 +359,40 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						// E agora... nós selecionamos a resposta (finalmente!)
 						val answer = weightedAnswers[RANDOM.nextInt(weightedAnswers.size)]
 
-						discordWebhook.send(
+						val it = discordWebhook.send(
 								com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
 										context.legacyLocale["FRASETOSCA_GABRIELA"],
 										context.getAsMention(true) + answer.answer.escapeMentions(),
 										"${loritta.config.loritta.website.url}assets/img/gabriela_avatar.png"
 								),
 								true
-						) {
-							val messageId = it["id"].string
-							val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
-							context.message.textChannel.retrieveMessageById(messageId).queue { message ->
-								if (message != null) {
-									learnGabriela(pergunta, message, context, functions, true, document, answer)
-								}
+						)
+
+						val messageId = it["id"].string
+						val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
+						context.message.textChannel.retrieveMessageById(messageId).queue { message ->
+							if (message != null) {
+								learnGabriela(pergunta, message, context, functions, true, document, answer)
 							}
 						}
 						return
 					}
 				}
 			}
-			discordWebhook.send(
+			val it = discordWebhook.send(
 					com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage(
 							context.legacyLocale["FRASETOSCA_GABRIELA"],
 							context.getAsMention(true) + locale["FRASETOSCA_DontKnow"],
 							"https://loritta.website/assets/img/gabriela_avatar.png"
 					),
 					true
-			) {
-				val messageId = it["id"].string
-				val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
-				context.message.textChannel.retrieveMessageById(messageId).queue { message ->
-					if (message != null) {
-						learnGabriela(pergunta, message, context, functions)
-					}
+			)
+
+			val messageId = it["id"].string
+			val functions = loritta.messageInteractionCache.getOrPut(messageId.toLong()) { MessageInteractionFunctions(context.guild.idLong, context.event.channel.idLong, context.userHandle.id) }
+			context.message.textChannel.retrieveMessageById(messageId).queue { message ->
+				if (message != null) {
+					learnGabriela(pergunta, message, context, functions)
 				}
 			}
 		} else {

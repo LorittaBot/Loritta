@@ -24,13 +24,14 @@ class GeneralConfig @JsonCreator constructor(
 		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
-		val mixer: MixerConfig) {
-
+		val mixer: MixerConfig
+) {
 	class LorittaConfig @JsonCreator constructor(
 			val environment: EnvironmentType,
 			val featureFlags: List<String>,
 			val ownerIds: List<String>,
 			val subOwnerIds: List<String>,
+			val commands: CommandsConfig,
 			val folders: FoldersConfig,
 			val website: WebsiteConfig
 	) {
@@ -54,7 +55,14 @@ class GeneralConfig @JsonCreator constructor(
 				val assets: String,
 				val temp: String,
 				val locales: String,
-				val plugins: String
+				val plugins: String,
+				val fanArts: String
+		)
+
+		class CommandsConfig @JsonCreator constructor(
+				val cooldown: Int,
+				val imageCooldown: Int,
+				val commandsCooldown: Map<String, Int>
 		)
 	}
 

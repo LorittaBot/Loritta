@@ -200,7 +200,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 				}
 			}
 
-			context.guild.controller.ban(member, days, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: ${reason}")
+			context.guild.controller.ban(member, days, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
 					.queue()
 			context.guild.controller.unban(user).queue()
 		}

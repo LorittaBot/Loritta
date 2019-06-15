@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import org.jsoup.Jsoup
@@ -349,7 +350,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				)
 			}
 
-			if (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty()) {
+			if (command is LorittaDiscordCommand && (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty())) {
 				var field = ""
 				if (command.discordPermissions.isNotEmpty()) {
 					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"

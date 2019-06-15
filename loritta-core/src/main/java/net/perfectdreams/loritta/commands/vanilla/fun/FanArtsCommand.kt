@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.config.fanarts.LorittaFanArt
 import com.mrpowergamerbr.loritta.utils.extensions.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
@@ -14,6 +13,9 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.utils.config.FanArt
+import net.perfectdreams.loritta.utils.config.FanArtArtist
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = CommandCategory.MISC) {
     override fun getDescription(locale: BaseLocale): String? {
@@ -22,28 +24,38 @@ class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = C
 
     @Subcommand
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale, index: String? = null) {
-        var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(loritta.fanArts.size) + 1) - 1
-        if (fanArtIndex !in 0 until loritta.fanArts.size) {
+        val fanArtsByDate = LorittaLauncher.loritta.fanArts.sortedBy {
+            it.createdAt
+        }
+
+        var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
+        if (fanArtIndex !in 0 until fanArtsByDate.size) {
             fanArtIndex = 0
         }
 
-        sendFanArtEmbed(context, locale, loritta.fanArts, fanArtIndex, null)
+        sendFanArtEmbed(context, locale, fanArtsByDate, fanArtIndex, null)
     }
 
-    suspend fun sendFanArtEmbed(context: DiscordCommandContext, locale: BaseLocale, list: List<LorittaFanArt>, item: Int, currentMessage: Message?) {
+    suspend fun sendFanArtEmbed(context: DiscordCommandContext, locale: BaseLocale, list: List<FanArt>, item: Int, currentMessage: Message?) {
         val fanArt = list[item]
-        val index = loritta.fanArts.indexOf(fanArt) + 1
+        val index = list.indexOf(fanArt) + 1
 
         val embed = EmbedBuilder().apply {
             setTitle("\uD83D\uDDBC<:loritta:331179879582269451> Fan Art")
 
-            val user = lorittaShards.retrieveUserById(fanArt.artistId)
+            val fanArtArtist = loritta.getFanArtArtistByFanArt(fanArt)
+            val discordId = fanArtArtist?.socialNetworks
+                    ?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+                    ?.id
 
-            val displayName = fanArt.fancyName ?: user?.name
+            val user = lorittaShards.retrieveUserById(discordId)
+
+            val displayName = fanArtArtist?.info?.override?.name ?: user?.name ?: fanArtArtist?.info?.name
 
             setDescription("**" + locale["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
-            val artist = loritta.fanArtConfig.artists[fanArt.artistId]
-            if (artist != null) {
+
+            // TODO: Corrigir
+            /* if (artist != null) {
                 for (socialNetwork in artist.socialNetworks) {
                     var root = socialNetwork.display
                     if (socialNetwork.link != null) {
@@ -51,10 +63,11 @@ class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = C
                     }
                     appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
                 }
-            }
+            } */
+
             appendDescription("\n\n${locale["commands.miscellaneous.fanArts.thankYouAll", displayName]}")
 
-            var footer = "Fan Art ${locale["loritta.xOfX", index, loritta.fanArts.size]}"
+            var footer = "Fan Art ${locale["loritta.xOfX", index, LorittaLauncher.loritta.fanArts.size]}"
 
             if (user != null) {
                 footer = "${user.name + "#" + user.discriminator} • $footer"

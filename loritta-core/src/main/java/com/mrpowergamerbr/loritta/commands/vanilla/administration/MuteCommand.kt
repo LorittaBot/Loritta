@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.HierarchyException
@@ -22,6 +23,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
+import java.util.concurrent.ConcurrentHashMap
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -188,11 +190,13 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 	}
 
 	companion object {
+		private val logger = KotlinLogging.logger {}
+
 		// Para guardar as threads, a key deverá ser...
 		// ID da guild#ID do usuário
 		// Exemplo:
 		// 297732013006389252#123170274651668480
-		val roleRemovalJobs = mutableMapOf<String, Job>()
+		val roleRemovalJobs = ConcurrentHashMap<String, Job>()
 
 		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			val delay = if (time != null) {
@@ -364,7 +368,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					for (x in 0..9) {
 						if (member.roles.contains(mutedRole))
 							break
-						Thread.sleep(250)
+						delay(250)
 					}
 					spawnRoleRemovalThread(context.guild, context.legacyLocale, user, time!!)
 				}
