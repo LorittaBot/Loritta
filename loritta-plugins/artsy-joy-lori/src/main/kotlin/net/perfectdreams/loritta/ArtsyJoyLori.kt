@@ -13,7 +13,8 @@ class ArtsyJoyLori : LorittaPlugin() {
         // ADMIN
         registerCommand(DashboardCommand())
         registerCommand(RenameChannelCommand())
-
+        registerCommand(RoleColorCommand())
+        
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
