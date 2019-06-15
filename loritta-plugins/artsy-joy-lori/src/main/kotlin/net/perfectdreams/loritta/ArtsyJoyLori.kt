@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import net.perfectdreams.loritta.commands.actions.*
 import net.perfectdreams.loritta.commands.administration.DashboardCommand
 import net.perfectdreams.loritta.commands.administration.RenameChannelCommand
+import net.perfectdreams.loritta.commands.administration.RoleColorCommand
 import net.perfectdreams.loritta.commands.discord.RenameEmojiCommand
 import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
 import net.perfectdreams.loritta.commands.images.*
