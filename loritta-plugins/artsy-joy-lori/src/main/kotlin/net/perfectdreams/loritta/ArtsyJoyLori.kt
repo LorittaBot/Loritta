@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta
 
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.commands.actions.*
 import net.perfectdreams.loritta.commands.administration.DashboardCommand
 import net.perfectdreams.loritta.commands.administration.RenameChannelCommand
@@ -14,8 +15,9 @@ class ArtsyJoyLori : LorittaPlugin() {
         // ADMIN
         registerCommand(DashboardCommand())
         registerCommand(RenameChannelCommand())
-        registerCommand(RoleColorCommand())
-        
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+            registerCommand(RoleColorCommand())
+
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
