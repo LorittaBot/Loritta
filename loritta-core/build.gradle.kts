@@ -87,7 +87,7 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9")
     compile("com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.9")
     compile("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
-    compile("com.github.DuncteBot:Lavalink-Client:63242d0ad8")
+    compile("com.github.DuncteBot:Lavalink-Client:bbee75ae8e")
     compile("com.github.markozajc:akiwrapper:1.4.1")
     compile("org.json:json:20180813")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
