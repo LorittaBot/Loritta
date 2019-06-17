@@ -206,10 +206,10 @@ class APILoriDailyRewardView : NoVarsView() {
 				val epochMillis = member.timeJoined.toEpochSecond() * 1000
 
 				if (member.user.avatarId == null) {
-					if ((System.currentTimeMillis() + 1_296_000_000) > epochMillis) // 15 dias
+					if (epochMillis + 1_296_000_000 > System.currentTimeMillis()) // 15 dias
 						continue
 				} else {
-					if ((System.currentTimeMillis() + 604_800_000) > epochMillis) // 7 dias
+					if (epochMillis + 604_800_000 > System.currentTimeMillis()) // 7 dias
 						continue
 				}
 

@@ -17,6 +17,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import lavalink.client.io.jda.JdaLavalink
+import lavalink.client.io.LavalinkRegion
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
@@ -45,7 +46,8 @@ class AudioManager(val loritta: Loritta) {
 			lavalink.addNode(
 					node.name,
 					URI("ws://${NetAddressUtils.getWithPortIfMissing(node.address, 2334)}"),
-					node.password
+					node.password,
+					LavalinkRegion.DEFAULT
 			)
 		}
 	}
