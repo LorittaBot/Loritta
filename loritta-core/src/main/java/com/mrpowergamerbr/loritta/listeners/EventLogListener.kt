@@ -255,7 +255,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val embed = EmbedBuilder()
 			embed.setTimestamp(Instant.now())
 			embed.setColor(Color(35, 209, 96))
@@ -269,35 +269,35 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (textChannel != null && textChannel.canTalk()) {
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-						return@execute
+						return@launch
 					if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-						return@execute
+						return@launch
 					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-						return@execute
+						return@launch
 
 					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
 						embed.setDescription("\uD83C\uDF1F ${locale["EVENTLOG_CHANNEL_CREATED", event.channel.asMention]}")
 
 						textChannel.sendMessage(embed.build()).queue()
-						return@execute
+						return@launch
 					}
 					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_NAME_UPDATED", event.channel.asMention, event.oldName, event.channel.name]}")
 
 						textChannel.sendMessage(embed.build()).queue()
-						return@execute
+						return@launch
 					}
 					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_TOPIC_UPDATED", event.channel.asMention, event.oldTopic, event.channel.topic]}")
 
 						textChannel.sendMessage(embed.build()).queue()
-						return@execute
+						return@launch
 					}
 					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
 						embed.setDescription("\uD83D\uDEAE ${locale["EVENTLOG_CHANNEL_DELETED", event.channel.name]}")
 
 						textChannel.sendMessage(embed.build()).queue()
-						return@execute
+						return@launch
 					}
 				}
 			}
@@ -555,7 +555,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val eventLogConfig = serverConfig.eventLogConfig
 
@@ -567,15 +567,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@execute
+				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
 				if (!textChannel.canTalk())
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@execute
+					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@execute
+					return@launch
 
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.oldNickname
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNickname
@@ -584,7 +584,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
 				textChannel.sendMessage(embed.build()).queue()
-				return@execute
+				return@launch
 			}
 		}
 	}

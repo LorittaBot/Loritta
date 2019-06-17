@@ -338,7 +338,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		logger.debug { "Deleting all ${e.guild} related stuff..." }
 
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			logger.trace { "Deleting MongoDB ${e.guild} config..."}
 
 			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
@@ -411,7 +411,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		// E depois iremos salvar a configuração do servidor
-		loritta.executor.execute {
+		GlobalScope.launch(loritta.coroutineDispatcher) {
 			loritta save serverConfig
 		}
 	}
