@@ -108,8 +108,10 @@ object LorittaLauncher {
 		loritta = Loritta(discordConfig, config)
 
 		// Coroutines Test Issue - Coroutines stop working after a while
-		DebugProbes.install()
-		CoroutinesBugTest().start()
+		if (System.getProperty("loritta.enable.coroutine.debug", "false") == "true") {
+			DebugProbes.install()
+			CoroutinesBugTest().start()
+		}
 
 
 		loritta.start()

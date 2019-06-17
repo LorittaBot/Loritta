@@ -16,8 +16,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import lavalink.client.io.jda.JdaLavalink
 import lavalink.client.io.LavalinkRegion
+import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
