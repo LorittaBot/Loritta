@@ -55,6 +55,9 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 						.trim()
 						.replace(" ", "_")
 
+				if (artistId.isBlank())
+					artistId = userId.toString()
+
 				logger.info { "Artist ID para $userId ($userName) é $artistId" }
 
 				val date = "${message.timeCreated.year}-${message.timeCreated.monthValue.toString().padStart(2, '0')}-${message.timeCreated.dayOfMonth.toString().padStart(2, '0')}"
@@ -66,9 +69,12 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 				else
 					"png"
 
-				val artistNameOnFiles = userName.replace(Regex("[^a-zA-Z0-9]"), "")
+				var artistNameOnFiles = userName.replace(Regex("[^a-zA-Z0-9]"), "")
 						.trim()
 						.replace(" ", "_")
+
+				if (artistNameOnFiles.isBlank())
+					artistNameOnFiles = userId.toString()
 
 				logger.info { "Nome do arquivo para $userId ($userName) é $artistNameOnFiles" }
 
