@@ -1,27 +1,79 @@
 package net.perfectdreams.loritta.plugin.githubissuesync
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.toJsonArray
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.plugin.githubissuesync.listeners.AddReactionListener
 import net.perfectdreams.loritta.plugin.githubissuesync.tables.GitHubIssues
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class GitHubIssueSync : DiscordPlugin() {
+	private val logger = KotlinLogging.logger {}
+
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<GitHubConfig>(File(dataFolder, "config.conf"))
+
+		LorittaLauncher.loritta.website.post("/api/v1/callback/github") { req, res ->
+			val bodyValue = req.body().value()
+			val eventType = req.header("X-GitHub-Event").value()
+
+			val json = Constants.JSON_MAPPER.readValue<JsonNode>(bodyValue)
+
+			logger.info { "Received event $eventType from GitHub!" }
+			when (eventType) {
+				"issues" -> {
+					val action = json["action"].textValue()
+
+					if (action == "closed") {
+						val id = json["issue"]["number"].longValue()
+
+						val issue = transaction(Databases.loritta) {
+							GitHubIssues.select { GitHubIssues.githubIssueId eq id }.firstOrNull()
+						} ?: run {
+							res.send("{}")
+							return@post
+						}
+
+						transaction(Databases.loritta) {
+							GitHubIssues.deleteWhere { GitHubIssues.githubIssueId eq id }
+						}
+
+						val messageId = issue[GitHubIssues.messageId]
+						val channelId = issue[GitHubIssues.channelId]
+
+						logger.info { "Deleting $messageId from the channel, issue closed!" }
+
+						val textChannel = lorittaShards.shardManager.getTextChannelById(channelId) ?: run {
+							res.send("{}")
+							return@post
+						}
+
+						textChannel.retrieveMessageById(messageId).queue {
+							it.delete().queue()
+						}
+					}
+				}
+			}
+
+			res.send("{}")
+		}
 
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
@@ -137,6 +189,7 @@ class GitHubIssueSync : DiscordPlugin() {
 			transaction(Databases.loritta) {
 				GitHubIssues.insert {
 					it[messageId] = message.idLong
+					it[channelId] = message.channel.idLong
 					it[githubIssueId] = issueId
 				}
 			}
