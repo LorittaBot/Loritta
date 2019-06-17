@@ -30,6 +30,7 @@ include(":loritta-plugins:artsy-joy-lori")
 include(":loritta-plugins:funny-lori")
 include(":loritta-plugins:minecraft-stuff")
 include(":loritta-plugins:quirky-stuff")
+include(":loritta-plugins:github-issue-sync")
 
 // Website
 include(":loritta-website")

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.tables
+package net.perfectdreams.loritta.plugin.githubissuesync.tables
 
 import org.jetbrains.exposed.dao.LongIdTable
 
