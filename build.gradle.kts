@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
 val loriVersion   = "2019.06.21-SNAPSHOT"
-val kotlinVersion = "1.3.21"
-val ktorVersion   = "1.2.0-rc2"
-val jdaVersion    = "4.ALPHA.0_79"
+val kotlinVersion = "1.3.31"
+val ktorVersion   = "1.2.1"
+val jdaVersion    = "4.BETA.0_1"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -86,7 +86,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.3.21"
+    kotlin("jvm") version "1.3.31"
     `maven-publish`
 }
 

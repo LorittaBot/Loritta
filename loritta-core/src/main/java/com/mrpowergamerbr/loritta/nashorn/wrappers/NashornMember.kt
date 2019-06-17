@@ -19,12 +19,12 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun addRole(role: NashornRole) {
-		member.guild.controller.addRolesToMember(member, role.role).queue()
+		member.guild.addRoleToMember(member, role.role).queue()
 	}
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun removeRole(role: NashornRole) {
-		member.guild.controller.removeRolesFromMember(member, role.role).queue()
+		member.guild.removeRoleFromMember(member, role.role).queue()
 	}
 
 	@NashornCommand.NashornDocs()
@@ -99,6 +99,6 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 		if (nickname.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
 
-		member.guild.controller.setNickname(member, nickname).queue()
+		member.guild.modifyNickname(member, nickname).queue()
 	}
 }

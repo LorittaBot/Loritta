@@ -47,7 +47,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 
 			if (os != null) {
 				os.use { inputStream ->
-					val emote = context.guild.controller.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
+					val emote = context.guild.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
 					context.reply(
 							LoriReply(
 									context.legacyLocale.toNewLocale()["commands.discord.addEmoji.success"],

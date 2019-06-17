@@ -439,7 +439,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.controller.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
+						relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
 					}
 				}
 			}
@@ -448,7 +448,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.controller.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
+						relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
 					}
 				}
 			}
@@ -503,12 +503,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
 				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
-				relayTo?.controller?.unban(event.user)?.queue()
+				relayTo?.unban(event.user)?.queue()
 			}
 			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
 				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
-				relayTo?.controller?.unban(event.user)?.queue()
+				relayTo?.unban(event.user)?.queue()
 			}
 
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)

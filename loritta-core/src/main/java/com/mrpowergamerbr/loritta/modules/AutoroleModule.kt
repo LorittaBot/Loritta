@@ -24,14 +24,14 @@ object AutoroleModule {
 		if (roles.isNotEmpty()) {
 			if (roles.size == 1) {
 				if (autoroleConfig.giveRolesAfter != null)
-					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
+					event.guild.addRoleToMember(event.member, roles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
 				else
-					event.guild.controller.addSingleRoleToMember(event.member, roles[0]).reason("Autorole").queue()
+					event.guild.addRoleToMember(event.member, roles[0]).reason("Autorole").queue()
 			} else {
 				if (autoroleConfig.giveRolesAfter != null)
-					event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
+					event.guild.modifyMemberRoles(event.member, event.member.roles.toMutableList().apply { this.addAll(roles) }).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
 				else
-					event.guild.controller.addRolesToMember(event.member, roles).reason("Autorole").queue()
+					event.guild.modifyMemberRoles(event.member, event.member.roles.toMutableList().apply { this.addAll(roles) }).reason("Autorole").queue()
 			}
 		}
 	}

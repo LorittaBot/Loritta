@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -64,26 +63,5 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 		if (serverConfig.musicConfig.isEnabled) {
 			loritta.audioManager.loadAndPlayNoFeedback(guild, serverConfig, url)
 		}
-	}
-
-	@NashornCommand.NashornDocs()
-	fun ban(user: NashornUser, delDays: Int, reason: String) {
-		if (reason.contains(loritta.discordConfig.discord.clientToken, true))
-			NashornContext.securityViolation(guild.id)
-
-		guild.controller.ban(user.user, delDays, reason).queue()
-	}
-
-	@NashornCommand.NashornDocs()
-	fun kick(member: NashornMember, reason: String) {
-		if (reason.contains(loritta.discordConfig.discord.clientToken, true))
-			NashornContext.securityViolation(guild.id)
-
-		guild.controller.kick(member.member, reason).queue()
-	}
-
-	@NashornCommand.NashornDocs()
-	fun unban(id: String) {
-		guild.controller.unban(id).queue()
 	}
 }

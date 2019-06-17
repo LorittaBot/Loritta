@@ -139,7 +139,7 @@ object ReactionModule {
 
         val rolesToBeGiven = roles.filter { !member.roles.contains(it) }
         if (rolesToBeGiven.isNotEmpty()) {
-            guild.controller.addRolesToMember(member, rolesToBeGiven).await()
+            guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) }).await()
         }
     }
 
@@ -148,7 +148,7 @@ object ReactionModule {
 
         val rolesToBeGiven = roles.filter { member.roles.contains(it) }
         if (rolesToBeGiven.isNotEmpty()) {
-            guild.controller.removeRolesFromMember(member, rolesToBeGiven).await()
+            guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.removeAll(rolesToBeGiven) }).await()
         }
     }
 }

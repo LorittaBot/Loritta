@@ -129,7 +129,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 									val os = LorittaUtils.downloadFile(emote.imageUrl, 5000) ?: throw RuntimeException("Couldn't download image!")
 
 									os.use { inputStream ->
-										val sentEmote = context.guild.controller.createEmote(emote.name, Icon.from(inputStream)).await()
+										val sentEmote = context.guild.createEmote(emote.name, Icon.from(inputStream)).await()
 										context.reply(
 												LoriReply(
 														context.legacyLocale["EMOJISEARCH_AddSuccess"],

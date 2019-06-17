@@ -67,14 +67,14 @@ class LorittaLandRoleSync : Runnable {
 				for (illustrator in validIllustrators) {
 					if (!illustrator.roles.contains(drawingRole)) {
 						logger.info("Dando o cargo de desenhista para ${illustrator.user.id}...")
-						originalGuild.controller.addSingleRoleToMember(illustrator, drawingRole).queue()
+						originalGuild.addRoleToMember(illustrator, drawingRole).queue()
 					}
 				}
 
 				val invalidIllustrators = originalGuild.getMembersWithRoles(drawingRole).filter { !validIllustrators.contains(it) }
 				invalidIllustrators.forEach {
 					logger.info("Removendo cargo de desenhista de ${it.user.id}...")
-					originalGuild.controller.removeSingleRoleFromMember(it, drawingRole).queue()
+					originalGuild.removeRoleFromMember(it, drawingRole).queue()
 				}
 			}
 
@@ -101,7 +101,7 @@ class LorittaLandRoleSync : Runnable {
 							validPartners.add(member)
 							if (!member.roles.contains(partnerRole)) {
 								logger.info("Dando o cargo de parceiro para ${member.user.id}...")
-								originalGuild.controller.addSingleRoleToMember(member, partnerRole).queue()
+								originalGuild.addRoleToMember(member, partnerRole).queue()
 							}
 						}
 					}
@@ -109,7 +109,7 @@ class LorittaLandRoleSync : Runnable {
 					val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
 					invalidPartners.forEach {
 						logger.info("Removendo cargo de parceiro de ${it.user.id}...")
-						originalGuild.controller.removeSingleRoleFromMember(it, partnerRole).queue()
+						originalGuild.removeRoleFromMember(it, partnerRole).queue()
 					}
 				} else {
 					logger.warn("Todas as shards não estão carregadas! Ignorando cargos de parceiros...")
@@ -287,7 +287,7 @@ class LorittaLandRoleSync : Runnable {
 
 				if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) {// Novos cargos foram adicionados
 					logger.info("Alterando cargos de $member, cargos atuais são ${member.roles}, novos cargos serão $roles")
-					member.guild.controller.modifyMemberRoles(member, roles).queue()
+					member.guild.modifyMemberRoles(member, roles).queue()
 				}
 			}
 		} catch (e: Exception) {
@@ -305,7 +305,7 @@ class LorittaLandRoleSync : Runnable {
 		for (member in membersWithNewRole) {
 			if (!membersWithOriginalRole.any { it.user.id == member.user.id }) {
 				logger.info("Removendo cargo  ${giveRole.id} de ${member.effectiveName} (${member.user.id})...")
-				toGuild.controller.removeSingleRoleFromMember(member, giveRole).queue()
+				toGuild.removeRoleFromMember(member, giveRole).queue()
 			}
 		}
 
@@ -314,7 +314,7 @@ class LorittaLandRoleSync : Runnable {
 				val usMember = toGuild.getMember(member.user) ?: continue
 
 				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
-				toGuild.controller.addSingleRoleToMember(usMember, giveRole).queue()
+				toGuild.addRoleToMember(usMember, giveRole).queue()
 			}
 		}
 	}

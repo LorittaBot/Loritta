@@ -342,7 +342,7 @@ object GiveawayManager {
                         }
 
                         if (rolesToBeGiven.isNotEmpty()) {
-                            message.guild.controller.addRolesToMember(member, rolesToBeGiven).queue()
+                            message.guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) }).queue()
                         }
                     }
                 }

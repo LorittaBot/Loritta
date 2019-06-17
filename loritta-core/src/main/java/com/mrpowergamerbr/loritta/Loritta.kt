@@ -212,7 +212,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.PRESENCE))
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,

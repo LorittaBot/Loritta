@@ -484,7 +484,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val locale = loritta.getLegacyLocaleById(conf.localeId)
 					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLegacyLocaleById(conf.localeId)) ?: return@launch
 
-					event.guild.controller.addSingleRoleToMember(event.member, muteRole).queue()
+					event.guild.addRoleToMember(event.member, muteRole).queue()
 
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)

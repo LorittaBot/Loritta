@@ -410,7 +410,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                                     )
                             )
                             if (ev.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
-                                ev.guild.controller.setNickname(ev.guild.selfMember, null).queue()
+                                ev.guild.modifyNickname(ev.guild.selfMember, null).queue()
                             } else {
                                 return true
                             }

@@ -1,5 +1,3 @@
-val jdaVersion by lazy { ext["jda-version"] as String }
-
 dependencies {
     implementation(kotlin("stdlib"))
     compile("io.github.microutils:kotlin-logging:1.6.26")

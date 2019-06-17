@@ -178,7 +178,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				MuteCommand.roleRemovalJobs.remove(member.guild.id + "#" + member.user.id)
 
 				if (mutedRoles != null) {
-					member.guild.controller.removeSingleRoleFromMember(member, mutedRoles).queue()
+					member.guild.removeRoleFromMember(member, mutedRoles).queue()
 				}
 
 				transaction(Databases.loritta) {

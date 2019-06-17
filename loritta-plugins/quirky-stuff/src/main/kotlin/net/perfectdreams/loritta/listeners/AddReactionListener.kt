@@ -165,7 +165,7 @@ networks = [
 							userMessage.append("Obrigada por ser uma pessoa incrível!! Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
 							userMessage.append("\n\n")
 							userMessage.append("Agora você tem permissão para mandar mais fan arts para mim em <#583406099047252044>, mandar outros desenhos fofis em <#510601125221761054> e conversar com outros artistas em <#574387310129315850>! ${Emotes.LORI_OWO}")
-							event.guild.controller.removeSingleRoleFromMember(fanArtArtistGuildMember, role).await()
+							event.guild.removeRoleFromMember(fanArtArtistGuildMember, role).await()
 						} else {
 							userMessage.append("Obrigada por ser uma pessoa incrível e por continuar a fazer fan arts de mim (tô até emocionada ${Emotes.LORI_CRYING})... Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
 						}

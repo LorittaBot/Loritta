@@ -1,5 +1,3 @@
-val jdaVersion by lazy { ext["jda-version"] as String }
-
 dependencies {
     implementation(kotlin("stdlib"))
     compile(project(":loritta-api"))
