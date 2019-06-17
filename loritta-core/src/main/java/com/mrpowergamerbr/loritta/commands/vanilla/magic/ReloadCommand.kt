@@ -6,25 +6,20 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.GitHubIssues
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
-import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.concurrent.thread
@@ -283,57 +278,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Datas exportadas!"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "send_suggestion") {
-			val channel = context.guild.getTextChannelById("359139508681310212") ?: return
-
-			val message = channel.retrieveMessageById(context.rawArgs[1]).await()
-
-			context.reply("Enviando sugestão ${message.id}...")
-			DiscordListener.sendSuggestionToGitHub(message)
-		}
-
-		if (arg0 == "mass_check_suggestions") {
-			val requiredCount = context.rawArgs.getOrNull(1)?.toIntOrNull() ?: 5
-
-			context.reply(
-					"Enviando sugestões com mais de $requiredCount likes totais para o GitHub..."
-			)
-
-			val channel = context.guild.getTextChannelById("359139508681310212")
-
-			val history = channel!!.history
-
-			var lastCheck = -1
-			for (i in 0 until 2200) {
-				history.retrievePast(100).await()
-				if (lastCheck == history.retrievedHistory.size)
-					break
-				lastCheck = history.retrievedHistory.size
-			}
-
-			for (message in history.retrievedHistory) {
-				if (DiscordListener.isSuggestionValid(message, requiredCount)) {
-					val alreadySent = transaction(Databases.loritta) {
-						GitHubIssues.select { GitHubIssues.messageId eq message.idLong }.count() != 0
-					}
-
-					if (alreadySent)
-						continue
-
-					context.reply("Enviando sugestão ${message.id}...")
-					DiscordListener.sendSuggestionToGitHub(message)
-					delay(60_000)
-				}
-			}
-
-			context.reply(
-					LoriReply(
-							"Acabou! Todas as sugestões válidas foram enviadas para o GitHub!"
 					)
 			)
 			return

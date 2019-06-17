@@ -396,7 +396,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					DonationKeys,
 					Payments,
 					ShipEffects,
-					GitHubIssues,
 					ParallaxMetaStorages
 			)
 		}
