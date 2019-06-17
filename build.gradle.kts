@@ -81,6 +81,7 @@ allprojects {
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.perfectdreams.net/")
         maven("https://dl.bintray.com/kotlin/ktor/")
+        maven("https://jitpack.io")
     }
 }
 
