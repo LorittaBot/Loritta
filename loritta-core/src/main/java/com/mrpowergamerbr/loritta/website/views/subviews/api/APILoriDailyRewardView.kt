@@ -213,7 +213,7 @@ class APILoriDailyRewardView : NoVarsView() {
 						continue
 				}
 
-				val xp = GuildProfile.find { GuildProfiles.userId eq member.idLong }.firstOrNull()?.xp ?: 0L
+				val xp = GuildProfile.find { GuildProfiles.guildId eq guild.idLong and GuildProfiles.userId eq member.idLong }.firstOrNull()?.xp ?: 0L
 
 				if (500 > xp)
 					continue
