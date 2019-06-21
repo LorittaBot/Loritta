@@ -7,11 +7,13 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.toJsonArray
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
@@ -22,16 +24,47 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jooby.Status
 import java.io.File
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 class GitHubIssueSync : DiscordPlugin() {
 	private val logger = KotlinLogging.logger {}
 
-    override fun onEnable() {
-        val config = Constants.HOCON_MAPPER.readValue<GitHubConfig>(File(dataFolder, "config.conf"))
+	override fun onEnable() {
+		val config = Constants.HOCON_MAPPER.readValue<GitHubConfig>(File(dataFolder, "config.conf"))
 
-		LorittaLauncher.loritta.website.post("/api/v1/callback/github") { req, res ->
+		LorittaWebsite.githubIssueCallback = callback@{ req, res ->
+			val originalSignatureHeader = req.header("X-Hub-Signature")
 			val bodyValue = req.body().value()
+
+			if (!originalSignatureHeader.isSet) {
+				res.status(Status.UNAUTHORIZED)
+				val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
+				res.send(payload.toString())
+				return@callback
+			}
+
+			val originalSignature = originalSignatureHeader.value()
+
+			val signingKey = SecretKeySpec(config.secretKey.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val mac = Mac.getInstance("HmacSHA1")
+			mac.init(signingKey)
+			val doneFinal = mac.doFinal(bodyValue.toByteArray(Charsets.UTF_8))
+			val output = "sha1=" + doneFinal.bytesToHex()
+
+			logger.debug { "Assinatura Original: ${originalSignature}" }
+			logger.debug { "Nossa Assinatura   : ${output}" }
+			logger.debug { "Sucesso?           : ${originalSignature == output}" }
+
+			if (originalSignature != output) {
+				res.status(Status.UNAUTHORIZED)
+				val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid Poker-Signature Content from Request")
+				res.send(payload.toString())
+				return@callback
+			}
+
 			val eventType = req.header("X-GitHub-Event").value()
 
 			val json = Constants.JSON_MAPPER.readValue<JsonNode>(bodyValue)
@@ -47,31 +80,36 @@ class GitHubIssueSync : DiscordPlugin() {
 						val issue = transaction(Databases.loritta) {
 							GitHubIssues.select { GitHubIssues.githubIssueId eq id }.firstOrNull()
 						} ?: run {
+							res.status(Status.OK)
 							res.send("{}")
-							return@post
+							return@callback
 						}
 
 						transaction(Databases.loritta) {
-							GitHubIssues.deleteWhere { GitHubIssues.githubIssueId eq id }
+							GitHubIssues.deleteWhere { GitHubIssues.id eq id }
 						}
 
 						val messageId = issue[GitHubIssues.messageId]
 						val channelId = issue[GitHubIssues.channelId]
 
-						logger.info { "Deleting $messageId from the channel, issue closed!" }
-
 						val textChannel = lorittaShards.shardManager.getTextChannelById(channelId) ?: run {
+							logger.warn { "Channel $channelId doesn't seem to exist... whoops?"}
+							res.status(Status.OK)
 							res.send("{}")
-							return@post
+							return@callback
 						}
 
+						logger.info { "Trying to delete $messageId from the channel due to issue close." }
+
 						textChannel.retrieveMessageById(messageId).queue {
+							logger.info { "Message $messageId exists in channel, issue closed!" }
 							it.delete().queue()
 						}
 					}
 				}
 			}
 
+			res.status(Status.OK)
 			res.send("{}")
 		}
 
@@ -81,10 +119,10 @@ class GitHubIssueSync : DiscordPlugin() {
 			)
 		}
 
-        registerEventListeners(
+		registerEventListeners(
 				AddReactionListener(config)
-        )
-    }
+		)
+	}
 
 	companion object {
 		suspend fun isSuggestionValid(message: Message, requiredCount: Int): Boolean {
