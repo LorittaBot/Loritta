@@ -28,6 +28,11 @@ object Constants {
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
 	const val DISCORD_EPOCH = 1420070400000L
 	const val TIMESTAMP_OFFSET: Long = 22
+	const val ONE_WEEK_IN_MILLISECONDS = 604_800_000L
+	const val ONE_MONTH_IN_MILLISECONDS = 2_592_000_000L
+	const val TWO_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 2
+	const val SIX_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 8
+	const val DELAY_CUT_OFF = SIX_MONTHS_IN_MILLISECONDS // six months
 
 	/**
 	 * Discord's URL Crawler User Agent

@@ -118,7 +118,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (economySource == "global") {
 				val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
 
-				if (epochMillis + 604_800_000 > System.currentTimeMillis()) { // 7 dias
+				if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
 					context.reply(
 							LoriReply(
 									"Você não pode transferir sonhos! Tente novamente mais tarde...",

@@ -272,7 +272,7 @@ object GiveawayManager {
         giveawayTasks.remove(giveaway.id.value)
 
         if (deleteFromDatabase || forceDelete) {
-            if (forceDelete || System.currentTimeMillis() - 604_800_000 >= giveaway.finishAt) { // Já se passaram uma semana?
+            if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
                 logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore"}
                 transaction(Databases.loritta) {
                     giveaway.delete()

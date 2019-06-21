@@ -67,7 +67,7 @@ class SelfProfileController {
 					this.user1Id = userIdentification.id.toLong()
 					this.user2Id = user.idLong
 					this.editedShipValue = editedValue
-					this.expiresAt = System.currentTimeMillis() + 604_800_000
+					this.expiresAt = System.currentTimeMillis() + Constants.ONE_WEEK_IN_MILLISECONDS
 				}
 
 				profile.money -= 3000

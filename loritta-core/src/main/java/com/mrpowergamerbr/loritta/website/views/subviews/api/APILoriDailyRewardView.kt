@@ -209,11 +209,11 @@ class APILoriDailyRewardView : NoVarsView() {
 					if (epochMillis + 1_296_000_000 > System.currentTimeMillis()) // 15 dias
 						continue
 				} else {
-					if (epochMillis + 604_800_000 > System.currentTimeMillis()) // 7 dias
+					if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) // 7 dias
 						continue
 				}
 
-				val xp = GuildProfile.find { GuildProfiles.guildId eq guild.idLong and GuildProfiles.userId eq member.idLong }.firstOrNull()?.xp ?: 0L
+				val xp = GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq member.idLong) }.firstOrNull()?.xp ?: 0L
 
 				if (500 > xp)
 					continue
