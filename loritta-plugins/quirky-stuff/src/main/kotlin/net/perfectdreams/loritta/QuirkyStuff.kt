@@ -32,7 +32,6 @@ import java.io.File
 import java.math.BigDecimal
 
 class QuirkyStuff : DiscordPlugin() {
-
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
         while (true) {
             delay(60_000)
@@ -49,9 +48,17 @@ class QuirkyStuff : DiscordPlugin() {
             }
         }
     }
+    var changeBanner: ChangeBanner? = null
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
+
+        if (config.changeBanner.enabled) {
+            logger.info { "Change Banner is enabled! Enabling banner stuff... :3"}
+            changeBanner = ChangeBanner(this, config).apply {
+                this.start()
+            }
+        }
 
         registerEventListeners(
                 AddReactionListener(config),
@@ -67,6 +74,7 @@ class QuirkyStuff : DiscordPlugin() {
     override fun onDisable() {
         super.onDisable()
         task.cancel()
+        changeBanner?.task?.cancel()
     }
 
     companion object {
