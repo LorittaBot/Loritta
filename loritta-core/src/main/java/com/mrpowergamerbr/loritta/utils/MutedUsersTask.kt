@@ -22,6 +22,8 @@ class MutedUsersTask : Runnable {
 				}.toMutableList()
 			}
 
+			val guildLocales = mutableMapOf<Long, String>()
+
 			for (mute in mutes) {
 				val expiresAt = mute.expiresAt
 
@@ -57,7 +59,9 @@ class MutedUsersTask : Runnable {
 					continue
 
 				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
-				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById("default"), member.user, mute.expiresAt!!)
+
+				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getServerConfigForGuild(mute.guildId.toString()).localeId })
+				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(localeId), member.user, mute.expiresAt!!)
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao verificar removal threads" }
@@ -73,6 +77,7 @@ class MutedUsersTask : Runnable {
 		val expiresAt = mute.expiresAt
 
 		if (expiresAt != null && System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= expiresAt) { // Já se passaram uma semana?
+			logger.debug { "Deleting $mute from database... The mute was made more than one week ago and it wasn't deleted..." }
 			transaction(Databases.loritta) {
 				mute.delete()
 			}
@@ -90,6 +95,7 @@ class MutedUsersTask : Runnable {
 		val receivedAt = mute.receivedAt
 
 		if (System.currentTimeMillis() - Constants.SIX_MONTHS_IN_MILLISECONDS >= receivedAt) { // Já se passaram uma semana?
+			logger.debug { "Deleting $mute from database... Member is not on the server anymore and the mute was done a long time ago..." }
 			transaction(Databases.loritta) {
 				mute.delete()
 			}

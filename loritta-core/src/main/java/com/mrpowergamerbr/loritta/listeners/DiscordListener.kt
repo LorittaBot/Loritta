@@ -462,6 +462,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildReady(event: GuildReadyEvent) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
+			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+
 			val mutes = transaction(Databases.loritta) {
 				Mute.find {
 					(Mutes.isTemporary eq true) and (Mutes.guildId eq event.guild.idLong)
@@ -478,7 +480,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val member = guild.getMemberById(mute.userId) ?: continue
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-				MuteCommand.spawnRoleRemovalThread(guild, com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById("default"), member.user, mute.expiresAt!!)
+				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
 			}
 
 			// Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
