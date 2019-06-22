@@ -8,12 +8,12 @@ class ParallaxMember(private val member: Member) : ParallaxUser(member.user) {
 	}
 
 	fun addRole(role: ParallaxRole): Boolean {
-		member.guild.controller.addSingleRoleToMember(member, role.role).queue()
+		member.guild.addRoleToMember(member, role.role).queue()
 		return true
 	}
 
 	fun removeRole(role: ParallaxRole): Boolean {
-		member.guild.controller.removeSingleRoleFromMember(member, role.role).queue()
+		member.guild.removeRoleFromMember(member, role.role).queue()
 		return true
 	}
 

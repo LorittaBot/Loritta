@@ -175,7 +175,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				}
 			}
 
-			guild.controller.ban(user, delDays, locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
+			guild.ban(user, delDays, locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
 					.queue()
 		}
 	}

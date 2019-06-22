@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
@@ -42,7 +41,7 @@ class MongoServerConfig @BsonCreator constructor(
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
 	var warnIfBlacklisted = false
 	var deleteMessagesAfter: Long? = null
-	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)! ${Emotes.LORI_OWO}"
+	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)!"
 	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 
 	var nashornEventHandlers = ArrayList<NashornEventHandler>()

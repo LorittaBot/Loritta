@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -111,22 +112,28 @@ class DailyTaxTask : Runnable {
 						System.currentTimeMillis().toString()
 				)
 
-				// MARRY
-				val documents = transaction(Databases.loritta) {
-					val selected = Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
-
+				// MARRY - Remover sonhos de quem merece
+				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble()) }) {
 						with(SqlExpressionBuilder) {
-							it.update(Profiles.money, Profiles.money - MARRIAGE_DAILY_TAX.toDouble())
+							it.update(money, money - MARRIAGE_DAILY_TAX.toDouble())
 						}
 					}
-
-					selected.onEach { it.marriage != null } // Vamos carregar todos os marriages antes de prosseguir
 				}
 
+				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
+					Profile.find {
+						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble())
+					}.toMutableList()
+				}
+
+				val removeMarriages = mutableListOf<Marriage>()
+
 				// Okay, tudo certo, vamos lá!
-				for (document in documents) {
+				for (document in usersThatShouldHaveTheirMarriageRemoved) {
 					val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
+
+					removeMarriages.add(marriage)
 
 					val marriedWithId = if (marriage.user1 == document.userId) {
 						marriage.user2
@@ -154,12 +161,11 @@ class DailyTaxTask : Runnable {
 						} catch (e: Exception) {
 						}
 					}
+				}
 
-					transaction(Databases.loritta) {
-						Profiles.update({ Profiles.id eq document.userId }) {
-							it[Profiles.marriage] = null
-						}
-						Profiles.update({ Profiles.id eq marriedWithId.toLong() }) {
+				transaction(Databases.loritta) {
+					for (marriage in removeMarriages) { // E agora delete os casamentos falhos... rip
+						Profiles.update({ Profiles.marriage eq marriage.id }) {
 							it[Profiles.marriage] = null
 						}
 						marriage.delete()

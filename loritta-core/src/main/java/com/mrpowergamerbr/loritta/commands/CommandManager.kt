@@ -539,7 +539,7 @@ class CommandManager {
 									)
 							)
 							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
-								context.guild.controller.setNickname(context.guild.selfMember, null).queue()
+								context.guild.modifyNickname(context.guild.selfMember, null).queue()
 							} else {
 								return true
 							}

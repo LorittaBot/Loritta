@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.website.routes.fanarts
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
-import net.perfectdreams.loritta.website.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.utils.website
 import org.w3c.dom.Element
 import java.io.File

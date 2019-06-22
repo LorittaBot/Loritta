@@ -26,24 +26,13 @@ class RoleInfoCommand : LorittaCommand(arrayOf("roleinfo", "taginfo"), CommandCa
     }
 
     @Subcommand
-    suspend fun root(context: DiscordCommandContext, locale: BaseLocale, legacyLocale: LegacyBaseLocale, argument: String? = null) {
+    suspend fun root(context: DiscordCommandContext, locale: BaseLocale, argument: String? = null) {
         if (argument == null) {
             context.explain()
             return
         }
 
-        val role = if (context.discordMessage.mentionedRoles.firstOrNull() != null) {
-            context.discordMessage.mentionedRoles.firstOrNull()
-        } else if (context.args.isNotEmpty() && argument.isValidSnowflake() && context.event.guild!!.getRoleById(argument) != null) {
-            context.event.guild!!.getRoleById(argument)
-        } else if (context.event.guild!!.getRolesByName(argument, true).isNotEmpty()) {
-            context.event.guild!!.getRolesByName(argument, true)[0]
-        } else if (context.event.guild!!.roles.filter { it.name.contains(argument, true) }.isNotEmpty()) {
-            context.event.guild!!.roles.filter { it.name.contains(argument, true) }.first()
-        } else {
-            context.reply(locale["commands.discord.roleinfo.roleNotFound"], Constants.ERROR)
-            return
-        }
+        val role = context.getRoleAt(0)
 
         if (role != null) {
             val embed = EmbedBuilder()

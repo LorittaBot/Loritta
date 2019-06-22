@@ -193,13 +193,13 @@ class APIVoteServerView : NoVarsView() {
 				} // The specified ID is not a valid snowflake (null).
 			}
 
-			if (roles.isNotEmpty()) {
+			/* if (roles.isNotEmpty()) {
 				if (roles.size == 1) {
-					guild.controller.addSingleRoleToMember(member, roles[0]).reason("Autorole").queue()
+					guild.addSingleRoleToMember(member, roles[0]).reason("Autorole").queue()
 				} else {
-					guild.controller.addRolesToMember(member, roles).reason("Autorole").queue()
+					guild.addRolesToMember(member, roles).reason("Autorole").queue()
 				}
-			}
+			} */
 		}
 
 		val payload = JsonObject()

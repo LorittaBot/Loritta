@@ -55,6 +55,9 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 						.trim()
 						.replace(" ", "_")
 
+				if (artistId.isBlank())
+					artistId = userId.toString()
+
 				logger.info { "Artist ID para $userId ($userName) é $artistId" }
 
 				val date = "${message.timeCreated.year}-${message.timeCreated.monthValue.toString().padStart(2, '0')}-${message.timeCreated.dayOfMonth.toString().padStart(2, '0')}"
@@ -66,9 +69,12 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 				else
 					"png"
 
-				val artistNameOnFiles = userName.replace(Regex("[^a-zA-Z0-9]"), "")
+				var artistNameOnFiles = userName.replace(Regex("[^a-zA-Z0-9]"), "")
 						.trim()
 						.replace(" ", "_")
+
+				if (artistNameOnFiles.isBlank())
+					artistNameOnFiles = userId.toString()
 
 				logger.info { "Nome do arquivo para $userId ($userName) é $artistNameOnFiles" }
 
@@ -165,7 +171,7 @@ networks = [
 							userMessage.append("Obrigada por ser uma pessoa incrível!! Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
 							userMessage.append("\n\n")
 							userMessage.append("Agora você tem permissão para mandar mais fan arts para mim em <#583406099047252044>, mandar outros desenhos fofis em <#510601125221761054> e conversar com outros artistas em <#574387310129315850>! ${Emotes.LORI_OWO}")
-							event.guild.controller.removeSingleRoleFromMember(fanArtArtistGuildMember, role).await()
+							event.guild.removeRoleFromMember(fanArtArtistGuildMember, role).await()
 						} else {
 							userMessage.append("Obrigada por ser uma pessoa incrível e por continuar a fazer fan arts de mim (tô até emocionada ${Emotes.LORI_CRYING})... Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
 						}

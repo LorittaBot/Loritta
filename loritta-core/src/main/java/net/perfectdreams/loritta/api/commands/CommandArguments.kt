@@ -42,6 +42,8 @@ enum class ArgumentType {
 	TEXT,
 	NUMBER,
 	USER,
+	ROLE,
+	COLOR,
 	EMOTE,
 	IMAGE;
 
@@ -52,6 +54,8 @@ enum class ArgumentType {
 			USER   -> locale["commands.arguments.user"]
 			EMOTE  -> locale["commands.arguments.emote"]
 			IMAGE  -> locale["commands.arguments.image"]
+			ROLE   -> locale["commands.arguments.role"]
+			COLOR  -> locale["commands.argument.color"]
 		}
 	}
 }

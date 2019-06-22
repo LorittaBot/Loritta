@@ -5,13 +5,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.tables.DonationConfigs
-import com.mrpowergamerbr.loritta.tables.DonationKeys
-import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import mu.KotlinLogging
@@ -198,7 +196,31 @@ class APILoriDailyRewardView : NoVarsView() {
 
 			val serverConfigs = ServerConfig.wrapRows(results)
 
-			val bestServer = serverConfigs.firstOrNull { lorittaShards.getGuildById(it.guildId) != null }
+			var bestServer: ServerConfig? = null
+
+			for (config in serverConfigs) {
+				val guild = lorittaShards.getGuildById(config.guildId) ?: continue
+
+				val member = guild.getMemberById(lorittaProfile.id.value) ?: continue
+
+				val epochMillis = member.timeJoined.toEpochSecond() * 1000
+
+				if (member.user.avatarId == null) {
+					if (epochMillis + 1_296_000_000 > System.currentTimeMillis()) // 15 dias
+						continue
+				} else {
+					if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) // 7 dias
+						continue
+				}
+
+				val xp = GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq member.idLong) }.firstOrNull()?.xp ?: 0L
+
+				if (500 > xp)
+					continue
+
+				bestServer = config
+				break
+			}
 
 			if (bestServer != null) {
 				val donationConfig = bestServer.donationConfig

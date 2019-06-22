@@ -27,6 +27,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.socket.LorittaController
 import net.perfectdreams.loritta.utils.Constants
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.website.routes.*
 import net.perfectdreams.loritta.website.routes.api.v1.guilds.GetGuildConfigRoute
@@ -40,7 +41,6 @@ import net.perfectdreams.loritta.website.routes.fanarts.FanArtArtistRoute
 import net.perfectdreams.loritta.website.routes.fanarts.FanArtsRoute
 import net.perfectdreams.loritta.website.routes.guild.dashboard.GuildDashboardRoute
 import net.perfectdreams.loritta.website.utils.MiscUtils
-import net.perfectdreams.loritta.website.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.utils.config.WebsiteConfig
 import net.perfectdreams.loritta.website.utils.website
 import org.w3c.dom.Document

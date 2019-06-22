@@ -3,9 +3,10 @@ package com.mrpowergamerbr.loritta
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MigrationTool
-import com.mrpowergamerbr.loritta.utils.config.DiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
+import kotlinx.coroutines.debug.DebugProbes
+import net.perfectdreams.loritta.utils.CoroutinesBugTest
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -105,6 +106,14 @@ object LorittaLauncher {
 
 		// Iniciar instância da Loritta
 		loritta = Loritta(discordConfig, config)
+
+		// Coroutines Test Issue - Coroutines stop working after a while
+		if (System.getProperty("loritta.enable.coroutine.debug", "false") == "true") {
+			DebugProbes.install()
+			CoroutinesBugTest().start()
+		}
+
+
 		loritta.start()
 	}
 

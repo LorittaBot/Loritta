@@ -223,10 +223,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						val timePretty = if (time != null)
 							DateUtils.formatDateDiff(System.currentTimeMillis(), time, locale)
-						else context.locale["cosmmands.moderation.mute.forever"]
+						else context.locale["commands.moderation.mute.forever"]
 
 						embed.addField(
-								context.locale["cosmmands.moderation.mute.duration"],
+								context.locale["commands.moderation.mute.duration"],
 								timePretty,
 								false
 						)
@@ -266,7 +266,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val mutedRole: Role?
 			if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
-				mutedRole = context.guild.controller.createRole()
+				mutedRole = context.guild.createRole()
 						.setName(context.legacyLocale["MUTE_ROLE_NAME"])
 						.setColor(Color.BLACK)
 						.await()
@@ -338,7 +338,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			try {
-				val addRole = context.guild.controller.addSingleRoleToMember(member, mutedRole)
+				val addRole = context.guild.addRoleToMember(member, mutedRole)
 
 				addRole.await()
 
@@ -428,7 +428,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 
 				if (mutedRole != null && member != null) {
-					val removeRole = guild.controller.removeSingleRoleFromMember(member, mutedRole)
+					val removeRole = guild.removeRoleFromMember(member, mutedRole)
 					removeRole.queue()
 				}
 				return

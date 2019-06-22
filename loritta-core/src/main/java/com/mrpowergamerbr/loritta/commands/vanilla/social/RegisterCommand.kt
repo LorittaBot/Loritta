@@ -26,15 +26,13 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 			RegisterConfig.find { RegisterConfigs.id eq context.guild.idLong }.firstOrNull()
 		}
 
-
-
 		if (step == null) { // Se for null, quer dizer que o usuário completou todas as perguntas!
 			channel.sendMessage("Obrigada por responder nosso questionário de registro marotex! https://i.imgur.com/Rl4198r.png").await()
 
 			for (answer in answers) {
 				val guild = context.guild
 				val role = guild.getRoleById(answer.roleId) ?: continue
-				guild.controller.addSingleRoleToMember(context.handle, role).queue()
+				guild.addRoleToMember(context.handle, role).queue()
 			}
 			return
 		}
@@ -151,7 +149,7 @@ class RegisterCommand : AbstractCommand("register", listOf("registrar"), Command
 		val flatMap = registerHolder.step.flatMap { it.options }
 		val rolesToBeRemoved = context.handle.roles.filter { flatMap.any { option -> it.id == option.roleId }}
 		if (rolesToBeRemoved.isNotEmpty()) {
-			context.guild.controller.removeRolesFromMember(context.handle, rolesToBeRemoved).queue()
+			context.guild.modifyMemberRoles(context.handle, context.handle.roles.toMutableList().apply { this.removeAll(rolesToBeRemoved) }).queue()
 		}
 
 		// Vamos começar

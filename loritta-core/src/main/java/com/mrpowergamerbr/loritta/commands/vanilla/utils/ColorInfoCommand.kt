@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.ColorUtils
+import net.perfectdreams.loritta.utils.ColorUtils
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.drawText
@@ -16,10 +16,8 @@ import java.awt.image.BufferedImage
 
 class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), CommandCategory.UTILS) {
 	companion object {
-		val HEX_PATTERN = "#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toPattern()
-		val RGB_PATTERN = "(\\d{1,3})(?:,| |, )(\\d{1,3})(?:,| |, )(\\d{1,3})(?:(?:,| |, )(\\d{1,3}))?".toPattern()
-		val COLOR_UTILS = ColorUtils()
-		val FACTOR = 0.7
+		val COLOR_UTILS = com.mrpowergamerbr.loritta.utils.ColorUtils()
+		const val FACTOR = 0.7
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -29,28 +27,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val input = context.args.joinToString(" ")
-			var color: Color? = null
-
-			val hexMatcher = ColorInfoCommand.HEX_PATTERN.matcher(input)
-			val rgbMatcher = ColorInfoCommand.RGB_PATTERN.matcher(input)
-
-			if (hexMatcher.find()) { // Hexadecimal
-				color = Color.decode("#" + hexMatcher.group(1))
-			}
-
-			if (rgbMatcher.find()) { // RGB
-				var r = rgbMatcher.group(1).toInt()
-				var g = rgbMatcher.group(2).toInt()
-				var b = rgbMatcher.group(3).toInt()
-
-				color = Color(r, g, b)
-			}
-
-			var packedInt = input.toIntOrNull()
-
-			if (packedInt != null) { // Packed Int
-				color = Color(packedInt)
-			}
+			var color = ColorUtils.getColorFromString(input)
 
 			if (color == null) { // Cor inválida!
 				context.reply(

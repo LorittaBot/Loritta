@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.utils
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.perfectdreams.loritta.website.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import java.io.File
 
 fun main() {
@@ -16,7 +16,7 @@ fun main() {
             val hocon = it.readText()
 
             val mapper = Constants.HOCON_MAPPER
-            println("Reading ${it}")
+            println("Reading $it")
             val r = mapper.readValue<FanArtArtist>(hocon)
             artists.add(r)
         }

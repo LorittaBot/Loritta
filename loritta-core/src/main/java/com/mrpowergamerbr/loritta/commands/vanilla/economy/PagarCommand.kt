@@ -18,7 +18,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		return locale["PAY_Description"]
 	}
 
-        override fun getUsage(): String {
+	override fun getUsage(): String {
 		return "usuário quantia"
 	}
 
@@ -116,6 +116,18 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Hora de transferir!
 			if (economySource == "global") {
+				val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
+
+				if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
+					context.reply(
+							LoriReply(
+									"Você não pode transferir sonhos! Tente novamente mais tarde...",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
 				val taxedMoney = Math.ceil(TRANSACTION_TAX * howMuch.toDouble())
 				val finalMoney = howMuch - taxedMoney
 

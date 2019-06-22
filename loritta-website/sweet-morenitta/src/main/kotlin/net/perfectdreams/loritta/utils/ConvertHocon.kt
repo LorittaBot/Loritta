@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.utils
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.*
 import com.typesafe.config.ConfigRenderOptions
-import net.perfectdreams.loritta.website.utils.config.FanArt
-import net.perfectdreams.loritta.website.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.config.FanArt
+import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.utils.jsonParser
 import java.io.File
 import java.nio.file.Files

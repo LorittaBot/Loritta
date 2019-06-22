@@ -8,8 +8,10 @@ import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import java.io.File
+import java.io.PrintStream
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger
@@ -48,7 +50,6 @@ object DebugLog {
 				+ runtime.freeMemory() / mb)
 		logger.info("Total Memory:" + runtime.totalMemory() / mb)
 		logger.info("Max Memory:" + runtime.maxMemory() / mb)
-		logger.info("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
@@ -126,7 +127,6 @@ object DebugLog {
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")
-				println("executor: ${(loritta.executor as ThreadPoolExecutor).activeCount}")
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${ManagementFactory.getThreadMXBean().threadCount}")
 			}
@@ -171,6 +171,13 @@ object DebugLog {
 			}
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)
+			}
+			"dumpcoroutines", "dc" -> {
+				println("Dumping coroutines to file...")
+				val pw = PrintStream(File("./coroutines-dump-${System.currentTimeMillis()}.txt"))
+				DebugProbes.dumpCoroutines(pw)
+				pw.close()
+				println("Done! :3")
 			}
 		}
 	}

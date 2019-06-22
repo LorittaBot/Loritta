@@ -28,6 +28,7 @@ object Emotes {
     val LORI_CRYING: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_crying") }
     val LORI_RAGE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_rage") }
     val LORI_SHRUG: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_shrug") }
+    val LORI_NITRO_BOOST: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_nitro_boost") }
 
     private var emoteMap = mapOf<String, String>()
 

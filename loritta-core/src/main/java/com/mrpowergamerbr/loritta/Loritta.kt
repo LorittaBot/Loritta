@@ -58,8 +58,6 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
-import net.perfectdreams.loritta.utils.config.FanArt
-import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -76,7 +74,8 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.concurrent.SynchronousQueue
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -118,12 +117,15 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 	override val supportedFeatures = PlatformFeature.values().toMutableList()
 
 	var lorittaShards = LorittaShards() // Shards da Loritta
-	val executor = createThreadPool("Executor Thread %d") // Threads
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+		return ThreadPoolExecutor(15, Integer.MAX_VALUE,
+				5L, TimeUnit.MINUTES,
+				SynchronousQueue<Runnable>(),
+				ThreadFactoryBuilder().setNameFormat(name).build()
+		)
 	}
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
@@ -214,7 +216,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.PRESENCE))
+				.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
@@ -280,7 +282,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		lorittaShards.shardManager = shardManager
 
 		generateDummyServerConfig()
-		
+
 		if (config.socket.enabled) {
 			logger.info { "Sucesso! Iniciando socket client..." }
 			socket.connect()
@@ -394,7 +396,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					DonationKeys,
 					Payments,
 					ShipEffects,
-					GitHubIssues,
 					ParallaxMetaStorages
 			)
 		}

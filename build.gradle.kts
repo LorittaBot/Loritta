@@ -3,10 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val loriVersion by lazy { ext["lori-version"] as String }
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
-val loriVersion   = "2019.06.14-SNAPSHOT"
-val kotlinVersion = "1.3.21"
-val ktorVersion   = "1.2.0-rc2"
-val jdaVersion    = "4.ALPHA.0_79"
+val loriVersion   = "2019.06.21-SNAPSHOT"
+val kotlinVersion = "1.3.31"
+val ktorVersion   = "1.2.1"
+val jdaVersion    = "4.BETA.0_7"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -81,12 +81,13 @@ allprojects {
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.perfectdreams.net/")
         maven("https://dl.bintray.com/kotlin/ktor/")
+        maven("https://jitpack.io")
     }
 }
 
 plugins {
     java
-    kotlin("jvm") version "1.3.21"
+    kotlin("jvm") version "1.3.31"
     `maven-publish`
 }
 

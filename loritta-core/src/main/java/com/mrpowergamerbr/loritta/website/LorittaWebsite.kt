@@ -7,7 +7,6 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
@@ -23,9 +22,7 @@ import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
-import org.jooby.Jooby
-import org.jooby.Kooby
-import org.jooby.MediaType
+import org.jooby.*
 import org.jooby.internal.SessionManager
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
@@ -82,6 +79,10 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString
 		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+	}
+
+	post("/api/v1/callback/github") { req, res ->
+		githubIssueCallback?.invoke(req, res)
 	}
 
 	use("*") { req, res, chain ->
@@ -183,6 +184,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use(APIRoute())
 	use(UserRoute())
 	use(GuildRoute())
+
 	get("/**") { req, res ->
 		if (req.path() == "/lorisocket")
 			return@get
@@ -198,6 +200,8 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		lateinit var WEBSITE_URL: String
 		private val logger = KotlinLogging.logger {}
 		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
+		var githubIssueCallback: ((Request, Response) -> (Unit))? = null
+
 		const val API_V1 = "/api/v1/"
 
 		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
