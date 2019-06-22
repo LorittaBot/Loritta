@@ -35,8 +35,7 @@ class MutedUsersTask : Runnable {
 				if (guild == null) {
 					logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
 
-					if (deleteMuteIfNeeded(mute))
-						return
+					deleteMuteIfNeeded(mute)
 					continue
 				}
 
@@ -45,10 +44,8 @@ class MutedUsersTask : Runnable {
 				if (member == null) {
 					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }
 
-					if (deleteMuteIfNeeded(mute))
-						return
-					if (deleteMuteIfNeededMemberIsNotOnTheServer(mute))
-						return
+					deleteMuteIfNeeded(mute)
+					deleteMuteIfNeededMemberIsNotOnTheServer(mute)
 					continue
 				}
 
