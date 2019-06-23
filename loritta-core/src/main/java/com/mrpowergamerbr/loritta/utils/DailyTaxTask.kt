@@ -164,11 +164,12 @@ class DailyTaxTask : Runnable {
 				}
 
 				transaction(Databases.loritta) {
-					for (marriage in removeMarriages) { // E agora delete os casamentos falhos... rip
-						Profiles.update({ Profiles.marriage eq marriage.id }) {
-							it[Profiles.marriage] = null
-						}
-						marriage.delete()
+					Profiles.update({ Profiles.marriage inList removeMarriages.map { it.id }}) {
+						it[marriage] = null
+					}
+
+					removeMarriages.forEach {
+						it.delete()
 					}
 				}
 			}
