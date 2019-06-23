@@ -51,6 +51,7 @@ class QuirkyStuff : DiscordPlugin() {
         }
     }
     var changeBanner: ChangeBanner? = null
+    var topDonatorsRank: TopDonatorsRank? = null
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
@@ -58,6 +59,13 @@ class QuirkyStuff : DiscordPlugin() {
         if (config.changeBanner.enabled) {
             logger.info { "Change Banner is enabled! Enabling banner stuff... :3"}
             changeBanner = ChangeBanner(this, config).apply {
+                this.start()
+            }
+        }
+
+        if (config.topDonatorsRank.enabled) {
+            logger.info { "Top Donators Rank is enabled! Enabling top donators rank stuff... :3"}
+            topDonatorsRank = TopDonatorsRank(this, config).apply {
                 this.start()
             }
         }
@@ -81,6 +89,7 @@ class QuirkyStuff : DiscordPlugin() {
         super.onDisable()
         task.cancel()
         changeBanner?.task?.cancel()
+        topDonatorsRank?.task?.cancel()
     }
 
     companion object {
