@@ -11,13 +11,17 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DailyTaxTask : Runnable {
 	companion object {
@@ -52,7 +56,10 @@ class DailyTaxTask : Runnable {
 			if (hour == 18 && !alreadySentDMs) {
 				logger.info("Avisando sobre a taxa diária!")
 
-				// Dar aquela reaproveitada aqui na moralzinha
+				// Dar aquela reaproveitada já que aqui já estamos avisando coisas a cada X horas do dia na moralzinha
+				val alreadyPaymentNotifiedUsers = mutableListOf<Long>()
+
+				// Avisar sobre keys expirando
 				val soonToBeExpiredMatchingKeys = transaction(Databases.loritta) {
 					val soonToBeExpiredKeys = DonationKey.find {
 						DonationKeys.expiresAt lessEq (System.currentTimeMillis() + 259_200_000) and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) // 3 dias
@@ -76,17 +83,102 @@ class DailyTaxTask : Runnable {
 					val user = lorittaShards.getUserById(donationKey.userId) ?: continue // Ignorar caso o usuário não exista
 					val guild = lorittaShards.getGuildById(guildId) ?: continue // Apenas avise caso a key esteja sendo usada em algum servidor
 
+					val dayNow = TimeUnit.MILLISECONDS.toDays(donationKey.expiresAt - System.currentTimeMillis())
+
 					val embed = EmbedBuilder()
-							.setTitle("\uD83D\uDC4B Hey!")
-							.setDescription("Só estou aqui passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}")
-							.setThumbnail("https://i.imgur.com/HSmy9yK.png")
+							.setTitle("\uD83D\uDD11 Sua key está quase expirando!")
 							.setColor(Constants.LORITTA_AQUA)
+
+					val coolFeatures by lazy {
+						val strBuilder = StringBuilder()
+						strBuilder.append("${Emotes.LORI_WOW} A sensação incrível de ter me ajudado a ficar online!")
+						strBuilder.append("\n")
+						strBuilder.append("${Emotes.LORI_WOW} Deixar que DJs no seu servidor possam usar `+volume`!")
+						strBuilder.append("\n")
+						strBuilder.append("${Emotes.LORI_WOW} Uma badge exclusiva para membros do seu servidor!")
+						strBuilder.append("\n")
+						if (59.99 >= donationKey.value) {
+							strBuilder.append("${Emotes.LORI_WOW} Multiplicador de sonhos para os membros ativos do seu servidor!")
+						}
+						strBuilder.toString()
+					}
+
+					when (dayNow) {
+						2L -> {
+							embed.setThumbnail("https://i.imgur.com/HSmy9yK.png")
+							embed.setDescription("Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
+						}
+						1L -> {
+							embed.setThumbnail("https://i.imgur.com/oleb4HP.png")
+							embed.setDescription("Hey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe a sua key expirar, você irá perder vantagens incríveis, como...\n$coolFeatures\n\nAh, e não se esqueça das vantagens que você ganha como usuário!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
+						}
+						0L -> {
+							embed.setThumbnail("https://i.imgur.com/L8oyJQ7.png")
+							embed.setDescription("Heeeeey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSério mesmo que você vai deixar a sua key expirar e deixar de ter vantagens incríveis como...\n$coolFeatures\nE ainda perder todas as vantagens que você ganha como usuário?\n\nMas eu vou te dar uma promoção exclusiva: Renove a key e eu irei te dar 20% de desconto! Pense bem, se você não renovar e quiser as vantagens de novo terá que pagar o preço sem desconto! ${Emotes.LORI_CRYING}\n\nSe você quiser renovar a key, [aqui está o link](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HUG}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
+						}
+					}
+
+					user.openPrivateChannel().queue {
+						it.sendMessage(embed.build()).queue()
+					}
+
+					alreadyPaymentNotifiedUsers.add(user.idLong)
+				}
+
+				// Avisar para pagar a doação novamente antes que ela "expire"
+				val soonToBeExpiredDonations = transaction(Databases.loritta) {
+					val soonToBeExpiredDonations = mutableListOf<Payment>()
+
+					val possiblySoonToBeExpiredDonations = Payment.find {
+						Payments.expiresAt lessEq (System.currentTimeMillis() + 259_200_000) and (Payments.expiresAt greaterEq System.currentTimeMillis() and (Payments.reason eq PaymentReason.DONATION)) // 3 dias
+					}
+
+					// O soonToBeExpiredDonations tem os pagamentos que "vão" expirar logo... mas tem uma coisa!
+					// E se o cara doar? Precisamos verificar se o cara já não pagou de novo!
+					for (soonToBeExpiredDonation in possiblySoonToBeExpiredDonations) {
+						val newDonationsCount = Payment.find {
+							Payments.paidAt greater (soonToBeExpiredDonation.paidAt ?: Long.MAX_VALUE) and (Payments.reason eq PaymentReason.DONATION) // greater, pois não queremos pegar o mesmo pagamento!
+						}.count()
+
+						if (newDonationsCount != 0 && !alreadyPaymentNotifiedUsers.contains(soonToBeExpiredDonation.userId)) {
+							soonToBeExpiredDonations.add(soonToBeExpiredDonation)
+						}
+					}
+
+					return@transaction soonToBeExpiredDonations
+				}
+
+				// Hora de avisar aos usuários que a doação deles irá acabar!
+				for (soonToBeExpiredDonation in soonToBeExpiredDonations) {
+					val user = lorittaShards.getUserById(soonToBeExpiredDonation.userId) ?: continue // Ignorar caso o usuário não exista
+
+					val embed = EmbedBuilder()
+							.setTitle("\uD83D\uDCB8 Faz bastante tempo que você não doa...")
+							.setColor(Constants.LORITTA_AQUA)
+
+					val dayNow = TimeUnit.MILLISECONDS.toDays(soonToBeExpiredDonation.expiresAt ?: Long.MAX_VALUE - System.currentTimeMillis())
+
+					when (dayNow) {
+						2L -> {
+							embed.setThumbnail("https://i.imgur.com/HSmy9yK.png")
+							embed.setDescription("Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição! ${Emotes.LORI_HAPPY}\n\nSe você quiser continuar a ser um maravilhoso contribuidor que me ajuda a pagar o meu aluguel e a ficar online, por favor, doe novamente [no meu website](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_TEMMIE}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
+						}
+						1L -> {
+							embed.setThumbnail("https://i.imgur.com/oleb4HP.png")
+							embed.setDescription("Hey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEu sei que é chatinho ficar pedindo para doar novamente, mas se você puder... por favoooor doeeeee! ${Emotes.LORI_CRYING}\n\nMesmo que a sua doação seja pequena, ela sempre me ajuda a ficar mais tempo online!\n\nMas bem, se você estiver afim de doar novamente... Aqui está o [link para doar](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
+						}
+						0L -> {
+							embed.setThumbnail("https://i.imgur.com/L8oyJQ7.png")
+							embed.setDescription("Heeeeey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEssa será a última vez que eu irei pedir para você contribuir novamente (eu sei, por dentro você deve estar \"nossa, finalmente hein lori, já estava ficando chato ${Emotes.LORI_SHRUG}\"...\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HUG}\n\nSe você estiver afim de doar novamente, [aqui está o link](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
+						}
+					}
 
 					user.openPrivateChannel().queue {
 						it.sendMessage(embed.build()).queue()
 					}
 				}
 
+				// MARRY - Aviar sobre sonhos
 				val documents = transaction(Databases.loritta) {
 					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
 				}
