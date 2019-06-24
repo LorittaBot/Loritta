@@ -85,6 +85,8 @@ class DailyTaxTask : Runnable {
 
 					val dayNow = TimeUnit.MILLISECONDS.toDays(donationKey.expiresAt - System.currentTimeMillis())
 
+					logger.info { "Avisando para $user que a key $donationKey de $guild irá expirar em breve! (Falta ${dayNow} dias para expirar)" }
+
 					val embed = EmbedBuilder()
 							.setTitle("\uD83D\uDD11 Sua key está quase expirando!")
 							.setColor(Constants.LORITTA_AQUA)
@@ -156,7 +158,9 @@ class DailyTaxTask : Runnable {
 							.setTitle("\uD83D\uDCB8 Faz bastante tempo que você não doa...")
 							.setColor(Constants.LORITTA_AQUA)
 
-					val dayNow = TimeUnit.MILLISECONDS.toDays(soonToBeExpiredDonation.expiresAt ?: Long.MAX_VALUE - System.currentTimeMillis())
+					val dayNow = TimeUnit.MILLISECONDS.toDays((soonToBeExpiredDonation.expiresAt ?: Long.MAX_VALUE) - System.currentTimeMillis())
+
+					logger.info { "Avisando para $user que a doação $soonToBeExpiredDonation irá expirar em breve! (Falta ${dayNow} dias para expirar)" }
 
 					when (dayNow) {
 						2L -> {
