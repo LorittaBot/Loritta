@@ -46,7 +46,7 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 			while (true) {
 				val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.changeBanner.timeMod
 				logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!"}
-				delay(3_600_000 - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
+				delay(config.changeBanner.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
 
 				val randomBanner = selectRandomBanner()
 				logger.info { "New banner is ${randomBanner.first} by ${randomBanner.second.id}!"}
