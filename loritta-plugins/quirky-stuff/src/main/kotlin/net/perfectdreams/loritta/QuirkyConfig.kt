@@ -53,6 +53,9 @@ class QuirkyConfig @JsonCreator constructor(
 
     class TopDonatorsRankConfig @JsonCreator constructor(
             val enabled: Boolean,
+            val topRole1: Long,
+            val topRole2: Long,
+            val topRole3: Long,
             val channels: List<Long>
     )
 }

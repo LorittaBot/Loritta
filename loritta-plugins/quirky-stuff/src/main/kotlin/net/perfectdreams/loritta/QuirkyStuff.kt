@@ -16,6 +16,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
+import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.BoostGuildListener
@@ -80,9 +81,8 @@ class QuirkyStuff : DiscordPlugin() {
                 ThankYouLoriModule(config)
         )
 
-        registerCommand(
-                LoriToolsQuirkyStuffCommand()
-        )
+        registerCommand(LoriToolsQuirkyStuffCommand())
+        registerCommand(SouTopDoadorCommand(config))
     }
 
     override fun onDisable() {

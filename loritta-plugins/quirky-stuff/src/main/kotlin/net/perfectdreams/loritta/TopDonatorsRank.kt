@@ -35,9 +35,12 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 				val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				if (guild != null) {
+					val role1 = guild.getRoleById(config.topDonatorsRank.topRole1)!!
+					val role2 = guild.getRoleById(config.topDonatorsRank.topRole2)!!
+					val role3 = guild.getRoleById(config.topDonatorsRank.topRole3)!!
+
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = transaction(Databases.loritta) {
-
 						Payments.slice(Payments.userId, moneySumId)
 								.select {
 									Payments.paidAt.isNotNull() and
@@ -54,9 +57,49 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 					val topMoneyAsDisplayEntry = "R$ ${mostPayingUsers[0][moneySumId]!!.toDouble().roundToInt()}"
 
+					val currentTop1 = guild.getMembersWithRoles(role1).firstOrNull()
+					val currentTop2 = guild.getMembersWithRoles(role2).firstOrNull()
+					val currentTop3 = guild.getMembersWithRoles(role3).firstOrNull()
+
+					// Remover todos que não merece mais
+					if (currentTop1 != null && currentTop1.idLong != mostPayingUsers.getOrNull(0)?.get(Payments.userId)) {
+						guild.removeRoleFromMember(currentTop1, role1).await()
+					}
+					if (currentTop2 != null && currentTop2.idLong != mostPayingUsers.getOrNull(1)?.get(Payments.userId)) {
+						guild.removeRoleFromMember(currentTop2, role2).await()
+					}
+					if (currentTop3 != null && currentTop3.idLong != mostPayingUsers.getOrNull(2)?.get(Payments.userId)) {
+						guild.removeRoleFromMember(currentTop3, role3).await()
+					}
+
 					mostPayingUsers.forEachIndexed { index, entry ->
 						val userId = entry[Payments.userId]
 						val user = guild.getMemberById(entry[Payments.userId])
+
+						if (user != null) {
+							val newRoles = user.roles.toMutableList()
+
+							newRoles.remove(role1)
+							newRoles.remove(role2)
+							newRoles.remove(role3)
+
+							if (index == 0) {
+								if (!user.roles.contains(role1)) {
+									newRoles.add(role1)
+								}
+							} else if (index == 1) {
+								if (!user.roles.contains(role2)) {
+									newRoles.add(role2)
+								}
+							} else if (index == 2) {
+								if (!user.roles.contains(role3)) {
+									newRoles.add(role3)
+								}
+							}
+
+							if (!(newRoles.containsAll(user.roles) && user.roles.containsAll(newRoles)))
+								guild.modifyMemberRoles(user, newRoles).await()
+						}
 
 						val rankEmoji = when (index) {
 							0 -> "<:nothing:592370648031166524>\uD83E\uDD47"
