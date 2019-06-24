@@ -46,6 +46,7 @@ class QuirkyConfig @JsonCreator constructor(
 
     class ChangeBannerConfig @JsonCreator constructor(
             val enabled: Boolean,
+            val timeMod: Long,
             val guilds: List<Long>,
             val channels: List<Long>
     )

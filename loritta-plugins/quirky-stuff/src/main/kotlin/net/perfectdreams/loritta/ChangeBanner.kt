@@ -44,7 +44,7 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 		logger.info { "Starting Banner Changing Task..." }
 		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
 			while (true) {
-				val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % 3_600_000
+				val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.changeBanner.timeMod
 				logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!"}
 				delay(3_600_000 - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
 
