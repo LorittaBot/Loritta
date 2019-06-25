@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.network
 
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import net.perfectdreams.loritta.utils.NetAddressUtils
@@ -15,7 +16,7 @@ object Databases {
 			config.password = loritta.config.postgreSql.password
 		config.driverClassName = "org.postgresql.Driver"
 
-		config.maximumPoolSize = 24
+		config.maximumPoolSize = LorittaLauncher.loritta.config.postgreSql.maximumPoolSize
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
