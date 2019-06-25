@@ -201,8 +201,7 @@ object GiveawayManager {
         logger.info { "Creating giveaway ${giveaway.id.value} job..." }
 
         // Vamos tentar pegar e ver se a guild ou o canal de texto existem
-        getGiveawayGuild(giveaway, false) ?: return
-        getGiveawayTextChannel(giveaway, false) ?: return
+        getGiveawayTextChannel(giveaway, getGiveawayGuild(giveaway, false) ?: return, false) ?: return
 
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
