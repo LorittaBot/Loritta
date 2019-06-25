@@ -20,22 +20,34 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 	}
 
 	var task: Job? = null
+	var currentBannerIndex = -1
 
 	fun selectRandomBanner(): Pair<File, FanArtArtist> {
 		logger.info { "Selecting new banner for the guild..." }
 		val bannersFolder = File(m.dataFolder, "banners/")
 
-		var randomBanner: File?
-		var fanArtArtist: FanArtArtist?
+		val currentBannerIndexFile = File(m.dataFolder, "current_banner_index")
+		if (currentBannerIndex == -1) {
+			currentBannerIndex = if (currentBannerIndexFile.exists())
+				currentBannerIndexFile.readText().toInt()
+			else
+				0
+		}
 
-		do {
-			val allBanners = bannersFolder.listFiles().filter { it.extension == "png" }
-			logger.info { "There are ${allBanners.size} banners!" }
-			randomBanner = allBanners.random()
+		if (currentBannerIndex + 1 > config.changeBanner.banners.size)
+			currentBannerIndex = 0
 
-			val artistId = randomBanner.nameWithoutExtension.split("-").first()
-			fanArtArtist = loritta.fanArtArtists.firstOrNull { it.id == artistId }
-		} while (randomBanner == null || fanArtArtist == null)
+		logger.info { "Current banner index is $currentBannerIndex"}
+
+		val randomBanner = bannersFolder.listFiles().first { it.name == config.changeBanner.banners[currentBannerIndex] }
+
+		val artistId = randomBanner.nameWithoutExtension.split("-").first()
+
+		val fanArtArtist = loritta.fanArtArtists.first { it.id == artistId }
+		logger.info { "Using banner $randomBanner by $fanArtArtist"}
+
+		currentBannerIndexFile.writeText(currentBannerIndex.toString())
+		currentBannerIndex++
 
 		return Pair(randomBanner, fanArtArtist)
 	}
