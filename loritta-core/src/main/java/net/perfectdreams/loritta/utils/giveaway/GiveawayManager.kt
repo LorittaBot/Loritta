@@ -150,37 +150,78 @@ object GiveawayManager {
         return giveaway
     }
 
+    /**
+     * Gets all entities related to this giveaway.
+     *
+     * @return a [GiveawayCombo] containing the guild, channel and message. If something is invalid, returns null
+     */
+    private suspend fun getGiveawayRelatedEntities(giveaway: Giveaway, shouldCancel: Boolean): GiveawayCombo? {
+        val guild = getGiveawayGuild(giveaway, shouldCancel) ?: return null
+        val channel = getGiveawayTextChannel(giveaway, guild, shouldCancel) ?: return null
+
+        val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
+            logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
+
+            if (shouldCancel)
+                cancelGiveaway(giveaway, true)
+
+            return null
+        }
+
+        return GiveawayCombo(guild, channel, message)
+    }
+
+    private fun getGiveawayGuild(giveaway: Giveaway, shouldCancel: Boolean): Guild? {
+        val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+            logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
+
+            if (shouldCancel)
+                cancelGiveaway(giveaway, true)
+
+            return null
+        }
+
+        return guild
+    }
+
+    private fun getGiveawayTextChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): TextChannel? {
+        val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+            logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
+
+            if (shouldCancel)
+                cancelGiveaway(giveaway, true)
+
+            return null
+        }
+
+        return channel
+    }
+
     fun createGiveawayJob(giveaway: Giveaway) {
         logger.info { "Creating giveaway ${giveaway.id.value} job..." }
+
+        // Vamos tentar pegar e ver se a guild ou o canal de texto existem
+        getGiveawayGuild(giveaway, false) ?: return
+        getGiveawayTextChannel(giveaway, false) ?: return
 
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
                 while (giveaway.finishAt > System.currentTimeMillis()) {
-                    if (!this.isActive) // Oh no, o giveaway acabou então a task não é mais necessária! Ignore...
-                        return@launch
-
-                    val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
-                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
-                        cancelGiveaway(giveaway, true)
+                    if (!this.isActive) { // Oh no, o giveaway acabou então a task não é mais necessária! Ignore...
+                        giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
-                    val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
-                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
-                        cancelGiveaway(giveaway, true)
+
+                    val (guild, channel, message) = getGiveawayRelatedEntities(giveaway, true) ?: run {
+                        giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
 
                     val diff = giveaway.finishAt - System.currentTimeMillis()
 
-                    val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
-                        logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
-                        cancelGiveaway(giveaway, true)
-                        return@launch
-                    }
-
                     val locale = loritta.getLocaleById(giveaway.locale)
 
-                    val giveawayMessage = GiveawayManager.createGiveawayMessage(
+                    val giveawayMessage = createGiveawayMessage(
                             locale,
                             giveaway.reason,
                             giveaway.description,
@@ -230,23 +271,12 @@ object GiveawayManager {
                     }
                 }
 
-                val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
-                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
-                    cancelGiveaway(giveaway, true)
-                    return@launch
-                }
-                val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
-                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
-                    cancelGiveaway(giveaway, true)
-                    return@launch
-                }
-                val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
-                    logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
-                    cancelGiveaway(giveaway, true)
+                val (guild, channel, message) = getGiveawayRelatedEntities(giveaway, true) ?: run {
+                    giveawayTasks.remove(giveaway.id.value)
                     return@launch
                 }
 
-                GiveawayManager.finishGiveaway(message, giveaway)
+                finishGiveaway(message, giveaway)
             } catch (e: Exception) {
                 if (e is ErrorResponseException) {
                     if (e.errorCode == 10008) { // Mensagem não existe, vamos cancelar o giveaway!
@@ -366,4 +396,10 @@ object GiveawayManager {
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
     }
+
+    private data class GiveawayCombo(
+            val guild: Guild,
+            val channel: TextChannel,
+            val message: Message
+    )
 }
