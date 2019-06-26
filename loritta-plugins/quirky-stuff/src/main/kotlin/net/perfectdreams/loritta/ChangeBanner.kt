@@ -46,8 +46,8 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 		val fanArtArtist = loritta.fanArtArtists.first { it.id == artistId }
 		logger.info { "Using banner $randomBanner by $fanArtArtist"}
 
-		currentBannerIndexFile.writeText(currentBannerIndex.toString())
 		currentBannerIndex++
+		currentBannerIndexFile.writeText(currentBannerIndex.toString())
 
 		return Pair(randomBanner, fanArtArtist)
 	}
