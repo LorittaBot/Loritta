@@ -1,11 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.toJsonArray
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
@@ -23,13 +18,9 @@ import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
@@ -58,13 +49,12 @@ import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 
 class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
@@ -332,10 +322,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				queueTextChannelTopicUpdates(event.guild, conf, true)
 
-				for (eventHandler in conf.nashornEventHandlers) {
-					eventHandler.handleMemberJoin(event)
-				}
-
 				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
 					AutoroleModule.giveRoles(event, conf.autoroleConfig)
 				}
@@ -388,10 +374,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
 				queueTextChannelTopicUpdates(event.guild, conf, true)
-
-				for (eventHandler in conf.nashornEventHandlers) {
-					eventHandler.handleMemberLeave(event)
-				}
 
 				if (conf.joinLeaveConfig.isEnabled) {
 					WelcomeModule.handleLeave(event, conf)
