@@ -76,7 +76,7 @@ class SouTopDoadorCommand(val config: QuirkyConfig) : LorittaDiscordCommand(arra
 			if (args[0] == "nome") {
 				val name = args.toMutableList().apply { this.removeAt(0) }.joinToString(" ")
 
-				editRole.manager.setName(name).await()
+				editRole.manager.setName("\uD83C\uDF1F $name | Top Doador ${index + 1}").await()
 
 				context.reply(
 						LoriReply(
