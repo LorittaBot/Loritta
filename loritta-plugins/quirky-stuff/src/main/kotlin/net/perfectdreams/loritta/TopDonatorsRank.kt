@@ -84,15 +84,15 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 							newRoles.remove(role3)
 
 							if (index == 0) {
-								if (!user.roles.contains(role1)) {
+								if (!newRoles.contains(role1)) {
 									newRoles.add(role1)
 								}
 							} else if (index == 1) {
-								if (!user.roles.contains(role2)) {
+								if (!newRoles.contains(role2)) {
 									newRoles.add(role2)
 								}
 							} else if (index == 2) {
-								if (!user.roles.contains(role3)) {
+								if (!newRoles.contains(role3)) {
 									newRoles.add(role3)
 								}
 							}
