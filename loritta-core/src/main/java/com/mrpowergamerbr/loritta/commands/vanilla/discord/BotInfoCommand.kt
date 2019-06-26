@@ -57,7 +57,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
-				locale.toNewLocale().getWithType<List<String>>("commands.botinfo.embedDescription")
+				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.embedDescription")
 						.joinToString("\n\n")
 						.msgFormat(
 								lorittaShards.getCachedGuildCount(),
@@ -72,7 +72,6 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						)
 		)
 
-		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), sb.toString(), LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
 		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.config.loritta.website.url}donate", true)
 		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.config.loritta.website.url}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.config.loritta.website.url}commands", true)
@@ -89,19 +88,20 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		embed.addField(
 				"\uD83C\uDFC5 ${locale["BOTINFO_HONORABLE_MENTIONS"]}",
-				locale.toNewLocale().getWithType<List<String>>("commands.botinfo.honorableMentions").joinToString("\n\n") { "•$ $it" }
+				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
 						.msgFormat(
 								numberOfUniqueDonators,
 								loritta.fanArtArtists.size,
 								context.userHandle.asMention,
 								Emotes.LORI_TEMMIE,
+								Emotes.LORI_OWO,
+								Emotes.LORI_WOW,
 								Emotes.LORI_HUG,
 								Emotes.LORI_SMILE
 						),
 				false
 		)
 
-		embed.addField("\uD83C\uDFC5 ${context.legacyLocale.get("BOTINFO_HONORABLE_MENTIONS")}", context.legacyLocale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
