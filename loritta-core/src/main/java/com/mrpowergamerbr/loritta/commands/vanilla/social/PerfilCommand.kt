@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -32,10 +33,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User, profile: Profile): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<Guild> = lorittaShards.getMutualGuilds(user)): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-			val member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-
 			fun hasRole(guildId: String, roleId: String): Boolean {
 				val lorittaGuild = lorittaShards.getGuildById(guildId)
 				return if (lorittaGuild != null) {
@@ -104,8 +103,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
 			if (isGitHubContributor) badges += ImageIO.read(File(Loritta.ASSETS + "github_contributor.png"))
 			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
-
-			val mutualGuilds = lorittaShards.getMutualGuilds(user)
 
 			transaction(Databases.loritta) {
 				var specialCase = false
@@ -207,8 +204,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-		val member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-		val badges = getUserBadges(user, userProfile)
+		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val member = mutualGuilds.firstOrNull()?.getMember(user)
+		val badges = getUserBadges(user, userProfile, mutualGuilds)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
