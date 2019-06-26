@@ -39,3 +39,6 @@ include(":loritta-website:spicy-morenitta")
 
 // Watchdoggo
 include(":loritta-watchdog-bot")
+
+// Misc
+include(":temmie-discord-auth")

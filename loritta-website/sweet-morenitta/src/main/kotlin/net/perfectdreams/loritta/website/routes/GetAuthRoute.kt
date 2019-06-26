@@ -9,7 +9,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
 import net.perfectdreams.loritta.utils.Constants
-import net.perfectdreams.loritta.utils.oauth2.TemmieDiscordAuth
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.SampleSession
 import net.perfectdreams.loritta.website.utils.ScriptingUtils

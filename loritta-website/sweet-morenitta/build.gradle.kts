@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
     compile(project(":loritta-api-jvm"))
+    compile(project(":temmie-discord-auth"))
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1")
     compile(kotlin("stdlib-jdk8"))

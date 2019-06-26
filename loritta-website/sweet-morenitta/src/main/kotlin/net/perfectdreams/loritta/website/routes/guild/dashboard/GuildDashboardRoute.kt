@@ -5,7 +5,7 @@ import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import net.perfectdreams.loritta.api.entities.Guild
 import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.oauth2.TemmieDiscordAuth
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.identification.SimpleUserIdentification

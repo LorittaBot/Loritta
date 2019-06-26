@@ -6,11 +6,10 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.Lo
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.SendMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.GetFanArtsController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.GetLocaleController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.UsersController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.CreateDonationPaymentController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.ProfileImageController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.SelfProfileController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.UserReputationController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.*
 import org.jooby.Jooby
 
 class APIRoute : Jooby() {
@@ -37,5 +36,10 @@ class APIRoute : Jooby() {
 
 		// ===[ LORITTA ]===
 		use(UsersController::class.java)
+
+		// ===[ NEW WEBSITE STUFF ]===
+		use(GetLocaleController::class.java)
+		use(GetSelfInfoController::class.java)
+		use(GetFanArtsController::class.java)
 	}
 }

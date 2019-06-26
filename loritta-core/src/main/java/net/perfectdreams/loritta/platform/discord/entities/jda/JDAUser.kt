@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.platform.discord.entities.jda
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
 
-open class JDAUser(val handle: net.dv8tion.jda.api.entities.User) : DiscordUser {
+open class JDAUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : DiscordUser {
     override val id: Long
         get() = handle.idLong
 

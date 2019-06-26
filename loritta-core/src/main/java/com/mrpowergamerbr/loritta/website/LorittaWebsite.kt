@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.Lists
-import com.google.inject.Injector
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
@@ -19,11 +18,12 @@ import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
-import com.mrpowergamerbr.loritta.website.views.WebSocketHandler
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
-import org.jooby.*
-import org.jooby.internal.SessionManager
+import org.jooby.Kooby
+import org.jooby.MediaType
+import org.jooby.Request
+import org.jooby.Response
 import org.jooby.mongodb.MongoSessionStore
 import org.jooby.mongodb.Mongodb
 import java.io.File
@@ -42,31 +42,6 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		res.type(MediaType.json)
 		res.send(gson.toJson(cause.payload))
 	}
-
-	ws("/lorisocket") { handler, ws ->
-		println("WEBSOCKET BOIS")
-		val _field = Jooby::class.java.getDeclaredField("injector")
-		_field.isAccessible = true
-
-		val injector = _field.get(this) as Injector
-		val sm = injector.getProvider(SessionManager::class.java).get()
-
-		val session = sm.get(handler, null)
-
-		ws.onMessage {
-			WebSocketHandler.onMessageReceived(ws, it, session)
-		}
-		ws.onClose {
-			WebSocketHandler.onSocketClose(ws, session)
-		}
-		ws.onError {
-			WebSocketHandler.onSocketError(ws, session)
-		}
-
-		WebSocketHandler.onSocketConnected(ws, session)
-	}
-
-	ws("/api/v1/lorisocket") { handler, ws ->	}
 
 	// Mostrar conexões realizadas ao website
 	before { req, res ->

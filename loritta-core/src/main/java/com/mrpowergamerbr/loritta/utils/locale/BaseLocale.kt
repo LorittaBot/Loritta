@@ -9,6 +9,8 @@ class BaseLocale(val id: String) {
 	}
 
 	val localeEntries = mutableMapOf<String, Any?>()
+	val path: String
+		get() = this["website.localePath"]
 
 	operator fun get(key: String, vararg arguments: Any?): String {
 		try {

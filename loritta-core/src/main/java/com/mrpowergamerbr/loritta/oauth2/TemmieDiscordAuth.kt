@@ -212,7 +212,11 @@ class TemmieDiscordAuth {
 		id: String,
 		avatar: String,
 		discriminator: String,
-		val email: String?
+		val email: String?,
+		val bot: Boolean,
+		val locale: String,
+		val flags: Int,
+		val premiumType: Int
 	) : SimpleUserIdentification(username, id, avatar, discriminator)
 
 	class DiscordGuild(
