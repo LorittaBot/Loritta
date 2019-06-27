@@ -55,7 +55,7 @@ allprojects {
                             } else {
                                 val output = File(libs, it.name)
 
-                                if (!output.exists())
+                                if (it.exists() && !output.exists())
                                     it.copyTo(output, true)
 
                                 null
