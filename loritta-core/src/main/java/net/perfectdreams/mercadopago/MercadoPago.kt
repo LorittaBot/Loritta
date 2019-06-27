@@ -58,7 +58,8 @@ class MercadoPago(val clientId: String? = null, val clientSecret: String? = null
     fun checkInvalidToken(payload: String): Boolean {
         val json = jsonParser.parse(payload).obj
 
-        if (json["message"].nullString == "invalid_token") {
+        val message = json["message"].nullString
+        if (message == "invalid_token" || message == "expired_token") {
             // frick
             logger.warn { "Tried to make request with invalid MercadoPago token! Forcing token request and trying again..." }
             getCheckoutToken(true)
