@@ -42,3 +42,4 @@ include(":loritta-watchdog-bot")
 
 // Misc
 include(":temmie-discord-auth")
+include(":loritta-premium")
