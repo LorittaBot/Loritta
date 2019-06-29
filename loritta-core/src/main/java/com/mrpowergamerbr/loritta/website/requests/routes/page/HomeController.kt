@@ -27,7 +27,7 @@ class HomeController {
 
 		val variables = req.get<MutableMap<String, Any?>>("variables")
 
-		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT)) {
+		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-home")) {
 			val test = ScriptingUtils.evaluateTemplate<Any>(
 					File(
 							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/home.kts"
