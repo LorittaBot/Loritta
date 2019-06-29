@@ -59,6 +59,7 @@ import kotlin.concurrent.thread
 class LorittaWebsite(val config: WebsiteConfig) {
     companion object {
         lateinit var INSTANCE: LorittaWebsite
+        val versionPrefix = ""
     }
 
     val localeFolder = "${config.websiteFolder}/locales"
