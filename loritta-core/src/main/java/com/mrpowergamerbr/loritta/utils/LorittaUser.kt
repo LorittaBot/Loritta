@@ -104,11 +104,10 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 
 		if (context is DiscordCommandContext && context.command is LorittaDiscordCommand) {
 			// E, finalmente, iremos verificar as permissões do usuário
-			if (member.hasPermission(context.event.textChannel!!, context.command.discordPermissions)) {
-				return true
-			}
+			if (!member.hasPermission(context.event.textChannel!!, context.command.discordPermissions))
+				return false
 		}
 
-		return false
+		return true
 	}
 }
