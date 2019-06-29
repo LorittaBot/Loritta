@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.website.utils
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import net.perfectdreams.loritta.utils.Constants
-import net.perfectdreams.loritta.utils.oauth2.TemmieDiscordAuth
 import net.perfectdreams.loritta.website.LorittaWebsite
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun TemmieDiscordAuth.serialize(): String {
     return Constants.JSON_MAPPER.writeValueAsString(

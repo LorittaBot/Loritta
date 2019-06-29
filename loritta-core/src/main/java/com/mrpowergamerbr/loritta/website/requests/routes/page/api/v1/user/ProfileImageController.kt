@@ -32,10 +32,9 @@ class ProfileImageController {
 		val user = lorittaShards.getUserById(userId)!!
 		val userProfile = loritta.getOrCreateLorittaProfile(userId)
 
-		val member = lorittaShards.getMutualGuilds(user).firstOrNull()?.getMember(user)
-		val badges = PerfilCommand.getUserBadges(user, userProfile)
-
-
+		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val member = mutualGuilds.firstOrNull()?.getMember(user)
+		val badges = PerfilCommand.getUserBadges(user, userProfile, mutualGuilds)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 

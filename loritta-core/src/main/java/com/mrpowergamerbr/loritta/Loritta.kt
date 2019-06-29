@@ -203,6 +203,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 
+		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!
+
 		val okHttpBuilder = OkHttpClient.Builder()
 				.connectTimeout(30, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
 				.readTimeout(30, TimeUnit.SECONDS)

@@ -77,7 +77,10 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				"\\b(cmo)\\b" to "como",
 				"\\b(pd)\\b" to "pode",
 				"\\b(flar)\\b" to "falar"
-		)
+		).map {
+			Regex(it.key) to it.value
+		}
+
 		val WORD_BLACKLIST = listOf(
 				"calcinha",
 				"cueca",
@@ -231,7 +234,9 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				"meteu",
 				"chupo",
 				"chupeta"
-		)
+		).map {
+			Regex("(?i)\\b($it)\\b")
+		}
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String = locale["FRASETOSCA_DESCRIPTION"]
@@ -255,7 +260,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			var pergunta = context.strippedArgs.joinToString(" ").toLowerCase().trim() // Já que nós não ligamos se o cara escreve "Nilce" ou "nilce"
 
 			for ((regex, replace) in CORRECTIONS) {
-				pergunta = pergunta.replace(Regex(regex), replace)
+				pergunta = pergunta.replace(regex, replace)
 			}
 
 			pergunta = pergunta.replace(Regex("\\p{P}"), "")
@@ -263,7 +268,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 			pergunta = StringUtils.stripAccents(pergunta)
 
 			val hasBadWords = WORD_BLACKLIST.any {
-				pergunta.contains(Regex("(?i)\\b($it)\\b"))
+				pergunta.contains(it)
 			}
 
 			if (hasBadWords) {
@@ -318,7 +323,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 
 				val answers = document.answers.filter { raw ->
 					WORD_BLACKLIST.forEach {
-						if (raw.answer.contains(Regex("(?i)\\b($it)\\b"))) {
+						if (raw.answer.contains(it)) {
 							return@filter false
 						}
 					}

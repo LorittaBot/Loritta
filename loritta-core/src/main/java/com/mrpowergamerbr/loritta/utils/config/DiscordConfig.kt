@@ -13,6 +13,8 @@ class DiscordConfig @JsonCreator constructor(
         val status: OnlineStatus,
         val addBotUrl: String,
         val authorizationUrl: String,
+        val disallowBots: Boolean,
+        val botWhitelist: List<Long>,
         val fanArtExtravaganza: FanArtExtravaganzaConfig,
         val requestLimiter: RequestLimiterConfig,
         val activities: List<LorittaGameStatus>

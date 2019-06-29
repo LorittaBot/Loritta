@@ -50,7 +50,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)

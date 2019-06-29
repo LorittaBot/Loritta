@@ -40,6 +40,7 @@ var switchPageStart = 0.0
 val pageCache = mutableMapOf<String, String>()
 var ignoreCacheRequests = false
 var navbarIsSetup = false
+external var isOldWebsite: Boolean
 
 val http = HttpClient(Js) {
 	expectSuccess = false // Não dar erro ao receber status codes 400-500
@@ -302,9 +303,13 @@ class SpicyMorenitta : Logging {
 
 		val loginButton = document.select<Element>("#login-button")
 
-		if (userIdentification == null) {
-			loginButton.onClick {
-				val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+		loginButton.onClick {
+			if (isOldWebsite) {
+				window.location.href = "${window.location.origin}/dashboard"
+			} else {
+				if (userIdentification == null) {
+					val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+				}
 			}
 		}
 

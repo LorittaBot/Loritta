@@ -200,6 +200,16 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "websitekt") {
+			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.pathCache.clear()
+			context.reply(
+					LoriReply(
+							"Views regeneradas!"
+					)
+			)
+			return
+		}
+
 		if (arg0 == "website") {
 			GlobalHandler.generateViews()
 			context.reply(

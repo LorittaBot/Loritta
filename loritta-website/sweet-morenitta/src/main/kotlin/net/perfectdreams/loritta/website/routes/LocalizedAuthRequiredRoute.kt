@@ -5,7 +5,7 @@ import io.ktor.response.respondText
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.oauth2.TemmieDiscordAuth
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import net.perfectdreams.loritta.website.SampleSession
 import net.perfectdreams.loritta.website.utils.deserialize
 import net.perfectdreams.loritta.website.utils.identification.SimpleUserIdentification

@@ -17,9 +17,9 @@ import net.perfectdreams.loritta.socket.network.SocketOpCode
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.extensions.toNodeArray
-import net.perfectdreams.loritta.utils.oauth2.TemmieDiscordAuth
 import net.perfectdreams.loritta.website.SampleSession
 import net.perfectdreams.loritta.website.utils.identification.SimpleUserIdentification
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set

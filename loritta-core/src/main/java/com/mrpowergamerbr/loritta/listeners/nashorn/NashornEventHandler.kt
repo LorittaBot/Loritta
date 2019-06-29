@@ -17,15 +17,8 @@ import java.util.concurrent.TimeUnit
  */
 class NashornEventHandler {
 	var id = ObjectId() // Object ID único para cada comando
-	var jsScriptName = "script-" + System.currentTimeMillis() // label do comando
 	lateinit var javaScript: String // código em JS do comando
 	var isEnabled = true // Se o comando está ativado
-	// var createdDate = LocalDateTime.now() // Data criada
-	// var editedDate = LocalDateTime.now() // Data editada
-	var authors: List<String> = ArrayList() // Autores do comando (ou seja, quem mexeu)
-	var isPublic = false // Se o comando é público no repositório de comandos
-	var isForked = false // Se é uma cópia de outro comando na repo de cmds
-	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
 
 	fun handleMessageReceived(event: GuildMessageReceivedEvent, serverConfig: MongoServerConfig) {
 		try {
@@ -36,20 +29,6 @@ class NashornEventHandler {
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
-	}
-
-	fun handleMemberJoin(event: GuildMemberJoinEvent) {
-		if (!javaScript.contains("onMemberJoin"))
-			return
-
-		run("onMemberJoin", NashornMemberJoinEvent(event))
-	}
-
-	fun handleMemberLeave(event: GuildMemberLeaveEvent) {
-		if (!javaScript.contains("onMemberLeave"))
-			return
-
-		run("onMemberLeave", NashornMemberLeaveEvent(event))
 	}
 
 	fun run(call: String, vararg objects: Any) {
@@ -91,18 +70,6 @@ var loritta=function(){ return nashornUtils.loritta(); };"""
 
 		fun getMessageId(): String {
 			return event.messageId
-		}
-	}
-
-	class NashornMemberJoinEvent(private val event: GuildMemberJoinEvent) {
-		fun getMember(): NashornMember {
-			return NashornMember(event.member)
-		}
-	}
-
-	class NashornMemberLeaveEvent(private val event: GuildMemberLeaveEvent) {
-		fun getMember(): NashornMember {
-			return NashornMember(event.member)
 		}
 	}
 }

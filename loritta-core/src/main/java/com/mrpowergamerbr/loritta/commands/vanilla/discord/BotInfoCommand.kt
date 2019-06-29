@@ -3,11 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -19,7 +24,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		return locale.get("BOTINFO_DESCRIPTION")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		if (arg0 == "extended" || arg0 == "more" || arg0 == "mais" || arg0 == "extendedinfo") {
 			showExtendedInfo(context, locale)
@@ -51,14 +56,52 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.config.loritta.website.url, "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
-		embed.setDescription(locale["BOTINFO_EMBED_INFO", lorittaShards.getCachedGuildCount(), sb.toString(), LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, lorittaShards.getCachedChannelCount(), lorittaShards.getCachedEmoteCount(), LorittaUtilsKotlin.executedCommands])
+		embed.setDescription(
+				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.embedDescription")
+						.joinToString("\n\n")
+						.msgFormat(
+								lorittaShards.getCachedGuildCount(),
+								sb.toString(),
+								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
+								LorittaUtilsKotlin.executedCommands,
+								Emotes.KOTLIN,
+								Emotes.JDA,
+								Emotes.LORI_SMILE,
+								Emotes.LORI_HAPPY,
+								Emotes.LORI_OWO
+						)
+		)
+
 		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.config.loritta.website.url}donate", true)
 		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.config.loritta.website.url}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.config.loritta.website.url}commands", true)
 		embed.addField("\uD83D\uDC81 ${context.legacyLocale["WEBSITE_Support"]}", "${loritta.config.loritta.website.url}support", true)
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
-		embed.addField("\uD83C\uDFC5 ${context.legacyLocale.get("BOTINFO_HONORABLE_MENTIONS")}", context.legacyLocale.get("BOTINFO_MENTIONS", context.userHandle.name, context.userHandle.discriminator), false)
+
+		val numberOfUniqueDonators = transaction(Databases.loritta) {
+			Payments.slice(Payments.userId)
+					.select { Payments.paidAt.isNotNull() }
+					.groupBy(Payments.userId)
+					.count()
+		}
+
+		embed.addField(
+				"\uD83C\uDFC5 ${locale["BOTINFO_HONORABLE_MENTIONS"]}",
+				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
+						.msgFormat(
+								numberOfUniqueDonators,
+								loritta.fanArtArtists.size,
+								context.userHandle.asMention,
+								Emotes.LORI_TEMMIE,
+								Emotes.LORI_OWO,
+								Emotes.LORI_WOW,
+								Emotes.LORI_HUG,
+								Emotes.LORI_SMILE
+						),
+				false
+		)
+
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 

@@ -36,3 +36,9 @@ include(":loritta-plugins:github-issue-sync")
 include(":loritta-website")
 include(":loritta-website:sweet-morenitta")
 include(":loritta-website:spicy-morenitta")
+
+// Watchdoggo
+include(":loritta-watchdog-bot")
+
+// Misc
+include(":temmie-discord-auth")

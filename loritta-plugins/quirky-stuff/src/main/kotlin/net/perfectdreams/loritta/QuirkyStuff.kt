@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
+import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.BoostGuildListener
@@ -24,6 +26,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -32,7 +35,6 @@ import java.io.File
 import java.math.BigDecimal
 
 class QuirkyStuff : DiscordPlugin() {
-
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
         while (true) {
             delay(60_000)
@@ -49,9 +51,25 @@ class QuirkyStuff : DiscordPlugin() {
             }
         }
     }
+    var changeBanner: ChangeBanner? = null
+    var topDonatorsRank: TopDonatorsRank? = null
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
+
+        if (config.changeBanner.enabled) {
+            logger.info { "Change Banner is enabled! Enabling banner stuff... :3"}
+            changeBanner = ChangeBanner(this, config).apply {
+                this.start()
+            }
+        }
+
+        if (config.topDonatorsRank.enabled) {
+            logger.info { "Top Donators Rank is enabled! Enabling top donators rank stuff... :3"}
+            topDonatorsRank = TopDonatorsRank(this, config).apply {
+                this.start()
+            }
+        }
 
         registerEventListeners(
                 AddReactionListener(config),
@@ -62,11 +80,16 @@ class QuirkyStuff : DiscordPlugin() {
                 QuirkyModule(config),
                 ThankYouLoriModule(config)
         )
+
+        registerCommand(LoriToolsQuirkyStuffCommand())
+        registerCommand(SouTopDoadorCommand(config))
     }
 
     override fun onDisable() {
         super.onDisable()
         task.cancel()
+        changeBanner?.task?.cancel()
+        topDonatorsRank?.task?.cancel()
     }
 
     companion object {
@@ -82,6 +105,7 @@ class QuirkyStuff : DiscordPlugin() {
                 Payment.new {
                     this.userId = member.idLong
                     this.gateway = PaymentGateway.NITRO_BOOST
+                    this.reason = PaymentReason.DONATION
                     this.createdAt = now
                     this.paidAt = now
                     this.money = BigDecimal(40)
@@ -117,10 +141,11 @@ class QuirkyStuff : DiscordPlugin() {
                 Payment.find {
                     (Payments.userId eq member.idLong) and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
                 }.firstOrNull()?.delete()
+
                 DonationKey.find {
-                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) eq (DonationKeys.value eq 40.0)
+                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
                 }.firstOrNull()?.apply {
-                    this.expiresAt = System.currentTimeMillis() // Ou seja, a key estará "não expirada"
+                    this.expiresAt = System.currentTimeMillis() // Ou seja, a key estará expirada
                 }
             }
         }
