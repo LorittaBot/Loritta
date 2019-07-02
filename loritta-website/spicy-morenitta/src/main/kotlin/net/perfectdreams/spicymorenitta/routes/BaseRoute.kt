@@ -4,15 +4,18 @@ import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.id
+import kotlinx.html.js.i
+import kotlinx.html.js.onClickFunction
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLScriptElement
-import org.w3c.dom.Node
-import org.w3c.dom.get
+import org.w3c.dom.*
 import kotlin.browser.document
+import kotlin.dom.addClass
 import kotlin.dom.clear
+import kotlin.dom.hasClass
+import kotlin.dom.removeClass
 import kotlin.math.max
 
 abstract class BaseRoute(val path: String) : Logging {
@@ -113,6 +116,9 @@ abstract class BaseRoute(val path: String) : Logging {
                 }
             }
 
+            // Cancelar todas as tasks
+            SpicyMorenitta.INSTANCE.pageSpecificTasks.onEach { it.cancel() }
+
             document.body?.appendChild(call.content)
             val childNode = document.body?.childNodes?.get(0)
 
@@ -127,6 +133,9 @@ abstract class BaseRoute(val path: String) : Logging {
                     document.body?.appendChild(newScript)
                 }
             }
+
+            SpicyMorenitta.INSTANCE.setUpLinkPreloader()
+            SpicyMorenitta.INSTANCE.setUpLazyLoad()
         }
     }
 
@@ -143,6 +152,20 @@ abstract class BaseRoute(val path: String) : Logging {
                 div {
                     id = "left-sidebar"
 
+                    div(classes = "subnavbar-hamburger") {
+                        i(classes = "subnavbar-hamburger-button fas fa-bars") {
+                            onClickFunction = {
+                                val leftSidebar = document.select<Element>("#left-sidebar")
+
+                                if (leftSidebar.hasClass("expanded")) {
+                                    leftSidebar.removeClass("expanded")
+                                } else {
+                                    leftSidebar.addClass("expanded")
+                                }
+                            }
+                        }
+                    }
+
                     div(classes = "contents") {
                         leftSidebar.invoke(this)
                     }
@@ -150,6 +173,8 @@ abstract class BaseRoute(val path: String) : Logging {
 
                 div {
                     id = "right-sidebar"
+                    attributes["create-scroll-lazy-load-here"] = "true"
+
                     div(classes = "contents") {
                         rightSidebar.invoke(this)
                     }

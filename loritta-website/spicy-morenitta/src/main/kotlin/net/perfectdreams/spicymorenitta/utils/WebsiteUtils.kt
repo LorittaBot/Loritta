@@ -21,12 +21,25 @@ object WebsiteUtils : Logging {
     }
 
     fun getPathWithoutLocale(): String {
-        val href = window.location.href
+        var href = window.location.pathname
+        if (!href.endsWith("/"))
+            href += "/"
+
         val split = href.split("/")
-        if (4 >= split.size)
+        if (3 > split.size)
             return href
 
-        return "/" + split.drop(4).joinToString("/")
+        var result = "/" + split.drop(2).joinToString("/")
+        if (!result.endsWith("/"))
+            result += "/"
+
+        return result
+    }
+
+    fun getWebsiteLocaleIdViaPath(): String {
+        val href = window.location.href
+        val split = href.split("/")
+        return split.dropLast(1).last()
     }
 
     fun patchGuildConfigById(

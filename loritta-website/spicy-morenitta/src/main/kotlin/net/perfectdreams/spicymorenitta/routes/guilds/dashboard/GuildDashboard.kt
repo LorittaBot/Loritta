@@ -1,11 +1,10 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GuildDashboard.isModified
 import net.perfectdreams.spicymorenitta.utils.WebsiteUtils
 import net.perfectdreams.spicymorenitta.utils.select
@@ -79,7 +78,7 @@ fun hideUnsavedAlert() {
 
 fun resetAnimation(element: HTMLElement) {
     element.style.display = "none" // reset animation
-    GlobalScope.launch { // Precisa ter um delay para o reset da animação funcionar
+    SpicyMorenitta.INSTANCE.launch { // Precisa ter um delay para o reset da animação funcionar
         delay(5)
         element.style.display = "block"
     }
@@ -88,7 +87,7 @@ fun resetAnimation(element: HTMLElement) {
 fun DIV.leftSidebarForGuildDashboard() {
     val function: (Event) -> Unit = {
         if (isModified) {
-            GlobalScope.launch {
+            SpicyMorenitta.INSTANCE.launch {
                 val content = document.select<HTMLDivElement>("#content")
                 val body = document.select<HTMLBodyElement>("body")
                 val unsavedAlert = document.select<HTMLDivElement>("#not-saved-alert")

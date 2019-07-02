@@ -32,6 +32,7 @@ object ScriptingUtils {
                 import org.w3c.dom.Element
                 import java.io.File
                 // import net.perfectdreams.loritta.utils.oauth2.*
+				import net.perfectdreams.loritta.utils.config.*
 
                 $code
             """.trimIndent()
