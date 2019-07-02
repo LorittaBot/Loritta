@@ -38,6 +38,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(PepeDreamCommand())
         registerCommand(LoriSignCommand())
         registerCommand(ArtCommand())
+        registerCommand(ChicoAtaCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
