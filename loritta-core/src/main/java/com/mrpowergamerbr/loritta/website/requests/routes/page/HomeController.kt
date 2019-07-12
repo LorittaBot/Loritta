@@ -34,6 +34,7 @@ class HomeController {
 								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/home.kts"
 						),
 						mapOf(
+								"path" to req.path().split("/").drop(2).joinToString("/"),
 								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
 								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
 						)

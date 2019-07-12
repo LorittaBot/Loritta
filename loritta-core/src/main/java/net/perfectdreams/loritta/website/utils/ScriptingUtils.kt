@@ -130,6 +130,7 @@ object ScriptingUtils {
         currentlyCompilingFiles[file] = deferred
 
         try {
+            currentlyCompilingFiles.remove(file)
             return deferred.await() as T
         } catch (e: Exception) {
             currentlyCompilingFiles.remove(file)

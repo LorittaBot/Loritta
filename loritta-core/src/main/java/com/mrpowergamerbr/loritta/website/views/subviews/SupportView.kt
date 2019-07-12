@@ -24,6 +24,7 @@ class SupportView : AbstractView() {
 								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/support.kts"
 						),
 						mapOf(
+								"path" to path,
 								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
 								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
 						)
