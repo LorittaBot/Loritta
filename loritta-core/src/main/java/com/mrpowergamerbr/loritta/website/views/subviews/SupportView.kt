@@ -1,8 +1,14 @@
 package com.mrpowergamerbr.loritta.website.views.subviews
 
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
+import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.website.LorittaWebsite
+import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import org.jooby.Request
 import org.jooby.Response
+import java.io.File
+import kotlin.reflect.full.createType
 
 class SupportView : AbstractView() {
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
@@ -10,6 +16,20 @@ class SupportView : AbstractView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): String {
-		return evaluate("support.html", variables)
+		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-support")) {
+			val html = ScriptingUtils.evaluateWebPageFromTemplate(
+					File(
+							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/support.kts"
+					),
+					mapOf(
+							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
+					)
+			)
+
+			return html
+		} else {
+			return evaluate("support.html", variables)
+		}
 	}
 }
