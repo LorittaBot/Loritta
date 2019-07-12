@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -35,15 +36,17 @@ class FanArtsController {
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
 		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-fanarts")) {
-			val html = ScriptingUtils.evaluateWebPageFromTemplate(
-					File(
-							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"
-					),
-					mapOf(
-							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
-							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
-					)
-			)
+			val html = runBlocking {
+				ScriptingUtils.evaluateWebPageFromTemplate(
+						File(
+								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"
+						),
+						mapOf(
+								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
+						)
+				)
+			}
 
 			res.send(html)
 		} else {

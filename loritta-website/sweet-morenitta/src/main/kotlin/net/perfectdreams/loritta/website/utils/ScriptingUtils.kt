@@ -1,54 +1,141 @@
 package net.perfectdreams.loritta.website.utils
 
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import mu.KotlinLogging
 import net.perfectdreams.loritta.website.LorittaWebsite
+import net.perfectdreams.loritta.website.utils.extensions.transformToString
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
+import org.w3c.dom.Document
+import org.w3c.dom.Element
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 
 object ScriptingUtils {
     private val logger = KotlinLogging.logger {}
+    private val currentlyCompilingFiles = ConcurrentHashMap<File, Deferred<Any>>()
 
-    fun <T> evaluateTemplate(file: File, args: Map<String, String> = mapOf()): T {
+    suspend fun evaluateWebPageFromTemplate(file: File, args: Map<String, Any>): String {
+        val document = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .newDocument()
+
+        val modifiedArgs = mutableMapOf<String, Any>(
+                "document" to WebsiteArgumentType(Document::class.createType(), document)
+        ).apply { this.putAll(args) }
+
+        val argTypes = modifiedArgs.map {
+            it.key to it.value.run {
+                if (this is WebsiteArgumentType) {
+                    var str = (this.kType.classifier as KClass<*>).simpleName
+
+                    if (this.kType.isMarkedNullable)
+                        str += "?"
+
+                    str!!
+                } else {
+                    this::class.simpleName!!
+                }
+            }
+        }.toMap().toMutableMap()
+
+        val test = evaluateTemplate<Any>(
+                file,
+                argTypes
+        )
+
+        // Nós precisamos manter o "document" em PRIMEIRO lugar
+        // Então vamos apenas remover o "document" e depois readicionar.
+        modifiedArgs.remove("document")
+
+        val argResults = modifiedArgs.map {
+            if (it.value is WebsiteArgumentType)
+                (it.value as WebsiteArgumentType).value
+            else
+                it.value
+        }.toMutableList()
+
+        argResults.add(0, document)
+        argResults.add(0, test)
+
+        val element = test::class.members.first { it.name == "generateHtml" }.call(
+                *argResults.toTypedArray()
+        ) as Element
+
+        document.appendChild(element)
+
+        return document.transformToString()
+    }
+
+    data class WebsiteArgumentType(val kType: KType, val value: Any?)
+
+    suspend fun <T> evaluateTemplate(file: File, args: Map<String, String> = mapOf()): T {
         if (LorittaWebsite.INSTANCE.pathCache[file] != null)
             return LorittaWebsite.INSTANCE.pathCache[file] as T
 
+        val deferredCompilingFile = currentlyCompilingFiles[file]
+
+        if (deferredCompilingFile != null) {
+            logger.info { "File $file is already being compiled by something else! Waiting until it finishes compilation..." }
+
+            return deferredCompilingFile.await() as T
+        }
+
         val code = generateCodeToBeEval(file)
-            .replace("@args", args.entries.joinToString(", ", transform = { "${it.key}: ${it.value}"}))
-            .replace("@call-args", args.keys.joinToString(", "))
+                .replace("@args", args.entries.joinToString(", ", transform = { "${it.key}: ${it.value}"}))
+                .replace("@call-args", args.keys.joinToString(", "))
 
-        File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(code)
-
-        logger.info("Compiling ${file.name}...")
-
-        val millis = measureTimeMillisWithResult {
-            val test = KtsObjectLoader().load<Any>(
-                """
+        val editedCode = """
                 import kotlinx.html.*
                 import kotlinx.html.dom.*
-                import net.perfectdreams.loritta.website.utils.KtsObjectLoader
+                // import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
                 import net.perfectdreams.loritta.utils.*
-                import net.perfectdreams.loritta.utils.locale.*
+                // import net.perfectdreams.loritta.utils.locale.*
+				// import com.mrpowergamerbr.loritta.utils.locale.*
                 import net.perfectdreams.loritta.website.*
                 import net.perfectdreams.loritta.api.entities.*
-                import net.perfectdreams.loritta.website.utils.config.*
+                // import net.perfectdreams.loritta.website.utils.config.*
                 import org.w3c.dom.Document
                 import org.w3c.dom.Element
                 import java.io.File
-                import net.perfectdreams.temmiediscordauth.*
+                // import net.perfectdreams.loritta.utils.oauth2.*
+				import net.perfectdreams.loritta.utils.config.*
+                import net.perfectdreams.loritta.utils.locale.*
 
                 $code
             """.trimIndent()
-            )
 
-            LorittaWebsite.INSTANCE.pathCache[file] = test
+        File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(editedCode)
 
-            return@measureTimeMillisWithResult test
+        logger.info("Compiling ${file.name}...")
+
+        val deferred = GlobalScope.async {
+            val millis = measureTimeMillisWithResult {
+                val test = KtsObjectLoader().load<Any>(editedCode)
+
+                LorittaWebsite.INSTANCE.pathCache[file] = test
+
+                return@measureTimeMillisWithResult test
+            }
+
+            logger.info("Took ${millis.first}ms to compile ${file.name}!")
+            millis.second
         }
+        currentlyCompilingFiles[file] = deferred
 
-        logger.info("Took ${millis.first}ms to compile ${file.name}!")
-
-        return millis.second as T
+        try {
+            return deferred.await() as T
+        } catch (e: Exception) {
+            currentlyCompilingFiles.remove(file)
+            logger.error(e) { "Exception while trying to evaluate $file"}
+            throw e
+        }
     }
 
     fun generateCodeToBeEval(file: File): String {
@@ -126,10 +213,10 @@ object ScriptingUtils {
         val firstLine = inputLines.first()
 
         stack.push(
-            CodeHolder(
-                f,
-                inputLines
-            )
+                CodeHolder(
+                        f,
+                        inputLines
+                )
         )
 
         if (firstLine.startsWith("@extends")) {
@@ -141,7 +228,7 @@ object ScriptingUtils {
     }
 
     data class CodeHolder(
-        val file: File,
-        val code: List<String>
+            val file: File,
+            val code: List<String>
     )
 }

@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
@@ -34,17 +35,19 @@ class FanArtArtistController {
 			val discordId = (fanArtist.socialNetworks?.firstOrNull { it.type == "discord" } as net.perfectdreams.loritta.utils.config.FanArtArtist.SocialNetwork.DiscordSocialNetwork?)?.id
 			val user = discordId?.let { lorittaShards.getUserById(it)?.let { JDAUser(it) } }
 
-			val html = ScriptingUtils.evaluateWebPageFromTemplate(
-					File(
-							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_art_artist.kts"
-					),
-					mapOf(
-							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
-							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!),
-							"artist" to fanArtist,
-							"user" to ScriptingUtils.WebsiteArgumentType(User::class.createType(nullable = true), user)
-					)
-			)
+			val html = runBlocking {
+				ScriptingUtils.evaluateWebPageFromTemplate(
+						File(
+								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_art_artist.kts"
+						),
+						mapOf(
+								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!),
+								"artist" to fanArtist,
+								"user" to ScriptingUtils.WebsiteArgumentType(User::class.createType(nullable = true), user)
+						)
+				)
+			}
 
 			res.send(html)
 		} else {}
