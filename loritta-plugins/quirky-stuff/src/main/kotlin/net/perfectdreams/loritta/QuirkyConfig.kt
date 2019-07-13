@@ -31,6 +31,9 @@ class QuirkyConfig @JsonCreator constructor(
     class ThankYouLoriConfig @JsonCreator constructor(
             val enabled: Boolean,
             val channelId: Long,
+            val giveDonationKeyIfSentBeforeTime: Long,
+            val donationKeyValue: Double,
+            val expiresAt: Long,
             val reactions: List<String>
     )
 

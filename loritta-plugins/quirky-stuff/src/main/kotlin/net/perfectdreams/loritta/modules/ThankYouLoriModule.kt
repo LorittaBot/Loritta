@@ -1,14 +1,18 @@
 package net.perfectdreams.loritta.modules
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.QuirkyConfig
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ThankYouLoriModule(val config: QuirkyConfig) : MessageReceivedModule {
     override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
@@ -21,6 +25,26 @@ class ThankYouLoriModule(val config: QuirkyConfig) : MessageReceivedModule {
                 return false
 
             event.message.addReaction(config.thankYouLori.reactions.random()).queue()
+
+            if (config.thankYouLori.giveDonationKeyIfSentBeforeTime >= System.currentTimeMillis()) {
+                val keyCount = transaction(Databases.loritta) {
+                    DonationKey.find {
+                        (DonationKeys.userId eq event.author.idLong) and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
+                    }.count()
+                }
+
+                if (keyCount == 0) {
+                    transaction(Databases.loritta) {
+                        DonationKey.new {
+                            this.userId = event.author.idLong
+                            this.expiresAt = config.thankYouLori.expiresAt
+                            this.value = config.thankYouLori.donationKeyValue
+                        }
+                    }
+
+                    event.message.addReaction("\uD83D\uDD11").queue()
+                }
+            }
         }
 
         return false
