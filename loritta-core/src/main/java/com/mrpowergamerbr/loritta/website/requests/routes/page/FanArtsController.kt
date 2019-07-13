@@ -35,7 +35,7 @@ class FanArtsController {
 	@GET
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
-		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT)) {
+		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-fanarts")) {
 			val test = ScriptingUtils.evaluateTemplate<Any>(
 					File(
 							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"

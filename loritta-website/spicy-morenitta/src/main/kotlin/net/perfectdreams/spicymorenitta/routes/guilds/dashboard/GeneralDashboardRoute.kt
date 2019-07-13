@@ -72,7 +72,7 @@ class GeneralDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
     override fun onRender(call: ApplicationCall) {
         m.showLoadingScreen()
 
-        GlobalScope.launch {
+        SpicyMorenitta.INSTANCE.launch {
             val result = http.get<String> {
                 url("${window.location.origin}/api/v1/guilds/${call.parameters["guildId"]}/config")
             }

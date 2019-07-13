@@ -354,8 +354,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                                         Constants.ERROR
                                 )
                         )
-                        return true
                     }
+                    return true
                 }
 
                 if (context.isPrivateChannel && !command.canUseInPrivateChannel) {

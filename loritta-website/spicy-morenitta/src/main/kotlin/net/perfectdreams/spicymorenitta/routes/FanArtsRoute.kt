@@ -2,9 +2,7 @@ package net.perfectdreams.spicymorenitta.routes
 
 import io.ktor.client.request.get
 import io.ktor.client.request.url
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
@@ -34,7 +32,7 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
         m.showLoadingScreen()
         currentMethod = ArtistSortingMethod.ALPHABETIC
 
-        GlobalScope.launch {
+        SpicyMorenitta.INSTANCE.launch {
             val result = http.get<String> {
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all")
             }
@@ -71,7 +69,7 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
             renderArtists(list.sortedBy { it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id })
             m.hideLoadingScreen()
 
-            GlobalScope.launch {
+            SpicyMorenitta.INSTANCE.launch {
                 while (true) {
                     val holdingImage1 = document.select<HTMLDivElement>("#right-sidebar .holding-image-1")
                     val holdingImage2 = document.select<HTMLDivElement>("#right-sidebar .holding-image-2")
@@ -247,21 +245,12 @@ opacity: 0;"""
                         style = "border-radius: 999999px; margin-right: 6px;"
                     }
                     div {
-                        style = "display: flex;\n" +
-                                "\n" +
-                                "flex-direction: column; overflow: hidden;"
-                        div {
-                            style = "  white-space: nowrap; \n" +
-                                    "  overflow: hidden;\n" +
-                                    "  text-overflow: ellipsis;"
+                        style = "overflow: hidden;"
+                        div(classes = "title") {
                             +(it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
                         }
 
-                        div {
-                            style = "color: #3339;\n" +
-                                    "\n" +
-                                    "font-size: 0.8em; line-height: 12px;" +
-                                    ""
+                        div(classes = "subtitle") {
                             +"${it.fanArts.size} fan art${if (it.fanArts.size != 1) "s" else ""}"
                         }
                     }
@@ -288,7 +277,7 @@ opacity: 0;"""
         val fanArtGallery = document.select<HTMLDivElement>("#fan-art-gallery")
         fanArtGallery.clear()
 
-        window.history.pushState(null, "", "/${m.localeId}/fanarts/${artist.id}")
+        window.history.pushState(null, "", "/${m.websiteLocaleId}/fanarts/${artist.id}")
 
         fanArtGallery.append {
             div(classes = "user-info") {
@@ -326,9 +315,9 @@ opacity: 0;"""
                 div(classes = "fan-arts-wrapper") {
                     for (fanArt in it.value) {
                         img(
-                                src = "https://loritta.website/assets/img/fanarts/${fanArt.fileName}",
                                 classes = "fan-art"
                         ) {
+                            attributes["lazy-load-url"] = "https://loritta.website/assets/img/fanarts/${fanArt.fileName}"
                             height = "100"
                             title = fanArt.createdAt.toDateString()
                         }
@@ -336,6 +325,7 @@ opacity: 0;"""
                 }
             }
         }
+        m.setUpLazyLoad()
     }
 
     enum class ArtistSortingMethod {

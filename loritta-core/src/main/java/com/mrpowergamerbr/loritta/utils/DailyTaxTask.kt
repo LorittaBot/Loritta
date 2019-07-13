@@ -151,7 +151,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				// Hora de avisar aos usuários que a doação deles irá acabar!
-				for (soonToBeExpiredDonation in soonToBeExpiredDonations) {
+				for (soonToBeExpiredDonation in soonToBeExpiredDonations.distinctBy { it.userId }) {
 					val user = lorittaShards.getUserById(soonToBeExpiredDonation.userId) ?: continue // Ignorar caso o usuário não exista
 
 					val embed = EmbedBuilder()

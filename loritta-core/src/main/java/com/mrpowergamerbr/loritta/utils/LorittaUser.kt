@@ -62,10 +62,7 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 	override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
 		val roles = member.roles.toMutableList()
 
-		val everyone = member.guild.publicRole
-		if (everyone != null) {
-			roles.add(everyone)
-		}
+		roles.add(member.guild.publicRole)
 
 		roles.sortByDescending { it.position }
 
@@ -90,13 +87,6 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 		if (!super.canUseCommand(context))
 			return false
 
-		// Primeiro iremos verificar as roles
-		for (role in member.roles) {
-			if (role.name == "Comando: " + context.cmd.label) { // Se o cara tem uma role chamada "Comando: labeldocomando"
-				return true
-			}
-		}
-
 		// E, finalmente, iremos verificar as permissões do usuário
 		if (member.hasPermission(context.event.textChannel!!, context.cmd.getDiscordPermissions())) {
 			return true
@@ -114,11 +104,10 @@ class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: P
 
 		if (context is DiscordCommandContext && context.command is LorittaDiscordCommand) {
 			// E, finalmente, iremos verificar as permissões do usuário
-			if (member.hasPermission(context.event.textChannel!!, context.command.discordPermissions)) {
-				return true
-			}
+			if (!member.hasPermission(context.event.textChannel!!, context.command.discordPermissions))
+				return false
 		}
 
-		return false
+		return true
 	}
 }

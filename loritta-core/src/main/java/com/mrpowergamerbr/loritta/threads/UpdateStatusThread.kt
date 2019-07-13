@@ -79,7 +79,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				} else {
 					"¯\\_(ツ)_/¯"
 				}
-				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
+				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 				lastUpdate = System.currentTimeMillis()
 			}
 
@@ -103,7 +103,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					}
 
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
+					loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 
 					UpdateStatusThread.currentFanArt = fanArt
 					currentIndex++
@@ -143,7 +143,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
 				str = str.replace("{uptime}", sb.toString())
 
-				loritta.lorittaShards.shardManager.setGame(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
+				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 

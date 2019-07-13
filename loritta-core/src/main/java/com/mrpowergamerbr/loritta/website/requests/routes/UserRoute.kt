@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes
 
-import com.mrpowergamerbr.loritta.website.requests.routes.page.DonateController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.ExtrasController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.FanArtsController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.HomeController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.extras.ExtrasViewerController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserProfileController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserReputationController
@@ -16,6 +13,7 @@ class UserRoute : Jooby() {
 	init {
 		use(HomeController::class.java)
 		use(FanArtsController::class.java)
+		use(FanArtArtistController::class.java)
 		use(ExtrasController::class.java)
 		use(ExtrasViewerController::class.java)
 		use(DonateController::class.java)

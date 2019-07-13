@@ -26,7 +26,7 @@ class DashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashb
 
         val userIdentification = m.userIdentification ?: return
 
-        GlobalScope.launch {
+        SpicyMorenitta.INSTANCE.launch {
             val result = http.get<String> {
                 url("${window.location.origin}/api/v1/users/@me/guilds?check-join=true")
             }
@@ -97,7 +97,7 @@ class DashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashb
                         }
                     }
                     div(classes = "bottom-row") {
-                        a(href = "/${SpicyMorenitta.INSTANCE.localeId}/guild/${it.id}/dashboard") {
+                        a(href = "/${SpicyMorenitta.INSTANCE.websiteLocaleId}/guild/${it.id}/dashboard") {
                             attributes["data-enable-link-preload"] = "true"
                             i(classes = "fas fa-cogs") {}
                             + " ${locale["website.dashboard.configureLori"]}"
@@ -123,7 +123,7 @@ class DashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashb
                         }
                     }
                     div(classes = "bottom-row") {
-                        a(href = "/${SpicyMorenitta.INSTANCE.localeId}/guild/${it.id}/dashboard") {
+                        a(href = "/${SpicyMorenitta.INSTANCE.websiteLocaleId}/guild/${it.id}/dashboard") {
                             attributes["data-enable-link-preload"] = "true"
                             i(classes = "fas fa-plus") {}
                             + " ${locale["website.dashboard.addLori"]}"

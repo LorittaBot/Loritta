@@ -1,12 +1,14 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import org.w3c.dom.Document
-import org.w3c.dom.Element
-import org.w3c.dom.ParentNode
+import org.w3c.dom.*
 import org.w3c.dom.events.Event
 
 fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T
+}
+
+fun <T> ParentNode.selectAll(query: String): List<T> {
+    return this.querySelectorAll(query).asList() as List<T>
 }
 
 fun Document.onDOMReady(callback: (Event) -> (Unit)) {
@@ -15,6 +17,14 @@ fun Document.onDOMReady(callback: (Event) -> (Unit)) {
 
 fun Element.onClick(callback: (Event) -> (Unit)) {
     this.addEventListener("click", callback)
+}
+
+fun Window.onScroll(callback: (Event) -> (Unit)) {
+    this.addEventListener("scroll", callback)
+}
+
+fun Element.onScroll(callback: (Event) -> (Unit)) {
+    this.addEventListener("scroll", callback)
 }
 
 fun Element.onMouseOver(callback: (Event) -> (Unit)) {

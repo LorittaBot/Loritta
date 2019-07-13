@@ -5,9 +5,10 @@ import io.ktor.client.engine.js.Js
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readText
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.div
@@ -33,7 +34,11 @@ import org.w3c.dom.WebSocket
 import org.w3c.dom.asList
 import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.collections.set
+import kotlin.dom.addClass
 import kotlin.dom.clear
+import kotlin.dom.hasClass
+import kotlin.dom.removeClass
 import kotlin.js.*
 
 var switchPageStart = 0.0
@@ -68,11 +73,35 @@ class SpicyMorenitta : Logging {
 			UpdateNavbarSizePostRender("/blog"),
 			UpdateNavbarSizePostRender("/extended")
 	)
+	val validWebsiteLocaleIds = mutableListOf(
+			"br",
+			"us",
+			"es"
+	)
+	val websiteLocaleIdToLocaleId = mutableMapOf(
+			"br" to "default",
+			"us" to "us-us",
+			"es" to "es-es"
+	)
 
 	val view: BaseView? = null
 	lateinit var socket: WebSocket
-	val localeId: String = "br"
+	val localeId: String
+		get() {
+			return websiteLocaleIdToLocaleId[websiteLocaleId] ?: "default"
+		}
+
+	val websiteLocaleId: String
+		get() {
+			val localeIdFromPath = WebsiteUtils.getWebsiteLocaleIdViaPath()
+			return if (localeIdFromPath in validWebsiteLocaleIds)
+				localeIdFromPath
+			else
+				"us"
+		}
+
 	var userIdentification: UserIdentification? = null
+	val pageSpecificTasks = mutableListOf<Job>()
 
 	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun start() {
@@ -88,6 +117,25 @@ class SpicyMorenitta : Logging {
 		if (window.location.pathname == "/auth") { // Nós não precisamos processar o resto do código apenas para verificar o popup de auth
 			AuthUtils.handlePopup()
 			return
+		}
+
+		// From old website
+		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
+		if (darkThemeCookie?.toBoolean() == true)
+			WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, true)
+
+		if (false) {
+			// From new website
+			val userThemeCookie = CookiesUtils.readCookie("userTheme")
+			if (userThemeCookie != null)
+				WebsiteThemeUtils.changeWebsiteThemeTo(
+						try {
+							WebsiteThemeUtils.WebsiteTheme.valueOf(userThemeCookie)
+						} catch (e: IllegalArgumentException) {
+							WebsiteThemeUtils.WebsiteTheme.DEFAULT
+						},
+						true
+				)
 		}
 
 		debug("Is using http? ${window.location.protocol == "http:"}")
@@ -148,38 +196,49 @@ class SpicyMorenitta : Logging {
 		document.onDOMReady {
 			debug("DOM is ready!")
 
-			debug(window.location.pathname)
+			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
-			GlobalScope.launch {
-                loadLocale()
-                loadLoggedInUser()
+			AdvertisementUtils.checkIfUserIsBlockingAds()
 
-                debug("Locale test: ${locale["commands.images.drawnword.description"]}")
-                debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
+			launch {
+				val deferred = listOf(
+						async {
+							loadLocale()
+						},
+						async {
+							loadLoggedInUser()
+						}
+				)
+
+				deferred.joinAll()
+
+				debug("Locale test: ${locale["commands.images.drawnword.description"]}")
+				debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
 
 				onPageChange(socket, window.location.pathname, null)
 			}
 		}
 	}
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
-    suspend fun loadLocale() {
-        val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/default")
-        locale = kotlinx.serialization.json.JSON.nonstrict.parse<BaseLocale>(payload)
-    }
+	@UseExperimental(ImplicitReflectionSerializer::class)
+	suspend fun loadLocale() {
+		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
+		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
+	}
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
-    suspend fun loadLoggedInUser() {
-        val payload = http.get<String>("${window.location.origin}/api/v1/users/@me")
-        val jsonPayload = JSON.parse<Json>(payload)
-        if (jsonPayload["code"] != null) {
-            debug("Get User Request failed - ${jsonPayload["code"]}")
-        } else {
-            val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse<UserIdentification>(payload)
-            debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
-            SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
-        }
-    }
+	@UseExperimental(ImplicitReflectionSerializer::class)
+	suspend fun loadLoggedInUser() {
+		val httpResponse = http.get<HttpResponse>("${window.location.origin}/api/v1/users/@me")
+		val payload = httpResponse.readText()
+		val jsonPayload = JSON.parse<Json>(payload)
+		if (httpResponse.status != HttpStatusCode.OK/* jsonPayload["code"] != null */) {
+			debug("Get User Request failed - ${jsonPayload["code"]}")
+		} else {
+			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse<UserIdentification>(payload)
+			debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
+			SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
+		}
+	}
 
 	fun updateLoggedInUser(newUser: UserIdentification) {
 		userIdentification = newUser
@@ -257,7 +316,7 @@ class SpicyMorenitta : Logging {
 
 			it.preventDefault()
 
-			GlobalScope.launch {
+			launch {
 				// Switch page
 				sendSwitchPageRequest(socket, path)
 			}
@@ -274,7 +333,7 @@ class SpicyMorenitta : Logging {
 			debug("Hovering the button!")
 			startedAt = Date().getTime()
 
-			GlobalScope.launch {
+			launch {
 				delay(CACHE_ON_HOVER_DELAY)
 				val diff = Date().getTime() - startedAt
 
@@ -300,6 +359,7 @@ class SpicyMorenitta : Logging {
 
 	fun addNavbarOptions(socket: WebSocket) {
 		debug("Adding navbar options!")
+		val navbar = document.select<Element>("#navigation-bar")
 
 		val loginButton = document.select<Element>("#login-button")
 
@@ -313,7 +373,33 @@ class SpicyMorenitta : Logging {
 			}
 		}
 
+		val themeChangerButton = document.select<Element>("#theme-changer-button")
+
+		themeChangerButton.onClick {
+			val body = document.body!!
+
+			if (body.hasClass("dark")) {
+				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
+			} else {
+				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
+			}
+		}
+
+		val hamburgerButton = document.select<Element>("#hamburger-menu-button")
+
+		hamburgerButton.onClick {
+			debug("Clicked on the hamburger button!")
+			if (navbar.hasClass("expanded")) {
+				navbar.removeClass("expanded")
+				document.body!!.style.overflowY = ""
+			} else {
+				navbar.addClass("expanded")
+				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
+			}
+		}
+
 		setUpLinkPreloader()
+		setUpLazyLoad()
 
 		debug("Redirect buttons added!")
 	}
@@ -322,6 +408,84 @@ class SpicyMorenitta : Logging {
 		document.querySelectorAll("a[data-enable-link-preload=\"true\"]:not([data-preload-activated=\"true\"])").asList().forEach {
 			debug("Setting up page switcher for $it")
 			setUpPageSwitcher(it as Element, it.getAttribute("href")!!)
+		}
+	}
+
+	fun setUpLazyLoad() {
+		document.querySelectorAll("iframe[lazy-load-url]:not([lazy-load-activated=\"true\"])").asList().forEach {
+			debug("Setting up iFrame lazy load for $it")
+
+			val el = it as Element
+			el.setAttribute("lazy-load-activated", "true")
+
+			val callback = callback@{
+				val diffBetweenElementAndCurrentYPosition = el.getBoundingClientRect().top - window.innerHeight
+
+				if (0 >= diffBetweenElementAndCurrentYPosition) {
+					if (!el.hasAttribute("lazy-load-url"))
+						return@callback
+
+					debug("iFrame is going to be displayed on screen! Loading...")
+					val lazyLoadUrl = el.getAttribute("lazy-load-url").toString()
+					el.removeAttribute("lazy-load-url")
+					el.setAttribute("src", lazyLoadUrl)
+				}
+			}
+
+			var applyScrollOn: Element? = el
+			do {
+				applyScrollOn = applyScrollOn?.parentElement
+			} while (applyScrollOn != null && !applyScrollOn.hasAttribute("create-scroll-lazy-load-here"))
+
+			if (applyScrollOn != null) {
+				applyScrollOn.onScroll {
+					callback.invoke()
+				}
+			} else {
+				window.onScroll {
+					callback.invoke()
+				}
+			}
+
+			callback.invoke()
+		}
+
+		document.querySelectorAll("img[lazy-load-url]:not([lazy-load-activated=\"true\"]").asList().forEach {
+			debug("Setting up image lazy load for $it")
+
+			val el = it as Element
+			el.setAttribute("lazy-load-activated", "true")
+
+			val callback = callback@{
+				val diffBetweenElementAndCurrentYPosition = el.getBoundingClientRect().top - window.innerHeight
+
+				if (0 >= diffBetweenElementAndCurrentYPosition) {
+					if (!el.hasAttribute("lazy-load-url"))
+						return@callback
+
+					debug("Image is going to be displayed on screen! Loading...")
+					val lazyLoadUrl = el.getAttribute("lazy-load-url").toString()
+					el.removeAttribute("lazy-load-url")
+					el.setAttribute("src", lazyLoadUrl)
+				}
+			}
+
+			var applyScrollOn2: Element? = el
+			do {
+				applyScrollOn2 = applyScrollOn2?.parentElement
+			} while (applyScrollOn2 != null && !applyScrollOn2.hasAttribute("create-scroll-lazy-load-here"))
+
+			if (applyScrollOn2 != null) {
+				applyScrollOn2.onScroll {
+					callback.invoke()
+				}
+			} else {
+				window.onScroll {
+					callback.invoke()
+				}
+			}
+
+			callback.invoke()
 		}
 	}
 
@@ -409,5 +573,10 @@ class SpicyMorenitta : Logging {
 		document.select<HTMLDivElement>("#loading-screen").apply {
 			style.opacity = "0"
 		}
+	}
+
+	fun launch(block: suspend CoroutineScope.() -> Unit) {
+		val job = GlobalScope.launch(block = block)
+		pageSpecificTasks.add(job)
 	}
 }

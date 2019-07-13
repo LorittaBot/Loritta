@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
+import org.jsoup.Jsoup
 
 class APIGetChannelInfoView : NoVarsView() {
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
@@ -50,35 +51,35 @@ class APIGetChannelInfoView : NoVarsView() {
 		val body = httpRequest.body()
 
 		try {
-			val youTubePayload = "window\\[\"ytInitialData\"\\] = (.+);".toPattern().matcher(body).apply { find() }
+			val jsoup = Jsoup.parse(body)
 
-			val payload = jsonParser.parse(youTubePayload.group(1))
+			val canonicalLink = jsoup.getElementsByTag("link").firstOrNull { it.attr("rel") == "canonical" }?.attr("href") ?: run {
+				json["error"] = "Canonical Link is missing!"
+				return gson.toJson(json)
+			}
 
-			val channelId = payload["header"]["c4TabbedHeaderRenderer"]["channelId"].string
-			val title = payload["header"]["c4TabbedHeaderRenderer"]["title"].string
-			val avatarUrl = payload["header"]["c4TabbedHeaderRenderer"]["avatar"]["thumbnails"][0]["url"].string
+			val channelId = canonicalLink.split("/").last()
 
 			val key = loritta.youtubeKey
 
-			var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=$channelId&key=$key")
+			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&id=$channelId&key=$key")
 					.body()
 
-			var json = jsonParser.parse(response).obj
-			val responseError = getResponseError(json)
+			val youTubeJsonResponse = jsonParser.parse(response).obj
+			val responseError = getResponseError(youTubeJsonResponse)
 			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
 			if (error) {
 				println("[!] Removendo key $key...")
 				loritta.youtubeKeys.remove(key)
 			} else {
-				var hasUploadsPlaylist = json["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.has("uploads")
+				val hasUploadsPlaylist = youTubeJsonResponse["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.has("uploads")
 
 				json["public_uploads_playlist"] = hasUploadsPlaylist
 			}
 
-			json["title"] = title
-			// json["description"] = description.attr("content")
-			json["avatarUrl"] = avatarUrl
+			json["title"] = youTubeJsonResponse["items"].array[0]["snippet"]["title"].string
+			json["avatarUrl"] = youTubeJsonResponse["items"].array[0]["snippet"]["thumbnails"]["high"]["url"].string
 			json["channelId"] = channelId
 			return gson.toJson(json)
 		} catch (e: Exception) {
