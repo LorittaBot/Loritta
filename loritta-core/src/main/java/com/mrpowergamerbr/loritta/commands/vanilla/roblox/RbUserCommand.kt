@@ -3,13 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.roblox
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
@@ -31,43 +31,21 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		if (context.args.isNotEmpty()) {
 			val username = context.args.joinToString(separator = " ")
 
-			val body = HttpRequest.get("https://www.roblox.com/search/users/results?keyword=${URLEncoder.encode(username, "UTF-8")}&maxRows=12&startIndex=0")
-					.body()
-
-			val response = jsonParser.parse(body).obj
-
 			var userId: Long? = null
 			var name: String? = null
 			var blurb: String? = null
 			var isOnline: Boolean? = null
 
-			if (response["Keyword"].string == "###########") {
-				// oh man, censored :(
-				// fuck you roblox >:c
-				val altRobloxQuery = HttpRequest.get("https://www.roblox.com/users/profile?username=${URLEncoder.encode(username, "UTF-8")}")
+			val altRobloxQuery = HttpRequest.get("https://www.roblox.com/users/profile?username=${URLEncoder.encode(username, "UTF-8")}")
 
-				altRobloxQuery.ok()
+			altRobloxQuery.ok()
 
-				if (altRobloxQuery.code() != 404) {
-					val jsoup = Jsoup.parse(altRobloxQuery.body())
-					userId = altRobloxQuery.url().path.split("/")[2].toLong()
-					name = jsoup.getElementsByClass("header-title").text()
-					blurb = jsoup.getElementsByAttribute("data-statustext").attr("data-statustext")
-					isOnline = jsoup.getElementsByClass("avatar-status").isNotEmpty()
-				}
-			} else {
-				if (response["UserSearchResults"].isJsonArray) {
-					val users = response["UserSearchResults"].array
-
-					if (users.size() > 0) {
-						val user = users[0]
-
-						userId = user["UserId"].long
-						name = user["Name"].string
-						blurb = user["Blurb"].string
-						isOnline = user["IsOnline"].bool
-					}
-				}
+			if (altRobloxQuery.code() != 404) {
+				val jsoup = Jsoup.parse(altRobloxQuery.body())
+				userId = altRobloxQuery.url().path.split("/")[2].toLong()
+				name = jsoup.getElementsByClass("header-title").text()
+				blurb = jsoup.getElementsByAttribute("data-statustext").attr("data-statustext")
+				isOnline = jsoup.getElementsByClass("avatar-status").isNotEmpty()
 			}
 
 			if (userId == null || name == null || blurb == null || isOnline == null) {
