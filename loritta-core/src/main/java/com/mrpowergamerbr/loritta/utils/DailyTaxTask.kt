@@ -208,6 +208,13 @@ class DailyTaxTask : Runnable {
 						System.currentTimeMillis().toString()
 				)
 
+				// Primeiro iremos pegar todos os casamentos ANTES de remover eles
+				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
+					Profile.find {
+						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble())
+					}.toMutableList()
+				}
+
 				// MARRY - Remover sonhos de quem merece
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble()) }) {
@@ -215,12 +222,6 @@ class DailyTaxTask : Runnable {
 							it.update(money, money - MARRIAGE_DAILY_TAX.toDouble())
 						}
 					}
-				}
-
-				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
-					Profile.find {
-						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble())
-					}.toMutableList()
 				}
 
 				val removeMarriages = mutableListOf<Marriage>()
