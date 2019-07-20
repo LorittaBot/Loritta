@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website
 
 import com.mrpowergamerbr.loritta.utils.loritta
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Clone of the original "LorittaWebsite" from the "sweet-morenitta" module
@@ -20,7 +21,7 @@ class LorittaWebsite {
 		}
 	}
 
-	val pathCache = mutableMapOf<File, Any>()
+	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
 
 	class WebsiteConfig {

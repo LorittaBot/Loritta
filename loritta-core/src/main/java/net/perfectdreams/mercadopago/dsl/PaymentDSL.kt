@@ -10,7 +10,7 @@ class PaymentSettingsBuilder {
     var payer: PaymentSettings.Payer? = null
     var externalReference: String? = null
     var notificationUrl: String? = null
-
+    var paymentMethods: PaymentMethods? = null
 
     fun item(block: ItemBuilder.() -> Unit) = items.add(ItemBuilder().apply(block).build())
 
@@ -18,11 +18,16 @@ class PaymentSettingsBuilder {
         payer = PaymentSettingsPayerBuilder().apply(block).build()
     }
 
+    fun paymentMethods(block: PaymentMethodsBuilder.() -> Unit) {
+        paymentMethods = PaymentMethodsBuilder().apply(block).build()
+    }
+
     fun build() = PaymentSettings(
             items = items,
             payer = payer,
             externalReference = externalReference,
-            notificationUrl = notificationUrl
+            notificationUrl = notificationUrl,
+            paymentMethods = paymentMethods
     )
 }
 
@@ -58,19 +63,12 @@ class ItemBuilder {
 }
 
 class PaymentSettingsPayerBuilder {
-    @SerializedName("address")
     var address: Address? = null
-    @SerializedName("date_created")
     var dateCreated: String? = null
-    @SerializedName("email")
     var email: String? = null
-    @SerializedName("identification")
     var identification: Identification? = null
-    @SerializedName("name")
     var firstName: String? = null
-    @SerializedName("phone")
     var phone: Phone? = null
-    @SerializedName("surname")
     var lastName: String? = null
 
     fun build() = PaymentSettings.Payer(
@@ -81,5 +79,17 @@ class PaymentSettingsPayerBuilder {
             firstName = firstName,
             phone = phone,
             lastName = lastName
+    )
+}
+
+class PaymentMethodsBuilder {
+    var excludedPaymentMethods: List<String>? = null
+    var excludedPaymentTypes: List<String>? = null
+    var installments: Int = 1
+
+    fun build() = PaymentMethods(
+            excludedPaymentTypes = excludedPaymentTypes?.map { ExcludedPaymentType(it) },
+            excludedPaymentMethods = excludedPaymentMethods?.map { ExcludedPaymentMethod(it) },
+            installments = installments
     )
 }

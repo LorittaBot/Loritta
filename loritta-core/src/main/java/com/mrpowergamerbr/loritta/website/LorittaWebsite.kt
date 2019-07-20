@@ -88,13 +88,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
-			locale = when (languageCode) {
-				"br" -> LorittaLauncher.loritta.getLocaleById("default")
-				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
-				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
-				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
-				else -> locale
-			}
+			locale = loritta.locales.values.firstOrNull { it["website.localePath"] == languageCode } ?: locale
 
 			lorittaLocale = when (languageCode) {
 				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
@@ -107,22 +101,13 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 		if (!doNotLocaleRedirect) {
 			val languageCode2 = req.path().split("/").getOrNull(1)
-			val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
+			val hasLangCode = loritta.locales.any { it.value["website.localePath"] == languageCode2 }
 			if (!hasLangCode) {
 				// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 				if (localeId != null) {
 					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 						res.status(302) // temporary redirect / no page rank penalty (?)
-						if (localeId == "default") {
-							res.redirect("${loritta.config.loritta.website.url}br${req.path()}${req.urlQueryString}")
-						}
-						if (localeId == "pt-pt") {
-							res.redirect("${loritta.config.loritta.website.url}pt${req.path()}${req.urlQueryString}")
-						}
-						if (localeId == "es-es") {
-							res.redirect("${loritta.config.loritta.website.url}es${req.path()}${req.urlQueryString}")
-						}
-						res.redirect("${loritta.config.loritta.website.url}us${req.path()}${req.urlQueryString}")
+						res.redirect("${loritta.config.loritta.website.url}${locale["website.localePath"]}${req.path()}${req.urlQueryString}")
 						res.send("Redirecting...")
 						return@use
 					}

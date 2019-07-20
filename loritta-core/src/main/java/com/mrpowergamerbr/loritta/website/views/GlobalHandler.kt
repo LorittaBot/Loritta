@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.website.views
 
 import com.google.common.collect.Lists
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -86,13 +85,7 @@ object GlobalHandler {
 		val languageCode = req.path().split("/").getOrNull(1)
 
 		if (languageCode != null) {
-			locale = when (languageCode) {
-				"br" -> LorittaLauncher.loritta.getLocaleById("default")
-				"pt" -> LorittaLauncher.loritta.getLocaleById("pt-pt")
-				"us" -> LorittaLauncher.loritta.getLocaleById("en-us")
-				"es" -> LorittaLauncher.loritta.getLocaleById("es-es")
-				else -> locale
-			}
+			locale = loritta.locales.values.firstOrNull { it["website.localePath"] == languageCode } ?: locale
 
 			lorittaLocale = when (languageCode) {
 				"br" -> LorittaLauncher.loritta.getLegacyLocaleById("default")
@@ -109,7 +102,7 @@ object GlobalHandler {
 		val split = pathNoLanguageCode.split("/").toMutableList()
 		val languageCode2 = split.getOrNull(1)
 
-		val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
+		val hasLangCode = loritta.locales.any { it.value["website.localePath"] == languageCode2 }
 		if (hasLangCode) {
 			split.removeAt(0)
 			split.removeAt(0)

@@ -3,13 +3,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.roblox
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
@@ -27,47 +31,25 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return listOf("cazum8", "lol738236")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val username = context.args.joinToString(separator = " ")
-
-			val body = HttpRequest.get("https://www.roblox.com/search/users/results?keyword=${URLEncoder.encode(username, "UTF-8")}&maxRows=12&startIndex=0")
-					.body()
-
-			val response = jsonParser.parse(body).obj
 
 			var userId: Long? = null
 			var name: String? = null
 			var blurb: String? = null
 			var isOnline: Boolean? = null
 
-			if (response["Keyword"].string == "###########") {
-				// oh man, censored :(
-				// fuck you roblox >:c
-				val altRobloxQuery = HttpRequest.get("https://www.roblox.com/users/profile?username=${URLEncoder.encode(username, "UTF-8")}")
+			val altRobloxQuery = HttpRequest.get("https://www.roblox.com/users/profile?username=${URLEncoder.encode(username, "UTF-8")}")
 
-				altRobloxQuery.ok()
+			altRobloxQuery.ok()
 
-				if (altRobloxQuery.code() != 404) {
-					val jsoup = Jsoup.parse(altRobloxQuery.body())
-					userId = altRobloxQuery.url().path.split("/")[2].toLong()
-					name = jsoup.getElementsByClass("header-title").text()
-					blurb = jsoup.getElementsByAttribute("data-statustext").attr("data-statustext")
-					isOnline = jsoup.getElementsByClass("avatar-status").isNotEmpty()
-				}
-			} else {
-				if (response["UserSearchResults"].isJsonArray) {
-					val users = response["UserSearchResults"].array
-
-					if (users.size() > 0) {
-						val user = users[0]
-
-						userId = user["UserId"].long
-						name = user["Name"].string
-						blurb = user["Blurb"].string
-						isOnline = user["IsOnline"].bool
-					}
-				}
+			if (altRobloxQuery.code() != 404) {
+				val jsoup = Jsoup.parse(altRobloxQuery.body())
+				userId = altRobloxQuery.url().path.split("/")[2].toLong()
+				name = jsoup.getElementsByClass("header-title").text()
+				blurb = jsoup.getElementsByAttribute("data-statustext").attr("data-statustext")
+				isOnline = jsoup.getElementsByClass("avatar-status").isNotEmpty()
 			}
 
 			if (userId == null || name == null || blurb == null || isOnline == null) {
@@ -75,99 +57,108 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				return
 			}
 
-			val avatarBody = HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
-					.body()
-
-			val avatarResponse = jsonParser.parse(avatarBody).obj
-
-			// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
-			val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
-
-			val page = Jsoup.connect("https://www.roblox.com/users/$userId/profile")
-					.get()
-					.body()
-
-			val stats = page.getElementsByClass("profile-stat")
-
-			val joinDate = stats[0].getElementsByClass("text-lead")[0].text()
-			val placeVisits = stats[1].getElementsByClass("text-lead")[0].text()
-
-			// SEGUINDO
-			val followingBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
-					.body()
-
-			val followingResponse = jsonParser.parse(followingBody)
-
-			val totalFollowing = followingResponse["TotalFriends"].int
-
-			// SEGUIDORES
-			val followersBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Followers&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
-					.body()
-
-			val followersResponse = jsonParser.parse(followersBody)
-
-			val totalFollowers = followersResponse["TotalFriends"].int
-
-			// AMIGOS
-			val friendsBody = HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=AllFriends&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
-					.body()
-
-			val friendsResponse = jsonParser.parse(friendsBody)
-
-			val totalFriends = friendsResponse["TotalFriends"].int
+			val avatarBodyTask = GlobalScope.async(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
+						.body()
+			}
+			val pageTask = GlobalScope.async(loritta.coroutineDispatcher) {
+				Jsoup.connect("https://www.roblox.com/users/$userId/profile")
+						.get()
+						.body()
+			}
+			val followingBodyTask = GlobalScope.async(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
+						.body()
+			}
+			val followersBodyTask = GlobalScope.async(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Followers&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
+						.body()
+			}
+			val friendsBodyTask = GlobalScope.async(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=AllFriends&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
+						.body()
+			}
 
 			var bufferedImage = BufferedImage(333, 220, BufferedImage.TYPE_INT_ARGB)
 
 			var x = 0
 			var y = 0
 
-			run {
+			val collections = GlobalScope.async(loritta.coroutineDispatcher) {
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/robloxcollections-json?userId=$userId")
 						.body()
 
 				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
-				for (coll in robloxCollections["CollectionsItems"].array) {
+
+				val entries = robloxCollections["CollectionsItems"].array.map {
 					if (x > 275) {
 						y += 55
 						x = 0
 					}
 
-					val thumbnailUrl = coll["Thumbnail"]["Url"].string
+					val realX = x
+					val realY = y
 
-					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)!!.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
-					bufferedImage.graphics.drawImage(thumbnail, x, y, null)
+					val async = GlobalScope.async(loritta.coroutineDispatcher) {
+						val thumbnailUrl = it["Thumbnail"]["Url"].string
+
+						val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+								?: return@async null
+						bufferedImage.graphics.drawImage(thumbnail, realX, realY, null)
+					}
+
 					x += 55
+
+					return@map async
 				}
+
+				entries.awaitAll()
 			}
 
 			y += 55
 			x = 0
-			run {
+
+			val playerAssets = GlobalScope.async(loritta.coroutineDispatcher) {
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId")
 						.body()
 
 				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
 
-				for (coll in robloxCollections["Assets"].array) {
+				val entries = robloxCollections["Assets"].array.map {
 					if (x > 275) {
 						y += 55
 						x = 0
 					}
 
-					val thumbnailUrl = coll["Thumbnail"]["Url"].string
+					val realX = x
+					val realY = y
 
-					val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)!!.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
-					bufferedImage.graphics.drawImage(thumbnail, x, y, null)
+					val async = GlobalScope.async(loritta.coroutineDispatcher) {
+						val thumbnailUrl = it["Thumbnail"]["Url"].string
+
+						val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+								?: return@async null
+						bufferedImage.graphics.drawImage(thumbnail, realX, realY, null)
+					}
+
 					x += 55
+
+					return@map async
 				}
+
+				entries.awaitAll()
 			}
+
+			val page = pageTask.await()
 
 			y += 55
 			x = 0
-			run {
+
+			val gameCards = GlobalScope.async(loritta.coroutineDispatcher) {
 				val gameCardsThumbnail = page.getElementsByClass("game-cards").first().getElementsByClass("game-card-thumb")
-				for (gameCard in gameCardsThumbnail) {
+
+				val entries = gameCardsThumbnail.mapNotNull { gameCard ->
 					if (x > 275) {
 						y += 55
 						x = 0
@@ -176,15 +167,56 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 					val thumbnailUrl = gameCard.attr("src")
 
 					if (thumbnailUrl != null) {
-						val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH) ?: continue
+						val realX = x
+						val realY = y
 
-						bufferedImage.graphics.drawImage(thumbnail, x, y, null)
+						val async = GlobalScope.async(loritta.coroutineDispatcher) {
+							val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+									?: return@async null
+
+							bufferedImage.graphics.drawImage(thumbnail, realX, realY, null)
+						}
+
 						x += 55
-					}
+
+						return@mapNotNull async
+					} else { return@mapNotNull null }
 				}
+
+				entries.awaitAll()
 			}
 
+			collections.await()
+			playerAssets.await()
+			gameCards.await()
+
 			bufferedImage = bufferedImage.getSubimage(0, 0, 333, y + 55)
+
+			val avatarResponse = jsonParser.parse(avatarBodyTask.await()).obj
+
+			// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
+			val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
+
+			val stats = page.getElementsByClass("profile-stat")
+
+			val joinDate = stats[0].getElementsByClass("text-lead")[0].text()
+			val placeVisits = stats[1].getElementsByClass("text-lead")[0].text()
+
+			// SEGUINDO
+			val followingResponse = jsonParser.parse(followingBodyTask.await())
+
+			val totalFollowing = followingResponse["TotalFriends"].int
+
+			// SEGUIDORES
+			val followersResponse = jsonParser.parse(followersBodyTask.await())
+
+			val totalFollowers = followersResponse["TotalFriends"].int
+
+			// AMIGOS
+			val friendsResponse = jsonParser.parse(friendsBodyTask.await())
+
+			val totalFriends = friendsResponse["TotalFriends"].int
+
 			val embed = EmbedBuilder().apply {
 				setTitle("<:roblox_logo:412576693803286528>${if (isOnline) "<:online:313956277808005120>" else "<:offline:313956277237710868>"}$name")
 				if (blurb.isNotEmpty()) {

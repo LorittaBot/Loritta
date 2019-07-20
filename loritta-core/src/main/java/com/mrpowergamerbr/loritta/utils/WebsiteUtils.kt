@@ -133,7 +133,7 @@ object WebsiteUtils {
 		val split = pathNoLanguageCode.split("/").toMutableList()
 		val languageCode2 = split.getOrNull(1)
 
-		val hasLangCode = languageCode2 == "br" || languageCode2 == "es" || languageCode2 == "us" || languageCode2 == "pt"
+		val hasLangCode = loritta.locales.any { it.value["website.localePath"] == languageCode2 }
 		if (hasLangCode) {
 			split.removeAt(0)
 			split.removeAt(0)

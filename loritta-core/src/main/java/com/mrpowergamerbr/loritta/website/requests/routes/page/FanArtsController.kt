@@ -2,10 +2,12 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluate
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -13,7 +15,6 @@ import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.SocialNetwork
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
-import net.perfectdreams.loritta.website.utils.extensions.transformToString
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import org.jooby.Request
@@ -21,10 +22,9 @@ import org.jooby.Response
 import org.jooby.mvc.GET
 import org.jooby.mvc.Local
 import org.jooby.mvc.Path
-import org.w3c.dom.Element
 import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.collections.set
+import kotlin.reflect.full.createType
 
 @Path("/:localeId/fanarts")
 class FanArtsController {
@@ -36,31 +36,20 @@ class FanArtsController {
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
 		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-fanarts")) {
-			val test = ScriptingUtils.evaluateTemplate<Any>(
-					File(
-							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"
-					),
-					mapOf(
-							"document" to "Document",
-							"websiteUrl" to "String",
-							"locale" to "BaseLocale"
-					)
-			)
+			val html = runBlocking {
+				ScriptingUtils.evaluateWebPageFromTemplate(
+						File(
+								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"
+						),
+						mapOf(
+								"path" to req.path().split("/").drop(2).joinToString("/"),
+								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
+						)
+				)
+			}
 
-			val document = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder()
-					.newDocument()
-
-			val element = test::class.members.first { it.name == "generateHtml" }.call(
-					test,
-					document,
-					LorittaWebsite.INSTANCE.config.websiteUrl,
-					variables["locale"]
-			) as Element
-
-			document.appendChild(element)
-
-			res.send(document.transformToString())
+			res.send(html)
 		} else {
 			val fanArts = loritta.fanArts
 

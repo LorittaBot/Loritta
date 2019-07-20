@@ -47,6 +47,7 @@ import org.w3c.dom.Document
 import java.io.File
 import java.io.StringWriter
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
@@ -64,7 +65,7 @@ class LorittaWebsite(val config: WebsiteConfig) {
 
     val localeFolder = "${config.websiteFolder}/locales"
     var locales = mapOf<String, BaseLocale>()
-    val pathCache = mutableMapOf<File, Any>()
+    val pathCache = ConcurrentHashMap<File, Any>()
     var fanArtArtists = listOf<FanArtArtist>()
     val webSocketSessions = mutableMapOf<UUID, MutableList<WebSocketSession>>()
     val controller = LorittaController(35575)
