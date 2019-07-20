@@ -53,6 +53,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.socket.LorittaSocket
 import net.perfectdreams.loritta.socket.network.SocketOpCode
 import net.perfectdreams.loritta.socket.network.commands.*
+import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ReactionOptions
@@ -398,7 +399,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					DonationKeys,
 					Payments,
 					ShipEffects,
-					ParallaxMetaStorages
+					ParallaxMetaStorages,
+					BotVotes
 			)
 		}
 	}

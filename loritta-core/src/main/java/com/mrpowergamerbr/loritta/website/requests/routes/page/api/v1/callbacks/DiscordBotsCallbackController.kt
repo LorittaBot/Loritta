@@ -8,7 +8,10 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.loritta.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.utils.WebsiteVoteUtils
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -51,11 +54,18 @@ class DiscordBotsCallbackController {
 
 		val payload = jsonParser.parse(response)
 		val botId = payload["bot"].string
-		val userId = payload["user"].string
+		val userId = payload["user"].string.toLong()
 		val type = payload["type"].string
 
-		if (loritta.config.isOwner(botId) && type == "upvote") {
-			PerfilCommand.userVotes?.add(PerfilCommand.DiscordBotVote(userId))
+		if (type == "upvote" || (type == "test" && loritta.config.isOwner(userId))) {
+			PerfilCommand.userVotes?.add(PerfilCommand.DiscordBotVote(userId.toString()))
+
+			runBlocking {
+				WebsiteVoteUtils.addVote(
+						userId,
+						WebsiteVoteSource.DISCORD_BOTS
+				)
+			}
 		}
 
 		res.status(Status.NO_CONTENT)
