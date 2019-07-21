@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.commands.actions.*
 import net.perfectdreams.loritta.commands.administration.DashboardCommand
 import net.perfectdreams.loritta.commands.administration.RenameChannelCommand
 import net.perfectdreams.loritta.commands.administration.RoleColorCommand
+import net.perfectdreams.loritta.commands.discord.GuildBannerCommand
 import net.perfectdreams.loritta.commands.discord.RenameEmojiCommand
 import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
 import net.perfectdreams.loritta.commands.images.*
@@ -14,14 +15,15 @@ class ArtsyJoyLori : LorittaPlugin() {
     override fun onEnable() {
         // ADMIN
         registerCommand(DashboardCommand())
-        registerCommand(RenameChannelCommand())
+        registerCommand(RenameChannelCommand()
+        )
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
             registerCommand(RoleColorCommand())
 
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
-
+        registerCommand(GuildBannerCommand())
         // IMAGES
         registerCommand(AtendenteCommand())
         registerCommand(TristeRealidadeCommand())
