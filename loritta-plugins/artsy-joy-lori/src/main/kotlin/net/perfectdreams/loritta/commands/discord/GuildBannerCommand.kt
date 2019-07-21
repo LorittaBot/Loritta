@@ -35,8 +35,8 @@ class GuildBannerCommand : LorittaCommand(arrayOf("guildbanner", "serverbanner")
 
             embed.setTitle("🖼 ${discordGuild.name}")
             embed.setColor(Constants.DISCORD_BLURPLE)
-            embed.setDescription(locale["loritta.clickHere", guildBanner])
-            embed.setImage(guildBanner)
+            embed.setDescription(locale["loritta.clickHere", guildBanner + "?size2048"])
+            embed.setImage(guildBanner + "?size2048")
 
             context.sendMessage(context.getAsMention(true), embed.build())
         }
