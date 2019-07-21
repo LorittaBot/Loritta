@@ -15,8 +15,7 @@ class ArtsyJoyLori : LorittaPlugin() {
     override fun onEnable() {
         // ADMIN
         registerCommand(DashboardCommand())
-        registerCommand(RenameChannelCommand()
-        )
+        registerCommand(RenameChannelCommand())
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
             registerCommand(RoleColorCommand())
 
@@ -24,6 +23,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
         registerCommand(GuildBannerCommand())
+        
         // IMAGES
         registerCommand(AtendenteCommand())
         registerCommand(TristeRealidadeCommand())
