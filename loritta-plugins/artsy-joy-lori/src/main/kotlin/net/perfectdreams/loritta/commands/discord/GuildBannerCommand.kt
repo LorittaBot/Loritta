@@ -27,16 +27,15 @@ class GuildBannerCommand : LorittaCommand(arrayOf("guildbanner", "serverbanner")
         val guildBanner = discordGuild!!.bannerUrl
 
         // Verificar se a guild tem banner
-        if(guildBanner == null) {
+        if (guildBanner == null) {
             context.reply(locale["commands.discord.guildbanner.noBanner"], Constants.ERROR)
-
         } else {
             val embed = EmbedBuilder()
 
             embed.setTitle("🖼 ${discordGuild.name}")
             embed.setColor(Constants.DISCORD_BLURPLE)
-            embed.setDescription(locale["loritta.clickHere", guildBanner + "?size2048"])
-            embed.setImage(guildBanner + "?size2048")
+            embed.setDescription(locale["loritta.clickHere", guildBanner + "?size=2048"])
+            embed.setImage(guildBanner + "?size=2048")
 
             context.sendMessage(context.getAsMention(true), embed.build())
         }
