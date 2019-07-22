@@ -208,7 +208,7 @@ class DailyTaxTask : Runnable {
 						System.currentTimeMillis().toString()
 				)
 
-				// Primeiro iremos pegar todos os casamentos ANTES de remover eles
+				// Primeiro iremos pegar todos os casamentos que serão deletados ANTES de retirar os sonhos
 				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
 					Profile.find {
 						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble())

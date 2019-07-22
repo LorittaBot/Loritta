@@ -3,10 +3,13 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.utils.SimpleImageInfo
+import net.perfectdreams.loritta.utils.readAllBytes
 import org.apache.commons.io.IOUtils
 import java.awt.image.BufferedImage
 import java.io.IOException
@@ -18,6 +21,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 object LorittaUtils {
+	private val logger = KotlinLogging.logger {}
 
 	fun canUploadFiles(context: CommandContext): Boolean {
 		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.textChannel!!, Permission.MESSAGE_ATTACH_FILES)) {
@@ -51,7 +55,7 @@ object LorittaUtils {
 	}
 
 	@JvmOverloads
-	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 100_000_000, overrideTimeoutsForSafeDomains: Boolean = false): BufferedImage? {
+	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 16_777_216, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
 			val connection = imageUrl.openSafeConnection() as HttpURLConnection
@@ -59,6 +63,7 @@ object LorittaUtils {
 					Constants.USER_AGENT)
 
 			if (connection.getHeaderFieldInt("Content-Length", 0) > maxSize) {
+				logger.warn { "Image $url exceeds the maximum allowed Content-Length! ${connection.getHeaderFieldInt("Content-Length", 0)} > $maxSize"}
 				return null
 			}
 
@@ -70,7 +75,20 @@ object LorittaUtils {
 				connection.readTimeout = readTimeout
 			}
 
-			return ImageIO.read(connection.inputStream)
+			logger.info { "Reading image $url; connectTimeout = $connectTimeout; readTimeout = $readTimeout; maxSize = $maxSize bytes; overrideTimeoutsForSafeDomains = $overrideTimeoutsForSafeDomains; maxWidth = $maxWidth; maxHeight = $maxHeight"}
+
+			val imageBytes = connection.inputStream.readAllBytes(maxSize)
+
+			val imageInfo = SimpleImageInfo(imageBytes)
+
+			logger.info { "Image $url was successfully downloaded! width = ${imageInfo.width}; height = ${imageInfo.height}; mimeType = ${imageInfo.mimeType}"}
+
+			if (imageInfo.width > maxWidth || imageInfo.height > maxHeight) {
+				logger.warn { "Image $url exceeds the maximum allowed width/height! ${imageInfo.width} > $maxWidth; ${imageInfo.height} > $maxHeight"}
+				return null
+			}
+			
+			return ImageIO.read(imageBytes.inputStream())
 		} catch (e: Exception) {
 		}
 
