@@ -2,12 +2,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.socket.network.SocketOpCode
 import net.perfectdreams.loritta.utils.extensions.objectNode
@@ -20,7 +17,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
-		if (arg0 == "shards") {
+		if (arg0 == "shards" && context.userHandle.support) {
 			if (loritta.config.socket.enabled) {
 				val networkShards = loritta.socket.socketWrapper!!.awaitResponse(SocketOpCode.Discord.GET_LORITTA_SHARDS, objectNode())["lorittaShards"]
 
