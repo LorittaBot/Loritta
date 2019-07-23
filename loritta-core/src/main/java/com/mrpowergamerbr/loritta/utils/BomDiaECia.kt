@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import net.perfectdreams.loritta.utils.Emotes
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
@@ -18,36 +16,111 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
 class BomDiaECia {
 	companion object {
-		val randomTexts = listOf(
-				"amo o yudi!",
-				"amo o yudi",
-				"amo a priscilla!",
-				"amo a priscilla",
-				"amo o yudi e a priscilla!",
-				"amo o yudi e a priscilla",
-				"bts? eu só conheço o sbt!",
-				"preisteicho dois!",
-				"preisteicho treis!",
-				"preisteicho!",
-				"playstation dois!",
-				"playstation treis!",
-				"playstation!",
-				"é o funk do yudi que vai dar preisteicho dois!",
-				"é o funk do yudi que vai dar preisteicho 2!",
-				"é o funk do yudi que vai dar preisteicho 3!",
-				"é o funk do yudi que vai dar preisteicho treis!",
-				"é o funk do yudi que vai dar playstation dois!",
-				"é o funk do yudi que vai dar playstation 2!",
-				"é o funk do yudi que vai dar playstation 3!",
-				"é o funk do yudi que vai dar playstation treis!",
-				"não quero ganhar um jogo da vida!",
-				"alôoooo, cê tá me escutando?"
-		)
+		val randomTexts = mutableListOf<String>().apply {
+			fun addWithVariations(source: String) {
+				this.add(source)
+				this.add("$source!")
+			}
+
+			// Gerar todas as mensagens possíveis do bom dia & cia
+			// "alôoooo, cê tá me escutando?"
+			for (i in 0..10) {
+				var str = "alô"
+				repeat(i) {
+					str += "o"
+				}
+				this.add("$str, cê tá me escutando?")
+				this.add("$str, cê está me escutando?")
+				this.add("$str, você tá me escutando?")
+				this.add("$str, você está me escutando?")
+			}
+
+			val ilove = listOf(
+					"o yudi",
+					"a priscilla",
+					"o yudi tamashiro",
+					"a priscilla alcântra",
+					"o sbt",
+					"o bom dia & cia",
+					"o bom dia e cia",
+					"o bom dia & compania",
+					"o yudi e a priscilla",
+					"o yudi tamashiro e a priscilla",
+					"o yudi e a priscilla alcântra",
+					"o yudi tamashiro e a priscilla alcântra"
+			)
+
+			for (person in ilove) {
+				addWithVariations("eu gosto d$person")
+				addWithVariations("eu amo $person")
+				addWithVariations("eu adoro $person!")
+				addWithVariations("eu idolatro $person")
+
+				addWithVariations("gosto d$person")
+				addWithVariations("amo $person")
+				addWithVariations("adoro $person!")
+				addWithVariations("idolatro $person")
+			}
+
+			val playstations = listOf(
+					"playstation",
+					"preisteicho",
+					"preisteixo",
+					"prêiesteicho",
+					"prêisteixo",
+					"playesteicho",
+					"preíesteichu"
+			)
+
+			val numbers = listOf(
+					"1",
+					"2",
+					"3",
+					"4",
+					"um",
+					"dois",
+					"três",
+					"treis",
+					"quatro"
+			)
+
+			for (playstation in playstations) {
+				addWithVariations(playstation)
+				addWithVariations("quero ganhar 1 $playstation")
+				addWithVariations("quero ganhar um $playstation")
+				addWithVariations("eu quero ganhar um $playstation")
+				addWithVariations("eu quero ganhar 1 $playstation")
+				addWithVariations("não quero ganhar um jogo da vida, quero ganhar 1 $playstation")
+				addWithVariations("não quero ganhar um jogo da vida, quero ganhar um $playstation")
+				addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar um $playstation")
+				addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar 1 $playstation")
+
+				for (number in numbers) {
+					addWithVariations("$playstation $number")
+					addWithVariations("quero ganhar 1 $playstation $number")
+					addWithVariations("quero ganhar um $playstation $number")
+					addWithVariations("eu quero ganhar um $playstation $number")
+					addWithVariations("eu quero ganhar 1 $playstation $number")
+
+					addWithVariations("não quero ganhar um jogo da vida, quero ganhar 1 $playstation $number")
+					addWithVariations("não quero ganhar um jogo da vida, quero ganhar um $playstation $number")
+					addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar um $playstation $number")
+					addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar 1 $playstation $number")
+
+					addWithVariations("4002-8922 é o funk do yudi que vai dar $playstation $number")
+					addWithVariations("4002-8922 é o funk do japonês que vai te dar $playstation $number")
+				}
+			}
+
+			this.add("bts? eu só conheço o sbt!")
+		}
+
 		val randomImages by lazy {
 			listOf(
 					"${loritta.config.loritta.website.url}assets/img/bom-dia-cia.jpg",
