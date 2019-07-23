@@ -7,12 +7,11 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import org.graalvm.polyglot.Context
 import java.lang.management.ManagementFactory
 import java.util.concurrent.Callable
-import javax.script.Invocable
-import javax.script.ScriptEngine
 
-internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var ogContext: CommandContext, var context: NashornContext) : Callable<Void> {
+internal class NashornTask(var graalContext: Context, var javaScript: String, var ogContext: CommandContext, var context: NashornContext) : Callable<Void> {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -43,31 +42,29 @@ internal class NashornTask(var engine: ScriptEngine, var javaScript: String, var
 							running = false
 						}
 
-						// Workaround, não se deve usar Thread.stop()!
 						if (!running)
-							currentThread.stop() // stop now!
+							graalContext.close(true)
 
 						try {
 							Thread.sleep(25)
 						} catch (e: Exception) {
 						}
-
 					}
 					return
 				}
 			}
 
 			t.start()
-			logger.info("Evaluating (Nashorn) @ ${ogContext.guild.idLong} = $javaScript")
+			logger.info("Evaluating (GraalJS (Old)) @ ${ogContext.guild.idLong} = $javaScript")
 
-			val invocable = engine as Invocable
-			engine.eval(javaScript)
-			invocable.invokeFunction("nashornCommand", context)
+			val value = graalContext.eval("js", javaScript)
+			value.execute(context)
 
 			running = false
 		} catch (t: Throwable) {
 			// Cancele primeiro a task
 			running = false
+			graalContext.close(true)
 
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				ParallaxUtils.sendThrowableToChannel(

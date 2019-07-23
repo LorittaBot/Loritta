@@ -49,7 +49,6 @@ internal class ParallaxTask(var graalContext: Context, var javaScript: String, v
 						Thread.sleep(25)
 					} catch (e: Exception) {
 					}
-
 				}
 				return
 			}

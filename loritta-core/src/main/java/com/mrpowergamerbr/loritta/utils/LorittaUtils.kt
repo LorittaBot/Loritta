@@ -87,7 +87,7 @@ object LorittaUtils {
 				logger.warn { "Image $url exceeds the maximum allowed width/height! ${imageInfo.width} > $maxWidth; ${imageInfo.height} > $maxHeight"}
 				return null
 			}
-			
+
 			return ImageIO.read(imageBytes.inputStream())
 		} catch (e: Exception) {
 		}
