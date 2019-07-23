@@ -74,23 +74,8 @@ object LorittaLauncher {
 			return
 		}
 
-		try {
-			val json = configurationFile.readText()
-			config = Constants.HOCON_MAPPER.readValue(json)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			System.exit(1) // Sair caso der erro
-			return
-		}
-
-		try {
-			val json = discordConfigurationFile.readText()
-			discordConfig = Constants.HOCON_MAPPER.readValue(json)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			System.exit(1) // Sair caso der erro
-			return
-		}
+		config = readConfigurationFromFile(configurationFile)
+		discordConfig = readConfigurationFromFile(discordConfigurationFile)
 
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
@@ -107,8 +92,19 @@ object LorittaLauncher {
 		loritta.start()
 	}
 
-	fun copyFromJar(inputPath: String, outputPath: String) {
+	private fun copyFromJar(inputPath: String, outputPath: String) {
 		val inputStream = LorittaLauncher::class.java.getResourceAsStream(inputPath)
 		File(outputPath).writeBytes(inputStream.readAllBytes())
+	}
+
+	private inline fun <reified T> readConfigurationFromFile(file: File): T {
+		try {
+			val json = file.readText()
+			return Constants.HOCON_MAPPER.readValue<T>(json)
+		} catch (e: IOException) {
+			e.printStackTrace()
+			System.exit(1) // Sair caso der erro
+			throw e
+		}
 	}
 }
