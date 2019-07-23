@@ -400,7 +400,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					Payments,
 					ShipEffects,
 					ParallaxMetaStorages,
-					BotVotes
+					BotVotes,
+					StoredMessages
 			)
 		}
 	}
