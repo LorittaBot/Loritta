@@ -79,14 +79,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				.asMap()
 
 		private val logger = KotlinLogging.logger {}
-		private val requestLogger = LoggerFactory.getLogger("requests")
-	}
-
-	override fun onHttpRequest(event: HttpRequestEvent) {
-		val copy = event.requestRaw?.newBuilder()?.build()
-		val buffer = Buffer()
-		copy?.body()?.writeTo(buffer)
-		requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\nGlobally? ${event.responseHeaders?.get("X-RateLimit-Global") ?: "false"} - RateLimit-Limit: ${event.responseHeaders?.get("X-RateLimit-Limit")} - RateLimit-Remaining: ${event.responseHeaders?.get("X-RateLimit-Remaining")} - Retry-After: ${event.responseHeaders?.get("Retry-After")}\n${buffer.readUtf8()}")
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
