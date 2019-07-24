@@ -54,7 +54,7 @@ class NashornCommand : AbstractCommand {
 
 		val graalContext = Context.newBuilder()
 				.hostClassFilter {
-					it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers")
+					it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers") || it.startsWith("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils")
 				}
 				.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
 				.option("js.nashorn-compat", "true")
