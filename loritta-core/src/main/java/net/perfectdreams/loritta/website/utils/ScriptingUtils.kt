@@ -83,7 +83,7 @@ object ScriptingUtils {
         val deferredCompilingFile = currentlyCompilingFiles[file]
 
         if (deferredCompilingFile != null) {
-            logger.info { "File $file is already being compiled by something else! Waiting until it finishes compilation..." }
+            logger.debug { "File $file is already being compiled by something else! Waiting until it finishes compilation..." }
 
             return deferredCompilingFile.await() as T
         }
