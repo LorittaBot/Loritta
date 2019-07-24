@@ -89,7 +89,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				val future = executor.submit(
 						NashornTask(
 								graalContext,
-								"(function(context) { \n" +
+								"(function(contexto) { \n" +
 										"$blacklisted\n" +
 										"$inlineMethods\n" +
 										"$javaScript\n })",
