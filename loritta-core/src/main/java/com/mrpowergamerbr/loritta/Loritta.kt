@@ -401,7 +401,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					ShipEffects,
 					ParallaxMetaStorages,
 					BotVotes,
-					StoredMessages
+					StoredMessages,
+					StarboardMessages
 			)
 		}
 	}
