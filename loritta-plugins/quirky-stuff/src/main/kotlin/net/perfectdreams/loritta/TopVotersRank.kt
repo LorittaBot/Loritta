@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.tables.BotVotes
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TopVotersRank(val m: QuirkyStuff, val config: QuirkyConfig) {
@@ -37,14 +38,19 @@ class TopVotersRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 					val role3 = guild.getRoleById(config.topVotersRank.topRole3)!!
 
 					val userIdCount = BotVotes.userId.count()
+					val votedAtSum = BotVotes.votedAt.sum()
+
 					val topVoterUsers = transaction(Databases.loritta) {
-						BotVotes.slice(BotVotes.userId, userIdCount).selectAll()
+						BotVotes.slice(BotVotes.userId, userIdCount, votedAtSum).selectAll()
 								.groupBy(BotVotes.userId)
-								.orderBy(userIdCount, SortOrder.DESC)
+								.orderBy(
+										userIdCount to SortOrder.DESC,
+										votedAtSum to SortOrder.ASC
+								)
 								.limit(15)
 								.toMutableList()
 					}
-					logger.info { "${topVoterUsers.size}"}
+
 					val message = StringBuilder()
 
 					val topMoneyAsDisplayEntry = "${topVoterUsers[0][userIdCount]} votos"
