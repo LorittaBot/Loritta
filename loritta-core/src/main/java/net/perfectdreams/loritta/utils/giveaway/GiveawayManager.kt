@@ -279,11 +279,13 @@ object GiveawayManager {
             } catch (e: Exception) {
                 if (e is ErrorResponseException) {
                     if (e.errorCode == 10008) { // Mensagem não existe, vamos cancelar o giveaway!
+                        logger.warn { "ErrorResponseException ${e.errorCode} while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
                         cancelGiveaway(giveaway, true)
                         return@launch
                     }
                 }
                 if (e is InsufficientPermissionException) { // Sem permissão, vamos cancelar o giveaway!
+                    logger.warn { "InsufficientPermissionException while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
                     cancelGiveaway(giveaway, true)
                     return@launch
                 }
