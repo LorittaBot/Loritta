@@ -129,7 +129,7 @@ class TwitchAPI {
 
 	private suspend fun waitUntilRatelimitIsLifted() {
 		val delay = ratelimitResetsAt - System.currentTimeMillis()
-		logger.info { "Rate limit atingido! Nós iremos continuar daqui ${delay}ms" }
+		logger.warn { "Rate limit atingido! Nós iremos continuar daqui ${delay}ms" }
 		delay(delay)
 	}
 

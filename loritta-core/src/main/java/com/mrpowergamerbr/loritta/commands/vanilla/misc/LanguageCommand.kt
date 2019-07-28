@@ -96,7 +96,14 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
 			var localeId = "default"
 
-			val newLanguage = validLanguages.firstOrNull { language -> it.reactionEmote.isEmote(language.emoteName) }
+			val newLanguage = validLanguages.firstOrNull { language ->
+				if (language.emoteName.startsWith("<")) {
+					it.reactionEmote.isEmote(language.emoteName.split(":")[2].removeSuffix(">"))
+				} else {
+					it.reactionEmote.isEmote(language.emoteName)
+				}
+			}
+			
 			localeId = newLanguage?.locale?.id ?: localeId
 
 			context.config.localeId = localeId

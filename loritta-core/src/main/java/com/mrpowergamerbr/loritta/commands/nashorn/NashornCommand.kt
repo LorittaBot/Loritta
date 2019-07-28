@@ -8,14 +8,12 @@ import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import jdk.nashorn.api.scripting.ClassFilter
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.bson.types.ObjectId
 import org.graalvm.polyglot.Context
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.script.Invocable
 
 /**
  * Comandos usando a Nashorn Engine
@@ -54,12 +52,15 @@ class NashornCommand : AbstractCommand {
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 
+		val graalContext = Context.newBuilder()
+				.hostClassFilter {
+					it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers") || it.startsWith("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils")
+				}
+				.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
+				.option("js.nashorn-compat", "true")
+				.build()
+
 		if (!useNewAPI) {
-			val factory = NashornScriptEngineFactory()
-
-			val engine = factory.getScriptEngine(NashornClassFilter())
-			val invocable = engine as Invocable
-
 			// Funções inline para facilitar a programação de comandos
 			val inlineMethods = """var nashornUtils = Java.type("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils");
 var loritta=function(){ return nashornUtils.loritta(); };
@@ -82,23 +83,26 @@ var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
 var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
-			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (Nashorn) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
+			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS (Old)) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
 			try {
-				val future = executor.submit(NashornTask(engine, "$blacklisted function nashornCommand(contexto) {\n$inlineMethods\n$javaScript\n}", ogContext, context))
+				val nashornContext = NashornContext(ogContext)
+				val future = executor.submit(
+						NashornTask(
+								graalContext,
+								"(function(contexto) { \n" +
+										"$blacklisted\n" +
+										"$inlineMethods\n" +
+										"$javaScript\n })",
+								ogContext,
+								nashornContext
+						)
+				)
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Throwable) {
 				ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
 			}
 			executor.shutdownNow()
 		} else {
-			val graalContext = Context.newBuilder()
-					.hostClassFilter {
-						it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers")
-					}
-					.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
-					.option("js.nashorn-compat", "true")
-					.build()
-
 			// Funções inline para facilitar a programação de comandos
 			val inlineMethods = """
 				var guild = context.guild;
@@ -115,9 +119,16 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
 			try {
 				val parallaxContext = ParallaxContext(ogContext)
-				val future = executor.submit(ParallaxTask(graalContext, "(function(context) { \n" +
-						"$inlineMethods\n" +
-						"$javaScript\n })", ogContext, parallaxContext))
+				val future = executor.submit(
+						ParallaxTask(
+								graalContext,
+								"(function(context) { \n" +
+										"$inlineMethods\n" +
+										"$javaScript\n })",
+								ogContext,
+								parallaxContext
+						)
+				)
 				future.get(15, TimeUnit.SECONDS)
 			} catch (e: Throwable) {
 				ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
