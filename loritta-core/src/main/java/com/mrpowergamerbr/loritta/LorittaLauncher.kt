@@ -5,8 +5,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
-import kotlinx.coroutines.debug.DebugProbes
-import net.perfectdreams.loritta.utils.CoroutinesBugTest
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -76,23 +74,8 @@ object LorittaLauncher {
 			return
 		}
 
-		try {
-			val json = configurationFile.readText()
-			config = Constants.HOCON_MAPPER.readValue(json)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			System.exit(1) // Sair caso der erro
-			return
-		}
-
-		try {
-			val json = discordConfigurationFile.readText()
-			discordConfig = Constants.HOCON_MAPPER.readValue(json)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			System.exit(1) // Sair caso der erro
-			return
-		}
+		config = readConfigurationFromFile(configurationFile)
+		discordConfig = readConfigurationFromFile(discordConfigurationFile)
 
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
@@ -106,19 +89,22 @@ object LorittaLauncher {
 
 		// Iniciar instância da Loritta
 		loritta = Loritta(discordConfig, config)
-
-		// Coroutines Test Issue - Coroutines stop working after a while
-		if (System.getProperty("loritta.enable.coroutine.debug", "false") == "true") {
-			DebugProbes.install()
-			CoroutinesBugTest().start()
-		}
-
-
 		loritta.start()
 	}
 
-	fun copyFromJar(inputPath: String, outputPath: String) {
+	private fun copyFromJar(inputPath: String, outputPath: String) {
 		val inputStream = LorittaLauncher::class.java.getResourceAsStream(inputPath)
 		File(outputPath).writeBytes(inputStream.readAllBytes())
+	}
+
+	private inline fun <reified T> readConfigurationFromFile(file: File): T {
+		try {
+			val json = file.readText()
+			return Constants.HOCON_MAPPER.readValue<T>(json)
+		} catch (e: IOException) {
+			e.printStackTrace()
+			System.exit(1) // Sair caso der erro
+			throw e
+		}
 	}
 }

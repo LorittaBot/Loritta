@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask.Companion.coroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -136,7 +135,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
             }
 
             // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
-            ConnectionManager.logger.info { "IP Logger detected $url, redirecing to somewhere else!" }
+            ConnectionManager.logger.warn { "IP Logger detected $url, redirecing to somewhere else!" }
             return HttpRequest.get("https://loritta.website")
         }
 
@@ -148,7 +147,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
             }
 
             // This ain't trusted dawg!
-            ConnectionManager.logger.info { "Doing untrusted connection $url, that ain't trusted dawg! Let's proxy it!!" }
+            ConnectionManager.logger.debug { "Doing untrusted connection $url, that ain't trusted dawg! Let's proxy it!!" }
 
             val proxy = loritta.connectionManager.getRandomProxy()
 
@@ -169,7 +168,7 @@ fun URL.openSafeConnection(): URLConnection {
             }
 
             // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
-            ConnectionManager.logger.info { "IP Logger detected ${this}, redirecing to somewhere else!" }
+            ConnectionManager.logger.warn { "IP Logger detected ${this}, redirecing to somewhere else!" }
             return URL("https://loritta.website").openConnection()
         }
 
@@ -181,7 +180,7 @@ fun URL.openSafeConnection(): URLConnection {
             }
 
             // This ain't trusted dawg!
-            ConnectionManager.logger.info { "Doing untrusted connection ${this}, that ain't trusted dawg! Let's proxy it!!" }
+            ConnectionManager.logger.debug { "Doing untrusted connection ${this}, that ain't trusted dawg! Let's proxy it!!" }
 
             val proxy = loritta.connectionManager.getRandomProxy()
 

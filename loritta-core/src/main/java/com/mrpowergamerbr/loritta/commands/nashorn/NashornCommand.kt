@@ -54,7 +54,7 @@ class NashornCommand : AbstractCommand {
 
 		val graalContext = Context.newBuilder()
 				.hostClassFilter {
-					it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers")
+					it.startsWith("com.mrpowergamerbr.loritta.parallax.wrappers") || it.startsWith("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils")
 				}
 				.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
 				.option("js.nashorn-compat", "true")
@@ -89,7 +89,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				val future = executor.submit(
 						NashornTask(
 								graalContext,
-								"(function(context) { \n" +
+								"(function(contexto) { \n" +
 										"$blacklisted\n" +
 										"$inlineMethods\n" +
 										"$javaScript\n })",

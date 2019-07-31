@@ -61,7 +61,6 @@ class MongoServerConfig @BsonCreator constructor(
 	var serverListConfig = ServerListConfig()
 	var economyConfig = EconomyConfig()
 	var miscellaneousConfig = MiscellaneousConfig()
-	var starboardEmbedMessages = mutableListOf<StarboardMessage>() // Quais mensagens correspondem a mensagens no starboard
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
@@ -114,6 +113,4 @@ class MongoServerConfig @BsonCreator constructor(
 			else -> CommandManager.DEFAULT_COMMAND_OPTIONS
 		}
 	}
-
-	class StarboardMessage @BsonCreator constructor(@BsonProperty("embedId") val embedId: String, @BsonProperty("messageId") val messageId: String)
 }

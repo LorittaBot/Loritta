@@ -8,7 +8,8 @@ class QuirkyConfig @JsonCreator constructor(
         val tioDoPave: TioDoPaveConfig,
         val addFanArts: AddFanArtsConfig,
         val changeBanner: ChangeBannerConfig,
-        val topDonatorsRank: TopDonatorsRankConfig
+        val topDonatorsRank: TopDonatorsRankConfig,
+        val topVotersRank: TopVotersRankConfig
 ) {
     class RandomReactionsConfig @JsonCreator constructor(
             val enabled: Boolean,
@@ -56,6 +57,14 @@ class QuirkyConfig @JsonCreator constructor(
     )
 
     class TopDonatorsRankConfig @JsonCreator constructor(
+            val enabled: Boolean,
+            val topRole1: Long,
+            val topRole2: Long,
+            val topRole3: Long,
+            val channels: List<Long>
+    )
+
+    class TopVotersRankConfig @JsonCreator constructor(
             val enabled: Boolean,
             val topRole1: Long,
             val topRole2: Long,

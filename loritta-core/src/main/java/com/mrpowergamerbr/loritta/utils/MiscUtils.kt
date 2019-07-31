@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import org.jooby.Status
 import org.json.XML
 import org.jsoup.Jsoup
+import org.jsoup.UncheckedIOException
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
@@ -58,7 +59,8 @@ object MiscUtils {
 			}
 
 			// Se não encontrar nenhum invite, vamos tentar parsear a página para pegar http redirects no <head> da página
-			val parser = Jsoup.parse(httpRequest.body())
+			// Caso seja uma imagem (ou algo que seja binário) o Jsoup retorna UncheckedIOException
+			val parser = try { Jsoup.parse(httpRequest.body()) } catch (e: UncheckedIOException) { return null }
 			val htmlRedirects = parser.getElementsByTag("meta").filter { it.hasAttr("http-equiv") && it.hasAttr("content") }
 
 			htmlRedirects.forEach {
