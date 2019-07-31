@@ -222,4 +222,16 @@ object Constants {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
+
+	val BURBANK_BIG_CONDENSED_BLACK: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "burbank-big-condensed-black.otf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
+
+	val BURBANK_BIG_CONDENSED_BOLD: Font by lazy {
+		FileInputStream(File(Loritta.ASSETS + "burbank-big-condensed-bold.otf")).use {
+			Font.createFont(Font.TRUETYPE_FONT, it)
+		}
+	}
 }

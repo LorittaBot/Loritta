@@ -5,8 +5,8 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -21,7 +21,6 @@ import java.awt.geom.Path2D
 import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.net.URL
 import java.time.Duration
 import java.time.ZoneId
@@ -117,7 +116,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 				x += 128
 			}
-			nonFeaturedElementsOnLastLine = (x / 128).toInt()
+			nonFeaturedElementsOnLastLine = (x / 128)
 			y + ELEMENT_HEIGHT
 		}
 
@@ -138,13 +137,13 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		graphics.fillRect(512 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING + (PADDING_BETWEEN_ITEMS * 3), 0 + PADDING, 512, 36)
 
 		graphics.color = Color(203, 210, 220)
-		graphics.font = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "burbank-big-condensed-black.otf")).deriveFont(27f)
+		graphics.font = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(27f)
 
-		val subHeaderApplyPath = makeFortniteHeader(graphics.fontMetrics, "ITENS EM DESTAQUE")
+		val subHeaderApplyPath = makeFortniteHeader(graphics.fontMetrics, locale["commands.fortnite.shop.featuredItems"])
 
 		graphics.drawImage(subHeaderApplyPath, PADDING, 0 + PADDING, null)
 
-		val subHeaderApplyPathItems = makeFortniteHeader(graphics.fontMetrics, "ITENS DIÁRIOS")
+		val subHeaderApplyPathItems = makeFortniteHeader(graphics.fontMetrics, locale["commands.fortnite.shop.dailyItems"])
 		graphics.drawImage(subHeaderApplyPathItems, 512 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING, 0 + PADDING, null)
 
 		run {
@@ -200,10 +199,10 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		}
 
 		// burbank-big-condensed-bold.otf
-		graphics.font = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "burbank-big-condensed-bold.otf")).deriveFont(27f)
+		graphics.font = Constants.BURBANK_BIG_CONDENSED_BOLD.deriveFont(27f)
 		graphics.color = Color(60, 60, 60)
 
-		val creatorCodeText = "Creator Code: MrPowerGamerBR"
+		val creatorCodeText = locale["commands.fortnite.shop.creatorCode", loritta.config.fortniteApi.creatorCode]
 		graphics.drawString(
 				creatorCodeText,
 				bufImage.width - graphics.fontMetrics.stringWidth(creatorCodeText) - 15,
@@ -228,7 +227,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		val subHeader = BufferedImage(14 + width + 14 + 14, 36, BufferedImage.TYPE_INT_ARGB)
 		val subHeaderGraphics = subHeader.graphics.apply { enableFontAntiAliasing(this) }
 
-		subHeaderGraphics.font = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "burbank-big-condensed-black.otf")).deriveFont(27f)
+		subHeaderGraphics.font = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(27f)
 
 		subHeaderGraphics.color = Color(83, 104, 137)
 		subHeaderGraphics.fillRect(0, 0, 1024, 36)
@@ -298,7 +297,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		graphics.color = Color.WHITE
 
-		val burbankBig = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "burbank-big-condensed-bold.otf")).deriveFont(15f)
+		val burbankBig = Constants.BURBANK_BIG_CONDENSED_BOLD.deriveFont(15f)
 		graphics.font = burbankBig
 
 		ImageUtils.drawCenteredString(
@@ -312,7 +311,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		graphics.color = Color(0, 0, 0, 255 / 2)
 		graphics.fillRect(2, height - 46, 124, 28)
 
-		val burbankBig2 = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "burbank-big-condensed-bold.otf")).deriveFont(20f)
+		val burbankBig2 = Constants.BURBANK_BIG_CONDENSED_BOLD.deriveFont(20f)
 		graphics.font = burbankBig2
 
 		graphics.color = Color(0, 0, 0, 128)
@@ -348,12 +347,6 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 				name,
 				Rectangle(2, 128 - 30, 124, 33),
 				burbankBig2
-		)
-
-		ImageIO.write(
-				base,
-				"png",
-				File("C:\\Users\\leona\\Documents\\LorittaAssets\\storeitem_${name.toLowerCase()}.png")
 		)
 
 		return base

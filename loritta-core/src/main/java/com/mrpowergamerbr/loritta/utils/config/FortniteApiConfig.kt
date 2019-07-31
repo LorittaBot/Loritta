@@ -5,5 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class FortniteApiConfig @JsonCreator constructor(
         @JsonProperty("token")
-        val token: String
+        val token: String,
+        @JsonProperty("creator-code")
+        val creatorCode: String
 )
