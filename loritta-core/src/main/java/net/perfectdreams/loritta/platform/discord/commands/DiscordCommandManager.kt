@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
 import java.util.*
 import kotlin.reflect.KClass
@@ -377,23 +378,12 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
+                // Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
+                DonateUtils.getRandomDonationMessage(
+                        locale,
+                        donatorPaid
+                )?.let { context.reply(it) }
                 val randomValue = Loritta.RANDOM.nextInt(0, 100)
-
-                if (randomValue == 0) {
-                    context.reply(
-                            LoriReply(
-                                    legacyLocale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta/vote>"],
-                                    "\uD83D\uDE0A"
-                            )
-                    )
-                } else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
-                    context.reply(
-                            LoriReply(
-                                    legacyLocale["LORITTA_PleaseDonate", "<${loritta.config.loritta.website.url}donate>"],
-                                    Emotes.LORI_OWO
-                            )
-                    )
-                }
 
                 if (!context.isPrivateChannel && ev.guild != null) {
                     val nickname = ev.guild.selfMember.nickname
