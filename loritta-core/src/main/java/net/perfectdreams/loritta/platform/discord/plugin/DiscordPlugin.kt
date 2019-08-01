@@ -20,6 +20,7 @@ open class DiscordPlugin : LorittaPlugin() {
         }
         eventListeners.clear()
         onGuildReadyListeners.clear()
+        onGuildMemberLeaveListeners.clear()
     }
 
     fun addEventListener(eventListener: ListenerAdapter) {
