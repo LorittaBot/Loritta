@@ -1,215 +1,221 @@
 package net.perfectdreams.loritta
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.BirthdayConfigs
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.UserSettings
-import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.loritta.tables.Payments
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.CalendarUtils
-import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import java.time.Instant
 import java.util.*
-import kotlin.math.roundToInt
 
 class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	var task: Job? = null
+	suspend fun updateBirthdayRanksForUser(user: User) {
+		val mutualGuilds = lorittaShards.getMutualGuilds(user)
 
-	fun start() {
-		logger.info { "Starting Birthday Rank Task..." }
+		mutualGuilds.forEach {
+			updateBirthdayRank(it)
+		}
+	}
 
-		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
-			while (true) {
-				// Pega os usuários que fazem aniversário entre esse dia e até o fim de (esse dia + 7 dias até meia noite)
-				val startOfThisDay = CalendarUtils.resetToBeginningOfTheDay(Calendar.getInstance())
-				val endOfNextSevenDays = CalendarUtils.resetToEndOfTheDay(
-						Calendar.getInstance().apply {
-							this.add(Calendar.DAY_OF_YEAR, 7)
-						}
-				)
+	suspend fun updateBirthdayRank(guild: Guild) = updateBirthdayRank(guild, loritta.getServerConfigForGuild(guild.id))
 
-				val profiles = transaction(Databases.loritta) {
-					(Profiles innerJoin UserSettings)
-							.select {
-								UserSettings.birthday greaterEq DateTime(Instant.ofEpochMilli(startOfThisDay.timeInMillis)) and
-										(UserSettings.birthday lessEq DateTime(Instant.ofEpochMilli(endOfNextSevenDays.timeInMillis)))
-							}
-							.toMutableList()
-				}
-
-				val configs = transaction(Databases.loritta) {
-					(ServerConfigs innerJoin BirthdayConfigs)
-							.select {
-								BirthdayConfigs.enabled eq true and BirthdayConfigs.channelId.isNotNull()
-							}
-							.toMutableList()
-				}
-
-				for (config in configs) {
-					val guild = lorittaShards.getGuildById(config.id.value) ?: continue
-					val channel = lorittaShards.getTextChannelById(config)
-					val matchingUsers = profiles.filter { guild.getMemberById(it[Profiles]) != null }
-				}
-
-				val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-				if (guild != null) {
-					val role1 = guild.getRoleById(config.topDonatorsRank.topRole1)!!
-					val role2 = guild.getRoleById(config.topDonatorsRank.topRole2)!!
-					val role3 = guild.getRoleById(config.topDonatorsRank.topRole3)!!
-
-					val moneySumId = Payments.money.sum()
-					val mostPayingUsers = transaction(Databases.loritta) {
-						Payments.slice(Payments.userId, moneySumId)
-								.select {
-									Payments.paidAt.isNotNull() and
-											(Payments.reason eq PaymentReason.DONATION)
-								}
-
-								.groupBy(Payments.userId)
-								.orderBy(moneySumId, SortOrder.DESC)
-								.limit(15)
-								.toMutableList()
+	suspend fun updateBirthdayRank(guild: Guild, serverConfig: MongoServerConfig) {
+		logger.info { "Updating birthday rank in $guild..." }
+		val config = transaction(Databases.loritta) {
+			(ServerConfigs innerJoin BirthdayConfigs)
+					.select {
+						BirthdayConfigs.enabled eq true and (ServerConfigs.id eq guild.idLong)
 					}
+					.firstOrNull()
+		} ?: return
 
-					val message = StringBuilder()
+		val channelId = config[BirthdayConfigs.channelId] ?: return
+		val channel = guild.getTextChannelById(channelId) ?: return
 
-					val topMoneyAsDisplayEntry = "R$ ${mostPayingUsers[0][moneySumId]!!.toDouble().roundToInt()}"
-
-					val currentTop1 = guild.getMembersWithRoles(role1).firstOrNull()
-					val currentTop2 = guild.getMembersWithRoles(role2).firstOrNull()
-					val currentTop3 = guild.getMembersWithRoles(role3).firstOrNull()
-
-					// Remover todos que não merece mais
-					if (currentTop1 != null && currentTop1.idLong != mostPayingUsers.getOrNull(0)?.get(Payments.userId)) {
-						guild.removeRoleFromMember(currentTop1, role1).await()
+		val profiles = transaction(Databases.loritta) {
+			(Profiles innerJoin UserSettings)
+					.select {
+						UserSettings.birthday.isNotNull() // TODO: Melhorar verificação para pegar apenas o que a gente realmente se interessa
 					}
-					if (currentTop2 != null && currentTop2.idLong != mostPayingUsers.getOrNull(1)?.get(Payments.userId)) {
-						guild.removeRoleFromMember(currentTop2, role2).await()
-					}
-					if (currentTop3 != null && currentTop3.idLong != mostPayingUsers.getOrNull(2)?.get(Payments.userId)) {
-						guild.removeRoleFromMember(currentTop3, role3).await()
-					}
+					.toMutableList()
+		}
 
-					mostPayingUsers.forEachIndexed { index, entry ->
-						val userId = entry[Payments.userId]
-						val user = guild.getMemberById(entry[Payments.userId])
+		val locale = loritta.getLocaleById(serverConfig.localeId)
 
-						if (user != null) {
-							val newRoles = user.roles.toMutableList()
+		// Matching Users = People that are on the server, wow!
+		val matchingUsers = profiles.filter { guild.getMemberById(it[Profiles.id].value) != null }
 
-							newRoles.remove(role1)
-							newRoles.remove(role2)
-							newRoles.remove(role3)
+		val usersHavingBirthdayToday = getUsersHavingBirthdayOnDate(matchingUsers, 0)
+		val usersHavingInOneDay = getUsersHavingBirthdayOnDate(matchingUsers, 1)
+		val usersHavingInTwoDays = getUsersHavingBirthdayOnDate(matchingUsers, 2)
+		val usersHavingInThreeDays = getUsersHavingBirthdayOnDate(matchingUsers, 3)
+		val usersHavingInFourDays = getUsersHavingBirthdayOnDate(matchingUsers, 4)
+		val usersHavingInFiveDays = getUsersHavingBirthdayOnDate(matchingUsers, 5)
+		val usersHavingInSixDays = getUsersHavingBirthdayOnDate(matchingUsers, 6)
 
-							if (index == 0) {
-								if (!newRoles.contains(role1)) {
-									newRoles.add(role1)
-								}
-							} else if (index == 1) {
-								if (!newRoles.contains(role2)) {
-									newRoles.add(role2)
-								}
-							} else if (index == 2) {
-								if (!newRoles.contains(role3)) {
-									newRoles.add(role3)
-								}
-							}
+		val roles = config[BirthdayConfigs.roles]
+		if (roles != null) {
+			val birthdayRoles = roles.mapNotNull { guild.getRoleById(it) }
 
-							if (!(newRoles.containsAll(user.roles) && user.roles.containsAll(newRoles)))
-								guild.modifyMemberRoles(user, newRoles).await()
-						}
+			if (birthdayRoles.isNotEmpty()) {
+				// Remover cargos de usuários que não estão fazendo mais aniversário
+				val membersWithBirthdayRoles = guild.getMembersWithRoles(birthdayRoles)
 
-						val rankEmoji = when (index) {
-							0 -> "<:nothing:592370648031166524>\uD83E\uDD47"
-							1 -> "<:nothing:592370648031166524>\uD83E\uDD48"
-							2 -> "<:nothing:592370648031166524>\uD83E\uDD49"
-							3 -> "<:nothing:592370648031166524><:kawaii_four:542823233448050688>"
-							4 -> "<:nothing:592370648031166524><a:kawaii_five:542823247826386997>"
-							5 -> "<:nothing:592370648031166524><:kawaii_six:542823279858286592>"
-							6 -> "<:nothing:592370648031166524><a:kawaii_seven:542823307414601734>"
-							7 -> "<:nothing:592370648031166524><:kawaii_eight:542823334652411936>"
-							8 -> "<:nothing:592370648031166524><:kawaii_nine:542823384917213200>"
-							9 -> "<:kawaii_one:542823112220344350><a:kawaii_zero:542823087649849414>"
-							10 -> "<:kawaii_one:542823112220344350><:kawaii_one:542823112220344350>"
-							11 -> "<:kawaii_one:542823112220344350><a:kawaii_two:542823168465829907>"
-							12 -> "<:kawaii_one:542823112220344350><a:kawaii_three:542823194445348885>"
-							13 -> "<:kawaii_one:542823112220344350><:kawaii_four:542823233448050688>"
-							14 -> "<:kawaii_one:542823112220344350><a:kawaii_five:542823247826386997>"
-							15 -> "<:kawaii_one:542823112220344350><:kawaii_six:542823279858286592>"
-							16 -> "<:kawaii_one:542823112220344350><a:kawaii_seven:542823307414601734>"
-							17 -> "<:kawaii_one:542823112220344350><:kawaii_eight:542823334652411936>"
-							18 -> "<:kawaii_one:542823112220344350><:kawaii_nine:542823384917213200>"
-							19 -> "<a:kawaii_two:542823168465829907><a:kawaii_zero:542823087649849414>"
-							else -> RuntimeException("There is >$index entries, but we only support up to 19!")
-						}
-						val badgeEmoji = if (user != null) {
-							if (guild.boosters.contains(user)) {
-								"<:lori_boost:588421112786976791>"
-							} else {
-								"<:nothing:592370648031166524>"
-							}
-						} else {
-							"<:nothing:592370648031166524>"
-						}
-						message.append(rankEmoji)
-						message.append(badgeEmoji)
-						message.append(" • ")
-						val moneyDisplay = "R$ ${entry[moneySumId]!!.toDouble().roundToInt()}"
-						message.append("`${moneyDisplay.padEnd(topMoneyAsDisplayEntry.length, ' ')}` - ")
-						message.append("**")
-						if (user != null) {
-							message.append(user.asMention)
-						} else {
-							val globalUser = lorittaShards.getUserById(userId)
-							if (globalUser != null) {
-								message.append("${globalUser.name.stripCodeMarks()}#${globalUser.discriminator}")
-							} else {
-								message.append(userId.toString())
-							}
-						}
-						message.append("**")
-						message.append("\n")
-					}
-
-					for (channelId in config.topDonatorsRank.channels) {
-						val channel = lorittaShards.getTextChannelById(channelId.toString())
-
-						if (channel != null) {
-							val loriMessage = channel.history.retrievePast(1)
-									.await()
-									.firstOrNull()
-
-							if (loriMessage?.author?.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
-								loriMessage.editMessage(message.toString()).await()
-							}
-						}
+				val usersWithBirthdayRolesButShouldntHaveThem = membersWithBirthdayRoles.filterNot { member ->
+					usersHavingBirthdayToday.any {
+						it[Profiles.id].value == member.idLong
 					}
 				}
 
-				delay(60_000)
+				usersWithBirthdayRolesButShouldntHaveThem.forEach {
+					guild.modifyMemberRoles(
+							it,
+							it.roles.toMutableList().apply {
+								this.removeAll(birthdayRoles)
+							}
+					).await()
+				}
+
+				// Dar cargos de aniversariantes para quem merece
+				usersHavingBirthdayToday.forEach {
+					val member = guild.getMemberById(it[Profiles.id].value) ?: return@forEach
+
+					val rolesMissing = birthdayRoles.filterNot { member.roles.contains(it) }
+
+					if (rolesMissing.isNotEmpty())
+						guild.modifyMemberRoles(
+								member,
+								member.roles.toMutableList().apply {
+									this.addAll(rolesMissing)
+								}
+						).await()
+				}
 			}
+		}
+
+		val messages = channel.history.retrievePast(7).await()
+
+		val todayBirthday = messages.getOrNull(0)
+		val inOneDay = messages.getOrNull(1)
+		val inTwoDays = messages.getOrNull(2)
+		val inThreeDays = messages.getOrNull(3)
+		val inFourDays = messages.getOrNull(4)
+		val inFiveDays = messages.getOrNull(5)
+		val inSixDays = messages.getOrNull(6)
+
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<:lori_sorriso:556525532359950337> **${locale["loritta.modules.birthday.usersBirthdayInXDaysPlural", 6]}:** ", usersHavingInSixDays, locale, serverConfig.commandPrefix),
+				channel,
+				inSixDays
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<:lori_happy:585550787426648084> **${locale["loritta.modules.birthday.usersBirthdayInXDaysPlural", 5]}:** ", usersHavingInFiveDays, locale, serverConfig.commandPrefix),
+				channel,
+				inFiveDays
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<:lori_cute:585549695737266186> **${locale["loritta.modules.birthday.usersBirthdayInXDaysPlural", 4]}:** ", usersHavingInFourDays, locale, serverConfig.commandPrefix),
+				channel,
+				inFourDays
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<:lori_very_owo:562303822978875403> **${locale["loritta.modules.birthday.usersBirthdayInXDaysPlural", 3]}:** ", usersHavingInThreeDays, locale, serverConfig.commandPrefix),
+				channel,
+				inThreeDays
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<a:lori_temmie:515330130495799307> **${locale["loritta.modules.birthday.usersBirthdayInXDaysPlural", 2]}:** ", usersHavingInTwoDays, locale, serverConfig.commandPrefix),
+				channel,
+				inTwoDays
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("<a:owo_whats_this:515329346194636811> **${locale["loritta.modules.birthday.usersBirthdayTomorrow"]}:** ", usersHavingInOneDay, locale, serverConfig.commandPrefix),
+				channel,
+				inOneDay
+		)
+
+		editMessageOrSendIfNull(
+				buildBirthdayMessage("\uD83C\uDF70 **${locale["loritta.modules.birthday.usersBirthdayToday"]}:** ", usersHavingBirthdayToday, locale, serverConfig.commandPrefix),
+				channel,
+				todayBirthday
+		)
+	}
+
+
+	private fun getUsersHavingBirthdayOnDate(users: List<ResultRow>, skipDays: Int): List<ResultRow> {
+		return users.filter {
+			val date = it[UserSettings.birthday] ?: return@filter false
+
+			val beginningOfTheDay = DateTime.now().toMutableDateTime()
+					.dayOfYear().add(skipDays)
+
+			// Nós utilizamos "isEqual" já que o tempo carregado pelo Exposed sempre será "00:00"
+			date.monthOfYear().get() == beginningOfTheDay.monthOfYear().get() && date.dayOfMonth().get() == beginningOfTheDay.dayOfMonth().get()
+		}
+	}
+
+	private fun buildBirthdayMessage(message: String, users: List<ResultRow>, locale: BaseLocale, commandPrefix: String): String {
+		val stringBuilder = StringBuilder()
+		stringBuilder.append(message)
+		if (users.isEmpty()) {
+			stringBuilder.append("*")
+			stringBuilder.append(
+					locale[
+							"loritta.modules.birthday.nobodyHasBirthdaySetYourOwn",
+							"`" + locale["loritta.modules.birthday.birthdayCommandExample", commandPrefix] + "`"
+					]
+			)
+			stringBuilder.append("*")
+		} else
+			stringBuilder.append(
+					users.joinToString(", ",
+							transform = {
+								val birthday = DateTime.now().year - (it[UserSettings.birthday]?.year ?: 0)
+								locale["loritta.modules.birthday.inlineBirthday", "<@${it[Profiles.id].value}>", birthday]
+							}
+					)
+			)
+
+		return stringBuilder.toString()
+	}
+
+	private suspend fun editMessageOrSendIfNull(text: String, channel: TextChannel, message: Message?) {
+		if (message != null) {
+			if (message.contentRaw != text)
+				message.editMessage(text).await()
+		} else {
+			channel.sendMessage(text).await()
 		}
 	}
 }
