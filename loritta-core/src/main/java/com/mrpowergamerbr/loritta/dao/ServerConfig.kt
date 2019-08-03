@@ -11,4 +11,5 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	val guildId = this.id.value
 	var donationKey by DonationKey optionalReferencedOn ServerConfigs.donationKey
 	var donationConfig by DonationConfig optionalReferencedOn ServerConfigs.donationConfig
+	var birthdayConfig by BirthdayConfig optionalReferencedOn ServerConfigs.birthdayConfig
 }

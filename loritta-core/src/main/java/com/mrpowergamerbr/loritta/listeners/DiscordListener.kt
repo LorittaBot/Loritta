@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
@@ -205,12 +206,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Deletar configurações
 				DiscordListener.logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
-				DiscordListener.logger.trace { "Deleting ${e.guild} donation config..."}
+				DiscordListener.logger.trace { "Deleting ${e.guild} configs..."}
 				val donationConfig = serverConfig?.donationConfig
+				val birthdayConfig = serverConfig?.birthdayConfig
 
 				DiscordListener.logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 				donationConfig?.delete()
+				birthdayConfig?.delete()
 
 				DiscordListener.logger.trace { "Deleting all ${e.guild}'s giveaways..."}
 				val allGiveaways = Giveaway.find {
@@ -335,6 +338,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
 				}
+
+				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+					it.onGuildMemberJoinListeners
+				}.forEach {
+					it.invoke(event.member, event.guild, conf)
+				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
@@ -366,6 +375,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (conf.joinLeaveConfig.isEnabled) {
 					WelcomeModule.handleLeave(event, conf)
+				}
+
+				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+					it.onGuildMemberLeaveListeners
+				}.forEach {
+					it.invoke(event.member, event.guild, conf)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
@@ -517,19 +532,25 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
+			}
 
-				val allActiveGiveaways = transaction(Databases.loritta) {
-					Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
-				}
+			val allActiveGiveaways = transaction(Databases.loritta) {
+				Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
+			}
 
-				allActiveGiveaways.forEach {
-					try {
-						if (GiveawayManager.giveawayTasks[it.id.value] == null)
-							GiveawayManager.createGiveawayJob(it)
-					} catch (e: Exception) {
-						logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
-					}
+			allActiveGiveaways.forEach {
+				try {
+					if (GiveawayManager.giveawayTasks[it.id.value] == null)
+						GiveawayManager.createGiveawayJob(it)
+				} catch (e: Exception) {
+					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
 				}
+			}
+
+			loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+				it.onGuildReadyListeners
+			}.forEach {
+				it.invoke(event.guild, serverConfig)
 			}
 		}
 	}

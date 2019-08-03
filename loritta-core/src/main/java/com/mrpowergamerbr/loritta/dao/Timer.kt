@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import mu.KotlinLogging
+import net.perfectdreams.loritta.utils.CalendarUtils
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
@@ -144,12 +145,7 @@ class Timer(id: EntityID<Long>) : LongEntity(id) {
 	}
 
 	fun getStartOfDay(): Long {
-		val calendar = Calendar.getInstance()
-		calendar.set(Calendar.HOUR_OF_DAY, 0)
-		calendar.set(Calendar.MINUTE, 0)
-		calendar.set(Calendar.SECOND, 0)
-		calendar.set(Calendar.MILLISECOND, 0)
-
+		val calendar = CalendarUtils.resetToBeginningOfTheDay(Calendar.getInstance())
 		return calendar.timeInMillis
 	}
 
