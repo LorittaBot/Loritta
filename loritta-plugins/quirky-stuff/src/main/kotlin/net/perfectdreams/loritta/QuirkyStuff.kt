@@ -85,7 +85,9 @@ class QuirkyStuff : DiscordPlugin() {
         birthdaysRank = BirthdaysRank(
                 this,
                 config
-        )
+        ).apply {
+            this.start()
+        }
 
         registerEventListeners(
                 AddReactionListener(config),
@@ -130,6 +132,7 @@ class QuirkyStuff : DiscordPlugin() {
         changeBanner?.task?.cancel()
         topDonatorsRank?.task?.cancel()
         topVotersRank?.task?.cancel()
+        birthdaysRank?.task?.cancel()
     }
 
     companion object {

@@ -16,7 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
@@ -27,11 +26,25 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import java.util.*
 
 class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+	}
+
+	var task: Job? = null
+
+	fun start() {
+		logger.info { "Starting Birthday Rank Task..." }
+
+		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
+			while (true) {
+				val timeUntilMidnight = CalendarUtils.getTimeUntilMidnight()
+				logger.info { "Waiting ${timeUntilMidnight}ms until midnight to update the birthday rank task"}
+				delay(timeUntilMidnight)
+				updateAllBirthdayRanks()
+			}
+		}
 	}
 
 	suspend fun updateBirthdayRanksForUser(user: User) {
@@ -39,6 +52,23 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 		mutualGuilds.forEach {
 			updateBirthdayRank(it)
+		}
+	}
+
+	suspend fun updateAllBirthdayRanks() {
+		val resultRows = transaction(Databases.loritta) {
+			(ServerConfigs innerJoin BirthdayConfigs)
+					.select {
+						BirthdayConfigs.enabled eq true
+					}
+		}
+
+		for (resultRow in resultRows) {
+			val guildId = resultRow[ServerConfigs.id].value
+			val guild = lorittaShards.getGuildById(guildId) ?: continue
+			val serverConfig = loritta.getServerConfigForGuild(guildId.toString())
+
+			updateBirthdayRank(guild, serverConfig, resultRow)
 		}
 	}
 
@@ -54,6 +84,10 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 					.firstOrNull()
 		} ?: return
 
+		updateBirthdayRank(guild, serverConfig, config)
+	}
+
+	suspend  fun updateBirthdayRank(guild: Guild, serverConfig: MongoServerConfig, config: ResultRow) {
 		val channelId = config[BirthdayConfigs.channelId] ?: return
 		val channel = guild.getTextChannelById(channelId) ?: return
 
