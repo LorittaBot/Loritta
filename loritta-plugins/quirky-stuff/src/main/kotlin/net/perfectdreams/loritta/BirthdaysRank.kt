@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.UserSettings
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -246,8 +247,7 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 	private suspend fun editMessageOrSendIfNull(text: String, channel: TextChannel, message: Message?) {
 		if (message != null) {
-			if (message.contentRaw != text)
-				message.editMessage(text).await()
+			message.editMessageIfContentWasChanged(text)
 		} else {
 			channel.sendMessage(text).await()
 		}

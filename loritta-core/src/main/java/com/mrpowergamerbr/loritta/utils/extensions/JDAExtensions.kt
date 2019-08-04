@@ -39,6 +39,18 @@ suspend fun Message.edit(content: Message, clearReactions: Boolean = true): Mess
 }
 
 /**
+ * Edits the message, but only if the content was changed
+ *
+ * This reduces the number of API requests needed
+ */
+suspend fun Message.editMessageIfContentWasChanged(message: String): Message {
+	if (this.contentRaw != message)
+		return this
+
+	return this.editMessage(message).await()
+}
+
+/**
  * Adds the [emotes] to the [message] if needed, this avoids a lot of unnecessary API requests
  */
 suspend fun Message.doReactions(vararg emotes: String): Message {
