@@ -4,8 +4,10 @@ import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaAnswer
@@ -18,6 +20,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.bson.types.ObjectId
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = CommandCategory.FUN) {
 	companion object {
@@ -350,7 +353,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 						val totalUpvotes = ((answer.upvotes.size - answer.downvotes.size) + lowestVotes)
 						val relative = answer.upvotes.size - answer.downvotes.size
 
-						if (-15 > relative) { // Se a resposta possui mais de -15 downvotes totais, ela será completamente ignorada pela Gabriela
+						if (-7 > relative) { // Se a resposta possui mais de -7 downvotes totais, ela será completamente ignorada pela Gabriela
 							continue
 						}
 
@@ -459,6 +462,73 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 		}
 
 		functions.onReactionAddByAuthor = {
+			// VER INFORMAÇÕES SOBRE A MENSAGEM
+			if (it.reactionEmote.isEmote("⁉") && answer != null) {
+				val user = lorittaShards.getUserById(answer.submittedBy)
+
+				val userMessage = if (user != null) {
+					"${user.name}#${user.discriminator} (${user.idLong})"
+				} else "Desconhecido (${answer.submittedBy})"
+
+				val gabrielaMessageInfo = context.reply(
+						LoriReply(
+								"Mensagem enviada por `$userMessage`"
+						),
+						LoriReply(
+								"Upvotes: ${answer.upvotes.size}",
+								"\uD83D\uDC4D",
+								mentionUser = false
+						),
+						LoriReply(
+								"Upvotes: ${answer.upvotes.size}",
+								"\uD83D\uDC4E",
+								mentionUser = false
+						)
+				)
+
+				gabrielaMessageInfo.onReactionAdd(context) {
+					document ?: return@onReactionAdd
+					val member = it.member ?: return@onReactionAdd
+
+					if (loritta.config.isOwner(member.idLong)) {
+						if (it.reactionEmote.isEmote("\uD83D\uDE14") || it.reactionEmote.isEmote("\uD83D\uDE08")) { // pensive
+							document.answers.remove(answer)
+
+							// upsert = Se já existe, apenas dê replace, se não existe, insira
+							val updateOptions = UpdateOptions().upsert(true)
+							loritta.gabrielaMessagesColl.replaceOne(
+									Filters.eq("_id", document.messageId),
+									document,
+									updateOptions
+							)
+
+							if (it.reactionEmote.isEmote("\uD83D\uDE14")) { // pensive
+								context.reply(
+										LoriReply(
+												"Mensagem apagada com sucesso!"
+										)
+								)
+							} else if (it.reactionEmote.isEmote("\uD83D\uDE08")) { // smiling imp
+								val profile = LorittaLauncher.loritta.getLorittaProfile(answer.submittedBy.toLong())
+
+								if (profile != null) {
+									transaction(Databases.loritta) {
+										profile.isBanned = true
+										profile.bannedReason = "Adicionar mensagens inapropriadas na Gabriela: \"${answer.answer}\""
+									}
+								}
+
+								context.reply(
+										LoriReply(
+												"Mensagem apagada com sucesso, usuário permanentemente banido de usar a Loritta!"
+										)
+								)
+							}
+						}
+					}
+				}
+			}
+
 			// ENSINAR
 			if (it.reactionEmote.isEmote("\uD83D\uDCA1")) {
 				val ask = context.reply(
@@ -541,6 +611,9 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 				}
 			}
 		}
+
+		if (answer != null)
+			message.addReaction("⁉").queue()
 
 		message.addReaction("\uD83D\uDCA1").queue()
 		if (allowUpvoteDownvote) {
