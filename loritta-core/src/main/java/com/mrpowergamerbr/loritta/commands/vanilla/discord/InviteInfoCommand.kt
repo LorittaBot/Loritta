@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
@@ -20,7 +20,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/coredasantigas")
+		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -72,7 +72,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 				embed.addField("\uD83D\uDC65 ${locale["SERVERINFO_MEMBERS"]}", "\uD83D\uDC81 **${locale["INVITEINFO_Active"]}:** ${approxPresenceCount}\n\uD83D\uDE34 **Offline:** ${approxMemberCount}", true)
 
 				if (features.size() == 0) {
-					embed.addField("✨ ${locale["SERVERINFO_Features"]}", "${locale["INVITEINFO_None"]}...", true) // ID da Guild
+					embed.addField("✨ ${locale["SERVERINFO_Features"]}", locale["INVITEINFO_None"], true) // ID da Guild
 				} else {
 					embed.addField("✨ ${locale["SERVERINFO_Features"]}", features.joinToString(", ", transform = { it.string }), true) // ID da Guild
 				}
@@ -93,6 +93,14 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 					val id = inviter["id"].string
 
 					embed.addField("\uD83D\uDC4B ${locale["INVITEINFO_WhoInvited"]}", "`$username#$discriminator` ($id)", true)
+				}
+
+				val discordGuild = lorittaShards.getGuildById(id)
+
+				if (discordGuild != null) {
+					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.discord.inviteinfo.inThisServer"]}")
+				} else {
+					embed.setFooter("\uD83D\uDE2D ${context.locale["commands.discord.inviteinfo.notOnTheServer"]}")
 				}
 
 				context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
