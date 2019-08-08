@@ -150,6 +150,10 @@ abstract class ProtectedView : AbstractView() {
 			req.session().unset("discordAuth")
 			res.redirect(loritta.discordConfig.discord.authorizationUrl)
 			"Redirecionando..."
+		} catch (e: TemmieDiscordAuth.UnauthorizedException) {
+			req.session().unset("discordAuth")
+			res.redirect(loritta.discordConfig.discord.authorizationUrl)
+			"Redirecionando..."
 		}
 	}
 
