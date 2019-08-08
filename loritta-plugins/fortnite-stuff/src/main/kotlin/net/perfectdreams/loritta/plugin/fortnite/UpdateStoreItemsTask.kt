@@ -6,16 +6,19 @@ import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteConfigs
+import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteServerConfigs
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.geom.Point2D
@@ -25,6 +28,7 @@ import java.net.URL
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 
 class UpdateStoreItemsTask(val m: FortniteStuff) {
@@ -34,19 +38,23 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		private val PADDING_BETWEEN_SECTIONS = 42
 		private val PADDING_BETWEEN_ITEMS = 8
 		private val ELEMENT_HEIGHT = 144
+		private val CHECK_TIMES = 900
+		private val CHECK_TIME_DELAY = 30_000L
 	}
 
 	var task: Job? = null
-	var storeImage: ByteArray? = null
+	// Locale ID -> ByteArray
+	var storeImages = ConcurrentHashMap<String, ByteArray>()
+	var currentShopPayloadHash: Int = 0
 
 	fun start() {
 		logger.info { "Starting Update Fortnite Store Items Task..." }
 
-		generateAndSaveStoreImage(loritta.getLocaleById("default"))
-
 		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
 			while (true) {
-				val zoneId = ZoneId.of("UTC");
+				updateFortniteShop()
+
+				val zoneId = ZoneId.of("UTC")
 
 				val now = ZonedDateTime.now(zoneId)
 				val tomorrow = now.toLocalDate().plusDays(1)
@@ -57,27 +65,86 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 				logger.info { "Waiting until ${millisecondsUntilTomorrow}ms for the next update..." }
 				delay(millisecondsUntilTomorrow)
-				logger.info { "Updating Fortnite Shop..." }
-
-				generateAndSaveStoreImage(loritta.getLocaleById("default"))
 			}
 		}
 	}
 
-	fun generateAndSaveStoreImage(locale: BaseLocale) {
+	private suspend fun updateFortniteShop() {
+		val oldShopPayloadHash = currentShopPayloadHash
+
+		logger.info { "Updating Fortnite Shop... Checking $CHECK_TIMES times delaying ${CHECK_TIME_DELAY}ms until we get a new payload... Current payload hash is $oldShopPayloadHash" }
+
+		for (x in 1..CHECK_TIMES) {
+			generateAndSaveStoreImage(loritta.getLocaleById(Constants.DEFAULT_LOCALE_ID))
+
+			if (oldShopPayloadHash != currentShopPayloadHash)
+				break
+
+			logger.warn { "Tried checking new Fortnite Shop, but it is still the old shop! Rechecking in ${CHECK_TIME_DELAY}ms..." }
+			delay(CHECK_TIME_DELAY)
+		}
+
+		if (oldShopPayloadHash == currentShopPayloadHash)
+			logger.warn { "Check threshold finished, but shop wasn't updated yet... Bug?" }
+		else {
+			logger.info { "Shop updated successfully! New hash is $currentShopPayloadHash - We will now update the other locales..." }
+
+			loritta.locales.forEach { localeId, locale ->
+				if (localeId != Constants.DEFAULT_LOCALE_ID) // Não queremos gerar a loja default novamente, ela já foi gerada!
+					generateAndSaveStoreImage(locale)
+			}
+
+			if (oldShopPayloadHash == 0) {
+				logger.info { "All shops were successfully updated! However the oldShopPayloadHash = 0, so we don't broadcast it..." }
+			} else {
+				logger.info { "All shops were successfully updated! Broadcasting to every guild..." }
+
+				broadcastNewFortniteShopItems()
+			}
+		}
+	}
+
+	fun broadcastNewFortniteShopItems() {
+		val guildsWithNotificationsEnabled = transaction(Databases.loritta) {
+			(FortniteServerConfigs innerJoin FortniteConfigs).select {
+				FortniteConfigs.advertiseNewItems eq true and FortniteConfigs.channelToAdvertiseNewItems.isNotNull()
+			}.toMutableList()
+		}
+
+		guildsWithNotificationsEnabled.forEach {
+			val guild = lorittaShards.getGuildById(it[FortniteServerConfigs.id].value) ?: return@forEach
+			val channel = guild.getTextChannelById(it[FortniteConfigs.channelToAdvertiseNewItems] ?: return@forEach) ?: return@forEach
+			val localeId = loritta.getServerConfigForGuild(guild.id).localeId
+
+			val storeImage = when {
+				m.updateStoreItems?.storeImages?.containsKey(localeId) == true -> m.updateStoreItems!!.storeImages[localeId]
+				m.updateStoreItems?.storeImages?.containsKey(Constants.DEFAULT_LOCALE_ID) == true -> m.updateStoreItems!!.storeImages[Constants.DEFAULT_LOCALE_ID]
+				else -> return@forEach
+			} ?: return@forEach
+
+			channel.sendFile(
+					storeImage,
+					"fortnite-shop.png"
+			).queue()
+		}
+	}
+
+	private fun generateAndSaveStoreImage(locale: BaseLocale) {
 		val storeBufferedImage = generateStoreImage(locale)
 		val baos = ByteArrayOutputStream()
 
 		ImageIO.write(storeBufferedImage, "png", baos)
-		storeImage = baos.toByteArray()
+		storeImages[locale.id] = baos.toByteArray()
 	}
 
-	fun generateStoreImage(locale: BaseLocale): BufferedImage {
+	private fun generateStoreImage(locale: BaseLocale): BufferedImage {
 		val width = 1024 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING + (PADDING_BETWEEN_ITEMS * 4)
 
-		val shop = HttpRequest.get("https://fnapi.ga/api/shop?lang=ptbr")
+		val shop = HttpRequest.get("https://fnapi.ga/api/shop?lang=${locale["commands.fortnite.shop.localeId"]}")
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
+
+		currentShopPayloadHash = shop.hashCode()
 
 		val parse = jsonParser.parse(shop)
 		val data = parse["data"].array
@@ -212,7 +279,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return bufImage
 	}
 
-	fun enableFontAntiAliasing(graphics: Graphics): Graphics2D {
+	private fun enableFontAntiAliasing(graphics: Graphics): Graphics2D {
 		graphics as Graphics2D
 		graphics.setRenderingHint(
 				RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -220,7 +287,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return graphics
 	}
 
-	fun makeFortniteHeader(fontMetrics: FontMetrics, str: String): BufferedImage {
+	private fun makeFortniteHeader(fontMetrics: FontMetrics, str: String): BufferedImage {
 		val header = str
 		val width = fontMetrics.stringWidth(header)
 
@@ -251,8 +318,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return subHeaderApplyPath
 	}
 
-	fun createItemBox(itemImageUrl: String, name: String, rarity: String, price: Int): BufferedImage {
-		var height = 144
+	private fun createItemBox(itemImageUrl: String, name: String, rarity: String, price: Int): BufferedImage {
+		val height = 144
 
 		// rarity = common, uncommon, rare, epic, legendary, marvel
 		val base = BufferedImage(128, 144, BufferedImage.TYPE_INT_ARGB)
