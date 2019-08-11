@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 
@@ -29,6 +30,9 @@ class ExperienceModule : MessageReceivedModule {
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+		if (!FeatureFlags.isEnabled("experience-gain"))
+			return false
+
 		// (copyright Loritta™)
 		var newProfileXp = lorittaProfile.xp
 		var lastMessageSentHash: Int? = null
@@ -70,9 +74,11 @@ class ExperienceModule : MessageReceivedModule {
 
 					val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
 
-					mutex.withLock {
-						transaction(Databases.loritta) {
-							profile.xp += gainedXp
+					if (FeatureFlags.isEnabled("experience-gain-locally")) {
+						mutex.withLock {
+							transaction(Databases.loritta) {
+								profile.xp += gainedXp
+							}
 						}
 					}
 				}
@@ -82,11 +88,13 @@ class ExperienceModule : MessageReceivedModule {
 		if (lastMessageSentHash != null && lorittaProfile.xp != newProfileXp) {
 			val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
 
-			mutex.withLock {
-				transaction(Databases.loritta) {
-					lorittaProfile.lastMessageSentHash = lastMessageSentHash
-					lorittaProfile.xp = newProfileXp
-					lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+			if (FeatureFlags.isEnabled("experience-gain-globally")) {
+				mutex.withLock {
+					transaction(Databases.loritta) {
+						lorittaProfile.lastMessageSentHash = lastMessageSentHash
+						lorittaProfile.xp = newProfileXp
+						lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+					}
 				}
 			}
 		}
