@@ -19,11 +19,13 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -278,22 +280,46 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val couldntEditChannels = mutableListOf<GuildChannel>()
 
 			// E agora vamos pegar todos os canais de texto do servidor
-			for (textChannel in context.guild.textChannels) {
-				if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
-					val permissionOverride = textChannel.getPermissionOverride(mutedRole)
-					if (permissionOverride == null) { // Se é null...
-						textChannel.createPermissionOverride(mutedRole)
-								.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-								.queue()
-					} else {
-						if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-							permissionOverride.manager
-									.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-									.queue()
+			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
+				var processedRequests = 0
+				for (textChannel in context.guild.textChannels) {
+					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
+						if (permissionOverride == null) { // Se é null...
+							textChannel.createPermissionOverride(mutedRole)
+									.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+							processedRequests++
+						} else {
+							if (!permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
+								permissionOverride.manager
+										.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								processedRequests++
+							}
 						}
+					} else {
+						couldntEditChannels.add(textChannel)
 					}
-				} else {
-					couldntEditChannels.add(textChannel)
+				}
+			} else {
+				for (textChannel in context.guild.textChannels) {
+					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
+						if (permissionOverride == null) { // Se é null...
+							textChannel.createPermissionOverride(mutedRole)
+									.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+									.queue()
+						} else {
+							if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
+								permissionOverride.manager
+										.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+										.queue()
+							}
+						}
+					} else {
+						couldntEditChannels.add(textChannel)
+					}
 				}
 			}
 
