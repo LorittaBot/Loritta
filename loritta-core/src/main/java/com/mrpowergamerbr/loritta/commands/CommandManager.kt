@@ -148,7 +148,7 @@ class CommandManager {
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		commandMap.add(EmojiSearchCommand())
+		// commandMap.add(EmojiSearchCommand())
 		commandMap.add(EncodeCommand())
 		commandMap.add(LyricsCommand())
 
