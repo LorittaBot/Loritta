@@ -426,7 +426,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val diff = System.currentTimeMillis() - lastUpdate
 
 		if (MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
-			logger.debug { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
+			logger.info { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
 
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 			val currentJob = memberCounterUpdateJobs[textChannel.idLong]
@@ -456,9 +456,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 
 		val locale = loritta.getLocaleById(serverConfig.localeId)
-		logger.debug { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
+		logger.info { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
 		logger.trace { "Member Counter Theme = ${memberCounterConfig.theme}"}
-		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Formatted Topic = $formattedTopic" }
 
