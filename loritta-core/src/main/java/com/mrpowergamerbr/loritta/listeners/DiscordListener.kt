@@ -95,7 +95,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${lines.take(3).joinToString("\n")}")
 		} else {
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${buffer.readUtf8()}")
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n$input")
 		}
 	}
 
