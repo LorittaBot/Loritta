@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -236,23 +237,23 @@ object GiveawayManager {
 
                     // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
                     when {
-                        5_000 >= diff -> {
+                        5_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 5s!) - Giveaway will be finished in ${diff}ms" }
                             delay(1_000) // a cada 1 segundo
                         }
-                        15_000 >= diff -> {
+                        15_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 2500ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
                             delay(2_500) // a cada 2.5 segundos
                         }
-                        30_000 >= diff -> {
+                        30_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
                             delay(10_000) // a cada 10 segundos
                         }
-                        60_000 >= diff -> {
+                        60_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 15000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
                             delay(15_000) // a cada 15 segundos
                         }
-                        3_600_000 >= diff -> {
+                        3_600_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
                             // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
                             // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
                             // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"

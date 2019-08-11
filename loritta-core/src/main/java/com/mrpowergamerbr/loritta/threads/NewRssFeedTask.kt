@@ -12,6 +12,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.loritta.utils.FeatureFlags
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
@@ -24,6 +25,9 @@ class NewRssFeedTask : Runnable {
 	}
 
 	override fun run() {
+		if (!FeatureFlags.isEnabled("rss-feeds"))
+			return
+
 		val servers = loritta.serversColl.find(
 				Filters.gt("rssFeedConfig.feeds", listOf<Any>())
 		).iterator()

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import java.awt.Color
@@ -25,6 +26,9 @@ class AminoRepostTask : Runnable {
 	}
 
 	override fun run() {
+		if (!FeatureFlags.isEnabled("amino-repost"))
+			return
+
 		// Carregar todos os server configs que tem o Amino Repost ativado
 		val servers = loritta.serversColl.find(
 				Filters.gt("aminoConfig.aminos", listOf<Any>())

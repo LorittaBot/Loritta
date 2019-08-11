@@ -57,11 +57,4 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 	fun getMemberById(id: String): NashornLorittaUser {
 		return NashornLorittaUser(guild.getMemberById(id)!!, serverConfig)
 	}
-
-	@NashornCommand.NashornDocs()
-	fun play(url: String) {
-		if (serverConfig.musicConfig.isEnabled) {
-			loritta.audioManager.loadAndPlayNoFeedback(guild, serverConfig, url)
-		}
-	}
 }
