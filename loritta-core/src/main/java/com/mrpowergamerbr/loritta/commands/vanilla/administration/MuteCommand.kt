@@ -324,22 +324,46 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			// E agora os canais de voz
-			for (voiceChannel in context.guild.voiceChannels) {
-				if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
-					val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
-					if (permissionOverride == null) { // Se é null...
-						voiceChannel.createPermissionOverride(mutedRole)
-								.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-								.queue()
-					} else {
-						if (permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
-							permissionOverride.manager
-									.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-									.queue()
+			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
+				var processedRequests = 0
+				for (voiceChannel in context.guild.voiceChannels) {
+					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
+						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
+						if (permissionOverride == null) { // Se é null...
+							voiceChannel.createPermissionOverride(mutedRole)
+									.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+							processedRequests++
+						} else {
+							if (!permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
+								permissionOverride.manager
+										.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								processedRequests++
+							}
 						}
+					} else {
+						couldntEditChannels.add(voiceChannel)
 					}
-				} else {
-					couldntEditChannels.add(voiceChannel)
+				}
+			} else {
+				for (voiceChannel in context.guild.voiceChannels) {
+					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
+						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
+						if (permissionOverride == null) { // Se é null...
+							voiceChannel.createPermissionOverride(mutedRole)
+									.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+									.queue()
+						} else {
+							if (permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
+								permissionOverride.manager
+										.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+										.queue()
+							}
+						}
+					} else {
+						couldntEditChannels.add(voiceChannel)
+					}
 				}
 			}
 
