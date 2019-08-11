@@ -46,6 +46,7 @@ import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
@@ -461,7 +462,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Formatted Topic = $formattedTopic" }
 
-		textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
+		if (FeatureFlags.isEnabled("member-counter-update"))
+			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
