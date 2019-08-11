@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jooby.Status
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
@@ -64,10 +65,12 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 					}
 				}
 
-				for (textChannel in guild.textChannels) {
-					val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
-					val formattedTopic = memberCountConfig.getFormattedTopic(guild)
-					textChannel.manager.setTopic(formattedTopic).queue()
+				if (FeatureFlags.isEnabled("member-counter-update")) {
+					for (textChannel in guild.textChannels) {
+						val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
+						val formattedTopic = memberCountConfig.getFormattedTopic(guild)
+						textChannel.manager.setTopic(formattedTopic).queue()
+					}
 				}
 			} else {
 				config.memberCounterConfig = null
