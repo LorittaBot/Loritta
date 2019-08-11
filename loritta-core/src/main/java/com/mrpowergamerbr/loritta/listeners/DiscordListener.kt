@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
@@ -46,10 +47,12 @@ import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -84,7 +87,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val copy = event.requestRaw?.newBuilder()?.build()
 		val buffer = Buffer()
 		copy?.body()?.writeTo(buffer)
-		requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\nGlobally? ${event.responseHeaders?.get("X-RateLimit-Global") ?: "false"} - RateLimit-Limit: ${event.responseHeaders?.get("X-RateLimit-Limit")} - RateLimit-Remaining: ${event.responseHeaders?.get("X-RateLimit-Remaining")} - Retry-After: ${event.responseHeaders?.get("Retry-After")}\n${buffer.readUtf8()}")
+
+		val input = buffer.readUtf8()
+		if (input.startsWith("--")) {
+			val lines = input.lines()
+
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${lines.take(3).joinToString("\n")}")
+		} else {
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${buffer.readUtf8()}")
+		}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
