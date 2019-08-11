@@ -24,7 +24,11 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 		return Arrays.asList("Eu sou fofa! :3")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override fun getDiscordPermissions(): List<Permission> {
+		return listOf(Permission.MANAGE_SERVER)
+	}
+
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			var args = context.rawArgs
 			val channelId = context.rawArgs[0]
