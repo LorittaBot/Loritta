@@ -159,7 +159,7 @@ class CommandManager {
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
 		commandMap.add(UserInfoCommand())
-		commandMap.add(ChatLogCommand())
+		// commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
