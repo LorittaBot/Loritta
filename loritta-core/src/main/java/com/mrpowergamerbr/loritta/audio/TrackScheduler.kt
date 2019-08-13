@@ -16,6 +16,7 @@ import lavalink.client.player.LavalinkPlayer
 import lavalink.client.player.event.PlayerEventListenerAdapter
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.utils.FeatureFlags
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -41,7 +42,7 @@ class TrackScheduler(val guild: Guild, val player: LavalinkPlayer) : PlayerEvent
 			if (serverConfig.musicConfig.logToChannel) {
 				val textChannel = guild.getTextChannelByNullableId(serverConfig.musicConfig.channelId) ?: return@launch
 
-				if (textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
+				if (FeatureFlags.isEnabled("log-track-info") && textChannel.canTalk() && guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 					LorittaUtilsKotlin.fillTrackMetadata(currentTrack ?: return@launch)
 
 					if (currentTrack!!.metadata.isNotEmpty()) {
