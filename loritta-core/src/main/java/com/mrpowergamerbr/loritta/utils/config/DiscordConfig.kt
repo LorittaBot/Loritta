@@ -10,6 +10,7 @@ class DiscordConfig @JsonCreator constructor(
         var minShardId: Int,
         var maxShardId: Int,
         val maxShards: Int,
+        val maxRequestsPerHost: Int,
         val status: OnlineStatus,
         val addBotUrl: String,
         val authorizationUrl: String,

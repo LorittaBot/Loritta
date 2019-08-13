@@ -208,7 +208,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!
 
 		val dispatcher = Dispatcher()
-		dispatcher.maxRequestsPerHost = 128
+		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
 
 		val okHttpBuilder = OkHttpClient.Builder()
 				.dispatcher(dispatcher)
