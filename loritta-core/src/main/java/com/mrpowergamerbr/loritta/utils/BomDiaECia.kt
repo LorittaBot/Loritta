@@ -45,15 +45,15 @@ class BomDiaECia {
 					"o yudi",
 					"a priscilla",
 					"o yudi tamashiro",
-					"a priscilla alcântra",
+					"a priscilla alcântara",
 					"o sbt",
 					"o bom dia & cia",
 					"o bom dia e cia",
-					"o bom dia & compania",
+					"o bom dia & companhia",
 					"o yudi e a priscilla",
 					"o yudi tamashiro e a priscilla",
-					"o yudi e a priscilla alcântra",
-					"o yudi tamashiro e a priscilla alcântra"
+					"o yudi e a priscilla alcântara",
+					"o yudi tamashiro e a priscilla alcântara"
 			)
 
 			for (person in ilove) {
