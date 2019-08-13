@@ -39,5 +39,5 @@ object Constants {
 		}
 	}
 
-	const val PREMIUM_BOT_VALUE = 59.99
+	const val PREMIUM_BOT_VALUE = 19.99
 }
