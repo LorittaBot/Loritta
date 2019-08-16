@@ -480,7 +480,7 @@ class GabrielaCommand : AbstractCommand("gabriela", listOf("gabi"), category = C
 								mentionUser = false
 						),
 						LoriReply(
-								"Upvotes: ${answer.upvotes.size}",
+								"Downvotes: ${answer.downvotes.size}",
 								"\uD83D\uDC4E",
 								mentionUser = false
 						)
