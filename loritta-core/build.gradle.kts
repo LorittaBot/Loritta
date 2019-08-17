@@ -89,7 +89,7 @@ dependencies {
     compile("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
     compile("com.sedmelluq:lavaplayer:1.3.19")
     compile("com.github.FredBoat:Lavalink-Client:jda4-SNAPSHOT")
-    compile("com.github.markozajc:akiwrapper:1.4.1")
+    compile("com.github.markozajc:akiwrapper:1.4.3.1")
     compile("org.json:json:20180813")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
