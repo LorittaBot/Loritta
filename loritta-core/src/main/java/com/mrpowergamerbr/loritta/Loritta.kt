@@ -63,6 +63,7 @@ import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
@@ -206,7 +207,11 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 
 		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!
 
+		val dispatcher = Dispatcher()
+		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
+
 		val okHttpBuilder = OkHttpClient.Builder()
+				.dispatcher(dispatcher)
 				.connectTimeout(30, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
 				.readTimeout(30, TimeUnit.SECONDS)
 				.writeTimeout(30, TimeUnit.SECONDS)

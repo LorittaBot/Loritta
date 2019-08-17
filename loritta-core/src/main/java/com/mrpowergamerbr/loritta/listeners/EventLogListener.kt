@@ -23,11 +23,6 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audit.ActionType
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent
-import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateNameEvent
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdateTopicEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent
@@ -237,68 +232,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
 
 					textChannel.sendMessage(embed.build()).queue()
-				}
-			}
-		}
-	}
-
-	// TEXT CHANNEL
-	override fun onGenericTextChannel(event: GenericTextChannelEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
-
-		// Detectar se é apenas uma mudança no contador ou se o tópico alterou
-		if (event is TextChannelUpdateTopicEvent) {
-			if (DiscordListener.memberCounterJoinLeftCache.contains(event.channel.idLong)) {
-				DiscordListener.memberCounterJoinLeftCache.remove(event.channel.idLong)
-				return
-			}
-		}
-
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val embed = EmbedBuilder()
-			embed.setTimestamp(Instant.now())
-			embed.setColor(Color(35, 209, 96))
-			embed.setAuthor(event.guild.name, null, event.guild.iconUrl)
-
-			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLegacyLocaleById(config.localeId)
-			val eventLogConfig = config.eventLogConfig
-			if (eventLogConfig.isEnabled) {
-				val textChannel = event.guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
-
-				if (textChannel != null && textChannel.canTalk()) {
-					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-						return@launch
-					if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-						return@launch
-					if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-						return@launch
-
-					if (event is TextChannelCreateEvent && eventLogConfig.channelCreated) {
-						embed.setDescription("\uD83C\uDF1F ${locale["EVENTLOG_CHANNEL_CREATED", event.channel.asMention]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@launch
-					}
-					if (event is TextChannelUpdateNameEvent && eventLogConfig.channelNameUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_NAME_UPDATED", event.channel.asMention, event.oldName, event.channel.name]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@launch
-					}
-					if (event is TextChannelUpdateTopicEvent && eventLogConfig.channelTopicUpdated) {
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_CHANNEL_TOPIC_UPDATED", event.channel.asMention, event.oldTopic, event.channel.topic]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@launch
-					}
-					if (event is TextChannelDeleteEvent && eventLogConfig.channelDeleted) {
-						embed.setDescription("\uD83D\uDEAE ${locale["EVENTLOG_CHANNEL_DELETED", event.channel.name]}")
-
-						textChannel.sendMessage(embed.build()).queue()
-						return@launch
-					}
 				}
 			}
 		}

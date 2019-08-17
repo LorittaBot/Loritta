@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
@@ -42,13 +43,17 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
+import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -76,6 +81,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				.asMap()
 
 		private val logger = KotlinLogging.logger {}
+		private val requestLogger = LoggerFactory.getLogger("requests")
+	}
+
+	override fun onHttpRequest(event: HttpRequestEvent) {
+		val copy = event.requestRaw?.newBuilder()?.build()
+		val buffer = Buffer()
+		copy?.body()?.writeTo(buffer)
+
+		val input = buffer.readUtf8()
+		if (input.startsWith("--")) {
+			val lines = input.lines()
+
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${lines.take(3).joinToString("\n")}")
+		} else {
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n$input")
+		}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
@@ -205,12 +226,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Deletar configurações
 				DiscordListener.logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
-				DiscordListener.logger.trace { "Deleting ${e.guild} donation config..."}
+				DiscordListener.logger.trace { "Deleting ${e.guild} configs..."}
 				val donationConfig = serverConfig?.donationConfig
+				val birthdayConfig = serverConfig?.birthdayConfig
 
 				DiscordListener.logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 				donationConfig?.delete()
+				birthdayConfig?.delete()
 
 				DiscordListener.logger.trace { "Deleting all ${e.guild}'s giveaways..."}
 				val allGiveaways = Giveaway.find {
@@ -335,6 +358,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(event.guild, locale, event.user, mute.expiresAt!!)
 				}
+
+				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+					it.onGuildMemberJoinListeners
+				}.forEach {
+					it.invoke(event.member, event.guild, conf)
+				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
@@ -367,6 +396,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (conf.joinLeaveConfig.isEnabled) {
 					WelcomeModule.handleLeave(event, conf)
 				}
+
+				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+					it.onGuildMemberLeaveListeners
+				}.forEach {
+					it.invoke(event.member, event.guild, conf)
+				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
@@ -392,7 +427,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val diff = System.currentTimeMillis() - lastUpdate
 
 		if (MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
-			logger.debug { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
+			logger.info { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
 
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 			val currentJob = memberCounterUpdateJobs[textChannel.idLong]
@@ -422,13 +457,13 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 
 		val locale = loritta.getLocaleById(serverConfig.localeId)
-		logger.debug { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
+		logger.info { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
 		logger.trace { "Member Counter Theme = ${memberCounterConfig.theme}"}
-		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Formatted Topic = $formattedTopic" }
 
-		textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
+		if (FeatureFlags.isEnabled("member-counter-update"))
+			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
@@ -517,19 +552,25 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
+			}
 
-				val allActiveGiveaways = transaction(Databases.loritta) {
-					Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
-				}
+			val allActiveGiveaways = transaction(Databases.loritta) {
+				Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
+			}
 
-				allActiveGiveaways.forEach {
-					try {
-						if (GiveawayManager.giveawayTasks[it.id.value] == null)
-							GiveawayManager.createGiveawayJob(it)
-					} catch (e: Exception) {
-						logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
-					}
+			allActiveGiveaways.forEach {
+				try {
+					if (GiveawayManager.giveawayTasks[it.id.value] == null)
+						GiveawayManager.createGiveawayJob(it)
+				} catch (e: Exception) {
+					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
 				}
+			}
+
+			loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+				it.onGuildReadyListeners
+			}.forEach {
+				it.invoke(event.guild, serverConfig)
 			}
 		}
 	}

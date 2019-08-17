@@ -237,7 +237,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						if (nearestCommand != null && 6 > diff) {
 							list.add(
 									LoriReply(
-											prefix = "<:lori_hm:481516015767781376>",
+											prefix = Emotes.LORI_HM,
 											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
 											mentionUser = false
 									)

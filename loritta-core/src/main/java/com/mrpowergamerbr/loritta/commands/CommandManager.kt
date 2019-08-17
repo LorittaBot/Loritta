@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
@@ -31,6 +30,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
 import java.util.*
 
@@ -147,7 +147,7 @@ class CommandManager {
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		commandMap.add(EmojiSearchCommand())
+		// commandMap.add(EmojiSearchCommand())
 		commandMap.add(EncodeCommand())
 		commandMap.add(LyricsCommand())
 
@@ -159,7 +159,7 @@ class CommandManager {
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
 		commandMap.add(UserInfoCommand())
-		commandMap.add(ChatLogCommand())
+		// commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
@@ -506,23 +506,11 @@ class CommandManager {
 					}
 				}
 
-				val randomValue = Loritta.RANDOM.nextInt(0, 100)
-
-				if (randomValue == 0) {
-					context.reply(
-							LoriReply(
-									reparsedLegacyLocale["LORITTA_PleaseUpvote", "<https://discordbots.org/bot/loritta/vote>"],
-									"\uD83D\uDE0A"
-							)
-					)
-				} else if ((randomValue == 1 || randomValue == 2 || randomValue == 3) && (39.99 > donatorPaid)) {
-					context.reply(
-							LoriReply(
-									reparsedLegacyLocale["LORITTA_PleaseDonate", "<${loritta.config.loritta.website.url}donate>"],
-									Emotes.LORI_OWO
-							)
-					)
-				}
+				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
+				DonateUtils.getRandomDonationMessage(
+						locale,
+						donatorPaid
+				)?.let { context.reply(it) }
 
 				if (!context.isPrivateChannel) {
 					val nickname = context.guild.selfMember.nickname

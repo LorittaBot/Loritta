@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.ChannelType
@@ -106,23 +105,8 @@ class NashornMessage(private val message: Message) {
 	}
 
 	@NashornCommand.NashornDocs()
-	fun clearReactions() {
-		message.clearReactions().queue()
-	}
-
-	@NashornCommand.NashornDocs()
 	fun delete() {
 		message.delete().queue()
-	}
-
-	@NashornCommand.NashornDocs()
-	fun pin() {
-		message.pin().queue()
-	}
-
-	@NashornCommand.NashornDocs()
-	fun unpin() {
-		message.unpin().queue()
 	}
 
 	@NashornCommand.NashornDocs()

@@ -57,13 +57,13 @@ class LorittaPremium(val config: PremiumConfig) {
 				.build()
 				.awaitReady()
 
-		jda.presence.activity = Activity.of(
-				Activity.ActivityType.WATCHING,
-				"\uD83D\uDCB8 https://loritta.website/donate | Doe para conseguir me ter no seu servidor :3"
-		)
-
 		GlobalScope.launch {
 			while (true) {
+				jda.presence.activity = Activity.of(
+						Activity.ActivityType.WATCHING,
+						"\uD83D\uDCB8 https://loritta.website/donate | Doe para conseguir me ter no seu servidor :3"
+				)
+
 				logger.info { "Currently in ${jda.guilds.size} guilds"}
 				for (guild in jda.guilds) {
 					val activeDonationKey = getActiveDonationKeyForGuild(guild)

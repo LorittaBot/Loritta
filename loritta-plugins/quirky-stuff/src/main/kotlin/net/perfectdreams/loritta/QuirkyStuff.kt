@@ -3,6 +3,7 @@ package net.perfectdreams.loritta
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.commands.BirthdayCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
@@ -54,6 +56,7 @@ class QuirkyStuff : DiscordPlugin() {
     var changeBanner: ChangeBanner? = null
     var topDonatorsRank: TopDonatorsRank? = null
     var topVotersRank: TopVotersRank? = null
+    var birthdaysRank: BirthdaysRank? = null
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
@@ -79,6 +82,13 @@ class QuirkyStuff : DiscordPlugin() {
             }
         }
 
+        birthdaysRank = BirthdaysRank(
+                this,
+                config
+        ).apply {
+            this.start()
+        }
+
         registerEventListeners(
                 AddReactionListener(config),
                 BoostGuildListener(config)
@@ -91,6 +101,29 @@ class QuirkyStuff : DiscordPlugin() {
 
         registerCommand(LoriToolsQuirkyStuffCommand())
         registerCommand(SouTopDoadorCommand(config))
+        registerCommand(BirthdayCommand(this))
+        
+        onGuildReady { guild, mongoServerConfig ->
+            birthdaysRank?.updateBirthdayRank(guild, mongoServerConfig)
+        }
+
+        onGuildMemberJoinListeners { member, guild, mongoServerConfig ->
+            val shouldBeUpdated = transaction(Databases.loritta) {
+                Profile.findById(member.idLong)?.settings?.birthday != null
+            }
+
+            if (shouldBeUpdated)
+                birthdaysRank?.updateBirthdayRank(guild, mongoServerConfig)
+        }
+
+        onGuildMemberLeaveListeners { member, guild, mongoServerConfig ->
+            val shouldBeUpdated = transaction(Databases.loritta) {
+                Profile.findById(member.idLong)?.settings?.birthday != null
+            }
+
+            if (shouldBeUpdated)
+                birthdaysRank?.updateBirthdayRank(guild, mongoServerConfig)
+        }
     }
 
     override fun onDisable() {
@@ -99,6 +132,7 @@ class QuirkyStuff : DiscordPlugin() {
         changeBanner?.task?.cancel()
         topDonatorsRank?.task?.cancel()
         topVotersRank?.task?.cancel()
+        birthdaysRank?.task?.cancel()
     }
 
     companion object {

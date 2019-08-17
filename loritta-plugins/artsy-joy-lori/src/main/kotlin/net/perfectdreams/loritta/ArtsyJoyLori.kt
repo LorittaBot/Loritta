@@ -41,6 +41,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(LoriSignCommand())
         registerCommand(ArtCommand())
         registerCommand(ChicoAtaCommand())
+        registerCommand(CanellaDvdCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())

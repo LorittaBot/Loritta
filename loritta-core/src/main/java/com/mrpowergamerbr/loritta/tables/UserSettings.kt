@@ -13,4 +13,5 @@ object UserSettings : LongIdTable() {
 	val hideLastSeen = bool("hide_last_seen")
 	val activeProfile = text("active_profile").nullable()
 	val boughtProfiles = array<String>("bought_profiles", TextColumnType())
+	val birthday = date("birthday").nullable()
 }

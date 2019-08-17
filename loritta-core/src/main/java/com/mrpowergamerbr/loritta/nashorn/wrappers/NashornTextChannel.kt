@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.TextChannel
@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.TextChannel
  * a Loritta possa controlar as mensagens enviadas de uma maneira segura (para não abusarem da API do Discord)
  */
 class NashornTextChannel(private val textChannel: TextChannel) {
+	var requesterLimiter = 0
+
 	@NashornCommand.NashornDocs()
 	fun getId(): String {
 		return textChannel.id
@@ -18,11 +20,6 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 	@NashornCommand.NashornDocs()
 	fun getTopic(): String {
 		return textChannel.topic!!
-	}
-
-	@NashornCommand.NashornDocs()
-	fun setTopic(name: String) {
-		textChannel.manager.setTopic(name).queue()
 	}
 
 	@NashornCommand.NashornDocs()
@@ -54,6 +51,10 @@ class NashornTextChannel(private val textChannel: TextChannel) {
 	fun sendMessage(mensagem: String): NashornMessage {
 		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
 			NashornContext.securityViolation(null)
+
+		if (requesterLimiter >= 3)
+			throw LorittaNashornException("Mais de três mensagens em um único comando!")
+		requesterLimiter++
 
 		return NashornMessage(textChannel.sendMessage(mensagem).complete())
 	}

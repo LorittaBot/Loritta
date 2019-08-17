@@ -64,11 +64,4 @@ class NashornRole(internal val role: Role) {
 	fun isMentionable(): Boolean {
 		return role.isMentionable
 	}
-
-	@NashornCommand.NashornDocs("Exclui a role",
-			"",
-			"wow")
-	fun delete() {
-		role.delete().queue()
-	}
 }

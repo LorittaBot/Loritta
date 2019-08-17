@@ -1,11 +1,17 @@
 package net.perfectdreams.loritta.platform.discord.plugin
 
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 open class DiscordPlugin : LorittaPlugin() {
     val eventListeners = mutableListOf<ListenerAdapter>()
+    val onGuildReadyListeners = mutableListOf<suspend (Guild, MongoServerConfig) -> (Unit)>()
+    val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
+    val onGuildMemberLeaveListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
 
     override fun onDisable() {
         super.onDisable()
@@ -13,6 +19,8 @@ open class DiscordPlugin : LorittaPlugin() {
             lorittaShards.shardManager.removeEventListener(it)
         }
         eventListeners.clear()
+        onGuildReadyListeners.clear()
+        onGuildMemberLeaveListeners.clear()
     }
 
     fun addEventListener(eventListener: ListenerAdapter) {
@@ -29,5 +37,17 @@ open class DiscordPlugin : LorittaPlugin() {
         eventListeners.forEach {
             addEventListener(it)
         }
+    }
+
+    fun onGuildReady(callback: suspend (Guild, MongoServerConfig) -> (Unit)) {
+        onGuildReadyListeners.add(callback)
+    }
+
+    fun onGuildMemberJoinListeners(callback: suspend (Member, Guild, MongoServerConfig) -> (Unit)) {
+        onGuildMemberJoinListeners.add(callback)
+    }
+
+    fun onGuildMemberLeaveListeners(callback: suspend (Member, Guild, MongoServerConfig) -> (Unit)) {
+        onGuildMemberLeaveListeners.add(callback)
     }
 }

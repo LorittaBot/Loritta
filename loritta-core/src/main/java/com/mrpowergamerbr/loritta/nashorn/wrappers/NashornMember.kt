@@ -1,8 +1,7 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.nashorn.LorittaNashornException
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Member
 import java.awt.Color
@@ -12,6 +11,8 @@ import java.awt.Color
  * a Loritta possa controlar as mensagens enviadas de uma maneira segura (para não abusarem da API do Discord)
  */
 open class NashornMember(internal val member: Member) : NashornUser(member.user) {
+	var requesterLimiter = 0
+
 	@NashornCommand.NashornDocs()
 	fun getNickname(): String {
 		return member.effectiveName
@@ -19,11 +20,19 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun addRole(role: NashornRole) {
+		if (requesterLimiter >= 3)
+			throw LorittaNashornException("Mais de três edições em um único comando!")
+
+		requesterLimiter++
 		member.guild.addRoleToMember(member, role.role).queue()
 	}
 
 	@NashornCommand.NashornDocs(arguments = "role")
 	fun removeRole(role: NashornRole) {
+		if (requesterLimiter >= 3)
+			throw LorittaNashornException("Mais de três edições em um único comando!")
+
+		requesterLimiter++
 		member.guild.removeRoleFromMember(member, role.role).queue()
 	}
 
@@ -91,14 +100,5 @@ open class NashornMember(internal val member: Member) : NashornUser(member.user)
 	@NashornCommand.NashornDocs()
 	fun isOwner(): Boolean {
 		return member.isOwner
-	}
-
-	@NashornCommand.NashornDocs("Altera o nome de um usuário",
-			"novoNickname")
-	fun setNickname(nickname: String) {
-		if (nickname.contains(loritta.discordConfig.discord.clientToken, true))
-			NashornContext.securityViolation(null)
-
-		member.guild.modifyNickname(member, nickname).queue()
 	}
 }

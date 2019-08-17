@@ -16,5 +16,6 @@ enum class CommandCategory constructor(val fancyTitle: String, var description: 
 	ACTION("CommandCategory_ACTION_Name", "CommandCategory_ACTION_Description"),
 	ECONOMY("CommandCategory_ECONOMY_Name", "CommandCategory_ECONOMY_Description"),
 	MUSIC("CommandCategory_MUSIC_Name", "CommandCategory_MUSIC_Description"),
+	FORTNITE("CommandCategory_MINECRAFT_Name", "CommandCategory_MINECRAFT_Description"),
 	MAGIC("CommandCategory_MAGIC_Name", "CommandCategory_MAGIC_Description") // Esta categoria é usada para comandos APENAS para o dono do bot
 }

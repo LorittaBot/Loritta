@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.GlobalScope
@@ -162,7 +163,7 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 									.firstOrNull()
 
 							if (loriMessage?.author?.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
-								loriMessage.editMessage(message.toString()).await()
+								loriMessage.editMessageIfContentWasChanged(message.toString())
 							}
 						}
 					}

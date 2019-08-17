@@ -14,7 +14,7 @@ open class BasicSkewedImageCommand(
 		category: CommandCategory,
 		descriptionKey: String,
 		sourceImageFile: String,
-		val corners: Corners
+		vararg val corners: Corners
 ) : BasicImageCommand(labels, category, descriptionKey, sourceImageFile) {
 	@ExperimentalContracts
 	@Subcommand
@@ -22,21 +22,27 @@ open class BasicSkewedImageCommand(
 		val contextImage = notNullImage(context.getImageAt(0), context)
 
 		val image = BufferedImage(template.width, template.height, BufferedImage.TYPE_INT_ARGB)
-
 		val graphics = image.graphics
-		val skewed = LorittaImage(contextImage)
 
-		skewed.resize(template.width, template.height)
+		corners.forEach {
+			// Nós iremos clonar a imagem para que ela fique em formato ARGB, isso evita problemas de transparência
+			val clonedContextImage = BufferedImage(contextImage.width, contextImage.height, BufferedImage.TYPE_INT_ARGB)
+			clonedContextImage.graphics.drawImage(contextImage, 0, 0, null)
 
-		// skew image
-		skewed.setCorners(
-				corners.upperLeftX, corners.upperLeftY,
-				corners.upperRightX, corners.upperRightY,
-				corners.lowerRightX, corners.lowerRightY,
-				corners.lowerLeftX, corners.lowerLeftY
-		)
+			val skewed = LorittaImage(clonedContextImage)
 
-		graphics.drawImage(skewed.bufferedImage, 0, 0, null)
+			skewed.resize(template.width, template.height)
+
+			// skew image
+			skewed.setCorners(
+					it.upperLeftX, it.upperLeftY,
+					it.upperRightX, it.upperRightY,
+					it.lowerRightX, it.lowerRightY,
+					it.lowerLeftX, it.lowerLeftY
+			)
+
+			graphics.drawImage(skewed.bufferedImage, 0, 0, null)
+		}
 
 		graphics.drawImage(template, 0, 0, null) // Desenhe o template por cima!
 
