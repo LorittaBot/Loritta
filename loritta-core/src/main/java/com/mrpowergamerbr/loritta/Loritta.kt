@@ -75,10 +75,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import kotlin.concurrent.thread
 
 /**
@@ -123,11 +120,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return ThreadPoolExecutor(15, Integer.MAX_VALUE,
-				5L, TimeUnit.MINUTES,
-				SynchronousQueue<Runnable>(),
-				ThreadFactoryBuilder().setNameFormat(name).build()
-		)
+		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
