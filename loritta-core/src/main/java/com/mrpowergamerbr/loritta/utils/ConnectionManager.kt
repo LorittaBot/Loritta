@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.sld
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
