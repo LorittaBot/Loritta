@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.sld
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
@@ -1493,20 +1492,20 @@ class ConnectionManager {
     fun isTrusted(url: String): Boolean {
         val domain = getDomainFromUrl(url)
 
-        if (domain != null) {
-            return loritta.config.connectionManager.trustedDomains.any { it.endsWith(domain) }
+        return if (domain != null) {
+            loritta.config.connectionManager.trustedDomains.any { it.endsWith(domain) }
         } else {
-            return false
+            false
         }
     }
 
     fun isBlocked(url: String): Boolean {
         val domain = getDomainFromUrl(url)
 
-        if (domain != null) {
-            return loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain) }
+        return if (domain != null) {
+            loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain) }
         } else {
-            return false
+            false
         }
     }
 
