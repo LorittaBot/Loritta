@@ -107,7 +107,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			val locale = loritta.getLegacyLocaleById(winner.second)
 			val user = lorittaShards.getUserById(lastWinnerId)
 
-			if (user != null) {
+			if (user != null && !user.isBot) {
 				try {
 					val embed = EmbedBuilder()
 					embed.setThumbnail("attachment://loritta_money.png")
