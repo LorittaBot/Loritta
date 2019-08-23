@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.Executors
@@ -98,34 +99,36 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
 
-					val safeSize = RaffleThread.userIds.filter {
-						it.first !in arrayOf(LORI_ID.toString(), PANTUFA_ID.toString(), GABI_ID.toString())
-					}.size
+					if (FeatureFlags.isEnabled(FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)) {
+						val safeSize = RaffleThread.userIds.filter {
+							it.first !in arrayOf(LORI_ID.toString(), PANTUFA_ID.toString(), GABI_ID.toString())
+						}.size
 
-					val loriAlreadyDidIt = RaffleThread.userIds.any { it.first == LORI_ID.toString() }
-					val pantufaAlreadyDidIt = RaffleThread.userIds.any { it.first == PANTUFA_ID.toString() }
-					val gabiAlreadyDidIt = RaffleThread.userIds.any { it.first == GABI_ID.toString() }
+						val loriAlreadyDidIt = RaffleThread.userIds.any { it.first == LORI_ID.toString() }
+						val pantufaAlreadyDidIt = RaffleThread.userIds.any { it.first == PANTUFA_ID.toString() }
+						val gabiAlreadyDidIt = RaffleThread.userIds.any { it.first == GABI_ID.toString() }
 
-					when {
-						safeSize >= MAX_TICKET_ABUSE_THRESHOLD_LORI && !loriAlreadyDidIt -> {
-							logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_LORI... Loritta will take care of this. ^-^" }
+						when {
+							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_LORI && !loriAlreadyDidIt -> {
+								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_LORI... Loritta will take care of this. ^-^" }
 
-							for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-								RaffleThread.userIds.add(Pair(LORI_ID.toString(), "default"))
+								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
+									RaffleThread.userIds.add(Pair(LORI_ID.toString(), "default"))
+								}
 							}
-						}
-						safeSize >= MAX_TICKET_ABUSE_THRESHOLD_PANTUFA && !pantufaAlreadyDidIt -> {
-							logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_PANTUFA... Pantufa will take care of this. ^-^" }
+							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_PANTUFA && !pantufaAlreadyDidIt -> {
+								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_PANTUFA... Pantufa will take care of this. ^-^" }
 
-							for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-								RaffleThread.userIds.add(Pair(PANTUFA_ID.toString(), "default"))
+								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
+									RaffleThread.userIds.add(Pair(PANTUFA_ID.toString(), "default"))
+								}
 							}
-						}
-						safeSize >= MAX_TICKET_ABUSE_THRESHOLD_GABI && !gabiAlreadyDidIt -> {
-							logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_GABI... Gabriela will take care of this. ^-^" }
+							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_GABI && !gabiAlreadyDidIt -> {
+								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_GABI... Gabriela will take care of this. ^-^" }
 
-							for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-								RaffleThread.userIds.add(Pair(GABI_ID.toString(), "default"))
+								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
+									RaffleThread.userIds.add(Pair(GABI_ID.toString(), "default"))
+								}
 							}
 						}
 					}

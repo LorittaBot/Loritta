@@ -6,11 +6,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.chance
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.Instant
@@ -71,7 +73,22 @@ class RaffleThread : Thread("Raffle Thread") {
 			started = System.currentTimeMillis()
 			save()
 		} else {
-			val winner = userIds[RANDOM.nextInt(userIds.size)]
+			val winner = if (FeatureFlags.isEnabled(FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES) && chance(25.0)) {
+				logger.info { "Wreck the Raffle! Stop the Whales!" }
+
+				val countOfEveryTicket = userIds.groupingBy { it.first }.eachCount()
+
+				val theLittleTimmies = countOfEveryTicket.filter { 250 >= it.value }
+				if (theLittleTimmies.isEmpty())
+					userIds[RANDOM.nextInt(userIds.size)]
+				else {
+					val lilTimmy = theLittleTimmies.keys.toMutableList()[RANDOM.nextInt(theLittleTimmies.size)]
+					Pair(lilTimmy, userIds.first { it.first == lilTimmy }.second)
+				}
+			} else {
+				userIds[RANDOM.nextInt(userIds.size)]
+			}
+
 			val winnerId = winner.first
 			lastWinnerId = winnerId
 
