@@ -417,7 +417,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key is $donationKey (${donationKey?.value}) Should hide in event log? $hideInEventLog"}
 
 		val validChannels = guild.textChannels.filter {
-			guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && serverConfig.getTextChannelConfig(it).memberCounterConfig != null
+			val memberCounterConfig = serverConfig.getTextChannelConfig(it).memberCounterConfig
+			guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
 		}
 
 		val channelsThatWillBeChecked = if (donationKey?.isActive() == true && donationKey.value >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.isEnabled(FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS)) {
