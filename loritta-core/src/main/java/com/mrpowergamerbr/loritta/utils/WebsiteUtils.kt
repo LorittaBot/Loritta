@@ -663,6 +663,18 @@ object WebsiteUtils {
 	fun getServerConfigAsJson(guild: Guild, serverConfig: MongoServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
+		val donationKey = transaction(Databases.loritta) {
+			loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()).donationKey
+		}
+
+		if (donationKey != null && donationKey.isActive()) {
+			serverConfigJson["donationKey"] = jsonObject(
+					"value" to donationKey.value,
+					"userId" to donationKey.userId.toString(),
+					"expiresAt" to donationKey.expiresAt.toString()
+			)
+		}
+
 		val textChannels = JsonArray()
 		for (textChannel in guild.textChannels) {
 			val json = JsonObject()
@@ -739,44 +751,44 @@ object WebsiteUtils {
 		return serverConfigJson
 	}
 
-	fun getProfileAsJson(profile: Profile): JsonObject {
-		return jsonObject(
-				"id" to profile.id.value,
-				"money" to profile.money
-		)
-	}
+fun getProfileAsJson(profile: Profile): JsonObject {
+	return jsonObject(
+			"id" to profile.id.value,
+			"money" to profile.money
+	)
+}
 
-	fun transformProfileToJson(profile: Profile): JsonObject {
-		// TODO: É necessário alterar o frontend para usar os novos valores
-		val jsonObject = JsonObject()
-		jsonObject["userId"] = profile.id.value
-		jsonObject["money"] = profile.money
-		jsonObject["dreams"] = profile.money // Deprecated
-		return jsonObject
-	}
+fun transformProfileToJson(profile: Profile): JsonObject {
+	// TODO: É necessário alterar o frontend para usar os novos valores
+	val jsonObject = JsonObject()
+	jsonObject["userId"] = profile.id.value
+	jsonObject["money"] = profile.money
+	jsonObject["dreams"] = profile.money // Deprecated
+	return jsonObject
+}
 
-	fun getDiscordCrawlerAuthenticationPage(): String {
-		return createHTML().html {
-			head {
-				fun setMetaProperty(property: String, content: String) {
-					meta(content = content) { attributes["property"] = property }
-				}
-				title("Login • Loritta")
-				setMetaProperty("og:site_name", "Loritta")
-				setMetaProperty("og:title", "Painel da Loritta")
-				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-				setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
-				setMetaProperty("og:image:width", "320")
-				setMetaProperty("og:ttl", "660")
-				setMetaProperty("og:image:width", "320")
-				setMetaProperty("theme-color", "#7289da")
-				meta("twitter:card", "summary_large_image")
+fun getDiscordCrawlerAuthenticationPage(): String {
+	return createHTML().html {
+		head {
+			fun setMetaProperty(property: String, content: String) {
+				meta(content = content) { attributes["property"] = property }
 			}
-			body {
-				p {
-					+ "Parabéns, você encontrou um easter egg!"
-				}
+			title("Login • Loritta")
+			setMetaProperty("og:site_name", "Loritta")
+			setMetaProperty("og:title", "Painel da Loritta")
+			setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
+			setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
+			setMetaProperty("og:image:width", "320")
+			setMetaProperty("og:ttl", "660")
+			setMetaProperty("og:image:width", "320")
+			setMetaProperty("theme-color", "#7289da")
+			meta("twitter:card", "summary_large_image")
+		}
+		body {
+			p {
+				+ "Parabéns, você encontrou um easter egg!"
 			}
 		}
 	}
+}
 }
