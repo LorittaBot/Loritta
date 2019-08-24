@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoraffleCommand
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.chance
@@ -18,6 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.collections.set
 
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
@@ -110,26 +112,36 @@ class RaffleThread : Thread("Raffle Thread") {
 				}
 			}
 
-			val winner = if (FeatureFlags.isEnabled(FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES) && chance(25.0)) {
-				logger.info { "Wreck the Raffle! Stop the Whales!" }
+			var winner: Pair<String, String>? = null
 
-				val countOfEveryTicket = userIds.groupingBy { it.first }.eachCount()
+			if (FeatureFlags.isEnabled(FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES)) {
+				val chance = loritta.config.loritta.featureFlags.firstOrNull { it.startsWith("${FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES}-chance-") }
+						?.split("-")
+						?.last()
+						?.toDouble() ?: 25.0
 
-				val theLittleTimmies = countOfEveryTicket.filter { 250 >= it.value }
-				if (theLittleTimmies.isEmpty())
-					userIds[RANDOM.nextInt(userIds.size)]
-				else {
-					val lilTimmy = theLittleTimmies.keys.toMutableList()[RANDOM.nextInt(theLittleTimmies.size)]
-					Pair(lilTimmy, userIds.first { it.first == lilTimmy }.second)
+				val shouldWeWreckTheRaffle = chance(chance)
+
+				logger.info { "Should we wreck the raffle to stop the whales? (Chance of $chance%) $shouldWeWreckTheRaffle" }
+
+				if (shouldWeWreckTheRaffle) {
+					logger.info { "Wreck the Raffle! Stop the Whales!!" }
+
+					if (FeatureFlags.isEnabled(FeatureFlags.SELECT_LOW_BETTING_USERS) && chance(50.0)) {
+						winner = getLowBettingWinner()
+					} else if (FeatureFlags.isEnabled(FeatureFlags.SELECT_USERS_WITH_LESS_MONEY)) {
+						winner = getUserWithLessMoneyWinner()
+					} else winner = getRandomWinner()
 				}
-			} else {
-				userIds[RANDOM.nextInt(userIds.size)]
 			}
+
+			if (winner == null)
+				winner = getRandomWinner()
 
 			if (FeatureFlags.isEnabled(FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)) {
 				// Se não foi a Lori, Pantufa ou a Gabi que ganhram, vamos remover todos os tickets que elas apostaram
 				// Assim evita que ganhadores ganhem muitos sonhos (já que os tickets delas também são considerados e
-				// dados na hora que alguém ganha na rifa!
+				// dados na hora que alguém ganha na rifa!)
 				if (winner.first !in arrayOf(LORI_ID.toString(), PANTUFA_ID.toString(), GABI_ID.toString())) {
 					userIds.removeIf {
 						winner.first in arrayOf(LORI_ID.toString(), PANTUFA_ID.toString(), GABI_ID.toString())
@@ -172,5 +184,62 @@ class RaffleThread : Thread("Raffle Thread") {
 			started = System.currentTimeMillis()
 			save()
 		}
+	}
+
+	/**
+	 * Selects a random ticket for the raffle winner.
+	 */
+	private fun getRandomWinner(): Pair<String, String> {
+		logger.info { "Using normal random ticket selection for the raffle" }
+		return userIds[RANDOM.nextInt(userIds.size)]
+	}
+
+	/**
+	 * Selects a pseudo-random ticket for the raffle winner, selecting winners from a "how many tickets did he bet" range.
+	 */
+	private fun getLowBettingWinner(): Pair<String, String> {
+		logger.info { "Using SELECT_USERS_WITH_LESS_MONEY ticket selection for the raffle" }
+		val countOfEveryTicket = userIds.groupingBy { it.first }.eachCount()
+
+		val lowerBound = RANDOM.nextInt(0, 250)
+		val higherBound = lowerBound + RANDOM.nextInt(0, 250)
+		val theLittleTimmies = countOfEveryTicket.filter { it.value in lowerBound..higherBound }
+		logger.info { "Raffle selected tickets between $lowerBound..$higherBound, there are ${theLittleTimmies.size} tickets matching the filter" }
+
+		return if (theLittleTimmies.isEmpty())
+			getRandomWinner()
+		else {
+			val lilTimmy = theLittleTimmies.keys.toMutableList()[RANDOM.nextInt(theLittleTimmies.size)]
+			Pair(lilTimmy, userIds.first { it.first == lilTimmy }.second)
+		}
+	}
+
+	/**
+	 * Selects a pseudo-random ticket for the raffle winner, giving a chance to users that has less money.
+	 */
+	private fun getUserWithLessMoneyWinner(): Pair<String, String> {
+		logger.info { "Using SELECT_LOW_BETTING_USERS ticket selection for the raffle" }
+
+		val allUserIds = userIds.distinctBy { it.first }
+		if (10 > allUserIds.size)
+			return getRandomWinner()
+
+		val countOfEveryTicket = userIds.groupingBy { it.first }.eachCount()
+
+		val userIdsAndMoney = mutableMapOf<String, Double>()
+		allUserIds.forEach {
+			val howMuchMoneyTheUserHas = transaction(Databases.loritta) {
+				(Profile.findById(it.first.toLong())?.money) ?: Double.MAX_VALUE
+			}
+
+			val howMuchTicketsTheUserBought = countOfEveryTicket[it.first] ?: LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND
+
+			userIdsAndMoney[it.first] = howMuchMoneyTheUserHas + (howMuchTicketsTheUserBought * 250)
+		}
+
+		val userIdsAndMoneySorted = userIdsAndMoney.entries.sortedBy { it.value }
+		val firstMorePoorPlayers = userIdsAndMoneySorted.take(allUserIds.size / 2)
+
+		return userIds.first { it.first == firstMorePoorPlayers.random().key }
 	}
 }
