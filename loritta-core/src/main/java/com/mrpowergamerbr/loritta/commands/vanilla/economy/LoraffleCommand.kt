@@ -193,7 +193,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						mentionUser = false
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_LastWinner", nameAndDiscriminator.stripCodeMarks(), RaffleThread.lastWinnerPrize],
+						context.legacyLocale["RAFFLE_LastWinner", "${nameAndDiscriminator.stripCodeMarks()} (${lastWinner?.id})", RaffleThread.lastWinnerPrize],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
