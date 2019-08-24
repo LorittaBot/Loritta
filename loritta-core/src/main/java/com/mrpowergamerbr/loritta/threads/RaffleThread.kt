@@ -82,7 +82,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			started = System.currentTimeMillis()
 			save()
 		} else {
-			if (FeatureFlags.isEnabled(FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)) {
+			if (FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO) {
 				// Para evitar que a "casa" nunca ganhe nada, dependendo de quantos tickets são apostados na rifa a Lori, Pantufa e a Gabi irão apostar nela.
 				// Se elas ganharem, quem apostou na rifa perde dinheiro!
 				val ticketCount = userIds.size
@@ -114,7 +114,7 @@ class RaffleThread : Thread("Raffle Thread") {
 
 			var winner: Pair<String, String>? = null
 
-			if (FeatureFlags.isEnabled(FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES)) {
+			if (FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES) {
 				val chance = loritta.config.loritta.featureFlags.firstOrNull { it.startsWith("${FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES}-chance-") }
 						?.split("-")
 						?.last()
@@ -127,9 +127,9 @@ class RaffleThread : Thread("Raffle Thread") {
 				if (shouldWeWreckTheRaffle) {
 					logger.info { "Wreck the Raffle! Stop the Whales!!" }
 
-					if (FeatureFlags.isEnabled(FeatureFlags.SELECT_LOW_BETTING_USERS) && chance(50.0)) {
+					if (FeatureFlags.SELECT_LOW_BETTING_USERS && chance(50.0)) {
 						winner = getLowBettingWinner()
-					} else if (FeatureFlags.isEnabled(FeatureFlags.SELECT_USERS_WITH_LESS_MONEY)) {
+					} else if (FeatureFlags.SELECT_USERS_WITH_LESS_MONEY) {
 						winner = getUserWithLessMoneyWinner()
 					} else winner = getRandomWinner()
 				}
@@ -138,7 +138,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			if (winner == null)
 				winner = getRandomWinner()
 
-			if (FeatureFlags.isEnabled(FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)) {
+			if (FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO) {
 				// Se não foi a Lori, Pantufa ou a Gabi que ganhram, vamos remover todos os tickets que elas apostaram
 				// Assim evita que ganhadores ganhem muitos sonhos (já que os tickets delas também são considerados e
 				// dados na hora que alguém ganha na rifa!)

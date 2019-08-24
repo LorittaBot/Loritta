@@ -421,7 +421,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
 		}
 
-		val channelsThatWillBeChecked = if (donationKey?.isActive() == true && donationKey.value >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.isEnabled(FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS)) {
+		val channelsThatWillBeChecked = if (donationKey?.isActive() == true && donationKey.value >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS) {
 			validChannels.take(3)
 		} else {
 			validChannels.take(1)
@@ -477,7 +477,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 		logger.trace { "Formatted Topic = $formattedTopic" }
 
-		if (FeatureFlags.isEnabled(FeatureFlags.MEMBER_COUNTER_UPDATE))
+		if (FeatureFlags.MEMBER_COUNTER_UPDATE)
 			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 	}
 
