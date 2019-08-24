@@ -19,12 +19,6 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 1000
-		const val MAX_TICKET_ABUSE_THRESHOLD_LORI = 5_000
-		const val LORI_ID = 297153970613387264L
-		const val MAX_TICKET_ABUSE_THRESHOLD_PANTUFA = 10_000
-		const val PANTUFA_ID = 390927821997998081L
-		const val MAX_TICKET_ABUSE_THRESHOLD_GABI = 15_000
-		const val GABI_ID = 481901252007952385L
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -98,40 +92,6 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 					}
 
 					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
-
-					if (FeatureFlags.isEnabled(FeatureFlags.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)) {
-						val safeSize = RaffleThread.userIds.filter {
-							it.first !in arrayOf(LORI_ID.toString(), PANTUFA_ID.toString(), GABI_ID.toString())
-						}.size
-
-						val loriAlreadyDidIt = RaffleThread.userIds.any { it.first == LORI_ID.toString() }
-						val pantufaAlreadyDidIt = RaffleThread.userIds.any { it.first == PANTUFA_ID.toString() }
-						val gabiAlreadyDidIt = RaffleThread.userIds.any { it.first == GABI_ID.toString() }
-
-						when {
-							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_LORI && !loriAlreadyDidIt -> {
-								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_LORI... Loritta will take care of this. ^-^" }
-
-								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-									RaffleThread.userIds.add(Pair(LORI_ID.toString(), "default"))
-								}
-							}
-							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_PANTUFA && !pantufaAlreadyDidIt -> {
-								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_PANTUFA... Pantufa will take care of this. ^-^" }
-
-								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-									RaffleThread.userIds.add(Pair(PANTUFA_ID.toString(), "default"))
-								}
-							}
-							safeSize >= MAX_TICKET_ABUSE_THRESHOLD_GABI && !gabiAlreadyDidIt -> {
-								logger.info { "Sorry, we don't do that around here. Ticket threshold $safeSize > $MAX_TICKET_ABUSE_THRESHOLD_GABI... Gabriela will take care of this. ^-^" }
-
-								for (i in 0 until MAX_TICKETS_BY_USER_PER_ROUND) {
-									RaffleThread.userIds.add(Pair(GABI_ID.toString(), "default"))
-								}
-							}
-						}
-					}
 
 					loritta.raffleThread.save()
 
