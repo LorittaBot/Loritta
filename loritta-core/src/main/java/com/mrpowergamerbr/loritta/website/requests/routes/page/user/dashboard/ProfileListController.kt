@@ -5,10 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
-import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -44,8 +41,8 @@ class ProfileListController {
         }
 
         variables["available_profiles_json"] = gson.toJson(
-                getProfiles().map {
-                    getProfileAsJson(userIdentification, it.first, it.second, profileSettings, it.third)
+                loritta.profileDesignManager.publicDesigns.map {
+                    getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
                 }
         )
 
@@ -57,15 +54,6 @@ class ProfileListController {
     }
 
     companion object {
-        fun getProfiles(): List<Triple<Class<*>, String, Double>> {
-            return listOf(
-                    Triple(NostalgiaProfileCreator::class.java, "default", 0.0),
-                    Triple(DefaultProfileCreator::class.java, "modern", 2000.0),
-                    Triple(MSNProfileCreator::class.java, "msn", 7500.0),
-                    Triple(OrkutProfileCreator::class.java, "orkut", 7500.0)
-            )
-        }
-
         fun getProfileAsJson(userIdentification: SimpleUserIdentification, profile: Class<*>, shortName: String, settings: ProfileSettings, price: Double): JsonObject {
             return jsonObject(
                     "internalName" to profile.simpleName,

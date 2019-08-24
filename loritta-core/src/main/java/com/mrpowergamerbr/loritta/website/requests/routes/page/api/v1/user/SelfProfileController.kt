@@ -84,13 +84,13 @@ class SelfProfileController {
 		if (config["buyItem"].nullString == "profile") {
 			val profileType = config["profileType"].string
 
-			val profileDesign = ProfileListController.getProfiles().firstOrNull { it.first.simpleName == profileType } ?: throw WebsiteAPIException(Status.NOT_FOUND,
+			val profileDesign = loritta.profileDesignManager.publicDesigns.firstOrNull { it.clazz.simpleName == profileType } ?: throw WebsiteAPIException(Status.NOT_FOUND,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.ITEM_NOT_FOUND
 					)
 			)
 
-			if (profileSettings.boughtProfiles.contains(profileDesign.first.simpleName)) {
+			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName)) {
 				throw WebsiteAPIException(Status.FORBIDDEN,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
@@ -98,7 +98,7 @@ class SelfProfileController {
 				)
 			}
 
-			if (profileDesign.third > profile.money) {
+			if (profileDesign.price > profile.money) {
 				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.INSUFFICIENT_FUNDS
@@ -107,14 +107,14 @@ class SelfProfileController {
 			}
 
 			transaction(Databases.loritta) {
-				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.first.simpleName) }.toTypedArray()
-				profile.money -= profileDesign.third
+				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
+				profile.money -= profileDesign.price
 			}
 
 			res.send(
 					gson.toJson(
-							ProfileListController.getProfiles().map {
-								ProfileListController.getProfileAsJson(userIdentification, it.first, it.second, profileSettings, it.third)
+							loritta.profileDesignManager.publicDesigns.map {
+								ProfileListController.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
 							}
 					)
 			)
@@ -138,8 +138,8 @@ class SelfProfileController {
 
 			res.send(
 					gson.toJson(
-							ProfileListController.getProfiles().map {
-								ProfileListController.getProfileAsJson(userIdentification, it.first, it.second, profileSettings, it.third)
+							loritta.profileDesignManager.publicDesigns.map {
+								ProfileListController.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
 							}
 					)
 			)

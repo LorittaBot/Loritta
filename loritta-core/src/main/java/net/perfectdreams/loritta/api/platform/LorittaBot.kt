@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.plugin.PluginManager
+import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -36,6 +37,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 	var fanArtArtists = listOf<FanArtArtist>()
 	val fanArts: List<FanArt>
 		get() = fanArtArtists.flatMap { it.fanArts }
+	val profileDesignManager = ProfileDesignManager()
 
 	/**
 	 * Loads the artists from the Fan Arts folder

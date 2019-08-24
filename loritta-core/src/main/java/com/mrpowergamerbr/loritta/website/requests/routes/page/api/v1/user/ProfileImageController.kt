@@ -2,10 +2,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
-import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -52,23 +49,16 @@ class ProfileImageController {
 			}
 		}
 
-		val map = mapOf(
-				"default" to NostalgiaProfileCreator::class.java,
-				"modern" to DefaultProfileCreator::class.java,
-				"msn" to MSNProfileCreator::class.java,
-				"orkut" to OrkutProfileCreator::class.java
-		)
-
 		var type = backgroundType
-		if (!map.containsKey(type))
+		if (!loritta.profileDesignManager.designs.any { it.internalType == type })
 			type = "default"
 
 		val locale = loritta.getLegacyLocaleById("default")
 		val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)!!
 		val serverConfig = loritta.getServerConfigForGuild(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
-		val creator = map[type]!!
-		val profileCreator = creator.newInstance()
+		val creator = loritta.profileDesignManager.designs.first { it.internalType == type }
+		val profileCreator = creator.clazz.constructors.first().newInstance() as ProfileCreator
 		val profile = profileCreator.create(
 				lorittaShards.getShards().first().selfUser,
 				user,

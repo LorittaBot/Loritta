@@ -9,10 +9,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
-import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
-import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
@@ -236,22 +233,33 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			}
 		}
 
-		val map = mapOf(
-				"default" to NostalgiaProfileCreator::class.java,
-				"modern" to DefaultProfileCreator::class.java,
-				"msn" to MSNProfileCreator::class.java,
-				"orkut" to OrkutProfileCreator::class.java
-		)
+		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
+			loritta.profileDesignManager.designs
+		} else {
+			loritta.profileDesignManager.publicDesigns
+		}
 
 		var type = if (user.idLong == context.userHandle.idLong) {
-			context.args.getOrNull(0)
-		} else { null } ?: map.entries.firstOrNull { settings.activeProfile == it.value.simpleName }?.key ?: "default"
+			context.rawArgs.getOrNull(0)
+		} else {
+			context.rawArgs.getOrNull(1)
+		}
 
-		if (!map.containsKey(type) || !settings.boughtProfiles.contains(map[type]!!.simpleName))
+		// Caso coloque "force_" no nome do type (Por exemplo: "force_nostalgia"), a Lori não irá verificar se o usuário realmente tem o design comprado
+		// Utilizado para debugging, apenas para pessoas especiais :3
+		val shouldForceDesignEvenIfItIsNotBought = if (loritta.config.isOwner(context.userHandle.idLong) && type?.startsWith("force_") == true) {
+			type = type.removePrefix("force_")
+			true
+		} else { false }
+
+		if (type == null)
+			type = availableDesigns.firstOrNull { settings.activeProfile == it.clazz.simpleName }?.internalType
+
+		if (type == null || !availableDesigns.any { it.internalType == type } || (!shouldForceDesignEvenIfItIsNotBought && !settings.boughtProfiles.contains(availableDesigns.first { it.internalType == type }.clazz.simpleName)))
 			type = "default"
 
-		val creator = map[type]!!
-		val profileCreator = creator.newInstance()
+		val creator = availableDesigns.first { it.internalType == type }.clazz
+		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
 		val profile = profileCreator.create(
 				context.userHandle,
 				user,
