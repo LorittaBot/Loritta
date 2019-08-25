@@ -111,6 +111,13 @@ class SelfProfileController {
 				profile.money -= profileDesign.price
 			}
 
+			for (creatorId in profileDesign.createdBy) {
+				val creator = loritta.getOrCreateLorittaProfile(creatorId)
+				transaction(Databases.loritta) {
+					creator.money += profileDesign.price * 0.2
+				}
+			}
+
 			res.send(
 					gson.toJson(
 							loritta.profileDesignManager.publicDesigns.map {
