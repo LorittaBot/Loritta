@@ -115,7 +115,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			var winner: Pair<String, String>? = null
 
 			if (FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES) {
-				val chance = loritta.config.loritta.featureFlags.firstOrNull { it.startsWith("${FeatureFlags.WRECK_THE_RAFFLE_STOP_THE_WHALES}-chance-") }
+				val chance = loritta.config.loritta.featureFlags.firstOrNull { it.startsWith("${FeatureFlags.Names.WRECK_THE_RAFFLE_STOP_THE_WHALES}-chance-") }
 						?.split("-")
 						?.last()
 						?.toDouble() ?: 25.0
