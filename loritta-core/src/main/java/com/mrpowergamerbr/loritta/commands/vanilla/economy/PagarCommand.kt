@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.sync.Mutex
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
@@ -12,6 +13,7 @@ import java.math.BigDecimal
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	companion object {
 		const val TRANSACTION_TAX = 0.05
+		private val mutex = Mutex()
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -142,39 +144,45 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
-						val receiverProfile = loritta.getOrCreateLorittaProfile(user.id)
+						mutex.withLock {
+							val receiverProfile = loritta.getOrCreateLorittaProfile(user.id)
 
-						if (receiverProfile.money.isNaN()) {
-							// receiverProfile.dreams = 0.0
-							return@onReactionAddByAuthor
+							if (receiverProfile.money.isNaN()) {
+								// receiverProfile.dreams = 0.0
+								return@onReactionAddByAuthor
+							}
+
+							if (context.lorittaUser.profile.money.isNaN()) {
+								// context.lorittaUser.profile.dreams = 0.0
+								return@onReactionAddByAuthor
+							}
+
+							val giverProfile = loritta.getOrCreateLorittaProfile(context.lorittaUser.profile.id.value)
+
+							if (howMuch > giverProfile.money)
+								return@onReactionAddByAuthor
+
+							val beforeGiver = context.lorittaUser.profile.money
+							val beforeReceiver = receiverProfile.money
+
+							transaction(Databases.loritta) {
+								context.lorittaUser.profile.money -= howMuch
+								receiverProfile.money += finalMoney
+							}
+
+							logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))")
+
+							context.reply(
+									LoriReply(
+											locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+												locale["ECONOMY_Name"]
+											} else {
+												locale["ECONOMY_NamePlural"]
+											}],
+											"\uD83D\uDCB8"
+									)
+							)
 						}
-
-						if (context.lorittaUser.profile.money.isNaN()) {
-							// context.lorittaUser.profile.dreams = 0.0
-							return@onReactionAddByAuthor
-						}
-
-						val giverProfile = loritta.getOrCreateLorittaProfile(context.lorittaUser.profile.id.value)
-
-						if (howMuch > giverProfile.money)
-							return@onReactionAddByAuthor
-
-						val beforeGiver = context.lorittaUser.profile.money
-						val beforeReceiver = receiverProfile.money
-
-						transaction(Databases.loritta) {
-							context.lorittaUser.profile.money -= howMuch
-							receiverProfile.money += finalMoney
-						}
-
-						logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))")
-
-						context.reply(
-								LoriReply(
-										locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
-										"\uD83D\uDCB8"
-								)
-						)
 					}
 				}
 
