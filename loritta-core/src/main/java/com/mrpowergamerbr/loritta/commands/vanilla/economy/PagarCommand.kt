@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
