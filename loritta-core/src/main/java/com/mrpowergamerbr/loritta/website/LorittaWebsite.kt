@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
@@ -106,8 +107,9 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 				// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 				if (localeId != null) {
 					if ((!req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
+						val hostHeader = req.header("Host").valueOrNull()
 						res.status(302) // temporary redirect / no page rank penalty (?)
-						res.redirect("${loritta.config.loritta.website.url}${locale["website.localePath"]}${req.path()}${req.urlQueryString}")
+						res.redirect("https://$hostHeader/${locale["website.localePath"]}${req.path()}${req.urlQueryString}")
 						res.send("Redirecting...")
 						return@use
 					}

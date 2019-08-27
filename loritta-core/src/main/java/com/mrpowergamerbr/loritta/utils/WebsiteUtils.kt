@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -31,6 +32,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -326,6 +328,18 @@ object WebsiteUtils {
 
 		// TODO: Permitir customizar da onde veio o guildId
 		val guildId = req.path().split("/")[3]
+
+		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
+
+		val host = req.header("Host").valueOrNull() ?: return false
+
+		val loriShardId = DiscordUtils.getLorittaShardIdForShardId(shardId)
+		val theNewUrl = DiscordUtils.getLorittaUrlForLorittaShardId(loriShardId)
+
+		if (host != theNewUrl) {
+			res.redirect("https://$theNewUrl${req.path()}${req.urlQueryString}")
+			return true
+		}
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
 		val server = lorittaShards.getGuildById(guildId)

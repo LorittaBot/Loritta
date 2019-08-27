@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 class GeneralConfig @JsonCreator constructor(
 		val loritta: LorittaConfig,
+		val shards: List<LorittaShardsConfig>,
 		@JsonProperty("postgresql")
 		val postgreSql: PostgreSqlConfig,
 		@JsonProperty("mongodb")
@@ -27,6 +28,13 @@ class GeneralConfig @JsonCreator constructor(
 		val mixer: MixerConfig,
 		val fortniteApi: FortniteApiConfig
 ) {
+	class LorittaShardsConfig @JsonCreator constructor(
+			val id: Long,
+			val name: String,
+			val minShard: Long,
+			val maxShard: Long
+	)
+
 	class LorittaConfig @JsonCreator constructor(
 			val environment: EnvironmentType,
 			val featureFlags: List<String>,
