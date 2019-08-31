@@ -21,7 +21,6 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -32,6 +31,8 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.Gender
@@ -86,7 +87,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : LorittaBot(config) {
+class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaBot(config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -176,15 +177,15 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				HeartbeatCommand()
 		)
 	}
-	val requestLimiter = RequestLimiter(this)
+	var willRestartAt: Long? = null
 
 	init {
 		LorittaLauncher.loritta = this
-		FOLDER = config.loritta.folders.root
-		ASSETS = config.loritta.folders.assets
-		TEMP = config.loritta.folders.temp
-		LOCALES = config.loritta.folders.locales
-		FRONTEND = config.loritta.website.folder
+		FOLDER = instanceConfig.loritta.folders.root
+		ASSETS = instanceConfig.loritta.folders.assets
+		TEMP = instanceConfig.loritta.folders.temp
+		LOCALES = instanceConfig.loritta.folders.locales
+		FRONTEND = instanceConfig.loritta.website.folder
 		loadLocales()
 		loadLegacyLocales()
 		mercadoPago = MercadoPago(
@@ -215,7 +216,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 
 		builder = DefaultShardManagerBuilder()
 				.setShardsTotal(discordConfig.discord.maxShards)
-				.setShards(discordConfig.discord.minShardId, discordConfig.discord.maxShardId)
+				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
 				.setStatus(discordConfig.discord.status)
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
@@ -258,6 +259,21 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 			return youtubeKeys[RANDOM.nextInt(youtubeKeys.size)]
 		}
 
+	val isMaster: Boolean
+		get() {
+			return loritta.instanceConfig.loritta.currentClusterId == 1L
+		}
+
+	val lorittaCluster: GeneralConfig.LorittaClusterConfig
+		get() {
+			return loritta.config.clusters.first { it.id == loritta.instanceConfig.loritta.currentClusterId }
+		}
+
+	val lorittaInternalApiKey: GeneralConfig.LorittaConfig.WebsiteConfig.AuthenticationKey
+		get() {
+			return loritta.config.loritta.website.apiKeys.first { it.description == "Loritta Internal Key" }
+		}
+
 	// Inicia a Loritta
 	fun start() {
 		RestAction.setPassContext(true)
@@ -273,7 +289,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(config.loritta.website.url, config.loritta.website.folder)
+			website = LorittaWebsite(instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
 			org.jooby.run({
 				website
 			})
@@ -295,10 +311,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 						SocketOpCode.Discord.IDENTIFY,
 						objectNode(
 								"lorittaShardId" to config.socket.shardId,
-								"lorittaShardName" to config.socket.clientName,
-								"discordMaxShards" to discordConfig.discord.maxShards,
-								"discordShardMin" to discordConfig.discord.minShardId,
-								"discordShardMax" to discordConfig.discord.maxShardId
+								"lorittaShardName" to config.socket.clientName
 						),
 						success = {
 							logger.info("Identification process was a success! We are now identified and ready to send and receive commands!")

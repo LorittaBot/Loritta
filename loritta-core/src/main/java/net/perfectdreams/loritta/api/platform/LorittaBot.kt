@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import io.ktor.client.HttpClient
@@ -25,7 +26,7 @@ import java.util.*
  *
  * This should be extended by plataform specific Lori's
  */
-abstract class LorittaBot(var config: GeneralConfig) {
+abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) {
 	abstract val supportedFeatures: List<PlatformFeature>
 	abstract val commandManager: LorittaCommandManager
 	var locales = mapOf<String, BaseLocale>()
@@ -45,7 +46,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 	 * In the future this will be loaded from Loritta's website!
 	 */
 	fun loadFanArts() {
-		val f = File(config.loritta.folders.fanArts)
+		val f = File(instanceConfig.loritta.folders.fanArts)
 
 		fanArtArtists = f.listFiles().filter { it.extension == "conf" }.map {
 			loadFanArtArtist(it)
@@ -71,7 +72,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 			locale.localeEntries.putAll(defaultLocale.localeEntries)
 		}
 
-		val localeFolder = File(config.loritta.folders.locales, id)
+		val localeFolder = File(instanceConfig.loritta.folders.locales, id)
 
 		if (localeFolder.exists()) {
 			localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
@@ -105,7 +106,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 		val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
 		locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
 
-		val localeFolder = File(config.loritta.folders.locales)
+		val localeFolder = File(instanceConfig.loritta.folders.locales)
 		localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
 			locales[it.name] = loadLocale(it.name, defaultLocale)
 		}
@@ -122,7 +123,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 		val locales = mutableMapOf<String, LegacyBaseLocale>()
 
 		// Carregar primeiro o locale padrão
-		val defaultLocaleFile = File(config.loritta.folders.locales, "default.json")
+		val defaultLocaleFile = File(instanceConfig.loritta.folders.locales, "default.json")
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
 		val defaultLocale = Loritta.GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = Loritta.JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
@@ -137,7 +138,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 		locales.put("default", defaultLocale)
 
 		// Carregar todos os locales
-		val localesFolder = File(config.loritta.folders.locales)
+		val localesFolder = File(instanceConfig.loritta.folders.locales)
 		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 		for (file in localesFolder.listFiles()) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
@@ -155,7 +156,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 			if (id != "default") {
 				val jsonObject = Loritta.JSON_PARSER.parse(Loritta.GSON.toJson(locale))
 
-				val localeFile = File(config.loritta.folders.locales, "$id.json")
+				val localeFile = File(instanceConfig.loritta.folders.locales, "$id.json")
 				val asJson = Loritta.JSON_PARSER.parse(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
@@ -200,7 +201,7 @@ abstract class LorittaBot(var config: GeneralConfig) {
 					}
 				}
 
-				File(config.loritta.folders.locales, "$id.json").writeText(prettyGson.toJson(jsonObject))
+				File(instanceConfig.loritta.folders.locales, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
 

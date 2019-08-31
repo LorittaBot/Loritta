@@ -6,7 +6,6 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -25,6 +24,9 @@ class CreateTwitchWebhooksTask : Runnable {
 	var twitchWebhooks: MutableList<TwitchWebhook>? = null
 
 	override fun run() {
+		if (!loritta.isMaster) // Não verifique caso não seja o servidor mestre
+			return
+
 		try {
 			// Servidores que usam o módulo do YouTube
 			val servers = loritta.serversColl.find(
@@ -41,7 +43,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			servers.iterator().use {
 				while (it.hasNext()) {
 					val server = it.next()
-					val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+					// val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 					val livestreamConfig = server.livestreamConfig
 
 					for (channel in livestreamConfig.channels) {
@@ -49,10 +51,10 @@ class CreateTwitchWebhooksTask : Runnable {
 							continue
 						if (!channel.channelUrl!!.startsWith("http"))
 							continue
-						val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
+						/* val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 						if (!textChannel.canTalk())
-							continue
+							continue */;
 
 						val userLogin = channel.channelUrl!!.split("/").last()
 						if (userLogin.isBlank())

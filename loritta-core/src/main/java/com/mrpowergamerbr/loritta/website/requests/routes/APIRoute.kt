@@ -6,9 +6,7 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.Lo
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.SendMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.GetFanArtsController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.GetLocaleController
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.UsersController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.*
 import org.jooby.Jooby
 
@@ -36,6 +34,13 @@ class APIRoute : Jooby() {
 
 		// ===[ LORITTA ]===
 		use(UsersController::class.java)
+		use(GetStatusController::class.java)
+		use(GetMutualGuildsController::class.java)
+		use(SendHelpController::class.java)
+		use(RegisterUsernameChangeController::class.java)
+		use(GetRaffleStatusController::class.java)
+		use(UpdateReadyController::class.java)
+		use(GetGuildInfoController::class.java)
 
 		// ===[ NEW WEBSITE STUFF ]===
 		use(GetLocaleController::class.java)

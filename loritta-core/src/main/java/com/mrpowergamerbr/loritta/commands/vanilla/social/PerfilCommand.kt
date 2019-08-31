@@ -2,6 +2,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -14,7 +17,7 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.api.entities.Guild
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -30,7 +33,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userVotes: MutableList<DiscordBotVote>? = null
 		var lastQuery = 0L
 
-		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<Guild> = lorittaShards.getMutualGuilds(user)): List<BufferedImage> {
+		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement> = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			fun hasRole(guildId: String, roleId: String): Boolean {
 				val lorittaGuild = lorittaShards.getGuildById(guildId)
@@ -113,7 +116,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				} else if (30_000 > mutualGuilds.size) { // Se está em menos de 30k servidores, o PostgreSQL ainda suporta pegar via inList
 					(ServerConfigs innerJoin DonationConfigs)
 							.select {
-								DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it.idLong })
+								DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
 							}
 				} else {
 					specialCase = true
@@ -128,7 +131,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				val configs = ServerConfig.wrapRows(results)
 
 				for (config in configs) {
-					if (specialCase && mutualGuilds.any { it.idLong == config.id.value })
+					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
 						continue
 
 					val donationKey = config.donationKey
@@ -196,14 +199,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && context.args.first() == "shop") {
-			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.config.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
+			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val mutualGuildsInAllClusters = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
 		val member = mutualGuilds.firstOrNull()?.getMember(user)
-		val badges = getUserBadges(user, userProfile, mutualGuilds)
+		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 

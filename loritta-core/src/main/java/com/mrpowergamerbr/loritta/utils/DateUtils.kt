@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object DateUtils {
 	private val maxYears = 100000
@@ -67,5 +68,66 @@ object DateUtils {
 		return if (sb.isEmpty()) {
 			locale["DATEUTILS_Now"]
 		} else sb.toString().trim { it <= ' ' }
+	}
+
+	fun formatMillis(timeInMillis: Long, locale: LegacyBaseLocale): String {
+		var jvmUpTime = timeInMillis
+		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
+		jvmUpTime -= TimeUnit.DAYS.toMillis(days)
+		val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
+		jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
+		val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
+		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
+		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
+
+		val sb = StringBuilder()
+		if (days != 0L) {
+			sb.append(days)
+			val isPlural = days != 1L
+			sb.append(" ")
+			if (!isPlural) {
+				sb.append(locale["DATEUTILS_Month"])
+			} else {
+				sb.append(locale["DATEUTILS_Months"])
+			}
+			sb.append(" ")
+		}
+
+		if (hours != 0L) {
+			sb.append(hours)
+			val isPlural = hours != 1L
+			sb.append(" ")
+			if (!isPlural) {
+				sb.append(locale["DATEUTILS_Hour"])
+			} else {
+				sb.append(locale["DATEUTILS_Hours"])
+			}
+			sb.append(" ")
+		}
+
+		if (minutes != 0L) {
+			sb.append(minutes)
+			val isPlural = minutes != 1L
+			sb.append(" ")
+			if (!isPlural) {
+				sb.append(locale["DATEUTILS_Minute"])
+			} else {
+				sb.append(locale["DATEUTILS_Minutes"])
+			}
+			sb.append(" ")
+		}
+
+		if (seconds != 0L) {
+			sb.append(seconds)
+			val isPlural = seconds != 1L
+			sb.append(" ")
+			if (!isPlural) {
+				sb.append(locale["DATEUTILS_Second"])
+			} else {
+				sb.append(locale["DATEUTILS_Seconds"])
+			}
+			sb.append(" ")
+		}
+		return sb.toString().trim()
 	}
 }

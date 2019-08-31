@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
@@ -110,18 +111,19 @@ object GlobalHandler {
 		} else {
 			// Nós iremos redirecionar o usuário para a versão correta para ele, caso esteja acessando o "website errado"
 			if (localeId != null) {
+				val hostHeader = req.header("Host").valueOrNull()
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("${loritta.config.loritta.website.url}br${req.path()}${queryString}")
+						res.redirect("${hostHeader}br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("${loritta.config.loritta.website.url}pt${req.path()}${queryString}")
+						res.redirect("${hostHeader}pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("${loritta.config.loritta.website.url}es${req.path()}${queryString}")
+						res.redirect("${hostHeader}es${req.path()}${queryString}")
 					}
-					res.redirect("${loritta.config.loritta.website.url}us${req.path()}${queryString}")
+					res.redirect("${hostHeader}us${req.path()}${queryString}")
 					return "Redirecting..."
 				}
 			}

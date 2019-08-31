@@ -205,7 +205,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 		context.sendMessage(temmie, DiscordMessage.builder()
 				.username("Kenji do Loop Infinito")
 				.content(context.getAsMention(true) + bemBoladas[RANDOM.nextInt(bemBoladas.size)])
-				.avatarUrl("${loritta.config.loritta.website.url}assets/img/kenji.jpg")
+				.avatarUrl("${loritta.instanceConfig.loritta.website.url}assets/img/kenji.jpg")
 				.build())
 	}
 }

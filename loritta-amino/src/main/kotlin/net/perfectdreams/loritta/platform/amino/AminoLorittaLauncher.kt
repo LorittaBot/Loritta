@@ -1,23 +1,21 @@
 package net.perfectdreams.loritta.platform.amino
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.platform.amino.utils.config.GeneralAminoConfig
+import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import java.io.File
 
 object AminoLorittaLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
-        val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
-        val config = Constants.HOCON_MAPPER.readValue<GeneralConfig>(configurationFile.readText())
-
-        val aminoConfigurationFile = File(System.getProperty("aminoConf") ?: "./amino.conf")
-        val aminoConfig = Constants.HOCON_MAPPER.readValue<GeneralAminoConfig>(aminoConfigurationFile.readText())
+        val config = readConfigurationFromFile<GeneralConfig>(File(System.getProperty("conf") ?: "./loritta.conf"))
+        val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(File(System.getProperty("conf") ?: "./loritta.instance.conf"))
+        val aminoConfig = readConfigurationFromFile<GeneralAminoConfig>(File(System.getProperty("aminoConf") ?: "./amino.conf"))
 
         runBlocking {
-            val loritta = AminoLoritta(aminoConfig, config)
+            val loritta = AminoLoritta(aminoConfig, config, instanceConfig)
             loritta.start()
         }
     }

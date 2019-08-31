@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
+import com.google.gson.JsonElement
+import com.mrpowergamerbr.loritta.utils.gson
 import org.jooby.Mutant
 import org.jooby.Request
+import org.jooby.Response
 
 /**
  * Returns the request "true IP"
@@ -34,4 +37,8 @@ fun Mutant.valueOrNull(): String? {
 		this.value()
 	else
 		null
+}
+
+fun Response.send(element: JsonElement) {
+	this.send(gson.toJsonTree(element))
 }

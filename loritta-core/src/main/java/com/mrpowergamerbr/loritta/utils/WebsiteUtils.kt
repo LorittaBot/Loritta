@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -31,6 +32,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -73,7 +75,7 @@ object WebsiteUtils {
 		val jsonObject = jsonObject(
 				"code" to code.errorId,
 				"reason" to code.fancyName,
-				"help" to "${loritta.config.loritta.website.url}docs/api"
+				"help" to "${loritta.instanceConfig.loritta.website.url}docs/api"
 		)
 
 		if (message != null) {
@@ -143,7 +145,7 @@ object WebsiteUtils {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["addBotUrl"] = loritta.discordConfig.discord.addBotUrl
+		variables["addBotUrl"] = loritta.discordInstanceConfig.discord.addBotUrl
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
 
@@ -237,7 +239,6 @@ object WebsiteUtils {
 
 		val auth = header.value()
 
-
 		val validKey = loritta.config.loritta.website.apiKeys.firstOrNull {
 			it.name == auth
 		}
@@ -290,7 +291,7 @@ object WebsiteUtils {
 			} else {
 				val state = JsonObject()
 				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-				res.redirect(loritta.discordConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+				res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 			}
 			return false
 		}
@@ -319,13 +320,25 @@ object WebsiteUtils {
 			} else {
 				val state = JsonObject()
 				state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + req.path()
-				res.redirect(loritta.discordConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+				res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 			}
 			return false
 		}
 
 		// TODO: Permitir customizar da onde veio o guildId
 		val guildId = req.path().split("/")[3]
+
+		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
+
+		val host = req.header("Host").valueOrNull() ?: return false
+
+		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
+		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
+
+		if (host != theNewUrl) {
+			res.redirect("https://$theNewUrl${req.path()}${req.urlQueryString}")
+			return true
+		}
 
 		val serverConfig = loritta.getServerConfigForGuild(guildId) // get server config for guild
 		val server = lorittaShards.getGuildById(guildId)
@@ -777,7 +790,7 @@ fun getDiscordCrawlerAuthenticationPage(): String {
 			setMetaProperty("og:site_name", "Loritta")
 			setMetaProperty("og:title", "Painel da Loritta")
 			setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-			setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
+			setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_dashboard.png")
 			setMetaProperty("og:image:width", "320")
 			setMetaProperty("og:ttl", "660")
 			setMetaProperty("og:image:width", "320")

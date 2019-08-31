@@ -1,13 +1,15 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.configure
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jooby.Request
 import org.jooby.Response
 
@@ -24,11 +26,24 @@ abstract class ConfigureView : ProtectedView() {
 		}
 		val guildId = split[3]
 
+		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
+
+		val host = req.header("Host").valueOrNull() ?: return "Missing Host header!"
+
+		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
+		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
+
+		if (host != theNewUrl) {
+			res.redirect("https://$theNewUrl${req.path()}${req.urlQueryString}")
+			return "Redirecting..."
+		}
+
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 		val serverConfig = loritta.getServerConfigForGuild(guildId)
 
 		if (jdaGuild == null) {
-			return "Eu não estou neste servidor ou as minhas shards ainda não reiniciaram!"
+			res.redirect(loritta.discordInstanceConfig.discord.addBotUrl)
+			return "Redirecting..."
 		}
 
 		val id = userIdentification.id

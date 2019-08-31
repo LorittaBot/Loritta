@@ -51,7 +51,7 @@ object WebsiteVoteUtils {
 			transaction(Databases.loritta) {
 				DonationKey.new {
 					this.userId = userId
-					this.expiresAt = System.currentTimeMillis() + Constants.SEVEN_DAYS_IN_MILLISECONDS
+					this.expiresAt = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
 					this.value = 59.99
 				}
 			}

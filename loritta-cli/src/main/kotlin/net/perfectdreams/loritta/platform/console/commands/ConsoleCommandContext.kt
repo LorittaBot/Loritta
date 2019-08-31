@@ -69,7 +69,7 @@ class ConsoleCommandContext(val loritta: LorittaBot, locale: BaseLocale, legacyL
     }
 
     override suspend fun sendFile(inputStream: InputStream, name: String, message: String): Message {
-        File("${loritta.config.loritta.folders.root}output/$name-${System.currentTimeMillis()}.png").writeBytes(inputStream.readAllBytes())
+        File("${loritta.instanceConfig.loritta.folders.root}output/$name-${System.currentTimeMillis()}.png").writeBytes(inputStream.readAllBytes())
         return ConsoleMessage(message)
     }
 
