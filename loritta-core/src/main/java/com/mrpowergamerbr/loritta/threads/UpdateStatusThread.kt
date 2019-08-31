@@ -4,11 +4,14 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Icon
 import java.io.File
 import java.lang.management.ManagementFactory
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -45,6 +48,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			currentIndex = skipToIndex
 			skipToIndex = -1
 		}
+
 		val calendar = Calendar.getInstance()
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
@@ -140,8 +144,14 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val game = loritta.discordConfig.discord.activities[currentIndex]
 
 				var str = game.name
-				str = str.replace("{guilds}", loritta.lorittaShards.getCachedGuildCount().toString())
+				str = str.replace("{guilds}", runBlocking { lorittaShards.queryGuildCount() }.toString())
 				str = str.replace("{uptime}", sb.toString())
+
+				val willRestartAt = loritta.willRestartAt
+				if (willRestartAt != null) {
+					val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
+					str = "\uD83D\uDEAB Inatividade Agendada: ${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}"
+				}
 
 				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
 				currentIndex++

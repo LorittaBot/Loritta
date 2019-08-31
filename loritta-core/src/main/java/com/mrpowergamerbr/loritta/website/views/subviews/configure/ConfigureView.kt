@@ -30,8 +30,8 @@ abstract class ConfigureView : ProtectedView() {
 
 		val host = req.header("Host").valueOrNull() ?: return "Missing Host header!"
 
-		val loriShardId = DiscordUtils.getLorittaShardIdForShardId(shardId)
-		val theNewUrl = DiscordUtils.getLorittaUrlForLorittaShardId(loriShardId)
+		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
+		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
 
 		if (host != theNewUrl) {
 			res.redirect("https://$theNewUrl${req.path()}${req.urlQueryString}")
@@ -42,7 +42,7 @@ abstract class ConfigureView : ProtectedView() {
 		val serverConfig = loritta.getServerConfigForGuild(guildId)
 
 		if (jdaGuild == null) {
-			res.redirect(loritta.discordConfig.discord.addBotUrl)
+			res.redirect(loritta.discordInstanceConfig.discord.addBotUrl)
 			return "Redirecting..."
 		}
 

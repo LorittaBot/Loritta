@@ -33,7 +33,7 @@ import java.util.*
 import kotlin.reflect.full.functions
 
 class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
-	port(loritta.config.loritta.website.port) // Porta do website
+	port(loritta.instanceConfig.loritta.website.port) // Porta do website
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
 	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
@@ -46,15 +46,28 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 
 	// Mostrar conexões realizadas ao website
 	before { req, res ->
-		req.set("start", System.currentTimeMillis())
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString")
+		val userAgent = req.header("User-Agent").valueOrNull()
+
+		if (loritta.config.loritta.website.blockedIps.contains(req.trueIp)) {
+			logger.warn("${req.trueIp} ($userAgent): ${req.method()} ${req.path()}$queryString - Request was IP blocked")
+			res.send("")
+			return@before
+		}
+		if (loritta.config.loritta.website.blockedUserAgents.contains(req.trueIp)) {
+			logger.warn("${req.trueIp} ($userAgent): ${req.method()} ${req.path()}$queryString - Request was User-Agent blocked")
+			res.send("")
+			return@before
+		}
+
+		req.set("start", System.currentTimeMillis())
+		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString")
 	}
 	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")
 		val queryString = req.urlQueryString
-		logger.info("${req.trueIp}: ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
+		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString - Finished! ${System.currentTimeMillis() - start}ms")
 	}
 
 	post("/api/v1/callback/github") { req, res ->

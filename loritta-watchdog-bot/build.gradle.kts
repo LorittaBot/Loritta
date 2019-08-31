@@ -69,7 +69,7 @@ dependencies {
 	compile("io.ktor:ktor-server-netty:$ktorVersion")
 	compile("io.ktor:ktor-websockets:$ktorVersion")
 	compile("io.ktor:ktor-client-core:$ktorVersion")
-	compile("io.ktor:ktor-client-cio:$ktorVersion")
+	compile("io.ktor:ktor-client-apache:$ktorVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
 	testImplementation("io.mockk:mockk:1.9.3")

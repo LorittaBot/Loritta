@@ -48,7 +48,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			try {
 				val diff = System.currentTimeMillis() - started
 
-				if (diff > 3600000) {
+				if (diff > 3600000 && loritta.isMaster) { // Resultados apenas saem no master server
 					handleWin()
 				}
 			} catch (e: Exception) {

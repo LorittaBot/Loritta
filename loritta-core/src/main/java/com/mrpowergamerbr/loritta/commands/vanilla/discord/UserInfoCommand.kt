@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
-import net.perfectdreams.loritta.utils.Emotes
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.UsernameChange
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
@@ -119,13 +121,16 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 			var sharedServersFieldTitle = context.legacyLocale.toNewLocale()["commands.discord.userInfo.sharedServers"]
 			var servers: String?
-			val sharedServers = lorittaShards.getMutualGuilds(user)
-					.sortedByDescending { it.members.size }
+
+			val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+			val sharedServers = sharedServersResults.sortedByDescending {
+				it["memberCount"].int
+			}
 
 			if (settings.hideSharedServers) {
 				servers = "*${context.legacyLocale["USERINFO_PrivacyOn"]}*"
 			} else {
-				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it.name}`" })
+				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}`" })
 				sharedServersFieldTitle = "$sharedServersFieldTitle (${sharedServers.size})"
 			}
 

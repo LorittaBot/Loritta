@@ -39,7 +39,7 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 
 				logger.info { "Tentando adicionar fan art de $userId ($userName) - URL: ${attachment.url} " }
 
-				for (it in File(loritta.config.loritta.folders.fanArts).listFiles()) {
+				for (it in File(loritta.instanceConfig.loritta.folders.fanArts).listFiles()) {
 					if (it.extension == "conf") {
 						val text = it.readText()
 						if (text.contains("        id = \"$userId\"")) {
@@ -108,7 +108,7 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 
 				logger.info { "Fan Art de $userId ($userName) - URL: ${attachment.url} foi salva em $imageFile!" }
 
-				val artistFile = File(loritta.config.loritta.folders.fanArts, "$artistId.conf")
+				val artistFile = File(loritta.instanceConfig.loritta.folders.fanArts, "$artistId.conf")
 
 				val fanArtSection = """    {
         |        file-name = "$fanArtName"

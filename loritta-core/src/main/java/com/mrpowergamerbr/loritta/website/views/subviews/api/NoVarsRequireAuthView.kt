@@ -17,7 +17,7 @@ abstract class NoVarsRequireAuthView : NoVarsView() {
 	}
 
 	override fun render(req: Request, res: Response, path: String): String {
-		val header = req.header("Lori-Authentication")
+		val header = req.header("Authorization")
 		val auth = header.value("???")
 
 		val validKey = loritta.config.loritta.website.apiKeys.filter {

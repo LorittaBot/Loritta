@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -10,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -36,7 +36,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			val description = context.legacyLocale[
 					"AJUDA_INTRODUCE_MYSELF",
 					context.userHandle.asMention,
-					loritta.discordConfig.discord.addBotUrl,
+					loritta.discordInstanceConfig.discord.addBotUrl,
 					context.event.guild?.name ?: "\uD83E\uDD37"]
 
 			val builder = EmbedBuilder()
@@ -83,243 +83,250 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 		}
 	}
 
-	fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
-		val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
-				CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
-				CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
-				CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
-				CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
-				CommandCategory.SOCIAL to "<a:lori_ablobcouple:412577132007653383>",
-				CommandCategory.ACTION to "✨",
-				CommandCategory.FUN to "<:vieirinha:412574915879763982>",
-				CommandCategory.ADMIN to "\uD83D\uDC6E",
-				CommandCategory.IMAGES to "\uD83C\uDFA8",
-				CommandCategory.MUSIC to "\uD83C\uDFA7",
-				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA",
-				CommandCategory.ECONOMY to "\uD83D\uDCB5"
-		)
+	companion object {
+		private val logger = KotlinLogging.logger {}
+		fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
+			val reactionEmotes = mapOf(
+					CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
+					CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
+					CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
+					CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
+					CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
+					CommandCategory.SOCIAL to "<a:lori_ablobcouple:412577132007653383>",
+					CommandCategory.ACTION to "✨",
+					CommandCategory.FUN to "<:vieirinha:412574915879763982>",
+					CommandCategory.ADMIN to "\uD83D\uDC6E",
+					CommandCategory.IMAGES to "\uD83C\uDFA8",
+					CommandCategory.MUSIC to "\uD83C\uDFA7",
+					CommandCategory.UTILS to "\uD83D\uDD27",
+					CommandCategory.MISC to "\uD83D\uDDC3",
+					CommandCategory.ANIME to "\uD83D\uDCFA",
+					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+			)
 
-		val embeds = ArrayList<MessageEmbed>()
-		var embed = EmbedBuilder()
-		embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.legacyLocale[cat.fancyTitle], null)
-		val conf = context.config
+			val embeds = ArrayList<MessageEmbed>()
+			var embed = EmbedBuilder()
+			embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.legacyLocale[cat.fancyTitle], null)
+			val conf = context.config
 
-		val color = when (cat) {
-			CommandCategory.DISCORD -> Color(121, 141, 207)
-			CommandCategory.SOCIAL -> Color(231, 150, 90)
-			CommandCategory.UNDERTALE -> Color(250, 250, 250)
-			CommandCategory.POKEMON -> Color(255, 13, 0)
-			CommandCategory.MINECRAFT -> Color(50, 141, 145)
-			CommandCategory.ROBLOX -> Color(226, 35, 26)
-			CommandCategory.MISC -> Color(255, 176, 0)
-			CommandCategory.UTILS -> Color(176, 146, 209)
-			CommandCategory.MUSIC -> Color(124, 91, 197)
-			CommandCategory.ECONOMY -> Color(167, 210, 139)
-			else -> Color(186, 0, 239)
-		}
+			val color = when (cat) {
+				CommandCategory.DISCORD -> Color(121, 141, 207)
+				CommandCategory.SOCIAL -> Color(231, 150, 90)
+				CommandCategory.UNDERTALE -> Color(250, 250, 250)
+				CommandCategory.POKEMON -> Color(255, 13, 0)
+				CommandCategory.MINECRAFT -> Color(50, 141, 145)
+				CommandCategory.ROBLOX -> Color(226, 35, 26)
+				CommandCategory.MISC -> Color(255, 176, 0)
+				CommandCategory.UTILS -> Color(176, 146, 209)
+				CommandCategory.MUSIC -> Color(124, 91, 197)
+				CommandCategory.ECONOMY -> Color(167, 210, 139)
+				else -> Color(186, 0, 239)
+			}
 
-		var image = when (cat) {
-			CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
-			CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
-			CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
-			CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
-			CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
-			CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
-			CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
-			CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
-			else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
-		}
+			var image = when (cat) {
+				CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
+				CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
+				CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
+				CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
+				CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
+				CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
+				CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
+				CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
+				else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
+			}
 
-		embed.setColor(color)
-		embed.setThumbnail(image)
+			embed.setColor(color)
+			embed.setThumbnail(image)
 
-		var description = "*" + context.legacyLocale[cat.description] + "*\n\n"
-		val categoryCmds = loritta.commandManager.getRegisteredCommands().filter { cmd -> cmd.category == cat } + loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
+			var description = "*" + context.legacyLocale[cat.description] + "*\n\n"
+			val categoryCmds = loritta.commandManager.getRegisteredCommands().filter { cmd -> cmd.category == cat } + loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
 
-		if (!categoryCmds.isEmpty()) {
-			for (cmd in categoryCmds.sortedBy {
-				when (it) {
-					is AbstractCommand -> it.label
-					is LorittaCommand -> it.labels.first()
-					else -> throw UnsupportedOperationException()
-				}
-			}) {
-				if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
-					val toBeAdded = when (cmd) {
-						is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.legacyLocale) + "\n"
-						is LorittaCommand -> {
-                            val usage = cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale)
-                            val usageWithinCodeBlocks = if (usage.isNotEmpty()) {
-                                "`$usage` "
-                            } else {
-                                ""
-                            }
-
-                            "**${conf.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.getDescription(loritta.getLocaleById(conf.localeId))}\n"
-                        }
+			if (!categoryCmds.isEmpty()) {
+				for (cmd in categoryCmds.sortedBy {
+					when (it) {
+						is AbstractCommand -> it.label
+						is LorittaCommand -> it.labels.first()
 						else -> throw UnsupportedOperationException()
 					}
-					if ((description + toBeAdded).length > 2048) {
-						embed.setDescription(description)
-						embeds.add(embed.build())
-						embed = EmbedBuilder()
-						embed.setColor(color)
-						description = ""
+				}) {
+					if (!conf.disabledCommands.contains(cmd.javaClass.simpleName)) {
+						val toBeAdded = when (cmd) {
+							is AbstractCommand -> "**" + conf.commandPrefix + cmd.label + "**" + (if (cmd.getUsage() != null) " `" + cmd.getUsage() + "`" else "") + " » " + cmd.getDescription(context.legacyLocale) + "\n"
+							is LorittaCommand -> {
+								val usage = cmd.getUsage(loritta.getLocaleById(conf.localeId)).build(context.locale)
+								val usageWithinCodeBlocks = if (usage.isNotEmpty()) {
+									"`$usage` "
+								} else {
+									""
+								}
+
+								"**${conf.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.getDescription(loritta.getLocaleById(conf.localeId))}\n"
+							}
+							else -> throw UnsupportedOperationException()
+						}
+						if ((description + toBeAdded).length > 2048) {
+							embed.setDescription(description)
+							embeds.add(embed.build())
+							embed = EmbedBuilder()
+							embed.setColor(color)
+							description = ""
+						}
+						description += toBeAdded
 					}
-					description += toBeAdded
 				}
+				embed.setDescription(description)
+				embeds.add(embed.build())
+				return embeds
+			} else {
+				return embeds
 			}
-			embed.setDescription(description)
-			embeds.add(embed.build())
-			return embeds
-		} else {
-			return embeds
-		}
-	}
-
-	fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
-		val disabledCommands = loritta.legacyCommandManager.getCommandsDisabledIn(context.config)
-		var description = ""
-
-		var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
-
-		if (!context.config.musicConfig.isEnabled) {
-			categories = categories.filter { it != CommandCategory.MUSIC }
 		}
 
-		// Não mostrar categorias vazias
-		categories = categories.filter { category ->
-			loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } ||
-					loritta.commandManager.commands.any { it.category == category }
-		}
+		fun sendInfoBox(context: CommandContext, privateChannel: PrivateChannel) {
+			val disabledCommands = loritta.legacyCommandManager.getCommandsDisabledIn(context.config)
+			var description = ""
 
-		val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to ":discord_logo:412576344120229888",
-				CommandCategory.ROBLOX to ":roblox_logo:412576693803286528",
-				CommandCategory.UNDERTALE to ":undertale_heart:412576128340066304",
-				CommandCategory.POKEMON to ":pokeball:412575443024216066",
-				CommandCategory.MINECRAFT to ":minecraft_logo:412575161041289217",
-				CommandCategory.SOCIAL to "a:lori_ablobcouple:412577132007653383",
-				CommandCategory.ACTION to "✨",
-				CommandCategory.FUN to ":vieirinha:412574915879763982",
-				CommandCategory.ADMIN to "\uD83D\uDC6E",
-				CommandCategory.IMAGES to "\uD83C\uDFA8",
-				CommandCategory.MUSIC to "\uD83C\uDFA7",
-				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA",
-				CommandCategory.ECONOMY to "\uD83D\uDCB5"
-		)
+			var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
 
-		for (category in categories) {
-			val legacyCmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
-			val cmdsInCategory = loritta.commandManager.commands.filter { it.category == category }
-
-			val cmdCountInCategory = legacyCmdsInCategory.count() + cmdsInCategory.count()
-
-			val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
-			val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) { "<$reactionEmote>" } else { reactionEmote }
-			val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
-			description += "$emoji **" + context.legacyLocale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
-
-			val mixedCommands = cmdsInCategory + legacyCmdsInCategory
-
-			// Exemplos de comandos, iremos pegar os comandos mais usados e mostrar lá
-			val mostUsedCommands = mixedCommands.sortedByDescending { if (it is AbstractCommand) it.executedCount else if (it is LorittaCommand) it.executedCount else 0 }
-			val subList = mostUsedCommands.subList(0, Math.min(5, mostUsedCommands.size))
-			description += "• ${subList.joinToString(", ", transform = { "**`${if (it is AbstractCommand) it.label else if (it is LorittaCommand) it.labels.first() else "???"}`**" })}...\n"
-		}
-
-		val embed = EmbedBuilder().apply {
-			setTitle(context.legacyLocale["AJUDA_SelectCategory"])
-			setDescription(description)
-			setColor(Color(0, 193, 223))
-		}
-
-		privateChannel.sendMessage(embed.build()).queue { message ->
-			if (!context.metadata.containsKey("guildId") && !context.isPrivateChannel) {
-				context.metadata["guildId"] = context.guild.id
+			if (!context.config.musicConfig.isEnabled) {
+				categories = categories.filter { it != CommandCategory.MUSIC }
 			}
 
-			message.onReactionAddByAuthor(context) { getCommandReactionCallback(context, it, message) }
+			// Não mostrar categorias vazias
+			categories = categories.filter { category ->
+				loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } ||
+						loritta.commandManager.commands.any { it.category == category }
+			}
+
+			val reactionEmotes = mapOf(
+					CommandCategory.DISCORD to ":discord_logo:412576344120229888",
+					CommandCategory.ROBLOX to ":roblox_logo:412576693803286528",
+					CommandCategory.UNDERTALE to ":undertale_heart:412576128340066304",
+					CommandCategory.POKEMON to ":pokeball:412575443024216066",
+					CommandCategory.MINECRAFT to ":minecraft_logo:412575161041289217",
+					CommandCategory.SOCIAL to "a:lori_ablobcouple:412577132007653383",
+					CommandCategory.ACTION to "✨",
+					CommandCategory.FUN to ":vieirinha:412574915879763982",
+					CommandCategory.ADMIN to "\uD83D\uDC6E",
+					CommandCategory.IMAGES to "\uD83C\uDFA8",
+					CommandCategory.MUSIC to "\uD83C\uDFA7",
+					CommandCategory.UTILS to "\uD83D\uDD27",
+					CommandCategory.MISC to "\uD83D\uDDC3",
+					CommandCategory.ANIME to "\uD83D\uDCFA",
+					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+			)
 
 			for (category in categories) {
-				// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
-				val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
-				message.addReaction(reactionEmote).queue()
+				val legacyCmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
+				val cmdsInCategory = loritta.commandManager.commands.filter { it.category == category }
+
+				val cmdCountInCategory = legacyCmdsInCategory.count() + cmdsInCategory.count()
+
+				val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
+				val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) {
+					"<$reactionEmote>"
+				} else {
+					reactionEmote
+				}
+				val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
+				description += "$emoji **" + context.legacyLocale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
+
+				val mixedCommands = cmdsInCategory + legacyCmdsInCategory
+
+				// Exemplos de comandos, iremos pegar os comandos mais usados e mostrar lá
+				val mostUsedCommands = mixedCommands.sortedByDescending { if (it is AbstractCommand) it.executedCount else if (it is LorittaCommand) it.executedCount else 0 }
+				val subList = mostUsedCommands.subList(0, Math.min(5, mostUsedCommands.size))
+				description += "• ${subList.joinToString(", ", transform = { "**`${if (it is AbstractCommand) it.label else if (it is LorittaCommand) it.labels.first() else "???"}`**" })}...\n"
 			}
-			message.addReaction("\uD83D\uDD22").queue() // all categories
-		}
-	}
 
-	suspend fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
-		logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
+			val embed = EmbedBuilder().apply {
+				setTitle(context.legacyLocale["AJUDA_SelectCategory"])
+				setDescription(description)
+				setColor(Color(0, 193, 223))
+			}
 
-		msg.delete().queue()
+			privateChannel.sendMessage(embed.build()).queue { message ->
+				if (!context.metadata.containsKey("guildId") && !context.isPrivateChannel) {
+					context.metadata["guildId"] = context.guild.id
+				}
 
-		if (context.metadata["deleteMessagesOnClick"] != null) {
-			val deleteMessagesOnClick = context.metadata["deleteMessagesOnClick"]!! as List<String>
+				message.onReactionAddByAuthor(context) { getCommandReactionCallback(context, it, message) }
 
-			deleteMessagesOnClick.forEach {
-				e.channel.deleteMessageById(it).queue() // Usaremos queue já que nós não tempos certeza se a mensagem ainda existe (espero que sim!)
+				for (category in categories) {
+					// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
+					val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
+					message.addReaction(reactionEmote).queue()
+				}
+				message.addReaction("\uD83D\uDD22").queue() // all categories
 			}
 		}
 
-		if (e.reactionEmote.isEmote("\uD83D\uDD19")) {
-			sendInfoBox(context, msg.privateChannel)
-			return
-		}
+		suspend fun getCommandReactionCallback(context: CommandContext, e: MessageReactionAddEvent, msg: Message) {
+			logger.info("Processando ajuda de ${e.user.name}#${e.user.discriminator} (${e.user.id})...")
 
-		if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
-			for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
-				getCommandsFor(context, category).forEach {
-					context.sendMessage(it)
+			msg.delete().queue()
+
+			if (context.metadata["deleteMessagesOnClick"] != null) {
+				val deleteMessagesOnClick = context.metadata["deleteMessagesOnClick"]!! as List<String>
+
+				deleteMessagesOnClick.forEach {
+					e.channel.deleteMessageById(it).queue() // Usaremos queue já que nós não tempos certeza se a mensagem ainda existe (espero que sim!)
 				}
 			}
-			return
-		}
 
-		val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to "discord_logo",
-				CommandCategory.ROBLOX to "roblox_logo",
-				CommandCategory.UNDERTALE to "undertale_heart",
-				CommandCategory.POKEMON to "pokeball",
-				CommandCategory.MINECRAFT to "minecraft_logo",
-				CommandCategory.SOCIAL to "lori_ablobcouple",
-				CommandCategory.ACTION to "✨",
-				CommandCategory.FUN to "vieirinha",
-				CommandCategory.ADMIN to "\uD83D\uDC6E",
-				CommandCategory.IMAGES to "\uD83C\uDFA8",
-				CommandCategory.MUSIC to "\uD83C\uDFA7",
-				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA",
-				CommandCategory.ECONOMY to "\uD83D\uDCB5"
-		)
-
-		val entry = reactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
-		if (entry != null) {
-			// Algumas categorias possuem vários comandos, fazendo que seja necessário enviar vários embeds
-			val embeds = getCommandsFor(context, entry.key)
-			var lastMessage: Message? = null
-
-			// Para que não fique estranho, nós iremos criar uma lista com todos os IDs que deverão ser deletados após voltar uma categoria, caso exista mais de um embed enviado
-			val deleteMessagesOnClick = mutableListOf<String>()
-
-			for (embed in embeds) {
-				if (lastMessage != null)
-					deleteMessagesOnClick.add(lastMessage.id)
-
-				lastMessage = context.sendMessage(embed)
+			if (e.reactionEmote.isEmote("\uD83D\uDD19")) {
+				sendInfoBox(context, msg.privateChannel)
+				return
 			}
 
-			context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick
-			if (lastMessage != null) {
-				lastMessage.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, lastMessage) })
-				lastMessage.addReaction("\uD83D\uDD19").queue()
+			if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
+				for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
+					getCommandsFor(context, category).forEach {
+						context.sendMessage(it)
+					}
+				}
+				return
+			}
+
+			val reactionEmotes = mapOf(
+					CommandCategory.DISCORD to "discord_logo",
+					CommandCategory.ROBLOX to "roblox_logo",
+					CommandCategory.UNDERTALE to "undertale_heart",
+					CommandCategory.POKEMON to "pokeball",
+					CommandCategory.MINECRAFT to "minecraft_logo",
+					CommandCategory.SOCIAL to "lori_ablobcouple",
+					CommandCategory.ACTION to "✨",
+					CommandCategory.FUN to "vieirinha",
+					CommandCategory.ADMIN to "\uD83D\uDC6E",
+					CommandCategory.IMAGES to "\uD83C\uDFA8",
+					CommandCategory.MUSIC to "\uD83C\uDFA7",
+					CommandCategory.UTILS to "\uD83D\uDD27",
+					CommandCategory.MISC to "\uD83D\uDDC3",
+					CommandCategory.ANIME to "\uD83D\uDCFA",
+					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+			)
+
+			val entry = reactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
+			if (entry != null) {
+				// Algumas categorias possuem vários comandos, fazendo que seja necessário enviar vários embeds
+				val embeds = getCommandsFor(context, entry.key)
+				var lastMessage: Message? = null
+
+				// Para que não fique estranho, nós iremos criar uma lista com todos os IDs que deverão ser deletados após voltar uma categoria, caso exista mais de um embed enviado
+				val deleteMessagesOnClick = mutableListOf<String>()
+
+				for (embed in embeds) {
+					if (lastMessage != null)
+						deleteMessagesOnClick.add(lastMessage.id)
+
+					lastMessage = context.sendMessage(embed)
+				}
+
+				context.metadata["deleteMessagesOnClick"] = deleteMessagesOnClick
+				if (lastMessage != null) {
+					lastMessage.onReactionAddByAuthor(context, { getCommandReactionCallback(context, it, lastMessage) })
+					lastMessage.addReaction("\uD83D\uDD19").queue()
+				}
 			}
 		}
 	}

@@ -28,7 +28,7 @@ abstract class ProtectedView : AbstractView() {
 					} else {
 						val state = JsonObject()
 						state["redirectUrl"] = "https://$hostHeader" + req.path()
-						res.redirect(loritta.discordConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
+						res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")
 					}
 					return false
 				}
@@ -106,7 +106,7 @@ abstract class ProtectedView : AbstractView() {
 									}
 
 									// Envie via DM uma mensagem falando sobre a Loritta!
-									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, loritta.config.loritta.website.url, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${loritta.config.loritta.website.url}donate"]
+									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, loritta.instanceConfig.loritta.website.url, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${loritta.instanceConfig.loritta.website.url}donate"]
 
 									user.openPrivateChannel().queue {
 										it.sendMessage(message).queue()
@@ -132,7 +132,7 @@ abstract class ProtectedView : AbstractView() {
 			return WebsiteUtils.getDiscordCrawlerAuthenticationPage()
 
 		if (!req.session().isSet("discordAuth")) { // Caso discordAuth não exista, vamos redirecionar para a tela de autenticação
-			res.redirect(loritta.discordConfig.discord.authorizationUrl)
+			res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl)
 			return "Redirecionando..."
 		}
 
@@ -141,7 +141,7 @@ abstract class ProtectedView : AbstractView() {
 			discordAuth.isReady(true)
 		} catch (e: Exception) {
 			req.session().unset("discordAuth")
-			res.redirect(loritta.discordConfig.discord.authorizationUrl)
+			res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl)
 			return "Redirecionando..."
 		}
 		variables["discordAuth"] = discordAuth
@@ -149,11 +149,11 @@ abstract class ProtectedView : AbstractView() {
 			renderProtected(req, res, path, variables, discordAuth)
 		} catch (e: TemmieDiscordAuth.TokenExchangeException) {
 			req.session().unset("discordAuth")
-			res.redirect(loritta.discordConfig.discord.authorizationUrl)
+			res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl)
 			"Redirecionando..."
 		} catch (e: TemmieDiscordAuth.UnauthorizedException) {
 			req.session().unset("discordAuth")
-			res.redirect(loritta.discordConfig.discord.authorizationUrl)
+			res.redirect(loritta.discordInstanceConfig.discord.authorizationUrl)
 			"Redirecionando..."
 		}
 	}

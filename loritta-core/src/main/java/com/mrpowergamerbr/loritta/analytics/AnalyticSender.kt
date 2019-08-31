@@ -7,6 +7,9 @@ import com.mrpowergamerbr.loritta.utils.loritta
  */
 class AnalyticSender : Runnable {
 	override fun run() {
+		if (!loritta.isMaster) // Apenas o cluster principal sincroniza os servidores
+			return
+
 		if (loritta.discordConfig.discordBots.enabled)
 			LorittaAnalytics.send(AnalyticProcessorService.DISCORD_BOTS)
 		if (loritta.discordConfig.discordBotList.enabled)

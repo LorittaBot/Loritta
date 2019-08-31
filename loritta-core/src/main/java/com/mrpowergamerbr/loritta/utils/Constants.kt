@@ -131,7 +131,7 @@ object Constants {
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }
 
 	val INVALID_IMAGE_URL: String by lazy {
-		loritta.config.loritta.website.url + "assets/img/oopsie_woopsie_invalid_image.png"
+		loritta.instanceConfig.loritta.website.url + "assets/img/oopsie_woopsie_invalid_image.png"
 	}
 
 	// Palavras inapropariadas

@@ -1,17 +1,17 @@
 package net.perfectdreams.loritta.platform.console
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.utils.ConnectionManager
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.platform.console.commands.ConsoleCommandManager
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import sun.misc.Unsafe
 import java.io.File
 import kotlin.concurrent.thread
@@ -19,7 +19,7 @@ import kotlin.concurrent.thread
 /**
  * A [LorittaBot] implementation as a CLI tool
  */
-class ConsoleLoritta(config: GeneralConfig) : LorittaBot(config) {
+class ConsoleLoritta(config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaBot(config, instanceConfig) {
     override val supportedFeatures = listOf<PlatformFeature>()
     override val commandManager = ConsoleCommandManager(this)
 
@@ -40,7 +40,7 @@ class ConsoleLoritta(config: GeneralConfig) : LorittaBot(config) {
         }
         LorittaLauncher.loritta = hackLori
 
-        Loritta.ASSETS = config.loritta.folders.assets
+        Loritta.ASSETS = instanceConfig.loritta.folders.assets
 
         Emotes.emoteManager = Emotes.EmoteManager.DefaultEmoteManager()
 
@@ -74,11 +74,10 @@ class ConsoleLoritta(config: GeneralConfig) : LorittaBot(config) {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
-            val json = configurationFile.readText()
-            val config = Constants.HOCON_MAPPER.readValue<GeneralConfig>(json)
+            val config = readConfigurationFromFile<GeneralConfig>(File(System.getProperty("conf") ?: "./loritta.conf"))
+            val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(File(System.getProperty("conf") ?: "./loritta.instance.conf"))
 
-            val loritta = ConsoleLoritta(config)
+            val loritta = ConsoleLoritta(config, instanceConfig)
             loritta.start()
         }
     }

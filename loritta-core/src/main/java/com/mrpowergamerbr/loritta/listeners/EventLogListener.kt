@@ -1,6 +1,8 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.jsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.StoredMessage
@@ -8,12 +10,10 @@ import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.tables.UsernameChanges
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -53,20 +53,77 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
-	}
 
-	val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
-			.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
-				// Removal listeners processam removals, expired, etc.
-				// Então não precisamos usar o sendUsernameChange em outros lugares :3
-				if (k1 != null && v1 != null) {
-					GlobalScope.launch(loritta.coroutineDispatcher) {
-						val user = lorittaShards.getUserById(k1) ?: return@launch
-						sendUsernameChange(user, v1)
+		val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
+				.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
+					// Removal listeners processam removals, expired, etc.
+					// Então não precisamos usar o sendUsernameChange em outros lugares :3
+					if (k1 != null && v1 != null) {
+						GlobalScope.launch(loritta.coroutineDispatcher) {
+							val user = lorittaShards.getUserById(k1) ?: return@launch
+							sendUsernameChange(user, v1)
+						}
+					}
+				}
+				.build<Long, UserMetaHolder>().asMap()
+
+		fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
+			val oldName = usernameChange.oldName ?: user.name
+			val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
+			val newName = user.name
+			val newDiscriminator = user.discriminator
+			val embed = EmbedBuilder()
+			embed.setTimestamp(Instant.now())
+			embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
+			embed.setColor(Constants.DISCORD_BLURPLE)
+
+			val changedAt = System.currentTimeMillis()
+
+			if (loritta.isMaster) { // Apenas a Lori mestre guarda as alterações necessárias :3
+				transaction(Databases.loritta) {
+					UsernameChange.new {
+						userId = user.idLong
+						username = newName
+						discriminator = newDiscriminator
+						writeValues[UsernameChanges.changedAt as Column<Any?>] = changedAt
 					}
 				}
 			}
-			.build<Long, UserMetaHolder>().asMap()
+
+			val guilds = lorittaShards.getMutualGuilds(user)
+
+			loritta.serversColl.find(
+					Filters.and(
+							Filters.eq("eventLogConfig.usernameChanges", true),
+							Filters.eq("eventLogConfig.enabled", true),
+							Filters.`in`("_id", guilds.map { it.id })
+					)
+			).iterator().use {
+				while (it.hasNext()) {
+					val config = it.next()
+					val locale = loritta.getLegacyLocaleById(config.localeId)
+
+					val guild = guilds.first { it.id == config.guildId }
+
+					val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
+
+					if (textChannel != null && textChannel.canTalk()) {
+						if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+							continue
+						if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+							continue
+						if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+							continue
+
+						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
+						embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
+
+						textChannel.sendMessage(embed.build()).queue()
+					}
+				}
+			}
+		}
+	}
 
 	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
 
@@ -168,6 +225,27 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldName = event.oldName
 		}
+
+		if (!loritta.isMaster) {
+			val shard = loritta.config.clusters.first { it.id == 1L }
+
+			logger.info { "Sending username change ${event.oldName} to the master server..." }
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
+						.userAgent(Constants.USER_AGENT)
+						.header("Authorization", loritta.lorittaInternalApiKey.name)
+						.connectTimeout(5_000)
+						.readTimeout(5_000)
+						.send(
+								gson.toJson(
+										jsonObject(
+												"name" to event.oldName
+										)
+								)
+						)
+						.ok()
+			}
+		}
 	}
 
 	override fun onUserUpdateDiscriminator(event: UserUpdateDiscriminatorEvent) {
@@ -180,59 +258,25 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val usernameChange = handledUsernameChanges[event.user.idLong]!!
 			usernameChange.oldDiscriminator = event.oldDiscriminator
 		}
-	}
 
-	fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
-		val oldName = usernameChange.oldName ?: user.name
-		val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
-		val newName = user.name
-		val newDiscriminator = user.discriminator
-		val embed = EmbedBuilder()
-		embed.setTimestamp(Instant.now())
-		embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
-		embed.setColor(Constants.DISCORD_BLURPLE)
+		if (!loritta.isMaster) {
+			val shard = loritta.config.clusters.first { it.id == 1L }
 
-		val changedAt = System.currentTimeMillis()
-
-		transaction(Databases.loritta) {
-			UsernameChange.new {
-				userId = user.idLong
-				username = newName
-				discriminator = newDiscriminator
-				writeValues[UsernameChanges.changedAt as Column<Any?>] = changedAt
-			}
-		}
-
-		val guilds = lorittaShards.getMutualGuilds(user)
-
-		loritta.serversColl.find(
-				Filters.and(
-						Filters.eq("eventLogConfig.usernameChanges", true),
-						Filters.eq("eventLogConfig.enabled", true),
-						Filters.`in`("_id", guilds.map { it.id })
-				)
-		).iterator().use {
-			while (it.hasNext()) {
-				val config = it.next()
-				val locale = loritta.getLegacyLocaleById(config.localeId)
-
-				val guild = guilds.first { it.id == config.guildId }
-
-				val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
-
-				if (textChannel != null && textChannel.canTalk()) {
-					if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-						continue
-					if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-						continue
-					if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-						continue
-
-					embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
-					embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
-
-					textChannel.sendMessage(embed.build()).queue()
-				}
+			logger.info { "Sending discriminator change ${event.oldDiscriminator} to the master server..." }
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
+						.userAgent(Constants.USER_AGENT)
+						.header("Authorization", loritta.lorittaInternalApiKey.name)
+						.connectTimeout(5_000)
+						.readTimeout(5_000)
+						.send(
+								gson.toJson(
+										jsonObject(
+												"name" to event.oldDiscriminator
+										)
+								)
+						)
+						.ok()
 			}
 		}
 	}

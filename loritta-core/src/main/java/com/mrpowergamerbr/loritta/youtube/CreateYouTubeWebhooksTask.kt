@@ -6,10 +6,8 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -29,6 +27,9 @@ class CreateYouTubeWebhooksTask : Runnable {
 	var fileLoaded = false
 
 	override fun run() {
+		if (!loritta.isMaster) // Não verifique caso não seja o servidor mestre
+			return
+
 		try {
 			// Servidores que usam o módulo do YouTube
 			val servers = loritta.serversColl.find(
@@ -45,7 +46,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			servers.iterator().use {
 				while (it.hasNext()) {
 					val server = it.next()
-					val guild = lorittaShards.getGuildById(server.guildId) ?: continue
+					// val guild = lorittaShards.getGuildById(server.guildId) ?: continue
 					val youTubeConfig = server.youTubeConfig
 
 					for (channel in youTubeConfig.channels) {
@@ -53,10 +54,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 							continue
 						if (!channel.channelUrl!!.startsWith("http"))
 							continue
-						val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
+						/* val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 						if (!textChannel.canTalk())
-							continue
+							continue */
 
 						channelIds.add(channel.channelId!!)
 					}

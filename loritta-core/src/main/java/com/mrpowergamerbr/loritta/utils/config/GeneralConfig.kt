@@ -3,11 +3,12 @@ package com.mrpowergamerbr.loritta.utils.config
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import net.perfectdreams.loritta.utils.DiscordUtils
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class GeneralConfig @JsonCreator constructor(
 		val loritta: LorittaConfig,
-		val shards: List<LorittaShardsConfig>,
+		val clusters: List<LorittaClusterConfig>,
 		@JsonProperty("postgresql")
 		val postgreSql: PostgreSqlConfig,
 		@JsonProperty("mongodb")
@@ -28,12 +29,14 @@ class GeneralConfig @JsonCreator constructor(
 		val mixer: MixerConfig,
 		val fortniteApi: FortniteApiConfig
 ) {
-	class LorittaShardsConfig @JsonCreator constructor(
+	class LorittaClusterConfig @JsonCreator constructor(
 			val id: Long,
 			val name: String,
 			val minShard: Long,
 			val maxShard: Long
-	)
+	) {
+		fun getUrl() = DiscordUtils.getUrlForLorittaClusterId(id)
+	}
 
 	class LorittaConfig @JsonCreator constructor(
 			val environment: EnvironmentType,
@@ -41,16 +44,13 @@ class GeneralConfig @JsonCreator constructor(
 			val ownerIds: List<String>,
 			val subOwnerIds: List<String>,
 			val commands: CommandsConfig,
-			val folders: FoldersConfig,
 			val website: WebsiteConfig
 	) {
 		class WebsiteConfig @JsonCreator constructor(
-				val url: String,
-				val folder: String,
 				val enabled: Boolean,
 				val apiKeys: List<AuthenticationKey>,
-				@JsonProperty("port")
-				val port: Int
+				val blockedIps: List<String>,
+				val blockedUserAgents: List<String>
 		) {
 			class AuthenticationKey @JsonCreator constructor(
 					val name: String,
@@ -58,15 +58,6 @@ class GeneralConfig @JsonCreator constructor(
 					val allowed: List<String>
 			)
 		}
-
-		class FoldersConfig @JsonCreator constructor(
-				val root: String,
-				val assets: String,
-				val temp: String,
-				val locales: String,
-				val plugins: String,
-				val fanArts: String
-		)
 
 		class CommandsConfig @JsonCreator constructor(
 				val cooldown: Int,

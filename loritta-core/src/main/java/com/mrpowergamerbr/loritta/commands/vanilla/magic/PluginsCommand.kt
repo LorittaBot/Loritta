@@ -28,7 +28,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 				)
 		)
 
-		loritta.pluginManager.loadPlugin(File(loritta.config.loritta.folders.plugins, "$pluginName.jar"))
+		loritta.pluginManager.loadPlugin(File(loritta.instanceConfig.loritta.folders.plugins, "$pluginName.jar"))
 		context.reply(
 				LoriReply(
 						"Finalizado, yay!"

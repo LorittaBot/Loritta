@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -179,7 +180,10 @@ class APILoriDailyRewardView : NoVarsView() {
 		var dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 		val originalPayout = dailyPayout
 
-		val mutualGuilds = lorittaShards.getMutualGuilds(lorittaShards.getUserById(userIdentification.id)!!)
+		val mutualGuilds = runBlocking {
+			lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)
+		}
+
 		var sponsoredBy: Guild? = null
 		var multipliedBy: Double? = null
 		var sponsoredByUser: User? = null
@@ -187,8 +191,8 @@ class APILoriDailyRewardView : NoVarsView() {
 		transaction(Databases.loritta) {
 			// Pegar todos os servidores com sonhos patrocinados
 			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
-				(ServerConfigs.id inList mutualGuilds.map { it.idLong }) and
-				(DonationConfigs.dailyMultiplier eq true) and
+				(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
+						(DonationConfigs.dailyMultiplier eq true) and
 						(ServerConfigs.donationKey.isNotNull()) and
 						(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and
 						(DonationKeys.value greaterEq 59.99)

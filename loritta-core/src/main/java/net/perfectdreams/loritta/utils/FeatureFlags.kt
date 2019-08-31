@@ -10,6 +10,8 @@ object FeatureFlags {
 	val WRECK_THE_RAFFLE_STOP_THE_WHALES = isEnabled(Names.WRECK_THE_RAFFLE_STOP_THE_WHALES)
 	val SELECT_LOW_BETTING_USERS = isEnabled(Names.SELECT_LOW_BETTING_USERS)
 	val SELECT_USERS_WITH_LESS_MONEY = isEnabled(Names.SELECT_USERS_WITH_LESS_MONEY)
+	val ADVERTISE_SPARKLYPOWER = isEnabled(Names.ADVERTISE_SPARKLYPOWER)
+	val ADVERTISE_SPONSORS = isEnabled(Names.ADVERTISE_SPONSORS)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -23,5 +25,7 @@ object FeatureFlags {
 		const val WRECK_THE_RAFFLE_STOP_THE_WHALES = "wreck-the-raffle"
 		const val SELECT_LOW_BETTING_USERS = "$WRECK_THE_RAFFLE_STOP_THE_WHALES-select-low-betting-users"
 		const val SELECT_USERS_WITH_LESS_MONEY = "$WRECK_THE_RAFFLE_STOP_THE_WHALES-select-users-with-less-money"
+		const val ADVERTISE_SPARKLYPOWER = "advertise-sparklypower"
+		const val ADVERTISE_SPONSORS = "advertise-sponsors"
 	}
 }

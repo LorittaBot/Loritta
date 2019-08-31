@@ -1,19 +1,24 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
+import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
+import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.jooby.MediaType
@@ -92,6 +97,29 @@ class PubSubHubbubCallbackController {
 			val payload = WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Content from Request")
 			res.send(payload.toString())
 			return
+		}
+
+		if (loritta.isMaster) {
+			logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
+
+			val shards = loritta.config.clusters.filter { it.id != 1L }
+
+			shards.map {
+				GlobalScope.launch {
+					try {
+						HttpRequest.get("https://${it.getUrl()}${req.path()}${req.urlQueryString}")
+								.userAgent(Constants.USER_AGENT)
+								.header("X-Hub-Signature", req.header("X-Hub-Signature").valueOrNull())
+								.send(response)
+								.connectTimeout(5_000)
+								.readTimeout(5_000)
+								.ok()
+					} catch (e: Exception) {
+						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+						throw PingCommand.ShardOfflineException(it.id, it.name)
+					}
+				}
+			}
 		}
 
 		val typeParam = req.param("type")

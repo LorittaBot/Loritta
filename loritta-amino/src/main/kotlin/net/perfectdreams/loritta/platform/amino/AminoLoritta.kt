@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.platform.amino
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import net.perfectdreams.aminoreapi.AminoClientBuilder
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -10,7 +11,7 @@ import net.perfectdreams.loritta.platform.amino.listeners.EventListener
 import net.perfectdreams.loritta.platform.amino.utils.config.GeneralAminoConfig
 import net.perfectdreams.loritta.utils.Emotes
 
-class AminoLoritta(val aminoConfig: GeneralAminoConfig, config: GeneralConfig) : LorittaBot(config) {
+class AminoLoritta(val aminoConfig: GeneralAminoConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaBot(config, instanceConfig) {
     override val supportedFeatures = listOf(
             PlatformFeature.IMAGE_UPLOAD
     )
@@ -20,7 +21,7 @@ class AminoLoritta(val aminoConfig: GeneralAminoConfig, config: GeneralConfig) :
     init {
         println("Init stuff...")
 
-        Loritta.ASSETS = config.loritta.folders.assets
+        Loritta.ASSETS = instanceConfig.loritta.folders.assets
 
         Emotes.emoteManager = Emotes.EmoteManager.DefaultEmoteManager()
 

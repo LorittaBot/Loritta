@@ -30,7 +30,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		context.reply(
 				LoriReply(
-						locale["DAILY_DailyLink", "${loritta.config.loritta.website.url}daily"],
+						locale["DAILY_DailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
 						"\uD83D\uDCB3"
 				)
 		)

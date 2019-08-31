@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.jooby.Request
 import org.jooby.Response
@@ -30,8 +31,9 @@ class ProfileImageController {
 		val userProfile = loritta.getOrCreateLorittaProfile(userId)
 
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val mutualGuildsInAllClusters = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }
 		val member = mutualGuilds.firstOrNull()?.getMember(user)
-		val badges = PerfilCommand.getUserBadges(user, userProfile, mutualGuilds)
+		val badges = PerfilCommand.getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 
 		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
 
