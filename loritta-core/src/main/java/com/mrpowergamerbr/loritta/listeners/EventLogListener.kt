@@ -67,6 +67,35 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 				.build<Long, UserMetaHolder>().asMap()
 
+		val cachedBeforeSending = Caffeine.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS).maximumSize(100)
+				.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
+					// Para evitar que fique spammando o master cluster de requests, nós iremos manter os requests por 3 segundos antes de mandar
+					if (v1 != null && k1 != null) {
+						val shard = loritta.config.clusters.first { it.id == 1L }
+						val id = k1
+						val meta = v1
+
+						logger.info { "Sending username/discriminator change for $id with data ${meta.oldName}#${meta.oldDiscriminator} to the master server..." }
+						GlobalScope.launch(loritta.coroutineDispatcher) {
+							HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/$id/username-change")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(5_000)
+									.readTimeout(5_000)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"name" to meta.oldName,
+															"discriminator" to meta.oldDiscriminator
+													)
+											)
+									)
+									.ok()
+						}
+					}
+				}
+				.build<Long, UserMetaHolder>().asMap()
+
 		fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
 			val oldName = usernameChange.oldName ?: user.name
 			val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
@@ -227,23 +256,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		if (!loritta.isMaster) {
-			val shard = loritta.config.clusters.first { it.id == 1L }
-
-			logger.info { "Sending username change ${event.oldName} to the master server..." }
-			GlobalScope.launch(loritta.coroutineDispatcher) {
-				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
-						.userAgent(loritta.lorittaCluster.getUserAgent())
-						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(5_000)
-						.readTimeout(5_000)
-						.send(
-								gson.toJson(
-										jsonObject(
-												"name" to event.oldName
-										)
-								)
-						)
-						.ok()
+			if (!cachedBeforeSending.containsKey(event.user.idLong)) {
+				cachedBeforeSending[event.user.idLong] = UserMetaHolder(null, event.oldName)
+			} else {
+				val usernameChange = cachedBeforeSending[event.user.idLong]!!
+				usernameChange.oldDiscriminator = event.oldName
 			}
 		}
 	}
@@ -260,23 +277,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 
 		if (!loritta.isMaster) {
-			val shard = loritta.config.clusters.first { it.id == 1L }
-
-			logger.info { "Sending discriminator change ${event.oldDiscriminator} to the master server..." }
-			GlobalScope.launch(loritta.coroutineDispatcher) {
-				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
-						.userAgent(loritta.lorittaCluster.getUserAgent())
-						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(5_000)
-						.readTimeout(5_000)
-						.send(
-								gson.toJson(
-										jsonObject(
-												"name" to event.oldDiscriminator
-										)
-								)
-						)
-						.ok()
+			if (!cachedBeforeSending.containsKey(event.user.idLong)) {
+				cachedBeforeSending[event.user.idLong] = UserMetaHolder(null, event.oldDiscriminator)
+			} else {
+				val usernameChange = cachedBeforeSending[event.user.idLong]!!
+				usernameChange.oldDiscriminator = event.oldDiscriminator
 			}
 		}
 	}
