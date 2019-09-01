@@ -106,7 +106,7 @@ class LoriPartnerView : AbstractView() {
 		fun transformToJsonArray(serverConfigs: List<MongoServerConfig>, userIdentification: TemmieDiscordAuth.UserIdentification?): JsonArray {
 			val allServersSample = JsonArray()
 			for (server in serverConfigs.toList()) {
-				val cluster = DiscordUtils.getLorittaClusterForShardId(server.guildId.toLong())
+				val cluster = DiscordUtils.getLorittaClusterForGuildId(server.guildId.toLong())
 				val guild = try {
 					runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/guild/${server.guildId}").await().obj }
 				} catch (e: PingCommand.ShardOfflineException) {
