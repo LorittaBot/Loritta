@@ -232,7 +232,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			logger.info { "Sending username change ${event.oldName} to the master server..." }
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
-						.userAgent(Constants.USER_AGENT)
+						.userAgent(loritta.lorittaCluster.getUserAgent())
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
 						.connectTimeout(5_000)
 						.readTimeout(5_000)
@@ -265,7 +265,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			logger.info { "Sending discriminator change ${event.oldDiscriminator} to the master server..." }
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/${event.user.id}/username-change")
-						.userAgent(Constants.USER_AGENT)
+						.userAgent(loritta.lorittaCluster.getUserAgent())
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
 						.connectTimeout(5_000)
 						.readTimeout(5_000)

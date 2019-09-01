@@ -1,26 +1,35 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
+import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
-import org.slf4j.LoggerFactory
 import java.time.Instant
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class LorittaLandRoleSync : Runnable {
 	companion object {
-		val logger = LoggerFactory.getLogger(LorittaLandRoleSync::class.java)
+		private val logger = KotlinLogging.logger {}
 	}
 
 	override fun run() {
@@ -80,40 +89,72 @@ class LorittaLandRoleSync : Runnable {
 
 			// ===[ PARCEIROS ]===
 			logger.info("Processando cargos de parceiros...")
-			if (!loritta.lorittaShards.shardManager.shards.any { it.status != JDA.Status.CONNECTED }) {
-				val partnerRole = originalGuild.getRoleById("434512654292221952")
+			val results = lorittaShards.queryAllLorittaShards("/api/v1/loritta/status")
 
-				if (partnerRole != null) {
-					val partnerServerConfigs = loritta.serversColl.find(
-							Filters.eq(
-									"serverListConfig.partner",
-									true
-							)
-					)
+			var areAllConnected: Boolean = false
+			for (result in results) {
+				try {
+					val json = runBlocking { result.await() }
 
-					val validPartners = mutableListOf<Member>()
+					areAllConnected = json["shards"].array.any { it["status"].nullString == "CONNECTED" }
 
-					val partnerGuilds = partnerServerConfigs.mapNotNull { lorittaShards.getGuildById(it.guildId) }
-					partnerGuilds.forEach {
-						val partners = it.members.filter { it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER) }
-						for (partner in partners) {
-							val member = originalGuild.getMember(partner.user) ?: continue
-							validPartners.add(member)
-							if (!member.roles.contains(partnerRole)) {
-								logger.info("Dando o cargo de parceiro para ${member.user.id}...")
-								originalGuild.addRoleToMember(member, partnerRole).queue()
+					if (!areAllConnected)
+						break
+				} catch (e: PingCommand.ShardOfflineException) {
+				}
+			}
+
+			logger.info { "Are all clusters connected so we can give the partner role? $areAllConnected" }
+
+			if (areAllConnected) {
+				try {
+					logger.info { "All connected! Giving partner roles..." }
+					val partnerRole = originalGuild.getRoleById("434512654292221952")
+
+					if (partnerRole != null) {
+						val partnerServerConfigs = loritta.serversColl.find(
+								Filters.eq(
+										"serverListConfig.partner",
+										true
+								)
+						)
+
+						val validPartners = mutableListOf<Member>()
+
+						for (partnerServerConfig in partnerServerConfigs) {
+							val shardId = DiscordUtils.getShardIdFromGuildId(partnerServerConfig.guildId.toLong())
+							val cluster = DiscordUtils.getLorittaClusterForShardId(shardId)
+
+							logger.info { "Checking user with permissions in ${partnerServerConfig.guildId}, shardId = $shardId" }
+
+							val usersWithPermission = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/${partnerServerConfig.guildId}/users-with-permission/${Permission.ADMINISTRATOR},${Permission.MANAGE_SERVER}").await() }
+							logger.info { "User Permission Payload from ${partnerServerConfig.guildId} is $usersWithPermission" }
+
+							val partners = usersWithPermission["members"].array.map { it["id"].string }
+
+							for (partner in partners) {
+								val member = originalGuild.getMemberById(partner) ?: continue
+								validPartners.add(member)
+								if (!member.roles.contains(partnerRole)) {
+									logger.info("Dando o cargo de parceiro para ${member.user.id}...")
+									originalGuild.addRoleToMember(member, partnerRole).queue()
+								}
 							}
 						}
-					}
 
-					val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
-					invalidPartners.forEach {
-						logger.info("Removendo cargo de parceiro de ${it.user.id}...")
-						originalGuild.removeRoleFromMember(it, partnerRole).queue()
+						val invalidPartners = originalGuild.getMembersWithRoles(partnerRole).filter { !validPartners.contains(it) }
+						invalidPartners.forEach {
+							logger.info("Removendo cargo de parceiro de ${it.user.id}...")
+							originalGuild.removeRoleFromMember(it, partnerRole).queue()
+						}
+					} else {
+						logger.warn { "Partner role is missing on Loritta's Server!" }
 					}
-				} else {
-					logger.warn("Todas as shards não estão carregadas! Ignorando cargos de parceiros...")
+				} catch (e: Exception) {
+					logger.warn(e) { "Error while trying to sync partner roles" }
 				}
+			} else {
+				logger.warn { "Not all shards are loaded yet! Ignoring partnership role sync..." }
 			}
 
 			logger.info("Sincronizando cargos da LorittaLand...")

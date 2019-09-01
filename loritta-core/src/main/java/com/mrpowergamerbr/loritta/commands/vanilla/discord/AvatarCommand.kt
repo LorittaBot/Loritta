@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -51,12 +52,15 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
 			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
-				val fanArt = UpdateStatusThread.currentFanArt
+				val currentFanArtInMasterCluster = lorittaShards.queryMasterLorittaShard("/api/v1/loritta/current-fan-art-avatar").await().obj
 
-				if (fanArt != null) {
-					val user = lorittaShards.retrieveUserById(fanArt.artistId)
+				val artistId = currentFanArtInMasterCluster["artistId"].nullString
+				val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
-					val displayName = fanArt.fancyName ?: user?.name
+				if (artistId != null) {
+					val user = lorittaShards.retrieveUserById(artistId)
+
+					val displayName = fancyName ?: user?.name
 
 					embed.appendDescription("\n\n**" + locale.toNewLocale()["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
 					// TODO: Readicionar redes sociais depois

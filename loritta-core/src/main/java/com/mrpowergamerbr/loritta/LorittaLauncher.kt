@@ -55,6 +55,7 @@ object LorittaLauncher {
 		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
 		val discordConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.conf")
 		val configurationInstanceFile = File(System.getProperty("instanceConf") ?: "./loritta.instance.conf")
+		val discordInstanceConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.instance.conf")
 
 		if (!configurationFile.exists() || !discordConfigurationFile.exists()) {
 			println("Welcome to Loritta Morenitta! :3")
@@ -78,7 +79,7 @@ object LorittaLauncher {
 		val config = readConfigurationFromFile<GeneralConfig>(configurationFile)
 		val discordConfig = readConfigurationFromFile<GeneralDiscordConfig>(discordConfigurationFile)
 		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
-		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(configurationInstanceFile)
+		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)

@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
+import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
@@ -82,6 +83,13 @@ class LorittaShards {
 		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
 	}
 
+	suspend fun retrieveUserById(id: Long?): User? {
+		if (id == null)
+			return null
+
+		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
+	}
+
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
 
 	fun getEmoteById(id: String?): Emote? {
@@ -108,7 +116,7 @@ class LorittaShards {
 		return GlobalScope.async {
 			try {
 				val body = HttpRequest.get("https://${shard.getUrl()}$path")
-						.userAgent(Constants.USER_AGENT)
+						.userAgent(loritta.lorittaCluster.getUserAgent())
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
 						.connectTimeout(5_000)
 						.readTimeout(5_000)
@@ -124,6 +132,26 @@ class LorittaShards {
 		}
 	}
 
+	fun queryCluster(cluster: GeneralConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
+		return GlobalScope.async {
+			try {
+				val body = HttpRequest.get("https://${cluster.getUrl()}$path")
+						.userAgent(loritta.lorittaCluster.getUserAgent())
+						.header("Authorization", loritta.lorittaInternalApiKey.name)
+						.connectTimeout(5_000)
+						.readTimeout(5_000)
+						.body()
+
+				jsonParser.parse(
+						body
+				)
+			} catch (e: Exception) {
+				logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
+				throw PingCommand.ShardOfflineException(cluster.id, cluster.name)
+			}
+		}
+	}
+
 	fun queryAllLorittaShards(path: String): List<Deferred<JsonElement>> {
 		val shards = loritta.config.clusters
 
@@ -131,7 +159,7 @@ class LorittaShards {
 			GlobalScope.async {
 				try {
 					val body = HttpRequest.get("https://${it.getUrl()}$path")
-							.userAgent(Constants.USER_AGENT)
+							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
 							.connectTimeout(5_000)
 							.readTimeout(5_000)
@@ -188,7 +216,7 @@ class LorittaShards {
 		val url = DiscordUtils.getUrlForLorittaClusterId(clusterId)
 
 		val body = HttpRequest.get("https://$url/api/v1/loritta/guild/$id")
-				.userAgent(Constants.USER_AGENT)
+				.userAgent(loritta.lorittaCluster.getUserAgent())
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
 				.connectTimeout(5_000)
 				.readTimeout(5_000)

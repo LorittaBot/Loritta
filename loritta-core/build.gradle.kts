@@ -68,6 +68,7 @@ dependencies {
     compile("commons-codec:commons-codec:1.12")
     compile("commons-io:commons-io:2.6")
     compile("org.apache.commons:commons-text:1.6")
+    compile("org.apache.commons:commons-collections4:4.4")
     compile("org.jooby:jooby:1.6.2")
     compile("org.jooby:jooby-netty:1.6.2")
     compile("org.jooby:jooby-lang-kotlin:1.6.2")

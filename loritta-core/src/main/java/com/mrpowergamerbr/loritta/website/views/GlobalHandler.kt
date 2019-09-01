@@ -115,15 +115,15 @@ object GlobalHandler {
 				if ((req.path() != "/dashboard" && !req.param("discordAuth").isSet) && req.path() != "/auth" && !req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)")) && !req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) && !req.path().startsWith("/translation") /* DEPRECATED API */) {
 					res.status(302) // temporary redirect / no page rank penalty (?)
 					if (localeId == "default") {
-						res.redirect("${hostHeader}br${req.path()}${queryString}")
+						res.redirect("https://${hostHeader}/br${req.path()}${queryString}")
 					}
 					if (localeId == "pt-pt") {
-						res.redirect("${hostHeader}pt${req.path()}${queryString}")
+						res.redirect("https://${hostHeader}/pt${req.path()}${queryString}")
 					}
 					if (localeId == "es-es") {
-						res.redirect("${hostHeader}es${req.path()}${queryString}")
+						res.redirect("https://${hostHeader}/es${req.path()}${queryString}")
 					}
-					res.redirect("${hostHeader}us${req.path()}${queryString}")
+					res.redirect("https://${hostHeader}/us${req.path()}${queryString}")
 					return "Redirecting..."
 				}
 			}

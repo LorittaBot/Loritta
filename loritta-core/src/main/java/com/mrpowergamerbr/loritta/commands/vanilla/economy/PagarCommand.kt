@@ -1,14 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.double
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
@@ -145,44 +148,45 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
+						logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 						mutex.withLock {
-							val receiverProfile = loritta.getOrCreateLorittaProfile(user.id)
+							val shard = loritta.config.clusters.first { it.id == 1L }
 
-							if (receiverProfile.money.isNaN()) {
-								// receiverProfile.dreams = 0.0
-								return@onReactionAddByAuthor
-							}
-
-							if (context.lorittaUser.profile.money.isNaN()) {
-								// context.lorittaUser.profile.dreams = 0.0
-								return@onReactionAddByAuthor
-							}
-
-							val giverProfile = loritta.getOrCreateLorittaProfile(context.lorittaUser.profile.id.value)
-
-							if (howMuch > giverProfile.money)
-								return@onReactionAddByAuthor
-
-							val beforeGiver = context.lorittaUser.profile.money
-							val beforeReceiver = receiverProfile.money
-
-							transaction(Databases.loritta) {
-								context.lorittaUser.profile.money -= howMuch
-								receiverProfile.money += finalMoney
-							}
-
-							logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))")
-
-							context.reply(
-									LoriReply(
-											locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
-												locale["ECONOMY_Name"]
-											} else {
-												locale["ECONOMY_NamePlural"]
-											}],
-											"\uD83D\uDCB8"
+							val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(5_000)
+									.readTimeout(5_000)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"giverId" to context.userHandle.idLong,
+															"receiverId" to user.idLong,
+															"howMuch" to howMuch
+													)
+											)
 									)
-							)
+									.body()
+
+							val result = jsonParser.parse(
+									body
+							).obj
+
+							val status = PayStatus.valueOf(result["status"].string)
+
+							if (status == PayStatus.SUCCESS) {
+								val finalMoney = result["finalMoney"].double
+								context.reply(
+										LoriReply(
+												locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+													locale["ECONOMY_Name"]
+												} else {
+													locale["ECONOMY_NamePlural"]
+												}],
+												"\uD83D\uDCB8"
+										)
+								)
+							}
 						}
 					}
 				}
@@ -210,5 +214,11 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		} else {
 			context.explain()
 		}
+	}
+
+	enum class PayStatus {
+		INVALID_MONEY_STATUS,
+		NOT_ENOUGH_MONEY,
+		SUCCESS
 	}
 }

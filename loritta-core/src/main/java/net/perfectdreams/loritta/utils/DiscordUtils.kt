@@ -1,8 +1,19 @@
 package net.perfectdreams.loritta.utils
 
+import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 
 object DiscordUtils {
+	/**
+	 * Gets a Discord Shard ID from the provided Guild ID
+	 *
+	 * @return the shard ID
+	 */
+	fun getShardLorittaClusterForGuildId(id: Long): GeneralConfig.LorittaClusterConfig {
+		val shardId = getShardIdFromGuildId(id)
+		return getLorittaClusterForShardId(id)
+	}
+
 	/**
 	 * Gets a Discord Shard ID from the provided Guild ID
 	 *
@@ -16,12 +27,19 @@ object DiscordUtils {
 	/**
 	 * Gets the cluster where the guild that has the specified ID is in
 	 *
+	 * @return the cluster
+	 */
+	fun getLorittaClusterForShardId(id: Long): GeneralConfig.LorittaClusterConfig {
+		val lorittaShard = loritta.config.clusters.firstOrNull { id in it.minShard..it.maxShard }
+		return lorittaShard ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
+	}
+
+	/**
+	 * Gets the cluster where the guild that has the specified ID is in
+	 *
 	 * @return the cluster ID
 	 */
-	fun getLorittaClusterIdForShardId(id: Long): Long {
-		val lorittaShard = loritta.config.clusters.firstOrNull { id in it.minShard..it.maxShard }
-		return lorittaShard?.id ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
-	}
+	fun getLorittaClusterIdForShardId(id: Long) = getLorittaClusterForShardId(id).id
 
 	/**
 	 * Gets the URL for the specified Loritta Cluster

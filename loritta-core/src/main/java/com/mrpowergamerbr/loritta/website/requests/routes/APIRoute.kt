@@ -41,6 +41,10 @@ class APIRoute : Jooby() {
 		use(GetRaffleStatusController::class.java)
 		use(UpdateReadyController::class.java)
 		use(GetGuildInfoController::class.java)
+		use(LorittaActionController::class.java)
+		use(GetMembersWithPermissionsInGuildController::class.java)
+		use(GetCurrentFanMadeAvatarController::class.java)
+		use(TransferBalanceController::class.java)
 
 		// ===[ NEW WEBSITE STUFF ]===
 		use(GetLocaleController::class.java)

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -33,50 +34,56 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				context.event.textChannel!!.sendMessage(context.getAsMention(true) + "${locale["AJUDA_SENT_IN_PRIVATE"]} \uD83D\uDE09").queue()
 			}
 
-			val description = context.legacyLocale[
-					"AJUDA_INTRODUCE_MYSELF",
-					context.userHandle.asMention,
-					loritta.discordInstanceConfig.discord.addBotUrl,
-					context.event.guild?.name ?: "\uD83E\uDD37"]
+			if ("skip_intro" !in context.rawArgs) {
+				val description = context.legacyLocale[
+						"AJUDA_INTRODUCE_MYSELF",
+						context.userHandle.asMention,
+						loritta.discordInstanceConfig.discord.addBotUrl,
+						context.event.guild?.name ?: "\uD83E\uDD37"]
 
-			val builder = EmbedBuilder()
-					.setColor(Color(0, 193, 223))
-					.setTitle("💁 ${context.legacyLocale.get("AJUDA_MY_HELP")}")
-					.setDescription(description)
-					.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
+				val builder = EmbedBuilder()
+						.setColor(Color(0, 193, 223))
+						.setTitle("💁 ${context.legacyLocale.get("AJUDA_MY_HELP")}")
+						.setDescription(description)
+						.setThumbnail("https://loritta.website/assets/img/loritta_gabizinha_v1.png")
 
-			val pleaseDonate = EmbedBuilder()
-					.setColor(Color(114, 137, 218))
-					.setThumbnail("https://loritta.website/assets/img/loritta_pobre.png")
-					.setTitle("<:lori_triste:370344565967814659> ${locale["AJUDA_DonationTitle"]}")
-					.setDescription(locale["AJUDA_PleaseDonate"])
+				val pleaseDonate = EmbedBuilder()
+						.setColor(Color(114, 137, 218))
+						.setThumbnail("https://loritta.website/assets/img/loritta_pobre.png")
+						.setTitle("<:lori_triste:370344565967814659> ${locale["AJUDA_DonationTitle"]}")
+						.setDescription(locale["AJUDA_PleaseDonate"])
 
-			val discordServerList = EmbedBuilder()
-					.setColor(Color(0, 121, 183))
-					.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
-					.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
-					.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
+				val discordServerList = EmbedBuilder()
+						.setColor(Color(0, 121, 183))
+						.setImage("https://loritta.website/assets/img/loritta_mendigagem_cover.png")
+						.setTitle("<:loritta:331179879582269451> Loritta's Server List", "https://loritta.website/servers")
+						.setDescription("Está com tédio e quer encontrar um servidor no Discord para você entrar e se divertir? Querendo divulgar o seu novo servidor no Discord para que outras pessoas possam entrar? Então visite a Loritta's Server List!\n\nhttps://loritta.website/servers")
 
-			val loriStickers = EmbedBuilder()
-					.setColor(Color(0, 121, 183))
-					.setImage("https://i.imgur.com/uJ0Lnb4.jpg")
-					.setTitle("<:lori_owo:417813932380520448> Meus Stickers!", "https://bit.ly/loristickers")
-					.setDescription("Cansado de stickers genéricos mal feitos? Bem, eu também. Por isto eu resolvi lançar o meu PRÓPRIO pack de stickers para o WhatsApp e para o Telegram! <:eu_te_moido:366047906689581085>\n\nBaixe, use, divirta-se e compartilhe com seus amigos! E, é claro, não se esqueça de dar aquela review 10/10 no app para me ajudar a crescer ;w;")
-					.addField("<a:SWbounce:444281772319047698> Link para baixar os stickers!", "https://bit.ly/loristickers", false)
+				val loriStickers = EmbedBuilder()
+						.setColor(Color(0, 121, 183))
+						.setImage("https://i.imgur.com/uJ0Lnb4.jpg")
+						.setTitle("<:lori_owo:417813932380520448> Meus Stickers!", "https://bit.ly/loristickers")
+						.setDescription("Cansado de stickers genéricos mal feitos? Bem, eu também. Por isto eu resolvi lançar o meu PRÓPRIO pack de stickers para o WhatsApp e para o Telegram! <:eu_te_moido:366047906689581085>\n\nBaixe, use, divirta-se e compartilhe com seus amigos! E, é claro, não se esqueça de dar aquela review 10/10 no app para me ajudar a crescer ;w;")
+						.addField("<a:SWbounce:444281772319047698> Link para baixar os stickers!", "https://bit.ly/loristickers", false)
 
-			privateChannel.sendMessage(builder.build()).await()
-			privateChannel.sendMessage(pleaseDonate.build()).await()
+				privateChannel.sendMessage(builder.build()).await()
+				privateChannel.sendMessage(pleaseDonate.build()).await()
 
-			// TODO: Remover verificação após ter a lista traduzida
-			if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
-				if (RANDOM.nextBoolean()) {
-					privateChannel.sendMessage(discordServerList.build()).await()
-				} else {
-					privateChannel.sendMessage(loriStickers.build()).await()
+				// TODO: Remover verificação após ter a lista traduzida
+				if (context.config.localeId == "default" || context.config.localeId == "pt-pt" || context.config.localeId == "pt-funk") {
+					if (RANDOM.nextBoolean()) {
+						privateChannel.sendMessage(discordServerList.build()).await()
+					} else {
+						privateChannel.sendMessage(loriStickers.build()).await()
+					}
 				}
-			}
 
-			sendInfoBox(context, privateChannel)
+				lorittaShards.queryMasterLorittaShard(
+						"/api/v1/loritta/user/${context.userHandle.id}/send-help/${context.config.localeId}"
+				).await()
+			} else {
+				sendInfoBox(context, privateChannel)
+			}
 		} catch (e: ErrorResponseException) {
 			if (e.errorCode == 50007) // Cannot send messages to this user
 				context.event.textChannel!!.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.legacyLocale["AJUDA_ERROR_WHEN_OPENING_DM"]).queue()

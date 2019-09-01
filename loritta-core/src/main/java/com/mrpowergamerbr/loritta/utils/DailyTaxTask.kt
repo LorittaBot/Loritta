@@ -35,6 +35,9 @@ class DailyTaxTask : Runnable {
 	}
 
 	fun runDailyTax(force: Boolean) {
+		if (!loritta.isMaster)
+			return
+
 		val lastDailyTax = File(Loritta.FOLDER, "last_daily_tax")
 
 		val hour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]

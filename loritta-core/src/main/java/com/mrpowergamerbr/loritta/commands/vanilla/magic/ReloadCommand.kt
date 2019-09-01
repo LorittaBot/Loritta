@@ -31,6 +31,19 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
+		val arg1 = context.rawArgs.getOrNull(1)
+
+		if (arg0 == "action") {
+			loritta.config.clusters.forEach {
+				lorittaShards.queryAllLorittaShards("/api/v1/loritta/action/$arg1")
+			}
+			context.reply(
+					LoriReply(
+							"Enviado ação para todos os clusters!"
+					)
+			)
+			return
+		}
 
 		if (arg0 == "emotes") {
 			context.reply(

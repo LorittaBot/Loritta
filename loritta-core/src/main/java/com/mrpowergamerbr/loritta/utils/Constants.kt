@@ -35,6 +35,7 @@ object Constants {
 	const val TWO_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 2
 	const val SIX_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 8
 	const val DELAY_CUT_OFF = SIX_MONTHS_IN_MILLISECONDS // six months
+	const val CLUSTER_USER_AGENT = "Loritta Cluster %s (%s)"
 
 	/**
 	 * Discord's URL Crawler User Agent

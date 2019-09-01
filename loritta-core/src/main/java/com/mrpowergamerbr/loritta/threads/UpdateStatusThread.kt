@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -53,7 +55,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled) {
+		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && loritta.isMaster) { // Apenas reverta o avatar caso seja o cluster principal
 			if (currentDay != loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
 				if (firstInstance != null) {
 					revertedAvatar = true
@@ -70,22 +72,6 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
-			val currentFanArt = UpdateStatusThread.currentFanArt ?: loritta.discordConfig.discord.fanArtExtravaganza.fanArts[0]
-
-			if (diff >= 25000 && firstInstance != null) {
-				val fanArt = currentFanArt
-				val artist = lorittaShards.getUserById(fanArt.artistId)
-
-				val displayName = if (fanArt.fancyName != null) {
-					fanArt.fancyName
-				} else if (artist != null) {
-					artist.name + "#" + artist.discriminator
-				} else {
-					"¯\\_(ツ)_/¯"
-				}
-				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
-				lastUpdate = System.currentTimeMillis()
-			}
 
 			if (fanArtMinutes != minutes) { // Diferente!
 				fanArtMinutes = minutes
@@ -96,21 +82,32 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val fanArt = loritta.discordConfig.discord.fanArtExtravaganza.fanArts[currentIndex]
 
 				if (firstInstance != null) {
-					val artist = lorittaShards.getUserById(fanArt.artistId)
+					if (loritta.isMaster) // Apenas troque o avatar caso seja o cluster principal (ele que controla tudo!)
+						firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
 
-					val displayName = if (fanArt.fancyName != null) {
-						fanArt.fancyName
-					} else if (artist != null) {
-						artist.name + "#" + artist.discriminator
-					} else {
-						"¯\\_(ツ)_/¯"
-					}
-
-					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
-
-					UpdateStatusThread.currentFanArt = fanArt
+					currentFanArt = fanArt
 					currentIndex++
+				}
+			}
+
+			if (diff >= 25_000 && firstInstance != null) {
+				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaShard("/api/v1/loritta/current-fan-art-avatar").await() }
+
+				val artistId = currentFanArtInMasterCluster["artistId"].nullString
+				if (artistId != null) { // Se o artistId for nulo, então ele não está marcado!
+					val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
+
+					val artist = runBlocking { lorittaShards.retrieveUserById(artistId) }
+
+					val displayName = fancyName
+							?: if (artist != null) {
+								artist.name + "#" + artist.discriminator
+							} else {
+								"¯\\_(ツ)_/¯"
+							}
+
+					loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
+					lastUpdate = System.currentTimeMillis()
 				}
 			}
 

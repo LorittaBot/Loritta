@@ -45,6 +45,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 				"action" -> {
 					val botName = args.getOrNull(0)!!
 					val actionsString = args.getOrNull(1)!!
+					val clusterList = args.getOrNull(2)?.split(",")
 
 					val actions = actionsString.split("+").map { it.toLowerCase() }
 
@@ -56,7 +57,14 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 						logger.info { "Deploying ${bot.name} master cluster to slaves..." }
 					}
 
-					for (clusterInfo in bot.clusters) {
+					val clustersToBeUsed = bot.clusters.filter {
+						if (clusterList != null)
+							it.id.toString() in clusterList
+						else
+							true
+					}
+
+					for (clusterInfo in clustersToBeUsed) {
 						GlobalScope.launch {
 							var shardsBeforeThisOne = 0L
 							val clustersBeforeThisOne = bot.clusters.filter { clusterInfo.id > it.id }
@@ -108,7 +116,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 								}
 
 								logger.info { "Waiting ${howMuchShouldItBeDelayed}ms until ${clusterInfo.id} ${clusterInfo.name} deploy..." }
-								delay(whenItWillBeRestarted - now)
+								delay(whenItWillBeRestarted - System.currentTimeMillis())
 							}
 
 							if (actions.contains("deploy") && clusterInfo.id != 1L) {
@@ -141,6 +149,8 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 							}
 						}
 					}
+
+					event.message.addReaction("lori_cheese:592779169059045379").queue()
 				}
 			}
 		}

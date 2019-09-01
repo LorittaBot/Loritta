@@ -53,7 +53,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			}
 
 			val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/raffle")
-					.userAgent(Constants.USER_AGENT)
+					.userAgent(loritta.lorittaCluster.getUserAgent())
 					.header("Authorization", loritta.lorittaInternalApiKey.name)
 					.connectTimeout(5_000)
 					.readTimeout(5_000)
@@ -116,7 +116,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		}
 
 		val body = HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/raffle")
-				.userAgent(Constants.USER_AGENT)
+				.userAgent(loritta.lorittaCluster.getUserAgent())
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
 				.connectTimeout(5_000)
 				.readTimeout(5_000)
@@ -126,7 +126,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 		val lastWinnerId = json["lastWinnerId"].nullString
 		val currentTickets = json["currentTickets"].int
-		val usersParticipating = json["currentTickets"].int
+		val usersParticipating = json["usersParticipating"].int
 		val started = json["started"].long
 		val lastWinnerPrize = json["lastWinnerPrize"].long
 

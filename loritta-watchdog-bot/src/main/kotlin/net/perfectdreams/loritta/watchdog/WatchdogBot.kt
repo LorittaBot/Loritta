@@ -26,6 +26,7 @@ import java.awt.Color
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLPeerUnverifiedException
 
 class WatchdogBot(val config: WatchdogConfig) {
 	companion object {
@@ -179,25 +180,29 @@ class WatchdogBot(val config: WatchdogConfig) {
 							logger.error(e) { "Error while checking cluster!" }
 
 							if (!botCluster.dead && botCluster.isReady && !botCluster.offlineForUpdates) {
-								val embed = EmbedBuilder()
-										.setTitle("<a:lori_caiu:540625554282512384> Cluster ${clusterInfo.id} (${clusterInfo.name}) está offline!")
-										.setColor(Color.BLACK)
-										.setTimestamp(Instant.now())
+								// Por algum motivo vive dando SSLPeerUnverifiedException, mesmo que a Lori não esteja offline
+								// Vamos apenas ignorar tais mensagens
+								if (e !is SSLPeerUnverifiedException) {
+									val embed = EmbedBuilder()
+											.setTitle("<a:lori_caiu:540625554282512384> Cluster ${clusterInfo.id} (${clusterInfo.name}) está offline!")
+											.setColor(Color.BLACK)
+											.setTimestamp(Instant.now())
 
-								if (e is HttpStatusError) {
-									embed.setDescription(
-											"**Discord Shards afetadas:** ${clusterInfo.minShard} até ${clusterInfo.maxShard}\n**Código de Erro HTTP:** `${e.status.value}` (${e.status.description})"
-									)
-								} else {
-									embed.setDescription("**Discord Shards afetadas:** ${clusterInfo.minShard} até ${clusterInfo.maxShard}\n**Erro:** `${e.message}`\n${e::class.simpleName}")
+									if (e is HttpStatusError) {
+										embed.setDescription(
+												"**Discord Shards afetadas:** ${clusterInfo.minShard} até ${clusterInfo.maxShard}\n**Código de Erro HTTP:** `${e.status.value}` (${e.status.description})"
+										)
+									} else {
+										embed.setDescription("**Discord Shards afetadas:** ${clusterInfo.minShard} até ${clusterInfo.maxShard}\n**Erro:** `${e.message}`\n${e::class.simpleName}")
+									}
+
+									channel?.sendMessage(
+											embed.build()
+									)?.queue()
+
+									botCluster.dead = true
+									botCluster.areAllConnected = false
 								}
-
-								channel?.sendMessage(
-										embed.build()
-								)?.queue()
-
-								botCluster.dead = true
-								botCluster.areAllConnected = false
 							}
 						}
 					}

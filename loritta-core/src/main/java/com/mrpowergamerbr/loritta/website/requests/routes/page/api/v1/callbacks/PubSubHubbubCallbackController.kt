@@ -107,8 +107,9 @@ class PubSubHubbubCallbackController {
 			shards.map {
 				GlobalScope.launch {
 					try {
-						HttpRequest.get("https://${it.getUrl()}${req.path()}${req.urlQueryString}")
-								.userAgent(Constants.USER_AGENT)
+						logger.info { "Sending request to ${"https://${it.getUrl()}${req.path()}${req.urlQueryString}"}..." }
+						HttpRequest.post("https://${it.getUrl()}${req.path()}${req.urlQueryString}")
+								.userAgent(loritta.lorittaCluster.getUserAgent())
 								.header("X-Hub-Signature", req.header("X-Hub-Signature").valueOrNull())
 								.send(response)
 								.connectTimeout(5_000)
@@ -314,6 +315,7 @@ class PubSubHubbubCallbackController {
 	}
 
 	@GET
+	@LoriDoNotLocaleRedirect(true)
 	fun request(req: Request, res: Response) {
 		val hubChallengeParam = req.param("hub.challenge")
 
