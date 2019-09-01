@@ -248,7 +248,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
-				LorittaUtilsKotlin.sendStackTrace(event.message, e)
 			}
 		}
 	}

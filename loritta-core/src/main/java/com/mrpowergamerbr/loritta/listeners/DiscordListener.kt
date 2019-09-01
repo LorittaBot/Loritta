@@ -258,7 +258,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				} catch (exception: Exception) {
 					logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
-					LorittaUtilsKotlin.sendStackTrace("[`${e.guild.name}`] **Starboard ${e.member?.user?.name}**", exception)
 				}
 			}
 		}
@@ -439,7 +438,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
-				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao entrar no servidor ${event.user.name}**", e)
 			}
 		}
 	}
@@ -476,7 +474,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
-				LorittaUtilsKotlin.sendStackTrace("[`${event.guild.name}`] **Ao sair do servidor ${event.user.name}**", e)
 			}
 		}
 	}
