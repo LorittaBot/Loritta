@@ -76,7 +76,6 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 	suspend fun updateBirthdayRank(guild: Guild) = updateBirthdayRank(guild, loritta.getServerConfigForGuild(guild.id))
 
 	suspend fun updateBirthdayRank(guild: Guild, serverConfig: MongoServerConfig) {
-		logger.info { "Updating birthday rank in $guild..." }
 		val config = transaction(Databases.loritta) {
 			(ServerConfigs innerJoin BirthdayConfigs)
 					.select {
@@ -85,6 +84,8 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 					.firstOrNull()
 		} ?: return
 
+		logger.info { "Updating birthday rank in $guild..." }
+		
 		updateBirthdayRank(guild, serverConfig, config)
 	}
 
