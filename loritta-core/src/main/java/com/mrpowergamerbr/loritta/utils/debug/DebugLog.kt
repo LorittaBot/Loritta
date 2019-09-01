@@ -154,13 +154,6 @@ object DebugLog {
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)
 			}
-			"dumpcoroutines", "dc" -> {
-				println("Dumping coroutines to file...")
-				val pw = PrintStream(File("./coroutines-dump-${System.currentTimeMillis()}.txt"))
-				DebugProbes.dumpCoroutines(pw)
-				pw.close()
-				println("Done! :3")
-			}
 		}
 	}
 }
