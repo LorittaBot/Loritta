@@ -503,19 +503,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		}
 	}
 
-	var idx0 = 0L
-	val findProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
-	var idx2 = 0L
-	val newProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
-
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
 		return transaction(Databases.loritta) {
-			val start0 = System.nanoTime()
 			val sqlProfile = Profile.findById(userId)
-			if (idx0 % 100 == 0L) {
-				findProfilePostgre.add(System.nanoTime() - start0)
-			}
-			idx0++
 
 			if (sqlProfile != null) {
 				return@transaction sqlProfile
@@ -542,11 +532,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					boughtProfiles = arrayOf()
 				}
 			}
-			if (idx2 % 100 == 0L) {
-				newProfilePostgre.add(System.nanoTime() - start2)
-			}
 
-			idx2++
 			return@transaction newProfile
 		}
 	}
