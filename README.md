@@ -25,6 +25,10 @@
 <a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
 </p>
 <p align="center">
+<a href="README_EN.md"><img src="https://img.shields.io/badge/🌐_Readme_📖-Read_In_English-03ebfc.svg"></a>
+<a href="README.md"><img src="https://img.shields.io/badge/🌐_Readme_📖-Leia_em_Português-03fc41.svg"></a>
+</p>
+<p align="center">
 <a href="https://github.com/LorittaBot/Loritta/stargazers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Stars"></a>
 <a href="https://github.com/LorittaBot/Loritta/watchers"><img src="https://img.shields.io/github/watchers/LorittaBot/Loritta.svg?style=social&label=Watch"></a>
 </p>
