@@ -336,7 +336,11 @@ object GiveawayManager {
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.retrieveUsers().await().filter { it.id != loritta.discordConfig.discord.clientId }.toMutableList()
+                val reactedUsers = messageReaction.retrieveUsers().await()
+                        .asSequence()
+                        .filter { it.id != loritta.discordConfig.discord.clientId }
+                        .filter { message.guild.getMemberById(it.idLong) != null }
+                        .toMutableList()
 
                 repeat(giveaway.numberOfWinners) {
                     if (reactedUsers.isEmpty())
