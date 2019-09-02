@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.channels.GetMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.LoriTransferBalanceController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.TransferBalanceExternalController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.SendMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
@@ -51,5 +52,8 @@ class APIRoute : Jooby() {
 		use(GetLocaleController::class.java)
 		use(GetSelfInfoController::class.java)
 		use(GetFanArtsController::class.java)
+
+		// ===[ MONEY ]===
+		use(TransferBalanceExternalController::class.java)
 	}
 }
