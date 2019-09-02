@@ -17,6 +17,7 @@ class UserRoute : Jooby() {
 		use(ExtrasController::class.java)
 		use(ExtrasViewerController::class.java)
 		use(DonateController::class.java)
+		use(SponsorsController::class.java)
 
 		use(UserProfileController::class.java)
 		use(UserDashboardController::class.java)

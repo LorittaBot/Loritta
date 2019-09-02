@@ -45,6 +45,7 @@ class APIRoute : Jooby() {
 		use(GetMembersWithPermissionsInGuildController::class.java)
 		use(GetCurrentFanMadeAvatarController::class.java)
 		use(TransferBalanceController::class.java)
+		use(SendReputationMessageController::class.java)
 
 		// ===[ NEW WEBSITE STUFF ]===
 		use(GetLocaleController::class.java)
