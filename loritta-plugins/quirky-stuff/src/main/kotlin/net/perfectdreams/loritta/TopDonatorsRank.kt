@@ -13,11 +13,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.SponsorManager
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.sum
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.math.roundToInt
 
@@ -45,13 +43,20 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 						Payments.slice(Payments.userId, moneySumId)
 								.select {
 									Payments.paidAt.isNotNull() and
-											(Payments.reason eq PaymentReason.DONATION)
+											(Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED)
 								}
 
 								.groupBy(Payments.userId)
 								.orderBy(moneySumId, SortOrder.DESC)
 								.limit(15)
 								.toMutableList()
+					}
+					val activeSponsors = transaction(Databases.loritta) {
+						val sponsors = SponsorManager.getActiveSponsors()
+
+						sponsors.map {
+							it[Payments.userId]
+						}
 					}
 
 					val message = StringBuilder()
@@ -126,7 +131,9 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 							else -> RuntimeException("There is >$index entries, but we only support up to 19!")
 						}
 						val badgeEmoji = if (user != null) {
-							if (guild.boosters.contains(user)) {
+							if (user.idLong in activeSponsors) {
+								"<:lori_rica:593979718919913474>"
+							} else if (guild.boosters.contains(user)) {
 								"<:lori_boost:588421112786976791>"
 							} else {
 								"<:nothing:592370648031166524>"
@@ -134,6 +141,7 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 						} else {
 							"<:nothing:592370648031166524>"
 						}
+
 						message.append(rankEmoji)
 						message.append(badgeEmoji)
 						message.append(" • ")

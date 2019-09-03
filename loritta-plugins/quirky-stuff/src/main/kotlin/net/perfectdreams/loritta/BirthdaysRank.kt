@@ -85,7 +85,7 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 		} ?: return
 
 		logger.info { "Updating birthday rank in $guild..." }
-		
+
 		updateBirthdayRank(guild, serverConfig, config)
 	}
 
