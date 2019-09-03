@@ -47,7 +47,7 @@ class UserReputationController {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
 				try {
-					HttpRequest.post("https://${cluster.getUrl()}/api/v1/send-reputation-message")
+					HttpRequest.post("https://${cluster.getUrl()}/api/v1/loritta/send-reputation-message")
 							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
 							.connectTimeout(5_000)
@@ -72,6 +72,8 @@ class UserReputationController {
 		}
 
 		fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+			logger.info { "Received sendReputation request in $guildId $channelId by $giverId for $receiverId" }
+
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
 				// Iremos verificar se o usuário *pode* usar comandos no canal especificado
 				val channel = lorittaShards.getTextChannelById(channelId)

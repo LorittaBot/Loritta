@@ -11,7 +11,7 @@ object DiscordUtils {
 	 */
 	fun getLorittaClusterForGuildId(id: Long): GeneralConfig.LorittaClusterConfig {
 		val shardId = getShardIdFromGuildId(id)
-		return getLorittaClusterForShardId(id)
+		return getLorittaClusterForShardId(shardId)
 	}
 
 	/**

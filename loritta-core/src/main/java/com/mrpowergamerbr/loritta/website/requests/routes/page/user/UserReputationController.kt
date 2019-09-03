@@ -48,7 +48,7 @@ class UserReputationController {
 			}
 		} else { null }
 
-		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("channel").valueOrNull())
+		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("guild").valueOrNull(), req.param("channel").valueOrNull())
 		val builder = StringBuilder()
 		builder.appendHTML().html {
 			Page.getHead(
