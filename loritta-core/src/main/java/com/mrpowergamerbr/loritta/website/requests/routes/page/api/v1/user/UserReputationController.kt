@@ -109,7 +109,7 @@ class UserReputationController {
 									"<@$receiverId>",
 									reputationCount,
 									Emotes.LORI_OWO,
-									"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?channel=$channelId>",
+									"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
 									receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
 							],
 							Emotes.LORI_HUG
