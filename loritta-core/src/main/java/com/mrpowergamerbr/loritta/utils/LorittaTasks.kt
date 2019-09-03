@@ -23,6 +23,7 @@ object LorittaTasks {
 
 		if (loritta.config.loritta.environment == EnvironmentType.PRODUCTION)
 			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(SponsorsSyncTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AminoRepostTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(NewRssFeedTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)

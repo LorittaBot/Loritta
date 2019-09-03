@@ -182,6 +182,17 @@ object WebsiteUtils {
 			}
 		}
 
+		repeat(10) {
+			val sponsor = loritta.sponsors.getOrNull(it)
+
+			variables["sponsor_${it}_enabled"] = sponsor != null
+			variables["sponsor_${it}_pc_url"] = sponsor?.getRectangularBannerUrl()
+			variables["sponsor_${it}_mobile_url"] = sponsor?.getSquareBannerUrl()
+			variables["sponsor_${it}_name"] = sponsor?.name
+			variables["sponsor_${it}_url"] = sponsor?.link
+			variables["sponsor_${it}_slug"] = sponsor?.slug
+		}
+
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {

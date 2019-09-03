@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.SponsorManager
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.and

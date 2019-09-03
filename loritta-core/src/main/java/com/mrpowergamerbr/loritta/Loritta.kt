@@ -4,8 +4,6 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
-import com.google.common.collect.EvictingQueue
-import com.google.common.collect.Queues
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -55,12 +53,10 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.socket.LorittaSocket
 import net.perfectdreams.loritta.socket.network.SocketOpCode
 import net.perfectdreams.loritta.socket.network.commands.*
-import net.perfectdreams.loritta.tables.BotVotes
-import net.perfectdreams.loritta.tables.Giveaways
-import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -178,6 +174,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		)
 	}
 	var willRestartAt: Long? = null
+	var sponsors: List<Sponsor> = listOf()
 
 	init {
 		LorittaLauncher.loritta = this
@@ -416,7 +413,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					ParallaxMetaStorages,
 					BotVotes,
 					StoredMessages,
-					StarboardMessages
+					StarboardMessages,
+					Sponsors
 			)
 		}
 	}
