@@ -27,7 +27,7 @@ class ProfileImageController {
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresVariables(true)
 	fun getReputations(req: Request, res: Response, userId: String, backgroundType: String) {
-		val user = lorittaShards.getUserById(userId)!!
+		val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
 		val userProfile = loritta.getOrCreateLorittaProfile(userId)
 
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)

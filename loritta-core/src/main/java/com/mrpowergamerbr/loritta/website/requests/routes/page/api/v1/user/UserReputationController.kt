@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.website.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -270,7 +271,7 @@ class UserReputationController {
 					}
 					for ((userId, count) in map) {
 						if (idx == 5) break
-						val rankUser = lorittaShards.getUserById(userId.toString())
+						val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
 
 						if (rankUser != null) {
 							tr {

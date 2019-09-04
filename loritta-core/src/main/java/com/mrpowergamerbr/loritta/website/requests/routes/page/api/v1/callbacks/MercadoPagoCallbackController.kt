@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -112,7 +113,7 @@ class MercadoPagoCallbackController {
 							}
 						}
 
-						val user = lorittaShards.getUserById(internalPayment.userId)
+						val user = runBlocking { lorittaShards.retrieveUserById(internalPayment.userId) }
 						if (user != null) {
 							user.openPrivateChannel().queue {
 								it.sendMessage("Seu pagamento foi aprovado com sucesso!").queue()
