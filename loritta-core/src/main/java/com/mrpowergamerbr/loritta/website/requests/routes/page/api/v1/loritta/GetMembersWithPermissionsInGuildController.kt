@@ -13,7 +13,7 @@ import org.jooby.Response
 import org.jooby.mvc.GET
 import org.jooby.mvc.Path
 
-@Path("/api/v1/loritta/guild/:guildId/users-with-permission/:permissionList")
+@Path("/api/v1/loritta/guild/:guildId/users-with-any-permission/:permissionList")
 class GetMembersWithPermissionsInGuildController {
 	@GET
 	@LoriDoNotLocaleRedirect(true)
@@ -32,12 +32,12 @@ class GetMembersWithPermissionsInGuildController {
 
 		val permissions = permissionList.split(",").map { Permission.valueOf(it) }
 
-		val membersWithPermission = guild.members.filter {
-			for (permission in permissions) {
-				if (!it.hasPermission(permission))
-					return@filter false
+		val membersWithPermission = guild.members.filter {  member ->
+			val permissionTheUserHas = permissions.filter { permission ->
+				member.hasPermission(permission)
 			}
-			return@filter true
+
+			permissionTheUserHas.isNotEmpty()
 		}
 
 		res.send(

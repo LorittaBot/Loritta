@@ -128,7 +128,7 @@ class LorittaLandRoleSync : Runnable {
 
 							logger.info { "Checking user with permissions in ${partnerServerConfig.guildId}, shardId = $shardId" }
 
-							val usersWithPermission = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/${partnerServerConfig.guildId}/users-with-permission/${Permission.ADMINISTRATOR},${Permission.MANAGE_SERVER},${Permission.MANAGE_ROLES}").await() }
+							val usersWithPermission = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/${partnerServerConfig.guildId}/users-with-any-permission/${Permission.ADMINISTRATOR},${Permission.MANAGE_SERVER},${Permission.MANAGE_ROLES}").await() }
 							logger.info { "User Permission Payload from ${partnerServerConfig.guildId} is $usersWithPermission" }
 
 							val partners = usersWithPermission["members"].array.map { it["id"].string }
