@@ -271,7 +271,7 @@ class UserReputationController {
 					}
 					for ((userId, count) in map) {
 						if (idx == 5) break
-						val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
+						val rankUser = runBlocking { lorittaShards.retrieveUserById(userId) }
 
 						if (rankUser != null) {
 							tr {
