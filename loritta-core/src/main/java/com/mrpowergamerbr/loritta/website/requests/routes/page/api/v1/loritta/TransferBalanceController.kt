@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.LorittaPrices
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
@@ -67,7 +68,11 @@ class TransferBalanceController {
 
 				val beforeGiver = giverProfile.money
 				val beforeReceiver = receiverProfile.money
-				val taxedMoney = Math.ceil(PagarCommand.TRANSACTION_TAX * howMuch.toDouble())
+
+				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(giverId)
+				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
+
+				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(PagarCommand.TRANSACTION_TAX * howMuch.toDouble()) }
 				val finalMoney = howMuch - taxedMoney
 
 				transaction(Databases.loritta) {

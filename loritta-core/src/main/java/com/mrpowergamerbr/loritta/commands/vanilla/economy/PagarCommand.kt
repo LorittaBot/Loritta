@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
@@ -134,13 +135,22 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 				}
 
-				val taxedMoney = Math.ceil(TRANSACTION_TAX * howMuch.toDouble())
+				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
+				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
+
+				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(TRANSACTION_TAX * howMuch.toDouble()) }
 				val finalMoney = howMuch - taxedMoney
 
 				val message = context.reply(
-						LoriReply(
-								"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber ${howMuch - taxedMoney} sonhos"
-						),
+						if (!taxBypass) {
+							LoriReply(
+									"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber ${howMuch - taxedMoney} sonhos"
+							)
+						} else {
+							LoriReply(
+									"Você irá transferir $howMuch sonhos para ${user.asMention}! Como você é um incrível doador, você não precisará pagar nenhuma taxa! Afinal, se você me ajudou, então você não precisa de taxas toscas te perturbando. ${Emotes.LORI_SMILE}"
+							)
+						},
 						LoriReply(
 								"Clique em ✅ para aceitar a transação!"
 						)
