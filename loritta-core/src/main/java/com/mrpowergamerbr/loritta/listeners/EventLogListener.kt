@@ -260,7 +260,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				cachedBeforeSending[event.user.idLong] = UserMetaHolder(null, event.oldName)
 			} else {
 				val usernameChange = cachedBeforeSending[event.user.idLong]!!
-				usernameChange.oldDiscriminator = event.oldName
+				usernameChange.oldName = event.oldName
 			}
 		}
 	}
