@@ -243,6 +243,7 @@ class APILoriDailyRewardView : NoVarsView() {
 
 				if (donationConfig != null && donationKey != null && donationKey.value >= 59.99) {
 					multipliedBy = when {
+						donationKey.value >= 179.99 -> 2.0
 						donationKey.value >= 139.99 -> 1.75
 						donationKey.value >= 99.99 -> 1.5
 						donationKey.value >= 59.99 -> 1.25
