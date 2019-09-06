@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes
 
 import com.mrpowergamerbr.loritta.website.requests.routes.page.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.extras.ExtrasViewerController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.landingpages.BrazilianBotLandingPageController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.sponsors.SponsorsRedirectController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserProfileController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.UserReputationController
@@ -21,6 +22,10 @@ class UserRoute : Jooby() {
 		use(SponsorsController::class.java)
 		use(SponsorsRedirectController::class.java)
 
+		// ===[ LANDING PAGES ]===
+		use(BrazilianBotLandingPageController::class.java)
+
+		// ===[ PROFILES ]===
 		use(UserProfileController::class.java)
 		use(UserDashboardController::class.java)
 		use(ShipEffectsController::class.java)
