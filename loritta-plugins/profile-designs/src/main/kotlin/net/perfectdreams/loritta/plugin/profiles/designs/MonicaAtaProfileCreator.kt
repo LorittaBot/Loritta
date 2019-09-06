@@ -72,11 +72,11 @@ class MonicaAtaProfileCreator : ProfileCreator {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
 		}
 
-		graphics.font = KOMIKA.deriveFont(13f)
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) })
-
 		userInfo.add("Sonhos")
 		userInfo.add("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}")
+
+		graphics.font = KOMIKA.deriveFont(13f)
+		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
 
