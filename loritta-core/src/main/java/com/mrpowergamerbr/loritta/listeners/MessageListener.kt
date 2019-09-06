@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
@@ -154,6 +155,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						legacyLocale,
 						lorittaUser
 				)
+
+				if (serverConfig.autoroleConfig.isEnabled && serverConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+					AutoroleModule.giveRoles(member, serverConfig.autoroleConfig)
+				}
 
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))

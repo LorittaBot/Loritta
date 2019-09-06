@@ -288,7 +288,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
 
 			transaction(Databases.loritta) {
-				DiscordListener.logger.trace { "Deleting all ${e.guild} profiles..."}
+				logger.trace { "Deleting all ${e.guild} profiles..."}
 
 				// Deletar todos os perfis do servidor
 				GuildProfiles.deleteWhere {
@@ -296,29 +296,29 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// Deletar configurações
-				DiscordListener.logger.trace { "Deleting all ${e.guild} configurations..."}
+				logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
-				DiscordListener.logger.trace { "Deleting ${e.guild} configs..."}
+				logger.trace { "Deleting ${e.guild} configs..."}
 				val donationConfig = serverConfig?.donationConfig
 				val birthdayConfig = serverConfig?.birthdayConfig
 
-				DiscordListener.logger.trace { "Deleting ${e.guild} config..."}
+				logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 				donationConfig?.delete()
 				birthdayConfig?.delete()
 
-				DiscordListener.logger.trace { "Deleting all ${e.guild}'s giveaways..."}
+				logger.trace { "Deleting all ${e.guild}'s giveaways..."}
 				val allGiveaways = Giveaway.find {
 					Giveaways.guildId eq e.guild.idLong
 				}
 
-				DiscordListener.logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!"}
+				logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!"}
 
 				allGiveaways.forEach {
 					GiveawayManager.cancelGiveaway(it, true, true)
 				}
 
-				DiscordListener.logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
+				logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
 			}
 		}
 	}
@@ -406,8 +406,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				queueTextChannelTopicUpdates(event.guild, conf, true)
 
-				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					AutoroleModule.giveRoles(event, conf.autoroleConfig)
+				if (conf.autoroleConfig.isEnabled && !conf.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+					AutoroleModule.giveRoles(event.member, conf.autoroleConfig)
 				}
 
 				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
