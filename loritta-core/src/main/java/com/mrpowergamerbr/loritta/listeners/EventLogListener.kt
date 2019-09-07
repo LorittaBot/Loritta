@@ -257,7 +257,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (!loritta.isMaster) {
 			if (!cachedBeforeSending.containsKey(event.user.idLong)) {
-				cachedBeforeSending[event.user.idLong] = UserMetaHolder(null, event.oldName)
+				cachedBeforeSending[event.user.idLong] = UserMetaHolder(event.oldName, null)
 			} else {
 				val usernameChange = cachedBeforeSending[event.user.idLong]!!
 				usernameChange.oldName = event.oldName
