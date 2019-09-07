@@ -90,7 +90,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			}
 
 			val userId = profile[Profiles.id].value.toString()
-			val member = lorittaShards.getUserById(userId)
+			val member = lorittaShards.retrieveUserById(userId)
 
 			if (member != null) {
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/$userId.png")
