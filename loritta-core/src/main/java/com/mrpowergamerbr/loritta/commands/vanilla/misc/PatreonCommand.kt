@@ -24,7 +24,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var patrons = ""
 
-		val lorittaGuild = com.mrpowergamerbr.loritta.utils.lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val moneySumId = Payments.money.sum()
@@ -41,8 +41,8 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			}
 
 			patrons = mostPayingUsers.map {
-				val money = it[Payments.money]
-				val isBold = money.toDouble() >= 59.99
+				val money = it[moneySumId]?.toDouble() ?: 0.0
+				val isBold = money >= 59.99
 
 				val user = lorittaShards.retrieveUserById(it[Payments.userId])
 
