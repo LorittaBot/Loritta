@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.utils.DiscordUtils
 
@@ -81,22 +80,14 @@ class LorittaShards {
 		if (id == null)
 			return null
 
-		return getUserById(id) ?: try {
-			shardManager.retrieveUserById(id).await()
-		} catch (e: ErrorResponseException) {
-			null
-		}
+		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
 	}
 
 	suspend fun retrieveUserById(id: Long?): User? {
 		if (id == null)
 			return null
 
-		return getUserById(id) ?: try {
-			shardManager.retrieveUserById(id).await()
-		} catch (e: ErrorResponseException) {
-			null
-		}
+		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
 	}
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
