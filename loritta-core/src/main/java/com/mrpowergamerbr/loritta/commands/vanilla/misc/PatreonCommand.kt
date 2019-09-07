@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -24,37 +23,35 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var patrons = ""
 
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-		if (lorittaGuild != null) {
-			val moneySumId = Payments.money.sum()
-			val mostPayingUsers = transaction(Databases.loritta) {
-				Payments.slice(Payments.userId, moneySumId)
-						.select {
-							Payments.paidAt.isNotNull() and
-									(Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED)
-						}
-
-						.groupBy(Payments.userId)
-						.orderBy(moneySumId, SortOrder.DESC)
-						.toMutableList()
-			}
-
-			patrons = mostPayingUsers.map {
-				val money = it[moneySumId]?.toDouble() ?: 0.0
-				val isBold = money >= 59.99
-
-				val user = lorittaShards.retrieveUserById(it[Payments.userId])
-
-				if (user != null) {
-					var name = "`${user.name}#${user.discriminator}`"
-					if (isBold) {
-						name = "**$name**"
+		val moneySumId = Payments.money.sum()
+		val mostPayingUsers = transaction(Databases.loritta) {
+			Payments.slice(Payments.userId, moneySumId)
+					.select {
+						Payments.paidAt.isNotNull() and
+								(Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
+								(Payments.expiresAt greaterEq System.currentTimeMillis())
 					}
-					name
-				} else { "???" }
-			}.joinToString(", ")
+					.groupBy(Payments.userId)
+					.orderBy(moneySumId, SortOrder.DESC)
+					.toMutableList()
 		}
+
+		patrons = mostPayingUsers.map {
+			val money = it[moneySumId]?.toDouble() ?: 0.0
+			val isBold = money >= 59.99
+
+			logger.info { "ID is ${it[Payments.userId]}" }
+
+			val user = lorittaShards.retrieveUserById(it[Payments.userId])
+
+			if (user != null) {
+				var name = "`${user.name}#${user.discriminator}`"
+				if (isBold) {
+					name = "**$name**"
+				}
+				name
+			} else { "???" }
+		}.joinToString(", ")
 
 		val embed = EmbedBuilder().apply {
 			setThumbnail("https://loritta.website/assets/img/fanarts/Loritta_-_Heathecliff.png")
