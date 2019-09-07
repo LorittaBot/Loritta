@@ -37,7 +37,9 @@ class SponsorsAdvertisement(val m: QuirkyStuff, val config: QuirkyConfig) {
 				}
 
 				millis = calendar.timeInMillis
+				val wait = millis - System.currentTimeMillis()
 
+				logger.info { "Waiting ${wait}ms until we broadcast the sponsored message! Will be triggered at $millis epoch" }
 				delay(millis - System.currentTimeMillis())
 
 				broadcastSponsoredMessage()
@@ -65,6 +67,8 @@ class SponsorsAdvertisement(val m: QuirkyStuff, val config: QuirkyConfig) {
 					}
 
 					textChannel.sendMessage("*Queria ter o seu servidor aqui? Então leia o <#615556330396319744>!* <:lori_feliz:519546310978830355>").await()
+							.addReaction("lori_rica:593979718919913474")
+							.await()
 				}
 			}
 		}
