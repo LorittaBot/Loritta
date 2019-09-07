@@ -229,6 +229,7 @@ class LorittaLandRoleSync : Runnable {
 			val donatorRole = originalGuild.getRoleById("364201981016801281")
 			val superDonatorRole = originalGuild.getRoleById("463652112656629760")
 			val megaDonatorRole = originalGuild.getRoleById("534659343656681474")
+			val advertisementRole = originalGuild.getRoleById("619691791041429574")
 			val inactiveRole = originalGuild.getRoleById("435856512787677214")
 
 			val textChannel = originalGuild.getTextChannelById(Constants.THANK_YOU_DONATORS_CHANNEL_ID)
@@ -261,6 +262,14 @@ class LorittaLandRoleSync : Runnable {
 					} else {
 						if (roles.contains(superDonatorRole))
 							roles.remove(superDonatorRole)
+					}
+
+					if (donated >= 39.99) {
+						if (!roles.contains(advertisementRole))
+							roles.add(advertisementRole)
+					} else {
+						if (roles.contains(advertisementRole))
+							roles.remove(advertisementRole)
 					}
 
 					val helpedDays = (donated / 10)
