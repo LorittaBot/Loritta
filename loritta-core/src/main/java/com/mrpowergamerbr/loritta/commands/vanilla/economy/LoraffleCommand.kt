@@ -42,6 +42,18 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
+			val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+
+			if (canGetDaily) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+				context.reply(
+						LoriReply(
+								"Parece que você ainda não pegou o seu daily, você só pode apostar na rifa após ter pegado o seu daily de hoje. Pegue agora mesmo! ${loritta.instanceConfig.loritta.website.url}daily",
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
 			if (quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
 				context.reply(
 						LoriReply(
