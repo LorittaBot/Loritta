@@ -6,16 +6,28 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
 
 abstract class ProtectedView : AbstractView() {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
 		val hostHeader = req.header("Host").valueOrNull() ?: return false
 
@@ -38,6 +50,24 @@ abstract class ProtectedView : AbstractView() {
 					debug = false
 				}
 				auth.doTokenExchange()
+				val userIdentification = auth.getUserIdentification()
+
+				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
+				val trueIp = req.trueIp
+				val dailiesWithSameIp = transaction(Databases.loritta) {
+					Dailies.select {
+						(Dailies.ip eq trueIp)
+					}.toMutableList()
+				}
+
+				val userIds = dailiesWithSameIp.map { it[Dailies.id] }.distinct()
+
+				val bannedProfiles = transaction(Databases.loritta) {
+					Profiles.select { Profiles.id inList userIds and Profiles.isBanned }
+				}.toMutableList()
+
+				if (bannedProfiles.isNotEmpty())
+					logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" }
 
 				req.session()["discordAuth"] = GSON.toJson(auth)
 				if (state.isSet) {

@@ -80,12 +80,14 @@ class APILoriDailyRewardView : NoVarsView() {
 					.firstOrNull()
 		}?.get(Dailies.receivedAt) ?: 0L
 
-		val sameIpDailyAt = transaction(Databases.loritta) {
+		val sameIpDaily = transaction(Databases.loritta) {
 			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
 					.orderBy(Dailies.receivedAt to false)
 					.limit(1)
 					.firstOrNull()
-		}?.get(Dailies.receivedAt) ?: 0L
+		}
+
+		val sameIpDailyAt = sameIpDaily?.get(Dailies.receivedAt) ?: 0L
 
 		run {
 			val calendar = Calendar.getInstance()
@@ -111,6 +113,8 @@ class APILoriDailyRewardView : NoVarsView() {
 			val tomorrow = calendar.timeInMillis
 
 			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
+				logger.warn { "User ${userIdentification.id} tried to get daily with the same IP as ${sameIpDaily?.get(Dailies.receivedById)}! IP = ${Dailies.ip}; Current User Email: ${userIdentification.email}; Daily User Email: ${sameIpDaily?.get(Dailies.email)}" }
+
 				val payload = JsonObject()
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				return payload.toString()
