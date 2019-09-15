@@ -83,6 +83,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
 
 			val badges = mutableListOf<BufferedImage>()
+
 			if (user.patreon || loritta.config.isOwner(user.id)) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			if (user.lorittaSupervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
@@ -102,6 +103,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
 			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
 			if (isGitHubContributor) badges += ImageIO.read(File(Loritta.ASSETS + "github_contributor.png"))
+
+			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
+				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
+
 			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 
 			transaction(Databases.loritta) {
