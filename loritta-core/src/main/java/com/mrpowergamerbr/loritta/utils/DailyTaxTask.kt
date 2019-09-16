@@ -145,7 +145,7 @@ class DailyTaxTask : Runnable {
 							Payments.paidAt greater (soonToBeExpiredDonation.paidAt ?: Long.MAX_VALUE) and (Payments.reason eq PaymentReason.DONATION) // greater, pois não queremos pegar o mesmo pagamento!
 						}.count()
 
-						if (newDonationsCount != 0 && !alreadyPaymentNotifiedUsers.contains(soonToBeExpiredDonation.userId)) {
+						if (newDonationsCount == 0 && !alreadyPaymentNotifiedUsers.contains(soonToBeExpiredDonation.userId)) {
 							soonToBeExpiredDonations.add(soonToBeExpiredDonation)
 						}
 					}
