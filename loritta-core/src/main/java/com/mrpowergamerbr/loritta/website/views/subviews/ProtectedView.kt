@@ -86,64 +86,91 @@ abstract class ProtectedView : AbstractView() {
 				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
 				val guildId = req.param("guild_id")
 				if (guildId.isSet) {
-					val guild = lorittaShards.getGuildById(guildId.value())
+					var guildFound = false
+					var tries = 0
 
-					if (guild != null) {
-						val serverConfig = loritta.getServerConfigForGuild(guild.id)
+					while (!guildFound && tries >= 5) {
+						val guild = lorittaShards.getGuildById(guildId.value())
 
-						// Agora nós iremos pegar o locale do servidor
-						val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+						if (guild != null) {
+							val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
-						val userId = auth.getUserIdentification().id
+							// Agora nós iremos pegar o locale do servidor
+							val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
-						val user = runBlocking { lorittaShards.retrieveUserById(userId) }
+							val userId = auth.getUserIdentification().id
 
-						if (user != null) {
-							val member = guild.getMember(user)
+							val user = runBlocking { lorittaShards.retrieveUserById(userId) }
 
-							if (member != null) {
-								// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
-								if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
-									// Verificar coisas antes de adicionar a Lori
-									val blacklistedReason = loritta.blacklistedServers.entries.firstOrNull { guild.id == it.key }?.value
-									if (blacklistedReason != null) { // Servidor blacklisted
+							if (user != null) {
+								val member = guild.getMember(user)
+
+								if (member != null) {
+									// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
+									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
+										// Verificar coisas antes de adicionar a Lori
+										val blacklistedReason = loritta.blacklistedServers.entries.firstOrNull { guild.id == it.key }?.value
+										if (blacklistedReason != null) { // Servidor blacklisted
+											// Envie via DM uma mensagem falando sobre a Loritta!
+											val message = locale["LORITTA_BlacklistedServer", blacklistedReason]
+
+											user.openPrivateChannel().queue {
+												it.sendMessage(message).queue({
+													guild.leave().queue()
+												}, {
+													guild.leave().queue()
+												})
+											}
+											return false
+										}
+
+										val profile = loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
+										if (profile.isBanned) { // Dono blacklisted
+											// Envie via DM uma mensagem falando sobre a Loritta!
+											val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, profile.bannedReason
+													?: "???"]
+
+											user.openPrivateChannel().queue {
+												it.sendMessage(message).queue({
+													guild.leave().queue()
+												}, {
+													guild.leave().queue()
+												})
+											}
+											return false
+										}
+
 										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_BlacklistedServer", blacklistedReason]
+										val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, loritta.instanceConfig.loritta.website.url, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${loritta.instanceConfig.loritta.website.url}donate"]
 
 										user.openPrivateChannel().queue {
-											it.sendMessage(message).queue({
-												guild.leave().queue()
-											}, {
-												guild.leave().queue()
-											})
+											it.sendMessage(message).queue()
 										}
-										return false
-									}
-
-									val profile = loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
-									if (profile.isBanned) { // Dono blacklisted
-										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, profile.bannedReason ?: "???"]
-
-										user.openPrivateChannel().queue {
-											it.sendMessage(message).queue({
-												guild.leave().queue()
-											}, {
-												guild.leave().queue()
-											})
-										}
-										return false
-									}
-
-									// Envie via DM uma mensagem falando sobre a Loritta!
-									val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, loritta.instanceConfig.loritta.website.url, locale["LORITTA_SupportServerInvite"], loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size, "${loritta.instanceConfig.loritta.website.url}donate"]
-
-									user.openPrivateChannel().queue {
-										it.sendMessage(message).queue()
 									}
 								}
 							}
+							guildFound = true // Servidor detectado, saia do loop!
+						} else {
+							tries++
+							logger.warn { "Received guild $guildId via OAuth2 scope, but I'm not in that guild yet! Waiting for 1s... Tries: ${tries}" }
+							Thread.sleep(1_000)
+							return true
 						}
+					}
+
+					if (tries == 5) {
+						// oof
+						logger.warn { "Received guild $guildId via OAuth2 scope, we tried five times, but I'm not in that guild yet! Telling the user about the issue..." }
+
+						res.send("""
+							|<p>Parece que você tentou me adicionar no seu servidor, mas parece que eu não estou nele!</p>
+							|<ul>
+							|<li>Tente me readicionar, as vezes isto acontece devido a um delay entre o tempo até o Discord atualizar os servidores que eu estou. <a href="https://loritta.website/dashboard">https://loritta.website/dashboard</a></li>
+							|<li>Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem outros bots do servidor ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione! <a href="https://loritta.website/dashboard">https://loritta.website/dashboard</a></li>
+							|</ul>
+							|<p>Desculpe pela inconveniência ;w;</p>
+						""".trimMargin())
+						return true
 					}
 
 					res.redirect("https://$hostHeader/dashboard/configure/${guildId.value()}")
