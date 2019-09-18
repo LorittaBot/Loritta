@@ -406,6 +406,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun isUserStillBanned(profile: Profile): Boolean {
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
 			if (profile.isBanned) { // E ele ainda está banido...
+				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
 				return true // Então flw galerinha
 			} else {
 				// Se não, vamos remover ele da lista do ignoreIds
