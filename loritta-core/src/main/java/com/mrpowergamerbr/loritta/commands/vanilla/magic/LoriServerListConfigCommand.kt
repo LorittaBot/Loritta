@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
-import net.perfectdreams.loritta.utils.Emotes
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.DonationKey
@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -35,6 +36,83 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 		// Sub-comandos que só o Dono pode usar
 		if (loritta.config.isOwner(context.userHandle.id)) {
+			if (arg0 == "search_user") {
+				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
+
+				val allUsers = lorittaShards.searchUserInAllLorittaClusters(pattern)
+
+				val strBuilder = StringBuilder()
+
+				allUsers.forEach {
+					val name = it["name"].string
+					val discriminator = it["discriminator"].string
+					val id = it["id"].long
+
+					strBuilder.append("`${name}#${discriminator}` (`${id}`)\n")
+				}
+
+				if (strBuilder.length > 2000) {
+					context.reply(
+							LoriReply(
+									"Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (strBuilder.isEmpty()) {
+					context.reply(
+							LoriReply(
+									"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				context.sendMessage(strBuilder.toString())
+				return
+			}
+
+			if (arg0 == "search_guild") {
+				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
+
+				val allGuilds = lorittaShards.searchGuildInAllLorittaClusters(pattern)
+
+				val strBuilder = StringBuilder()
+
+				allGuilds.forEach {
+					val name = it["name"].string
+					val id = it["id"].long
+
+					strBuilder.append("`${name}` (`${id}`)\n")
+				}
+
+				if (strBuilder.length > 2000) {
+					context.reply(
+							LoriReply(
+									"Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (strBuilder.isEmpty()) {
+					context.reply(
+							LoriReply(
+									"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				context.sendMessage(strBuilder.toString())
+				return
+			}
+
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
 				transaction(Databases.loritta) {

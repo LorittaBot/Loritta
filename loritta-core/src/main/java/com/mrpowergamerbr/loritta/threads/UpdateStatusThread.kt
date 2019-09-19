@@ -91,7 +91,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			}
 
 			if (diff >= 25_000 && firstInstance != null) {
-				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaShard("/api/v1/loritta/current-fan-art-avatar").await() }
+				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
 				if (artistId != null) { // Se o artistId for nulo, então ele não está marcado!

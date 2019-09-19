@@ -67,7 +67,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					privateChannel.sendMessage(loriStickers.build()).await()
 				}
 
-				lorittaShards.queryMasterLorittaShard(
+				lorittaShards.queryMasterLorittaCluster(
 						"/api/v1/loritta/user/${context.userHandle.id}/send-help/${context.config.localeId}"
 				).await()
 			} else {

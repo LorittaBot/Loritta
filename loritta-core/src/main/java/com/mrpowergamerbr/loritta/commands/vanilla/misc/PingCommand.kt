@@ -19,7 +19,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "shards" || arg0 == "clusters") {
-			val results = lorittaShards.queryAllLorittaShards("/api/v1/loritta/status")
+			val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 
 			val row0 = mutableListOf<String>()
 			val row1 = mutableListOf<String>()
@@ -126,7 +126,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				context.sendMessage("```$str```")
 			}
 		} else if ((arg0 == "all_shards" || arg0 == "all_clusters") && (context.userHandle.support || loritta.config.isOwner(context.userHandle.idLong))) {
-			val results = lorittaShards.queryAllLorittaShards("/api/v1/loritta/status")
+			val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 
 			val row0 = mutableListOf<String>()
 			val row1 = mutableListOf<String>()

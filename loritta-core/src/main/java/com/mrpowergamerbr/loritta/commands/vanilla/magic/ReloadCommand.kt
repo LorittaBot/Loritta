@@ -35,7 +35,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		if (arg0 == "action") {
 			loritta.config.clusters.forEach {
-				lorittaShards.queryAllLorittaShards("/api/v1/loritta/action/$arg1")
+				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
 			}
 			context.reply(
 					LoriReply(

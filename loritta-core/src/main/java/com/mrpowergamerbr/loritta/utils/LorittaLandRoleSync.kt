@@ -89,7 +89,7 @@ class LorittaLandRoleSync : Runnable {
 
 			// ===[ PARCEIROS ]===
 			logger.info("Processando cargos de parceiros...")
-			val results = lorittaShards.queryAllLorittaShards("/api/v1/loritta/status")
+			val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 
 			var areAllConnected: Boolean = false
 			for (result in results) {

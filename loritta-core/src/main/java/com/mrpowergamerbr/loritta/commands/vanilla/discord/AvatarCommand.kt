@@ -52,7 +52,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
 			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
-				val currentFanArtInMasterCluster = lorittaShards.queryMasterLorittaShard("/api/v1/loritta/current-fan-art-avatar").await().obj
+				val currentFanArtInMasterCluster = lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await().obj
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
 				val fancyName = currentFanArtInMasterCluster["fancyName"].nullString

@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
@@ -110,7 +107,7 @@ class LorittaShards {
 		return shardManager.shards
 	}
 
-	fun queryMasterLorittaShard(path: String): Deferred<JsonElement> {
+	fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
 		val shard = loritta.config.clusters.first { it.id == 1L }
 
 		return GlobalScope.async {
@@ -152,7 +149,7 @@ class LorittaShards {
 		}
 	}
 
-	fun queryAllLorittaShards(path: String): List<Deferred<JsonElement>> {
+	fun queryAllLorittaClusters(path: String): List<Deferred<JsonElement>> {
 		val shards = loritta.config.clusters
 
 		return shards.map {
@@ -177,7 +174,7 @@ class LorittaShards {
 	}
 
 	suspend fun queryMutualGuildsInAllLorittaClusters(userId: String): List<JsonObject> {
-		val results = queryAllLorittaShards("/api/v1/loritta/user/$userId/mutual-guilds")
+		val results = queryAllLorittaClusters("/api/v1/loritta/user/$userId/mutual-guilds")
 
 		val allGuilds = mutableListOf<JsonObject>()
 
@@ -194,10 +191,96 @@ class LorittaShards {
 		return allGuilds
 	}
 
+	suspend fun searchUserInAllLorittaClusters(pattern: String): List<JsonObject> {
+		val shards = loritta.config.clusters
+
+		val results = shards.map {
+			GlobalScope.async {
+				try {
+					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/user/search")
+							.userAgent(loritta.lorittaCluster.getUserAgent())
+							.header("Authorization", loritta.lorittaInternalApiKey.name)
+							.connectTimeout(5_000)
+							.readTimeout(5_000)
+							.send(
+									gson.toJson(
+											jsonObject("pattern" to pattern)
+									)
+							)
+							.body()
+
+					jsonParser.parse(
+							body
+					)
+				} catch (e: Exception) {
+					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+					throw PingCommand.ShardOfflineException(it.id, it.name)
+				}
+			}
+		}
+
+		val matchedUsers = mutableListOf<JsonObject>()
+
+		results.forEach {
+			try {
+				val json = it.await()
+
+				json.array.forEach {
+					matchedUsers.add(it.obj)
+				}
+			} catch (e: PingCommand.ShardOfflineException) {}
+		}
+
+		return matchedUsers.distinctBy { it["id"].long }
+	}
+
+	suspend fun searchGuildInAllLorittaClusters(pattern: String): List<JsonObject> {
+		val shards = loritta.config.clusters
+
+		val results = shards.map {
+			GlobalScope.async {
+				try {
+					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/guild/search")
+							.userAgent(loritta.lorittaCluster.getUserAgent())
+							.header("Authorization", loritta.lorittaInternalApiKey.name)
+							.connectTimeout(5_000)
+							.readTimeout(5_000)
+							.send(
+									gson.toJson(
+											jsonObject("pattern" to pattern)
+									)
+							)
+							.body()
+
+					jsonParser.parse(
+							body
+					)
+				} catch (e: Exception) {
+					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+					throw PingCommand.ShardOfflineException(it.id, it.name)
+				}
+			}
+		}
+
+		val matchedGuilds = mutableListOf<JsonObject>()
+
+		results.forEach {
+			try {
+				val json = it.await()
+
+				json.array.forEach {
+					matchedGuilds.add(it.obj)
+				}
+			} catch (e: PingCommand.ShardOfflineException) {}
+		}
+
+		return matchedGuilds
+	}
+
 	suspend fun queryGuildCount(): Int {
 		var guildCount = 0
 
-		val results = lorittaShards.queryAllLorittaShards("/api/v1/loritta/status")
+		val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 		results.forEach {
 			try {
 				val json = it.await()

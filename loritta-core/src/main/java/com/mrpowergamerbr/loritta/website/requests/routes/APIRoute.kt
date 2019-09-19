@@ -47,6 +47,8 @@ class APIRoute : Jooby() {
 		use(GetCurrentFanMadeAvatarController::class.java)
 		use(TransferBalanceController::class.java)
 		use(SendReputationMessageController::class.java)
+		use(SearchUsersController::class.java)
+		use(SearchGuildsController::class.java)
 
 		// ===[ NEW WEBSITE STUFF ]===
 		use(GetLocaleController::class.java)
