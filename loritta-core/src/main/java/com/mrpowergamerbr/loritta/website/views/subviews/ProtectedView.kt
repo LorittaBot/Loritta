@@ -64,7 +64,8 @@ abstract class ProtectedView : AbstractView() {
 
 				val bannedProfiles = transaction(Databases.loritta) {
 					Profiles.select { Profiles.id inList userIds and Profiles.isBanned }
-				}.toMutableList()
+							.toMutableList()
+				}
 
 				if (bannedProfiles.isNotEmpty())
 					logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" }

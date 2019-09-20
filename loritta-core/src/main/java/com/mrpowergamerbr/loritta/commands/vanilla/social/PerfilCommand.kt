@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.Loritta
@@ -20,6 +21,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -36,18 +38,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement> = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			fun hasRole(guildId: String, roleId: String): Boolean {
-				val lorittaGuild = lorittaShards.getGuildById(guildId)
-				return if (lorittaGuild != null) {
-					if (lorittaGuild.isMember(user)) {
-						val member = lorittaGuild.getMember(user)
-						val role = lorittaGuild.getRoleById(roleId)
-						member?.roles?.contains(role) ?: false
-					} else {
-						false
-					}
-				} else {
-					false
-				}
+				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
+
+				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/$guildId/users-with-any-role/$roleId").await() }
+
+				val membersArray = usersWithRolesPayload["members"].nullArray ?: return false
+
+				val usersWithRoles = membersArray.map { it["id"].string }
+
+				return usersWithRoles.contains(user.id)
 			}
 
 			try {
