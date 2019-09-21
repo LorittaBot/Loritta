@@ -95,7 +95,7 @@ abstract class ProtectedView : AbstractView() {
 						val guild = lorittaShards.getGuildById(guildId.value())
 
 						if (guild != null) {
-							logger.info { "Guild ${guild} was successfully found! Yay!!" }
+							logger.info { "Guild ${guild} was successfully found after $tries tries! Yay!!" }
 
 							val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
