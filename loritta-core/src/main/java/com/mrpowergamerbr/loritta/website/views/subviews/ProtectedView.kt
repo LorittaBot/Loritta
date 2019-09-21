@@ -95,6 +95,8 @@ abstract class ProtectedView : AbstractView() {
 						val guild = lorittaShards.getGuildById(guildId.value())
 
 						if (guild != null) {
+							logger.info { "Guild ${guild} was successfully found! Yay!!" }
+							
 							val serverConfig = loritta.getServerConfigForGuild(guild.id)
 
 							// Agora nós iremos pegar o locale do servidor
@@ -156,7 +158,6 @@ abstract class ProtectedView : AbstractView() {
 							tries++
 							logger.warn { "Received guild $guildId via OAuth2 scope, but I'm not in that guild yet! Waiting for 1s... Tries: ${tries}" }
 							Thread.sleep(1_000)
-							return true
 						}
 					}
 
