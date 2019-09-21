@@ -113,7 +113,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			val tomorrow = calendar.timeInMillis
 
 			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
-				logger.warn { "User ${userIdentification.id} tried to get daily with the same IP as ${sameIpDaily?.get(Dailies.receivedById)}! IP = ${Dailies.ip}; Current User Email: ${userIdentification.email}; Daily User Email: ${sameIpDaily?.get(Dailies.email)}" }
+				logger.warn { "User ${userIdentification.id} tried to get daily with the same IP as ${sameIpDaily?.get(Dailies.receivedById)}! IP = ${sameIpDaily?.get(Dailies.receivedById)}; Current User Email: ${userIdentification.email}; Daily User Email: ${sameIpDaily?.get(Dailies.email)}" }
 
 				val payload = JsonObject()
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
