@@ -166,10 +166,17 @@ abstract class ProtectedView : AbstractView() {
 						logger.warn { "Received guild $guildId via OAuth2 scope, we tried ${loritta.config.loritta.website.maxGuildTries} times, but I'm not in that guild yet! Telling the user about the issue..." }
 
 						res.send("""
-							|<p>Parece que você tentou me adicionar no seu servidor, mas parece que eu não estou nele!</p>
+							|<p>Parece que você tentou me adicionar no seu servidor, mas mesmo assim eu não estou nele!</p>
 							|<ul>
 							|<li>Tente me readicionar, as vezes isto acontece devido a um delay entre o tempo até o Discord atualizar os servidores que eu estou. <a href="https://loritta.website/dashboard">https://loritta.website/dashboard</a></li>
-							|<li>Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem outros bots do servidor ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione! <a href="https://loritta.website/dashboard">https://loritta.website/dashboard</a></li>
+							|<li>
+							|Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem outros bots ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione!
+							|<ul>
+							|<li>
+							|Em vez de confiar em um bot para "proteger" o seu servidor: Veja quem possui permissão de administrador ou gerenciar servidores no seu servidor, eles são os únicos que conseguem adicionar bots no seu servidor.
+							|</li>
+							|</ul>
+							|</li>
 							|</ul>
 							|<p>Desculpe pela inconveniência ;w;</p>
 						""".trimMargin())
