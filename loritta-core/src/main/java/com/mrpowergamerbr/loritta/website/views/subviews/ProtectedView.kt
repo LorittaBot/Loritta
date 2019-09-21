@@ -87,10 +87,11 @@ abstract class ProtectedView : AbstractView() {
 				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
 				val guildId = req.param("guild_id")
 				if (guildId.isSet) {
+					logger.info { "Received guild $guildId via OAuth2 scope, sending DM to the guild owner..." }
 					var guildFound = false
 					var tries = 0
 
-					while (!guildFound && tries >= 5) {
+					while (!guildFound && 5 > tries) {
 						val guild = lorittaShards.getGuildById(guildId.value())
 
 						if (guild != null) {
