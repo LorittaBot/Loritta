@@ -91,7 +91,7 @@ abstract class ProtectedView : AbstractView() {
 					var guildFound = false
 					var tries = 0
 
-					while (!guildFound && 5 > tries) {
+					while (!guildFound && loritta.config.loritta.website.maxGuildTries > tries) {
 						val guild = lorittaShards.getGuildById(guildId.value())
 
 						if (guild != null) {
@@ -161,9 +161,9 @@ abstract class ProtectedView : AbstractView() {
 						}
 					}
 
-					if (tries == 5) {
+					if (tries == loritta.config.loritta.website.maxGuildTries) {
 						// oof
-						logger.warn { "Received guild $guildId via OAuth2 scope, we tried five times, but I'm not in that guild yet! Telling the user about the issue..." }
+						logger.warn { "Received guild $guildId via OAuth2 scope, we tried ${loritta.config.loritta.website.maxGuildTries} times, but I'm not in that guild yet! Telling the user about the issue..." }
 
 						res.send("""
 							|<p>Parece que você tentou me adicionar no seu servidor, mas parece que eu não estou nele!</p>

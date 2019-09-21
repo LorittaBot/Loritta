@@ -51,6 +51,7 @@ class GeneralConfig @JsonCreator constructor(
 		class WebsiteConfig @JsonCreator constructor(
 				val enabled: Boolean,
 				val apiKeys: List<AuthenticationKey>,
+				val maxGuildTries: Int,
 				val blockedIps: List<String>,
 				val blockedUserAgents: List<String>
 		) {
