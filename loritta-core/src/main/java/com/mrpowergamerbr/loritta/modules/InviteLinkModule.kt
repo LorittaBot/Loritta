@@ -167,7 +167,7 @@ class InviteLinkModule : MessageReceivedModule {
 		// necessário, e, ao pegar, vamos guardar no cache de invites
 		if (inviteBlockerConfig.whitelistServerInvites) {
 			guild.vanityCode?.let { whitelisted.add(it) }
-			
+
 			if (!cachedInviteLinks.containsKey(guild.idLong) && guild.selfMember.hasPermission(Permission.MANAGE_SERVER)) {
 				val invites = guild.retrieveInvites().await()
 				val codes = invites.map { it.code }

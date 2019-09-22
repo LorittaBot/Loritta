@@ -6,7 +6,9 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
@@ -16,10 +18,12 @@ import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -36,6 +40,37 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 		// Sub-comandos que só o Dono pode usar
 		if (loritta.config.isOwner(context.userHandle.id)) {
+			if (arg0 == "inject_economy") {
+				val config = loritta.getOrCreateServerConfig(context.guild.idLong)
+
+				transaction(Databases.loritta) {
+					config.economyConfig = EconomyConfig.new {
+						this.enabled = true
+						this.economyName = "LoriCoin"
+						this.economyNamePlural = "LoriCoins"
+						this.sonhosExchangeEnabled = true
+						this.exchangeRate = 1.0
+						this.sonhosExchangeEnabled = true
+						this.realMoneyToEconomyRate = 1.0
+					}
+				}
+
+				context.reply(
+						"Deve ter dado certo, yay"
+				)
+				return
+			}
+			if (arg0 == "set_local_money") {
+				transaction(Databases.loritta) {
+					val profile = GuildProfile.find { (GuildProfiles.guildId eq context.guild.idLong) and (GuildProfiles.userId eq arg1!!.toLong()) }.firstOrNull()
+					profile?.money = arg2?.toDouble()?.toBigDecimal() ?: 0.0.toBigDecimal()
+				}
+
+				context.reply(
+						"Quantidade alterada com sucesso!!"
+				)
+				return
+			}
 			if (arg0 == "search_user") {
 				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
 

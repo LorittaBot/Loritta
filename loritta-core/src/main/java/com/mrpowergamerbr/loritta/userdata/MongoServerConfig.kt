@@ -59,7 +59,7 @@ class MongoServerConfig @BsonCreator constructor(
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
 	var serverListConfig = ServerListConfig()
-	var economyConfig = EconomyConfig()
+	// var economyConfig = EconomyConfig()
 	var miscellaneousConfig = MiscellaneousConfig()
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
