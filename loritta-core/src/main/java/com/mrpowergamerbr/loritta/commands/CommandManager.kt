@@ -504,7 +504,7 @@ class CommandManager {
 				}
 
 				if (command.requiresMusicEnabled()) {
-					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
+					if (!context.config.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
