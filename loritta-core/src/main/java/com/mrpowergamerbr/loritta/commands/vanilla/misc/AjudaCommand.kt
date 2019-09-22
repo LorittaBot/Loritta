@@ -184,10 +184,6 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 			var categories = CommandCategory.values().filter { it != CommandCategory.MAGIC }
 
-			if (!context.config.musicConfig.isEnabled) {
-				categories = categories.filter { it != CommandCategory.MUSIC }
-			}
-
 			// Não mostrar categorias vazias
 			categories = categories.filter { category ->
 				loritta.legacyCommandManager.commandMap.any { it.category == category && !disabledCommands.contains(it) } ||
