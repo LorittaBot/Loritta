@@ -67,8 +67,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/raffle")
 					.userAgent(loritta.lorittaCluster.getUserAgent())
 					.header("Authorization", loritta.lorittaInternalApiKey.name)
-					.connectTimeout(5_000)
-					.readTimeout(5_000)
+					.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+					.readTimeout(loritta.config.loritta.clusterReadTimeout)
 					.send(
 							gson.toJson(
 									jsonObject(
@@ -130,8 +130,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		val body = HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/raffle")
 				.userAgent(loritta.lorittaCluster.getUserAgent())
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
-				.connectTimeout(5_000)
-				.readTimeout(5_000)
+				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+				.readTimeout(loritta.config.loritta.clusterReadTimeout)
 				.body()
 
 		val json = jsonParser.parse(body)

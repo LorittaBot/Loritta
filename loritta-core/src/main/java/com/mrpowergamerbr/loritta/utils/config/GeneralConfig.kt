@@ -46,7 +46,9 @@ class GeneralConfig @JsonCreator constructor(
 			val ownerIds: List<String>,
 			val subOwnerIds: List<String>,
 			val commands: CommandsConfig,
-			val website: WebsiteConfig
+			val website: WebsiteConfig,
+			val clusterReadTimeout: Int,
+			val clusterConnectionTimeout: Int
 	) {
 		class WebsiteConfig @JsonCreator constructor(
 				val enabled: Boolean,

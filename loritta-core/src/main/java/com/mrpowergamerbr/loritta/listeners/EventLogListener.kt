@@ -80,8 +80,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/user/$id/username-change")
 									.userAgent(loritta.lorittaCluster.getUserAgent())
 									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(5_000)
-									.readTimeout(5_000)
+									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(loritta.config.loritta.clusterReadTimeout)
 									.send(
 											gson.toJson(
 													jsonObject(

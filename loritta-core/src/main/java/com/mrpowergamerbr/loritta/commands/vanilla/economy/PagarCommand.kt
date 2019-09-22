@@ -173,8 +173,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 							val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
 									.userAgent(loritta.lorittaCluster.getUserAgent())
 									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(5_000)
-									.readTimeout(5_000)
+									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(loritta.config.loritta.clusterReadTimeout)
 									.send(
 											gson.toJson(
 													jsonObject(

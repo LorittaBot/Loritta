@@ -112,8 +112,8 @@ class PubSubHubbubCallbackController {
 								.userAgent(loritta.lorittaCluster.getUserAgent())
 								.header("X-Hub-Signature", req.header("X-Hub-Signature").valueOrNull())
 								.send(response)
-								.connectTimeout(5_000)
-								.readTimeout(5_000)
+								.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+								.readTimeout(loritta.config.loritta.clusterReadTimeout)
 								.ok()
 					} catch (e: Exception) {
 						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }

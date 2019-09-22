@@ -115,8 +115,8 @@ class LorittaShards {
 				val body = HttpRequest.get("https://${shard.getUrl()}$path")
 						.userAgent(loritta.lorittaCluster.getUserAgent())
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(5_000)
-						.readTimeout(5_000)
+						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+						.readTimeout(loritta.config.loritta.clusterReadTimeout)
 						.body()
 
 				jsonParser.parse(
@@ -135,8 +135,8 @@ class LorittaShards {
 				val body = HttpRequest.get("https://${cluster.getUrl()}$path")
 						.userAgent(loritta.lorittaCluster.getUserAgent())
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(5_000)
-						.readTimeout(5_000)
+						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+						.readTimeout(loritta.config.loritta.clusterReadTimeout)
 						.body()
 
 				jsonParser.parse(
@@ -158,8 +158,8 @@ class LorittaShards {
 					val body = HttpRequest.get("https://${it.getUrl()}$path")
 							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(5_000)
-							.readTimeout(5_000)
+							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+							.readTimeout(loritta.config.loritta.clusterReadTimeout)
 							.body()
 
 					jsonParser.parse(
@@ -200,8 +200,8 @@ class LorittaShards {
 					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/user/search")
 							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(5_000)
-							.readTimeout(5_000)
+							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+							.readTimeout(loritta.config.loritta.clusterReadTimeout)
 							.send(
 									gson.toJson(
 											jsonObject("pattern" to pattern)
@@ -243,8 +243,8 @@ class LorittaShards {
 					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/guild/search")
 							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(5_000)
-							.readTimeout(5_000)
+							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+							.readTimeout(loritta.config.loritta.clusterReadTimeout)
 							.send(
 									gson.toJson(
 											jsonObject("pattern" to pattern)
@@ -301,8 +301,8 @@ class LorittaShards {
 		val body = HttpRequest.get("https://$url/api/v1/loritta/guild/$id")
 				.userAgent(loritta.lorittaCluster.getUserAgent())
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
-				.connectTimeout(5_000)
-				.readTimeout(5_000)
+				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+				.readTimeout(loritta.config.loritta.clusterReadTimeout)
 				.body()
 
 		val json = jsonParser.parse(body).obj

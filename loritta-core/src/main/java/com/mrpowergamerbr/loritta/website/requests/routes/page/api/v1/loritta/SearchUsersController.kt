@@ -34,7 +34,7 @@ class SearchUsersController {
 			discriminator = split[1]
 		}
 
-		val regex = Regex(pattern)
+		5val regex = Regex(pattern)
 
 		val array = lorittaShards.getUsers()
 				.asSequence()

@@ -51,8 +51,8 @@ class UserReputationController {
 					HttpRequest.post("https://${cluster.getUrl()}/api/v1/loritta/send-reputation-message")
 							.userAgent(loritta.lorittaCluster.getUserAgent())
 							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(5_000)
-							.readTimeout(5_000)
+							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+							.readTimeout(loritta.config.loritta.clusterReadTimeout)
 							.send(
 									gson.toJson(
 											jsonObject(
