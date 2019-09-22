@@ -171,10 +171,10 @@ abstract class ProtectedView : AbstractView() {
 							|<ul>
 							|<li>Tente me readicionar, as vezes isto acontece devido a um delay entre o tempo até o Discord atualizar os servidores que eu estou. <a href="https://loritta.website/dashboard">https://loritta.website/dashboard</a></li>
 							|<li>
-							|Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem outros bots ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione!
+							|Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione!
 							|<ul>
 							|<li>
-							|Em vez de confiar em um bot para "proteger" o seu servidor: Veja quem possui permissão de administrador ou gerenciar servidores no seu servidor, eles são os únicos que conseguem adicionar bots no seu servidor.
+							|<b>Em vez de confiar em um bot para "proteger" o seu servidor:</b> Veja quem possui permissão de administrador ou de gerenciar servidores no seu servidor, eles são os únicos que conseguem adicionar bots no seu servidor. Existem boatos que existem "bugs que permitem adicionar bots sem permissão", mas isto é mentira.
 							|</li>
 							|</ul>
 							|</li>
